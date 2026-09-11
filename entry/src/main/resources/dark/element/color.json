@@ -1,0 +1,56 @@
+{
+  "color": [
+    {
+      "name": "start_window_background",
+      "value": "#000000"
+    },
+    {
+      "name": "brand",
+      "value": "#1D9BF0"
+    },
+    {
+      "name": "like",
+      "value": "#F91880"
+    },
+    {
+      "name": "repost",
+      "value": "#00BA7C"
+    },
+    {
+      "name": "danger",
+      "value": "#F4212E"
+    },
+    {
+      "name": "bg_page",
+      "value": "#000000"
+    },
+    {
+      "name": "bg_card",
+      "value": "#16181C"
+    },
+    {
+      "name": "bg_field",
+      "value": "#202327"
+    },
+    {
+      "name": "bg_secondary_btn",
+      "value": "#2F3336"
+    },
+    {
+      "name": "text_primary",
+      "value": "#E7E9EA"
+    },
+    {
+      "name": "text_secondary",
+      "value": "#71767B"
+    },
+    {
+      "name": "text_on_brand",
+      "value": "#FFFFFF"
+    },
+    {
+      "name": "divider",
+      "value": "#2F3336"
+    }
+  ]
+}

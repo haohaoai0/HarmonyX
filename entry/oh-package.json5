@@ -1,0 +1,10 @@
+{
+  "name": "entry",
+  "version": "1.0.0",
+  "description": "OpenTwit entry module - X/Twitter client for HarmonyOS.",
+  "main": "",
+  "author": "OpenTwit contributors",
+  "license": "MIT",
+  "modelVersion": "5.0.0",
+  "dependencies": {}
+}

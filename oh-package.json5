@@ -1,0 +1,13 @@
+{
+  "name": "opentwit",
+  "version": "1.0.0",
+  "description": "Open source X/Twitter adaptation for HarmonyOS devices.",
+  "main": "",
+  "author": "OpenTwit contributors",
+  "license": "MIT",
+  "modelVersion": "5.0.0",
+  "dependencies": {},
+  "devDependencies": {
+    "@ohos/hypium": "1.0.19"
+  }
+}

@@ -1,0 +1,10 @@
+.hvigor/
+entry/build/
+build/
+oh_modules/
+oh-package-lock.json5
+*.hap
+*.hsp
+*.har
+local.properties
+.DS_Store

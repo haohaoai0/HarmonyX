@@ -1,0 +1,32 @@
+{
+  "string": [
+    {
+      "name": "module_desc",
+      "value": "OpenTwit entry module"
+    },
+    {
+      "name": "EntryAbility_desc",
+      "value": "OpenTwit main ability"
+    },
+    {
+      "name": "EntryAbility_label",
+      "value": "OpenTwit"
+    },
+    {
+      "name": "home_title",
+      "value": "Home"
+    },
+    {
+      "name": "explore_title",
+      "value": "Explore"
+    },
+    {
+      "name": "notifications_title",
+      "value": "Notifications"
+    },
+    {
+      "name": "messages_title",
+      "value": "Messages"
+    }
+  ]
+}
