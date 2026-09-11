@@ -4,7 +4,7 @@
   "description": "OpenTwit entry module - X/Twitter client for HarmonyOS.",
   "main": "",
   "author": "OpenTwit contributors",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "modelVersion": "5.0.0",
   "dependencies": {}
 }
