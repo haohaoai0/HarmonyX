@@ -5,7 +5,7 @@
 //    (Type of App: Native App is the right choice for a public client.)
 // 3. Paste the Client ID below and rebuild. No secret is needed: OpenTwit
 //    uses the PKCE public-client flow, so end users never handle any key.
-export const X_CLIENT_ID: string = 'WFBVUVRTemhoUElnNGJWVUt4b0s6MTpjaQ';
+export const X_CLIENT_ID: string = '';
 
 export function isOAuthConfigured(): boolean {
   return X_CLIENT_ID.trim().length > 0;
