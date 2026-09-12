@@ -1,90 +1,114 @@
-# OpenTwit
+<p align="center">
+  <img src="AppScope/resources/base/media/app_icon.png" width="132" alt="Harmony X app icon">
+</p>
 
-Open source X/Twitter client for HarmonyOS devices — native ArkTS, Stage model,
-built with the HarmonyOS design language and an iOS-X-inspired layout.
+<h1 align="center">Harmony X</h1>
 
-| Home | Explore | Alerts |
-|---|---|---|
-| <img src="docs/screenshots/home.jpg" width="260"> | <img src="docs/screenshots/explore.jpg" width="260"> | <img src="docs/screenshots/alerts.jpg" width="260"> |
+<p align="center">
+  A native, design-led X client for HarmonyOS.<br>
+  Built with ArkTS and the Stage model — focused on a clean, dark, device-native experience.
+</p>
 
-| DMs | Me |
-|---|---|
-| <img src="docs/screenshots/dms.jpg" width="260"> | <img src="docs/screenshots/me.jpg" width="260"> |
+<p align="center">
+  <img src="https://img.shields.io/badge/HarmonyOS-6.1.1%20%2F%20API%2024-1677FF?style=flat-square" alt="HarmonyOS API 24">
+  <img src="https://img.shields.io/badge/ArkTS-Stage%20model-0B0B0D?style=flat-square" alt="ArkTS Stage model">
+  <img src="https://img.shields.io/badge/License-Apache--2.0-2EA44F?style=flat-square" alt="Apache-2.0 license">
+</p>
 
-## Features
+<p align="center">
+  <a href="#highlights">Highlights</a> ·
+  <a href="#screens">Screens</a> ·
+  <a href="#build">Build</a> ·
+  <a href="#upstream--license">Upstream &amp; License</a>
+</p>
 
-- **Home timeline** with post rows (reply · repost · like · views), pull-to-refresh,
-  and a floating compose button opening a bottom-sheet editor (replies prefill `@handle`)
-- **Sign in with X** via OAuth 2.0 PKCE in an embedded browser — the only auth
-  method, no keys for users to handle
-- **Explore** with search (live search when signed in), **Alerts**, **DMs**,
-  and a **Me** tab with profile card and sign-out
-- **Works with zero setup**: sample posts show without any key; sign-in unlocks
-  live data and interactions, with honest status messages (e.g. X 402 paid-access)
-- Phone / tablet / 2in1, Stage model only
+---
 
-## Design
+## Highlights
 
-- **HarmonyOS Symbols** throughout (`SymbolGlyph` + `$r('sys.symbol.*')`):
-  house, magnifyingglass, bell, envelope, person, ellipsis_bubble, repeat,
-  heart, eye, square_and_pencil, checkmark — filled variants for active/liked
-  states, all names verified against the system symbol font
-- Navigation + bottom Tabs, Search, Refresh, toasts, CustomDialog composer,
-  16vp card radii, standard spacing
-- System typography (HarmonyOS Sans, never overridden)
-- Full **light/dark** adaptation via `base` + `dark` color resources —
-  no hardcoded UI colors
-- iOS X layout cues: avatar + centered 𝕏 top bar, 4-metric post rows,
-  compose FAB
+| | |
+|:--|:--|
+| **A complete social shell** | Home timeline, Explore, Alerts, messages, profile and a floating composer — with sample content ready before sign-in. |
+| **Native HarmonyOS design** | ArkUI layout, HarmonyOS Symbols, adaptive light/dark colors, and phone / tablet / 2-in-1 support. |
+| **Real X when configured** | OAuth 2.0 PKCE in an embedded browser; sign-in unlocks live timeline, search, posting, likes and reposts. |
+| **Honest offline behavior** | When X is unavailable or API access is limited, the app stays usable and explains the current state clearly. |
 
-## Tech
+## Screens
 
-- **Target:** HarmonyOS 6.1.1 (API 24); uses only stable Stage-model APIs,
-  forward-compatible with HarmonyOS 7 (API 26)
-- **Live data:** X API v2 (`reverse_chronological` home timeline, search,
-  post/reply, likes, reposts), token persisted via preferences
-- **Layout:** `AppScope/` (bundle `com.opentwit.harmony`), `entry/` module —
-  `ets/entryability/`, `ets/pages/` (Index, Login, AuthWeb),
-  `ets/components/TweetCard`, `ets/models/`, `ets/services/`
-  (AuthStore, OAuthConfig, Pkce, XApiClient, MockData)
+<p align="center">
+  <img src="docs/screenshots/home-dark.jpg" width="22.5%" alt="Home timeline">
+  <img src="docs/screenshots/explore-dark.jpg" width="22.5%" alt="Explore search">
+  <img src="docs/screenshots/alerts-dark.jpg" width="22.5%" alt="Alerts">
+  <img src="docs/screenshots/messages-dark.jpg" width="22.5%" alt="Messages">
+</p>
+
+<p align="center"><sub>Home · Explore · Alerts · Messages</sub></p>
+
+<p align="center">
+  <img src="docs/screenshots/sign-in-dark.jpg" width="23%" alt="Harmony X sign-in screen">
+  <img src="docs/screenshots/oauth-authorization-dark.jpg" width="23%" alt="X.com authorization screen in the system browser">
+</p>
+
+<p align="center"><sub>Harmony X sign-in · X.com authorization in the system browser</sub></p>
+
+## Design notes
+
+- **Actual app icon** — the header uses `AppScope/resources/base/media/app_icon.png`; the installed app uses its paired layered resources (opaque black background plus transparent blue/white foreground mark), all at 1024 × 1024.
+- **System-first interface** — HarmonyOS Sans and system SymbolGlyph icons, with color tokens in resources rather than hard-coded page colors.
+- **Responsive by default** — designed for phone, tablet and 2-in-1 device types using the Stage model.
+
+## Project configuration
+
+| Setting | Current value |
+|:--|:--|
+| Application | `Harmony X` · `com.haohaoai0.harmonyx` · version `1.0.0` (`versionCode` 1) |
+| Module | `entry` · Stage model · `modelVersion` 5.0.0 |
+| SDK profile | No explicit compile SDK (uses the installed DevEco SDK) · compatible SDK `6.1.0 (API 23)` · target SDK `26.0.0` |
+| Devices | `phone`, `tablet`, `2in1` · fullscreen `EntryAbility` |
+| Permissions | `ohos.permission.INTERNET`, `ohos.permission.DETECT_GESTURE` |
+| Build tooling | Hvigor `6.26.4` · `@ohos/hvigor-ohos-plugin` `6.26.4` · `@ohos/hypium` `1.0.19` (dev dependency) |
 
 ## Build
 
-Requirements: HarmonyOS Command Line Tools 6.1.1 (or DevEco Studio) with the
-HarmonyOS 6.1.1 SDK, JDK 17, and `~/.npmrc` containing
-`@ohos:registry=https://repo.harmonyos.com/npm/`.
+Requirements: HarmonyOS Command Line Tools (or DevEco Studio), JDK 17, and an
+npm configuration containing:
 
-```bash
-export PATH="$HOME/Developer/command-line-tools/bin:/opt/homebrew/opt/openjdk@17/bin:$HOME/Developer/command-line-tools/tool/node/bin:$PATH"
-export DEVECO_SDK_HOME="$HOME/Developer/command-line-tools/sdk"
-export JAVA_HOME="/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home"
-ohpm install
-hvigorw assembleApp
-# outputs:
-#   entry/build/default/outputs/default/entry-default-unsigned.hap
-#   build/outputs/default/OpenTwit-default-unsigned.app
+```ini
+@ohos:registry=https://repo.harmonyos.com/npm/
 ```
 
-Debug builds are unsigned on purpose (`signingConfigs: []`). For a signed
-release, provision materials out-of-band via DevEco Studio
-(File > Project Structure > Signing Configs); never commit
-`.p12` / `.cer` / provisioning profiles.
+```bash
+devecocli build
+```
 
-## Enabling live sign-in (one time, ~2 min)
+Outputs:
 
-OAuth requires a registered client (there is no anonymous X API), but end
-users never touch it — only the builder, once:
+```text
+entry/build/default/outputs/default/entry-default-unsigned.hap
+```
 
-1. Create a free app at https://developer.x.com (Projects & Apps).
-2. Enable OAuth 2.0, choose **Native App**, and add the callback URL exactly:
-   `opentwit://callback`.
-3. Paste the Client ID into `X_CLIENT_ID` in
-   `entry/src/main/ets/services/OAuthConfig.ets` and rebuild.
-   No client secret is needed (PKCE public-client flow).
+The open-source `build-profile.json5` intentionally contains no signing
+materials. Configure certificate, profile and passwords only in your local
+DevEco Studio signing configuration; never commit them.
 
-Note: X meters timeline/search reads (HTTP 402 without paid access); the app
-reports this in the status line instead of failing silently.
+## Enable X sign-in
 
-## License
+1. Create an application at [developer.x.com](https://developer.x.com/).
+2. Enable **OAuth 2.0** as a **Native App** and set the callback URL to `harmonyx://callback`.
+3. Add the Client ID to `entry/src/main/ets/services/OAuthConfig.ets`, then rebuild.
 
-Apache-2.0 — see [LICENSE](LICENSE).
+Harmony X uses PKCE, so no client secret is required. Tapping **Continue with
+X** launches the system browser with `ohos.want.action.viewData`; the X.com
+permission page shown above is therefore rendered and owned by X, rather than
+being imitated inside the app. Some X endpoints require paid API access; the
+app reports that condition and continues with sample content.
+
+## Upstream & License
+
+Harmony X is a derivative work of
+[OpenTwit](https://github.com/Abhi-Flex1/OpenTwit) by Abhi-Flex1. This Fork
+keeps the Apache-2.0 license and the repository's applicable attribution notices;
+Harmony X-specific changes include the application identity, visual system,
+localized interface, OAuth flow, responsive UI refinements and documentation.
+
+Licensed under [Apache-2.0](LICENSE).

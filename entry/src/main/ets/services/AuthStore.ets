@@ -1,4 +1,4 @@
-// Persistent sign-in state for OpenTwit, backed by @ohos.data.preferences.
+// Persistent sign-in state for Harmony X, backed by @ohos.data.preferences.
 // OAuth is the only auth method: this holds the X OAuth 2.0 access token
 // plus the resolved user id / handle. Empty token = signed out (the
 // timeline still shows sample posts so the app works with zero setup).
@@ -7,8 +7,8 @@ import hilog from '@ohos.hilog';
 import common from '@ohos.app.ability.common';
 
 const DOMAIN = 0xFF00;
-const TAG = 'OpenTwit-AuthStore';
-const STORE_NAME = 'opentwit_auth';
+const TAG = 'HarmonyX-AuthStore';
+const STORE_NAME = 'harmony_x_auth';
 const KEY_TOKEN = 'access_token';
 const KEY_USER_ID = 'user_id';
 const KEY_USERNAME = 'username';

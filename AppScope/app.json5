@@ -1,10 +1,10 @@
 {
   "app": {
-    "bundleName": "com.opentwit.harmony",
-    "vendor": "opentwit",
+    "bundleName": "com.haohaoai0.harmonyx",
+    "vendor": "haohaoai0",
     "versionCode": 1,
     "versionName": "1.0.0",
-    "icon": "$media:app_icon",
+    "icon": "$media:app_layered_image",
     "label": "$string:app_name"
   }
 }

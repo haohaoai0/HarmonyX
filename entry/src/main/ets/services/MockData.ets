@@ -1,4 +1,4 @@
-// Offline mock data so OpenTwit is fully usable in the HarmonyOS
+// Offline mock data so Harmony X is fully usable in the HarmonyOS
 // emulator / previewer without X API credentials.
 import type { Tweet, DirectMessage, AppNotification } from '../models/Tweet';
 
@@ -8,7 +8,7 @@ export class MockData {
       {
         id: '1',
         author: { id: 'u1', name: 'HarmonyOS', username: 'HarmonyOS', avatarColor: '#1D9BF0', verified: true },
-        text: 'Welcome to OpenTwit on HarmonyOS 6.1! Native ArkTS, Stage model, API 24. This build runs the full timeline offline.',
+        text: 'Welcome to Harmony X on HarmonyOS 6.1! Native ArkTS, Stage model, API 24. This build runs the full timeline offline.',
         createdAt: '2h',
         metrics: { replyCount: 128, repostCount: 842, likeCount: 5210, viewCount: 210000 },
         liked: false,
@@ -16,7 +16,7 @@ export class MockData {
       },
       {
         id: '2',
-        author: { id: 'u2', name: 'OpenTwit', username: 'opentwit', avatarColor: '#7856FF', verified: false },
+        author: { id: 'u2', name: 'Harmony X', username: 'harmonyx', avatarColor: '#7856FF', verified: false },
         text: 'X/Twitter ported to HarmonyOS NEXT: tabs, compose, search, notifications, DMs. Sign in with X to see live posts.',
         createdAt: '4h',
         metrics: { replyCount: 42, repostCount: 156, likeCount: 980, viewCount: 45200 },
@@ -26,7 +26,7 @@ export class MockData {
       {
         id: '3',
         author: { id: 'u3', name: 'ArkUI', username: 'arkui_dev', avatarColor: '#00B578', verified: true },
-        text: 'Tip: OpenTwit targets HarmonyOS 6.1.1 (API 24) and is forward-compatible with HarmonyOS 7 (API 26) — no deprecated APIs, Stage model only.',
+        text: 'Tip: Harmony X targets HarmonyOS 6.1.1 (API 24) and is forward-compatible with HarmonyOS 7 (API 26) — no deprecated APIs, Stage model only.',
         createdAt: '7h',
         metrics: { replyCount: 18, repostCount: 64, likeCount: 412, viewCount: 18700 },
         liked: false,
@@ -45,14 +45,14 @@ export class MockData {
   }
 
   static trends(): string[] {
-    return ['#HarmonyOS', '#OpenTwit', '#ArkTS', 'HDC 2026', '#HarmonyOS7', 'OpenHarmony'];
+    return ['#HarmonyOS', '#HarmonyX', '#ArkTS', 'HDC 2026', '#HarmonyOS7', 'OpenHarmony'];
   }
 
   static notifications(): AppNotification[] {
     return [
       { id: 'n1', kind: '♥', text: 'HarmonyOS liked your post', time: '1h' },
       { id: 'n2', kind: '↻', text: 'ArkUI reposted your post', time: '3h' },
-      { id: 'n3', kind: '+', text: 'OpenTwit started following you', time: '1d' }
+      { id: 'n3', kind: '+', text: 'Harmony X started following you', time: '1d' }
     ];
   }
 
@@ -60,7 +60,7 @@ export class MockData {
     return [
       { id: 'm1', from: 'HarmonyOS', preview: 'API 24 build looks great!', time: '2h', unread: 2 },
       { id: 'm2', from: 'ArkUI', preview: 'Tabs + compose verified', time: '1d', unread: 0 },
-      { id: 'm3', from: 'OpenTwit', preview: 'Welcome to DMs', time: '2d', unread: 0 }
+      { id: 'm3', from: 'Harmony X', preview: 'Welcome to DMs', time: '2d', unread: 0 }
     ];
   }
 }

@@ -9,6 +9,14 @@
       "value": "#1D9BF0"
     },
     {
+      "name": "compose_material_overlay",
+      "value": "#A61D9BF0"
+    },
+    {
+      "name": "compose_material_border",
+      "value": "#99E8F6FF"
+    },
+    {
       "name": "like",
       "value": "#F91880"
     },

@@ -7,11 +7,11 @@ import hilog from '@ohos.hilog';
 import type { Tweet } from '../models/Tweet';
 
 const DOMAIN = 0xFF00;
-const TAG = 'OpenTwit-XApi';
+const TAG = 'HarmonyX-XApi';
 const BASE_URL = 'https://api.x.com/2';
 const AUTHORIZE_URL = 'https://x.com/i/oauth2/authorize';
 const TOKEN_URL = 'https://api.x.com/2/oauth2/token';
-export const REDIRECT_URI = 'opentwit://callback';
+export const REDIRECT_URI = 'harmonyx://callback';
 const TWEET_FIELDS = 'created_at,public_metrics';
 const USER_FIELDS = 'name,username,verified';
 const EXPANSIONS = 'author_id';

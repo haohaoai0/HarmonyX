@@ -2,31 +2,275 @@
   "string": [
     {
       "name": "module_desc",
-      "value": "OpenTwit entry module"
+      "value": "Harmony X 应用入口模块"
     },
     {
       "name": "EntryAbility_desc",
-      "value": "OpenTwit main ability"
+      "value": "Harmony X 主界面"
     },
     {
       "name": "EntryAbility_label",
-      "value": "OpenTwit"
+      "value": "Harmony X"
     },
     {
       "name": "home_title",
-      "value": "Home"
+      "value": "首页"
     },
     {
       "name": "explore_title",
-      "value": "Explore"
+      "value": "探索"
     },
     {
       "name": "notifications_title",
-      "value": "Notifications"
+      "value": "通知"
     },
     {
       "name": "messages_title",
-      "value": "Messages"
+      "value": "私信"
+    },
+    {
+      "name": "tab_alerts",
+      "value": "提醒"
+    },
+    {
+      "name": "tab_me",
+      "value": "我"
+    },
+    {
+      "name": "compose_cancel",
+      "value": "取消"
+    },
+    {
+      "name": "compose_post",
+      "value": "发布"
+    },
+    {
+      "name": "compose_replying_to",
+      "value": "正在回复 @"
+    },
+    {
+      "name": "compose_placeholder",
+      "value": "有什么新鲜事？"
+    },
+    {
+      "name": "status_loading",
+      "value": "加载中…"
+    },
+    {
+      "name": "status_live_badge",
+      "value": " · 实时"
+    },
+    {
+      "name": "status_home_live_prefix",
+      "value": "主页时间线 · 实时："
+    },
+    {
+      "name": "status_live_search",
+      "value": "实时搜索 · X API v2"
+    },
+    {
+      "name": "status_sample_sign_in",
+      "value": "示例动态 · 登录后查看实时内容"
+    },
+    {
+      "name": "status_paid_api_samples",
+      "value": "X 需要付费 API 权限（402）· 正在展示示例"
+    },
+    {
+      "name": "status_offline_samples",
+      "value": "离线状态 · 无法连接 X，正在展示示例"
+    },
+    {
+      "name": "toast_sign_in_to_prefix",
+      "value": "请先使用 X 登录，再"
+    },
+    {
+      "name": "action_reply",
+      "value": "回复"
+    },
+    {
+      "name": "action_post",
+      "value": "发布动态"
+    },
+    {
+      "name": "action_like_posts",
+      "value": "点赞动态"
+    },
+    {
+      "name": "action_repost",
+      "value": "转发"
+    },
+    {
+      "name": "action_search_live",
+      "value": "搜索实时内容"
+    },
+    {
+      "name": "toast_published",
+      "value": "已发布到 X ✓"
+    },
+    {
+      "name": "toast_sign_out",
+      "value": "已退出登录"
+    },
+    {
+      "name": "toast_replying_to",
+      "value": "正在回复 @"
+    },
+    {
+      "name": "toast_results_suffix",
+      "value": " 条结果"
+    },
+    {
+      "name": "toast_search_paid_api",
+      "value": "搜索需要付费 API 权限（402）"
+    },
+    {
+      "name": "toast_no_live_results",
+      "value": "未找到实时结果，请重试"
+    },
+    {
+      "name": "api_paid_access",
+      "value": "X 需要付费 API 权限（402）"
+    },
+    {
+      "name": "api_unreachable_suffix",
+      "value": "操作已保存在本地 · 无法连接 X"
+    },
+    {
+      "name": "action_post_capitalized",
+      "value": "发布"
+    },
+    {
+      "name": "action_like",
+      "value": "点赞"
+    },
+    {
+      "name": "profile_welcome",
+      "value": "欢迎来到 Harmony X"
+    },
+    {
+      "name": "profile_signed_in",
+      "value": "已使用 X 登录"
+    },
+    {
+      "name": "profile_browse_free",
+      "value": "自由浏览 · 登录后查看实时内容"
+    },
+    {
+      "name": "profile_sign_out",
+      "value": "退出登录"
+    },
+    {
+      "name": "profile_sign_in",
+      "value": "使用 X 登录"
+    },
+    {
+      "name": "profile_version",
+      "value": "Harmony X 0.1.0 · HarmonyOS 6.1（API 24）· Stage 模型"
+    },
+    {
+      "name": "login_not_configured",
+      "value": "此构建版本尚未配置登录"
+    },
+    {
+      "name": "login_prepare_failed",
+      "value": "无法准备安全登录"
+    },
+    {
+      "name": "login_continue_browser",
+      "value": "请在浏览器中继续登录"
+    },
+    {
+      "name": "login_browser_failed",
+      "value": "无法打开浏览器进行登录"
+    },
+    {
+      "name": "login_title",
+      "value": "登录 Harmony X"
+    },
+    {
+      "name": "login_description",
+      "value": "轻点一次，在 X 网页中授权 Harmony X 即可登录。你的实时首页、动态、点赞和转发会与 X 同步。"
+    },
+    {
+      "name": "login_continue_x",
+      "value": "使用 X 继续"
+    },
+    {
+      "name": "login_developer_setup",
+      "value": "开发者配置（一次完成，约 2 分钟）"
+    },
+    {
+      "name": "login_developer_steps_prefix",
+      "value": "1. 在 developer.x.com 创建免费应用。\n2. 启用 OAuth 2.0（原生应用），回调地址：\n"
+    },
+    {
+      "name": "login_developer_steps_suffix",
+      "value": "\n3. 将 Client ID 填入 services/OAuthConfig.ets 后重新构建。"
+    },
+    {
+      "name": "login_navigation_title",
+      "value": "欢迎"
+    },
+    {
+      "name": "auth_loading",
+      "value": "正在加载 X 登录…"
+    },
+    {
+      "name": "auth_missing_url",
+      "value": "缺少登录链接，请返回后重试。"
+    },
+    {
+      "name": "auth_finishing",
+      "value": "正在完成登录…"
+    },
+    {
+      "name": "auth_cancelled",
+      "value": "登录已取消"
+    },
+    {
+      "name": "auth_no_code",
+      "value": "未返回授权码"
+    },
+    {
+      "name": "auth_state_mismatch",
+      "value": "登录验证失败，请重试"
+    },
+    {
+      "name": "auth_signed_in",
+      "value": "登录成功 ✓"
+    },
+    {
+      "name": "auth_navigation_title",
+      "value": "使用 X 登录"
+    },
+    {
+      "name": "callback_cancelled",
+      "value": "登录已取消。"
+    },
+    {
+      "name": "callback_no_code",
+      "value": "未返回授权码，请重新开始登录。"
+    },
+    {
+      "name": "callback_session_expired",
+      "value": "安全登录会话已过期。请点击登录后重试。"
+    },
+    {
+      "name": "callback_verification_failed",
+      "value": "登录验证失败，请重试。"
+    },
+    {
+      "name": "callback_opening",
+      "value": "登录成功，正在打开 Harmony X…"
+    },
+    {
+      "name": "callback_back_to_login",
+      "value": "返回登录"
+    },
+    {
+      "name": "callback_navigation_title",
+      "value": "正在登录"
     }
   ]
 }

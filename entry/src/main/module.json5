@@ -17,11 +17,14 @@
         "name": "EntryAbility",
         "srcEntry": "./ets/entryability/EntryAbility.ets",
         "description": "$string:EntryAbility_desc",
-        "icon": "$media:icon",
+        "icon": "$media:layered_image",
         "label": "$string:EntryAbility_label",
         "startWindowIcon": "$media:icon",
         "startWindowBackground": "$color:start_window_background",
         "exported": true,
+        "supportWindowMode": [
+          "fullscreen"
+        ],
         "skills": [
           {
             "entities": [
@@ -30,6 +33,17 @@
             "actions": [
               "ohos.want.action.home"
             ]
+          },
+          {
+            "actions": [
+              "ohos.want.action.viewData"
+            ],
+            "uris": [
+              {
+                "scheme": "harmonyx",
+                "host": "callback"
+              }
+            ]
           }
         ]
       }
@@ -37,6 +51,9 @@
     "requestPermissions": [
       {
         "name": "ohos.permission.INTERNET"
+      },
+      {
+        "name": "ohos.permission.DETECT_GESTURE"
       }
     ]
   }

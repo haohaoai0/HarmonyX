@@ -2,6 +2,7 @@
 // with HarmonyOS SymbolGlyph icons and theme-resource colors.
 import type { Tweet } from '../models/Tweet';
 import { formatCount } from '../models/Tweet';
+import { hdsEffect } from '@kit.UIDesignKit';
 
 @Component
 export struct TweetCard {
@@ -128,5 +129,10 @@ export struct TweetCard {
     .padding(12)
     .backgroundColor($r('app.color.bg_page'))
     .border({ width: { bottom: 1 }, color: $r('app.color.divider') })
+    .visualEffect(new hdsEffect.HdsEffectBuilder()
+      .pointLight({
+        illuminatedType: hdsEffect.PointLightIlluminatedType.BORDER_CONTENT
+      })
+      .buildEffect())
   }
 }

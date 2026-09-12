@@ -1,9 +1,9 @@
 {
   "name": "entry",
   "version": "1.0.0",
-  "description": "OpenTwit entry module - X/Twitter client for HarmonyOS.",
+  "description": "Harmony X entry module - X client for HarmonyOS.",
   "main": "",
-  "author": "OpenTwit contributors",
+  "author": "Harmony X contributors",
   "license": "Apache-2.0",
   "modelVersion": "5.0.0",
   "dependencies": {}

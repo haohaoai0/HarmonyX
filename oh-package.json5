@@ -1,9 +1,9 @@
 {
-  "name": "opentwit",
+  "name": "harmony-x",
   "version": "1.0.0",
-  "description": "Open source X/Twitter adaptation for HarmonyOS devices.",
+  "description": "Harmony X, a HarmonyOS X client.",
   "main": "",
-  "author": "OpenTwit contributors",
+  "author": "Harmony X contributors",
   "license": "Apache-2.0",
   "modelVersion": "5.0.0",
   "dependencies": {},

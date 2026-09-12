@@ -1,8 +1,8 @@
 {
-  "hvigorVersion": "6.24.2",
+  "hvigorVersion": "6.26.4",
   "modelVersion": "5.0.0",
   "dependencies": {
-    "@ohos/hvigor-ohos-plugin": "6.24.2"
+    "@ohos/hvigor-ohos-plugin": "6.26.4"
   },
   "properties": {
     "enableHvigorPlugin": true

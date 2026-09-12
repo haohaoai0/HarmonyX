@@ -1,4 +1,4 @@
-// OpenTwit data models.
+// Harmony X data models.
 // Mirrors a subset of X API v2 objects so the UI works identically
 // against live data and the offline mock fallback.
 

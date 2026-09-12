@@ -1,5 +1,5 @@
 // Embedded X sign-in browser: loads the OAuth authorize page and
-// intercepts the opentwit://callback redirect carrying the auth code,
+// intercepts the harmonyx://callback redirect carrying the auth code,
 // then exchanges it for an access token without leaving the app.
 import router from '@ohos.router';
 import promptAction from '@ohos.promptAction';
@@ -16,7 +16,7 @@ struct AuthWeb {
   @State verifier: string = '';
   @State expectedState: string = '';
   @State busy: boolean = false;
-  @State statusText: string = 'Loading X sign-in…';
+  @State statusText: string = '';
   private controller: webview.WebviewController = new webview.WebviewController();
   private api: XApiClient = new XApiClient();
   private handled: boolean = false;
@@ -26,7 +26,13 @@ struct AuthWeb {
   private readonly ua: string = 'Mozilla/5.0 (Linux; Android 14; K) AppleWebKit/537.36' +
     ' (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36';
 
+  private text(resource: Resource): string {
+    const context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
+    return context.resourceManager.getStringSync(resource);
+  }
+
   aboutToAppear(): void {
+    this.statusText = this.text($r('app.string.auth_loading'));
     const params = router.getParams() as Record<string, Object> | undefined;
     if (params !== undefined) {
       this.authUrl = String(params['authUrl'] ?? '');
@@ -34,7 +40,7 @@ struct AuthWeb {
       this.expectedState = String(params['state'] ?? '');
     }
     if (this.authUrl.length === 0) {
-      this.statusText = 'Missing sign-in URL — go back and try again.';
+      this.statusText = this.text($r('app.string.auth_missing_url'));
     }
   }
 
@@ -52,23 +58,23 @@ struct AuthWeb {
 
   private async finishOAuth(url: string): Promise<void> {
     this.busy = true;
-    this.statusText = 'Finishing sign-in…';
+    this.statusText = this.text($r('app.string.auth_finishing'));
     try {
       const code: string = this.queryParam(url, 'code');
       const state: string = this.queryParam(url, 'state');
       const err: string = this.queryParam(url, 'error');
       if (err.length > 0) {
-        promptAction.showToast({ message: 'Sign-in cancelled', duration: 2000 });
+        promptAction.showToast({ message: this.text($r('app.string.auth_cancelled')), duration: 2000 });
         router.back();
         return;
       }
       if (code.length === 0) {
-        promptAction.showToast({ message: 'No auth code returned', duration: 2000 });
+        promptAction.showToast({ message: this.text($r('app.string.auth_no_code')), duration: 2000 });
         router.back();
         return;
       }
       if (this.expectedState.length > 0 && state !== this.expectedState) {
-        promptAction.showToast({ message: 'State mismatch — try again', duration: 2000 });
+        promptAction.showToast({ message: this.text($r('app.string.auth_state_mismatch')), duration: 2000 });
         router.back();
         return;
       }
@@ -86,7 +92,7 @@ struct AuthWeb {
       } else {
         await authStore.saveToken(ctx, result.accessToken, '', '');
       }
-      promptAction.showToast({ message: 'Signed in ✓', duration: 1500 });
+      promptAction.showToast({ message: this.text($r('app.string.auth_signed_in')), duration: 1500 });
       await router.replaceUrl({ url: 'pages/Index' });
     } finally {
       this.busy = false;
@@ -116,7 +122,7 @@ struct AuthWeb {
             .fontSize(13)
             .fontColor($r('app.color.text_secondary'))
             .layoutWeight(1)
-          Button('Cancel', { stateEffect: true })
+          Button($r('app.string.compose_cancel'), { stateEffect: true })
             .fontSize(13)
             .backgroundColor($r('app.color.bg_secondary_btn'))
             .fontColor($r('app.color.text_primary'))
@@ -154,7 +160,7 @@ struct AuthWeb {
     .width('100%')
     .height('100%')
     .backgroundColor($r('app.color.bg_page'))
-    .title('Sign in with X')
+    .title($r('app.string.auth_navigation_title'))
     .titleMode(NavigationTitleMode.Mini)
   }
 }
