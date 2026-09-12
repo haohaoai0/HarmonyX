@@ -1,103 +1,92 @@
 <p align="center">
-  <img src="AppScope/resources/base/media/app_icon.png" width="132" alt="Harmony X app icon">
+  <img src="AppScope/resources/base/media/app_icon.png" width="132" alt="Harmony X 应用图标">
 </p>
 
 <h1 align="center">Harmony X</h1>
 
 <p align="center">
-  A native, design-led X client for HarmonyOS.<br>
-  Built with ArkTS and the Stage model — focused on a clean, dark, device-native experience.
+  面向 HarmonyOS 的原生 X 客户端。<br>
+  基于 ArkTS 与 Stage 模型，专注于沉浸、简洁且贴合设备的深色体验。
 </p>
+
+<p align="center"><a href="README.en.md">English</a></p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/HarmonyOS-API%2026-1677FF?style=flat-square" alt="HarmonyOS API 26">
-  <img src="https://img.shields.io/badge/ArkTS-Stage%20model-0B0B0D?style=flat-square" alt="ArkTS Stage model">
-  <img src="https://img.shields.io/badge/License-Apache--2.0-2EA44F?style=flat-square" alt="Apache-2.0 license">
+  <img src="https://img.shields.io/badge/ArkTS-Stage%20%E6%A8%A1%E5%9E%8B-0B0B0D?style=flat-square" alt="ArkTS Stage 模型">
+  <img src="https://img.shields.io/badge/%E5%BC%80%E6%BA%90%E8%AE%B8%E5%8F%AF-Apache--2.0-2EA44F?style=flat-square" alt="Apache-2.0 许可证">
 </p>
 
 <p align="center">
-  <a href="#highlights">Highlights</a> ·
-  <a href="#screens">Screens</a> ·
-  <a href="#changes-from-opentwit">Changes from OpenTwit</a> ·
-  <a href="#build">Build</a> ·
-  <a href="#upstream--license">Upstream &amp; License</a>
+  <a href="#功能概览">功能概览</a> ·
+  <a href="#界面预览">界面预览</a> ·
+  <a href="#相对-opentwit-的改造">相对 OpenTwit 的改造</a> ·
+  <a href="#工程配置">工程配置</a> ·
+  <a href="#构建">构建</a> ·
+  <a href="#上游与许可证">上游与许可证</a>
 </p>
 
 ---
 
-## Highlights
+## 功能概览
 
 | | |
 |:--|:--|
-| **A complete social shell** | Home timeline, Explore, Alerts, messages, profile and a floating composer — with sample content ready before sign-in. |
-| **Native HarmonyOS design** | ArkUI layout, HarmonyOS Symbols, adaptive light/dark colors, and phone / tablet / 2-in-1 support. |
-| **Real X when configured** | OAuth 2.0 PKCE in the system browser; sign-in unlocks live timeline, search, posting, likes and reposts. |
-| **Honest offline behavior** | When X is unavailable or API access is limited, the app stays usable and explains the current state clearly. |
+| **完整的社交功能框架** | 首页时间线、探索、提醒、私信、个人页和悬浮发帖按钮；未登录时也可直接浏览示例内容。 |
+| **原生 HarmonyOS 设计** | ArkUI 界面、HarmonyOS 系统符号、明暗主题适配，以及手机 / 平板 / 二合一设备支持。 |
+| **配置后接入 X 实时能力** | 通过系统浏览器执行 OAuth 2.0 PKCE 授权，登录后可使用实时时间线、搜索、发帖、点赞和转发。 |
+| **诚实的离线降级** | X 不可访问或 API 权限受限时，应用会保留可用界面并明确说明当前状态。 |
 
-## Screens
-
-<p align="center">
-  <img src="docs/screenshots/home-dark.jpg" width="22.5%" alt="Home timeline">
-  <img src="docs/screenshots/explore-dark.jpg" width="22.5%" alt="Explore search">
-  <img src="docs/screenshots/alerts-dark.jpg" width="22.5%" alt="Alerts">
-  <img src="docs/screenshots/messages-dark.jpg" width="22.5%" alt="Messages">
-</p>
-
-<p align="center"><sub>Home · Explore · Alerts · Messages</sub></p>
+## 界面预览
 
 <p align="center">
-  <img src="docs/screenshots/sign-in-dark.jpg" width="23%" alt="Harmony X sign-in screen">
-  <img src="docs/screenshots/oauth-authorization-dark.jpg" width="23%" alt="X.com authorization screen in the system browser">
+  <img src="docs/screenshots/home-dark.jpg" width="22.5%" alt="首页时间线">
+  <img src="docs/screenshots/explore-dark.jpg" width="22.5%" alt="探索搜索">
+  <img src="docs/screenshots/alerts-dark.jpg" width="22.5%" alt="提醒">
+  <img src="docs/screenshots/messages-dark.jpg" width="22.5%" alt="私信">
 </p>
 
-<p align="center"><sub>Harmony X sign-in · X.com authorization in the system browser</sub></p>
+<p align="center"><sub>首页 · 探索 · 提醒 · 私信</sub></p>
 
-## Design notes
+<p align="center">
+  <img src="docs/screenshots/sign-in-dark.jpg" width="23%" alt="Harmony X 登录页">
+  <img src="docs/screenshots/oauth-authorization-dark.jpg" width="23%" alt="系统浏览器中的 X.com 授权页">
+</p>
 
-- **Actual app icon** — the header uses `AppScope/resources/base/media/app_icon.png`; the installed app uses its paired layered resources (opaque black background plus transparent blue/white foreground mark), all at 1024 × 1024.
-- **System-first interface** — HarmonyOS Sans and system SymbolGlyph icons, with color tokens in resources rather than hard-coded page colors.
-- **Responsive by default** — designed for phone, tablet and 2-in-1 device types using the Stage model.
+<p align="center"><sub>Harmony X 登录页 · 系统浏览器中的 X.com 授权页</sub></p>
 
-## Changes from OpenTwit
+## 设计说明
 
-Harmony X is not a reskin: it is an API 26-oriented HarmonyOS adaptation of
-OpenTwit with the following project-specific changes.
+- **实际应用图标**：页首直接使用 `AppScope/resources/base/media/app_icon.png`；已安装应用使用配套的分层资源——不透明黑色背景和透明的蓝白前景标识，均为 1024 × 1024。
+- **遵循系统设计语言**：使用 HarmonyOS Sans 和系统 `SymbolGlyph` 图标；颜色通过资源文件统一管理，不在页面中硬编码。
+- **多设备自适应**：面向手机、平板和二合一设备，通过 Stage 模型组织界面与状态。
 
-- **Immersive HDS tabs** — replaces the conventional bottom bar with `HdsTabs`,
-  adaptive immersive material and scroller binding for the five primary feeds.
-- **Immersive HDS navigation** — uses `HdsNavigation` with an immersive
-  gradient-blur title treatment, while keeping the avatar and brand mark within
-  the navigation content.
-- **Intelligent compose button** — a full-page draggable HDS compose action
-  listens for holding-hand changes when supported, remembers the last usable
-  side otherwise, and follows the device's safe-area and tab-bar insets.
-- **Point-light interaction** — press and drag activate HDS point lighting to
-  illuminate the component border and content; the compose action also scales
-  during a drag for clear tactile feedback.
-- **Fullscreen window handling** — `EntryAbility` enables layout fullscreen and
-  observes system and navigation-indicator avoid areas so immersive content
-  remains usable around device cutouts and gesture indicators.
-- **Chinese localization** — product naming, interface copy and status messages
-  are localized in `zh_CN`, with matching English resources and a Chinese base
-  resource set.
-- **Harmony X identity and sign-in** — new package identity, layered app icon,
-  system-browser OAuth callback flow, dark visual system and documentation.
+## 相对 OpenTwit 的改造
 
-## Project configuration
+Harmony X 并非仅替换外观，而是面向 HarmonyOS API 26 的 OpenTwit 改造版本，包含以下工程级变化：
 
-| Setting | Current value |
+- **HDS 沉浸式底栏**：以 `HdsTabs` 替代常规底部导航，使用自适应沉浸材质，并为五个主页面绑定滚动容器。
+- **HDS 沉浸式标题栏**：采用 `HdsNavigation` 与沉浸式渐变模糊标题效果；头像和品牌标识作为导航内容的一部分显示。
+- **智感握姿发帖按钮**：全页面可拖动的 HDS 发帖按钮会在设备支持时监听握持手变化；不支持时保留上一次可用侧别，并始终避让安全区和底栏。
+- **拖动点光源交互**：按压或拖动时开启 HDS 点光源，照亮组件边框与内容；发帖按钮在拖动期间同步缩放，强化触感反馈。
+- **全屏窗口与安全区处理**：`EntryAbility` 启用布局全屏，并监听系统避让区和导航指示条避让区，确保沉浸内容在刘海、圆角和手势区域仍可正常使用。
+- **中文本地化**：产品名称、界面文案和状态提示均已完成 `zh_CN` 本地化，同时保留对应英文资源及中文基础资源。
+- **Harmony X 身份与登录流程**：使用新的包名、分层图标、系统浏览器 OAuth 回调流程、深色视觉体系和配套说明文档。
+
+## 工程配置
+
+| 项目 | 当前配置 |
 |:--|:--|
-| Application | `Harmony X` · `com.haohaoai0.harmonyx` · version `1.0.0` (`versionCode` 1) |
-| Module | `entry` · Stage model · `modelVersion` 5.0.0 |
-| SDK profile | No explicit compile SDK (uses the installed DevEco SDK) · compatible SDK `6.1.0 (API 23)` · target SDK `26.0.0` |
-| Devices | `phone`, `tablet`, `2in1` · fullscreen `EntryAbility` |
-| Permissions | `ohos.permission.INTERNET`, `ohos.permission.DETECT_GESTURE` |
-| Build tooling | Hvigor `6.26.4` · `@ohos/hvigor-ohos-plugin` `6.26.4` · `@ohos/hypium` `1.0.19` (dev dependency) |
+| 应用 | `Harmony X` · `com.haohaoai0.harmonyx` · 版本 `1.0.0`（`versionCode` 1） |
+| 模块 | `entry` · Stage 模型 · `modelVersion` 5.0.0 |
+| SDK 配置 | 未显式设置编译 SDK（使用本机 DevEco SDK）· 兼容 SDK `6.1.0 (API 23)` · 目标 SDK `26.0.0` |
+| 设备 | `phone`、`tablet`、`2in1` · 全屏 `EntryAbility` |
+| 权限 | `ohos.permission.INTERNET`、`ohos.permission.DETECT_GESTURE` |
+| 构建工具 | Hvigor `6.26.4` · `@ohos/hvigor-ohos-plugin` `6.26.4` · `@ohos/hypium` `1.0.19`（开发依赖） |
 
-## Build
+## 构建
 
-Requirements: HarmonyOS Command Line Tools (or DevEco Studio), JDK 17, and an
-npm configuration containing:
+需要安装 HarmonyOS Command Line Tools（或 DevEco Studio）、JDK 17，并在 npm 配置中加入：
 
 ```ini
 @ohos:registry=https://repo.harmonyos.com/npm/
@@ -107,34 +96,24 @@ npm configuration containing:
 devecocli build
 ```
 
-Outputs:
+产物路径：
 
 ```text
 entry/build/default/outputs/default/entry-default-unsigned.hap
 ```
 
-The open-source `build-profile.json5` intentionally contains no signing
-materials. Configure certificate, profile and passwords only in your local
-DevEco Studio signing configuration; never commit them.
+开源的 `build-profile.json5` 刻意不包含签名材料。证书、Profile 和口令仅应配置在本地 DevEco Studio 中，切勿提交到仓库。
 
-## Enable X sign-in
+## 启用 X 登录
 
-1. Create an application at [developer.x.com](https://developer.x.com/).
-2. Enable **OAuth 2.0** as a **Native App** and set the callback URL to `harmonyx://callback`.
-3. Add the Client ID to `entry/src/main/ets/services/OAuthConfig.ets`, then rebuild.
+1. 在 [developer.x.com](https://developer.x.com/) 创建应用。
+2. 启用 **OAuth 2.0**，应用类型选择 **Native App**，并将回调地址设置为 `harmonyx://callback`。
+3. 将 Client ID 写入 `entry/src/main/ets/services/OAuthConfig.ets` 后重新构建。
 
-Harmony X uses PKCE, so no client secret is required. Tapping **Continue with
-X** launches the system browser with `ohos.want.action.viewData`; the X.com
-permission page shown above is therefore rendered and owned by X, rather than
-being imitated inside the app. Some X endpoints require paid API access; the
-app reports that condition and continues with sample content.
+Harmony X 使用 PKCE，不需要 Client Secret。点击“使用 X 继续”后，应用通过 `ohos.want.action.viewData` 唤起系统浏览器；上方展示的 x.com 权限页面由 X 渲染和管理，并非由应用仿制。部分 X 接口需要付费 API 权限，应用会说明该状态并继续显示示例内容。
 
-## Upstream & License
+## 上游与许可证
 
-Harmony X is a derivative work of
-[OpenTwit](https://github.com/Abhi-Flex1/OpenTwit) by Abhi-Flex1. This Fork
-keeps the Apache-2.0 license and the repository's applicable attribution notices;
-Harmony X-specific changes include the application identity, visual system,
-localized interface, OAuth flow, responsive UI refinements and documentation.
+Harmony X 基于 [Abhi-Flex1/OpenTwit](https://github.com/Abhi-Flex1/OpenTwit) 二次开发。仓库保留 Apache-2.0 许可证及适用的上游署名；本项目的新增内容包括应用身份、视觉系统、本地化界面、OAuth 流程、响应式 UI 优化和文档。
 
-Licensed under [Apache-2.0](LICENSE).
+本项目采用 [Apache-2.0](LICENSE) 许可证。
