@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/HarmonyOS-6.1.1%20%2F%20API%2024-1677FF?style=flat-square" alt="HarmonyOS API 24">
+  <img src="https://img.shields.io/badge/HarmonyOS-API%2026-1677FF?style=flat-square" alt="HarmonyOS API 26">
   <img src="https://img.shields.io/badge/ArkTS-Stage%20model-0B0B0D?style=flat-square" alt="ArkTS Stage model">
   <img src="https://img.shields.io/badge/License-Apache--2.0-2EA44F?style=flat-square" alt="Apache-2.0 license">
 </p>
@@ -18,6 +18,7 @@
 <p align="center">
   <a href="#highlights">Highlights</a> ·
   <a href="#screens">Screens</a> ·
+  <a href="#changes-from-opentwit">Changes from OpenTwit</a> ·
   <a href="#build">Build</a> ·
   <a href="#upstream--license">Upstream &amp; License</a>
 </p>
@@ -30,7 +31,7 @@
 |:--|:--|
 | **A complete social shell** | Home timeline, Explore, Alerts, messages, profile and a floating composer — with sample content ready before sign-in. |
 | **Native HarmonyOS design** | ArkUI layout, HarmonyOS Symbols, adaptive light/dark colors, and phone / tablet / 2-in-1 support. |
-| **Real X when configured** | OAuth 2.0 PKCE in an embedded browser; sign-in unlocks live timeline, search, posting, likes and reposts. |
+| **Real X when configured** | OAuth 2.0 PKCE in the system browser; sign-in unlocks live timeline, search, posting, likes and reposts. |
 | **Honest offline behavior** | When X is unavailable or API access is limited, the app stays usable and explains the current state clearly. |
 
 ## Screens
@@ -56,6 +57,31 @@
 - **Actual app icon** — the header uses `AppScope/resources/base/media/app_icon.png`; the installed app uses its paired layered resources (opaque black background plus transparent blue/white foreground mark), all at 1024 × 1024.
 - **System-first interface** — HarmonyOS Sans and system SymbolGlyph icons, with color tokens in resources rather than hard-coded page colors.
 - **Responsive by default** — designed for phone, tablet and 2-in-1 device types using the Stage model.
+
+## Changes from OpenTwit
+
+Harmony X is not a reskin: it is an API 26-oriented HarmonyOS adaptation of
+OpenTwit with the following project-specific changes.
+
+- **Immersive HDS tabs** — replaces the conventional bottom bar with `HdsTabs`,
+  adaptive immersive material and scroller binding for the five primary feeds.
+- **Immersive HDS navigation** — uses `HdsNavigation` with an immersive
+  gradient-blur title treatment, while keeping the avatar and brand mark within
+  the navigation content.
+- **Intelligent compose button** — a full-page draggable HDS compose action
+  listens for holding-hand changes when supported, remembers the last usable
+  side otherwise, and follows the device's safe-area and tab-bar insets.
+- **Point-light interaction** — press and drag activate HDS point lighting to
+  illuminate the component border and content; the compose action also scales
+  during a drag for clear tactile feedback.
+- **Fullscreen window handling** — `EntryAbility` enables layout fullscreen and
+  observes system and navigation-indicator avoid areas so immersive content
+  remains usable around device cutouts and gesture indicators.
+- **Chinese localization** — product naming, interface copy and status messages
+  are localized in `zh_CN`, with matching English resources and a Chinese base
+  resource set.
+- **Harmony X identity and sign-in** — new package identity, layered app icon,
+  system-browser OAuth callback flow, dark visual system and documentation.
 
 ## Project configuration
 
