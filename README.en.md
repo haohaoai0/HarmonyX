@@ -32,10 +32,10 @@
 
 | | |
 |:--|:--|
-| **Complete social shell** | Home timeline, Explore, Alerts, messages, profile, and a floating compose action. Sample content is available before sign-in. |
+| **Complete social shell** | Dual home timelines, Explore, Alerts, messages, post detail, reply composer, profile, settings, and a floating compose action. Sample content is available before sign-in. |
 | **Native HarmonyOS design** | ArkUI, HarmonyOS system symbols, light/dark adaptation, and support for phones, tablets, and 2-in-1 devices. |
-| **Live X capabilities when configured** | OAuth 2.0 PKCE runs in the system browser; after sign-in, the app can use live timelines, search, posting, likes, and reposts. |
-| **Honest offline fallback** | When X is unavailable or API access is restricted, the interface stays usable and clearly explains the current state. |
+| **Live X capabilities when configured** | Configure the Client ID in Settings, then use OAuth 2.0 PKCE in the system browser. After sign-in, the app can use live timelines, search, posting, likes, reposts, and replies. |
+| **Honest offline fallback** | When X is unavailable or API access is restricted, the interface stays usable with visible live-state feedback and local reply drafts. |
 
 ## Screens
 
@@ -108,7 +108,7 @@ entry/build/default/outputs/default/entry-default-unsigned.hap
 
 1. Create an application at [developer.x.com](https://developer.x.com/).
 2. Enable **OAuth 2.0**, choose **Native App**, and set the callback URI to `harmonyx://callback`.
-3. Add the Client ID in `entry/src/main/ets/services/OAuthConfig.ets`, then rebuild.
+3. Open **Settings > Developer API** in Harmony X, paste the Client ID, and save. No rebuild is needed.
 
 Harmony X uses PKCE and does not require a Client Secret. Tapping **Continue with X** launches the system browser through `ohos.want.action.viewData`; the X.com permission page shown above is rendered and managed by X, not imitated by the app. Some X endpoints require paid API access; the app reports that state and continues to show sample content.
 

@@ -23,7 +23,9 @@
         "startWindowBackground": "$color:start_window_background",
         "exported": true,
         "supportWindowMode": [
-          "fullscreen"
+          "fullscreen",
+          "split",
+          "floating"
         ],
         "skills": [
           {

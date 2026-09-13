@@ -6,7 +6,7 @@
     },
     {
       "name": "brand",
-      "value": "#1D9BF0"
+      "value": "#007DFF"
     },
     {
       "name": "compose_material_overlay",
@@ -59,6 +59,26 @@
     {
       "name": "divider",
       "value": "#EFF3F4"
+    },
+    {
+      "name": "profile_hero_scrim",
+      "value": "#52000000"
+    },
+    {
+      "name": "profile_hero_control",
+      "value": "#52000000"
+    },
+    {
+      "name": "profile_hero_outline",
+      "value": "#73FFFFFF"
+    },
+    {
+      "name": "profile_hero_muted",
+      "value": "#D9FFFFFF"
+    },
+    {
+      "name": "profile_surface",
+      "value": "#FFFFFF"
     }
   ]
 }

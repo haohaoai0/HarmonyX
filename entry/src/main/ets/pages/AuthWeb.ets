@@ -7,7 +7,7 @@ import webview from '@ohos.web.webview';
 import common from '@ohos.app.ability.common';
 import { authStore } from '../services/AuthStore';
 import { XApiClient, REDIRECT_URI } from '../services/XApiClient';
-import { X_CLIENT_ID } from '../services/OAuthConfig';
+import { OAuthConfigStore, XDeveloperConfig } from '../services/OAuthConfig';
 
 @Entry
 @Component
@@ -17,8 +17,10 @@ struct AuthWeb {
   @State expectedState: string = '';
   @State busy: boolean = false;
   @State statusText: string = '';
+  @StorageLink('harmonyx.accent_color') accentColor: string = '#007DFF';
   private controller: webview.WebviewController = new webview.WebviewController();
   private api: XApiClient = new XApiClient();
+  private configStore: OAuthConfigStore = new OAuthConfigStore();
   private handled: boolean = false;
   // Standard mobile-browser UA: the default ArkWeb UA looks unfamiliar to
   // X's login risk engine and can contribute to "temporarily limited"
@@ -78,7 +80,9 @@ struct AuthWeb {
         router.back();
         return;
       }
-      const result = await this.api.exchangeCode(X_CLIENT_ID, '', code, this.verifier);
+      const ctx: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
+      const config: XDeveloperConfig = this.configStore.load(ctx);
+      const result = await this.api.exchangeCode(config.clientId, '', code, this.verifier);
       if (!result.ok) {
         promptAction.showToast({ message: result.errorText, duration: 2500 });
         router.back();
@@ -86,7 +90,6 @@ struct AuthWeb {
       }
       this.api.setToken(result.accessToken);
       const me = await this.api.me();
-      const ctx: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
       if (me !== null) {
         await authStore.saveToken(ctx, result.accessToken, me.id, me.username);
       } else {
@@ -150,7 +153,7 @@ struct AuthWeb {
           Blank().layoutWeight(1)
         }
         if (this.busy) {
-          LoadingProgress().color($r('app.color.brand')).margin(12)
+          LoadingProgress().color(this.accentColor).margin(12)
         }
       }
       .width('100%')

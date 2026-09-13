@@ -7,6 +7,7 @@ export interface TweetAuthor {
   name: string;
   username: string;
   avatarColor: string;
+  avatarUrl?: string;
   verified: boolean;
 }
 
@@ -17,6 +18,16 @@ export interface TweetMetrics {
   viewCount: number;
 }
 
+export interface MediaAttachment {
+  id: string;
+  type: string;
+  mediaUrl: string;
+  previewUrl: string;
+  width: number;
+  height: number;
+  altText: string;
+}
+
 export interface Tweet {
   id: string;
   author: TweetAuthor;
@@ -25,8 +36,7 @@ export interface Tweet {
   metrics: TweetMetrics;
   liked: boolean;
   reposted: boolean;
-  // X API v2 includes entities/attachments; we keep a simple optional image hint.
-  imageLabel?: string;
+  attachments?: MediaAttachment[];
 }
 
 export interface DirectMessage {
@@ -35,6 +45,20 @@ export interface DirectMessage {
   preview: string;
   time: string;
   unread: number;
+  avatarUrl?: string;
+}
+
+export interface UserProfile {
+  id: string;
+  name: string;
+  username: string;
+  description: string;
+  followersCount: number;
+  followingCount: number;
+  postCount: number;
+  verified: boolean;
+  avatarUrl?: string;
+  bannerUrl?: string;
 }
 
 export interface AppNotification {

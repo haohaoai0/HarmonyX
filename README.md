@@ -32,10 +32,10 @@
 
 | | |
 |:--|:--|
-| **完整的社交功能框架** | 首页时间线、探索、提醒、私信、个人页和悬浮发帖按钮；未登录时也可直接浏览示例内容。 |
+| **完整的社交功能框架** | 首页双时间线、探索、提醒、私信、动态详情、回复编辑、个人主页、设置和悬浮发帖按钮；未登录时也可直接浏览示例内容。 |
 | **原生 HarmonyOS 设计** | ArkUI 界面、HarmonyOS 系统符号、明暗主题适配，以及手机 / 平板 / 二合一设备支持。 |
-| **配置后接入 X 实时能力** | 通过系统浏览器执行 OAuth 2.0 PKCE 授权，登录后可使用实时时间线、搜索、发帖、点赞和转发。 |
-| **诚实的离线降级** | X 不可访问或 API 权限受限时，应用会保留可用界面并明确说明当前状态。 |
+| **配置后接入 X 实时能力** | 在应用设置中配置 Client ID，通过系统浏览器执行 OAuth 2.0 PKCE 授权；登录后可使用实时时间线、搜索、发帖、点赞、转发和回复。 |
+| **诚实的离线降级** | X 不可访问或 API 权限受限时，应用会保留可用界面、可见的实时状态和本地回复草稿。 |
 
 ## 界面预览
 
@@ -108,7 +108,7 @@ entry/build/default/outputs/default/entry-default-unsigned.hap
 
 1. 在 [developer.x.com](https://developer.x.com/) 创建应用。
 2. 启用 **OAuth 2.0**，应用类型选择 **Native App**，并将回调地址设置为 `harmonyx://callback`。
-3. 将 Client ID 写入 `entry/src/main/ets/services/OAuthConfig.ets` 后重新构建。
+3. 打开 Harmony X 的 **设置 > 开发者 API**，粘贴 Client ID 并保存，无需重新构建。
 
 Harmony X 使用 PKCE，不需要 Client Secret。点击“使用 X 继续”后，应用通过 `ohos.want.action.viewData` 唤起系统浏览器；上方展示的 x.com 权限页面由 X 渲染和管理，并非由应用仿制。部分 X 接口需要付费 API 权限，应用会说明该状态并继续显示示例内容。
 

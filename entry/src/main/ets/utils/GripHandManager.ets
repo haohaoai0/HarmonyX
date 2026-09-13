@@ -4,6 +4,7 @@ import { motion } from '@kit.MultimodalAwarenessKit';
 
 const PREFERENCE_NAME: string = 'harmonyx_fab_preferences';
 const LAST_HAND_KEY: string = 'harmonyx_fab_last_hand';
+const GRIP_HAND_ENABLED_KEY: string = 'harmonyx_grip_hand_enabled';
 
 /**
  * MiniBeerHall's intelligent-handedness model, scoped to Harmony X's
@@ -12,6 +13,7 @@ const LAST_HAND_KEY: string = 'harmonyx_fab_last_hand';
 export class GripHandManager {
   private static instance: GripHandManager | null = null;
   private lastHand: string = 'right';
+  private gripHandEnabled: boolean = true;
   private subscribed: boolean = false;
   private callback: ((hand: string) => void) | null = null;
   private motionHandler: ((status: motion.HoldingHandStatus) => void) | null = null;
@@ -31,13 +33,30 @@ export class GripHandManager {
       const store: preferences.Preferences = await preferences.getPreferences(context, PREFERENCE_NAME);
       const storedHand: preferences.ValueType = await store.get(LAST_HAND_KEY, 'right');
       this.lastHand = storedHand as string;
+      const storedEnabled: preferences.ValueType = await store.get(GRIP_HAND_ENABLED_KEY, true);
+      this.gripHandEnabled = storedEnabled as boolean;
     } catch (error) {
       this.lastHand = 'right';
+      this.gripHandEnabled = true;
     }
   }
 
   public getLastHand(): string {
     return this.lastHand;
+  }
+
+  public isGripHandEnabled(): boolean {
+    return this.gripHandEnabled;
+  }
+
+  public async saveGripHandEnabled(context: common.Context, enabled: boolean): Promise<void> {
+    this.gripHandEnabled = enabled;
+    try {
+      const store: preferences.Preferences = await preferences.getPreferences(context, PREFERENCE_NAME);
+      await store.put(GRIP_HAND_ENABLED_KEY, enabled);
+      await store.flush();
+    } catch (error) {
+    }
   }
 
   public start(onHandChanged: (hand: string) => void): void {

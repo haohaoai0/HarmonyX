@@ -3,6 +3,7 @@
 import type { Tweet } from '../models/Tweet';
 import { formatCount } from '../models/Tweet';
 import { hdsEffect } from '@kit.UIDesignKit';
+import { PostMedia } from './PostMedia';
 
 @Component
 export struct TweetCard {
@@ -13,53 +14,89 @@ export struct TweetCard {
   };
   onReply: (t: Tweet) => void = () => {
   };
+  onOpen: (t: Tweet) => void = () => {
+  };
+  onAuthorTapped: (t: Tweet) => void = () => {
+  };
+  @Prop showActions: boolean = true;
   @State liked: boolean = false;
   @State reposted: boolean = false;
+  @StorageLink('harmonyx.accent_color') accentColor: string = '#007DFF';
+  @StorageLink('harmonyx.font_scale') fontScale: number = 1;
+
+  private scaledFont(size: number): number {
+    return Math.round(size * this.fontScale * 10) / 10;
+  }
 
   aboutToAppear(): void {
     this.liked = this.tweet.liked;
     this.reposted = this.tweet.reposted;
   }
 
+  private avatarUrl(): string {
+    return this.tweet.author.avatarUrl ?? '';
+  }
+
   build(): void {
     Column() {
       Row({ space: 10 }) {
-        // Avatar: colored circle with initial (no remote image needed offline).
-        Text(this.tweet.author.name.substring(0, 1).toUpperCase())
-          .width(44)
-          .height(44)
-          .fontSize(20)
-          .fontWeight(FontWeight.Bold)
-          .fontColor($r('app.color.text_on_brand'))
-          .backgroundColor(this.tweet.author.avatarColor)
-          .borderRadius(22)
-          .textAlign(TextAlign.Center)
+        if (this.avatarUrl().length > 0) {
+          Image(this.avatarUrl())
+            .width(44)
+            .height(44)
+            .objectFit(ImageFit.Cover)
+            .borderRadius(22)
+            .clip(true)
+            .onClick((): void => this.onAuthorTapped(this.tweet))
+        } else {
+          Text(this.tweet.author.name.substring(0, 1).toUpperCase())
+            .width(44)
+            .height(44)
+            .fontSize(this.scaledFont(20))
+            .fontWeight(FontWeight.Bold)
+            .fontColor($r('app.color.text_on_brand'))
+            .backgroundColor(this.tweet.author.avatarColor)
+            .borderRadius(22)
+            .textAlign(TextAlign.Center)
+            .onClick((): void => this.onAuthorTapped(this.tweet))
+        }
 
         Column({ space: 4 }) {
+          Column({ space: 4 }) {
           Row({ space: 4 }) {
             Text(this.tweet.author.name)
-              .fontSize(16)
+              .fontSize(this.scaledFont(16))
               .fontWeight(FontWeight.Bold)
               .fontColor($r('app.color.text_primary'))
             if (this.tweet.author.verified) {
               SymbolGlyph($r('sys.symbol.checkmark'))
-                .fontSize(13)
+                .fontSize(this.scaledFont(13))
                 .fontWeight(FontWeight.Bold)
-                .fontColor([$r('app.color.brand')])
+                .fontColor([this.accentColor])
             }
             Text('@' + this.tweet.author.username + ' · ' + this.tweet.createdAt)
-              .fontSize(14)
+              .fontSize(this.scaledFont(14))
               .fontColor($r('app.color.text_secondary'))
               .textOverflow({ overflow: TextOverflow.Ellipsis })
               .maxLines(1)
           }
 
           Text(this.tweet.text)
-            .fontSize(16)
+            .fontSize(this.scaledFont(16))
             .fontColor($r('app.color.text_primary'))
             .width('100%')
 
-          // Action bar: reply / repost / like / views (iOS X order).
+          if (this.tweet.attachments !== undefined && this.tweet.attachments.length > 0) {
+            PostMedia({ attachments: this.tweet.attachments })
+              .margin({ top: 8 })
+          }
+        }
+        .onClick((): void => {
+          this.onOpen(this.tweet);
+        })
+
+        if (this.showActions) {
+        // Action bar: reply / repost / like / views (iOS X order).
           Row() {
             Row({ space: 4 }) {
               SymbolGlyph($r('sys.symbol.ellipsis_bubble'))
@@ -118,6 +155,7 @@ export struct TweetCard {
           .width('100%')
           .justifyContent(FlexAlign.SpaceBetween)
           .margin({ top: 8 })
+        }
         }
         .layoutWeight(1)
         .alignItems(HorizontalAlign.Start)

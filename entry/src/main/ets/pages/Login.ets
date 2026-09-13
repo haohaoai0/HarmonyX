@@ -1,6 +1,5 @@
-// Harmony X sign-in — OAuth is the only method. The X Client ID ships
-// inside the app (see services/OAuthConfig.ets), so users just tap once
-// and approve in the X web page. No keys to copy, no tokens to paste.
+// Harmony X signs in with the Client ID selected in Settings. Native OAuth
+// uses PKCE, so users never need to expose a Client Secret in the app.
 import router from '@ohos.router';
 import promptAction from '@ohos.promptAction';
 import common from '@ohos.app.ability.common';
@@ -9,7 +8,7 @@ import { Pkce } from '../services/Pkce';
 import { authStore } from '../services/AuthStore';
 import { oauthFlowStore } from '../services/OAuthFlowStore';
 import { XApiClient, REDIRECT_URI } from '../services/XApiClient';
-import { X_CLIENT_ID, isOAuthConfigured } from '../services/OAuthConfig';
+import { OAuthConfigStore, XDeveloperConfig } from '../services/OAuthConfig';
 
 @Entry
 @Component
@@ -19,10 +18,13 @@ struct Login {
   @State private xMarkScale: number = 1;
   @State private foregroundOpacity: number = 0;
   @State private foregroundScale: number = 0.72;
+  @StorageLink('harmonyx.accent_color') accentColor: string = '#007DFF';
   @StorageProp('harmonyx.status_bar_height') private statusBarHeight: number =
     AppStorage.get<number>('harmonyx.status_bar_height') ?? 0;
   @StorageProp('harmonyx.navigation_indicator_height') private navigationIndicatorHeight: number =
     AppStorage.get<number>('harmonyx.navigation_indicator_height') ?? 0;
+  @State private clientId: string = '';
+  private configStore: OAuthConfigStore = new OAuthConfigStore();
 
   private text(resource: Resource): string {
     const context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
@@ -32,6 +34,8 @@ struct Login {
   aboutToAppear(): void {
     this.playBrandIntro();
     const ctx: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
+    const config: XDeveloperConfig = this.configStore.load(ctx);
+    this.clientId = config.clientId;
     authStore.load(ctx).then(() => {
       if (authStore.isSignedIn()) {
         router.replaceUrl({ url: 'pages/Index' });
@@ -57,7 +61,10 @@ struct Login {
   }
 
   private async startOAuth(): Promise<void> {
-    if (!isOAuthConfigured()) {
+    const ctx: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
+    const config: XDeveloperConfig = this.configStore.load(ctx);
+    this.clientId = config.clientId;
+    if (this.clientId.length === 0) {
       promptAction.showToast({ message: this.text($r('app.string.login_not_configured')), duration: 2500 });
       return;
     }
@@ -66,9 +73,8 @@ struct Login {
       const verifier: string = Pkce.newVerifier();
       const challenge: string = Pkce.challengeS256(verifier);
       const state: string = Pkce.newState();
-      const authUrl: string = XApiClient.buildAuthorizeUrl(X_CLIENT_ID, challenge, state);
-      const ctx: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
-      const saved: boolean = await oauthFlowStore.save(ctx, verifier, state);
+      const authUrl: string = XApiClient.buildAuthorizeUrl(this.clientId, challenge, state);
+      const saved: boolean = await oauthFlowStore.save(ctx, verifier, state, this.clientId);
       if (!saved) {
         promptAction.showToast({ message: this.text($r('app.string.login_prepare_failed')), duration: 2500 });
         return;
@@ -105,7 +111,7 @@ struct Login {
               .opacity(this.xMarkOpacity)
               .scale({ x: this.xMarkScale, y: this.xMarkScale })
 
-            Image($r('app.media.icon_foreground'))
+            Image($r('app.media.ui_brand_foreground'))
               .width(88)
               .height(88)
               .objectFit(ImageFit.Contain)
@@ -128,12 +134,12 @@ struct Login {
 
           Button($r('app.string.login_continue_x'), { stateEffect: true })
             .width('100%')
-            .backgroundColor($r('app.color.brand'))
+            .backgroundColor(this.accentColor)
             .fontColor($r('app.color.text_on_brand'))
-            .enabled(!this.busy && isOAuthConfigured())
+            .enabled(!this.busy && this.clientId.length > 0)
             .onClick(() => this.startOAuth())
 
-          if (!isOAuthConfigured()) {
+          if (this.clientId.length === 0) {
             Column({ space: 8 }) {
               Text($r('app.string.login_developer_setup'))
                 .fontSize(14)
@@ -151,7 +157,7 @@ struct Login {
           }
 
           if (this.busy) {
-            LoadingProgress().color($r('app.color.brand'))
+            LoadingProgress().color(this.accentColor)
           }
         }
         .width('100%')

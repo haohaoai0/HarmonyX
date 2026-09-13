@@ -7,7 +7,6 @@ import common from '@ohos.app.ability.common';
 import { authStore } from '../services/AuthStore';
 import { oauthFlowStore } from '../services/OAuthFlowStore';
 import { XApiClient } from '../services/XApiClient';
-import { X_CLIENT_ID } from '../services/OAuthConfig';
 
 @Entry
 @Component
@@ -15,6 +14,7 @@ struct OAuthCallback {
   @State statusText: string = '';
   @State finished: boolean = false;
   @State succeeded: boolean = false;
+  @StorageLink('harmonyx.accent_color') accentColor: string = '#007DFF';
   private api: XApiClient = new XApiClient();
   private started: boolean = false;
 
@@ -59,7 +59,11 @@ struct OAuthCallback {
     }
 
     await oauthFlowStore.clear(ctx);
-    const result = await this.api.exchangeCode(X_CLIENT_ID, '', code, pending.verifier);
+    if (pending.clientId.length === 0) {
+      this.showFailure(this.text($r('app.string.callback_session_expired')));
+      return;
+    }
+    const result = await this.api.exchangeCode(pending.clientId, '', code, pending.verifier);
     if (!result.ok) {
       this.showFailure(result.errorText);
       return;
@@ -103,7 +107,7 @@ struct OAuthCallback {
     Navigation() {
       Column({ space: 16 }) {
         if (!this.finished) {
-          LoadingProgress().color($r('app.color.brand'))
+          LoadingProgress().color(this.accentColor)
         }
         Text(this.statusText)
           .fontSize(16)
@@ -111,7 +115,7 @@ struct OAuthCallback {
           .textAlign(TextAlign.Center)
         if (this.finished && !this.succeeded) {
           Button($r('app.string.callback_back_to_login'), { stateEffect: true })
-            .backgroundColor($r('app.color.brand'))
+            .backgroundColor(this.accentColor)
             .fontColor($r('app.color.text_on_brand'))
             .onClick(() => {
               router.replaceUrl({ url: 'pages/Login' });

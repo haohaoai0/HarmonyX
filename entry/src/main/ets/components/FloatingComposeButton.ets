@@ -18,6 +18,9 @@ const FAB_BAR_GAP: number = 24;
 @Component
 export struct FloatingComposeButton {
   @Prop bottomInset: number = 0;
+  @StorageLink('harmonyx.accent_color') accentColor: string = '#007DFF';
+  @StorageLink('harmonyx.grip_hand_enabled') @Watch('onGripHandEnabledChanged')
+  gripHandEnabled: boolean = true;
   onCompose: () => void = () => {
   };
 
@@ -44,12 +47,25 @@ export struct FloatingComposeButton {
     const context: common.Context | undefined = this.getUIContext().getHostContext();
     if (context !== undefined) {
       await GripHandManager.getInstance().load(context);
+      this.gripHandEnabled = GripHandManager.getInstance().isGripHandEnabled();
     }
     this.lastHand = GripHandManager.getInstance().getLastHand();
     this.positionForHand(this.lastHand, false);
-    GripHandManager.getInstance().start((hand: string): void => {
-      this.onGripHandChanged(hand);
-    });
+    if (this.gripHandEnabled) {
+      GripHandManager.getInstance().start((hand: string): void => {
+        this.onGripHandChanged(hand);
+      });
+    } else {
+      GripHandManager.getInstance().stop();
+    }
+  }
+
+  private onGripHandEnabledChanged(): void {
+    if (this.gripHandEnabled) {
+      this.initializeGripHand();
+      return;
+    }
+    GripHandManager.getInstance().stop();
   }
 
   private onGripHandChanged(hand: string): void {
@@ -126,7 +142,7 @@ export struct FloatingComposeButton {
       Column()
         .width(FAB_SIZE)
         .height(FAB_SIZE)
-        .backgroundColor($r('app.color.compose_material_overlay'))
+        .backgroundColor(this.accentColor)
         .border({ width: 1, color: $r('app.color.compose_material_border') })
         .borderRadius(FAB_SIZE / 2);
       SymbolGlyph($r('sys.symbol.square_and_pencil'))
@@ -142,7 +158,7 @@ export struct FloatingComposeButton {
       HdsButton({
         barWidth: FAB_SIZE,
         barHeight: FAB_SIZE + 12,
-        lightColor: $r('app.color.brand'),
+        lightColor: this.accentColor,
         materialLevel: 2,
         forceHdsStyle: true,
         enableShadow: true,
