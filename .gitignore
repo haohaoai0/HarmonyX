@@ -7,4 +7,6 @@ oh-package-lock.json5
 *.hsp
 *.har
 local.properties
+# Local DevEco signing configuration. Never commit this file.
+/build-profile.json5
 .DS_Store

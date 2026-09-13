@@ -102,7 +102,7 @@ devecocli build
 entry/build/default/outputs/default/entry-default-unsigned.hap
 ```
 
-开源的 `build-profile.json5` 刻意不包含签名材料。证书、Profile 和口令仅应配置在本地 DevEco Studio 中，切勿提交到仓库。
+`build-profile.json5` 为本地 DevEco 签名配置，不随仓库提交。请在本机 DevEco Studio 中创建并配置证书、Profile 和口令，切勿提交到仓库。
 
 ## 启用 X 登录
 

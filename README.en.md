@@ -102,7 +102,7 @@ Output:
 entry/build/default/outputs/default/entry-default-unsigned.hap
 ```
 
-The open-source `build-profile.json5` intentionally contains no signing material. Configure certificates, profiles, and passwords only in your local DevEco Studio environment; never commit them.
+`build-profile.json5` is a local DevEco signing configuration and is not committed to this repository. Create it and configure certificates, profiles, and passwords only in your local DevEco Studio environment; never commit it.
 
 ## Enable X sign-in
 
