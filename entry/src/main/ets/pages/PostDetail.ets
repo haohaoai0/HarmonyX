@@ -25,6 +25,7 @@ import type { Tweet, UserProfile } from '../models/Tweet';
 import { XApiClient } from '../services/XApiClient';
 import { authStore } from '../services/AuthStore';
 import { ResponsiveLayout } from '../utils/ResponsiveLayout';
+import { NavigationGuard } from '../utils/NavigationGuard';
 
 export interface PostDetailRouteParam {
   tweet: Tweet;
@@ -185,7 +186,8 @@ export struct PostDetail {
 
   private openPost(tweet: Tweet): void {
     const param: PostDetailRouteParam = { tweet: tweet };
-    this.pageStack.pushPath({ name: 'PostDetail', param: param });
+    NavigationGuard.pushPath<PostDetailRouteParam>(this.pageStack, { name: 'PostDetail', param: param },
+      (route: PostDetailRouteParam): string => route.tweet.id);
   }
 
   private replyComposerContext(): ReplyComposerContext {
@@ -214,7 +216,8 @@ export struct PostDetail {
       imageUri: imageUri,
       gifUri: gifUri
     };
-    this.pageStack.pushPath({ name: 'ReplyComposer', param: param });
+    NavigationGuard.pushPath<ReplyComposerRouteParam>(this.pageStack, { name: 'ReplyComposer', param: param },
+      (route: ReplyComposerRouteParam): string => route.replyToId);
   }
 
   private showSignInRequired(action: Resource): void {
