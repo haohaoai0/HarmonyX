@@ -29,6 +29,7 @@ import {
 } from '../services/LanguageStore';
 import { GripHandManager } from '../utils/GripHandManager';
 import { ResponsiveLayout } from '../utils/ResponsiveLayout';
+import { NavigationGuard } from '../utils/NavigationGuard';
 import { OAuthConfigStore, XDeveloperConfig } from '../services/OAuthConfig';
 import { authStore } from '../services/AuthStore';
 import { oauthFlowStore } from '../services/OAuthFlowStore';
@@ -120,7 +121,8 @@ export struct SettingsHome {
 
   private open(section: string): void {
     const param: SettingsRouteParam = { section: section };
-    this.pageStack.pushPath({ name: 'SettingsSection', param: param });
+    NavigationGuard.pushPath<SettingsRouteParam>(this.pageStack, { name: 'SettingsSection', param: param },
+      (route: SettingsRouteParam): string => route.section);
   }
 
   build(): void {
@@ -278,7 +280,7 @@ export struct SettingsSection {
       await authStore.signOut(context);
       await oauthFlowStore.clear(context);
       promptAction.showToast({ message: this.text($r('app.string.settings_api_saved')), duration: 2000 });
-      router.pushUrl({ url: 'pages/Login' });
+      router.pushUrl({ url: 'pages/Login' }, router.RouterMode.Single);
       return;
     }
     promptAction.showToast({ message: this.text($r('app.string.settings_api_saved')), duration: 2000 });
@@ -369,12 +371,14 @@ export struct SettingsSection {
 
   private openDisplay(): void {
     const param: SettingsRouteParam = { section: 'display' };
-    this.pageStack.pushPath({ name: 'SettingsSection', param: param });
+    NavigationGuard.pushPath<SettingsRouteParam>(this.pageStack, { name: 'SettingsSection', param: param },
+      (route: SettingsRouteParam): string => route.section);
   }
 
   private openLanguage(): void {
     const param: SettingsRouteParam = { section: 'language' };
-    this.pageStack.pushPath({ name: 'SettingsSection', param: param });
+    NavigationGuard.pushPath<SettingsRouteParam>(this.pageStack, { name: 'SettingsSection', param: param },
+      (route: SettingsRouteParam): string => route.section);
   }
 
   private selectLanguage(language: string): void {

@@ -40,6 +40,7 @@ import { HelpCenterBuilder } from './HelpCenter';
 import { UserDetailBuilder } from './UserDetail';
 import type { UserDetailRouteParam } from './UserDetail';
 import { ResponsiveLayout } from '../utils/ResponsiveLayout';
+import { NavigationGuard } from '../utils/NavigationGuard';
 
 // iOS-style bottom-sheet composer.
 @CustomDialog
@@ -402,7 +403,7 @@ struct Index {
       return false;
     }
     promptAction.showToast({ message: this.text($r('app.string.toast_sign_in_to_prefix')) + what, duration: 2000 });
-    router.pushUrl({ url: 'pages/Login' });
+    router.pushUrl({ url: 'pages/Login' }, router.RouterMode.Single);
     return true;
   }
 
@@ -750,13 +751,15 @@ struct Index {
   private openPost(tweet: Tweet): void {
     const param: PostDetailRouteParam = { tweet: tweet };
     this.openContentDestination();
-    this.navPathStack.pushPath({ name: 'PostDetail', param: param });
+    NavigationGuard.pushPath<PostDetailRouteParam>(this.navPathStack, { name: 'PostDetail', param: param },
+      (route: PostDetailRouteParam): string => route.tweet.id);
   }
 
   private openUser(tweet: Tweet): void {
     const param: UserDetailRouteParam = { author: tweet.author, posts: this.timeline };
     this.openContentDestination();
-    this.navPathStack.pushPath({ name: 'UserDetail', param: param });
+    NavigationGuard.pushPath<UserDetailRouteParam>(this.navPathStack, { name: 'UserDetail', param: param },
+      (route: UserDetailRouteParam): string => route.author.id);
   }
 
   private openSideDrawer(): void {
@@ -765,7 +768,7 @@ struct Index {
 
   private openSettings(): void {
     this.openContentDestination();
-    this.navPathStack.pushPath({ name: 'Settings' });
+    this.navPathStack.pushPath({ name: 'Settings' }, { launchMode: LaunchMode.POP_TO_SINGLETON });
   }
 
   private openHelpCenter(): void {
@@ -773,7 +776,7 @@ struct Index {
       this.showSideDrawer = false;
     }
     this.openContentDestination();
-    this.navPathStack.pushPath({ name: 'HelpCenter' });
+    this.navPathStack.pushPath({ name: 'HelpCenter' }, { launchMode: LaunchMode.POP_TO_SINGLETON });
   }
 
   private showDrawerFeature(feature: string): void {
@@ -791,7 +794,7 @@ struct Index {
   }
 
   private goLogin(): void {
-    router.pushUrl({ url: 'pages/Login' });
+    router.pushUrl({ url: 'pages/Login' }, router.RouterMode.Single);
   }
 
   private async signOut(): Promise<void> {
