@@ -8,7 +8,7 @@ import { accountStore } from './AccountStore';
 
 const DOMAIN = 0xFF00;
 const TAG = 'HarmonyX-Notify';
-const BUNDLE_NAME: string = 'com.haohaoai0.CroakX';
+const BUNDLE_NAME: string = 'com.haohaoai0.harmonx';
 const ABILITY_NAME: string = 'EntryAbility';
 const NOTIFICATION_GROUP: string = 'harmonyx-x-notifications';
 const MESSAGE_GROUP: string = 'harmonyx-x-messages';
@@ -213,7 +213,7 @@ export class NotificationDeliveryService {
   private async publishOne(context: common.UIAbilityContext, row: AppNotification,
     unreadCount: number, badgeCount: number, accountId: string): Promise<boolean> {
     try {
-    const title: string = row.authorName.length > 0 ? row.authorName : 'Croak X';
+    const title: string = row.authorName.length > 0 ? row.authorName : 'Harmony X';
     const body: string = row.text.length > 0 ? row.text : row.postText;
     const additional: string = unreadCount > 1 ? unreadCount.toString() + ' unread' : row.time;
     const request: notificationManager.NotificationRequest = {
@@ -248,7 +248,7 @@ export class NotificationDeliveryService {
   private async publishMessageOne(context: common.UIAbilityContext, row: DirectMessage,
     unreadCount: number, badgeCount: number, deliveredId: string, accountId: string): Promise<boolean> {
     try {
-    const title: string = row.from.length > 0 ? row.from : 'Croak X';
+    const title: string = row.from.length > 0 ? row.from : 'Harmony X';
     const body: string = row.preview.length > 0 ? row.preview : 'New direct message';
     const additional: string = unreadCount > 1 ? unreadCount.toString() + ' unread messages' : row.time;
     const request: notificationManager.NotificationRequest = {

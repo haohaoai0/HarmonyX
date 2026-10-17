@@ -325,7 +325,7 @@ export class MediaDownloadService {
   private copyToDestination(context: common.UIAbilityContext, sourcePath: string,
     title: string, extension: string, isVideo: boolean): Promise<number> {
     if (downloadLocationStore.useDownloads(context)) {
-      return downloadLocationStore.save(context, sourcePath, 'CroakX-' + title + '.' + extension);
+      return downloadLocationStore.save(context, sourcePath, 'HarmonyX-' + title + '.' + extension);
     }
     return this.copyToGallery(context, sourcePath, title, extension, isVideo);
   }
@@ -336,7 +336,7 @@ export class MediaDownloadService {
     for (let i: number = 0; i < files.length; i++) {
       const file: DownloadedMediaFile = files[i];
       const result: LocalFileSaveResult = await downloadLocationStore.save(context, file.sourcePath,
-        'CroakX-' + file.title + '.' + file.extension);
+        'HarmonyX-' + file.title + '.' + file.extension);
       if (result !== LocalFileSaveResult.SAVED) { return MEDIA_DOWNLOAD_CANCELED; }
       // A later failed batch copy must not re-export or lose a file already saved successfully.
       if (file.taskId.length > 0) { downloadManager.saveCompleted(file.taskId, context); }
@@ -349,7 +349,7 @@ export class MediaDownloadService {
     const helper: photoAccessHelper.PhotoAccessHelper = photoAccessHelper.getPhotoAccessHelper(context);
     const sources: string[] = [sourcePath];
     const configs: photoAccessHelper.PhotoCreationConfig[] = [{
-      title: 'CroakX-' + title,
+      title: 'HarmonyX-' + title,
       fileNameExtension: extension,
       photoType: isVideo ? photoAccessHelper.PhotoType.VIDEO : photoAccessHelper.PhotoType.IMAGE,
       subtype: photoAccessHelper.PhotoSubtype.DEFAULT
@@ -381,7 +381,7 @@ export class MediaDownloadService {
       const file: DownloadedMediaFile = files[index];
       sources.push(file.sourcePath);
       const config: photoAccessHelper.PhotoCreationConfig = {
-        title: 'CroakX-' + file.title,
+        title: 'HarmonyX-' + file.title,
         fileNameExtension: file.extension,
         photoType: photoAccessHelper.PhotoType.IMAGE,
         subtype: photoAccessHelper.PhotoSubtype.DEFAULT

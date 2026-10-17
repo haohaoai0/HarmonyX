@@ -62,7 +62,7 @@
     },
     {
       "name": "xxauth_support_author",
-      "value": "Support the Croak X developer"
+      "value": "Support the Harmony X developer"
     },
     {
       "name": "xxauth_discover_apps",
@@ -222,15 +222,15 @@
     },
     {
       "name": "module_desc",
-      "value": "Mô-đun chính Croak X"
+      "value": "Mô-đun chính Harmony X"
     },
     {
       "name": "EntryAbility_desc",
-      "value": "Thành phần chính Croak X"
+      "value": "Thành phần chính Harmony X"
     },
     {
       "name": "EntryAbility_label",
-      "value": "Croak X"
+      "value": "Harmony X"
     },
     {
       "name": "ShareReceiverAbility_desc",
@@ -238,7 +238,7 @@
     },
     {
       "name": "ShareReceiverAbility_label",
-      "value": "Croak X"
+      "value": "Harmony X"
     },
     {
       "name": "home_title",
@@ -902,7 +902,7 @@
     },
     {
       "name": "profile_welcome",
-      "value": "Chào mừng đến với Croak X"
+      "value": "Chào mừng đến với Harmony X"
     },
     {
       "name": "profile_signed_in",
@@ -922,7 +922,7 @@
     },
     {
       "name": "profile_version",
-      "value": "Croak X 3.0.0 · HarmonyOS 6.1 (API 23-26) · mô hình Stage"
+      "value": "Harmony X 3.0.0 · HarmonyOS 6.1 (API 23-26) · mô hình Stage"
     },
     {
       "name": "profile_following",
@@ -954,7 +954,7 @@
     },
     {
       "name": "login_title",
-      "value": "Đăng nhập Croak X"
+      "value": "Đăng nhập Harmony X"
     },
     {
       "name": "login_description",
@@ -1030,7 +1030,7 @@
     },
     {
       "name": "callback_opening",
-      "value": "Đã đăng nhập. Đang mở Croak X…"
+      "value": "Đã đăng nhập. Đang mở Harmony X…"
     },
     {
       "name": "callback_back_to_login",
@@ -1090,7 +1090,7 @@
     },
     {
       "name": "side_support",
-      "value": "Ủng hộ Croak X"
+      "value": "Ủng hộ Harmony X"
     },
     {
       "name": "help_intro",
@@ -1270,7 +1270,7 @@
     },
     {
       "name": "settings_accessibility_desc",
-      "value": "Tùy chỉnh cách Croak X hiển thị nội dung."
+      "value": "Tùy chỉnh cách Harmony X hiển thị nội dung."
     },
     {
       "name": "settings_resources",
@@ -1334,7 +1334,7 @@
     },
     {
       "name": "settings_language_intro",
-      "value": "Chọn ngôn ngữ cho toàn bộ Croak X. Thay đổi có hiệu lực ngay và được giữ ở lần mở sau."
+      "value": "Chọn ngôn ngữ cho toàn bộ Harmony X. Thay đổi có hiệu lực ngay và được giữ ở lần mở sau."
     },
     {
       "name": "settings_language_system",
@@ -1342,7 +1342,7 @@
     },
     {
       "name": "settings_language_system_desc",
-      "value": "Dùng ngôn ngữ hệ thống cho toàn bộ Croak X."
+      "value": "Dùng ngôn ngữ hệ thống cho toàn bộ Harmony X."
     },
     {
       "name": "settings_language_zh_cn",
@@ -1350,7 +1350,7 @@
     },
     {
       "name": "settings_language_zh_cn_desc",
-      "value": "Dùng Croak X bằng tiếng Trung giản thể."
+      "value": "Dùng Harmony X bằng tiếng Trung giản thể."
     },
     {
       "name": "settings_language_en",
@@ -1358,7 +1358,7 @@
     },
     {
       "name": "settings_language_en_desc",
-      "value": "Dùng Croak X bằng tiếng Anh."
+      "value": "Dùng Harmony X bằng tiếng Anh."
     },
     {
       "name": "settings_language_it",
@@ -1366,7 +1366,7 @@
     },
     {
       "name": "settings_language_it_desc",
-      "value": "Dùng Croak X bằng tiếng Ý."
+      "value": "Dùng Harmony X bằng tiếng Ý."
     },
     {
       "name": "settings_font_size",
@@ -1386,7 +1386,7 @@
     },
     {
       "name": "settings_app_icon_intro",
-      "value": "Chọn biểu tượng Croak X. Màn hình chính, danh sách ứng dụng và ứng dụng gần đây đều dùng biểu tượng này."
+      "value": "Chọn biểu tượng Harmony X. Màn hình chính, danh sách ứng dụng và ứng dụng gần đây đều dùng biểu tượng này."
     },
     {
       "name": "settings_app_icon_note",
@@ -1878,7 +1878,7 @@
     },
     {
       "name": "settings_notification_permission_needed",
-      "value": "Cho phép thông báo Croak X trong cài đặt hệ thống"
+      "value": "Cho phép thông báo Harmony X trong cài đặt hệ thống"
     },
     {
       "name": "settings_notification_settings_failed",
@@ -2434,7 +2434,7 @@
     },
     {
       "name": "settings_sensitive_media_desc",
-      "value": "Đồng bộ tùy chọn phương tiện nhạy cảm của tài khoản X và áp dụng trong Croak X."
+      "value": "Đồng bộ tùy chọn phương tiện nhạy cảm của tài khoản X và áp dụng trong Harmony X."
     },
     {
       "name": "sensitive_media_hidden",
@@ -4230,7 +4230,7 @@
     },
     {
       "name": "onboarding_welcome_title",
-      "value": "Chào mừng đến với Croak X"
+      "value": "Chào mừng đến với Harmony X"
     },
     {
       "name": "onboarding_welcome_detail",
@@ -4258,7 +4258,7 @@
     },
     {
       "name": "onboarding_login_hint",
-      "value": "Đăng nhập ở trang web bên dưới. Croak X tự mở khi bạn hoàn tất."
+      "value": "Đăng nhập ở trang web bên dưới. Harmony X tự mở khi bạn hoàn tất."
     },
     {
       "name": "onboarding_login_save_failed",
@@ -4402,7 +4402,7 @@
     },
     {
       "name": "onboarding_tips_detail",
-      "value": "Một vài lựa chọn để Croak X phù hợp hơn với bạn."
+      "value": "Một vài lựa chọn để Harmony X phù hợp hơn với bạn."
     },
     {
       "name": "onboarding_customize_title",
@@ -4422,7 +4422,7 @@
     },
     {
       "name": "onboarding_already_signed_in",
-      "value": "Tài khoản X đã kết nối. Bạn có thể bắt đầu dùng Croak X."
+      "value": "Tài khoản X đã kết nối. Bạn có thể bắt đầu dùng Harmony X."
     },
     {
       "name": "onboarding_finish",
@@ -4674,7 +4674,7 @@
     },
     {
       "name": "follow_contacts_sdk_unavailable",
-      "value": "Croak X hiện chưa đồng bộ được danh bạ thiết bị. Đồng bộ trong ứng dụng X chính thức rồi quay lại xem gợi ý."
+      "value": "Harmony X hiện chưa đồng bộ được danh bạ thiết bị. Đồng bộ trong ứng dụng X chính thức rồi quay lại xem gợi ý."
     },
     {
       "name": "follow_contacts_open_x",
@@ -6042,7 +6042,7 @@
     },
     {
       "name": "meow_intro",
-      "value": "Cài MeoW và liên kết biệt danh tại đây. Máy chủ chuyển tiếp HTTPS luôn hoạt động có thể chuyển thông báo tin nhắn X khi Croak X đã đóng."
+      "value": "Cài MeoW và liên kết biệt danh tại đây. Máy chủ chuyển tiếp HTTPS luôn hoạt động có thể chuyển thông báo tin nhắn X khi Harmony X đã đóng."
     },
     {
       "name": "meow_relay_url",
@@ -6294,7 +6294,7 @@
     },
     {
       "name": "storage_path_note",
-      "value": "Tệp mới lưu trong thư mục con com.haohaoai0.CroakX. Đổi vị trí không di chuyển tệp đã lưu."
+      "value": "Tệp mới lưu trong thư mục con com.haohaoai0.harmonx. Đổi vị trí không di chuyển tệp đã lưu."
     },
     {
       "name": "storage_path_authorize",
@@ -6346,7 +6346,7 @@
     },
     {
       "name": "storage_network_note",
-      "value": "Lưu lượng Croak X thực từ lần khởi động máy gần nhất, gồm phương tiện và yêu cầu. Bộ đếm đặt lại khi khởi động lại."
+      "value": "Lưu lượng Harmony X thực từ lần khởi động máy gần nhất, gồm phương tiện và yêu cầu. Bộ đếm đặt lại khi khởi động lại."
     },
     {
       "name": "storage_network_unavailable",
@@ -6574,7 +6574,7 @@
     },
     {
       "name": "xsettings_local_filter_note",
-      "value": "Bộ lọc chỉ ảnh hưởng Croak X. Quản lý từ và tài khoản ẩn cho toàn tài khoản trong Quyền riêng tư và an toàn."
+      "value": "Bộ lọc chỉ ảnh hưởng Harmony X. Quản lý từ và tài khoản ẩn cho toàn tài khoản trong Quyền riêng tư và an toàn."
     },
     {
       "name": "xsettings_muted_list",
@@ -7022,7 +7022,7 @@
     },
     {
       "name": "xsettings_sensitive_media_desc",
-      "value": "Đồng bộ tài khoản X hiện tại và điều chỉnh phương tiện trong Croak X."
+      "value": "Đồng bộ tài khoản X hiện tại và điều chỉnh phương tiện trong Harmony X."
     },
     {
       "name": "xsettings_sensitive_categories",
@@ -8314,7 +8314,7 @@
     },
     {
       "name": "spaces_listen_only_body",
-      "value": "Croak X hiện hỗ trợ nghe và phát lại. Không gửi âm thanh micro hay yêu cầu phát biểu."
+      "value": "Harmony X hiện hỗ trợ nghe và phát lại. Không gửi âm thanh micro hay yêu cầu phát biểu."
     },
     {
       "name": "spaces_manage_title",
@@ -9142,7 +9142,7 @@
     },
     {
       "name": "settings_custom_font_sample_medium",
-      "value": "Croak X  Typography  2026"
+      "value": "Harmony X  Typography  2026"
     },
     {
       "name": "settings_custom_font_sample_small",
@@ -9930,7 +9930,7 @@
     },
     {
       "name": "logo_universe_desc",
-      "value": "Mỗi cuộc gặp đều hoàn thiện Croak X."
+      "value": "Mỗi cuộc gặp đều hoàn thiện HarmonyX."
     },
     {
       "name": "logo_universe_hint",
@@ -9982,7 +9982,7 @@
     },
     {
       "name": "logo_part_of_you",
-      "value": "Bạn là một phần của Croak X."
+      "value": "Bạn là một phần của HarmonyX."
     },
     {
       "name": "logo_touch_hint",

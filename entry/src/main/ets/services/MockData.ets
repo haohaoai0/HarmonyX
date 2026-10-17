@@ -1,4 +1,4 @@
-// Offline mock data so Croak X is fully usable in the HarmonyOS
+// Offline mock data so Harmony X is fully usable in the HarmonyOS
 // emulator / previewer without X API credentials.
 import type { Tweet, DirectMessage, AppNotification } from '../models/Tweet';
 
@@ -8,7 +8,7 @@ export class MockData {
       {
         id: '1',
         author: { id: 'u1', name: 'HarmonyOS', username: 'HarmonyOS', avatarColor: '#1D9BF0', verified: true },
-        text: 'Welcome to Croak X on HarmonyOS 6.1! Native ArkTS, Stage model, API 24. This build runs the full timeline offline.',
+        text: 'Welcome to Harmony X on HarmonyOS 6.1! Native ArkTS, Stage model, API 24. This build runs the full timeline offline.',
         createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
         metrics: { replyCount: 128, repostCount: 842, likeCount: 5210, viewCount: 210000 },
         liked: false,
@@ -16,7 +16,7 @@ export class MockData {
       },
       {
         id: '2',
-        author: { id: 'u2', name: 'Croak X', username: 'croakx', avatarColor: '#7856FF', verified: false },
+        author: { id: 'u2', name: 'Harmony X', username: 'croakx', avatarColor: '#7856FF', verified: false },
         text: 'X/Twitter ported to HarmonyOS NEXT: tabs, compose, search, notifications, DMs. Sign in with X to see live posts.',
         createdAt: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
         metrics: { replyCount: 42, repostCount: 156, likeCount: 980, viewCount: 45200 },
@@ -38,7 +38,7 @@ export class MockData {
       {
         id: '3',
         author: { id: 'u3', name: 'ArkUI', username: 'arkui_dev', avatarColor: '#00B578', verified: true },
-        text: 'Tip: Croak X targets HarmonyOS 6.1.1 (API 24) and is forward-compatible with HarmonyOS 7 (API 26) — no deprecated APIs, Stage model only.',
+        text: 'Tip: Harmony X targets HarmonyOS 6.1.1 (API 24) and is forward-compatible with HarmonyOS 7 (API 26) — no deprecated APIs, Stage model only.',
         createdAt: new Date(Date.now() - 7 * 60 * 60 * 1000).toISOString(),
         metrics: { replyCount: 18, repostCount: 64, likeCount: 412, viewCount: 18700 },
         liked: false,
@@ -105,7 +105,7 @@ export class MockData {
         },
         {
           id: 'sample-8',
-          author: { id: 'u8', name: 'Croak X Lab', username: 'croakx_lab', avatarColor: '#F97316', verified: false },
+          author: { id: 'u8', name: 'Harmony X Lab', username: 'harmonyx_lab', avatarColor: '#F97316', verified: false },
           text: 'Offline mode now keeps the same continuous-reading rhythm as the connected feed, with additional sample posts loaded as you browse.',
           createdAt: new Date(Date.now() - 19 * 60 * 60 * 1000).toISOString(),
           metrics: { replyCount: 15, repostCount: 52, likeCount: 403, viewCount: 9600 },
@@ -146,7 +146,7 @@ export class MockData {
         {
           id: 'sample-12',
           author: { id: 'u12', name: 'Harmony Community', username: 'harmony_community', avatarColor: '#6366F1', verified: false },
-          text: 'Thanks for trying Croak X. Sign in to replace these samples with your own reverse-chronological X timeline.',
+          text: 'Thanks for trying Harmony X. Sign in to replace these samples with your own reverse-chronological X timeline.',
           createdAt: new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString(),
           metrics: { replyCount: 20, repostCount: 65, likeCount: 488, viewCount: 11900 },
           liked: false,
@@ -162,7 +162,7 @@ export class MockData {
   }
 
   static trends(): string[] {
-    return ['#HarmonyOS', '#CroakX', '#ArkTS', 'HDC 2026', '#HarmonyOS7', 'OpenHarmony'];
+    return ['#HarmonyOS', '#HarmonyX', '#ArkTS', 'HDC 2026', '#HarmonyOS7', 'OpenHarmony'];
   }
 
   static notifications(): AppNotification[] {
@@ -180,9 +180,9 @@ export class MockData {
         imageUrl: '', imageIsVideo: false, unread: false, deepLink: ''
       },
       {
-        id: 'n3', kind: 'follow', text: 'Croak X started following you', time: '1d',
+        id: 'n3', kind: 'follow', text: 'Harmony X started following you', time: '1d',
         timestampMs: 0, targetPostId: '', postText: '', authorId: '',
-        authorName: 'Croak X', authorUsername: 'croakx', authorAvatarUrl: '',
+        authorName: 'Harmony X', authorUsername: 'croakx', authorAvatarUrl: '',
         imageUrl: '', imageIsVideo: false, unread: false, deepLink: ''
       }
     ];
@@ -192,7 +192,7 @@ export class MockData {
     return [
       { id: 'm1', from: 'HarmonyOS', preview: 'API 24 build looks great!', time: '2h', unread: 2 },
       { id: 'm2', from: 'ArkUI', preview: 'Tabs + compose verified', time: '1d', unread: 0 },
-      { id: 'm3', from: 'Croak X', preview: 'Welcome to DMs', time: '2d', unread: 0 }
+      { id: 'm3', from: 'Harmony X', preview: 'Welcome to DMs', time: '2d', unread: 0 }
     ];
   }
 }

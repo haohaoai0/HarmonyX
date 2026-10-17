@@ -16,7 +16,7 @@ export function logoParticipation(context: common.Context, accountId: string, jo
 }
 
 export async function writeLogoKeepsake(context: common.Context, pixels: image.PixelMap): Promise<string> {
-  const path: string = context.cacheDir + '/CroakX-keepsake-' + Date.now().toString() + '.png';
+  const path: string = context.cacheDir + '/HarmonyX-keepsake-' + Date.now().toString() + '.png';
   const packer: image.ImagePacker = image.createImagePacker();
   let file: fileIo.File | null = null;
   try {
@@ -32,7 +32,7 @@ export async function writeLogoKeepsake(context: common.Context, pixels: image.P
 
 export async function saveLogoKeepsake(context: common.UIAbilityContext, path: string): Promise<boolean> {
   const helper: photoAccessHelper.PhotoAccessHelper = photoAccessHelper.getPhotoAccessHelper(context);
-  const configs: photoAccessHelper.PhotoCreationConfig[] = [{ title: 'CroakX-' + Date.now().toString(),
+  const configs: photoAccessHelper.PhotoCreationConfig[] = [{ title: 'HarmonyX-' + Date.now().toString(),
     fileNameExtension: 'png', photoType: photoAccessHelper.PhotoType.IMAGE,
     subtype: photoAccessHelper.PhotoSubtype.DEFAULT }];
   const destinations: string[] = await helper.showAssetsCreationDialog([path], configs);

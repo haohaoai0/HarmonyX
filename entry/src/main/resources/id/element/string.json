@@ -62,7 +62,7 @@
     },
     {
       "name": "xxauth_support_author",
-      "value": "Support the Croak X developer"
+      "value": "Support the Harmony X developer"
     },
     {
       "name": "xxauth_discover_apps",
@@ -222,15 +222,15 @@
     },
     {
       "name": "module_desc",
-      "value": "Modul utama Croak X"
+      "value": "Modul utama Harmony X"
     },
     {
       "name": "EntryAbility_desc",
-      "value": "Ability utama Croak X"
+      "value": "Ability utama Harmony X"
     },
     {
       "name": "EntryAbility_label",
-      "value": "Croak X"
+      "value": "Harmony X"
     },
     {
       "name": "ShareReceiverAbility_desc",
@@ -238,7 +238,7 @@
     },
     {
       "name": "ShareReceiverAbility_label",
-      "value": "Croak X"
+      "value": "Harmony X"
     },
     {
       "name": "home_title",
@@ -902,7 +902,7 @@
     },
     {
       "name": "profile_welcome",
-      "value": "Selamat datang di Croak X"
+      "value": "Selamat datang di Harmony X"
     },
     {
       "name": "profile_signed_in",
@@ -922,7 +922,7 @@
     },
     {
       "name": "profile_version",
-      "value": "Croak X 3.0.0 · HarmonyOS 6.1 (API 23-26) · model Stage"
+      "value": "Harmony X 3.0.0 · HarmonyOS 6.1 (API 23-26) · model Stage"
     },
     {
       "name": "profile_following",
@@ -954,7 +954,7 @@
     },
     {
       "name": "login_title",
-      "value": "Masuk ke Croak X"
+      "value": "Masuk ke Harmony X"
     },
     {
       "name": "login_description",
@@ -1030,7 +1030,7 @@
     },
     {
       "name": "callback_opening",
-      "value": "Berhasil masuk. Membuka Croak X…"
+      "value": "Berhasil masuk. Membuka Harmony X…"
     },
     {
       "name": "callback_back_to_login",
@@ -1090,7 +1090,7 @@
     },
     {
       "name": "side_support",
-      "value": "Dukung Croak X"
+      "value": "Dukung Harmony X"
     },
     {
       "name": "help_intro",
@@ -1270,7 +1270,7 @@
     },
     {
       "name": "settings_accessibility_desc",
-      "value": "Atur tampilan konten Croak X."
+      "value": "Atur tampilan konten Harmony X."
     },
     {
       "name": "settings_resources",
@@ -1334,7 +1334,7 @@
     },
     {
       "name": "settings_language_intro",
-      "value": "Pilih bahasa untuk seluruh Croak X. Perubahan langsung berlaku dan tersimpan saat aplikasi dibuka lagi."
+      "value": "Pilih bahasa untuk seluruh Harmony X. Perubahan langsung berlaku dan tersimpan saat aplikasi dibuka lagi."
     },
     {
       "name": "settings_language_system",
@@ -1342,7 +1342,7 @@
     },
     {
       "name": "settings_language_system_desc",
-      "value": "Gunakan bahasa sistem di seluruh Croak X."
+      "value": "Gunakan bahasa sistem di seluruh Harmony X."
     },
     {
       "name": "settings_language_zh_cn",
@@ -1350,7 +1350,7 @@
     },
     {
       "name": "settings_language_zh_cn_desc",
-      "value": "Gunakan Croak X dalam bahasa Mandarin Sederhana."
+      "value": "Gunakan Harmony X dalam bahasa Mandarin Sederhana."
     },
     {
       "name": "settings_language_en",
@@ -1358,7 +1358,7 @@
     },
     {
       "name": "settings_language_en_desc",
-      "value": "Gunakan Croak X dalam bahasa Inggris."
+      "value": "Gunakan Harmony X dalam bahasa Inggris."
     },
     {
       "name": "settings_language_it",
@@ -1366,7 +1366,7 @@
     },
     {
       "name": "settings_language_it_desc",
-      "value": "Gunakan Croak X dalam bahasa Italia."
+      "value": "Gunakan Harmony X dalam bahasa Italia."
     },
     {
       "name": "settings_font_size",
@@ -1386,7 +1386,7 @@
     },
     {
       "name": "settings_app_icon_intro",
-      "value": "Pilih ikon Croak X. Layar utama, daftar aplikasi, dan aplikasi terbaru akan memakai ikon yang sama."
+      "value": "Pilih ikon Harmony X. Layar utama, daftar aplikasi, dan aplikasi terbaru akan memakai ikon yang sama."
     },
     {
       "name": "settings_app_icon_note",
@@ -1878,7 +1878,7 @@
     },
     {
       "name": "settings_notification_permission_needed",
-      "value": "Izinkan notifikasi Croak X di pengaturan sistem"
+      "value": "Izinkan notifikasi Harmony X di pengaturan sistem"
     },
     {
       "name": "settings_notification_settings_failed",
@@ -2434,7 +2434,7 @@
     },
     {
       "name": "settings_sensitive_media_desc",
-      "value": "Sinkronkan preferensi media sensitif akun X dan terapkan di Croak X."
+      "value": "Sinkronkan preferensi media sensitif akun X dan terapkan di Harmony X."
     },
     {
       "name": "sensitive_media_hidden",
@@ -4230,7 +4230,7 @@
     },
     {
       "name": "onboarding_welcome_title",
-      "value": "Selamat datang di Croak X"
+      "value": "Selamat datang di Harmony X"
     },
     {
       "name": "onboarding_welcome_detail",
@@ -4258,7 +4258,7 @@
     },
     {
       "name": "onboarding_login_hint",
-      "value": "Masuk di halaman web di bawah. Croak X terbuka otomatis setelah selesai."
+      "value": "Masuk di halaman web di bawah. Harmony X terbuka otomatis setelah selesai."
     },
     {
       "name": "onboarding_login_save_failed",
@@ -4402,7 +4402,7 @@
     },
     {
       "name": "onboarding_tips_detail",
-      "value": "Beberapa pilihan agar Croak X sesuai dengan Anda."
+      "value": "Beberapa pilihan agar Harmony X sesuai dengan Anda."
     },
     {
       "name": "onboarding_customize_title",
@@ -4422,7 +4422,7 @@
     },
     {
       "name": "onboarding_already_signed_in",
-      "value": "Akun X terhubung. Croak X siap digunakan."
+      "value": "Akun X terhubung. Harmony X siap digunakan."
     },
     {
       "name": "onboarding_finish",
@@ -4674,7 +4674,7 @@
     },
     {
       "name": "follow_contacts_sdk_unavailable",
-      "value": "Sinkronisasi kontak perangkat belum tersedia di Croak X. Sinkronkan melalui aplikasi X resmi, lalu kembali untuk melihat saran."
+      "value": "Sinkronisasi kontak perangkat belum tersedia di Harmony X. Sinkronkan melalui aplikasi X resmi, lalu kembali untuk melihat saran."
     },
     {
       "name": "follow_contacts_open_x",
@@ -6042,7 +6042,7 @@
     },
     {
       "name": "meow_intro",
-      "value": "Pasang MeoW dan hubungkan nama pengguna Anda di sini. Relay HTTPS yang selalu aktif bisa meneruskan peringatan pesan X saat Croak X ditutup."
+      "value": "Pasang MeoW dan hubungkan nama pengguna Anda di sini. Relay HTTPS yang selalu aktif bisa meneruskan peringatan pesan X saat Harmony X ditutup."
     },
     {
       "name": "meow_relay_url",
@@ -6294,7 +6294,7 @@
     },
     {
       "name": "storage_path_note",
-      "value": "File baru disimpan di subfolder com.haohaoai0.CroakX. Mengubah lokasi tidak memindahkan file yang sudah ada."
+      "value": "File baru disimpan di subfolder com.haohaoai0.harmonx. Mengubah lokasi tidak memindahkan file yang sudah ada."
     },
     {
       "name": "storage_path_authorize",
@@ -6346,7 +6346,7 @@
     },
     {
       "name": "storage_network_note",
-      "value": "Lalu lintas Croak X sejak perangkat terakhir dinyalakan, termasuk media dan permintaan. Penghitungan dimulai ulang setelah reboot."
+      "value": "Lalu lintas Harmony X sejak perangkat terakhir dinyalakan, termasuk media dan permintaan. Penghitungan dimulai ulang setelah reboot."
     },
     {
       "name": "storage_network_unavailable",
@@ -6574,7 +6574,7 @@
     },
     {
       "name": "xsettings_local_filter_note",
-      "value": "Filter ini hanya berlaku di Croak X. Kelola kata dan akun yang dibisukan untuk seluruh akun di Privasi dan keamanan."
+      "value": "Filter ini hanya berlaku di Harmony X. Kelola kata dan akun yang dibisukan untuk seluruh akun di Privasi dan keamanan."
     },
     {
       "name": "xsettings_muted_list",
@@ -7022,7 +7022,7 @@
     },
     {
       "name": "xsettings_sensitive_media_desc",
-      "value": "Disinkronkan dengan akun X aktif dan mengatur media yang tampil di Croak X."
+      "value": "Disinkronkan dengan akun X aktif dan mengatur media yang tampil di Harmony X."
     },
     {
       "name": "xsettings_sensitive_categories",
@@ -8314,7 +8314,7 @@
     },
     {
       "name": "spaces_listen_only_body",
-      "value": "Croak X mendukung mendengarkan dan memutar rekaman. Suara mikrofon serta permintaan berbicara tidak dikirim."
+      "value": "Harmony X mendukung mendengarkan dan memutar rekaman. Suara mikrofon serta permintaan berbicara tidak dikirim."
     },
     {
       "name": "spaces_manage_title",
@@ -9142,7 +9142,7 @@
     },
     {
       "name": "settings_custom_font_sample_medium",
-      "value": "Croak X  Typography  2026"
+      "value": "Harmony X  Typography  2026"
     },
     {
       "name": "settings_custom_font_sample_small",
@@ -9930,7 +9930,7 @@
     },
     {
       "name": "logo_universe_desc",
-      "value": "Setiap pertemuan melengkapi Croak X."
+      "value": "Setiap pertemuan melengkapi HarmonyX."
     },
     {
       "name": "logo_universe_hint",
@@ -9982,7 +9982,7 @@
     },
     {
       "name": "logo_part_of_you",
-      "value": "Kamu bagian dari Croak X."
+      "value": "Kamu bagian dari HarmonyX."
     },
     {
       "name": "logo_touch_hint",

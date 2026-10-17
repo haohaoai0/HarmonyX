@@ -62,7 +62,7 @@
     },
     {
       "name": "xxauth_support_author",
-      "value": "Support the Croak X developer"
+      "value": "Support the Harmony X developer"
     },
     {
       "name": "xxauth_discover_apps",
@@ -222,15 +222,15 @@
     },
     {
       "name": "module_desc",
-      "value": "Croak X giriş modülü"
+      "value": "Harmony X giriş modülü"
     },
     {
       "name": "EntryAbility_desc",
-      "value": "Croak X ana ekranı"
+      "value": "Harmony X ana ekranı"
     },
     {
       "name": "EntryAbility_label",
-      "value": "Croak X"
+      "value": "Harmony X"
     },
     {
       "name": "ShareReceiverAbility_desc",
@@ -238,7 +238,7 @@
     },
     {
       "name": "ShareReceiverAbility_label",
-      "value": "Croak X"
+      "value": "Harmony X"
     },
     {
       "name": "home_title",
@@ -902,7 +902,7 @@
     },
     {
       "name": "profile_welcome",
-      "value": "Croak X'e hoş geldiniz"
+      "value": "Harmony X'e hoş geldiniz"
     },
     {
       "name": "profile_signed_in",
@@ -922,7 +922,7 @@
     },
     {
       "name": "profile_version",
-      "value": "Croak X 3.0.0 · HarmonyOS 6.1 (API 23-26) · Stage modeli"
+      "value": "Harmony X 3.0.0 · HarmonyOS 6.1 (API 23-26) · Stage modeli"
     },
     {
       "name": "profile_following",
@@ -954,7 +954,7 @@
     },
     {
       "name": "login_title",
-      "value": "Croak X'e giriş yapın"
+      "value": "Harmony X'e giriş yapın"
     },
     {
       "name": "login_description",
@@ -1030,7 +1030,7 @@
     },
     {
       "name": "callback_opening",
-      "value": "Giriş yapıldı. Croak X açılıyor…"
+      "value": "Giriş yapıldı. Harmony X açılıyor…"
     },
     {
       "name": "callback_back_to_login",
@@ -1090,7 +1090,7 @@
     },
     {
       "name": "side_support",
-      "value": "Croak X'i destekle"
+      "value": "Harmony X'i destekle"
     },
     {
       "name": "help_intro",
@@ -1270,7 +1270,7 @@
     },
     {
       "name": "settings_accessibility_desc",
-      "value": "Croak X'in içerik görünümünü ayarlayın."
+      "value": "Harmony X'in içerik görünümünü ayarlayın."
     },
     {
       "name": "settings_resources",
@@ -1334,7 +1334,7 @@
     },
     {
       "name": "settings_language_intro",
-      "value": "Croak X'in dilini seçin. Değişiklik hemen uygulanır ve sonraki açılışta korunur."
+      "value": "Harmony X'in dilini seçin. Değişiklik hemen uygulanır ve sonraki açılışta korunur."
     },
     {
       "name": "settings_language_system",
@@ -1342,7 +1342,7 @@
     },
     {
       "name": "settings_language_system_desc",
-      "value": "Croak X'te sistem dilini kullan."
+      "value": "Harmony X'te sistem dilini kullan."
     },
     {
       "name": "settings_language_zh_cn",
@@ -1386,7 +1386,7 @@
     },
     {
       "name": "settings_app_icon_intro",
-      "value": "Croak X simgesini seçin. Ana ekran, uygulama listesi ve son uygulamalar bu simgeyi kullanır."
+      "value": "Harmony X simgesini seçin. Ana ekran, uygulama listesi ve son uygulamalar bu simgeyi kullanır."
     },
     {
       "name": "settings_app_icon_note",
@@ -1878,7 +1878,7 @@
     },
     {
       "name": "settings_notification_permission_needed",
-      "value": "Sistem ayarlarından Croak X bildirimlerine izin verin"
+      "value": "Sistem ayarlarından Harmony X bildirimlerine izin verin"
     },
     {
       "name": "settings_notification_settings_failed",
@@ -2434,7 +2434,7 @@
     },
     {
       "name": "settings_sensitive_media_desc",
-      "value": "X hesabınızın hassas medya ayarını eşitler ve Croak X'e uygular."
+      "value": "X hesabınızın hassas medya ayarını eşitler ve Harmony X'e uygular."
     },
     {
       "name": "sensitive_media_hidden",
@@ -4230,7 +4230,7 @@
     },
     {
       "name": "onboarding_welcome_title",
-      "value": "Croak X'e hoş geldiniz"
+      "value": "Harmony X'e hoş geldiniz"
     },
     {
       "name": "onboarding_welcome_detail",
@@ -4258,7 +4258,7 @@
     },
     {
       "name": "onboarding_login_hint",
-      "value": "Aşağıdaki web sayfasından giriş yapın. Bitince Croak X otomatik açılır."
+      "value": "Aşağıdaki web sayfasından giriş yapın. Bitince Harmony X otomatik açılır."
     },
     {
       "name": "onboarding_login_save_failed",
@@ -4402,7 +4402,7 @@
     },
     {
       "name": "onboarding_tips_detail",
-      "value": "Croak X'i size uygun yapmak için birkaç seçenek."
+      "value": "Harmony X'i size uygun yapmak için birkaç seçenek."
     },
     {
       "name": "onboarding_customize_title",
@@ -4422,7 +4422,7 @@
     },
     {
       "name": "onboarding_already_signed_in",
-      "value": "X hesabınız bağlı. Croak X'i kullanmaya başlayabilirsiniz."
+      "value": "X hesabınız bağlı. Harmony X'i kullanmaya başlayabilirsiniz."
     },
     {
       "name": "onboarding_finish",
@@ -6042,7 +6042,7 @@
     },
     {
       "name": "meow_intro",
-      "value": "MeoW'u kurup takma adınızı bağlayın. Sürekli çalışan HTTPS aktarıcısı Croak X kapalıyken X mesaj uyarılarını iletir."
+      "value": "MeoW'u kurup takma adınızı bağlayın. Sürekli çalışan HTTPS aktarıcısı Harmony X kapalıyken X mesaj uyarılarını iletir."
     },
     {
       "name": "meow_relay_url",
@@ -6294,7 +6294,7 @@
     },
     {
       "name": "storage_path_note",
-      "value": "Yeni dosyalar com.haohaoai0.CroakX alt klasörüne kaydedilir. Konum değişimi eski dosyaları taşımaz."
+      "value": "Yeni dosyalar com.haohaoai0.harmonx alt klasörüne kaydedilir. Konum değişimi eski dosyaları taşımaz."
     },
     {
       "name": "storage_path_authorize",
@@ -6346,7 +6346,7 @@
     },
     {
       "name": "storage_network_note",
-      "value": "Cihaz açıldığından beri medya ve istekler dahil gerçek Croak X trafiği. Yeniden başlatınca sayaçlar sıfırlanır."
+      "value": "Cihaz açıldığından beri medya ve istekler dahil gerçek Harmony X trafiği. Yeniden başlatınca sayaçlar sıfırlanır."
     },
     {
       "name": "storage_network_unavailable",
@@ -6574,7 +6574,7 @@
     },
     {
       "name": "xsettings_local_filter_note",
-      "value": "Filtreler yalnızca Croak X'i etkiler. Hesap genelindeki sessize almaları Gizlilik ve güvenlik'ten yönetin."
+      "value": "Filtreler yalnızca Harmony X'i etkiler. Hesap genelindeki sessize almaları Gizlilik ve güvenlik'ten yönetin."
     },
     {
       "name": "xsettings_muted_list",
@@ -7022,7 +7022,7 @@
     },
     {
       "name": "xsettings_sensitive_media_desc",
-      "value": "X hesabıyla eşitlenir, Croak X'teki medyayı ayarlar."
+      "value": "X hesabıyla eşitlenir, Harmony X'teki medyayı ayarlar."
     },
     {
       "name": "xsettings_sensitive_categories",
@@ -8314,7 +8314,7 @@
     },
     {
       "name": "spaces_listen_only_body",
-      "value": "Croak X şu an dinleme ve kayıtları destekler. Mikrofon sesi ve konuşma istekleri gönderilmez."
+      "value": "Harmony X şu an dinleme ve kayıtları destekler. Mikrofon sesi ve konuşma istekleri gönderilmez."
     },
     {
       "name": "spaces_manage_title",
@@ -9142,7 +9142,7 @@
     },
     {
       "name": "settings_custom_font_sample_medium",
-      "value": "Croak X  Typography  2026"
+      "value": "Harmony X  Typography  2026"
     },
     {
       "name": "settings_custom_font_sample_small",
@@ -9930,7 +9930,7 @@
     },
     {
       "name": "logo_universe_desc",
-      "value": "Her bağlantı Croak X’i tamamlar."
+      "value": "Her bağlantı HarmonyX’i tamamlar."
     },
     {
       "name": "logo_universe_hint",
@@ -9982,7 +9982,7 @@
     },
     {
       "name": "logo_part_of_you",
-      "value": "Sen de Croak X’in bir parçasısın."
+      "value": "Sen de HarmonyX’in bir parçasısın."
     },
     {
       "name": "logo_touch_hint",

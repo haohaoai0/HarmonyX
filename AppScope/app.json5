@@ -1,6 +1,6 @@
 {
   "app": {
-    "bundleName": "com.haohaoai0.CroakX",
+    "bundleName": "com.haohaoai0.harmonx",
     "vendor": "haohaoai0",
     "versionCode": 22,
     "versionName": "3.0.0",
@@ -9,7 +9,7 @@
     // 不再依赖 AppGallery Connect 的动态图标服务与审核。
     "alternateIcons": [
       {
-        // The pre-Croak X default icon remains selectable as "Classic".
+        // The classic HarmonyX icon remains selectable.
         "name": "classic",
         "icon": "$media:alt_icon_classic"
       },

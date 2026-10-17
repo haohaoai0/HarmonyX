@@ -15,8 +15,8 @@ export struct XSideDrawer {
   @StorageProp('harmonyx.compact_window') private compactWindow: boolean = false;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @Prop profile: UserProfile | null = null;
-  @Prop fallbackName: string = 'Croak X';
-  @Prop fallbackHandle: string = '@croakx';
+  @Prop fallbackName: string = 'Harmony X';
+  @Prop fallbackHandle: string = '@harmonyx';
   onClose: () => void = (): void => {};
   onProfile: () => void = (): void => {};
   onFollowing: () => void = (): void => {};

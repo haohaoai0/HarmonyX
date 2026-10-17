@@ -8,13 +8,13 @@ const DIRECTORY_KEY: string = 'directory_uri';
 const SAVE_TO_FOLDER_KEY: string = 'save_to_folder';
 const DOWNLOAD_ROOT: string = 'file://docs/storage/Users/currentUser/Download';
 // 下载目录使用应用包名，文件管理器的“来源”按包名文件夹识别并显示入口。
-const APP_FOLDER: string = 'com.haohaoai0.CroakX';
+const APP_FOLDER: string = 'com.haohaoai0.harmonx';
 
 export enum LocalFileSaveResult { SAVED = 0, CANCELLED = 2 }
 
 export function downloadFileName(name: string): string {
   const sanitized: string = name.replace(/[\\/:*?"<>|\u0000-\u001f]/g, '_').trim();
-  return sanitized.length > 0 && sanitized !== '.' && sanitized !== '..' ? sanitized.substring(0, 180) : 'CroakX-file';
+  return sanitized.length > 0 && sanitized !== '.' && sanitized !== '..' ? sanitized.substring(0, 180) : 'HarmonyX-file';
 }
 
 function policy(uri: string): fileShare.PolicyInfo {

@@ -107,7 +107,7 @@ export class ReadAloudService {
       // Keeps the queue audible after the user leaves the page; the manifest
       // declares the matching background mode and permission.
       keepBackgroundRunning: true,
-      businessBrandInfo: { panelName: 'Croak X' }
+      businessBrandInfo: { panelName: 'Harmony X' }
     };
     try {
       await TextReader.init(context, params);

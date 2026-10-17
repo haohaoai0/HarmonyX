@@ -184,7 +184,7 @@ class VideoMediaSession {
           itemId: 0,
           description: {
             assetId: id, title: this.title, mediaImage: this.cover, mediaUri: this.castMediaUrl,
-            mediaType: 'VIDEO', startPosition: startPosition, duration: this.durationMs, appName: 'Croak X'
+            mediaType: 'VIDEO', startPosition: startPosition, duration: this.durationMs, appName: 'Harmony X'
           }
         };
         await controller.prepare(item);

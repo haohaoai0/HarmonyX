@@ -62,7 +62,7 @@
     },
     {
       "name": "xxauth_support_author",
-      "value": "Support the Croak X developer"
+      "value": "Support the Harmony X developer"
     },
     {
       "name": "xxauth_discover_apps",
@@ -222,23 +222,23 @@
     },
     {
       "name": "module_desc",
-      "value": "Основний модуль Croak X"
+      "value": "Основний модуль Harmony X"
     },
     {
       "name": "EntryAbility_desc",
-      "value": "Головний екран Croak X"
+      "value": "Головний екран Harmony X"
     },
     {
       "name": "EntryAbility_label",
-      "value": "Croak X"
+      "value": "Harmony X"
     },
     {
       "name": "ShareReceiverAbility_desc",
-      "value": "Відкривати посилання, фото й відео в Croak X"
+      "value": "Відкривати посилання, фото й відео в Harmony X"
     },
     {
       "name": "ShareReceiverAbility_label",
-      "value": "Croak X"
+      "value": "Harmony X"
     },
     {
       "name": "home_title",
@@ -902,7 +902,7 @@
     },
     {
       "name": "profile_welcome",
-      "value": "Ласкаво просимо до Croak X"
+      "value": "Ласкаво просимо до Harmony X"
     },
     {
       "name": "profile_signed_in",
@@ -922,7 +922,7 @@
     },
     {
       "name": "profile_version",
-      "value": "Croak X 3.0.0 · HarmonyOS 6.1 (API 23-26) · модель Stage"
+      "value": "Harmony X 3.0.0 · HarmonyOS 6.1 (API 23-26) · модель Stage"
     },
     {
       "name": "profile_following",
@@ -954,7 +954,7 @@
     },
     {
       "name": "login_title",
-      "value": "Вхід у Croak X"
+      "value": "Вхід у Harmony X"
     },
     {
       "name": "login_description",
@@ -1030,7 +1030,7 @@
     },
     {
       "name": "callback_opening",
-      "value": "Вхід виконано. Відкриваємо Croak X…"
+      "value": "Вхід виконано. Відкриваємо Harmony X…"
     },
     {
       "name": "callback_back_to_login",
@@ -1090,7 +1090,7 @@
     },
     {
       "name": "side_support",
-      "value": "Підтримати Croak X"
+      "value": "Підтримати Harmony X"
     },
     {
       "name": "help_intro",
@@ -1270,7 +1270,7 @@
     },
     {
       "name": "settings_accessibility_desc",
-      "value": "Налаштуйте відображення вмісту в Croak X."
+      "value": "Налаштуйте відображення вмісту в Harmony X."
     },
     {
       "name": "settings_resources",
@@ -1334,7 +1334,7 @@
     },
     {
       "name": "settings_language_intro",
-      "value": "Виберіть мову Croak X. Вона зміниться відразу й збережеться для наступного запуску."
+      "value": "Виберіть мову Harmony X. Вона зміниться відразу й збережеться для наступного запуску."
     },
     {
       "name": "settings_language_system",
@@ -1342,7 +1342,7 @@
     },
     {
       "name": "settings_language_system_desc",
-      "value": "Використовувати мову системи в Croak X."
+      "value": "Використовувати мову системи в Harmony X."
     },
     {
       "name": "settings_language_zh_cn",
@@ -1386,7 +1386,7 @@
     },
     {
       "name": "settings_app_icon_intro",
-      "value": "Виберіть значок Croak X. Він зміниться на головному екрані, у списку застосунків і нещодавніх застосунках."
+      "value": "Виберіть значок Harmony X. Він зміниться на головному екрані, у списку застосунків і нещодавніх застосунках."
     },
     {
       "name": "settings_app_icon_note",
@@ -1878,7 +1878,7 @@
     },
     {
       "name": "settings_notification_permission_needed",
-      "value": "Дозвольте сповіщення Croak X у налаштуваннях системи"
+      "value": "Дозвольте сповіщення Harmony X у налаштуваннях системи"
     },
     {
       "name": "settings_notification_settings_failed",
@@ -2434,7 +2434,7 @@
     },
     {
       "name": "settings_sensitive_media_desc",
-      "value": "Синхронізувати налаштування чутливих медіа облікового запису X з Croak X."
+      "value": "Синхронізувати налаштування чутливих медіа облікового запису X з Harmony X."
     },
     {
       "name": "sensitive_media_hidden",
@@ -4230,7 +4230,7 @@
     },
     {
       "name": "onboarding_welcome_title",
-      "value": "Ласкаво просимо до Croak X"
+      "value": "Ласкаво просимо до Harmony X"
     },
     {
       "name": "onboarding_welcome_detail",
@@ -4258,7 +4258,7 @@
     },
     {
       "name": "onboarding_login_hint",
-      "value": "Увійдіть на сторінці нижче. Croak X відкриється автоматично після входу."
+      "value": "Увійдіть на сторінці нижче. Harmony X відкриється автоматично після входу."
     },
     {
       "name": "onboarding_login_save_failed",
@@ -4402,7 +4402,7 @@
     },
     {
       "name": "onboarding_tips_detail",
-      "value": "Кілька налаштувань, щоб Croak X був зручним вам."
+      "value": "Кілька налаштувань, щоб Harmony X був зручним вам."
     },
     {
       "name": "onboarding_customize_title",
@@ -4422,7 +4422,7 @@
     },
     {
       "name": "onboarding_already_signed_in",
-      "value": "Обліковий запис X підключено. Можна користуватися Croak X."
+      "value": "Обліковий запис X підключено. Можна користуватися Harmony X."
     },
     {
       "name": "onboarding_finish",
@@ -6042,7 +6042,7 @@
     },
     {
       "name": "meow_intro",
-      "value": "Установіть MeoW і вкажіть нік. Постійно активний HTTPS-сервер зможе передавати сповіщення X, поки Croak X закрито."
+      "value": "Установіть MeoW і вкажіть нік. Постійно активний HTTPS-сервер зможе передавати сповіщення X, поки Harmony X закрито."
     },
     {
       "name": "meow_relay_url",
@@ -6294,7 +6294,7 @@
     },
     {
       "name": "storage_path_note",
-      "value": "Нові файли зберігаються в підпапку com.haohaoai0.CroakX. Зміна папки не переміщує старі файли."
+      "value": "Нові файли зберігаються в підпапку com.haohaoai0.harmonx. Зміна папки не переміщує старі файли."
     },
     {
       "name": "storage_path_authorize",
@@ -6346,7 +6346,7 @@
     },
     {
       "name": "storage_network_note",
-      "value": "Фактичний трафік Croak X із запуску пристрою, зокрема медіа й запити. Лічильники скидаються після перезавантаження."
+      "value": "Фактичний трафік Harmony X із запуску пристрою, зокрема медіа й запити. Лічильники скидаються після перезавантаження."
     },
     {
       "name": "storage_network_unavailable",
@@ -6574,7 +6574,7 @@
     },
     {
       "name": "xsettings_local_filter_note",
-      "value": "Фільтри діють лише в Croak X. Спільні для облікового запису ігноровані слова й люди — у розділі конфіденційності."
+      "value": "Фільтри діють лише в Harmony X. Спільні для облікового запису ігноровані слова й люди — у розділі конфіденційності."
     },
     {
       "name": "xsettings_muted_list",
@@ -7022,7 +7022,7 @@
     },
     {
       "name": "xsettings_sensitive_media_desc",
-      "value": "Синхронізується з обліковим записом X й керує медіа в Croak X."
+      "value": "Синхронізується з обліковим записом X й керує медіа в Harmony X."
     },
     {
       "name": "xsettings_sensitive_categories",
@@ -8314,7 +8314,7 @@
     },
     {
       "name": "spaces_listen_only_body",
-      "value": "Croak X підтримує прослуховування й записи. Звук мікрофона й запити виступити не надсилаються."
+      "value": "Harmony X підтримує прослуховування й записи. Звук мікрофона й запити виступити не надсилаються."
     },
     {
       "name": "spaces_manage_title",
@@ -9142,7 +9142,7 @@
     },
     {
       "name": "settings_custom_font_sample_medium",
-      "value": "Croak X  Typography  2026"
+      "value": "Harmony X  Typography  2026"
     },
     {
       "name": "settings_custom_font_sample_small",
@@ -9930,7 +9930,7 @@
     },
     {
       "name": "logo_universe_desc",
-      "value": "Кожна зустріч доповнює Croak X."
+      "value": "Кожна зустріч доповнює HarmonyX."
     },
     {
       "name": "logo_universe_hint",
@@ -9982,7 +9982,7 @@
     },
     {
       "name": "logo_part_of_you",
-      "value": "Ви — частина Croak X."
+      "value": "Ви — частина HarmonyX."
     },
     {
       "name": "logo_touch_hint",

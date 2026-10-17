@@ -62,7 +62,7 @@
     },
     {
       "name": "xxauth_support_author",
-      "value": "支持 Croak X 作者"
+      "value": "支持 Harmony X 作者"
     },
     {
       "name": "xxauth_discover_apps",
@@ -222,15 +222,15 @@
     },
     {
       "name": "module_desc",
-      "value": "Croak X 应用入口模块"
+      "value": "Harmony X 应用入口模块"
     },
     {
       "name": "EntryAbility_desc",
-      "value": "Croak X 主界面"
+      "value": "Harmony X 主界面"
     },
     {
       "name": "EntryAbility_label",
-      "value": "Croak X"
+      "value": "Harmony X"
     },
     {
       "name": "ShareReceiverAbility_desc",
@@ -238,7 +238,7 @@
     },
     {
       "name": "ShareReceiverAbility_label",
-      "value": "Croak X"
+      "value": "Harmony X"
     },
     {
       "name": "home_title",
@@ -902,7 +902,7 @@
     },
     {
       "name": "profile_welcome",
-      "value": "欢迎来到 Croak X"
+      "value": "欢迎来到 Harmony X"
     },
     {
       "name": "profile_signed_in",
@@ -922,7 +922,7 @@
     },
     {
       "name": "profile_version",
-      "value": "Croak X 3.0.0 · HarmonyOS 6.1（API 23-26）· Stage 模型"
+      "value": "Harmony X 3.0.0 · HarmonyOS 6.1（API 23-26）· Stage 模型"
     },
     {
       "name": "profile_following",
@@ -954,7 +954,7 @@
     },
     {
       "name": "login_title",
-      "value": "登录 Croak X"
+      "value": "登录 Harmony X"
     },
     {
       "name": "login_description",
@@ -1030,7 +1030,7 @@
     },
     {
       "name": "callback_opening",
-      "value": "登录成功，正在打开 Croak X…"
+      "value": "登录成功，正在打开 Harmony X…"
     },
     {
       "name": "callback_back_to_login",
@@ -1090,7 +1090,7 @@
     },
     {
       "name": "side_support",
-      "value": "支持 Croak X"
+      "value": "支持 Harmony X"
     },
     {
       "name": "help_intro",
@@ -1270,7 +1270,7 @@
     },
     {
       "name": "settings_accessibility_desc",
-      "value": "管理 Croak X 如何向你显示内容。"
+      "value": "管理 Harmony X 如何向你显示内容。"
     },
     {
       "name": "settings_resources",
@@ -1334,7 +1334,7 @@
     },
     {
       "name": "settings_language_intro",
-      "value": "选择 Croak X 的界面语言。更改会立即应用，并在下次打开应用时保留。"
+      "value": "选择 Harmony X 的界面语言。更改会立即应用，并在下次打开应用时保留。"
     },
     {
       "name": "settings_language_system",
@@ -1350,7 +1350,7 @@
     },
     {
       "name": "settings_language_zh_cn_desc",
-      "value": "使用简体中文浏览 Croak X。"
+      "value": "使用简体中文浏览 Harmony X。"
     },
     {
       "name": "settings_language_en",
@@ -1358,7 +1358,7 @@
     },
     {
       "name": "settings_language_en_desc",
-      "value": "Use Croak X in English."
+      "value": "Use Harmony X in English."
     },
     {
       "name": "settings_language_it",
@@ -1366,7 +1366,7 @@
     },
     {
       "name": "settings_language_it_desc",
-      "value": "Usa Croak X in italiano."
+      "value": "Usa Harmony X in italiano."
     },
     {
       "name": "settings_font_size",
@@ -1386,7 +1386,7 @@
     },
     {
       "name": "settings_app_icon_intro",
-      "value": "为 Croak X 挑一个图标。切换后桌面、应用列表和最近任务里的图标会一起更新。"
+      "value": "为 Harmony X 挑一个图标。切换后桌面、应用列表和最近任务里的图标会一起更新。"
     },
     {
       "name": "settings_app_icon_note",
@@ -1878,7 +1878,7 @@
     },
     {
       "name": "settings_notification_permission_needed",
-      "value": "请在系统通知设置中允许 Croak X 发送通知"
+      "value": "请在系统通知设置中允许 Harmony X 发送通知"
     },
     {
       "name": "settings_notification_settings_failed",
@@ -2434,7 +2434,7 @@
     },
     {
       "name": "settings_sensitive_media_desc",
-      "value": "同步 X 账号的敏感媒体显示偏好，并应用到 Croak X。"
+      "value": "同步 X 账号的敏感媒体显示偏好，并应用到 Harmony X。"
     },
     {
       "name": "sensitive_media_hidden",
@@ -4230,7 +4230,7 @@
     },
     {
       "name": "onboarding_welcome_title",
-      "value": "欢迎使用 Croak X"
+      "value": "欢迎使用 Harmony X"
     },
     {
       "name": "onboarding_welcome_detail",
@@ -4258,7 +4258,7 @@
     },
     {
       "name": "onboarding_login_hint",
-      "value": "请在下方网页完成登录；成功后会自动进入 Croak X。"
+      "value": "请在下方网页完成登录；成功后会自动进入 Harmony X。"
     },
     {
       "name": "onboarding_login_save_failed",
@@ -4422,7 +4422,7 @@
     },
     {
       "name": "onboarding_already_signed_in",
-      "value": "当前 X 账号已连接，可以直接开始使用 Croak X。"
+      "value": "当前 X 账号已连接，可以直接开始使用 Harmony X。"
     },
     {
       "name": "onboarding_finish",
@@ -4674,7 +4674,7 @@
     },
     {
       "name": "follow_contacts_sdk_unavailable",
-      "value": "暂时无法在 Croak X 同步本机通讯录。你可以在 X 官方客户端开启通讯录同步，再返回查看推荐。"
+      "value": "暂时无法在 Harmony X 同步本机通讯录。你可以在 X 官方客户端开启通讯录同步，再返回查看推荐。"
     },
     {
       "name": "follow_contacts_open_x",
@@ -6046,7 +6046,7 @@
     },
     {
       "name": "meow_intro",
-      "value": "安装 MeoW 后，在此绑定昵称。配置常驻 HTTPS 中转后，Croak X 关闭时也可接收 X 发送的私信提醒。"
+      "value": "安装 MeoW 后，在此绑定昵称。配置常驻 HTTPS 中转后，Harmony X 关闭时也可接收 X 发送的私信提醒。"
     },
     {
       "name": "meow_relay_url",
@@ -6298,7 +6298,7 @@
     },
     {
       "name": "storage_path_note",
-      "value": "新文件保存到此目录下的 com.haohaoai0.CroakX 文件夹。更改位置不会搬移已保存的文件。"
+      "value": "新文件保存到此目录下的 com.haohaoai0.harmonx 文件夹。更改位置不会搬移已保存的文件。"
     },
     {
       "name": "storage_path_authorize",
@@ -6350,7 +6350,7 @@
     },
     {
       "name": "storage_network_note",
-      "value": "统计 Croak X 自本次开机以来的实际网络流量，包含媒体和请求。设备重启后重新计数。"
+      "value": "统计 Harmony X 自本次开机以来的实际网络流量，包含媒体和请求。设备重启后重新计数。"
     },
     {
       "name": "storage_network_unavailable",
@@ -6578,7 +6578,7 @@
     },
     {
       "name": "xsettings_local_filter_note",
-      "value": "这些过滤仅影响 Croak X。X 账号中的静音词语和账号请在隐私与安全中管理。"
+      "value": "这些过滤仅影响 Harmony X。X 账号中的静音词语和账号请在隐私与安全中管理。"
     },
     {
       "name": "xsettings_muted_list",
@@ -7026,7 +7026,7 @@
     },
     {
       "name": "xsettings_sensitive_media_desc",
-      "value": "与当前 X 账号同步，也应用于 Croak X 中的媒体显示。"
+      "value": "与当前 X 账号同步，也应用于 Harmony X 中的媒体显示。"
     },
     {
       "name": "xsettings_sensitive_categories",
@@ -8318,7 +8318,7 @@
     },
     {
       "name": "spaces_listen_only_body",
-      "value": "Croak X 当前支持收听与回放，不上传麦克风音频，也不提交发言请求。"
+      "value": "Harmony X 当前支持收听与回放，不上传麦克风音频，也不提交发言请求。"
     },
     {
       "name": "spaces_manage_title",
@@ -9146,7 +9146,7 @@
     },
     {
       "name": "settings_custom_font_sample_medium",
-      "value": "Croak X  字体预览  2026"
+      "value": "Harmony X  字体预览  2026"
     },
     {
       "name": "settings_custom_font_sample_small",
@@ -9934,7 +9934,7 @@
     },
     {
       "name": "logo_universe_desc",
-      "value": "每一次相遇，都让 Croak X 更完整。"
+      "value": "每一次相遇，都让 HarmonyX 更完整。"
     },
     {
       "name": "logo_universe_hint",
@@ -9986,7 +9986,7 @@
     },
     {
       "name": "logo_part_of_you",
-      "value": "Croak X，也有你的一部分。"
+      "value": "HarmonyX，也有你的一部分。"
     },
     {
       "name": "logo_touch_hint",

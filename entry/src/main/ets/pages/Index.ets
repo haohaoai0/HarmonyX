@@ -6772,8 +6772,8 @@ struct Index {
   private SideBarPanelBuilder(): void {
     XSideDrawer({
       profile: this.profile,
-      fallbackName: this.handleText.length > 1 ? this.handleText.substring(1) : 'Croak X',
-      fallbackHandle: this.handleText.length > 0 ? this.handleText : '@croakx',
+      fallbackName: this.handleText.length > 1 ? this.handleText.substring(1) : 'Harmony X',
+      fallbackHandle: this.handleText.length > 0 ? this.handleText : '@harmonyx',
       onClose: (): void => { this.showSideDrawer = false; },
       onProfile: (): void => {
         this.showSideDrawer = false;

@@ -62,7 +62,7 @@
     },
     {
       "name": "xxauth_support_author",
-      "value": "Support the Croak X developer"
+      "value": "Support the Harmony X developer"
     },
     {
       "name": "xxauth_discover_apps",
@@ -222,15 +222,15 @@
     },
     {
       "name": "module_desc",
-      "value": "Croak X entry module"
+      "value": "Harmony X entry module"
     },
     {
       "name": "EntryAbility_desc",
-      "value": "Croak X main ability"
+      "value": "Harmony X main ability"
     },
     {
       "name": "EntryAbility_label",
-      "value": "Croak X"
+      "value": "Harmony X"
     },
     {
       "name": "ShareReceiverAbility_desc",
@@ -238,7 +238,7 @@
     },
     {
       "name": "ShareReceiverAbility_label",
-      "value": "Croak X"
+      "value": "Harmony X"
     },
     {
       "name": "home_title",
@@ -902,7 +902,7 @@
     },
     {
       "name": "profile_welcome",
-      "value": "Welcome to Croak X"
+      "value": "Welcome to Harmony X"
     },
     {
       "name": "profile_signed_in",
@@ -922,7 +922,7 @@
     },
     {
       "name": "profile_version",
-      "value": "Croak X 3.0.0 · HarmonyOS 6.1 (API 23-26) · Stage model"
+      "value": "Harmony X 3.0.0 · HarmonyOS 6.1 (API 23-26) · Stage model"
     },
     {
       "name": "profile_following",
@@ -954,7 +954,7 @@
     },
     {
       "name": "login_title",
-      "value": "Sign in to Croak X"
+      "value": "Sign in to Harmony X"
     },
     {
       "name": "login_description",
@@ -1030,7 +1030,7 @@
     },
     {
       "name": "callback_opening",
-      "value": "Signed in. Opening Croak X…"
+      "value": "Signed in. Opening Harmony X…"
     },
     {
       "name": "callback_back_to_login",
@@ -1090,7 +1090,7 @@
     },
     {
       "name": "side_support",
-      "value": "Support Croak X"
+      "value": "Support Harmony X"
     },
     {
       "name": "help_intro",
@@ -1270,7 +1270,7 @@
     },
     {
       "name": "settings_accessibility_desc",
-      "value": "Manage how Croak X displays content."
+      "value": "Manage how Harmony X displays content."
     },
     {
       "name": "settings_resources",
@@ -1334,7 +1334,7 @@
     },
     {
       "name": "settings_language_intro",
-      "value": "Choose the language used throughout Croak X. Changes apply immediately and are kept next time you open the app."
+      "value": "Choose the language used throughout Harmony X. Changes apply immediately and are kept next time you open the app."
     },
     {
       "name": "settings_language_system",
@@ -1342,7 +1342,7 @@
     },
     {
       "name": "settings_language_system_desc",
-      "value": "Use the system language throughout Croak X."
+      "value": "Use the system language throughout Harmony X."
     },
     {
       "name": "settings_language_zh_cn",
@@ -1350,7 +1350,7 @@
     },
     {
       "name": "settings_language_zh_cn_desc",
-      "value": "Use Croak X in Simplified Chinese."
+      "value": "Use Harmony X in Simplified Chinese."
     },
     {
       "name": "settings_language_en",
@@ -1358,7 +1358,7 @@
     },
     {
       "name": "settings_language_en_desc",
-      "value": "Use Croak X in English."
+      "value": "Use Harmony X in English."
     },
     {
       "name": "settings_language_it",
@@ -1366,7 +1366,7 @@
     },
     {
       "name": "settings_language_it_desc",
-      "value": "Usa Croak X in italiano."
+      "value": "Usa Harmony X in italiano."
     },
     {
       "name": "settings_font_size",
@@ -1386,7 +1386,7 @@
     },
     {
       "name": "settings_app_icon_intro",
-      "value": "Pick an icon for Croak X. The home screen, app list and recent apps all follow it."
+      "value": "Pick an icon for Harmony X. The home screen, app list and recent apps all follow it."
     },
     {
       "name": "settings_app_icon_note",
@@ -1878,7 +1878,7 @@
     },
     {
       "name": "settings_notification_permission_needed",
-      "value": "Allow Croak X notifications in system settings"
+      "value": "Allow Harmony X notifications in system settings"
     },
     {
       "name": "settings_notification_settings_failed",
@@ -2434,7 +2434,7 @@
     },
     {
       "name": "settings_sensitive_media_desc",
-      "value": "Sync your X account’s sensitive media preference and apply it in Croak X."
+      "value": "Sync your X account’s sensitive media preference and apply it in Harmony X."
     },
     {
       "name": "sensitive_media_hidden",
@@ -4230,7 +4230,7 @@
     },
     {
       "name": "onboarding_welcome_title",
-      "value": "Welcome to Croak X"
+      "value": "Welcome to Harmony X"
     },
     {
       "name": "onboarding_welcome_detail",
@@ -4258,7 +4258,7 @@
     },
     {
       "name": "onboarding_login_hint",
-      "value": "Sign in on the web page below. Croak X will open automatically when you finish."
+      "value": "Sign in on the web page below. Harmony X will open automatically when you finish."
     },
     {
       "name": "onboarding_login_save_failed",
@@ -4402,7 +4402,7 @@
     },
     {
       "name": "onboarding_tips_detail",
-      "value": "A few choices to make Croak X feel right for you."
+      "value": "A few choices to make Harmony X feel right for you."
     },
     {
       "name": "onboarding_customize_title",
@@ -4422,7 +4422,7 @@
     },
     {
       "name": "onboarding_already_signed_in",
-      "value": "Your X account is connected. You can start using Croak X now."
+      "value": "Your X account is connected. You can start using Harmony X now."
     },
     {
       "name": "onboarding_finish",
@@ -4674,7 +4674,7 @@
     },
     {
       "name": "follow_contacts_sdk_unavailable",
-      "value": "Syncing device contacts in Croak X is currently unavailable. Sync contacts in the official X app, then return to view suggestions."
+      "value": "Syncing device contacts in Harmony X is currently unavailable. Sync contacts in the official X app, then return to view suggestions."
     },
     {
       "name": "follow_contacts_open_x",
@@ -6046,7 +6046,7 @@
     },
     {
       "name": "meow_intro",
-      "value": "Install MeoW and link your nickname here. An always-on HTTPS relay can forward X message alerts while Croak X is closed."
+      "value": "Install MeoW and link your nickname here. An always-on HTTPS relay can forward X message alerts while Harmony X is closed."
     },
     {
       "name": "meow_relay_url",
@@ -6298,7 +6298,7 @@
     },
     {
       "name": "storage_path_note",
-      "value": "New files go into the com.haohaoai0.CroakX subfolder. Changing location does not move previously saved files."
+      "value": "New files go into the com.haohaoai0.harmonx subfolder. Changing location does not move previously saved files."
     },
     {
       "name": "storage_path_authorize",
@@ -6350,7 +6350,7 @@
     },
     {
       "name": "storage_network_note",
-      "value": "Actual Croak X traffic since the last device boot, including media and requests. Counters restart after reboot."
+      "value": "Actual Harmony X traffic since the last device boot, including media and requests. Counters restart after reboot."
     },
     {
       "name": "storage_network_unavailable",
@@ -6578,7 +6578,7 @@
     },
     {
       "name": "xsettings_local_filter_note",
-      "value": "These filters only affect Croak X. Manage account-wide muted words and accounts in Privacy and safety."
+      "value": "These filters only affect Harmony X. Manage account-wide muted words and accounts in Privacy and safety."
     },
     {
       "name": "xsettings_muted_list",
@@ -7026,7 +7026,7 @@
     },
     {
       "name": "xsettings_sensitive_media_desc",
-      "value": "Syncs with your current X account and controls media shown in Croak X."
+      "value": "Syncs with your current X account and controls media shown in Harmony X."
     },
     {
       "name": "xsettings_sensitive_categories",
@@ -8318,7 +8318,7 @@
     },
     {
       "name": "spaces_listen_only_body",
-      "value": "Croak X currently supports listening and replay. Microphone audio and speaking requests are not sent."
+      "value": "Harmony X currently supports listening and replay. Microphone audio and speaking requests are not sent."
     },
     {
       "name": "spaces_manage_title",
@@ -9146,7 +9146,7 @@
     },
     {
       "name": "settings_custom_font_sample_medium",
-      "value": "Croak X  Typography  2026"
+      "value": "Harmony X  Typography  2026"
     },
     {
       "name": "settings_custom_font_sample_small",
@@ -9934,7 +9934,7 @@
     },
     {
       "name": "logo_universe_desc",
-      "value": "Every connection makes Croak X more complete."
+      "value": "Every connection makes HarmonyX more complete."
     },
     {
       "name": "logo_universe_hint",
@@ -9986,7 +9986,7 @@
     },
     {
       "name": "logo_part_of_you",
-      "value": "You are part of Croak X."
+      "value": "You are part of HarmonyX."
     },
     {
       "name": "logo_touch_hint",

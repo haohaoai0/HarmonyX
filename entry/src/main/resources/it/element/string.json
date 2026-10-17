@@ -62,7 +62,7 @@
     },
     {
       "name": "xxauth_support_author",
-      "value": "Support the Croak X developer"
+      "value": "Support the Harmony X developer"
     },
     {
       "name": "xxauth_discover_apps",
@@ -222,15 +222,15 @@
     },
     {
       "name": "module_desc",
-      "value": "Modulo di ingresso di Croak X"
+      "value": "Modulo di ingresso di Harmony X"
     },
     {
       "name": "EntryAbility_desc",
-      "value": "Ability principale di Croak X"
+      "value": "Ability principale di Harmony X"
     },
     {
       "name": "EntryAbility_label",
-      "value": "Croak X"
+      "value": "Harmony X"
     },
     {
       "name": "ShareReceiverAbility_desc",
@@ -238,7 +238,7 @@
     },
     {
       "name": "ShareReceiverAbility_label",
-      "value": "Croak X"
+      "value": "Harmony X"
     },
     {
       "name": "home_title",
@@ -902,7 +902,7 @@
     },
     {
       "name": "profile_welcome",
-      "value": "Benvenuto in Croak X"
+      "value": "Benvenuto in Harmony X"
     },
     {
       "name": "profile_signed_in",
@@ -922,7 +922,7 @@
     },
     {
       "name": "profile_version",
-      "value": "Croak X 3.0.0 · HarmonyOS 6.1 (API 23-26) · Stage model"
+      "value": "Harmony X 3.0.0 · HarmonyOS 6.1 (API 23-26) · Stage model"
     },
     {
       "name": "profile_following",
@@ -954,7 +954,7 @@
     },
     {
       "name": "login_title",
-      "value": "Accedi a Croak X"
+      "value": "Accedi a Harmony X"
     },
     {
       "name": "login_description",
@@ -1030,7 +1030,7 @@
     },
     {
       "name": "callback_opening",
-      "value": "Accesso effettuato. Apertura di Croak X…"
+      "value": "Accesso effettuato. Apertura di Harmony X…"
     },
     {
       "name": "callback_back_to_login",
@@ -1090,7 +1090,7 @@
     },
     {
       "name": "side_support",
-      "value": "Supporta Croak X"
+      "value": "Supporta Harmony X"
     },
     {
       "name": "help_intro",
@@ -1270,7 +1270,7 @@
     },
     {
       "name": "settings_accessibility_desc",
-      "value": "Gestisci come Croak X mostra i contenuti."
+      "value": "Gestisci come Harmony X mostra i contenuti."
     },
     {
       "name": "settings_resources",
@@ -1334,7 +1334,7 @@
     },
     {
       "name": "settings_language_intro",
-      "value": "Scegli la lingua usata in tutta l'app Croak X. Le modifiche si applicano subito e restano salvate alla prossima apertura."
+      "value": "Scegli la lingua usata in tutta l'app Harmony X. Le modifiche si applicano subito e restano salvate alla prossima apertura."
     },
     {
       "name": "settings_language_system",
@@ -1342,7 +1342,7 @@
     },
     {
       "name": "settings_language_system_desc",
-      "value": "Usa la lingua di sistema in tutta l'app Croak X."
+      "value": "Usa la lingua di sistema in tutta l'app Harmony X."
     },
     {
       "name": "settings_language_zh_cn",
@@ -1350,7 +1350,7 @@
     },
     {
       "name": "settings_language_zh_cn_desc",
-      "value": "Usa Croak X in cinese semplificato."
+      "value": "Usa Harmony X in cinese semplificato."
     },
     {
       "name": "settings_language_en",
@@ -1358,7 +1358,7 @@
     },
     {
       "name": "settings_language_en_desc",
-      "value": "Usa Croak X in inglese."
+      "value": "Usa Harmony X in inglese."
     },
     {
       "name": "settings_language_it",
@@ -1366,7 +1366,7 @@
     },
     {
       "name": "settings_language_it_desc",
-      "value": "Usa Croak X in italiano."
+      "value": "Usa Harmony X in italiano."
     },
     {
       "name": "settings_font_size",
@@ -1386,7 +1386,7 @@
     },
     {
       "name": "settings_app_icon_intro",
-      "value": "Scegli un'icona per Croak X. Schermata Home, elenco app e app recenti la seguono."
+      "value": "Scegli un'icona per Harmony X. Schermata Home, elenco app e app recenti la seguono."
     },
     {
       "name": "settings_app_icon_note",
@@ -1878,7 +1878,7 @@
     },
     {
       "name": "settings_notification_permission_needed",
-      "value": "Consenti le notifiche di Croak X nelle impostazioni di sistema"
+      "value": "Consenti le notifiche di Harmony X nelle impostazioni di sistema"
     },
     {
       "name": "settings_notification_settings_failed",
@@ -2434,7 +2434,7 @@
     },
     {
       "name": "settings_sensitive_media_desc",
-      "value": "Sincronizza la preferenza dei contenuti sensibili dell’account X e applicala in Croak X."
+      "value": "Sincronizza la preferenza dei contenuti sensibili dell’account X e applicala in Harmony X."
     },
     {
       "name": "sensitive_media_hidden",
@@ -4230,7 +4230,7 @@
     },
     {
       "name": "onboarding_welcome_title",
-      "value": "Benvenuto in Croak X"
+      "value": "Benvenuto in Harmony X"
     },
     {
       "name": "onboarding_welcome_detail",
@@ -4258,7 +4258,7 @@
     },
     {
       "name": "onboarding_login_hint",
-      "value": "Accedi nella pagina web qui sotto. Croak X si aprirà automaticamente al termine."
+      "value": "Accedi nella pagina web qui sotto. Harmony X si aprirà automaticamente al termine."
     },
     {
       "name": "onboarding_login_save_failed",
@@ -4402,7 +4402,7 @@
     },
     {
       "name": "onboarding_tips_detail",
-      "value": "Alcune scelte per adattare Croak X alle tue preferenze."
+      "value": "Alcune scelte per adattare Harmony X alle tue preferenze."
     },
     {
       "name": "onboarding_customize_title",
@@ -4422,7 +4422,7 @@
     },
     {
       "name": "onboarding_already_signed_in",
-      "value": "Il tuo account X è collegato. Puoi iniziare a usare Croak X."
+      "value": "Il tuo account X è collegato. Puoi iniziare a usare Harmony X."
     },
     {
       "name": "onboarding_finish",
@@ -4674,7 +4674,7 @@
     },
     {
       "name": "follow_contacts_sdk_unavailable",
-      "value": "La sincronizzazione dei contatti in Croak X non è disponibile. Sincronizza i contatti nell’app ufficiale X, poi torna per vedere i suggerimenti."
+      "value": "La sincronizzazione dei contatti in Harmony X non è disponibile. Sincronizza i contatti nell’app ufficiale X, poi torna per vedere i suggerimenti."
     },
     {
       "name": "follow_contacts_open_x",
@@ -6042,7 +6042,7 @@
     },
     {
       "name": "meow_intro",
-      "value": "Installa MeoW e collega il tuo nickname. Un relay HTTPS sempre attivo può inoltrare gli avvisi di X anche quando Croak X è chiusa."
+      "value": "Installa MeoW e collega il tuo nickname. Un relay HTTPS sempre attivo può inoltrare gli avvisi di X anche quando Harmony X è chiusa."
     },
     {
       "name": "meow_relay_url",
@@ -6294,7 +6294,7 @@
     },
     {
       "name": "storage_path_note",
-      "value": "I nuovi file vengono salvati nella sottocartella com.haohaoai0.CroakX. I file già salvati non vengono spostati."
+      "value": "I nuovi file vengono salvati nella sottocartella com.haohaoai0.harmonx. I file già salvati non vengono spostati."
     },
     {
       "name": "storage_path_authorize",
@@ -6346,7 +6346,7 @@
     },
     {
       "name": "storage_network_note",
-      "value": "Traffico effettivo di Croak X dall’ultimo avvio, inclusi media e richieste. I contatori ripartono dopo il riavvio."
+      "value": "Traffico effettivo di Harmony X dall’ultimo avvio, inclusi media e richieste. I contatori ripartono dopo il riavvio."
     },
     {
       "name": "storage_network_unavailable",
@@ -6574,7 +6574,7 @@
     },
     {
       "name": "xsettings_local_filter_note",
-      "value": "Questi filtri riguardano solo Croak X. Gestisci parole e account silenziati in Privacy e sicurezza."
+      "value": "Questi filtri riguardano solo Harmony X. Gestisci parole e account silenziati in Privacy e sicurezza."
     },
     {
       "name": "xsettings_muted_list",
@@ -7022,7 +7022,7 @@
     },
     {
       "name": "xsettings_sensitive_media_desc",
-      "value": "Si sincronizza con il tuo account X e controlla i contenuti mostrati in Croak X."
+      "value": "Si sincronizza con il tuo account X e controlla i contenuti mostrati in Harmony X."
     },
     {
       "name": "xsettings_sensitive_categories",
@@ -8314,7 +8314,7 @@
     },
     {
       "name": "spaces_listen_only_body",
-      "value": "Croak X supporta attualmente ascolto e riproduzione. Non invia audio dal microfono né richieste di intervento."
+      "value": "Harmony X supporta attualmente ascolto e riproduzione. Non invia audio dal microfono né richieste di intervento."
     },
     {
       "name": "spaces_manage_title",
@@ -9142,7 +9142,7 @@
     },
     {
       "name": "settings_custom_font_sample_medium",
-      "value": "Croak X  Typography  2026"
+      "value": "Harmony X  Typography  2026"
     },
     {
       "name": "settings_custom_font_sample_small",
@@ -9930,7 +9930,7 @@
     },
     {
       "name": "logo_universe_desc",
-      "value": "Ogni incontro rende Croak X più completo."
+      "value": "Ogni incontro rende HarmonyX più completo."
     },
     {
       "name": "logo_universe_hint",
@@ -9982,7 +9982,7 @@
     },
     {
       "name": "logo_part_of_you",
-      "value": "Anche tu fai parte di Croak X."
+      "value": "Anche tu fai parte di HarmonyX."
     },
     {
       "name": "logo_touch_hint",

@@ -62,7 +62,7 @@
     },
     {
       "name": "xxauth_support_author",
-      "value": "Support the Croak X developer"
+      "value": "Support the Harmony X developer"
     },
     {
       "name": "xxauth_discover_apps",
@@ -222,15 +222,15 @@
     },
     {
       "name": "module_desc",
-      "value": "Croak Xのメインモジュール"
+      "value": "Harmony Xのメインモジュール"
     },
     {
       "name": "EntryAbility_desc",
-      "value": "Croak Xのメイン画面"
+      "value": "Harmony Xのメイン画面"
     },
     {
       "name": "EntryAbility_label",
-      "value": "Croak X"
+      "value": "Harmony X"
     },
     {
       "name": "ShareReceiverAbility_desc",
@@ -238,7 +238,7 @@
     },
     {
       "name": "ShareReceiverAbility_label",
-      "value": "Croak X"
+      "value": "Harmony X"
     },
     {
       "name": "home_title",
@@ -902,7 +902,7 @@
     },
     {
       "name": "profile_welcome",
-      "value": "Croak Xへようこそ"
+      "value": "Harmony Xへようこそ"
     },
     {
       "name": "profile_signed_in",
@@ -922,7 +922,7 @@
     },
     {
       "name": "profile_version",
-      "value": "Croak X 3.0.0 · HarmonyOS 6.1（API 23-26）· Stageモデル"
+      "value": "Harmony X 3.0.0 · HarmonyOS 6.1（API 23-26）· Stageモデル"
     },
     {
       "name": "profile_following",
@@ -954,7 +954,7 @@
     },
     {
       "name": "login_title",
-      "value": "Croak Xにログイン"
+      "value": "Harmony Xにログイン"
     },
     {
       "name": "login_description",
@@ -1030,7 +1030,7 @@
     },
     {
       "name": "callback_opening",
-      "value": "ログインしました。Croak Xを開いています…"
+      "value": "ログインしました。Harmony Xを開いています…"
     },
     {
       "name": "callback_back_to_login",
@@ -1090,7 +1090,7 @@
     },
     {
       "name": "side_support",
-      "value": "Croak Xを支援"
+      "value": "Harmony Xを支援"
     },
     {
       "name": "help_intro",
@@ -1270,7 +1270,7 @@
     },
     {
       "name": "settings_accessibility_desc",
-      "value": "Croak Xの表示方法を設定します。"
+      "value": "Harmony Xの表示方法を設定します。"
     },
     {
       "name": "settings_resources",
@@ -1334,7 +1334,7 @@
     },
     {
       "name": "settings_language_intro",
-      "value": "Croak Xの表示言語を選びます。すぐに切り替わり、次回起動時も設定を保持します。"
+      "value": "Harmony Xの表示言語を選びます。すぐに切り替わり、次回起動時も設定を保持します。"
     },
     {
       "name": "settings_language_system",
@@ -1342,7 +1342,7 @@
     },
     {
       "name": "settings_language_system_desc",
-      "value": "Croak Xをシステムの言語で表示します。"
+      "value": "Harmony Xをシステムの言語で表示します。"
     },
     {
       "name": "settings_language_zh_cn",
@@ -1350,7 +1350,7 @@
     },
     {
       "name": "settings_language_zh_cn_desc",
-      "value": "Croak Xを簡体字中国語で表示します。"
+      "value": "Harmony Xを簡体字中国語で表示します。"
     },
     {
       "name": "settings_language_en",
@@ -1358,7 +1358,7 @@
     },
     {
       "name": "settings_language_en_desc",
-      "value": "Croak Xを英語で表示します。"
+      "value": "Harmony Xを英語で表示します。"
     },
     {
       "name": "settings_language_it",
@@ -1366,7 +1366,7 @@
     },
     {
       "name": "settings_language_it_desc",
-      "value": "Croak Xをイタリア語で表示します。"
+      "value": "Harmony Xをイタリア語で表示します。"
     },
     {
       "name": "settings_font_size",
@@ -1386,7 +1386,7 @@
     },
     {
       "name": "settings_app_icon_intro",
-      "value": "Croak Xのアイコンを選んでください。ホーム画面、アプリ一覧、最近使ったアプリに反映されます。"
+      "value": "Harmony Xのアイコンを選んでください。ホーム画面、アプリ一覧、最近使ったアプリに反映されます。"
     },
     {
       "name": "settings_app_icon_note",
@@ -1878,7 +1878,7 @@
     },
     {
       "name": "settings_notification_permission_needed",
-      "value": "システム設定でCroak Xの通知を許可してください"
+      "value": "システム設定でHarmony Xの通知を許可してください"
     },
     {
       "name": "settings_notification_settings_failed",
@@ -2434,7 +2434,7 @@
     },
     {
       "name": "settings_sensitive_media_desc",
-      "value": "Xアカウントのセンシティブなメディア設定を同期し、Croak Xに適用します。"
+      "value": "Xアカウントのセンシティブなメディア設定を同期し、Harmony Xに適用します。"
     },
     {
       "name": "sensitive_media_hidden",
@@ -4230,7 +4230,7 @@
     },
     {
       "name": "onboarding_welcome_title",
-      "value": "Croak Xへようこそ"
+      "value": "Harmony Xへようこそ"
     },
     {
       "name": "onboarding_welcome_detail",
@@ -4258,7 +4258,7 @@
     },
     {
       "name": "onboarding_login_hint",
-      "value": "下のウェブページでログインしてください。完了するとCroak Xが自動で開きます。"
+      "value": "下のウェブページでログインしてください。完了するとHarmony Xが自動で開きます。"
     },
     {
       "name": "onboarding_login_save_failed",
@@ -4402,7 +4402,7 @@
     },
     {
       "name": "onboarding_tips_detail",
-      "value": "Croak Xを使いやすくする設定を選びましょう。"
+      "value": "Harmony Xを使いやすくする設定を選びましょう。"
     },
     {
       "name": "onboarding_customize_title",
@@ -4422,7 +4422,7 @@
     },
     {
       "name": "onboarding_already_signed_in",
-      "value": "Xアカウントに接続済みです。Croak Xを使い始められます。"
+      "value": "Xアカウントに接続済みです。Harmony Xを使い始められます。"
     },
     {
       "name": "onboarding_finish",
@@ -4674,7 +4674,7 @@
     },
     {
       "name": "follow_contacts_sdk_unavailable",
-      "value": "現在Croak Xでは端末の連絡先を同期できません。公式Xアプリで同期後、ここでおすすめを確認してください。"
+      "value": "現在Harmony Xでは端末の連絡先を同期できません。公式Xアプリで同期後、ここでおすすめを確認してください。"
     },
     {
       "name": "follow_contacts_open_x",
@@ -6042,7 +6042,7 @@
     },
     {
       "name": "meow_intro",
-      "value": "MeoWをインストールし、ここでニックネームを連携してください。常時稼働するHTTPS中継サーバーで、Croak X終了中もXのメッセージ通知を転送できます。"
+      "value": "MeoWをインストールし、ここでニックネームを連携してください。常時稼働するHTTPS中継サーバーで、Harmony X終了中もXのメッセージ通知を転送できます。"
     },
     {
       "name": "meow_relay_url",
@@ -6294,7 +6294,7 @@
     },
     {
       "name": "storage_path_note",
-      "value": "新しいファイルはcom.haohaoai0.CroakXサブフォルダーに保存します。保存先を変更しても既存のファイルは移動しません。"
+      "value": "新しいファイルはcom.haohaoai0.harmonxサブフォルダーに保存します。保存先を変更しても既存のファイルは移動しません。"
     },
     {
       "name": "storage_path_authorize",
@@ -6346,7 +6346,7 @@
     },
     {
       "name": "storage_network_note",
-      "value": "前回の端末起動からのCroak Xの実際の通信量です。メディアやリクエストを含み、再起動でリセットします。"
+      "value": "前回の端末起動からのHarmony Xの実際の通信量です。メディアやリクエストを含み、再起動でリセットします。"
     },
     {
       "name": "storage_network_unavailable",
@@ -6574,7 +6574,7 @@
     },
     {
       "name": "xsettings_local_filter_note",
-      "value": "このフィルターはCroak Xのみで有効です。アカウント全体のミュート設定は「プライバシーと安全」で管理してください。"
+      "value": "このフィルターはHarmony Xのみで有効です。アカウント全体のミュート設定は「プライバシーと安全」で管理してください。"
     },
     {
       "name": "xsettings_muted_list",
@@ -7022,7 +7022,7 @@
     },
     {
       "name": "xsettings_sensitive_media_desc",
-      "value": "現在のXアカウントと同期し、Croak Xのメディア表示に適用します。"
+      "value": "現在のXアカウントと同期し、Harmony Xのメディア表示に適用します。"
     },
     {
       "name": "xsettings_sensitive_categories",
@@ -8314,7 +8314,7 @@
     },
     {
       "name": "spaces_listen_only_body",
-      "value": "現在Croak Xは聴取と録音の再生に対応しています。マイク音声や発言リクエストは送信しません。"
+      "value": "現在Harmony Xは聴取と録音の再生に対応しています。マイク音声や発言リクエストは送信しません。"
     },
     {
       "name": "spaces_manage_title",
@@ -9142,7 +9142,7 @@
     },
     {
       "name": "settings_custom_font_sample_medium",
-      "value": "Croak X  Typography  2026"
+      "value": "Harmony X  Typography  2026"
     },
     {
       "name": "settings_custom_font_sample_small",
@@ -9930,7 +9930,7 @@
     },
     {
       "name": "logo_universe_desc",
-      "value": "出会いの一つひとつが Croak X を形づくります。"
+      "value": "出会いの一つひとつが HarmonyX を形づくります。"
     },
     {
       "name": "logo_universe_hint",
@@ -9982,7 +9982,7 @@
     },
     {
       "name": "logo_part_of_you",
-      "value": "あなたも Croak X の一部です。"
+      "value": "あなたも HarmonyX の一部です。"
     },
     {
       "name": "logo_touch_hint",

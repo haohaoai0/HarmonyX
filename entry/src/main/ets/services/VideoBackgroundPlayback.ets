@@ -15,7 +15,7 @@ import hilog from '@ohos.hilog';
 
 const DOMAIN = 0xFF00;
 const TAG = 'HarmonyX-VideoTask';
-const BUNDLE_NAME: string = 'com.haohaoai0.CroakX';
+const BUNDLE_NAME: string = 'com.haohaoai0.harmonx';
 const ABILITY_NAME: string = 'EntryAbility';
 
 class VideoBackgroundPlayback {
