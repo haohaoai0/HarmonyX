@@ -1,7 +1,11 @@
 // PKCE helpers for X OAuth 2.0 (Authorization Code Flow with S256).
-// Pure ArkTS — no native dependencies, works on any HarmonyOS device.
+// The verifier and state must come from the system CSPRNG. Math.random()
+// would make a captured authorization redirect materially easier to replay.
+import { cryptoFramework } from '@kit.CryptoArchitectureKit';
 
 const B64URL = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
+const PKCE_VERIFIER_ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';
+const STATE_ALPHABET = 'abcdefghijklmnopqrstuvwxyz0123456789';
 
 function rightRotate(v: number, n: number): number {
   return ((v >>> n) | (v << (32 - n))) >>> 0;
@@ -93,12 +97,7 @@ export function base64UrlEncode(data: number[]): string {
 export class Pkce {
   // RFC 7636 code_verifier: 43-128 chars from [A-Z a-z 0-9 - . _ ~]
   static newVerifier(): string {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';
-    let v = '';
-    for (let i = 0; i < 64; i++) {
-      v += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    return v;
+    return Pkce.secureRandomString(64, PKCE_VERIFIER_ALPHABET);
   }
 
   static challengeS256(verifier: string): string {
@@ -106,11 +105,30 @@ export class Pkce {
   }
 
   static newState(): string {
-    let s = '';
-    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
-    for (let i = 0; i < 16; i++) {
-      s += chars.charAt(Math.floor(Math.random() * chars.length));
+    return Pkce.secureRandomString(32, STATE_ALPHABET);
+  }
+
+  private static secureRandomString(length: number, alphabet: string): string {
+    if (length <= 0 || alphabet.length === 0) {
+      return '';
     }
-    return s;
+    const threshold: number = 256 - (256 % alphabet.length);
+    const bytesPerBatch: number = Math.max(length * 2, 32);
+    let result: string = '';
+    try {
+      for (let batch: number = 0; batch < 8 && result.length < length; batch++) {
+        const random = cryptoFramework.createRandom();
+        const bytes: Uint8Array = random.generateRandomSync(bytesPerBatch).data;
+        for (let index: number = 0; index < bytes.length && result.length < length; index++) {
+          const value: number = bytes[index];
+          if (value < threshold) {
+            result += alphabet.charAt(value % alphabet.length);
+          }
+        }
+      }
+    } catch (error) {
+      return '';
+    }
+    return result.length === length ? result : '';
   }
 }

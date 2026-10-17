@@ -1,0 +1,26 @@
+{
+  "fr": {
+    "count": 2175,
+    "unique": 2175,
+    "expected": 2175,
+    "errors": []
+  },
+  "de": {
+    "count": 2175,
+    "unique": 2175,
+    "expected": 2175,
+    "errors": []
+  },
+  "es": {
+    "count": 2175,
+    "unique": 2175,
+    "expected": 2175,
+    "errors": []
+  },
+  "pt": {
+    "count": 2175,
+    "unique": 2175,
+    "expected": 2175,
+    "errors": []
+  }
+}

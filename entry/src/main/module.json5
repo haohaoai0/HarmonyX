@@ -12,6 +12,12 @@
     "deliveryWithInstall": true,
     "installationFree": false,
     "pages": "$profile:main_pages",
+    "metadata": [
+      {
+        "name": "ohos.arkui.UIMaterial.state",
+        "value": "enable"
+      }
+    ],
     "abilities": [
       {
         "name": "EntryAbility",
@@ -19,9 +25,18 @@
         "description": "$string:EntryAbility_desc",
         "icon": "$media:layered_image",
         "label": "$string:EntryAbility_label",
-        "startWindowIcon": "$media:icon",
+        "startWindowIcon": "$media:start_window_icon",
         "startWindowBackground": "$color:start_window_background",
+        // Phones and folded devices stay in the app's portrait shell. Tablets
+        // and unfolded devices follow the desktop, while fullscreen video can
+        // temporarily request its own direction at runtime.
+        "orientation": "follow_desktop",
         "exported": true,
+        "continuable": true,
+        "backgroundModes": [
+          "audioPlayback",
+          "dataTransfer"
+        ],
         "supportWindowMode": [
           "fullscreen",
           "split",
@@ -46,16 +61,145 @@
                 "host": "callback"
               }
             ]
+          },
+          {
+            // Lets the system list Harmony X in the "打开方式" chooser when an
+            // x.com link is tapped in another app. domainVerify stays off
+            // because x.com is not ours to verify; the system then resolves
+            // this through plain Deep Linking.
+            "actions": [
+              "ohos.want.action.viewData"
+            ],
+            "entities": [
+              "entity.system.browsable"
+            ],
+            "uris": [
+              {
+                "scheme": "https",
+                "host": "x.com"
+              },
+              {
+                "scheme": "https",
+                "host": "www.x.com"
+              },
+              {
+                "scheme": "https",
+                "host": "twitter.com"
+              },
+              {
+                "scheme": "https",
+                "host": "www.twitter.com"
+              },
+              {
+                "scheme": "https",
+                "host": "mobile.twitter.com"
+              }
+            ],
+            "domainVerify": false
+          }
+        ]
+      }
+    ],
+    "extensionAbilities": [
+      {
+        // Links open in the app; photos/videos enter the existing attachment editors.
+        "name": "ShareReceiverAbility",
+        "srcEntry": "./ets/share/ShareReceiverAbility.ets",
+        "type": "share",
+        "description": "$string:ShareReceiverAbility_desc",
+        "label": "$string:ShareReceiverAbility_label",
+        "icon": "$media:layered_image",
+        "exported": true,
+        "skills": [
+          {
+            "actions": [
+              "ohos.want.action.sendData"
+            ],
+            "uris": [
+              {
+                // scheme is a reserved field for share abilities, the utd list
+                // is what decides which shares reach this app.
+                "scheme": "file",
+                "utd": "general.hyperlink",
+                "maxFileSupported": 1
+              },
+              {
+                "scheme": "file",
+                "utd": "general.plain-text",
+                "maxFileSupported": 1
+              },
+              {
+                "scheme": "file",
+                "utd": "general.image",
+                "maxFileSupported": 10
+              },
+              {
+                "scheme": "file",
+                "utd": "general.video",
+                "maxFileSupported": 10
+              }
+            ]
           }
         ]
       }
     ],
     "requestPermissions": [
       {
+        "name": "ohos.permission.APPROXIMATELY_LOCATION",
+        "reason": "$string:compose_location_permission_reason",
+        "usedScene": { "abilities": ["EntryAbility"], "when": "inuse" }
+      },
+      {
+        "name": "ohos.permission.LOCATION",
+        "reason": "$string:compose_location_permission_reason",
+        "usedScene": { "abilities": ["EntryAbility"], "when": "inuse" }
+      },
+      {
+        "name": "ohos.permission.FILE_ACCESS_PERSIST",
+        "reason": "$string:storage_permission_reason",
+        "usedScene": { "abilities": ["EntryAbility"], "when": "inuse" }
+      },
+      {
         "name": "ohos.permission.INTERNET"
       },
       {
+        "name": "ohos.permission.PRIVACY_WINDOW"
+      },
+      {
         "name": "ohos.permission.DETECT_GESTURE"
+      },
+      {
+        "name": "ohos.permission.VIBRATE"
+      },
+      {
+        "name": "ohos.permission.GET_NETWORK_INFO"
+      },
+      {
+        "name": "ohos.permission.GET_DONOTDISTURB_STATE"
+      },
+      {
+        // Read-aloud keeps speaking after the page is left, so the TTS engine
+        // needs the matching long-running task permission.
+        "name": "ohos.permission.KEEP_BACKGROUND_RUNNING",
+        "usedScene": {
+          "abilities": [
+            "EntryAbility"
+          ],
+          "when": "inuse"
+        }
+      },
+      {
+        // The pages the app opens itself record voice: Grok web mode and the
+        // message surface. ArkWeb can only hand the microphone to them once the
+        // app holds this permission.
+        "name": "ohos.permission.MICROPHONE",
+        "reason": "$string:permission_microphone_reason",
+        "usedScene": {
+          "abilities": [
+            "EntryAbility"
+          ],
+          "when": "inuse"
+        }
       }
     ]
   }

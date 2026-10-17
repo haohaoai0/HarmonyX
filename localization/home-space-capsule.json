@@ -1,0 +1,128 @@
+{
+  "base": {
+    "spaces_home_capsule_close_session": "仅本次关闭",
+    "spaces_home_capsule_close": "直接关闭",
+    "settings_home_space_capsule": "首页空间胶囊",
+    "settings_home_space_capsule_desc": "在首页标题栏显示空间状态；关闭后可在此重新开启。"
+  },
+  "zh_CN": {
+    "spaces_home_capsule_close_session": "仅本次关闭",
+    "spaces_home_capsule_close": "直接关闭",
+    "settings_home_space_capsule": "首页空间胶囊",
+    "settings_home_space_capsule_desc": "在首页标题栏显示空间状态；关闭后可在此重新开启。"
+  },
+  "zh_Hant": {
+    "spaces_home_capsule_close_session": "僅本次關閉",
+    "spaces_home_capsule_close": "直接關閉",
+    "settings_home_space_capsule": "首頁音訊空間膠囊",
+    "settings_home_space_capsule_desc": "在首頁標題列顯示音訊空間狀態；關閉後可在此重新開啟。"
+  },
+  "en": {
+    "spaces_home_capsule_close_session": "Hide for this session",
+    "spaces_home_capsule_close": "Turn off",
+    "settings_home_space_capsule": "Home Spaces capsule",
+    "settings_home_space_capsule_desc": "Show Spaces in the Home header. Turn this on here to restore the capsule after hiding it."
+  },
+  "ru": {
+    "spaces_home_capsule_close_session": "Скрыть на этот сеанс",
+    "spaces_home_capsule_close": "Отключить",
+    "settings_home_space_capsule": "Капсула Пространств на главной",
+    "settings_home_space_capsule_desc": "Показывать Пространства в заголовке главной страницы. После скрытия капсулу можно включить здесь."
+  },
+  "uk": {
+    "spaces_home_capsule_close_session": "Приховати на цей сеанс",
+    "spaces_home_capsule_close": "Вимкнути",
+    "settings_home_space_capsule": "Капсула Просторів на головній",
+    "settings_home_space_capsule_desc": "Показувати Простори в заголовку головної сторінки. Після приховування капсулу можна ввімкнути тут."
+  },
+  "fa": {
+    "spaces_home_capsule_close_session": "فقط این بار پنهان شود",
+    "spaces_home_capsule_close": "خاموش کردن",
+    "settings_home_space_capsule": "کپسول اسپیس‌ها در خانه",
+    "settings_home_space_capsule_desc": "نمایش اسپیس‌ها در سربرگ خانه. پس از پنهان کردن کپسول، می‌توانید آن را از همین‌جا دوباره فعال کنید."
+  },
+  "ar": {
+    "spaces_home_capsule_close_session": "إخفاء لهذه الجلسة فقط",
+    "spaces_home_capsule_close": "إيقاف",
+    "settings_home_space_capsule": "كبسولة المساحات في الرئيسية",
+    "settings_home_space_capsule_desc": "عرض المساحات في شريط عنوان الصفحة الرئيسية. يمكنك إعادة تفعيل الكبسولة من هنا بعد إخفائها."
+  },
+  "id": {
+    "spaces_home_capsule_close_session": "Sembunyikan untuk sesi ini",
+    "spaces_home_capsule_close": "Nonaktifkan",
+    "settings_home_space_capsule": "Kapsul Spaces di Beranda",
+    "settings_home_space_capsule_desc": "Tampilkan Spaces di header Beranda. Aktifkan kembali di sini untuk menampilkan kapsul setelah disembunyikan."
+  },
+  "ms": {
+    "spaces_home_capsule_close_session": "Sembunyikan untuk sesi ini",
+    "spaces_home_capsule_close": "Matikan",
+    "settings_home_space_capsule": "Kapsul Spaces di Laman Utama",
+    "settings_home_space_capsule_desc": "Paparkan Spaces pada pengepala Laman Utama. Hidupkan semula di sini untuk memulihkan kapsul selepas disembunyikan."
+  },
+  "tr": {
+    "spaces_home_capsule_close_session": "Bu oturum için gizle",
+    "spaces_home_capsule_close": "Kapat",
+    "settings_home_space_capsule": "Ana sayfa Sohbet Odaları kapsülü",
+    "settings_home_space_capsule_desc": "Ana sayfa başlığında Sohbet Odalarını göster. Kapsülü gizledikten sonra buradan yeniden açabilirsiniz."
+  },
+  "vi": {
+    "spaces_home_capsule_close_session": "Chỉ ẩn trong phiên này",
+    "spaces_home_capsule_close": "Tắt",
+    "settings_home_space_capsule": "Viên nang Spaces ở Trang chủ",
+    "settings_home_space_capsule_desc": "Hiển thị Spaces trên thanh tiêu đề Trang chủ. Sau khi ẩn, bạn có thể bật lại viên nang tại đây."
+  },
+  "th": {
+    "spaces_home_capsule_close_session": "ซ่อนเฉพาะครั้งนี้",
+    "spaces_home_capsule_close": "ปิด",
+    "settings_home_space_capsule": "แคปซูล Spaces ในหน้าหลัก",
+    "settings_home_space_capsule_desc": "แสดง Spaces ในแถบหัวเรื่องของหน้าหลัก หลังจากซ่อนแล้ว คุณสามารถเปิดแคปซูลอีกครั้งได้ที่นี่"
+  },
+  "ja": {
+    "spaces_home_capsule_close_session": "今回のみ非表示",
+    "spaces_home_capsule_close": "オフにする",
+    "settings_home_space_capsule": "ホームのスペースカプセル",
+    "settings_home_space_capsule_desc": "ホームのタイトルバーにスペースの状態を表示します。非表示にした後は、ここで再びオンにできます。"
+  },
+  "ko": {
+    "spaces_home_capsule_close_session": "이번 세션에서만 숨기기",
+    "spaces_home_capsule_close": "끄기",
+    "settings_home_space_capsule": "홈 스페이스 캡슐",
+    "settings_home_space_capsule_desc": "홈 제목 표시줄에 스페이스 상태를 표시합니다. 숨긴 후에는 여기서 캡슐을 다시 켤 수 있습니다."
+  },
+  "de": {
+    "spaces_home_capsule_close_session": "Für diese Sitzung ausblenden",
+    "spaces_home_capsule_close": "Ausschalten",
+    "settings_home_space_capsule": "Spaces-Kapsel auf der Startseite",
+    "settings_home_space_capsule_desc": "Spaces im Kopfbereich der Startseite anzeigen. Nach dem Ausblenden können Sie die Kapsel hier wieder einschalten."
+  },
+  "fr": {
+    "spaces_home_capsule_close_session": "Masquer pour cette session",
+    "spaces_home_capsule_close": "Désactiver",
+    "settings_home_space_capsule": "Capsule Spaces de l’accueil",
+    "settings_home_space_capsule_desc": "Afficher les Spaces dans l’en-tête de l’accueil. Vous pouvez réactiver la capsule ici après l’avoir masquée."
+  },
+  "es": {
+    "spaces_home_capsule_close_session": "Ocultar durante esta sesión",
+    "spaces_home_capsule_close": "Desactivar",
+    "settings_home_space_capsule": "Cápsula de Espacios en Inicio",
+    "settings_home_space_capsule_desc": "Mostrar Espacios en el encabezado de Inicio. Puedes reactivar la cápsula aquí después de ocultarla."
+  },
+  "pt": {
+    "spaces_home_capsule_close_session": "Ocultar nesta sessão",
+    "spaces_home_capsule_close": "Desativar",
+    "settings_home_space_capsule": "Cápsula de Espaços no Início",
+    "settings_home_space_capsule_desc": "Mostrar Espaços no cabeçalho do Início. Você pode reativar a cápsula aqui depois de ocultá-la."
+  },
+  "it": {
+    "spaces_home_capsule_close_session": "Nascondi per questa sessione",
+    "spaces_home_capsule_close": "Disattiva",
+    "settings_home_space_capsule": "Capsula degli spazi nella Home",
+    "settings_home_space_capsule_desc": "Mostra gli spazi nell’intestazione della Home. Puoi riattivare la capsula qui dopo averla nascosta."
+  },
+  "hi": {
+    "spaces_home_capsule_close_session": "सिर्फ़ इस सत्र के लिए छिपाएँ",
+    "spaces_home_capsule_close": "बंद करें",
+    "settings_home_space_capsule": "होम पर स्पेसेस कैप्सूल",
+    "settings_home_space_capsule_desc": "होम के शीर्षक बार में स्पेसेस दिखाएँ। कैप्सूल छिपाने के बाद उसे यहाँ से फिर चालू किया जा सकता है।"
+  }
+}

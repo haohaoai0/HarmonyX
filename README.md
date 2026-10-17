@@ -34,7 +34,7 @@
 |:--|:--|
 | **完整的社交功能框架** | 首页双时间线、探索、提醒、私信、动态详情、回复编辑、个人主页、设置和悬浮发帖按钮；未登录时也可直接浏览示例内容。 |
 | **原生 HarmonyOS 设计** | ArkUI 界面、HarmonyOS 系统符号、明暗主题适配，以及手机 / 平板 / 二合一设备支持。 |
-| **配置后接入 X 实时能力** | 在应用设置中配置 Client ID，通过系统浏览器执行 OAuth 2.0 PKCE 授权；登录后可使用实时时间线、搜索、发帖、点赞、转发和回复。 |
+| **两条登录路径** | 主路径：在应用内登录 x.com，用 Cookie 会话直连 X 私有接口，无需申请开发者应用即可获得时间线、搜索、通知、个人主页、发帖、点赞、转发与回复。可选路径：配置自己的 Client ID 走 OAuth 2.0 PKCE 官方 API v2。 |
 | **诚实的离线降级** | X 不可访问或 API 权限受限时，应用会保留可用界面、可见的实时状态和本地回复草稿。 |
 
 ## 界面预览
@@ -77,11 +77,11 @@ Harmony X 并非仅替换外观，而是面向 HarmonyOS API 26 的 OpenTwit 改
 
 | 项目 | 当前配置 |
 |:--|:--|
-| 应用 | `Harmony X` · `com.haohaoai0.harmonyx` · 版本 `1.0.0`（`versionCode` 1） |
+| 应用 | `Harmony X` · `com.haohaoai0.harmonx` · 版本 `3.0.0`（`versionCode` 22） |
 | 模块 | `entry` · Stage 模型 · `modelVersion` 5.0.0 |
 | SDK 配置 | 未显式设置编译 SDK（使用本机 DevEco SDK）· 兼容 SDK `6.1.0 (API 23)` · 目标 SDK `26.0.0` |
 | 设备 | `phone`、`tablet`、`2in1` · 全屏 `EntryAbility` |
-| 权限 | `ohos.permission.INTERNET`、`ohos.permission.DETECT_GESTURE` |
+| 权限 | `ohos.permission.INTERNET`（网络）、`ohos.permission.DETECT_GESTURE`（智感握姿）、`ohos.permission.VIBRATE`（操作触觉）、`ohos.permission.GET_NETWORK_INFO`（在线状态）、`ohos.permission.GET_DONOTDISTURB_STATE`（免打扰静默）、`ohos.permission.KEEP_BACKGROUND_RUNNING`（后台朗读）、`ohos.permission.MICROPHONE`（Grok 网页与私信语音输入） |
 | 构建工具 | Hvigor `6.26.4` · `@ohos/hvigor-ohos-plugin` `6.26.4` · `@ohos/hypium` `1.0.19`（开发依赖） |
 
 ## 构建
@@ -102,15 +102,45 @@ devecocli build
 entry/build/default/outputs/default/entry-default-unsigned.hap
 ```
 
-`build-profile.json5` 为本地 DevEco 签名配置，不随仓库提交。请在本机 DevEco Studio 中创建并配置证书、Profile 和口令，切勿提交到仓库。
+`build-profile.json5` 为本地 DevEco 签名配置，不随仓库提交。首次克隆后，可先复制公开的安全模板，再填写自己在 DevEco Studio 创建的证书、Profile 和口令：
 
-## 启用 X 登录
+```powershell
+Copy-Item .\build-profile.example.json5 .\build-profile.json5
+```
 
-1. 在 [developer.x.com](https://developer.x.com/) 创建应用。
-2. 启用 **OAuth 2.0**，应用类型选择 **Native App**，并将回调地址设置为 `harmonyx://callback`。
-3. 打开 Harmony X 的 **设置 > 开发者 API**，粘贴 Client ID 并保存，无需重新构建。
+模板只包含无效占位符，不含任何可用的证书、Profile、路径、别名或口令。请只在本机编辑生成的 `build-profile.json5`，切勿提交它或任何签名材料。
 
-Harmony X 使用 PKCE，不需要 Client Secret。点击“使用 X 继续”后，应用通过 `ohos.want.action.viewData` 唤起系统浏览器；上方展示的 x.com 权限页面由 X 渲染和管理，并非由应用仿制。部分 X 接口需要付费 API 权限，应用会说明该状态并继续显示示例内容。
+## 登录
+
+### 使用 X 账号登录（推荐，无需开发者应用）
+
+点击登录页的 **使用 X 账号登录**，应用会在内置 Web 组件里打开 x.com 登录页。登录成功后自动提取 Cookie 会话并返回，无需任何开发者配置。
+
+这条路径使用 X 的私有接口（GraphQL / REST 1.1），因此时间线、搜索、通知、个人主页、发帖、媒体上传、点赞、转发和回复都可用。代价是它绕过了 X 的客户端身份校验，**违反 X 服务条款，账号有限流或封禁风险**，请自行评估。
+
+会话由 `XPrivateStore` 保存在本机偏好存储中。应用内不再提供私有接口会话的管理入口，如果 Web 引擎没有把 HttpOnly 的 `auth_token` 交给应用，请重新走一次登录流程。
+
+### 使用开发者 API 登录（可选）
+
+需要自备 X 应用的 Client ID：在 [developer.x.com](https://developer.x.com/) 创建应用，启用 **OAuth 2.0**，应用类型选择 **Native App**，回调地址设置为 `harmonyx://callback`。
+
+设置页已不再提供 Client ID 的配置入口（`OAuthConfigStore` 只从本机偏好读取），所以这条路径默认不可用，登录页保留的 **使用 X 账号登录** 才是可用路径。
+
+该路径使用 PKCE，不需要 Client Secret，走官方 API v2。部分接口需要付费额度，应用会说明状态并继续显示示例内容。
+
+## 私有接口层
+
+| 组件 | 作用 |
+|---|---|
+| `models/XOperations.ets` + `resources/rawfile/x-operations.json` | 从参考客户端提取的 **396 个 GraphQL 操作**（queryId、GET/POST、feature 开关组、变量声明） |
+| `services/XPrivateClient.ets` | 请求头构造、GraphQL 调用、REST 1.1、媒体上传；按操作补全 X 校验所需的变量与 feature |
+| `services/XTimelineParser.ets` | 时间线解码，对字段改名与嵌套变化做了多层兜底 |
+| `services/XNotificationParser.ets` | 通知时间线解码 |
+| `services/XUserParser.ets` | 用户资料解码 |
+| `services/XPrivateStore.ets` | Cookie 会话持久化，并从 `twid` 解析账号 ID |
+| `services/XTransactionId.ets` | `X-Client-Transaction-Id` 的 provider 链；算法插槽留待接入 |
+
+queryId 会随 X 前端发版轮换，过期的 ID 会返回 400。`server/tools/refresh-query-ids.mjs` 可从 X 当前网页包重新抓取并改写操作表。
 
 ## 上游与许可证
 

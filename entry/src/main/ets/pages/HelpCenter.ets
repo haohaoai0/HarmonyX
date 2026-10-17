@@ -1,3 +1,5 @@
+import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
+import { SupporterActivationCard } from '../components/SupporterActivationCard';
 import promptAction from '@ohos.promptAction';
 import common from '@ohos.app.ability.common';
 import { uiMaterial } from '@kit.ArkUI';
@@ -5,13 +7,15 @@ import { deviceInfo } from '@kit.BasicServicesKit';
 import {
   HdsNavDestination,
   HdsNavDestinationTitleMode,
-  hdsMaterial,
   ScrollEffectType
 } from '@kit.UIDesignKit';
+import { destinationTitleBarStyle } from '../utils/DestinationTitleBar';
 import { ResponsiveLayout } from '../utils/ResponsiveLayout';
+import { cardSurfaceColor, fieldSurfaceColor, pageSurfaceColor } from '../utils/ThemeColors';
 
 const FEEDBACK_URL: string = 'https://github.com/haohaoai0/HarmonyX/issues/new';
 const QQ_GROUP_URL: string = 'https://qm.qq.com/q/QGxbHyYXuI';
+const TELEGRAM_GROUP_URL: string = 'https://t.me/HarmonXH';
 
 @Builder
 export function HelpCenterBuilder(): void {
@@ -20,14 +24,17 @@ export function HelpCenterBuilder(): void {
 
 @Component
 struct SupportQrCard {
+  @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @Prop title: Resource = $r('app.string.help_support_wechat');
   @Prop image: Resource = $r('app.media.support_wechat');
   @Prop imageHeight: number = 380;
+  @StorageProp('harmonyx.display_mode') private themeDisplayMode: string = '';
+  @StorageProp('harmonyx.dark_surface') private themeDarkSurface: string = '';
 
   build(): void {
     Column({ space: 12 }) {
-      Text(this.title)
-        .fontSize(17)
+      Text(this.title).fontFamily(this.appFontFamily)
+        .fontSize($r('sys.float.Subtitle_L'))
         .fontWeight(FontWeight.Medium)
         .fontColor($r('app.color.text_primary'))
         .width('100%')
@@ -40,19 +47,23 @@ struct SupportQrCard {
     }
     .width('100%')
     .padding(16)
-    .backgroundColor($r('app.color.bg_card'))
+    .backgroundColor(cardSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
     .borderRadius(20)
   }
 }
 
 @Component
 struct HelpCenter {
+  @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @Consume('pageStack') pageStack: NavPathStack;
   @StorageProp('harmonyx.status_bar_height') statusBarHeight: number =
     AppStorage.get<number>('harmonyx.status_bar_height') ?? 0;
   @StorageProp('harmonyx.navigation_indicator_height') navigationIndicatorHeight: number =
     AppStorage.get<number>('harmonyx.navigation_indicator_height') ?? 0;
   @StorageLink('harmonyx.accent_color') accentColor: string = '#007DFF';
+  @StorageProp('harmonyx.display_mode') private themeDisplayMode: string = '';
+  @StorageProp('harmonyx.dark_surface') private themeDarkSurface: string = '';
+  @StorageLink('harmonyx.title_bar_style_mode') titleBarStyleMode: number = 0;
   private scroller: Scroller = new Scroller();
 
   private pageMaterial(): uiMaterial.Material | undefined {
@@ -101,6 +112,14 @@ struct HelpCenter {
     );
   }
 
+  private openTelegramGroup(): void {
+    this.openExternalLink(
+      TELEGRAM_GROUP_URL,
+      $r('app.string.help_tg_group_opened'),
+      $r('app.string.help_tg_group_failed')
+    );
+  }
+
   build(): void {
     HdsNavDestination() {
       Scroll(this.scroller) {
@@ -109,12 +128,12 @@ struct HelpCenter {
             SymbolGlyph($r('sys.symbol.questionmark_circle'))
               .fontSize(34)
               .fontColor([this.accentColor])
-            Text($r('app.string.side_help'))
-              .fontSize(24)
+            Text($r('app.string.side_help')).fontFamily(this.appFontFamily)
+              .fontSize($r('sys.float.Title_M'))
               .fontWeight(FontWeight.Bold)
               .fontColor($r('app.color.text_primary'))
-            Text($r('app.string.help_intro'))
-              .fontSize(15)
+            Text($r('app.string.help_intro')).fontFamily(this.appFontFamily)
+              .fontSize($r('sys.float.Body_L'))
               .lineHeight(22)
               .fontColor($r('app.color.text_secondary'))
               .width('100%')
@@ -128,12 +147,12 @@ struct HelpCenter {
                 .fontSize(26)
                 .fontColor([this.accentColor])
               Column({ space: 4 }) {
-                Text($r('app.string.help_feedback_title'))
-                  .fontSize(19)
+                Text($r('app.string.help_feedback_title')).fontFamily(this.appFontFamily)
+                  .fontSize($r('sys.float.Title_S'))
                   .fontWeight(FontWeight.Bold)
                   .fontColor($r('app.color.text_primary'))
-                Text($r('app.string.help_feedback_desc'))
-                  .fontSize(14)
+                Text($r('app.string.help_feedback_desc')).fontFamily(this.appFontFamily)
+                  .fontSize($r('sys.float.Body_M'))
                   .lineHeight(21)
                   .fontColor($r('app.color.text_secondary'))
               }
@@ -143,7 +162,7 @@ struct HelpCenter {
             Button($r('app.string.help_feedback_action'), { stateEffect: true })
               .width('100%')
               .backgroundColor(this.accentColor)
-              .fontColor($r('app.color.text_on_brand'))
+              .fontColor($r('app.color.text_on_accent'))
               .onClick((): void => {
                 this.openFeedback();
               })
@@ -153,12 +172,12 @@ struct HelpCenter {
                 .fontSize(24)
                 .fontColor([this.accentColor])
               Column({ space: 4 }) {
-                Text($r('app.string.help_group_title'))
-                  .fontSize(17)
+                Text($r('app.string.help_group_title')).fontFamily(this.appFontFamily)
+                  .fontSize($r('sys.float.Subtitle_L'))
                   .fontWeight(FontWeight.Medium)
                   .fontColor($r('app.color.text_primary'))
-                Text($r('app.string.help_group_desc'))
-                  .fontSize(14)
+                Text($r('app.string.help_group_desc')).fontFamily(this.appFontFamily)
+                  .fontSize($r('sys.float.Body_M'))
                   .lineHeight(21)
                   .fontColor($r('app.color.text_secondary'))
               }
@@ -167,16 +186,42 @@ struct HelpCenter {
             }
             Button($r('app.string.help_group_action'), { stateEffect: true })
               .width('100%')
-              .backgroundColor($r('app.color.bg_field'))
-              .fontColor(this.accentColor)
+              .backgroundColor(fieldSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
+              .fontColor($r('app.color.text_accent'))
               .border({ width: 1, color: this.accentColor })
               .onClick((): void => {
                 this.openQqGroup();
               })
+            Divider().color($r('app.color.divider'))
+            Row({ space: 14 }) {
+              SymbolGlyph($r('sys.symbol.person_2'))
+                .fontSize(24)
+                .fontColor([this.accentColor])
+              Column({ space: 4 }) {
+                Text($r('app.string.help_tg_group_title')).fontFamily(this.appFontFamily)
+                  .fontSize($r('sys.float.Subtitle_L'))
+                  .fontWeight(FontWeight.Medium)
+                  .fontColor($r('app.color.text_primary'))
+                Text($r('app.string.help_tg_group_desc')).fontFamily(this.appFontFamily)
+                  .fontSize($r('sys.float.Body_M'))
+                  .lineHeight(21)
+                  .fontColor($r('app.color.text_secondary'))
+              }
+              .layoutWeight(1)
+              .alignItems(HorizontalAlign.Start)
+            }
+            Button($r('app.string.help_tg_group_action'), { stateEffect: true })
+              .width('100%')
+              .backgroundColor(fieldSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
+              .fontColor($r('app.color.text_accent'))
+              .border({ width: 1, color: this.accentColor })
+              .onClick((): void => {
+                this.openTelegramGroup();
+              })
           }
           .width('100%')
           .padding(18)
-          .backgroundColor($r('app.color.bg_card'))
+          .backgroundColor(cardSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
           .borderRadius(20)
 
           Divider().color($r('app.color.divider'))
@@ -186,23 +231,24 @@ struct HelpCenter {
               SymbolGlyph($r('sys.symbol.heart_fill'))
                 .fontSize(25)
                 .fontColor([$r('app.color.like')])
-              Text($r('app.string.help_support_title'))
-                .fontSize(20)
+              Text($r('app.string.help_support_title')).fontFamily(this.appFontFamily)
+                .fontSize($r('sys.float.Title_S'))
                 .fontWeight(FontWeight.Bold)
                 .fontColor($r('app.color.text_primary'))
             }
-            Text($r('app.string.help_support_desc'))
-              .fontSize(15)
+            Text($r('app.string.help_support_desc')).fontFamily(this.appFontFamily)
+              .fontSize($r('sys.float.Body_L'))
               .lineHeight(22)
               .fontColor($r('app.color.text_secondary'))
               .width('100%')
-            Text($r('app.string.help_support_scan'))
-              .fontSize(14)
+            Text($r('app.string.help_support_scan')).fontFamily(this.appFontFamily)
+              .fontSize($r('sys.float.Body_M'))
               .fontColor($r('app.color.text_secondary'))
               .width('100%')
           }
           .width('100%')
 
+          SupporterActivationCard()
           SupportQrCard({
             title: $r('app.string.help_support_wechat'),
             image: $r('app.media.support_wechat'),
@@ -220,7 +266,8 @@ struct HelpCenter {
       }
       .width('100%')
       .height('100%')
-      .scrollBar(BarState.Auto)
+      .scrollBar(BarState.Off)
+      .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: true })
     }
     .titleMode(HdsNavDestinationTitleMode.MINI)
     .hideBackButton(false)
@@ -232,18 +279,10 @@ struct HelpCenter {
     .titleBar({
       avoidLayoutSafeArea: true,
       content: { title: { mainTitle: $r('app.string.side_help') } },
-      style: {
-        scrollEffectOpts: {
-          enableScrollEffect: true,
-          scrollEffectType: ScrollEffectType.GRADIENT_BLUR
-        },
-        systemMaterialEffect: {
-          materialType: hdsMaterial.MaterialType.IMMERSIVE,
-          materialLevel: hdsMaterial.MaterialLevel.EXQUISITE
-        }
-      }
+      style: destinationTitleBarStyle(ScrollEffectType.GRADIENT_BLUR, this.themeDisplayMode,
+        this.themeDarkSurface, this.titleBarStyleMode)
     })
-    .backgroundColor($r('app.color.bg_page'))
+    .backgroundColor(pageSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
     .systemMaterial(this.pageMaterial());
   }
 }

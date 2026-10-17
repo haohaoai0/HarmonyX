@@ -2,6 +2,7 @@
   "src": [
     "pages/Index",
     "pages/Login",
-    "pages/OAuthCallback"
+    "pages/OAuthCallback",
+    "pages/AuthWeb"
   ]
 }

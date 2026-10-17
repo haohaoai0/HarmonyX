@@ -1,0 +1,120 @@
+diff --git a/crates/core/src/core.rs b/crates/core/src/core.rs
+--- a/crates/core/src/core.rs
++++ b/crates/core/src/core.rs
+@@ -1378,6 +1378,19 @@
+     fn parse_event_b64(event_b64: &str) -> Result<MessageEvent, SdkError> {
+         let event_bytes = base64_decode(event_b64)?;
+         parse_message_event(&event_bytes)
++    }
++
++    /// Inspect wire encryption metadata without decrypting or accepting content.
++    /// This uses the same bounded parser as decryption; no keys are returned.
++    pub fn inspect_event_encryption(event_b64: &str) -> Result<Option<(String, bool)>, SdkError> {
++        let event = Self::parse_event_b64(event_b64)?;
++        let encrypted = match event.detail {
++            Some(MessageEventDetail::MessageCreateEvent(message)) =>
++                message.conversation_key_version.is_some(),
++            Some(MessageEventDetail::ConversationKeyChangeEvent(_)) => true,
++            _ => return Ok(None),
++        };
++        Ok(event.conversation_id.map(|id| (id, encrypted)))
+     }
+ 
+     /// Decrypt a raw webhook event payload.
+@@ -1982,6 +1995,72 @@
+         signature.encoded_message_event_detail =
+             Self::encode_message_delete_detail(&params.sequence_ids, delete_action)?;
+         Ok(signature)
++    }
++
++    /// Sign the conversation deletion event used by the private XChat API.
++    pub fn prepare_conversation_delete(
++        &self, conversation_id: &str,
++    ) -> Result<crate::signatures::ActionSignature, SdkError> {
++        if conversation_id.is_empty() { return Err(SdkError::Parse("missing conversation id".into())); }
++        let sender_id = self.resolve_sender_id(None)?;
++        let key_version = self.resolve_signing_key_version(None)?;
++        let conversation_id = crate::pipeline::canonical_conversation_id(conversation_id, &sender_id);
++        let message_id = Self::generate_message_id();
++        let detail = crate::thrift::event::MessageEventDetail::ConversationDeleteEvent(
++            crate::thrift::event::ConversationDeleteEvent::new(
++                Some(conversation_id.to_string()), None::<crate::thrift::event::ClearConversationOptions>));
++        let payload = build_component_payload("ConversationDeleteEvent", &message_id,
++            &sender_id, Some(&conversation_id), &[])
++            .ok_or_else(|| SdkError::Parse("invalid action identity".into()))?;
++        let signature = self.sign(&payload)?;
++        Ok(crate::signatures::ActionSignature {
++            message_id, encoded_message_event_detail: base64_encode(&crate::pipeline::serialize_thrift(&detail)?),
++            signature: base64_encode(&signature), signature_version: crate::signatures::SIGNATURE_VERSION.into(),
++            public_key_version: key_version, signature_payload: String::new(),
++        })
++    }
++
++    /// Encrypt a read receipt using the private client's message-content type.
++    pub fn prepare_plain_read_receipt(&self, conversation_id: &str, seen_until: &str) -> Result<(String, String), SdkError> {
++        if conversation_id.is_empty() || seen_until.is_empty() {
++            return Err(SdkError::Parse("missing read target".into()));
++        }
++        let sender = self.resolve_sender_id(None)?;
++        let version = self.resolve_signing_key_version(None)?;
++        let conversation = crate::pipeline::canonical_conversation_id(conversation_id, &sender);
++        let id = Self::generate_message_id();
++        let detail = MessageEventDetail::MarkConversationReadEvent(
++            crate::thrift::event::MarkConversationReadEvent::new(Some(seen_until.to_string()), None::<i64>));
++        let payload = build_component_payload("MarkConversationReadEvent", &id, &sender,
++            Some(&conversation), &[seen_until]).ok_or_else(|| SdkError::Parse("invalid read identity".into()))?;
++        let signature = crate::thrift::event::MessageEventSignature::new(
++            Some(base64_encode(&self.sign(&payload)?)), Some(version),
++            Some(crate::signatures::SIGNATURE_VERSION.to_string()), None, None);
++        let event = MessageEvent::new(None::<String>, Some(id.clone()), Some(sender), Some(conversation.into_owned()),
++            None::<String>, None::<String>, Some(detail), None::<crate::thrift::event::MessageEventRelaySource>,
++            Some(signature), None::<String>, None::<bool>);
++        Ok((id, base64_encode(&crate::pipeline::serialize_thrift(&event)?)))
++    }
++
++    /// Encrypt a read receipt using the private client's message-content type.
++    pub fn encrypt_read_receipt(
++        &self, conversation_id: &str, seen_until: &str,
++    ) -> Result<SendPayload, SdkError> {
++        if conversation_id.is_empty() || seen_until.is_empty() {
++            return Err(SdkError::Parse("missing read target".into()));
++        }
++        let sender_id = self.resolve_sender_id(None)?;
++        let signing_key_version = self.resolve_signing_key_version(None)?;
++        let (ckey, key_version) = self.resolve_conversation_key(None, None, conversation_id, &sender_id)?;
++        let signing = self.get_signing_keypair_arc()?;
++        let holder = crate::thrift::product::MessageEntryHolder::new(Some(Box::new(
++            crate::thrift::product::MessageEntryContents::MarkConversationRead(
++                Box::new(crate::thrift::product::MarkConversationRead::new(Some(seen_until.to_string()), None::<i64>))))));
++        let content = crate::pipeline::serialize_thrift(&holder)?;
++        let message_id = Self::generate_message_id();
++        crate::pipeline::encrypt_and_sign(crate::pipeline::EncryptAndSignParams::new(
++            &ckey, &signing.private, &message_id, &sender_id, conversation_id, &content,
++            &key_version, &signing_key_version).should_notify(false))
+     }
+ 
+     /// Serialize the `MessageDeleteEvent` the API validates and relays.
+diff --git a/crates/core/src/chat.rs b/crates/core/src/chat.rs
+--- a/crates/core/src/chat.rs
++++ b/crates/core/src/chat.rs
+@@ -352,6 +352,20 @@
+     ) -> Result<crate::signatures::ActionSignature, SdkError> {
+         self.inner.prepare_message_delete(params)
+     }
++    /// Sign a private XChat conversation deletion.
++    pub fn prepare_conversation_delete(&self, conversation_id: &str) -> Result<crate::signatures::ActionSignature, SdkError> {
++        self.inner.prepare_conversation_delete(conversation_id)
++    }
++
++    /// Encrypt a private XChat read receipt without notifying the recipient.
++    pub fn encrypt_read_receipt(&self, conversation_id: &str, seen_until: &str) -> Result<SendPayload, SdkError> {
++        self.inner.encrypt_read_receipt(conversation_id, seen_until)
++    }
++
++    pub fn prepare_plain_read_receipt(&self, conversation_id: &str, seen_until: &str) -> Result<(String, String), SdkError> {
++        self.inner.prepare_plain_read_receipt(conversation_id, seen_until)
++    }
++
+     /// Decrypt an encrypted conversation key (ECIES).
+     pub fn decrypt_conversation_key(
+         &self,

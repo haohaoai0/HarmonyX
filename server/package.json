@@ -1,0 +1,24 @@
+{
+  "name": "harmonyx-gateway",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Backend gateway for Harmony X. Holds the X session and speaks the private GraphQL/REST surface on behalf of the ArkUI client.",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "gen": "node tools/gen-operations.mjs",
+    "refresh-ids": "node tools/refresh-query-ids.mjs",
+    "refresh-ids:write": "node tools/refresh-query-ids.mjs --write",
+    "merge-ops": "node tools/merge-operation-tables.mjs",
+    "start": "node src/index.mjs",
+    "start:proxy": "node --use-env-proxy src/index.mjs",
+    "dev": "node --watch src/index.mjs",
+    "start:push": "node src/push/index.mjs",
+    "test:push": "node --test test/push-relay.test.mjs"
+  },
+  "dependencies": {
+    "http_ece": "1.2.1"
+  }
+}

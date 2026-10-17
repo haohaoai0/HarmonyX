@@ -1,0 +1,150 @@
+Akun yang Anda ikuti selalu bisa mengirim pesan. || Orang yang anda ikuti sentiasa boleh menghantar mesej.
+Pilih siapa yang bisa menelepon setelah panggilan diaktifkan. || Pilih siapa yang boleh menghubungi anda selepas panggilan dihidupkan.
+Sembunyikan alamat IP saat panggilan. Kualitas panggilan mungkin menurun. || Sembunyikan alamat IP semasa panggilan. Kualiti panggilan mungkin berkurang.
+Anda harus mengirim pesan kepada seseorang sebelum mereka bisa menelepon. || Anda mesti menghantar mesej kepada seseorang sebelum mereka boleh menghubungi anda.
+Nama panggilan dienkripsi dan hanya terlihat oleh Anda di perangkat ini. || Nama panggilan disulitkan dan hanya kelihatan kepada anda pada peranti ini.
+Pilih kode sandi yang mudah diingat dan jangan bagikan kepada siapa pun. || Pilih kod laluan yang mudah diingati dan jangan kongsikannya.
+Reset cache Chat di perangkat ini dan kunci pesan? || Tetapkan semula cache Chat pada peranti ini dan kunci mesej?
+Tidak ada media, tautan, atau dokumen dalam percakapan ini || Tiada media, pautan atau dokumen dalam perbualan ini
+Chat SDK tidak menyediakan panggilan. Antarmuka chat X akan dibuka. || Chat SDK tidak menyediakan panggilan. Antara muka sembang X akan dibuka.
+Bandingkan sidik kunci identitas dengan lawan bicara. || Bandingkan cap jari kunci identiti dengan pihak satu lagi.
+Pesan suara gagal diputar. Coba lagi. || Mesej suara gagal dimainkan. Cuba lagi.
+Hapus pesan ini hanya dari percakapan Anda. || Padam mesej ini daripada perbualan anda sahaja.
+Pesan asli belum dimuat. Muat pesan sebelumnya. || Mesej asal belum dimuatkan. Muatkan mesej terdahulu.
+Atur latar percakapan ini untuk akun aktif. Ketuk Terapkan untuk menyimpan. || Tetapkan latar perbualan ini untuk akaun semasa. Ketik Gunakan untuk menyimpan.
+Foto ini tidak bisa dibaca. Pilih foto lain. || Foto ini tidak dapat dibaca. Pilih foto lain.
+Latar gagal diterapkan. Coba lagi. || Latar gagal digunakan. Cuba lagi.
+Peringatan pesan offline MeoW || Makluman mesej luar talian MeoW
+Pasang MeoW dan hubungkan nama pengguna Anda di sini. Relay HTTPS yang selalu aktif bisa meneruskan peringatan pesan X saat Harmony X ditutup. || Pasang MeoW dan pautkan nama pengguna anda di sini. Geganti HTTPS yang sentiasa aktif boleh memajukan makluman mesej X semasa Harmony X ditutup.
+Alamat relay (https://domain) || Alamat geganti (https://domain)
+Token akses relay || Token akses geganti
+Nama pengguna MeoW || Nama pengguna MeoW
+Tampilkan pratinjau pesan di MeoW || Paparkan pratonton mesej dalam MeoW
+Relay mendekripsi ringkasan push X. Pratinjau meneruskan ringkasan ke MeoW; jika nonaktif, hanya peringatan pesan baru yang dikirim. Cookie masuk X dan PIN chat tidak pernah diunggah. Gunakan relay tepercaya. || Geganti menyahsulit ringkasan pemberitahuan X. Pratonton memajukan ringkasan kepada MeoW; jika dimatikan, hanya makluman mesej baharu dihantar. Kuki log masuk X dan PIN sembang tidak pernah dimuat naik. Gunakan geganti yang dipercayai.
+Terdaftar; periksa penerimaan pesan nyata di bawah || Didaftarkan; semak penerimaan mesej sebenar di bawah
+Pengaturan belum selesai; selesaikan pendaftaran atau hentikan || Persediaan belum lengkap; selesaikan pendaftaran atau hentikan
+Belum terhubung || Belum dipautkan
+Masuk ke akun ini melalui halaman web X terlebih dahulu. || Log masuk ke akaun ini melalui halaman web X dahulu.
+Kirim kode verifikasi MeoW || Hantar kod pengesahan MeoW
+Kode 6 digit yang diterima di MeoW || Kod 6 digit yang diterima dalam MeoW
+Verifikasi dan aktifkan peringatan pesan || Sahkan dan hidupkan makluman mesej
+Selesaikan pendaftaran X || Lengkapkan pendaftaran X
+Hentikan dan putuskan hubungan || Hentikan dan nyahpaut
+Coba bersihkan langganan X lagi || Cuba bersihkan langganan X semula
+Kirim notifikasi uji || Hantar pemberitahuan ujian
+Periksa status pengiriman nyata || Semak status penghantaran sebenar
+Saluran ini diatur per akun hanya untuk pesan langsung. Sakelar di atas mengatur notifikasi lokal. Atur suara, banner, dan Jangan Ganggu MeoW di MeoW atau pengaturan sistem. Uji yang berhasil belum membuktikan pengiriman pesan X. || Saluran ini ditetapkan mengikut akaun untuk mesej langsung sahaja. Suis di atas mengawal pemberitahuan setempat. Tetapkan bunyi, sepanduk dan Jangan Ganggu MeoW dalam MeoW atau tetapan sistem. Ujian berjaya belum mengesahkan penghantaran mesej X.
+Kode dikirim. Masukkan dalam 5 menit. || Kod dihantar. Masukkan dalam masa 5 minit.
+Relay dihentikan dan langganan dihapus. || Geganti dihentikan dan langganan dialih keluar.
+Relay mengirim pengujian ke MeoW. Periksa penerimaannya di perangkat Anda. || Geganti menghantar ujian kepada MeoW. Semak penerimaannya pada peranti anda.
+Belum ada pengiriman nyata tercatat. Kirim pesan dari akun lain, lalu periksa lagi. || Belum ada penghantaran sebenar direkodkan. Hantar mesej daripada akaun lain, kemudian semak semula.
+Terakhir dikirim ke MeoW:  || Penghantaran terakhir kepada MeoW: 
+Peringatan menunggu diteruskan:  || Makluman menunggu untuk dimajukan: 
+Pengiriman MeoW gagal atau dibatasi. Relay akan mencoba lagi. || Penghantaran MeoW gagal atau dihadkan. Geganti akan mencuba semula.
+Masukkan alamat asal HTTPS relay tanpa jalur, kredensial, atau parameter kueri. || Masukkan alamat asal HTTPS geganti tanpa laluan, kelayakan atau parameter pertanyaan.
+Token akses relay harus berisi setidaknya 32 karakter. || Token akses geganti mesti mengandungi sekurang-kurangnya 32 aksara.
+Masukkan nama pengguna MeoW yang valid tanpa garis miring. || Masukkan nama pengguna MeoW yang sah tanpa garis miring.
+Kode salah, kedaluwarsa, atau permintaan tidak valid. Periksa dan coba lagi. || Kod salah, tamat tempoh atau permintaan tidak sah. Semak dan cuba lagi.
+Token akses relay tidak valid. Periksa konfigurasi server. || Token akses geganti tidak sah. Semak konfigurasi pelayan.
+Langganan atau nama pengguna MeoW tidak ditemukan. Periksa pengaturan. || Langganan atau nama pengguna MeoW tidak ditemui. Semak konfigurasi.
+Terlalu banyak permintaan. Coba lagi nanti. || Terlalu banyak permintaan. Cuba lagi nanti.
+Respons relay tidak lengkap. Peringatan belum diaktifkan. || Respons geganti tidak lengkap. Makluman belum dihidupkan.
+Relay dihentikan dan penerusan berakhir. Pendaftaran X gagal dibatalkan; coba bersihkan lagi. || Geganti dihentikan dan pemajuan tamat. Pendaftaran X gagal dibatalkan; cuba bersihkan semula.
+X menolak konfigurasi push. Periksa akun dan jaringan. || X menolak konfigurasi pemberitahuan tolak. Semak log masuk dan rangkaian.
+Tindakan belum selesai. Periksa alamat relay, jaringan, dan layanan, lalu coba lagi. || Tindakan belum lengkap. Semak alamat geganti, rangkaian dan perkhidmatan, kemudian cuba lagi.
+Konfigurasi push tidak bisa dibaca. Pertahankan data aplikasi dan periksa penyimpanan. || Konfigurasi pemberitahuan tidak dapat dibaca. Kekalkan data aplikasi dan semak storan.
+Penerusan MeoW akun ini belum dihentikan. Putuskan hubungan di pengaturan notifikasi sebelum keluar. || Pemajuan MeoW akaun ini belum dihentikan. Nyahpaut dalam tetapan pemberitahuan sebelum log keluar.
+Penggunaan penyimpanan, lokasi unduhan, dan pembersihan cache || Penggunaan storan, lokasi muat turun dan pembersihan cache
+Total penyimpanan aplikasi || Jumlah storan aplikasi
+Aplikasi terpasang || Aplikasi dipasang
+Data aplikasi (termasuk cache) || Data aplikasi (termasuk cache)
+Ruang perangkat tersedia || Ruang peranti tersedia
+Termasuk aplikasi terpasang dan datanya. Salinan di Galeri atau folder unduhan tidak dihitung. || Termasuk aplikasi dipasang dan datanya. Salinan dalam Galeri atau folder muat turun tidak dikira.
+Cache yang bisa dibersihkan || Cache boleh dibersihkan
+Cache media pesan || Cache media mesej
+Cache linimasa dan respons || Cache garis masa dan respons
+%1$d file || %1$d fail
+Bersihkan semua cache yang bisa dihapus || Kosongkan semua cache boleh dipadam
+Bersihkan sekitar %1$s cache. Akun, pesan, draf, lampiran tertunda, tugas unduhan, dan salinan tersimpan tetap ada. || Kosongkan kira-kira %1$s cache. Akaun, mesej, draf, lampiran tertunda, tugas muat turun dan salinan tersimpan dikekalkan.
+Konten cache bisa dimuat lagi. File video yang sedang diputar dibersihkan setelah dilepas pemutar. || Kandungan cache boleh dimuatkan semula. Fail video yang sedang dimainkan dibersihkan selepas dilepaskan pemain.
+%1$s dibersihkan; cache yang masih dipakai dibersihkan nanti || %1$s dikosongkan; cache yang masih digunakan dibersihkan kemudian
+%1$s dibersihkan. Beberapa file gagal dihapus; segarkan dan coba lagi. || %1$s dikosongkan. Sesetengah fail gagal dipadam; muat semula dan cuba lagi.
+Pembersihan cache gagal. Segarkan dan coba lagi. || Pembersihan cache gagal. Muat semula dan cuba lagi.
+Lokasi unduhan lokal || Lokasi muat turun setempat
+Ubah folder unduhan || Tukar folder muat turun
+Folder unduhan diperbarui || Folder muat turun dikemas kini
+Izin folder gagal diberikan. Coba lagi, atau gunakan Simpan Sebagai pada tugas unduhan jika perangkat tidak mendukungnya. || Kebenaran folder gagal diberikan. Cuba lagi, atau gunakan Simpan Sebagai pada tugas muat turun jika peranti tidak menyokongnya.
+File baru disimpan di subfolder HarmonyX. Mengubah lokasi tidak memindahkan file yang sudah ada. || Fail baharu disimpan dalam subfolder HarmonyX. Menukar lokasi tidak memindahkan fail sedia ada.
+Ini lokasi bawaan. Pilih dan izinkan folder melalui pemilih sistem sebelum menyimpan. File yang ada tidak dipindahkan. || Ini lokasi lalai. Pilih dan benarkan folder melalui pemilih sistem sebelum menyimpan. Fail sedia ada tidak dipindahkan.
+Perangkat ini tidak bisa menyimpan izin folder. Simpan ke folder unduhan akan membuka pemilih Simpan Sebagai sistem. || Peranti ini tidak boleh mengekalkan kebenaran folder. Simpan ke folder muat turun akan membuka pemilih Simpan Sebagai sistem.
+Simpan ke folder unduhan secara bawaan || Simpan ke folder muat turun secara lalai
+Saat aktif, foto dan video disimpan ke folder unduhan. Jika nonaktif, disimpan ke Galeri. || Apabila dihidupkan, foto dan video disimpan ke folder muat turun. Jika dimatikan, disimpan ke Galeri.
+File unduhan dan catatan tugas || Fail muat turun dan rekod tugas
+Cache lain (dipertahankan) || Cache lain (dikekalkan)
+Unduhan, edit sementara, akun, dan draf tetap ada. Batalkan atau hapus unduhan belum selesai satu per satu di tugas unduhan. || Muat turun, suntingan sementara, akaun dan draf dikekalkan. Batal atau padam muat turun belum selesai satu demi satu dalam tugas muat turun.
+Simpan ke folder unduhan || Simpan ke folder muat turun
+Lalu lintas HarmonyX sejak perangkat terakhir dinyalakan, termasuk media dan permintaan. Penghitungan dimulai ulang setelah reboot. || Trafik sebenar HarmonyX sejak peranti terakhir dihidupkan, termasuk media dan permintaan. Kiraan bermula semula selepas mula semula.
+Data penggunaan jaringan aplikasi tidak tersedia. Segarkan nanti. || Data trafik aplikasi tidak tersedia. Muat semula kemudian.
+Memproses… || Memproses…
+Menghitung penyimpanan dan penggunaan data… || Mengira storan dan trafik…
+Diukur dari file sebenarnya || Diukur daripada fail sebenar
+Sebagian data penyimpanan gagal dibaca. Statistik yang tersedia ditampilkan; segarkan untuk mencoba lagi. || Sesetengah data storan gagal dibaca. Statistik tersedia dipaparkan; muat semula untuk cuba lagi.
+Untuk terus menyimpan foto, video, dan file ke folder unduhan pilihan Anda. || Untuk terus menyimpan foto, video dan fail ke folder muat turun pilihan anda.
+Lihat profil || Lihat profil
+Kotak masuk @%s ditutup. Anda masih bisa mengirim pesan menggunakan Nomor X-nya. || Peti masuk @%s ditutup. Anda masih boleh menghantar mesej menggunakan Nombor X mereka.
+Masukkan Nomor X 8 digit milik @%s untuk menghubunginya. || Masukkan Nombor X 8 digit @%s untuk menghubunginya.
+Nomor X tidak diterima. Periksa dan coba lagi. || Nombor X tidak diterima. Semak dan cuba lagi.
+Izin pesan gagal dimuat. Coba lagi. || Kebenaran pemesejan gagal dimuatkan. Cuba lagi.
+Terlalu banyak pesan media tertunda. Coba nanti atau hapus pesan yang gagal. || Terlalu banyak mesej media tertunda. Cuba nanti atau alih keluar mesej gagal.
+Terjemahkan postingan dengan akun X yang sudah masuk tanpa kunci API. X mendeteksi bahasa asal; ketersediaan bergantung pada akun dan layanan X. || Terjemahkan siaran dengan akaun X yang dilog masuk tanpa kunci API. X mengesan bahasa sumber; ketersediaan bergantung pada akaun dan perkhidmatan X.
+Masuk ke X sebelum memakai terjemahan X / Grok. || Log masuk ke X sebelum menggunakan terjemahan X / Grok.
+Pengaturan disimpan ke akun X aktif. || Tetapan disimpan ke akaun X semasa.
+Lanjutkan di aplikasi untuk menyelesaikan verifikasi atau mengelola opsi lain di X. || Teruskan dalam aplikasi untuk melengkapkan pengesahan atau mengurus pilihan lain di X.
+Sebagian pengaturan gagal dimuat. Coba lagi atau buka pengaturan X. || Sesetengah tetapan gagal dimuatkan. Cuba lagi atau buka tetapan X.
+Perubahan gagal dibaca atau dikonfirmasi. Coba lagi atau buka pengaturan X. || Perubahan gagal dibaca atau disahkan. Cuba lagi atau buka tetapan X.
+Akun aktif berubah. Muat ulang pengaturan. || Akaun aktif berubah. Muatkan semula tetapan.
+Perubahan ini berlaku untuk akun X aktif. Lanjutkan? || Perubahan ini terpakai kepada akaun X semasa. Teruskan?
+Hapus semua kontak yang diunggah ke akun X ini. Tidak bisa diurungkan. Kontak perangkat tetap ada. || Padam semua kenalan yang dimuat naik ke akaun X ini. Tidak boleh dibuat asal. Kenalan peranti dikekalkan.
+Hapus informasi lokasi dari postingan sebelumnya. Tidak bisa diurungkan. || Alih keluar maklumat lokasi daripada siaran terdahulu. Tidak boleh dibuat asal.
+Perangkat yang dipilih perlu masuk lagi. Sesi Anda saat ini tetap ada. || Peranti yang dipilih perlu log masuk semula. Sesi semasa anda dikekalkan.
+Keluar dari semua sesi X selain sesi ini. Perangkat lain harus masuk lagi. || Log keluar daripada semua sesi X kecuali sesi ini. Peranti lain perlu log masuk semula.
+Aplikasi ini akan kehilangan izin akses ke akun X Anda. || Aplikasi ini akan kehilangan akses yang dibenarkan kepada akaun X anda.
+Filter ini hanya berlaku di Harmony X. Kelola kata dan akun yang dibisukan untuk seluruh akun di Privasi dan keamanan. || Penapis ini hanya terpakai dalam Harmony X. Urus perkataan dan akaun dibisukan untuk seluruh akaun dalam Privasi dan keselamatan.
+Akun aktif berubah. Kembali dan buka ulang halaman ini. || Akaun aktif berubah. Kembali dan buka semula halaman ini.
+Saat aktif, hanya pengikut yang Anda setujui bisa melihat postingan. || Apabila dihidupkan, hanya pengikut yang anda luluskan boleh melihat siaran.
+Cegah orang lain mengunduh video baru Anda di X. || Halang orang lain memuat turun video baharu anda di X.
+Tandai media yang Anda posting sebagai berpotensi sensitif || Tandakan media yang anda siarkan sebagai mungkin sensitif
+Pengaturan ini berlaku untuk media yang Anda posting di X. || Tetapan ini terpakai kepada media yang anda siarkan di X.
+Atur apakah postingan bisa menyertakan informasi lokasi. || Kawal sama ada siaran boleh menyertakan maklumat lokasi.
+Tampilkan media yang mungkin berisi konten sensitif || Paparkan media yang mungkin mengandungi kandungan sensitif
+Disinkronkan dengan akun X aktif dan mengatur media yang tampil di Harmony X. || Disegerakkan dengan akaun X semasa dan mengawal media yang dipaparkan dalam Harmony X.
+Izinkan X menyaring balasan yang mungkin tidak diinginkan pada postingan Anda. || Benarkan X menapis balasan yang mungkin tidak diingini pada siaran anda.
+Kelola preferensi rekomendasi akun ini; ketersediaan bergantung pada akun. || Urus pilihan cadangan akaun ini; ketersediaan bergantung pada akaun.
+Izinkan X menyesuaikan iklan berdasarkan aktivitas Anda. || Benarkan X memperibadikan iklan berdasarkan aktiviti anda.
+Personalisasi berdasarkan perkiraan identitas || Peribadikan berdasarkan identiti yang disimpulkan
+Izinkan X menggunakan aktivitas perangkat lain untuk personalisasi. || Benarkan X menggunakan aktiviti peranti lain untuk pemperibadian.
+Atur penggunaan aktivitas penjelajahan di luar X untuk personalisasi. || Kawal penggunaan aktiviti pelayaran di luar X untuk pemperibadian.
+Izinkan berbagi informasi tambahan dengan mitra bisnis || Benarkan perkongsian maklumat tambahan dengan rakan niaga
+Kelola berbagi data tambahan antara X dan mitra bisnisnya. || Urus perkongsian data tambahan antara X dan rakan niaganya.
+Izinkan X menyesuaikan konten berdasarkan riwayat lokasi Anda. || Benarkan X memperibadikan kandungan berdasarkan sejarah lokasi anda.
+Izinkan data dipakai untuk pelatihan dan penyempurnaan model || Benarkan data digunakan untuk latihan dan penalaan model
+Atur izin penggunaan data publik serta interaksi, masukan, dan hasil Grok untuk pelatihan. || Urus kebenaran menggunakan data awam serta interaksi, input dan hasil Grok untuk latihan.
+Izinkan X menyesuaikan pengalaman Grok Anda. || Benarkan X memperibadikan pengalaman Grok anda.
+Izinkan Grok memakai memori untuk jawaban yang lebih relevan. || Benarkan Grok menggunakan ingatan untuk jawapan yang lebih relevan.
+Gagal memuat. Coba lagi atau verifikasi kata sandi jika diminta. || Gagal memuatkan. Cuba lagi atau sahkan kata laluan jika diminta.
+Tindakan belum selesai. Periksa masukan atau coba lagi. || Tindakan belum selesai. Semak input atau cuba lagi.
+Profil dan postingan Anda disembunyikan. Masuk dalam 30 hari untuk mengaktifkan kembali; setelah itu penghapusan permanen dimulai. Nonaktifkan akun ini? || Profil dan siaran anda disembunyikan. Log masuk dalam masa 30 hari untuk mengaktifkan semula; selepas itu pemadaman kekal bermula. Nyahaktifkan akaun ini?
+Langkah ini memerlukan verifikasi kredensial atau identitas X. Selesaikan, lalu kembali dan segarkan. || Langkah ini memerlukan pengesahan kelayakan atau identiti X. Lengkapkan, kemudian kembali dan muat semula.
+Ini mengubah akun Anda dan bisa mencabut akses atau menghapus data. Lanjutkan? || Ini mengubah akaun anda dan boleh membatalkan akses atau memadam data. Teruskan?
+Fitur ini tidak tersedia untuk akun ini || Ciri ini tidak tersedia untuk akaun ini
+Gunakan kata sandi berbeda minimal 8 karakter dengan konfirmasi yang cocok. || Gunakan kata laluan berbeza sekurang-kurangnya 8 aksara dengan pengesahan sepadan.
+Masukkan hingga 140 karakter dan pilih tempat pembisuan. || Masukkan sehingga 140 aksara dan pilih tempat pembisuan.
+Masukkan kode negara dua huruf, misalnya CN. || Masukkan kod negara dua huruf, seperti CN.
+X menyiapkan arsip Anda. Buka unduhan amannya di sini setelah siap. || X menyediakan arkib anda. Buka muat turun selamatnya di sini apabila siap.
+Verifikasi identitas memerlukan kelayakan Premium || Pengesahan identiti memerlukan kelayakan Premium
+Menayangkan ke layar lain || Menghantar ke skrin lain
+Gagal menayangkan. Coba lagi. || Gagal menghantar paparan. Cuba lagi.
+Material panel || Bahan panel
+Gunakan material pilihan untuk semua panel. Nonaktif secara bawaan; mematikannya mengembalikan tampilan asli masing-masing panel. || Gunakan bahan pilihan untuk semua panel. Dimatikan secara lalai; mematikannya memulihkan rupa asal setiap panel.
+Memerlukan HarmonyOS 7 atau lebih baru. Panel tetap memakai tampilan asli pada perangkat ini. || Memerlukan HarmonyOS 7 atau lebih baharu. Panel mengekalkan rupa asal pada peranti ini.
+Pengaturan material panel gagal disimpan. Coba lagi. || Tetapan bahan panel gagal disimpan. Cuba lagi.

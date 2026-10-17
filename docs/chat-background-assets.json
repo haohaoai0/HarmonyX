@@ -1,0 +1,257 @@
+{
+  "patterns": [
+    {
+      "id": "petrel_zoo",
+      "catalogId": "k-wp-01",
+      "artwork": "chat_background_petrel_zoo.svg",
+      "sha256": "26bf3ed72b4f8da218786141e5f9e23162327afe1c94cd624ae67b11488f850d",
+      "width": 1440,
+      "height": 2960,
+      "colors": [
+        "#DBDDBB",
+        "#6BA587",
+        "#D5D88D",
+        "#88B884"
+      ],
+      "source": "https://raw.githubusercontent.com/GSUBx019/migram-web/main/frontend/public/patterns/k/k-wp-01.svg"
+    },
+    {
+      "id": "petrel_snow",
+      "catalogId": "k-wp-02",
+      "artwork": "chat_background_petrel_snow.svg",
+      "sha256": "56a6d0c8f48fd50670d7fe0014a19e1e78fbad06a3178c14522c8d93d180fe47",
+      "width": 1125,
+      "height": 2436,
+      "colors": [
+        "#40CDDE",
+        "#AC86ED",
+        "#E984D8",
+        "#EFD359"
+      ],
+      "source": "https://raw.githubusercontent.com/GSUBx019/migram-web/main/frontend/public/patterns/k/k-wp-02.svg"
+    },
+    {
+      "id": "petrel_beach",
+      "catalogId": "k-wp-03",
+      "artwork": "chat_background_petrel_beach.svg",
+      "sha256": "c9e7fdfd1986f1f63b1cdcbbcd40804169fed64976016e1f6a281be5323fca87",
+      "width": 1440,
+      "height": 2960,
+      "colors": [
+        "#EAA36E",
+        "#F0E486",
+        "#F29EBF",
+        "#E8C06E"
+      ],
+      "source": "https://raw.githubusercontent.com/GSUBx019/migram-web/main/frontend/public/patterns/k/k-wp-03.svg"
+    },
+    {
+      "id": "petrel_science",
+      "catalogId": "k-wp-04",
+      "artwork": "chat_background_petrel_science.svg",
+      "sha256": "d19a9f469c5473d17c97c193c09a07016622358a2c2ec0976717f40df1bb41ca",
+      "width": 1125,
+      "height": 2436,
+      "colors": [
+        "#DAEACB",
+        "#A2B4FF",
+        "#ECCBFF",
+        "#B9E2FF"
+      ],
+      "source": "https://raw.githubusercontent.com/GSUBx019/migram-web/main/frontend/public/patterns/k/k-wp-04.svg"
+    },
+    {
+      "id": "petrel_crystal",
+      "catalogId": "k-wp-05",
+      "artwork": "chat_background_petrel_crystal.svg",
+      "sha256": "9cd03495a309e75a447616826e2cdeb9bc96c978c31f9b728ba2ae5622e8070b",
+      "width": 1440,
+      "height": 2960,
+      "colors": [
+        "#7FC289",
+        "#E4D573",
+        "#AFD677",
+        "#F0C07A"
+      ],
+      "source": "https://raw.githubusercontent.com/GSUBx019/migram-web/main/frontend/public/patterns/k/k-wp-05.svg"
+    },
+    {
+      "id": "petrel_gifts",
+      "catalogId": "k-wp-06",
+      "artwork": "chat_background_petrel_gifts.svg",
+      "sha256": "453623ee19e67ae711df114bb33157c6fc08cef5e80289a072456de5b0ecc1e8",
+      "width": 1440,
+      "height": 2960,
+      "colors": [
+        "#B2B1EE",
+        "#D4A7C9",
+        "#6C8CD4"
+      ],
+      "source": "https://raw.githubusercontent.com/GSUBx019/migram-web/main/frontend/public/patterns/k/k-wp-06.svg"
+    },
+    {
+      "id": "petrel_holiday",
+      "catalogId": "k-wp-07",
+      "artwork": "chat_background_petrel_holiday.svg",
+      "sha256": "4feff7f55974b07cde9f821783c27e4fc0acd7bdee9d390e620883d600252610",
+      "width": 1440,
+      "height": 2960,
+      "colors": [
+        "#A464F4",
+        "#EDAC4C",
+        "#E96CAF",
+        "#F7DD6D"
+      ],
+      "source": "https://raw.githubusercontent.com/GSUBx019/migram-web/main/frontend/public/patterns/k/k-wp-07.svg"
+    },
+    {
+      "id": "petrel_games",
+      "catalogId": "k-wp-08",
+      "artwork": "chat_background_petrel_games.svg",
+      "sha256": "e52798b9a3190d5aea8983b830a2d09bb896ae5053bf34b04b4112fdb1df1b43",
+      "width": 1125,
+      "height": 2312.5,
+      "colors": [
+        "#DCEB92",
+        "#8FE1D6",
+        "#67A3F2",
+        "#85D685"
+      ],
+      "source": "https://raw.githubusercontent.com/GSUBx019/migram-web/main/frontend/public/patterns/k/k-wp-08.svg"
+    },
+    {
+      "id": "petrel_pets",
+      "catalogId": "k-wp-09",
+      "artwork": "chat_background_petrel_pets.svg",
+      "sha256": "5d047b86844d4bb8edfbb4c6574ea8a223136c8d514853670546d1281e098608",
+      "width": 1440,
+      "height": 2960,
+      "colors": [
+        "#FEC496",
+        "#DD6CB9",
+        "#962FBF",
+        "#4F5BD5"
+      ],
+      "source": "https://raw.githubusercontent.com/GSUBx019/migram-web/main/frontend/public/patterns/k/k-wp-09.svg"
+    },
+    {
+      "id": "petrel_cats",
+      "catalogId": "k-wp-10",
+      "artwork": "chat_background_petrel_cats.svg",
+      "sha256": "96d87f17904aec5a933dffb7b0aa2530931e108a91f7b5342e992efb6c5a985b",
+      "width": 1440,
+      "height": 2960,
+      "colors": [
+        "#73CAFF",
+        "#D5F7FF",
+        "#FB9AE5",
+        "#FBD9E6"
+      ],
+      "source": "https://raw.githubusercontent.com/GSUBx019/migram-web/main/frontend/public/patterns/k/k-wp-10.svg"
+    },
+    {
+      "id": "petrel_nature",
+      "catalogId": "k-wp-11",
+      "artwork": "chat_background_petrel_nature.svg",
+      "sha256": "7f0d676c075a621e32e699b6b4c6350cc1340183247f3abc2d6a1d5376428855",
+      "width": 1440,
+      "height": 2960,
+      "colors": [
+        "#8ADBF2",
+        "#888DEC",
+        "#E39FEA",
+        "#679CED"
+      ],
+      "source": "https://raw.githubusercontent.com/GSUBx019/migram-web/main/frontend/public/patterns/k/k-wp-11.svg"
+    },
+    {
+      "id": "petrel_warm",
+      "catalogId": "k-wp-12",
+      "artwork": "chat_background_petrel_warm.svg",
+      "sha256": "5069403408d37125c93ca517d2fa41b8762b235b569b1140a19632f6017eef37",
+      "width": 1440.6,
+      "height": 2960.1,
+      "colors": [
+        "#EAA36E",
+        "#F0E486",
+        "#F29EBF",
+        "#E8C06E"
+      ],
+      "source": "User device Petrelgram wallpaper cache"
+    },
+    {
+      "id": "petrel_dream",
+      "catalogId": "k-wp-13",
+      "artwork": "chat_background_petrel_dream.svg",
+      "sha256": "30d1b323bb36ceb63767b0ff9bc1eb34bb98dc7e064be055784c9d2acd4de5a3",
+      "width": 1440,
+      "height": 2960,
+      "colors": [
+        "#DAEACB",
+        "#A2B4FF",
+        "#ECCBFF",
+        "#B9E2FF"
+      ],
+      "source": "User device Petrelgram wallpaper cache"
+    },
+    {
+      "id": "petrel_home",
+      "catalogId": "k-wp-14",
+      "artwork": "chat_background_petrel_home.svg",
+      "sha256": "6b6b153c1e8a9b0679eac95216680b71d12e4c3504cbf0394c99329ec795a2e9",
+      "width": 1440,
+      "height": 2960,
+      "colors": [
+        "#97BEEB",
+        "#B1E9EA",
+        "#C6B1EF",
+        "#EFB7DC"
+      ],
+      "source": "https://raw.githubusercontent.com/GSUBx019/migram-web/main/frontend/public/patterns/k/k-wp-14.svg"
+    },
+    {
+      "id": "petrel_space",
+      "catalogId": "k-wp-15",
+      "artwork": "chat_background_petrel_space.svg",
+      "sha256": "68ddaae585fbbc376ed9b2fd15a79a710d9d58edcf751dc87da7105ca76dee0c",
+      "width": 1440,
+      "height": 2960,
+      "colors": [
+        "#E4B2EA",
+        "#8376C2",
+        "#EAB9D9",
+        "#B493E6"
+      ],
+      "source": "https://raw.githubusercontent.com/GSUBx019/migram-web/main/frontend/public/patterns/k/k-wp-15.svg"
+    },
+    {
+      "id": "petrel_carnival",
+      "catalogId": "k-wp-16",
+      "artwork": "chat_background_petrel_carnival.svg",
+      "sha256": "f007a8755616188f3011bbd391d0e9293fbd8c4726c29fc57d88acd2e46ded67",
+      "width": 1440,
+      "height": 2960,
+      "colors": [
+        "#D1A3E2",
+        "#EDD594",
+        "#E5A1D0",
+        "#ECD893"
+      ],
+      "source": "https://raw.githubusercontent.com/GSUBx019/migram-web/main/frontend/public/patterns/k/k-wp-16.svg"
+    },
+    {
+      "id": "petrel_adventure",
+      "catalogId": "k-wp-26",
+      "artwork": "chat_background_petrel_adventure.svg",
+      "sha256": "b0d74600fac6648f37c0c40191b7cb4edf1a91b2f7fa15e84c2f5294d6d4d883",
+      "width": 1440,
+      "height": 2960,
+      "colors": [
+        "#A4DBFF",
+        "#009FDD",
+        "#527BDD"
+      ],
+      "source": "https://raw.githubusercontent.com/GSUBx019/migram-web/main/frontend/public/patterns/k/k-wp-26.svg"
+    }
+  ]
+}

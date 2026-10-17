@@ -1,0 +1,6 @@
+{
+  "layered-image": {
+    "background": "$media:frog_background_white",
+    "foreground": "$media:frog_foreground"
+  }
+}

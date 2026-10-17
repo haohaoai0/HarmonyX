@@ -77,11 +77,11 @@ Harmony X is more than a reskin. It is an API 26-oriented HarmonyOS adaptation o
 
 | Setting | Current value |
 |:--|:--|
-| Application | `Harmony X` · `com.haohaoai0.harmonyx` · version `1.0.0` (`versionCode` 1) |
+| Application | `Harmony X` · `com.haohaoai0.harmonx` · version `3.0.0` (`versionCode` 22) |
 | Module | `entry` · Stage model · `modelVersion` 5.0.0 |
 | SDK profile | No explicit compile SDK (uses the installed DevEco SDK) · compatible SDK `6.1.0 (API 23)` · target SDK `26.0.0` |
 | Devices | `phone`, `tablet`, `2in1` · fullscreen `EntryAbility` |
-| Permissions | `ohos.permission.INTERNET`, `ohos.permission.DETECT_GESTURE` |
+| Permissions | `ohos.permission.INTERNET` (network), `ohos.permission.DETECT_GESTURE` (grip-hand posture), `ohos.permission.VIBRATE` (haptics), `ohos.permission.GET_NETWORK_INFO` (online state), `ohos.permission.GET_DONOTDISTURB_STATE` (silent under Do Not Disturb), `ohos.permission.KEEP_BACKGROUND_RUNNING` (background read-aloud), `ohos.permission.MICROPHONE` (voice input in Grok web and messages) |
 | Build tools | Hvigor `6.26.4` · `@ohos/hvigor-ohos-plugin` `6.26.4` · `@ohos/hypium` `1.0.19` (development dependency) |
 
 ## Build
@@ -106,9 +106,14 @@ entry/build/default/outputs/default/entry-default-unsigned.hap
 
 ## Enable X sign-in
 
+Tap **Continue with X** on the sign-in screen: the app opens x.com in the built-in Web component, captures the cookie session, and returns without any developer configuration.
+
+The legacy OAuth 2.0 path needs a self-registered X application:
+
 1. Create an application at [developer.x.com](https://developer.x.com/).
 2. Enable **OAuth 2.0**, choose **Native App**, and set the callback URI to `harmonyx://callback`.
-3. Open **Settings > Developer API** in Harmony X, paste the Client ID, and save. No rebuild is needed.
+
+The app no longer exposes a Client ID field in Settings (`OAuthConfigStore` only reads the on-device preference it used to write), so this path is unavailable by default; **Continue with X** remains the working sign-in route.
 
 Harmony X uses PKCE and does not require a Client Secret. Tapping **Continue with X** launches the system browser through `ohos.want.action.viewData`; the X.com permission page shown above is rendered and managed by X, not imitated by the app. Some X endpoints require paid API access; the app reports that state and continues to show sample content.
 

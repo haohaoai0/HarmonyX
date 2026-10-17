@@ -1,0 +1,5 @@
+{
+  "name": "libharmonyx_chat.so",
+  "version": "0.1.0",
+  "types": "./index.d.ts"
+}

@@ -1,176 +1,1063 @@
+import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
+import { STORAGE_KEY_SYSTEM_EMOJI_ENABLED } from '../services/AppearanceStore';
+import { PostAdLabel } from './PostAdLabel';
+import { userAvatarRadius, userVerifiedType, userAvatarShape, verificationBadgeColor } from '../utils/UserIdentity';
 // Reusable post card: X-style row (avatar, header, text, action bar)
 // with HarmonyOS SymbolGlyph icons and theme-resource colors.
-import type { Tweet } from '../models/Tweet';
+import type { MediaAttachment, Tweet, TweetPoll } from '../models/Tweet';
 import { formatCount } from '../models/Tweet';
 import { hdsEffect } from '@kit.UIDesignKit';
+import { curves } from '@kit.ArkUI';
+import { common } from '@kit.AbilityKit';
+import promptAction from '@ohos.promptAction';
 import { PostMedia } from './PostMedia';
+import { SpaceAwareAvatar } from './SpaceAwareAvatar';
+import { CommunitySource } from './CommunitySource';
+import { ProxyMediaImage } from './ProxyMediaImage';
+import { QuotedPostCard } from './QuotedPostCard';
+import { PostInteractiveContent } from './PostInteractiveContent';
+import { canPostAction } from '../utils/PostContentVisibility';
+import {
+  STORAGE_KEY_TRANSLATION_AUTO_ENABLED,
+  STORAGE_KEY_TRANSLATION_REPLACE_ORIGINAL,
+  STORAGE_KEY_TRANSLATION_SETTINGS_REVISION,
+  TranslationSettings,
+  translationStore
+} from '../services/TranslationStore';
+import { TranslationResult, translationService } from '../services/TranslationService';
+import { TARGET_LANGUAGE_APP } from '../models/Translation';
+import { MentionSegment, splitPostText } from '../utils/MentionText';
+import { EmojiSpans } from './EmojiSpans';
+import { EmojiCopyMenu } from '../utils/EmojiCopyMenu';
+import { openExternalLink, requestSearch } from '../utils/PostEntities';
+import { hapticTick } from '../utils/Haptics';
+import { sharePost } from '../utils/SharePost';
+import { LIST_ITEM_PRESS_CURVE, LIST_ITEM_PRESS_SCALE } from '../utils/SharedElementMotion';
+import { XPrivateResult, xPrivateClient } from '../services/XPrivateClient';
+import { fieldSurfaceColor } from '../utils/ThemeColors';
+import { STORAGE_KEY_PRESS_EFFECT_ENABLED } from '../services/PressEffectSettingsStore';
+import { formatPostTime, STORAGE_KEY_POST_TIME_NOW } from '../utils/PostTime';
+import { effectiveAppLocale, isAppRtl, STORAGE_KEY_APP_LOCALE } from '../utils/AppLocale';
+import { LengthMetrics } from '@kit.ArkUI';
+import { postViewCounts, STORAGE_KEY_POST_VIEWS_REVISION } from '../services/PostViewCounts';
+import { postLikeStore, STORAGE_KEY_POST_LIKES_REVISION } from '../services/PostLikeStore';
+import { postPollStore, STORAGE_KEY_POST_POLL_REVISION } from '../services/PostPollStore';
+import { photoStripLayout } from '../utils/PostPhotoLayout';
+import {
+  DEFAULT_CONTENT_FONT_FAMILY,
+  STORAGE_KEY_CONTENT_FONT_FAMILY,
+  STORAGE_KEY_AVATAR_TINT_ENABLED
+} from '../services/AppearanceStore';
+import { AvatarTintPalette, avatarTintIsDark, avatarTintSurface } from '../utils/AvatarTintColors';
+import { PostOverflowButton } from './PostOverflowButton';
+import { postModerationStore, STORAGE_KEY_POST_MODERATION_REVISION } from '../services/PostModerationStore';
+import { STORAGE_KEY_ACCOUNTS_CHANGED } from '../services/AccountStore';
+import { homeSeenTweetStore } from '../services/HomeSeenTweetStore';
+
+// Collapse a post body once it passes this many characters.
+const LONG_TEXT_CHARACTERS: number = 180;
+const LONG_TEXT_MAX_LINES: number = 6;
+const LONG_TEXT_MAX_LINES_EXPANDED: number = 400;
 
 @Component
 export struct TweetCard {
-  @Prop tweet: Tweet;
-  onLikeChanged: (t: Tweet, liked: boolean) => void = () => {
-  };
-  onRepostChanged: (t: Tweet, reposted: boolean) => void = () => {
+  @StorageProp(STORAGE_KEY_POST_MODERATION_REVISION) @Watch('loadModeration') private moderationRevision: number = 0;
+  @State private readerHidden: boolean = false;
+  @StorageProp(STORAGE_KEY_ACCOUNTS_CHANGED) @Watch('loadModeration') private accountRevision: number = 0;
+  @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
+  @StorageProp(STORAGE_KEY_SYSTEM_EMOJI_ENABLED) private systemEmojiEnabled: boolean = false;
+  @Prop @Watch('onTweetChanged') tweet: Tweet;
+  @StorageProp(STORAGE_KEY_POST_TIME_NOW) private postTimeNow: number = Date.now();
+  @StorageProp(STORAGE_KEY_APP_LOCALE) @Watch('onTranslationAppLocaleChanged')
+  private appLocale: string = effectiveAppLocale();
+  @StorageProp(STORAGE_KEY_POST_VIEWS_REVISION) private viewCountRevision: number = 0;
+  @StorageProp(STORAGE_KEY_POST_LIKES_REVISION) @Watch('syncLikeState') private likeRevision: number = 0;
+  @StorageProp(STORAGE_KEY_POST_POLL_REVISION) private pollRevision: number = 0;
+  @Prop sharedElementId: string = '';
+  @StorageProp('harmonyx.display_mode') private themeDisplayMode: string = '';
+  @StorageProp('harmonyx.dark_surface') private themeDarkSurface: string = '';
+  @StorageProp(STORAGE_KEY_AVATAR_TINT_ENABLED) private avatarTintEnabled: boolean = false;
+  @State private avatarPalette: AvatarTintPalette | null = null;
+  @State private avatarThemeDark: boolean = false;
+  @StorageLink(STORAGE_KEY_CONTENT_FONT_FAMILY) private contentFontFamily: string = DEFAULT_CONTENT_FONT_FAMILY;
+  onLikeChanged: (t: Tweet, liked: boolean) => Promise<boolean> = async () => false;
+  onRepostChanged: (t: Tweet, reposted: boolean) => Promise<boolean> = async () => false;
+  onBookmarkChanged: (t: Tweet, bookmarked: boolean) => void = () => {
   };
   onReply: (t: Tweet) => void = () => {
   };
-  onOpen: (t: Tweet) => void = () => {
+  // The card owns the shared-element id of whatever was tapped, so the page
+  // never has to rebuild it: the tapped post is either this card or the quoted
+  // block inside it, and each has its own id.
+  onOpen: (t: Tweet, sourceId: string) => void = () => {
+  };
+  onVideoOpen: (t: Tweet, media: MediaAttachment) => void = (): void => {
   };
   onAuthorTapped: (t: Tweet) => void = () => {
   };
+  onMentionTapped: (handle: string) => void = () => {
+  };
   @Prop showActions: boolean = true;
+  @Prop transparentBackground: boolean = false;
+  @Prop compactAuthorHeader: boolean = false;
+  @Prop showReplyContext: boolean = false;
+  @Prop videoFeedEnabled: boolean = false;
+  // Only cards in the root home timeline use its autoplay-audio preference.
+  @Prop homeTimelineVideo: boolean = false;
+  @Prop recordRecommendationSeen: boolean = false;
+  // Stream-view pages opt out explicitly. Timeline and detail cards keep the
+  // source video's native aspect ratio everywhere else.
+  @Prop naturalVideoSize: boolean = true;
+  @Prop connectAbove: boolean = false;
+  @Prop connectBelow: boolean = false;
+  // A promotion row is a synthetic Tweet: the card keeps the ordinary post
+  // layout while the actions that would write to a real post are removed.
+  promotion: boolean = false;
+  onPromotionHideSession: () => void = (): void => { };
+  onPromotionHideWeek: () => void = (): void => { };
+  @State private cardHeight: number = 0;
+  @State private avatarTop: number = 12;
   @State liked: boolean = false;
+  @State private likeCount: number = 0;
   @State reposted: boolean = false;
+  @State bookmarked: boolean = false;
+  @State likePending: boolean = false;
+  @State repostPending: boolean = false;
+  @State bookmarkPending: boolean = false;
+  @State private likeScale: number = 1;
+  @State private repostRotation: number = 0;
+  @State private bookmarkScale: number = 1;
+  @StorageLink('harmonyx.translation_enabled') translationEnabled: boolean = false;
+  @StorageLink(STORAGE_KEY_TRANSLATION_AUTO_ENABLED)
+  translationAutoEnabled: boolean = false;
+  @StorageLink(STORAGE_KEY_TRANSLATION_SETTINGS_REVISION) @Watch('onTranslationSettingsRevisionChanged')
+  translationSettingsRevision: number = 0;
+  @StorageLink(STORAGE_KEY_TRANSLATION_REPLACE_ORIGINAL) translationReplaceOriginal: boolean = false;
+  @State translatedText: string = '';
+  @State translating: boolean = false;
+  @State private lastAutoTranslationRevision: number = -1;
+  @State private lastAutoTranslationPostId: string = '';
+  private translationRequestGeneration: number = 0;
+  private translationPostId: string = '';
+  private translationWasAutomatic: boolean = false;
+  @State private textExpanded: boolean = false;
+  @State private photoPageIndex: number = 0;
+  @State private cardWidth: number = 0;
+  @StorageProp('harmonyx.window_height') private photoWindowHeight: number = 0;
+  private visibleForViews: boolean = false;
+  // The row sinks under the finger while it is pressed.
+  @State private pressScale: number = 1;
+  @StorageLink(STORAGE_KEY_PRESS_EFFECT_ENABLED) pressEffectEnabled: boolean = false;
   @StorageLink('harmonyx.accent_color') accentColor: string = '#007DFF';
-  @StorageLink('harmonyx.font_scale') fontScale: number = 1;
-
-  private scaledFont(size: number): number {
-    return Math.round(size * this.fontScale * 10) / 10;
-  }
 
   aboutToAppear(): void {
-    this.liked = this.tweet.liked;
+    this.loadModeration();
+    this.syncLikeState();
     this.reposted = this.tweet.reposted;
+    this.bookmarked = this.tweet.bookmarked ?? false;
+    this.tryAutomaticTranslation();
+  }
+
+  onWillApplyTheme(theme: Theme): void {
+    this.avatarThemeDark = avatarTintIsDark(theme);
+  }
+
+  private loadModeration(): void {
+    postModerationStore.load(getContext(this));
+    this.readerHidden = postModerationStore.hidden(this.tweet);
+  }
+
+  private onTweetChanged(): void {
+    this.loadModeration();
+    this.syncLikeState();
+    if (this.visibleForViews) {
+      postViewCounts.requestMissing(this.tweet);
+    }
+    if (this.translationPostId !== this.tweet.id && (this.translating || this.translatedText.length > 0)) {
+      this.resetTranslation();
+    } else if (this.translationWasAutomatic) {
+      const context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
+      if (!translationStore.load(context).shouldAutomaticallyTranslate(this.tweet.language ?? '')) {
+        this.resetTranslation();
+      }
+    }
+    this.tryAutomaticTranslation();
+  }
+
+  private syncLikeState(): void {
+    postLikeStore.apply(this.tweet);
+    this.liked = this.tweet.liked;
+    this.likeCount = this.tweet.metrics.likeCount;
+  }
+
+  private onTranslationSettingsRevisionChanged(): void {
+    this.resetTranslation();
+    this.tryAutomaticTranslation();
+  }
+
+  private onTranslationAppLocaleChanged(): void {
+    const context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
+    if (translationStore.load(context).targetLanguage === TARGET_LANGUAGE_APP) {
+      this.resetTranslation();
+      this.tryAutomaticTranslation();
+    }
+  }
+
+  private resetTranslation(): void {
+    // Invalidated requests may finish, but cannot restore an excluded post or
+    // a translation in the language selected before the settings changed.
+    this.translationRequestGeneration++;
+    this.translating = false;
+    this.translatedText = '';
+    this.translationWasAutomatic = false;
+    this.lastAutoTranslationRevision = -1;
+    this.lastAutoTranslationPostId = '';
+  }
+
+  private tryAutomaticTranslation(): void {
+    if (!this.translationAutoEnabled || this.translating || this.translatedText.length > 0 ||
+      (this.lastAutoTranslationRevision === this.translationSettingsRevision &&
+        this.lastAutoTranslationPostId === this.tweet.id)) {
+      return;
+    }
+    const context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
+    if (!translationStore.load(context).shouldAutomaticallyTranslate(this.tweet.language ?? '')) { return; }
+    this.lastAutoTranslationRevision = this.translationSettingsRevision;
+    this.lastAutoTranslationPostId = this.tweet.id;
+    this.runTranslation(true);
   }
 
   private avatarUrl(): string {
     return this.tweet.author.avatarUrl ?? '';
   }
 
-  build(): void {
-    Column() {
-      Row({ space: 10 }) {
-        if (this.avatarUrl().length > 0) {
-          Image(this.avatarUrl())
-            .width(44)
-            .height(44)
-            .objectFit(ImageFit.Cover)
-            .borderRadius(22)
-            .clip(true)
-            .onClick((): void => this.onAuthorTapped(this.tweet))
-        } else {
-          Text(this.tweet.author.name.substring(0, 1).toUpperCase())
-            .width(44)
-            .height(44)
-            .fontSize(this.scaledFont(20))
-            .fontWeight(FontWeight.Bold)
-            .fontColor($r('app.color.text_on_brand'))
-            .backgroundColor(this.tweet.author.avatarColor)
-            .borderRadius(22)
-            .textAlign(TextAlign.Center)
-            .onClick((): void => this.onAuthorTapped(this.tweet))
+  private authorTimeLabel(): string {
+    const time: string = formatPostTime(this.tweet.createdAt, this.postTimeNow);
+    return '@' + this.tweet.author.username + (time.length > 0 ? ' · ' + time : '');
+  }
+
+  private mentionSegments(): MentionSegment[] {
+    return splitPostText(this.tweet.text);
+  }
+
+  private hasPhotoStrip(): boolean {
+    const attachments: MediaAttachment[] = this.tweet.attachments ?? [];
+    if (attachments.length === 0) {
+      return false;
+    }
+    for (let i: number = 0; i < attachments.length; i++) {
+      if (attachments[i].type !== 'photo') {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  private photoOnlyPost(): boolean {
+    return this.hasPhotoStrip() && this.tweet.text.trim().length === 0;
+  }
+
+  private hasWidePhotoStrip(): boolean {
+    const count: number = this.tweet.attachments?.length ?? 0;
+    if (this.connectAbove || this.connectBelow || !this.hasPhotoStrip() || count < 2 || this.cardWidth <= 0) {
+      return false;
+    }
+    const bodyWidth: number = Math.max(1, this.cardWidth - 80);
+    return photoStripLayout(this.tweet.attachments ?? [], bodyWidth, this.photoWindowHeight).overflows;
+  }
+
+  private displayedViewCount(): number {
+    return postViewCounts.countFor(this.tweet.id, this.tweet.metrics.viewCount, this.viewCountRevision);
+  }
+
+  private repostLabel(): string {
+    if (this.tweet.repostAuthor !== undefined) {
+      const context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
+      const name: string = this.tweet.repostAuthor.name.length > 0 ?
+        this.tweet.repostAuthor.name : '@' + this.tweet.repostAuthor.username;
+      return context.resourceManager.getStringSync($r('app.string.post_reposted_by'), name);
+    }
+    return (this.tweet.repostText ?? '').length > 0 ? this.tweet.repostText as string :
+      this.resourceText($r('app.string.post_reposted'));
+  }
+
+  @Builder
+  private PhotoPageIndicator(): void {
+    Row({ space: 6 }) {
+      ForEach(this.tweet.attachments ?? [], (_media: MediaAttachment, index: number) => {
+        Column()
+          .width(22)
+          .height(4)
+          .borderRadius(2)
+          .backgroundColor($r('app.color.text_secondary'))
+          .opacity(index === this.photoPageIndex ? 1 : 0.35)
+      }, (media: MediaAttachment) => media.id)
+    }
+    .height(20)
+    .alignItems(VerticalAlign.Center)
+  }
+
+  // Long posts collapse to a few lines with an explicit expander, matching how
+  // X keeps the feed scannable.
+  private textIsLong(): boolean {
+    const displayText: string = this.translationReplaceOriginal && this.translatedText.length > 0 ?
+      this.translatedText : this.tweet.text;
+    return displayText.length > LONG_TEXT_CHARACTERS;
+  }
+
+  private resourceText(resource: Resource): string {
+    const context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
+    return context.resourceManager.getStringSync(resource);
+  }
+
+  // The numbers a row shows when it has no action handlers of its own: the same
+  // maths the card's action bar uses, so a row without buttons still reports
+  // what it knows.
+  private displayedLikeCount(): number {
+    return this.likeCount;
+  }
+
+  private displayedRepostCount(): number {
+    return Math.max(0, this.tweet.metrics.repostCount +
+      (this.reposted === this.tweet.reposted ? 0 : (this.reposted ? 1 : -1)));
+  }
+
+  private metricLabel(label: Resource, value: number): string {
+    const name: string = this.resourceText(label);
+    return value > 0 ? name + ' ' + formatCount(value) : name;
+  }
+
+  private translationMenuItems(): MenuElement[] {
+    const items: MenuElement[] = [];
+    items.push({
+      value: this.resourceText(this.translatedText.length > 0 ?
+        $r('app.string.post_hide_translation') : $r('app.string.post_translate')),
+      action: (): void => {
+        this.runTranslation();
+      }
+    });
+    return items;
+  }
+
+  // One tap translates, a second tap hides the result again. The service
+  // caches per post, so re-opening a card is free.
+  private async runTranslation(automatic: boolean = false): Promise<void> {
+    if (this.translating) {
+      return;
+    }
+    if (this.translatedText.length > 0) {
+      if (automatic) {
+        return;
+      }
+      this.translatedText = '';
+      return;
+    }
+    const context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
+    const settings: TranslationSettings = translationStore.load(context);
+    if (automatic && !settings.shouldAutomaticallyTranslate(this.tweet.language ?? '')) {
+      return;
+    }
+    if (!settings.isRunnable()) {
+      if (!automatic) {
+        promptAction.showToast({
+          message: this.resourceText($r('app.string.post_translate_no_key')),
+          duration: 2600
+        });
+      }
+      return;
+    }
+    const generation: number = this.translationRequestGeneration;
+    const postId: string = this.tweet.id;
+    this.translationPostId = postId;
+    this.translationWasAutomatic = automatic;
+    this.translating = true;
+    const result: TranslationResult = await translationService.translate(postId, this.tweet.text, settings,
+      this.tweet.language ?? '');
+    if (generation !== this.translationRequestGeneration || this.tweet.id !== postId) { return; }
+    this.translating = false;
+    if (result.ok) {
+      this.translatedText = result.text;
+      return;
+    }
+    if (!automatic) {
+      promptAction.showToast({
+        message: this.resourceText(result.errorText === 'no_session' ?
+          $r('app.string.post_translate_x_login') : $r('app.string.post_translate_failed')),
+        duration: 2600
+      });
+    }
+  }
+
+  private playLikeMotion(next: boolean): void {
+    this.likeScale = next ? 0.78 : 1.12;
+    this.getUIContext().animateTo({
+      duration: 320,
+      curve: curves.springMotion(0.42, 0.82)
+    }, (): void => {
+      this.likeScale = next ? 1.18 : 0.92;
+    });
+    setTimeout((): void => {
+      this.getUIContext().animateTo({ duration: 140, curve: Curve.EaseOut }, (): void => {
+        this.likeScale = 1;
+      });
+    }, 180);
+  }
+
+  private playRepostMotion(next: boolean): void {
+    this.getUIContext().animateTo({ duration: 280, curve: Curve.EaseOut }, (): void => {
+      this.repostRotation = next ? 180 : 0;
+    });
+  }
+
+  private playBookmarkMotion(next: boolean): void {
+    this.bookmarkScale = next ? 0.78 : 1.08;
+    this.getUIContext().animateTo({ duration: 260, curve: curves.springMotion(0.45, 0.82) }, (): void => {
+      this.bookmarkScale = 1;
+    });
+  }
+
+  private async toggleLike(): Promise<void> {
+    if (!canPostAction(this.tweet, 'like')) { return; }
+    if (this.likePending || postLikeStore.isPending(this.tweet.id)) { return; }
+    const post: Tweet = this.tweet;
+    const next: boolean = !this.liked;
+    this.likePending = true;
+    const completion: Promise<boolean> = postLikeStore.setLike(post, next,
+      (): Promise<boolean> => this.onLikeChanged(post, next));
+    this.syncLikeState();
+    this.playLikeMotion(next);
+    hapticTick();
+    try {
+      await completion;
+    } finally {
+      this.likePending = false;
+      this.syncLikeState();
+    }
+  }
+
+  private commitRepost(next: boolean): void {
+    if (this.tweet.reposted !== next) {
+      if (next) {
+        this.tweet.metrics.repostCount += 1;
+      } else if (this.tweet.metrics.repostCount > 0) {
+        this.tweet.metrics.repostCount -= 1;
+      }
+    }
+    this.tweet.reposted = next;
+    this.reposted = next;
+  }
+
+  private async toggleBookmark(): Promise<void> {
+    if (!canPostAction(this.tweet, 'bookmark')) { return; }
+    if (this.bookmarkPending) {
+      return;
+    }
+    const context: common.UIAbilityContext =
+      this.getUIContext().getHostContext() as common.UIAbilityContext;
+    xPrivateClient.load(context);
+    if (!xPrivateClient.isSignedIn()) {
+      promptAction.showToast({
+        message: this.resourceText($r('app.string.bookmarks_sign_in')),
+        duration: 2000
+      });
+      return;
+    }
+    this.bookmarkPending = true;
+    const next: boolean = !this.bookmarked;
+    try {
+      const result: XPrivateResult = await xPrivateClient.bookmark(this.tweet.id, next);
+      if (!result.ok) {
+        promptAction.showToast({
+          message: this.resourceText($r('app.string.action_bookmark')) + ' · HTTP ' + result.status,
+          duration: 2000
+        });
+        return;
+      }
+      this.bookmarked = next;
+      this.tweet.bookmarked = next;
+      this.playBookmarkMotion(next);
+      hapticTick();
+      this.onBookmarkChanged(this.tweet, next);
+      const message: Resource = next ? $r('app.string.toast_bookmark_added') :
+        $r('app.string.toast_bookmark_removed');
+      promptAction.showToast({ message: this.resourceText(message), duration: 1500 });
+    } finally {
+      this.bookmarkPending = false;
+    }
+  }
+
+  // A quoted post is a list item of its own inside the card, so it expands from
+  // the quoted block rather than from the card that contains it.
+  private quotedSharedElementId(): string {
+    if (this.sharedElementId.length === 0 || this.tweet.quotedTweet === undefined) {
+      return '';
+    }
+    return this.sharedElementId + '-quote-' + this.tweet.quotedTweet.id;
+  }
+
+  // Press feedback for the card itself, independent of how the post opens:
+  // every timeline row sinks under the finger, reply rows included.
+  private onCardTouch(event?: TouchEvent): void {
+    if (event === undefined || !this.pressEffectEnabled) {
+      return;
+    }
+    if (event.type === TouchType.Down) {
+      this.getUIContext().animateTo({ curve: LIST_ITEM_PRESS_CURVE }, (): void => {
+        this.pressScale = LIST_ITEM_PRESS_SCALE;
+      });
+      return;
+    }
+    if (event.type === TouchType.Up || event.type === TouchType.Cancel) {
+      this.getUIContext().animateTo({ curve: LIST_ITEM_PRESS_CURVE }, (): void => {
+        this.pressScale = 1;
+      });
+    }
+  }
+
+  @Builder
+  private PostAttachments(): void {
+    if (this.tweet.attachments !== undefined && this.tweet.attachments.length > 0 && this.tweet.presentation?.visibility?.hidden !== true) {
+      PostMedia({
+        sourceTweet: this.tweet,
+        attachments: this.tweet.attachments,
+        videoFeedEnabled: this.videoFeedEnabled,
+        homeTimelineVideo: this.homeTimelineVideo,
+        naturalVideoSize: this.naturalVideoSize,
+        photoStartOffset: this.hasWidePhotoStrip() ? 68 : 0,
+        photoEndOffset: this.hasWidePhotoStrip() ? 12 : 0,
+        onPhotoPageChanged: (index: number): void => { this.photoPageIndex = index; },
+        onVideoOpen: (media: MediaAttachment): void => {
+          this.onVideoOpen(this.tweet, media);
         }
+      })
+        .width('100%')
+        .padding({ start: LengthMetrics.vp(this.hasWidePhotoStrip() ? 0 : 68), end: LengthMetrics.vp(this.hasWidePhotoStrip() ? 0 : 12) })
+        .margin({ top: 8 })
+    }
 
-        Column({ space: 4 }) {
-          Column({ space: 4 }) {
-          Row({ space: 4 }) {
-            Text(this.tweet.author.name)
-              .fontSize(this.scaledFont(16))
-              .fontWeight(FontWeight.Bold)
-              .fontColor($r('app.color.text_primary'))
-            if (this.tweet.author.verified) {
-              SymbolGlyph($r('sys.symbol.checkmark'))
-                .fontSize(this.scaledFont(13))
-                .fontWeight(FontWeight.Bold)
-                .fontColor([this.accentColor])
-            }
-            Text('@' + this.tweet.author.username + ' · ' + this.tweet.createdAt)
-              .fontSize(this.scaledFont(14))
-              .fontColor($r('app.color.text_secondary'))
-              .textOverflow({ overflow: TextOverflow.Ellipsis })
-              .maxLines(1)
+  }
+
+  @Builder
+  private PostFooter(): void {
+    Column({ space: 4 }) {
+      if (this.interactivePoll() !== undefined || this.tweet.card !== undefined || this.tweet.article !== undefined || this.tweet.presentation !== undefined) {
+        PostInteractiveContent({ postId: this.tweet.id, poll: this.interactivePoll(), card: this.tweet.card,
+          article: this.tweet.article, presentation: this.tweet.presentation,
+          accentColor: this.accentColor, showPollMedia: (this.tweet.attachments?.length ?? 0) === 0 })
+      }
+      if (this.tweet.quotedTweet !== undefined && this.tweet.presentation?.visibility?.hidden !== true) {
+        QuotedPostCard({
+          quoted: this.tweet.quotedTweet,
+          accentColor: this.accentColor,
+          sharedElementId: this.quotedSharedElementId(),
+          onOpen: (quoted: Tweet): void => {
+            this.onOpen(quoted, this.quotedSharedElementId());
           }
-
-          Text(this.tweet.text)
-            .fontSize(this.scaledFont(16))
-            .fontColor($r('app.color.text_primary'))
-            .width('100%')
-
-          if (this.tweet.attachments !== undefined && this.tweet.attachments.length > 0) {
-            PostMedia({ attachments: this.tweet.attachments })
-              .margin({ top: 8 })
-          }
-        }
-        .onClick((): void => {
-          this.onOpen(this.tweet);
         })
+      }
+
+      // Comment rows omit interactive social actions but keep the post's
+      // read-only counts. A count of zero leaves its icon bare, which keeps
+      // quiet comments quiet.
+      if (!this.showActions) {
+        Row() {
+          Row({ space: 4 }) {
+            SymbolGlyph($r('sys.symbol.ellipsis_bubble'))
+              .fontSize(17)
+              .fontColor([$r('app.color.text_secondary')])
+            if (this.tweet.metrics.replyCount > 0) {
+              Text(formatCount(this.tweet.metrics.replyCount)).fontFamily(this.appFontFamily)
+                .fontSize($r('sys.float.Caption_L'))
+                .fontWeight(FontWeight.Medium)
+                .fontColor($r('app.color.text_secondary'))
+            }
+          }
+          .accessibilityText(this.metricLabel($r('app.string.action_reply'), this.tweet.metrics.replyCount))
+
+          Row({ space: 4 }) {
+            SymbolGlyph($r('sys.symbol.repeat'))
+              .fontSize(18)
+              .fontColor([this.reposted ? $r('app.color.repost') : $r('app.color.text_secondary')])
+            if (this.displayedRepostCount() > 0) {
+              Text(formatCount(this.displayedRepostCount())).fontFamily(this.appFontFamily)
+                .fontSize($r('sys.float.Caption_L'))
+                .fontWeight(FontWeight.Medium)
+                .fontColor(this.reposted ? $r('app.color.repost') : $r('app.color.text_secondary'))
+            }
+          }
+          .accessibilityText(this.metricLabel($r('app.string.action_repost'), this.displayedRepostCount()))
+
+          Row({ space: 4 }) {
+            SymbolGlyph(this.liked ? $r('sys.symbol.heart_fill') : $r('sys.symbol.heart'))
+              .fontSize(18)
+              .fontColor([this.liked ? $r('app.color.like') : $r('app.color.text_secondary')])
+            if (this.displayedLikeCount() > 0) {
+              Text(formatCount(this.displayedLikeCount())).fontFamily(this.appFontFamily)
+                .fontSize($r('sys.float.Caption_L'))
+                .fontWeight(FontWeight.Medium)
+                .fontColor(this.liked ? $r('app.color.like') : $r('app.color.text_secondary'))
+            }
+          }
+          .accessibilityText(this.metricLabel($r('app.string.action_like'), this.displayedLikeCount()))
+
+          Row({ space: 4 }) {
+            SymbolGlyph($r('sys.symbol.eye'))
+              .fontSize(18)
+              .fontColor([$r('app.color.text_secondary')])
+            if (this.displayedViewCount() > 0) {
+              Text(formatCount(this.displayedViewCount())).fontFamily(this.appFontFamily)
+                .fontSize($r('sys.float.Caption_L'))
+                .fontWeight(FontWeight.Medium)
+                .fontColor($r('app.color.text_secondary'))
+            }
+          }
+          .accessibilityText(this.metricLabel($r('app.string.post_detail_views'), this.displayedViewCount()))
+
+        }
+        .width('100%')
+        .justifyContent(FlexAlign.SpaceBetween)
+        .margin({ top: 8 })
+      }
 
         if (this.showActions) {
         // Action bar: reply / repost / like / views (iOS X order).
+      Row() {
+        Row({ space: 4 }) {
+          SymbolGlyph($r('sys.symbol.ellipsis_bubble'))
+            .fontSize(17)
+            .fontColor([$r('app.color.text_secondary')])
+          Text(formatCount(this.tweet.metrics.replyCount)).fontFamily(this.appFontFamily)
+            .fontSize($r('sys.float.Caption_L'))
+            .fontWeight(FontWeight.Medium)
+            .fontColor($r('app.color.text_secondary'))
+        }
+        .onClick(() => {
+          if (!canPostAction(this.tweet, 'reply')) { return; }
+          this.onReply(this.tweet);
+        })
+        .accessibilityText(this.resourceText($r('app.string.action_reply')))
+
+        Row({ space: 4 }) {
+          SymbolGlyph($r('sys.symbol.repeat'))
+            .fontSize(18)
+            .fontWeight(FontWeight.Medium)
+            .fontColor([this.reposted ? $r('app.color.repost') : $r('app.color.text_secondary')])
+            .rotate({ angle: this.repostRotation })
+          Text(formatCount(Math.max(0, this.tweet.metrics.repostCount +
+            (this.reposted === this.tweet.reposted ? 0 : (this.reposted ? 1 : -1))))).fontFamily(this.appFontFamily)
+            .fontSize($r('sys.float.Caption_L'))
+            .fontWeight(FontWeight.Medium)
+            .fontColor(this.reposted ? $r('app.color.repost') : $r('app.color.text_secondary'))
+        }
+        .onClick(async () => {
+          if (!canPostAction(this.tweet, 'repost')) { return; }
+          if (this.repostPending) return;
+          this.repostPending = true;
+          const next: boolean = !this.reposted;
+          try {
+            if (await this.onRepostChanged(this.tweet, next)) {
+              this.commitRepost(next);
+              this.playRepostMotion(next);
+              hapticTick();
+            }
+          } finally {
+            this.repostPending = false;
+          }
+        })
+        .accessibilityText(this.resourceText($r('app.string.action_repost')))
+
+        Row({ space: 4 }) {
+          SymbolGlyph(this.liked ? $r('sys.symbol.heart_fill') : $r('sys.symbol.heart'))
+            .fontSize(18)
+            .fontColor([this.liked ? $r('app.color.like') : $r('app.color.text_secondary')])
+            .scale({ x: this.likeScale, y: this.likeScale })
+          Text(formatCount(this.displayedLikeCount())).fontFamily(this.appFontFamily)
+            .fontSize($r('sys.float.Caption_L'))
+            .fontWeight(FontWeight.Medium)
+            .fontColor(this.liked ? $r('app.color.like') : $r('app.color.text_secondary'))
+        }
+        .onClick((): void => { void this.toggleLike(); })
+        .accessibilityText(this.resourceText($r('app.string.action_like')))
+
+        Row({ space: 4 }) {
+          SymbolGlyph($r('sys.symbol.eye'))
+            .fontSize(18)
+            .fontColor([$r('app.color.text_secondary')])
+          if (this.displayedViewCount() > 0) {
+            Text(formatCount(this.displayedViewCount())).fontFamily(this.appFontFamily)
+              .fontSize($r('sys.float.Caption_L'))
+              .fontWeight(FontWeight.Medium)
+              .fontColor($r('app.color.text_secondary'))
+          }
+        }
+
+        Row({ space: 4 }) {
+          SymbolGlyph(this.bookmarked ? $r('sys.symbol.bookmark_fill') : $r('sys.symbol.bookmark'))
+            .fontSize(18)
+            .fontColor([this.bookmarked ? this.accentColor : $r('app.color.text_secondary')])
+            .scale({ x: this.bookmarkScale, y: this.bookmarkScale })
+        }
+        .opacity(this.bookmarkPending ? 0.5 : 1)
+        .onClick((): void => {
+          this.toggleBookmark();
+        })
+        .accessibilityText(this.resourceText($r('app.string.action_bookmark')))
+
+        Row({ space: 4 }) {
+          SymbolGlyph($r('sys.symbol.share'))
+            .fontSize(18)
+            .fontColor([$r('app.color.text_secondary')])
+        }
+        .onClick((): void => {
+          const context: common.UIAbilityContext =
+            this.getUIContext().getHostContext() as common.UIAbilityContext;
+          sharePost(context, this.tweet);
+        })
+        .accessibilityText(this.resourceText($r('app.string.action_share')))
+
+        if (this.translationEnabled) {
           Row() {
-            Row({ space: 4 }) {
-              SymbolGlyph($r('sys.symbol.ellipsis_bubble'))
-                .fontSize(17)
-                .fontColor([$r('app.color.text_secondary')])
-              Text(formatCount(this.tweet.metrics.replyCount))
-                .fontSize(13)
-                .fontColor($r('app.color.text_secondary'))
-            }
-            .onClick(() => {
-              this.tweet.metrics.replyCount += 1;
-              this.onReply(this.tweet);
-            })
-
-            Row({ space: 4 }) {
-              SymbolGlyph($r('sys.symbol.repeat'))
+            if (this.translating) {
+              LoadingProgress()
+                .width(16)
+                .height(16)
+                .color(this.accentColor)
+            } else {
+              SymbolGlyph($r('sys.symbol.translate'))
                 .fontSize(18)
-                .fontWeight(FontWeight.Medium)
-                .fontColor([this.reposted ? $r('app.color.repost') : $r('app.color.text_secondary')])
-              Text(formatCount(this.tweet.metrics.repostCount + (this.reposted ? 1 : 0)))
-                .fontSize(13)
-                .fontColor(this.reposted ? $r('app.color.repost') : $r('app.color.text_secondary'))
+                .fontColor([this.translatedText.length > 0 ? this.accentColor :
+                  $r('app.color.text_secondary')])
             }
-            .onClick(() => {
-              this.reposted = !this.reposted;
-              if (this.reposted) {
-                this.tweet.metrics.repostCount += 1;
-              } else if (this.tweet.metrics.repostCount > 0) {
-                this.tweet.metrics.repostCount -= 1;
+          }
+          .width(32)
+          .height(32)
+          .justifyContent(FlexAlign.Center)
+          .onClick((): void => {
+            this.runTranslation();
+          })
+          .accessibilityText(this.resourceText(this.translatedText.length > 0 ?
+            $r('app.string.post_hide_translation') : $r('app.string.post_translate')))
+        }
+
+      }
+      .width('100%')
+      .justifyContent(FlexAlign.SpaceBetween)
+      .margin({ top: 8 })
+        }
+    }
+    .width('100%')
+    .padding({ start: LengthMetrics.vp(68), end: LengthMetrics.vp(12), bottom: LengthMetrics.vp(12) })
+    .onClick((): void => { this.onOpen(this.tweet, this.sharedElementId); })
+  }
+
+  private interactivePoll(): TweetPoll | undefined {
+    return this.tweet.poll ?? postPollStore.known(this.tweet.id, this.pollRevision);
+  }
+
+  @Builder
+  private ConversationLines(): void {
+    Column({ space: 0 }) {
+      if (this.connectAbove || this.connectBelow) {
+        Rect()
+          .width($r('app.float.reply_connector_width'))
+          .height(this.avatarTop)
+          .fill(this.connectAbove ? $r('app.color.reply_connector') : Color.Transparent)
+        Blank().height(44)
+        Rect()
+          .width($r('app.float.reply_connector_width'))
+          .height(Math.max(0, this.cardHeight - this.avatarTop - 44))
+          .fill(this.connectBelow ? $r('app.color.reply_connector') : Color.Transparent)
+      }
+    }
+    .width($r('app.float.reply_connector_width'))
+    .alignItems(HorizontalAlign.Center)
+    .hitTestBehavior(HitTestMode.Transparent)
+    .accessibilityLevel('no')
+  }
+
+  build(): void {
+    if (!this.readerHidden) {
+    Column() {
+      CommunitySource({ communityId: this.tweet.communityId ?? '', communityName: this.tweet.communityName ?? '', inset: 56 })
+      if (this.tweet.pinned) {
+        Row({ space: 6 }) {
+          SymbolGlyph($r('sys.symbol.pin_fill')).fontSize(13).fontColor([$r('app.color.text_secondary')])
+          Text($r('app.string.community_pinned_post')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_S'))
+            .fontColor($r('app.color.text_secondary'))
+        }.width('100%').padding({ start: LengthMetrics.vp(56), top: LengthMetrics.vp(6) })
+      }
+      if (this.tweet.isRepost) {
+        Row({ space: 8 }) {
+          SymbolGlyph($r('sys.symbol.repeat'))
+            .fontSize(14)
+            .fontColor([$r('app.color.text_secondary')])
+          Text(this.repostLabel()).fontFamily(this.appFontFamily)
+            .fontSize($r('sys.float.Body_S'))
+            .fontWeight(FontWeight.Medium)
+            .fontColor($r('app.color.text_secondary'))
+            .maxLines(1)
+            .textOverflow({ overflow: TextOverflow.Ellipsis })
+        }
+        .width('100%')
+        .padding({ start: LengthMetrics.vp(38), end: LengthMetrics.vp(12), top: LengthMetrics.vp(8) })
+      }
+      Row({ space: 12 }) {
+          SpaceAwareAvatar({verifiedType: this.tweet.author.verifiedType ?? '', avatarShape: this.tweet.author.avatarShape ?? '',  userId: this.tweet.author.id, url: this.avatarUrl(), avatarSize: 44, radius: 22,
+            followed: this.tweet.author.following === true,
+            fallbackText: this.tweet.author.name.substring(0, 1).toUpperCase(),
+            fallbackColor: this.tweet.author.avatarColor, tintBackground: true,
+            onTintResolved: (palette: AvatarTintPalette | null): void => { this.avatarPalette = palette; },
+            onProfile: (): void => this.onAuthorTapped(this.tweet) })
+
+        Column({ space: 4 }) {
+          Column({ space: 1 }) {
+            Row({ space: 4 }) {
+              Flex({ alignItems: ItemAlign.Center }) {
+                Text() { EmojiSpans(this.getUIContext(), this.tweet.author.name, $r('sys.float.Body_L'), this.systemEmojiEnabled) }.fontFamily(this.appFontFamily)
+                  .fontSize($r('sys.float.Body_L'))
+                  .fontWeight(FontWeight.Medium)
+                  .fontColor($r('app.color.text_primary'))
+                  .maxLines(1)
+                  .textOverflow({ overflow: TextOverflow.Ellipsis })
+                  .flexShrink(1)
+                  .margin({ end: LengthMetrics.vp(4) })
+                if (this.tweet.author.verified) {
+                  SymbolGlyph($r('sys.symbol.checkmark_circle_fill'))
+                    .fontSize(16)
+                    .fontColor([verificationBadgeColor(this.tweet.author.verifiedType ?? '', this.accentColor)])
+                    .flexShrink(0)
+                }
+                if (this.compactAuthorHeader) {
+                  Text(this.authorTimeLabel()).fontFamily(this.appFontFamily)
+                    .fontSize($r('sys.float.Body_M')).fontColor($r('app.color.text_secondary'))
+                    .maxLines(1).textOverflow({ overflow: TextOverflow.Ellipsis }).flexShrink(1)
+                }
               }
-              this.onRepostChanged(this.tweet, this.reposted);
-            })
-
-            Row({ space: 4 }) {
-              SymbolGlyph(this.liked ? $r('sys.symbol.heart_fill') : $r('sys.symbol.heart'))
-                .fontSize(18)
-                .fontColor([this.liked ? $r('app.color.like') : $r('app.color.text_secondary')])
-              Text(formatCount(this.tweet.metrics.likeCount + (this.liked ? 1 : 0)))
-                .fontSize(13)
-                .fontColor(this.liked ? $r('app.color.like') : $r('app.color.text_secondary'))
+              .layoutWeight(1)
+              .onClick((): void => this.onAuthorTapped(this.tweet))
+              PostAdLabel({ presentation: this.tweet.presentation })
+              // A promotion row reuses this card for identical layout, so the
+              // affordances that need a real post are replaced by the dismissal
+              // choices the promotion supports.
+              if (this.promotion) {
+                Button({ type: ButtonType.Normal, stateEffect: true }) {
+                  SymbolGlyph($r('sys.symbol.xmark'))
+                    .fontSize(16)
+                    .fontColor([$r('app.color.text_secondary')])
+                    .accessibilityLevel('no')
+                }
+                .width(32)
+                .height(32)
+                .padding(0)
+                .backgroundColor(Color.Transparent)
+                .flexShrink(0)
+                .accessibilityText($r('app.string.xxauth_close'))
+                .bindMenu([
+                  { value: $r('app.string.promotion_hide_once'), action: (): void => this.onPromotionHideSession() },
+                  { value: $r('app.string.promotion_hide_week'), action: (): void => this.onPromotionHideWeek() }
+                ])
+              } else {
+                PostOverflowButton({ tweet: this.tweet })
+              }
+              if (this.translationEnabled && !this.showActions && !this.promotion) {
+                Stack() {
+                  SymbolGlyph($r('sys.symbol.ellipsis_circle'))
+                    .fontSize(20)
+                    .fontColor([this.translatedText.length > 0 ? this.accentColor :
+                      $r('app.color.text_secondary')])
+                }
+                .width(32)
+                .height(32)
+                .borderRadius(16)
+                .backgroundColor(fieldSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
+                .bindMenu(this.translationMenuItems())
+              }
             }
-            .onClick(() => {
-              this.liked = !this.liked;
-              this.onLikeChanged(this.tweet, this.liked);
-            })
+            .width('100%')
 
-            Row({ space: 4 }) {
-              SymbolGlyph($r('sys.symbol.eye'))
-                .fontSize(18)
-                .fontColor([$r('app.color.text_secondary')])
-              Text(formatCount(this.tweet.metrics.viewCount))
-                .fontSize(13)
-                .fontColor($r('app.color.text_secondary'))
+            if (!this.compactAuthorHeader) {
+            Text(this.authorTimeLabel()).fontFamily(this.appFontFamily)
+              .fontSize($r('sys.float.Body_M'))
+              .fontColor($r('app.color.text_secondary'))
+              .textOverflow({ overflow: TextOverflow.Ellipsis })
+              .maxLines(1)
+              .width('100%')
+              .onClick((): void => this.onAuthorTapped(this.tweet))
             }
           }
           .width('100%')
-          .justifyContent(FlexAlign.SpaceBetween)
-          .margin({ top: 8 })
-        }
+          .alignItems(HorizontalAlign.Start)
+
+          if (this.showReplyContext && (this.tweet.replyToUsername ?? '').length > 0) {
+            Text() {
+              Span($r('app.string.compose_replying_to')).fontColor($r('app.color.text_secondary'))
+              Span(this.tweet.replyToUsername ?? '').fontColor(this.accentColor)
+                .onClick((): void => this.onMentionTapped(this.tweet.replyToUsername ?? ''))
+            }.fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M'))
+              .maxLines(1).textOverflow({ overflow: TextOverflow.Ellipsis })
+          }
+
+          if (this.photoOnlyPost() && (this.tweet.attachments?.length ?? 0) > 1) {
+            this.PhotoPageIndicator()
+          }
+
+          if (this.translationReplaceOriginal && this.translatedText.length > 0) {
+            Text() { EmojiSpans(this.getUIContext(), this.translatedText, $r('sys.float.Body_L'), this.systemEmojiEnabled) }
+              .fontSize($r('sys.float.Body_L'))
+              .fontFamily(this.appFontFamily === DEFAULT_APP_FONT_FAMILY ? this.contentFontFamily : this.appFontFamily)
+              .fontWeight(FontWeight.Medium)
+              .fontColor($r('app.color.text_primary'))
+              .width('100%')
+              .maxLines(this.textExpanded || !this.textIsLong() ? LONG_TEXT_MAX_LINES_EXPANDED :
+                LONG_TEXT_MAX_LINES)
+              .textOverflow({ overflow: TextOverflow.Ellipsis })
+              .copyOption(CopyOptions.LocalDevice)
+              .accessibilityText(this.translatedText)
+              .editMenuOptions(new EmojiCopyMenu(getContext(this) as common.UIAbilityContext, this.translatedText, this.systemEmojiEnabled))
+              .onClick((): void => {
+                this.onOpen(this.tweet, this.sharedElementId);
+              })
+          } else if (this.tweet.text.length > 0 && this.tweet.presentation?.visibility?.hidden !== true) {
+            Text() {
+              ForEach(this.mentionSegments(), (segment: MentionSegment) => {
+                if (segment.mention) {
+                  EmojiSpans(this.getUIContext(), segment.text, $r('sys.float.Body_L'), this.systemEmojiEnabled, (): void => {
+                      this.onMentionTapped(segment.handle);
+                  })
+                } else if (segment.hashtag.length > 0) {
+                  EmojiSpans(this.getUIContext(), segment.text, $r('sys.float.Body_L'), this.systemEmojiEnabled, (): void => {
+                      requestSearch(segment.text);
+                  })
+                } else if (segment.url.length > 0) {
+                  EmojiSpans(this.getUIContext(), segment.text, $r('sys.float.Body_L'), this.systemEmojiEnabled, (): void => {
+                      const context: common.UIAbilityContext =
+                        this.getUIContext().getHostContext() as common.UIAbilityContext;
+                      openExternalLink(context, segment.url);
+                  })
+                } else {
+                  EmojiSpans(this.getUIContext(), segment.text, $r('sys.float.Body_L'), this.systemEmojiEnabled)
+                }
+              })
+            }
+              .fontSize($r('sys.float.Body_L'))
+              .fontFamily(this.appFontFamily === DEFAULT_APP_FONT_FAMILY ? this.contentFontFamily : this.appFontFamily)
+              .fontWeight(FontWeight.Medium)
+              .fontColor($r('app.color.text_primary'))
+              .width('100%')
+              .maxLines(this.textExpanded || !this.textIsLong() ? LONG_TEXT_MAX_LINES_EXPANDED :
+                LONG_TEXT_MAX_LINES)
+              .textOverflow({ overflow: TextOverflow.Ellipsis })
+              .copyOption(CopyOptions.LocalDevice)
+              .accessibilityText(this.tweet.text)
+              .editMenuOptions(new EmojiCopyMenu(getContext(this) as common.UIAbilityContext, this.tweet.text, this.systemEmojiEnabled))
+              // Clickable spans handle mentions, hashtags and links first. This
+              // handler opens the post when the rest of the body is tapped.
+              .onClick((): void => {
+                this.onOpen(this.tweet, this.sharedElementId);
+              })
+          }
+
+          if (this.textIsLong() && this.tweet.presentation?.visibility?.hidden !== true) {
+            Text(this.textExpanded ? $r('app.string.post_show_less') :
+              $r('app.string.post_show_more')).fontFamily(this.appFontFamily)
+              .fontSize($r('sys.float.Body_M'))
+              .fontWeight(FontWeight.Medium)
+              .fontColor($r('app.color.text_accent'))
+              .margin({ top: 4 })
+              .onClick((): void => {
+                this.textExpanded = !this.textExpanded;
+              })
+          }
+
+          if (this.translating) {
+            Row({ space: 6 }) {
+              LoadingProgress()
+                .width(16)
+                .height(16)
+                .color(this.accentColor)
+              Text($r('app.string.post_translating')).fontFamily(this.appFontFamily)
+                .fontSize($r('sys.float.Body_S'))
+                .fontColor($r('app.color.text_secondary'))
+            }
+            .margin({ top: 6 })
+          }
+
+          if (this.translatedText.length > 0 && !this.translationReplaceOriginal && this.tweet.presentation?.visibility?.hidden !== true) {
+            Text() { EmojiSpans(this.getUIContext(), this.translatedText, $r('sys.float.Body_L'), this.systemEmojiEnabled) }.fontFamily(this.appFontFamily)
+              .fontSize($r('sys.float.Body_L'))
+              .fontWeight(FontWeight.Medium)
+              .fontColor($r('app.color.text_primary'))
+              .width('100%')
+              .padding({ start: LengthMetrics.vp(10) })
+              .borderWidth({ start: LengthMetrics.vp(2) })
+              .borderColor(this.accentColor)
+              .margin({ top: 8 })
+          }
+
         }
         .layoutWeight(1)
         .alignItems(HorizontalAlign.Start)
+        .onClick((): void => {
+          this.onOpen(this.tweet, this.sharedElementId);
+        })
       }
       .width('100%')
       .alignItems(VerticalAlign.Top)
+      .padding({ left: 12, right: 12, top: 12 })
+      .onAreaChange((_oldValue: Area, newValue: Area): void => {
+        const top: number = Number(newValue.position.y) + 12;
+        if (Math.abs(top - this.avatarTop) > 0.5) {
+          this.avatarTop = top;
+        }
+      })
+      this.PostAttachments()
+      this.PostFooter()
     }
     .width('100%')
-    .padding(12)
-    .backgroundColor($r('app.color.bg_page'))
-    .border({ width: { bottom: 1 }, color: $r('app.color.divider') })
+    .backgroundColor(this.transparentBackground ? Color.Transparent :
+      avatarTintSurface(this.avatarPalette, this.avatarUrl(), this.avatarTintEnabled,
+      this.themeDisplayMode, this.themeDarkSurface, this.avatarThemeDark))
+    .onAreaChange((_oldValue: Area, newValue: Area): void => {
+      const width: number = Number(newValue.width);
+      if (width > 0 && Math.abs(width - this.cardWidth) > 1) {
+        this.cardWidth = width;
+      }
+      const height: number = Number(newValue.height);
+      if (Math.abs(height - this.cardHeight) > 0.5) {
+        this.cardHeight = height;
+      }
+    })
+    .overlay(this.ConversationLines(), { align: Alignment.TopStart, offset: { x: isAppRtl(this.appLocale) ? -33 : 33, y: 0 } })
+    .border({ width: { bottom: this.connectBelow ? 0 : 1 }, color: $r('app.color.divider') })
+    .scale({ x: this.pressScale, y: this.pressScale })
     .visualEffect(new hdsEffect.HdsEffectBuilder()
       .pointLight({
         illuminatedType: hdsEffect.PointLightIlluminatedType.BORDER_CONTENT
       })
       .buildEffect())
+    // The row follows the destination page: the post page leads, the row
+    // tracks it, which is what turns the tap into a list expansion instead of
+    // two independent elements flying to a meeting point.
+    .geometryTransition(this.sharedElementId, { follow: true })
+    // Paired with the transition above, as in the official long-take samples:
+    // the near-opaque transition keeps the row's node alive for the length of
+    // the expansion instead of letting it be torn down the moment the list
+    // rebuilds under the opening page.
+    .transition(TransitionEffect.opacity(0.99))
+    .onClick((): void => {
+      this.onOpen(this.tweet, this.sharedElementId);
+    })
+    .onTouch((event?: TouchEvent): void => {
+      this.onCardTouch(event);
+    })
+    .onVisibleAreaApproximateChange({ ratios: [0, 0.1], expectedUpdateInterval: 200 },
+      (_visible: boolean, ratio: number): void => {
+        this.visibleForViews = ratio > 0.1;
+        if (ratio > 0.1) {
+          postViewCounts.requestMissing(this.tweet);
+          if (this.recordRecommendationSeen) { homeSeenTweetStore.observe(getContext(this), this.tweet.id); }
+        }
+      })
+    }
   }
 }

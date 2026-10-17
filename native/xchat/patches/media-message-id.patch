@@ -1,0 +1,463 @@
+diff --git a/crates/core/src/core.rs b/crates/core/src/core.rs
+index 20fd878..7a51605 100644
+--- a/crates/core/src/core.rs
++++ b/crates/core/src/core.rs
+@@ -1746,7 +1746,11 @@ impl ChatCore {
+             thrift_attachments,
+         )?;
+ 
+-        let message_id = Self::generate_message_id();
++        let message_id = params
++            .message_id
++            .take()
++            .filter(|id| !id.is_empty())
++            .unwrap_or_else(Self::generate_message_id);
+         let mut api_params = crate::pipeline::EncryptAndSignParams::new(
+             &ckey,
+             &signing_kp.private,
+@@ -1802,7 +1806,7 @@ impl ChatCore {
+             thrift_attachments,
+         )?;
+ 
+-        let message_id = Self::generate_message_id();
++        let message_id = params.message_id.take().filter(|id| !id.is_empty()).unwrap_or_else(Self::generate_message_id);
+         let mut api_params = crate::pipeline::EncryptAndSignParams::new(
+             &ckey,
+             &signing_kp.private,
+@@ -8041,6 +8045,31 @@ mod tests {
+ 
+     // ChatCore-level roundtrips: reply / add-reaction / remove-reaction
+ 
++    #[test]
++    fn supplied_message_id_is_signed_and_tampering_is_rejected() {
++        let core = ChatCore::new();
++        let reg = core.generate_keypairs().unwrap();
++        let ckey = core.generate_conversation_key().unwrap();
++        let mut params = crate::EncryptMessageParams::new("conv-1", "attachment caption")
++            .with_identity("sender-1", "pkv")
++            .with_conversation_key(ckey.to_bytes(), "9001");
++        params.message_id = Some("upload-message-id".into());
++        let payload = core.encrypt_message(params).unwrap();
++        assert_eq!(payload.message_id, "upload-message-id");
++        let keys = [("9001".to_string(), ckey)].into_iter().collect();
++        let signing_keys = [signing_key_entry_for(&reg, "sender-1")];
++        let event = wrap_signed_payload(&payload, &payload.message_id, "sender-1", "conv-1");
++        match core.decrypt_event(&event, &keys, &signing_keys).unwrap() {
++            Event::Message(msg) => {
++                assert!(msg.verified);
++                assert_eq!(msg.text(), Some("attachment caption"));
++            }
++            other => panic!("expected Message, got {:?}", other),
++        }
++        let tampered = wrap_signed_payload(&payload, "different-id", "sender-1", "conv-1");
++        assert!(core.decrypt_event(&tampered, &keys, &signing_keys).is_err());
++    }
++
+     #[test]
+     fn encrypt_reply_signature_verifies_on_decrypt() {
+         let core = ChatCore::new();
+diff --git a/crates/core/src/params.rs b/crates/core/src/params.rs
+index 1095869..935ee2d 100644
+--- a/crates/core/src/params.rs
++++ b/crates/core/src/params.rs
+@@ -42,6 +42,9 @@ pub struct EncryptMessageParams {
+     pub conversation_id: String,
+     /// The plaintext message text.
+     pub text: String,
++    /// Stable message ID shared with an attachment upload. `None` or an empty
++    /// string generates a fresh ID. This ID participates in the signature.
++    pub message_id: Option<String>,
+     /// User ID of the sender; resolves from the session identity when unset.
+     pub sender_id: Option<String>,
+     /// Version of the signing key used to sign the message; resolves from the
+@@ -70,6 +73,7 @@ impl EncryptMessageParams {
+         Self {
+             conversation_id: conversation_id.into(),
+             text: text.into(),
++            message_id: None,
+             sender_id: None,
+             signing_key_version: None,
+             conversation_key: None,
+@@ -119,6 +123,7 @@ impl std::fmt::Debug for EncryptMessageParams {
+         f.debug_struct("EncryptMessageParams")
+             .field("conversation_id", &self.conversation_id)
+             .field("text", &self.text)
++            .field("message_id", &self.message_id)
+             .field("sender_id", &self.sender_id)
+             .field("signing_key_version", &self.signing_key_version)
+             .field(
+@@ -155,6 +160,8 @@ pub struct EncryptReplyParams {
+     pub conversation_id: String,
+     /// The plaintext reply text.
+     pub text: String,
++    /// Stable upload ID, applied before encryption and signing.
++    pub message_id: Option<String>,
+     /// Base64 of the raw signed event being replied to. The reply preview
+     /// (sequence id, sender, text, entities, attachments) is derived from it
+     /// and the raw event is embedded so recipients can validate the preview.
+@@ -214,6 +221,7 @@ impl EncryptReplyParams {
+         Self {
+             conversation_id: conversation_id.into(),
+             text: text.into(),
++            message_id: None,
+             reply_to_event: non_empty(reply_to_event),
+             reply_to_edit_event: None,
+             reply_to_ckces: None,
+@@ -772,6 +780,7 @@ mod tests {
+     fn assert_message_params_eq(a: &EncryptMessageParams, b: &EncryptMessageParams) {
+         assert_eq!(a.conversation_id, b.conversation_id);
+         assert_eq!(a.text, b.text);
++        assert_eq!(a.message_id, b.message_id);
+         assert_eq!(a.sender_id, b.sender_id);
+         assert_eq!(a.signing_key_version, b.signing_key_version);
+         assert_eq!(a.conversation_key, b.conversation_key);
+@@ -798,6 +807,7 @@ mod tests {
+         let full = EncryptMessageParams {
+             conversation_id: "conv-1".into(),
+             text: "hi".into(),
++            message_id: None,
+             sender_id: Some("me".into()),
+             signing_key_version: Some("2".into()),
+             conversation_key: Some(ckey),
+diff --git a/crates/dotnet/dotnet/ChatXdk.Tests/ChatTests.cs b/crates/dotnet/dotnet/ChatXdk.Tests/ChatTests.cs
+index f9600b6..e11c277 100644
+--- a/crates/dotnet/dotnet/ChatXdk.Tests/ChatTests.cs
++++ b/crates/dotnet/dotnet/ChatXdk.Tests/ChatTests.cs
+@@ -371,6 +371,22 @@ namespace ChatXdk.Tests
+             Assert.False(payload.ShouldNotify);
+         }
+ 
++        [Theory]
++        [InlineData("upload-message-id")]
++        [InlineData("")]
++        public void EncryptMessage_PreservesAttachmentUploadId(string messageId)
++        {
++            using var chat = CreateUnlocked();
++            var payload = chat.EncryptMessage(new EncryptMessageParams("conv-1", "caption")
++            {
++                SenderId = "user-1", SigningKeyVersion = "s1",
++                ConversationKey = NewConvKey(chat), ConversationKeyVersion = "v1",
++                MessageId = messageId,
++            });
++            Assert.NotEmpty(payload.MessageId);
++            if (messageId.Length > 0) Assert.Equal(messageId, payload.MessageId);
++        }
++
+         [Fact]
+         public void EncryptMessage_WithTtl_Succeeds()
+         {
+diff --git a/crates/dotnet/dotnet/ChatXdk/Chat.cs b/crates/dotnet/dotnet/ChatXdk/Chat.cs
+index 85a303b..f09b57b 100644
+--- a/crates/dotnet/dotnet/ChatXdk/Chat.cs
++++ b/crates/dotnet/dotnet/ChatXdk/Chat.cs
+@@ -976,6 +976,7 @@ namespace ChatXdk
+             {
+                 ["conversation_id"] = p.ConversationId,
+                 ["text"] = p.Text,
++                ["message_id"] = p.MessageId,
+                 ["sender_id"] = p.SenderId,
+                 ["signing_key_version"] = p.SigningKeyVersion,
+                 ["conversation_key"] = p.ConversationKey != null ? Convert.ToBase64String(p.ConversationKey) : null,
+diff --git a/crates/dotnet/dotnet/ChatXdk/Types.cs b/crates/dotnet/dotnet/ChatXdk/Types.cs
+index 68589e7..ede7e8b 100644
+--- a/crates/dotnet/dotnet/ChatXdk/Types.cs
++++ b/crates/dotnet/dotnet/ChatXdk/Types.cs
+@@ -484,6 +484,8 @@ namespace ChatXdk
+         public string ConversationId { get; }
+         /// <summary>Plaintext message body to encrypt.</summary>
+         public string Text { get; }
++        /// <summary>Stable attachment-upload message ID; null or empty generates a fresh ID.</summary>
++        public string? MessageId { get; init; }
+         /// <summary>User ID of the sender; resolves from the session identity when null.</summary>
+         public string? SenderId { get; init; }
+         /// <summary>Version of the sender's signing key; resolves from the session identity when null.</summary>
+diff --git a/crates/dotnet/src/lib.rs b/crates/dotnet/src/lib.rs
+index 2bb6f8c..6c70c7b 100644
+--- a/crates/dotnet/src/lib.rs
++++ b/crates/dotnet/src/lib.rs
+@@ -216,6 +216,8 @@ struct FfiEncryptMessageParams {
+     conversation_id: String,
+     text: String,
+     #[serde(default)]
++    message_id: Option<String>,
++    #[serde(default)]
+     sender_id: Option<String>,
+     #[serde(default)]
+     signing_key_version: Option<String>,
+@@ -1264,6 +1266,7 @@ pub extern "C" fn chat_xdk_encrypt_message(
+         };
+ 
+         let mut params = EncryptMessageParams::new(p.conversation_id, p.text);
++        params.message_id = p.message_id;
+         params.sender_id = p.sender_id;
+         params.signing_key_version = p.signing_key_version;
+         params.conversation_key = ckey_bytes;
+diff --git a/crates/go/src/lib.rs b/crates/go/src/lib.rs
+index 941bb98..698a961 100644
+--- a/crates/go/src/lib.rs
++++ b/crates/go/src/lib.rs
+@@ -886,6 +886,8 @@ struct FfiEncryptMessageParams {
+     conversation_id: String,
+     text: String,
+     #[serde(default)]
++    message_id: Option<String>,
++    #[serde(default)]
+     sender_id: Option<String>,
+     #[serde(default)]
+     signing_key_version: Option<String>,
+@@ -1330,6 +1332,7 @@ pub extern "C" fn chat_xdk_encrypt_message(
+         };
+ 
+         let mut params = EncryptMessageParams::new(p.conversation_id, p.text);
++        params.message_id = p.message_id;
+         params.sender_id = p.sender_id;
+         params.signing_key_version = p.signing_key_version;
+         params.conversation_key = ckey_bytes;
+diff --git a/crates/jvm/java/chatxdk/src/main/java/com/x/chatxdk/Chat.java b/crates/jvm/java/chatxdk/src/main/java/com/x/chatxdk/Chat.java
+index 3f9c7d8..4c8fe76 100644
+--- a/crates/jvm/java/chatxdk/src/main/java/com/x/chatxdk/Chat.java
++++ b/crates/jvm/java/chatxdk/src/main/java/com/x/chatxdk/Chat.java
+@@ -906,6 +906,9 @@ public final class Chat implements AutoCloseable {
+         ObjectNode n = ChatJson.MAPPER.createObjectNode();
+         n.put("conversation_id", p.conversationId);
+         n.put("text", p.text);
++        if (p.messageId != null) {
++            n.put("message_id", p.messageId);
++        }
+         putIdentityAndKey(n, p.senderId, p.signingKeyVersion, p.conversationKey, p.conversationKeyVersion);
+         if (p.entities != null) {
+             n.set("entities", ChatJson.MAPPER.valueToTree(serializeEntities(p.entities)));
+diff --git a/crates/jvm/java/chatxdk/src/main/java/com/x/chatxdk/Types.java b/crates/jvm/java/chatxdk/src/main/java/com/x/chatxdk/Types.java
+index a2ee0a4..af48298 100644
+--- a/crates/jvm/java/chatxdk/src/main/java/com/x/chatxdk/Types.java
++++ b/crates/jvm/java/chatxdk/src/main/java/com/x/chatxdk/Types.java
+@@ -481,6 +481,9 @@ public final class Types {
+         /** The plaintext message body. */
+         public final String text;
+ 
++        /** Stable attachment-upload message ID; null or empty generates a fresh ID. */
++        public String messageId;
++
+         /** User ID of the sender; resolves from the session identity when null. */
+         public String senderId;
+ 
+diff --git a/crates/jvm/java/chatxdk/src/test/java/com/x/chatxdk/ChatTest.java b/crates/jvm/java/chatxdk/src/test/java/com/x/chatxdk/ChatTest.java
+index 16be8d6..31100d2 100644
+--- a/crates/jvm/java/chatxdk/src/test/java/com/x/chatxdk/ChatTest.java
++++ b/crates/jvm/java/chatxdk/src/test/java/com/x/chatxdk/ChatTest.java
+@@ -284,6 +284,23 @@ class ChatTest {
+         }
+     }
+ 
++    @Test
++    void encryptMessagePreservesAttachmentUploadId() throws Exception {
++        try (Chat chat = createUnlocked()) {
++            for (String id : new String[]{"upload-message-id", ""}) {
++                EncryptMessageParams p = new EncryptMessageParams("conv-1", "caption");
++                p.senderId = "user-1";
++                p.signingKeyVersion = "s1";
++                p.conversationKey = newConvKey(chat);
++                p.conversationKeyVersion = "v1";
++                p.messageId = id;
++                SendPayload payload = chat.encryptMessage(p);
++                assertFalse(payload.messageId.isEmpty());
++                if (!id.isEmpty()) assertEquals(id, payload.messageId);
++            }
++        }
++    }
++
+     @Test
+     void encryptMessageMixedAttachmentTypesThrows() throws Exception {
+         try (Chat chat = createUnlocked()) {
+diff --git a/crates/pyo3/python/tests/test_api.py b/crates/pyo3/python/tests/test_api.py
+index baf650e..13ce671 100644
+--- a/crates/pyo3/python/tests/test_api.py
++++ b/crates/pyo3/python/tests/test_api.py
+@@ -279,6 +279,19 @@ class TestApiShapes(unittest.TestCase):
+                 conversation_key=conv_key,
+             )
+ 
++    def test_encrypt_message_preserves_attachment_upload_id(self):
++        chat, v = self._unlocked_chat()
++        for message_id in ("upload-message-id", ""):
++            payload = chat.encrypt_message(
++                "conv-1", "caption", message_id=message_id,
++                sender_id="me", signing_key_version="1",
++                conversation_key=base64.b64decode(v["conversation_key_b64"]),
++                conversation_key_version="1",
++            )
++            self.assertTrue(payload.message_id)
++            if message_id:
++                self.assertEqual(payload.message_id, message_id)
++
+     def test_encrypt_reply_shape(self):
+         chat, v = self._unlocked_chat()
+ 
+diff --git a/crates/pyo3/src/lib.rs b/crates/pyo3/src/lib.rs
+index 5116080..d89e92f 100644
+--- a/crates/pyo3/src/lib.rs
++++ b/crates/pyo3/src/lib.rs
+@@ -750,8 +750,8 @@ impl Chat {
+ 
+     /// Encrypt a message for the X API.
+     ///
+-    /// The SDK generates the message id and returns it in the payload; read it
+-    /// back from ``payload.message_id`` (do not pass one in).
++    /// The SDK generates the message id unless ``message_id`` is supplied for
++    /// an attachment upload; read it back from ``payload.message_id``.
+     ///
+     /// Args:
+     ///     conversation_id: The conversation ID.
+@@ -769,8 +769,9 @@ impl Chat {
+     ///     attachments: Optional list of attachment dicts (each with "attachment_type" key).
+     ///     should_notify: Whether to send a push notification (default: True).
+     ///     ttl_msec: Optional TTL in milliseconds for disappearing messages.
++    ///     message_id: Stable attachment-upload message ID; None or empty generates a fresh ID.
+     #[allow(clippy::too_many_arguments)]
+-    #[pyo3(signature = (conversation_id, text, *, sender_id=None, signing_key_version=None, conversation_key=None, conversation_key_version=None, entities=None, attachments=None, should_notify=None, ttl_msec=None))]
++    #[pyo3(signature = (conversation_id, text, *, sender_id=None, signing_key_version=None, conversation_key=None, conversation_key_version=None, entities=None, attachments=None, should_notify=None, ttl_msec=None, message_id=None))]
+     fn encrypt_message(
+         &self,
+         conversation_id: &str,
+@@ -783,8 +784,10 @@ impl Chat {
+         attachments: Option<Vec<HashMap<String, Py<PyAny>>>>,
+         should_notify: Option<bool>,
+         ttl_msec: Option<i64>,
++        message_id: Option<String>,
+     ) -> PyResult<SendPayload> {
+         let mut params = EncryptMessageParams::new(conversation_id, text);
++        params.message_id = message_id;
+         params.sender_id = sender_id;
+         params.signing_key_version = signing_key_version;
+         params.conversation_key = conversation_key;
+diff --git a/crates/wasm/js/index.d.ts b/crates/wasm/js/index.d.ts
+index a6fb289..1e2c077 100644
+--- a/crates/wasm/js/index.d.ts
++++ b/crates/wasm/js/index.d.ts
+@@ -205,6 +205,8 @@ export interface EncryptMessageParams {
+   conversationId: string;
+   /** The plaintext message text. */
+   text: string;
++  /** Stable attachment-upload message ID; omitted or empty generates a fresh ID. */
++  messageId?: string | null;
+   /** User ID of the sender; resolves from the session identity (setIdentity) when omitted. */
+   senderId?: string | null;
+   /** Version of the signing key used to sign the message; resolves from the session identity when omitted. */
+diff --git a/crates/wasm/js/tests/api.test.mjs b/crates/wasm/js/tests/api.test.mjs
+index 79a51c6..3550111 100644
+--- a/crates/wasm/js/tests/api.test.mjs
++++ b/crates/wasm/js/tests/api.test.mjs
+@@ -299,6 +299,15 @@ async function main() {
+   assert.equal(payload.signatureInfo.signatureVersion, "7");
+   assert.equal(payload.conversationKeyVersion, "1");
+ 
++  for (const messageId of ["upload-message-id", ""]) {
++    const uploaded = chat.encryptMessage({
++      senderId: "111", conversationId: "conv-1", conversationKey: convKey,
++      text: "caption", conversationKeyVersion: "1", signingKeyVersion: "1", messageId,
++    });
++    assert.ok(uploaded.messageId.length > 0);
++    if (messageId) assert.equal(uploaded.messageId, messageId);
++  }
++
+   // 4b. encryptReply produces a signed payload like encryptMessage
+   const replyPayload = chat.encryptReply({
+     senderId: "111",
+diff --git a/crates/wasm/src/lib.rs b/crates/wasm/src/lib.rs
+index 9fb99b2..86b4401 100644
+--- a/crates/wasm/src/lib.rs
++++ b/crates/wasm/src/lib.rs
+@@ -462,11 +462,12 @@ impl Chat {
+     /// `ttlMsec`.
+     ///
+     /// The SDK generates the message id and returns it as `messageId` on the
+-    /// result; callers do not pass one.
++    /// result, unless an optional `messageId` is supplied for an attachment upload.
+     #[wasm_bindgen(js_name = encryptMessage)]
+     pub fn encrypt_message(&self, params: JsValue) -> Result<JsValue, JsError> {
+         let p: JsEncryptMessageParams = from_js_params("encryptMessage", params)?;
+         let mut core_params = chat_xdk_core::EncryptMessageParams::new(p.conversation_id, p.text);
++        core_params.message_id = p.message_id;
+         core_params.sender_id = p.sender_id;
+         core_params.signing_key_version = p.signing_key_version;
+         core_params.conversation_key = p.conversation_key;
+@@ -1055,6 +1056,7 @@ fn entity_tuples_to_descs(tuples: Vec<(i32, i32, String)>) -> Vec<chat_xdk_core:
+ struct JsEncryptMessageParams {
+     conversation_id: String,
+     text: String,
++    message_id: Option<String>,
+     sender_id: Option<String>,
+     signing_key_version: Option<String>,
+     conversation_key: Option<Vec<u8>>,
+diff --git a/docs/API.md b/docs/API.md
+index 4041f80..abf0ba1 100644
+--- a/docs/API.md
++++ b/docs/API.md
+@@ -703,7 +703,7 @@ type ConversationKeyMap = { [version: string]: Uint8Array };
+ 
+ | # | Method | Rust | JS | Python | Go | JVM | .NET |
+ |---|--------|------|-----|--------|-----|------|------|
+-| 26 | **encrypt_message** | `encrypt_message(EncryptMessageParams) → SendPayload` | `encryptMessage(params: EncryptMessageParams) → SendPayload` | `encrypt_message(conversation_id, text, *, sender_id=None, signing_key_version=None, conversation_key=None, conversation_key_version=None, entities=None, attachments=None, should_notify=None, ttl_msec=None) → SendPayload` | `EncryptMessage(params EncryptMessageParams) (*SendPayload, error)` | `encryptMessage(EncryptMessageParams)` | `EncryptMessage(EncryptMessageParams)` |
++| 26 | **encrypt_message** | `encrypt_message(EncryptMessageParams) → SendPayload` | `encryptMessage(params: EncryptMessageParams) → SendPayload` | `encrypt_message(conversation_id, text, *, sender_id=None, signing_key_version=None, conversation_key=None, conversation_key_version=None, entities=None, attachments=None, should_notify=None, ttl_msec=None, message_id=None) → SendPayload` | `EncryptMessage(params EncryptMessageParams) (*SendPayload, error)` | `encryptMessage(EncryptMessageParams)` | `EncryptMessage(EncryptMessageParams)` |
+ | 27 | **encrypt_reply** | `encrypt_reply(EncryptReplyParams) → SendPayload` | `encryptReply(params: EncryptReplyParams) → SendPayload` | `encrypt_reply(conversation_id, text, reply_to_event=None, *, reply_to_edit_event=None, reply_to_ckces=None, reply_to_sequence_id=None, reply_to_sender_id=None, reply_to_text=None, reply_to_entities=None, reply_to_attachments=None, …encrypt_message keyword optionals…) → SendPayload` | `EncryptReply(params EncryptReplyParams) (*SendPayload, error)` | `encryptReply(EncryptReplyParams)` | `EncryptReply(EncryptReplyParams)` |
+ | 28 | **encrypt_add_reaction** | `encrypt_add_reaction(&EncryptReactionParams) → SendPayload` | `encryptAddReaction(params: EncryptReactionParams) → SendPayload` | `encrypt_add_reaction(target_event, emoji, *, conversation_id=None, target_message_sequence_id=None, sender_id=None, signing_key_version=None, conversation_key=None, conversation_key_version=None) → SendPayload` | `EncryptAddReaction(params EncryptReactionParams) (*SendPayload, error)` | `encryptAddReaction(EncryptReactionParams)` | `EncryptAddReaction(EncryptReactionParams)` |
+ | 29 | **encrypt_remove_reaction** | `encrypt_remove_reaction(&EncryptReactionParams) → SendPayload` | `encryptRemoveReaction(params: EncryptReactionParams) → SendPayload` | `encrypt_remove_reaction(…same args as encrypt_add_reaction…) → SendPayload` | `EncryptRemoveReaction(params EncryptReactionParams) (*SendPayload, error)` | `encryptRemoveReaction(EncryptReactionParams)` | `EncryptRemoveReaction(EncryptReactionParams)` |
+@@ -726,8 +726,11 @@ idiom): `conversation_id` and `text`. Everything else is an optional override:
+ An omitted value and its explicit equivalent produce byte-identical signed
+ output for the same logical inputs (Rust: `params.with_identity(…)` /
+ `params.with_conversation_key(…)`).
+-The SDK generates the `message_id` itself and returns it on the `SendPayload`
+-(see below); callers never pass one in.
++The SDK generates the `message_id` and returns it on the `SendPayload` unless
++an optional stable attachment-upload ID is supplied: `message_id` in Rust/Python,
++`messageId` in JS/JVM, `MessageID` in Go, or `MessageId` in .NET. Omitted or empty
++values keep automatic ID generation. The supplied ID participates in the signature
++and must match attachment initialization, finalization, and delivery retries.
+ The `entities` parameter shape is split by binding: **Rust, .NET, and JVM**
+ take structured `EntityDescriptor` objects (`{ start, end, entity_type }`),
+ while **JS, Python, and Go** take positional `[start, end, type]` tuples
+diff --git a/go/chatxdk/chatxdk_test.go b/go/chatxdk/chatxdk_test.go
+index a84ecbd..2842a48 100644
+--- a/go/chatxdk/chatxdk_test.go
++++ b/go/chatxdk/chatxdk_test.go
+@@ -249,6 +249,28 @@ func TestLockAndUnlockState(t *testing.T) {
+ 	}
+ }
+ 
++func TestEncryptMessagePreservesAttachmentUploadID(t *testing.T) {
++	v := loadVectors(t)
++	chat := New()
++	defer chat.Close()
++	if err := chat.ImportKeys(v.privateKeys(t)); err != nil {
++		t.Fatalf("ImportKeys failed: %v", err)
++	}
++	for _, id := range []string{"upload-message-id", ""} {
++		payload, err := chat.EncryptMessage(EncryptMessageParams{
++			ConversationID: "conv-1", Text: "caption", MessageID: id,
++			SenderID: "me", SigningKeyVersion: "1",
++			ConversationKey: v.conversationKey(t), ConversationKeyVersion: "1",
++		})
++		if err != nil {
++			t.Fatalf("EncryptMessage failed: %v", err)
++		}
++		if payload.MessageID == "" || (id != "" && payload.MessageID != id) {
++			t.Fatal("attachment upload message ID was not preserved")
++		}
++	}
++}
++
+ func TestUtilityHelpers(t *testing.T) {
+ 	for plaintextSize, want := range map[uint64]uint64{
+ 		0: 24, 1: 42, 1024: 1065, 1025: 1083,
+diff --git a/go/chatxdk/types.go b/go/chatxdk/types.go
+index e10bc54..20ae856 100644
+--- a/go/chatxdk/types.go
++++ b/go/chatxdk/types.go
+@@ -169,6 +169,7 @@ type GroupCreateParams struct {
+ type EncryptMessageParams struct {
+ 	ConversationID         string                 `json:"conversation_id"`
+ 	Text                   string                 `json:"text"`
++	MessageID              string                 `json:"message_id,omitempty"` // stable attachment-upload ID; empty = generate
+ 	SenderID               string                 `json:"sender_id,omitempty"`                // empty = session identity
+ 	SigningKeyVersion      string                 `json:"signing_key_version,omitempty"`      // empty = session identity
+ 	ConversationKey        []byte                 `json:"conversation_key,omitempty"`         // raw 32-byte key; nil = key cache

@@ -1,12 +1,80 @@
 {
   "color": [
     {
+      "name": "notification_recommendation",
+      "value": "#A56DE2"
+    },
+    {
+      "name": "media_viewer_black_background",
+      "value": "#000000"
+    },
+    {
+      "name": "video_feed_post_scrim",
+      "value": "#99000000"
+    },
+    {
+      "name": "video_feed_player_surface",
+      "value": "#000000"
+    },
+    {
+      "name": "video_feed_backdrop_start",
+      "value": "#26313A"
+    },
+    {
+      "name": "video_feed_backdrop_end",
+      "value": "#0B1118"
+    },
+    {
+      "name": "video_feed_backdrop_scrim",
+      "value": "#66000000"
+    },
+    {
+      "name": "video_feed_secondary_text",
+      "value": "#CCFFFFFF"
+    },
+    {
       "name": "start_window_background",
       "value": "#FFFFFF"
     },
     {
       "name": "brand",
       "value": "#007DFF"
+    },
+    {
+      "name": "theme_system_blue",
+      "value": "#007DFF"
+    },
+    {
+      "name": "theme_x_blue",
+      "value": "#1D9BF0"
+    },
+    {
+      "name": "theme_yellow",
+      "value": "#F7B500"
+    },
+    {
+      "name": "theme_pink",
+      "value": "#F91880"
+    },
+    {
+      "name": "theme_purple",
+      "value": "#7856FF"
+    },
+    {
+      "name": "theme_orange",
+      "value": "#FF7A00"
+    },
+    {
+      "name": "theme_green",
+      "value": "#00BA7C"
+    },
+    {
+      "name": "theme_cat_blue",
+      "value": "#345483"
+    },
+    {
+      "name": "theme_huawei_red",
+      "value": "#D8333A"
     },
     {
       "name": "compose_material_overlay",
@@ -17,19 +85,43 @@
       "value": "#99E8F6FF"
     },
     {
+      "name": "video_control_gradient_top",
+      "value": "#00000000"
+    },
+    {
+      "name": "video_control_gradient_bottom",
+      "value": "#DD000000"
+    },
+    {
+      "name": "video_control_progress_track",
+      "value": "#80FFFFFF"
+    },
+    {
+      "name": "video_control_glass_tint",
+      "value": "#704A4548"
+    },
+    {
+      "name": "video_control_glass_border",
+      "value": "#55FFFFFF"
+    },
+    {
       "name": "like",
-      "value": "#F91880"
+      "value": "#B80058"
     },
     {
       "name": "repost",
-      "value": "#00BA7C"
+      "value": "#007A52"
     },
     {
       "name": "danger",
-      "value": "#F4212E"
+      "value": "#B4232D"
     },
     {
       "name": "bg_page",
+      "value": "#FFFFFF"
+    },
+    {
+      "name": "gentle_bg_page",
       "value": "#FFFFFF"
     },
     {
@@ -37,11 +129,23 @@
       "value": "#F7F9F9"
     },
     {
+      "name": "gentle_bg_card",
+      "value": "#F7F9F9"
+    },
+    {
       "name": "bg_field",
       "value": "#EFF3F4"
     },
     {
+      "name": "gentle_bg_field",
+      "value": "#EFF3F4"
+    },
+    {
       "name": "bg_secondary_btn",
+      "value": "#EFF3F4"
+    },
+    {
+      "name": "gentle_bg_secondary_btn",
       "value": "#EFF3F4"
     },
     {
@@ -53,7 +157,19 @@
       "value": "#536471"
     },
     {
+      "name": "text_accent",
+      "value": "#005CB8"
+    },
+    {
+      "name": "text_on_accent",
+      "value": "#FFFFFF"
+    },
+    {
       "name": "text_on_brand",
+      "value": "#FFFFFF"
+    },
+    {
+      "name": "text_on_inverse",
       "value": "#FFFFFF"
     },
     {
@@ -61,7 +177,23 @@
       "value": "#EFF3F4"
     },
     {
+      "name": "reply_connector",
+      "value": "#CFD9DE"
+    },
+    {
+      "name": "title_bar_scrim",
+      "value": "#FFFFFFFF"
+    },
+    {
+      "name": "gentle_title_bar_scrim",
+      "value": "#FFFFFFFF"
+    },
+    {
       "name": "profile_hero_scrim",
+      "value": "#52000000"
+    },
+    {
+      "name": "reply_composer_scrim",
       "value": "#52000000"
     },
     {
@@ -79,6 +211,517 @@
     {
       "name": "profile_surface",
       "value": "#FFFFFF"
+    },
+    {
+      "name": "profile_title_scrim",
+      "value": "#D9FFFFFF"
+    },
+    {
+      "name": "pill_avatar_ring",
+      "value": "#D9FFFFFF"
+    },
+    {
+      "name": "mid_autumn_moon",
+      "value": "#FFF2C9"
+    },
+    {
+      "name": "mid_autumn_moon_glow",
+      "value": "#59FFD98A"
+    },
+    {
+      "name": "profile_nav_scrim",
+      "value": "#CCFFFFFF"
+    },
+    {
+      "name": "profile_video_badge",
+      "value": "#BB000000"
+    },
+    {
+      "name": "follow_badge_gold",
+      "value": "#997600"
+    },
+    {
+      "name": "timeline_reset_background",
+      "value": "#405763"
+    },
+    {
+      "name": "timeline_pin_accent",
+      "value": "#007A52"
+    },
+    {
+      "name": "post_media_badge_background",
+      "value": "#99000000"
+    },
+    {
+      "name": "list_cover_blue",
+      "value": "#1267B1"
+    },
+    {
+      "name": "list_cover_cyan",
+      "value": "#1D9BF0"
+    },
+    {
+      "name": "list_cover_teal",
+      "value": "#00CBB7"
+    },
+    {
+      "name": "list_cover_purple",
+      "value": "#7856C7"
+    },
+    {
+      "name": "list_cover_symbol",
+      "value": "#66FFFFFF"
+    },
+    {
+      "name": "list_cover_button",
+      "value": "#66000000"
+    },
+    {
+      "name": "space_accent",
+      "value": "#7856FF"
+    },
+    {
+      "name": "space_button",
+      "value": "#7856FF"
+    },
+    {
+      "name": "space_soft",
+      "value": "#EEE9FF"
+    },
+    {
+      "name": "space_border",
+      "value": "#DFD6FC"
+    },
+    {
+      "name": "chat_media_remove_tint",
+      "value": "#66B4232D"
+    },
+    {
+      "name": "chat_reaction_selected",
+      "value": "#263391E8"
+    },
+    {
+      "name": "chat_message_menu_mask",
+      "value": "#52000000"
+    },
+    {
+      "name": "chat_background_scrim",
+      "value": "#00000000"
+    },
+    {
+      "name": "chat_media_play_scrim",
+      "value": "#66000000"
+    },
+    {
+      "name": "chat_background_warm_1",
+      "value": "#EAA36E"
+    },
+    {
+      "name": "chat_background_warm_2",
+      "value": "#F0E486"
+    },
+    {
+      "name": "chat_background_warm_3",
+      "value": "#F29EBF"
+    },
+    {
+      "name": "chat_background_warm_4",
+      "value": "#E8C06E"
+    },
+    {
+      "name": "chat_background_dream_1",
+      "value": "#DAEACB"
+    },
+    {
+      "name": "chat_background_dream_2",
+      "value": "#A2B4FF"
+    },
+    {
+      "name": "chat_background_dream_3",
+      "value": "#ECCBFF"
+    },
+    {
+      "name": "chat_background_dream_4",
+      "value": "#B9E2FF"
+    },
+    {
+      "name": "chat_background_zoo_1",
+      "value": "#DBDDBB"
+    },
+    {
+      "name": "chat_background_zoo_2",
+      "value": "#6BA587"
+    },
+    {
+      "name": "chat_background_zoo_3",
+      "value": "#D5D88D"
+    },
+    {
+      "name": "chat_background_zoo_4",
+      "value": "#88B884"
+    },
+    {
+      "name": "chat_background_snow_1",
+      "value": "#40CDDE"
+    },
+    {
+      "name": "chat_background_snow_2",
+      "value": "#AC86ED"
+    },
+    {
+      "name": "chat_background_snow_3",
+      "value": "#E984D8"
+    },
+    {
+      "name": "chat_background_snow_4",
+      "value": "#EFD359"
+    },
+    {
+      "name": "chat_background_beach_1",
+      "value": "#EAA36E"
+    },
+    {
+      "name": "chat_background_beach_2",
+      "value": "#F0E486"
+    },
+    {
+      "name": "chat_background_beach_3",
+      "value": "#F29EBF"
+    },
+    {
+      "name": "chat_background_beach_4",
+      "value": "#E8C06E"
+    },
+    {
+      "name": "chat_background_science_1",
+      "value": "#DAEACB"
+    },
+    {
+      "name": "chat_background_science_2",
+      "value": "#A2B4FF"
+    },
+    {
+      "name": "chat_background_science_3",
+      "value": "#ECCBFF"
+    },
+    {
+      "name": "chat_background_science_4",
+      "value": "#B9E2FF"
+    },
+    {
+      "name": "chat_background_crystal_1",
+      "value": "#7FC289"
+    },
+    {
+      "name": "chat_background_crystal_2",
+      "value": "#E4D573"
+    },
+    {
+      "name": "chat_background_crystal_3",
+      "value": "#AFD677"
+    },
+    {
+      "name": "chat_background_crystal_4",
+      "value": "#F0C07A"
+    },
+    {
+      "name": "chat_background_gifts_1",
+      "value": "#B2B1EE"
+    },
+    {
+      "name": "chat_background_gifts_2",
+      "value": "#D4A7C9"
+    },
+    {
+      "name": "chat_background_gifts_3",
+      "value": "#6C8CD4"
+    },
+    {
+      "name": "chat_background_holiday_1",
+      "value": "#A464F4"
+    },
+    {
+      "name": "chat_background_holiday_2",
+      "value": "#EDAC4C"
+    },
+    {
+      "name": "chat_background_holiday_3",
+      "value": "#E96CAF"
+    },
+    {
+      "name": "chat_background_holiday_4",
+      "value": "#F7DD6D"
+    },
+    {
+      "name": "chat_background_games_1",
+      "value": "#DCEB92"
+    },
+    {
+      "name": "chat_background_games_2",
+      "value": "#8FE1D6"
+    },
+    {
+      "name": "chat_background_games_3",
+      "value": "#67A3F2"
+    },
+    {
+      "name": "chat_background_games_4",
+      "value": "#85D685"
+    },
+    {
+      "name": "chat_background_pets_1",
+      "value": "#FEC496"
+    },
+    {
+      "name": "chat_background_pets_2",
+      "value": "#DD6CB9"
+    },
+    {
+      "name": "chat_background_pets_3",
+      "value": "#962FBF"
+    },
+    {
+      "name": "chat_background_pets_4",
+      "value": "#4F5BD5"
+    },
+    {
+      "name": "chat_background_cats_1",
+      "value": "#73CAFF"
+    },
+    {
+      "name": "chat_background_cats_2",
+      "value": "#D5F7FF"
+    },
+    {
+      "name": "chat_background_cats_3",
+      "value": "#FB9AE5"
+    },
+    {
+      "name": "chat_background_cats_4",
+      "value": "#FBD9E6"
+    },
+    {
+      "name": "chat_background_nature_1",
+      "value": "#8ADBF2"
+    },
+    {
+      "name": "chat_background_nature_2",
+      "value": "#888DEC"
+    },
+    {
+      "name": "chat_background_nature_3",
+      "value": "#E39FEA"
+    },
+    {
+      "name": "chat_background_nature_4",
+      "value": "#679CED"
+    },
+    {
+      "name": "chat_background_home_1",
+      "value": "#97BEEB"
+    },
+    {
+      "name": "chat_background_home_2",
+      "value": "#B1E9EA"
+    },
+    {
+      "name": "chat_background_home_3",
+      "value": "#C6B1EF"
+    },
+    {
+      "name": "chat_background_home_4",
+      "value": "#EFB7DC"
+    },
+    {
+      "name": "chat_background_space_1",
+      "value": "#E4B2EA"
+    },
+    {
+      "name": "chat_background_space_2",
+      "value": "#8376C2"
+    },
+    {
+      "name": "chat_background_space_3",
+      "value": "#EAB9D9"
+    },
+    {
+      "name": "chat_background_space_4",
+      "value": "#B493E6"
+    },
+    {
+      "name": "chat_background_carnival_1",
+      "value": "#D1A3E2"
+    },
+    {
+      "name": "chat_background_carnival_2",
+      "value": "#EDD594"
+    },
+    {
+      "name": "chat_background_carnival_3",
+      "value": "#E5A1D0"
+    },
+    {
+      "name": "chat_background_carnival_4",
+      "value": "#ECD893"
+    },
+    {
+      "name": "chat_background_adventure_1",
+      "value": "#A4DBFF"
+    },
+    {
+      "name": "chat_background_adventure_2",
+      "value": "#009FDD"
+    },
+    {
+      "name": "chat_background_adventure_3",
+      "value": "#527BDD"
+    },
+    {
+      "name": "chat_badge_blue",
+      "value": "#1D9BF0"
+    },
+    {
+      "name": "chat_media_upload_scrim",
+      "value": "#FF000000"
+    },
+    {
+      "name": "media_viewer_control",
+      "value": "#CC202020"
+    },
+    {
+      "name": "media_viewer_sheet",
+      "value": "#141414"
+    },
+    {
+      "name": "media_viewer_reply",
+      "value": "#222222"
+    },
+    {
+      "name": "media_viewer_placeholder",
+      "value": "#A0A0A0"
+    },
+    {
+      "name": "media_viewer_dot",
+      "value": "#606060"
+    },
+    {
+      "name": "poll_option_surface",
+      "value": "#B3FFFFFF"
+    },
+    {
+      "name": "poll_selected_surface",
+      "value": "#1A007DFF"
+    },
+    {
+      "name": "poll_result_fill",
+      "value": "#7B8D9E"
+    },
+    {
+      "name": "poll_result_track",
+      "value": "#16000000"
+    },
+    {
+      "name": "community_cover_button",
+      "value": "#66000000"
+    },
+    {
+      "name": "space_card_text",
+      "value": "#FFFFFF"
+    },
+    {
+      "name": "space_card_fill",
+      "value": "#7856FF"
+    },
+    {
+      "name": "space_card_footer",
+      "value": "#6248CE"
+    },
+    {
+      "name": "space_card_badge",
+      "value": "#9681E7"
+    },
+    {
+      "name": "space_recording",
+      "value": "#D12B83"
+    },
+    {
+      "name": "space_recording_soft",
+      "value": "#FCE8F3"
+    },
+    {
+      "name": "space_search_surface",
+      "value": "#EFF3F4"
+    },
+    {
+      "name": "space_calendar_button",
+      "value": "#101419"
+    },
+    {
+      "name": "space_card_action_surface",
+      "value": "#F7F9F9"
+    },
+    {
+      "name": "space_card_action_text",
+      "value": "#101419"
+    },
+    {
+      "name": "post_card_title_overlay",
+      "value": "#80000000"
+    },
+    {
+      "name": "post_card_overlay_text",
+      "value": "#FFFFFFFF"
+    },
+    {
+      "name": "sidebar_blur_start",
+      "value": "#24FFFFFF"
+    },
+    {
+      "name": "sidebar_blur_end",
+      "value": "#08FFFFFF"
+    },
+    {
+      "name": "sidebar_handle_surface",
+      "value": "#EAF1F5FC"
+    },
+    {
+      "name": "sidebar_preview_line",
+      "value": "#CAD5E8"
+    },
+    {
+      "name": "sidebar_preview_tile",
+      "value": "#E1E9F6"
+    },
+    {
+      "name": "sidebar_preview_accent",
+      "value": "#97B8F2"
+    },
+    {"name":"video_episode_surface","value":"#FF17181B"},
+    {"name":"video_danmaku_own","value":"#FFFFD866"},
+    {"name":"video_danmaku_hint","value":"#B3FFFFFF"},
+    {
+      "name": "media_viewer_comment_control_tint",
+      "value": "#60202020"
+    },
+    {
+      "name": "logo_particle_blue",
+      "value": "#167FFF"
+    },
+    {
+      "name": "logo_particle_white",
+      "value": "#F5FAFF"
+    },
+    {
+      "name": "logo_avatar_border",
+      "value": "#85C9FF"
+    },
+    {
+      "name": "logo_glow_blue",
+      "value": "#B00073FF"
+    },
+    {
+      "name": "logo_glow_white",
+      "value": "#50D3E8FF"
     }
   ]
 }

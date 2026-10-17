@@ -1,0 +1,150 @@
+Mengirim… || Menghantar…
+Memperbarui jajak pendapat… || Mengemas kini tinjauan…
+%s suara || %s undian
+Hasil akhir || Hasil akhir
+Jajak pendapat terbuka || Tinjauan dibuka
+%s hari lagi || %s hari lagi
+%s jam lagi || %s jam lagi
+%s menit lagi || %s minit lagi
+Pilihan Anda || Undian anda
+Lihat hasil || Lihat hasil
+Kembali memilih || Kembali mengundi
+Segarkan hasil || Muat semula hasil
+Periksa status suara || Semak status undian
+Suara Anda belum terkonfirmasi. Periksa statusnya sebelum mencoba lagi. || Undian anda belum disahkan. Semak statusnya sebelum mencuba lagi.
+Masuk dengan sesi web X untuk memilih di aplikasi. || Log masuk dengan sesi web X untuk mengundi dalam aplikasi.
+Jajak pendapat ini berakhir. || Tinjauan ini telah tamat.
+Akun berubah. Buka postingan ini lagi. || Akaun berubah. Buka siaran ini semula.
+Jajak pendapat gagal diperbarui. Coba lagi. || Tinjauan gagal dikemas kini. Cuba lagi.
+Suara gagal dikirim. Segarkan status dan coba lagi. || Undian gagal dihantar. Muat semula status dan cuba lagi.
+Jumlah suara tidak tersedia || Bilangan undian tidak tersedia
+Buka jajak pendapat asli || Buka tinjauan asal
+Buka Space || Buka Space
+Buka siaran langsung || Buka siaran langsung
+Lihat acara || Lihat acara
+Buka konten || Buka kandungan
+Temukan Komunitas baru || Temui Komuniti baharu
+Pilih Komunitas untuk memposting || Pilih Komuniti untuk menyiarkan
+Opsi linimasa || Pilihan garis masa
+Postingan saya || Siaran saya
+Balasan saya || Balasan saya
+Informasi Komunitas || Maklumat Komuniti
+Hanya anggota Komunitas yang bisa memposting. || Hanya ahli Komuniti boleh menyiarkan.
+Komunitas bersifat publik. Siapa pun bisa bergabung ke Komunitas ini. || Komuniti bersifat awam. Sesiapa sahaja boleh menyertai Komuniti ini.
+Postingan Komunitas bersifat publik. Keanggotaan memerlukan persetujuan moderator. || Siaran Komuniti bersifat awam. Keahlian memerlukan kelulusan moderator.
+Dibuat pada || Dicipta pada
+Baca dan setujui aturan || Baca dan setujui peraturan
+Jawaban Anda || Jawapan anda
+Jawab pertanyaan moderator sebelum mengirim. || Jawab soalan moderator sebelum menghantar.
+Postingan Komunitas || Siaran Komuniti
+Bagikan dalam postingan || Kongsi dalam siaran
+Bagikan… || Kongsi…
+Tautan Komunitas disalin || Pautan Komuniti disalin
+Cari postingan Komunitas || Cari siaran Komuniti
+Laporkan Komunitas di X || Laporkan Komuniti di X
+X membatasi permintaan Komunitas sementara. Coba lagi setelah %s. || X mengehadkan permintaan Komuniti buat sementara waktu. Cuba lagi selepas %s.
+Jelajahi Komunitas lainnya || Terokai lebih banyak Komuniti
+Urutkan || Isih
+Anda belum memposting di Komunitas ini. || Anda belum menyiarkan dalam Komuniti ini.
+Anda belum membalas di Komunitas ini. || Anda belum membalas dalam Komuniti ini.
+Saring postingan yang dimuat || Tapis siaran yang dimuatkan
+Host bersama || Hos bersama
+Besok || Esok
+%s mendengarkan || %s sedang mendengar
+Buka Space aktif || Buka Space semasa
+Tindakan Space lainnya || Tindakan Space lain
+Tidak tertarik pada Space ini || Tidak berminat dengan Space ini
+Laporkan Space ini di X || Laporkan Space ini di X
+Ditambahkan ke kalender || Ditambah ke kalendar
+Kalender gagal dibuka. Coba lagi nanti. || Kalendar gagal dibuka. Cuba lagi nanti.
+Sedang berlangsung || Sedang berlangsung
+Spaces yang sedang berlangsung || Spaces yang sedang berlangsung
+Langsung dari akun yang Anda ikuti || Langsung daripada akaun yang anda ikuti
+Spaces yang diadakan atau diikuti akun yang Anda ikuti || Spaces yang dihoskan atau disertai akaun yang anda ikuti
+Temukan Spaces || Temui Spaces
+Belum ada akun yang Anda ikuti sedang live. Ini daftar Spaces terbaru yang dibagikan. || Tiada akaun yang anda ikuti sedang bersiaran langsung. Ini senarai Spaces terkini yang dikongsi.
+Tambahkan ke kalender Anda || Tambah ke kalendar anda
+Temukan percakapan mendatang dan atur pengingat || Temui perbualan akan datang dan tetapkan peringatan
+Dengarkan lagi || Dengar semula
+Rekaman publik Spaces sebelumnya || Rakaman awam Spaces terdahulu
+Tambahkan ke kalender || Tambah ke kalendar
+Peserta || Peserta
+Lihat peserta · %s mendengarkan || Lihat peserta · %s sedang mendengar
+Ada %s pendengar. Hanya peserta yang tersedia secara publik ditampilkan; sebagian pendengar mungkin tidak terlihat. || Terdapat %s pendengar. Hanya peserta yang tersedia secara awam dipaparkan; sesetengah pendengar mungkin tidak kelihatan.
+Tidak ada peserta publik || Tiada peserta awam
+Lanjutkan menjelajah || Teruskan melayari
+Tentang Spaces || Perihal Spaces
+Selamat datang di Spaces || Selamat datang ke Spaces
+Dengarkan percakapan secara langsung || Dengar perbualan secara langsung
+Spaces bersifat publik || Spaces bersifat awam
+Siapa pun bisa mendengarkan Space publik. Ikuti topik dan aturan host. || Sesiapa sahaja boleh mendengar Space awam. Ikuti topik dan peraturan hos.
+Bergabung sebagai pendengar || Sertai sebagai pendengar
+Harmony X mendukung mendengarkan dan memutar rekaman. Suara mikrofon serta permintaan berbicara tidak dikirim. || Harmony X menyokong mendengar dan memainkan rakaman. Audio mikrofon dan permintaan bercakap tidak dihantar.
+Atur pengalaman Anda || Urus pengalaman anda
+Ketuk peserta untuk melihat profil. Sembunyikan Spaces yang tidak diinginkan dari menu, atau buka X untuk melaporkan. || Ketik peserta untuk melihat profil. Sembunyikan Spaces yang tidak diingini melalui menu, atau buka X untuk melaporkan.
+Tentang rekaman || Perihal rakaman
+Spaces yang direkam || Spaces dirakam
+Simpan percakapan agar tetap tersedia || Kekalkan perbualan supaya tersedia
+Suara pembicara mungkin direkam || Audio pembicara mungkin dirakam
+Host bisa merekam Spaces. Rekaman publik bisa memuat suara pembicara. Mendengarkan tidak menyalakan mikrofon Anda. || Hos boleh merakam Spaces. Rakaman awam boleh menyertakan audio pembicara. Mendengar tidak menghidupkan mikrofon anda.
+Putar ulang dan bagikan || Main semula dan kongsi
+Ketersediaan rekaman diatur host dan X. Dengarkan rekaman yang tersedia dan bagikan tautan Space. || Ketersediaan rakaman dikawal hos dan X. Dengar rakaman tersedia dan kongsi pautan Space.
+Siapkan Space || Sediakan Space
+Nama, topik, pilihan rekaman, dan jadwal disimpan sebagai draf lokal. Menerbitkan atau memulai Space langsung di X belum tersedia. || Nama, topik, pilihan rakaman dan jadual disimpan sebagai draf setempat. Menerbitkan atau memulakan Space langsung di X belum tersedia.
+Nama Space || Nama Space
+Apa yang ingin Anda bicarakan? || Apa yang mahu anda bualkan?
+Rekam Space || Rakam Space
+Simpan preferensi rekaman di draf || Simpan pilihan rakaman dalam draf
+Pilih hingga 3 topik || Pilih sehingga 3 topik
+Jadwalkan untuk nanti || Jadualkan untuk kemudian
+Pilih waktu antara 1 menit dan 14 hari dari sekarang || Pilih masa antara 1 minit dan 14 hari dari sekarang
+Simpan draf || Simpan draf
+Draf Space disimpan di perangkat ini || Draf Space disimpan pada peranti ini
+Masukkan nama Space terlebih dahulu || Masukkan nama Space dahulu
+Seni & Budaya || Seni & Budaya
+Posting foto || Siarkan foto
+Salin foto || Salin foto
+Simpan foto asli || Simpan foto asal
+Bagikan foto || Kongsi foto
+Gagal berbagi. Coba lagi. || Perkongsian gagal. Cuba lagi.
+Kirim ke Xiaoyi || Hantar kepada Xiaoyi
+Pilih Xiaoyi di panel berbagi sistem || Pilih Xiaoyi dalam panel perkongsian sistem
+Foto gagal dikirim ke Xiaoyi. Coba lagi. || Foto gagal dihantar kepada Xiaoyi. Cuba lagi.
+%s sedang mendengarkan || %s sedang mendengar
+%s menjadi host || %s menjadi hos
+Dengarkan langsung || Dengar secara langsung
+%s kali didengarkan || %s kali didengar
+Lihat Space || Lihat Space
+Sedang di Space langsung. Ketuk untuk melihat. || Sedang dalam Space langsung. Ketik untuk melihat.
+%s jam %s menit || %s jam %s minit
+Akun untuk notifikasi ini telah dihapus. Masuk lagi untuk melihatnya. || Akaun untuk pemberitahuan ini telah dialih keluar. Log masuk semula untuk melihatnya.
+Postingan mendukung hingga empat gambar, termasuk satu GIF, atau satu video. Kurangi lampiran atau pilih pesan langsung. || Siaran menyokong sehingga empat imej, termasuk satu GIF, atau satu video. Kurangkan lampiran atau pilih mesej langsung.
+Konten yang dibagikan tidak bisa dibaca. Bagikan lagi. Mendukung hingga sepuluh gambar atau video. || Kandungan yang dikongsi tidak dapat dibaca. Kongsi semula. Sehingga sepuluh imej atau video disokong.
+Ganti draf saat ini dengan konten yang dibagikan? || Gantikan draf semasa dengan kandungan yang dikongsi?
+Gunakan konten yang dibagikan || Gunakan kandungan yang dikongsi
+Tata letak layar besar || Susun atur skrin besar
+Pada jendela lebar, gunakan navigasi samping, satu kolom postingan, dan bilah tren, serta chat dan pengaturan dua panel. Jendela sempit tetap memakai tata letak biasa. || Dalam tetingkap lebar, gunakan navigasi sisi, satu lajur siaran dan bar sisi trend, serta sembang dan tetapan dua panel. Tetingkap sempit kekal dengan susun atur biasa.
+Tata letak saat ini || Susun atur semasa
+Tata letak desktop || Susun atur desktop
+Terhubung || Berhubung
+Riwayat || Sejarah
+Yang sedang terjadi || Apa yang sedang berlaku
+Berlangganan Premium || Langgan Premium
+Lihat fitur X Premium dan paket langganan. || Terokai ciri X Premium dan pelan langganan.
+Mulai percakapan || Mulakan perbualan
+Pilih percakapan yang ada atau mulai yang baru. || Pilih perbualan sedia ada atau mulakan yang baharu.
+Pencarian lanjutan || Carian lanjutan
+Semua kata ini || Semua perkataan ini
+Frasa persis ini || Frasa tepat ini
+Salah satu kata ini || Mana-mana perkataan ini
+Tanpa kata-kata ini || Tanpa perkataan ini
+Tagar ini || Tanda pagar ini
+Dari akun ini || Daripada akaun ini
+Kepada akun ini || Kepada akaun ini
+Tanggal awal (YYYY-MM-DD) || Tarikh mula (YYYY-MM-DD)
+Tanggal akhir (YYYY-MM-DD) || Tarikh akhir (YYYY-MM-DD)
+Masukkan tanggal valid dengan tanggal akhir setelah tanggal awal. || Masukkan tarikh sah dengan tarikh akhir selepas tarikh mula.
+Bagi hasil kreator || Perkongsian hasil pencipta
+Analitik || Analitik
+Studio langsung || Studio langsung
+Langganan || Langganan

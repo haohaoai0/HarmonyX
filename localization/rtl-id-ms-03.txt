@@ -1,0 +1,150 @@
+Tambahkan ke Daftar atau hapus dari Daftar || Tambah ke Senarai atau alih keluar
+Lihat Daftar || Lihat Senarai
+Daftar yang memuat akun ini || Senarai yang menyertakan akaun ini
+Tanggal bergabung || Tarikh menyertai
+Tidak dicantumkan || Tidak diberikan
+Lokasi akun || Lokasi akaun
+Terhubung melalui || Disambungkan melalui
+Verifikasi || Pengesahan
+Terverifikasi || Disahkan
+Belum terverifikasi || Belum disahkan
+Dapatkan verifikasi || Dapatkan pengesahan
+Informasi lokasi mungkin berupa perkiraan. || Maklumat lokasi mungkin anggaran sahaja.
+Informasi akun gagal dimuat. Coba lagi. || Maklumat akaun gagal dimuatkan. Cuba lagi.
+Notifikasi akun || Pemberitahuan akaun
+Jangan lewatkan kabar || Jangan terlepas perkembangan
+Terima notifikasi untuk setiap postingan. || Terima pemberitahuan bagi setiap siaran.
+Semua postingan dan balasan || Semua siaran dan balasan
+Terima notifikasi postingan dan balasan. || Terima pemberitahuan siaran dan balasan.
+Hanya video langsung || Video langsung sahaja
+Terima notifikasi video langsung saja. || Terima pemberitahuan video langsung sahaja.
+Nonaktifkan notifikasi akun ini. || Matikan pemberitahuan akaun ini.
+Atur pilihan ini melalui lonceng notifikasi di X. || Tetapkan pilihan ini melalui loceng pemberitahuan di X.
+Pengaturan disimpan || Tetapan disimpan
+Gagal menyimpan. Coba lagi. || Gagal menyimpan. Cuba lagi.
+Cari postingan akun ini || Cari siaran akaun ini
+Tindakan akun lainnya || Tindakan akaun lain
+Bagikan profil || Kongsi profil
+Sorotan || Sorotan
+Artikel || Artikel
+Postingan asli saja || Siaran asal sahaja
+Saring konten || Tapis kandungan
+tayangan || paparan
+Baca artikel || Baca artikel
+Halaman gagal dimuat. Coba lagi. || Halaman gagal dimuatkan. Cuba lagi.
+Temukan orang untuk diikuti || Cari orang untuk diikuti
+Orang yang mungkin Anda kenal || Orang yang mungkin anda kenali
+Temukan teman || Cari rakan
+Siapa yang perlu diikuti || Siapa untuk diikuti
+Saran untuk Anda || Cadangan untuk anda
+Temukan kenalan Anda di X, lalu pilih akun yang ingin diikuti. || Cari kenalan anda di X, kemudian pilih akaun yang mahu diikuti.
+Sinkronisasi kontak perangkat belum tersedia di Harmony X. Sinkronkan melalui aplikasi X resmi, lalu kembali untuk melihat saran. || Penyegerakan kenalan peranti belum tersedia dalam Harmony X. Segerakkan melalui aplikasi X rasmi, kemudian kembali untuk melihat cadangan.
+Kelola kontak X || Urus kenalan X
+Masuk ke X untuk menemukan lebih banyak akun untuk diikuti. || Log masuk ke X untuk mencari lebih banyak akaun untuk diikuti.
+Saran gagal dimuat. Coba lagi. || Cadangan gagal dimuatkan. Cuba lagi.
+Belum ada saran baru saat ini. || Tiada cadangan baharu buat masa ini.
+%s memposting ulang || %s menyiarkan semula
+Diposting ulang || Disiarkan semula
+Diikuti || Diikuti
+Paket Awal gagal dimuat. Coba lagi. || Pek Permulaan gagal dimuatkan. Cuba lagi.
+Anda mencapai batas mengikuti Paket Awal. Coba lagi nanti. || Anda telah mencapai had mengikuti Pek Permulaan. Cuba lagi nanti.
+Bisnis & Keuangan || Perniagaan & Kewangan
+Teknologi || Teknologi
+Politik || Politik
+Meme || Meme
+Kripto || Mata wang kripto
+Game || Permainan
+Film & TV || Filem & TV
+Makanan || Makanan
+Kesehatan & Kebugaran || Kesihatan & Kecergasan
+Sepak bola || Bola sepak
+Selebritas || Selebriti
+Hewan peliharaan || Haiwan peliharaan
+Sembunyikan topik sementara || Sembunyikan topik sementara
+Pilih topik untuk disembunyikan selama 1 hari || Pilih topik untuk disembunyikan selama 1 hari
+Urutkan berdasarkan || Isih mengikut
+Kelola linimasa || Urus garis masa
+Linimasa || Garis masa
+Belum ada apa-apa di sini || Belum ada apa-apa di sini
+Tidak ada linimasa yang cocok || Tiada garis masa yang sepadan
+Pengaturan gagal disimpan. Coba lagi. || Tetapan gagal disimpan. Cuba lagi.
+Sepak bola || Bola sepak
+Saham dan ekonomi || Saham dan ekonomi
+Konflik Iran || Konflik Iran
+Bisnis dan keuangan || Perniagaan dan kewangan
+Sains || Sains
+Hiburan dan seni || Hiburan dan seni
+Kecerdasan buatan || Kecerdasan buatan
+GIF gagal dimuat. Ketuk untuk mencoba lagi. || GIF gagal dimuatkan. Ketik untuk cuba lagi.
+Daftar Anda || Senarai anda
+Cari Daftar || Cari Senarai
+Tindakan Daftar lainnya || Tindakan Senarai lain
+Daftar yang memuat Anda || Senarai yang menyertakan anda
+Anda belum ditambahkan ke Daftar || Anda belum ditambah ke mana-mana Senarai
+Daftar akan muncul di sini saat seseorang menambahkan Anda. || Senarai akan muncul di sini apabila seseorang menambah anda.
+Buat Daftar pertama Anda || Cipta Senarai pertama anda
+Tambahkan akun ke Daftar untuk melihat postingannya bersama. || Tambah akaun ke Senarai untuk melihat siarannya bersama.
+Daftar tidak ditemukan || Tiada Senarai ditemui
+Coba kata kunci lain atau jalankan pencarian untuk menemukan Daftar lainnya. || Cuba kata kunci lain atau hantar carian untuk mencari lebih banyak Senarai.
+Sematkan Daftar || Semat Senarai
+Lepas sematan Daftar || Nyahsemat Senarai
+Daftar gagal diperbarui || Senarai gagal dikemas kini
+Buat Daftar Anda || Cipta Senarai anda
+Langkah 1 dari 2 || Langkah 1 daripada 2
+Langkah 2 dari 2 || Langkah 2 daripada 2
+Tambahkan ke Daftar Anda || Tambah ke Senarai anda
+Masukkan nama Daftar || Masukkan nama Senarai
+Deskripsi || Perihalan
+Tambahkan deskripsi (opsional) || Tambah perihalan (pilihan)
+Daftar privat hanya bisa dilihat oleh Anda. || Senarai peribadi hanya boleh dilihat oleh anda.
+Edit Daftar || Sunting Senarai
+Pilih sampul Daftar || Pilih kulit Senarai
+Hapus sampul || Alih keluar kulit
+Daftar tersimpan, tetapi sampul gagal disimpan. Coba lagi atau lanjutkan. || Senarai disimpan, tetapi kulit gagal disimpan. Cuba lagi atau teruskan.
+Lanjutkan dan edit sampul nanti || Teruskan dan sunting kulit kemudian
+Daftar dibuat, tetapi responsnya tidak bisa dibaca. Kembali ke Daftar dan segarkan agar tidak membuat duplikat. || Senarai dicipta, tetapi responsnya tidak dapat dibaca. Kembali ke Senarai dan muat semula supaya tidak mencipta pendua.
+Kelola anggota || Urus ahli
+Cari orang || Cari orang
+Tidak ada orang ditemukan. Coba nama atau nama pengguna lain. || Tiada orang ditemui. Cuba nama atau nama pengguna lain.
+Anda belum menambahkan siapa pun || Anda belum menambah sesiapa
+Tambahkan orang ke Daftar baru, atau selesaikan sekarang dan tambahkan nanti. || Tambah orang ke Senarai baharu, atau selesaikan sekarang dan tambah kemudian.
+Hapus Daftar || Padam Senarai
+Hapus Daftar ini beserta pengaturan anggotanya? Tindakan ini tidak bisa diurungkan. || Padam Senarai ini dan tetapan keahliannya? Tindakan ini tidak boleh dibuat asal.
+Menunggu postingan || Menunggu siaran
+Postingan anggota Daftar akan muncul di sini. || Siaran ahli Senarai akan muncul di sini.
+Ikuti Daftar || Ikuti Senarai
+Mengikuti · Berhenti mengikuti || Mengikuti · Nyahikut
+pengikut || pengikut
+Bagikan Daftar || Kongsi Senarai
+Daftar privat ini hanya bisa dilihat oleh Anda. || Senarai peribadi ini hanya boleh dilihat oleh anda.
+Pembuatan belum bisa dikonfirmasi. Kembali ke Daftar dan segarkan sebelum mencoba lagi. || Penciptaan belum dapat disahkan. Kembali ke Senarai dan muat semula sebelum mencuba lagi.
+Mendatang || Akan datang
+Cari Spaces || Cari Spaces
+Hasil pencarian || Hasil carian
+Spaces yang baru dibagikan || Spaces yang baru dikongsi
+Ruang audio || Ruang audio
+Pendengar || Pendengar
+peserta || peserta
+Belum ada Spaces di sini || Belum ada Spaces di sini
+Cari topik atau buka tautan Space dari postingan. || Cari topik atau buka pautan Space daripada siaran.
+Spaces gagal dimuat || Spaces gagal dimuatkan
+Periksa koneksi dan akun, lalu coba lagi. || Semak sambungan dan log masuk, kemudian cuba lagi.
+Space ini tidak tersedia || Space ini tidak tersedia
+Space gagal disegarkan. Akan dicoba lagi sebentar nanti. || Space gagal dimuat semula. Akan dicuba lagi sebentar lagi.
+Mulai mendengarkan || Mula mendengar
+Keluar dari Space || Keluar dari Space
+Menghubungkan audio… || Menyambungkan audio…
+Coba dengarkan lagi || Cuba dengar semula
+Putar rekaman || Main rakaman
+Audio gagal terhubung. Periksa koneksi dan coba lagi. || Audio gagal disambungkan. Semak sambungan dan cuba lagi.
+Anda bisa mendengarkan setelah Space dimulai. || Anda boleh mendengar apabila Space bermula.
+Belum ada audio yang bisa diputar di Space ini. || Tiada audio yang boleh dimainkan dalam Space ini buat masa ini.
+Bagikan Space || Kongsi Space
+Masukkan PIN X Chat 4 digit yang sudah Anda miliki untuk memulihkan kunci di perangkat ini. || Masukkan PIN X Chat 4 digit sedia ada untuk memulihkan kunci pada peranti ini.
+PIN salah. Periksa sebelum mencoba lagi. || PIN salah. Semak sebelum mencuba lagi.
+Gagal membuka kunci. Periksa jaringan dan PIN, atau selesaikan pengaturan Chat di X terlebih dahulu. || Gagal membuka kunci. Semak rangkaian dan PIN, atau lengkapkan persediaan Chat di X dahulu.
+Beberapa pesan gagal diverifikasi atau didekripsi. Segarkan untuk mencoba lagi. || Sesetengah mesej gagal disahkan atau dinyahsulit. Muat semula untuk cuba lagi.
+Kesempatan memasukkan PIN habis. Periksa opsi pemulihan di X Chat. || Tiada percubaan PIN berbaki. Semak pilihan pemulihan dalam X Chat.
+Akun ini tidak punya kunci chat yang bisa dipulihkan. Atur PIN di X Chat terlebih dahulu. || Akaun ini tiada kunci sembang yang boleh dipulihkan. Tetapkan PIN dalam X Chat dahulu.
+Orang ini tidak bisa menerima jenis pesan ini. || Orang ini tidak boleh menerima jenis mesej ini.
+Semua notifikasi push X lainnya akan dinonaktifkan. || Semua pemberitahuan tolak X yang lain akan dimatikan.

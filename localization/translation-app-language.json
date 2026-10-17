@@ -1,0 +1,23 @@
+{
+  "base": { "settings_translation_target_app": "当前应用语言" },
+  "zh_CN": { "settings_translation_target_app": "当前应用语言" },
+  "zh_Hant": { "settings_translation_target_app": "目前的應用程式語言" },
+  "en": { "settings_translation_target_app": "Current app language" },
+  "ru": { "settings_translation_target_app": "Текущий язык приложения" },
+  "uk": { "settings_translation_target_app": "Поточна мова застосунку" },
+  "fa": { "settings_translation_target_app": "زبان فعلی برنامه" },
+  "ar": { "settings_translation_target_app": "لغة التطبيق الحالية" },
+  "id": { "settings_translation_target_app": "Bahasa aplikasi saat ini" },
+  "ms": { "settings_translation_target_app": "Bahasa aplikasi semasa" },
+  "tr": { "settings_translation_target_app": "Geçerli uygulama dili" },
+  "vi": { "settings_translation_target_app": "Ngôn ngữ ứng dụng hiện tại" },
+  "th": { "settings_translation_target_app": "ภาษาปัจจุบันของแอป" },
+  "ja": { "settings_translation_target_app": "現在のアプリの言語" },
+  "ko": { "settings_translation_target_app": "현재 앱 언어" },
+  "de": { "settings_translation_target_app": "Aktuelle App-Sprache" },
+  "fr": { "settings_translation_target_app": "Langue actuelle de l’application" },
+  "es": { "settings_translation_target_app": "Idioma actual de la aplicación" },
+  "pt": { "settings_translation_target_app": "Idioma atual do aplicativo" },
+  "it": { "settings_translation_target_app": "Lingua attuale dell’app" },
+  "hi": { "settings_translation_target_app": "ऐप की मौजूदा भाषा" }
+}

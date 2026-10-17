@@ -1,0 +1,150 @@
+Satu nama pengguna, nama tampilan, atau ID pengguna per baris. @ pada nama pengguna boleh dihilangkan. || Satu nama pengguna, nama paparan atau ID pengguna setiap baris. @ pada nama pengguna tidak wajib.
+Tampilkan tombol baca suara di detail, markah, daftar, dan profil. Menyembunyikan tombol tidak menghentikan pemutaran saat ini. || Paparkan butang bacaan suara pada butiran, penanda buku, senarai dan profil. Menyembunyikan butang tidak menghentikan main balik semasa.
+Gagal memposting ke X. Konten Anda tetap di editor. || Gagal menyiarkan ke X. Kandungan anda kekal dalam penyunting.
+Editor X terbuka. Tambahkan media lagi dan konfirmasikan postingan di X. || Penyunting X dibuka. Tambah media semula dan sahkan siaran di X.
+Browser untuk postingan ini gagal dibuka. Coba lagi. || Pelayar untuk siaran ini gagal dibuka. Cuba lagi.
+Postingan belum terkonfirmasi. Konten tetap di editor. Periksa profil X sebelum mencoba lagi agar tidak terkirim dua kali. || Siaran belum disahkan. Kandungan kekal dalam penyunting. Semak profil X sebelum mencuba lagi supaya tidak disiarkan dua kali.
+Lampiran memerlukan sesi web X. Masuk melalui halaman X sebelum mengirim. || Lampiran memerlukan sesi web X. Log masuk melalui halaman X sebelum menghantar.
+Postingan yang disukai gagal dimuat. Tarik ke bawah untuk mencoba lagi. || Siaran yang disukai gagal dimuatkan. Tarik ke bawah untuk cuba lagi.
+Linimasa ini menampilkan postingan dari Komunitas yang Anda ikuti. || Garis masa ini memaparkan siaran daripada Komuniti yang anda sertai.
+Baca dan setujui aturan Komunitas ini. Aturan X tetap berlaku. || Baca dan setujui peraturan Komuniti ini. Peraturan X turut terpakai.
+Aturan Komunitas gagal dimuat. Segarkan dan coba lagi. || Peraturan Komuniti gagal dimuatkan. Muat semula dan cuba lagi.
+Anda perlu bergabung lagi untuk mendapat akses sebagai anggota. || Anda perlu menyertai semula untuk mendapat akses sebagai ahli.
+Permintaan bergabung dikirim. Tunggu persetujuan moderator. || Permintaan menyertai dihantar. Tunggu kelulusan moderator.
+Postingan Komunitas bersifat publik di X dan bisa muncul di pencarian, profil, dan linimasa lain. || Siaran Komuniti terbuka di X dan boleh muncul dalam carian, profil dan garis masa lain.
+Postingan Komunitas memerlukan sesi web X aktif. Masuk ke akun X terlebih dahulu. || Siaran Komuniti memerlukan sesi web X aktif. Log masuk ke akaun X dahulu.
+X menolak permintaan postingan Komunitas. Konten tidak dikirim sebagai postingan biasa, dan draf tetap tersimpan. || X menolak permintaan siaran Komuniti. Kandungan tidak dihantar sebagai siaran biasa, dan draf kekal disimpan.
+Buka linimasa daftar yang Anda miliki atau ikuti. || Buka garis masa senarai yang anda miliki atau ikuti.
+Tautan postingan terbuka dalam panel setengah layar, bukan browser sistem. || Pautan siaran dibuka dalam panel separuh skrin.
+Video diputar otomatis saat muncul di layar. Jika nonaktif, ketuk sampul untuk memutarnya. || Video dimainkan secara automatik apabila muncul pada skrin. Jika dimatikan, ketik kulit video untuk memainkannya.
+Beranda dan linimasa video memakai pengaturan suara yang sama. Membisukan atau menyalakan suara satu postingan disimpan dan berlaku untuk postingan berikutnya. || Halaman utama dan garis masa video berkongsi tetapan bunyi. Membisukan atau menghidupkan bunyi satu siaran disimpan dan digunakan untuk siaran seterusnya.
+Pada detail postingan, video yang diputar beralih ke jendela mengambang saat keluar layar agar Anda bisa membaca balasan sambil menonton. Jika nonaktif, video hanya dijeda. || Dalam butiran siaran, video yang sedang dimainkan beralih ke tetingkap terapung apabila keluar skrin supaya anda boleh membaca balasan sambil menonton. Jika dimatikan, video dijeda sahaja.
+Gunakan latar hitam saat aktif, atau latar video lembut saat nonaktif. Rasio gambar asli tetap terjaga dan kontrol pemutaran berada di bawah. || Gunakan latar hitam apabila dihidupkan, atau latar video lembut apabila dimatikan. Nisbah imej asal dikekalkan dan kawalan main balik berada di bawah.
+Informasi postingan dan kontrol tetap terlihat saat diputar. Ketuk video untuk menyembunyikan atau menampilkan keduanya. || Maklumat siaran dan kawalan kekal kelihatan semasa main balik. Ketik video untuk menyembunyikan atau memaparkan kedua-duanya.
+Pilih kontrol memudar di bawah atau kontrol mengambang asli. || Pilih kawalan beransur pudar di bawah atau kawalan terapung asal.
+Bilah kontrol mengambang berbentuk bulat dengan susunan tombol asli. || Bar kawalan terapung berbucu bulat dengan susunan butang asal.
+Progres selebar layar dan tombol berjarak di bawah layar; tersembunyi saat video diputar. || Kemajuan selebar skrin dan kawalan berjarak di bawah skrin; tersembunyi semasa main balik.
+Tampilkan media yang mungkin berisi konten sensitif || Paparkan media yang mungkin mengandungi kandungan sensitif
+Sinkronkan preferensi media sensitif akun X dan terapkan di Harmony X. || Segerakkan pilihan media sensitif akaun X dan gunakannya dalam Harmony X.
+Media yang mungkin berisi konten sensitif disembunyikan || Media yang mungkin mengandungi kandungan sensitif disembunyikan
+Atur perilaku video layar penuh saat Anda keluar dari aplikasi atau mengunci layar. || Tetapkan tindakan video skrin penuh apabila anda meninggalkan aplikasi atau mengunci skrin.
+Gambar tetap di tempatnya dan suara terus diputar. Putar, jeda, dan geser posisi dari panel media sistem. || Gambar kekal di tempatnya dan bunyi terus dimainkan. Main, jeda dan laraskan kedudukan melalui panel media sistem.
+Saat keluar aplikasi, video dilanjutkan dalam jendela gambar dalam gambar sambil Anda memakai aplikasi lain. || Apabila meninggalkan aplikasi, video diteruskan dalam tetingkap gambar dalam gambar semasa anda menggunakan aplikasi lain.
+Pilih kualitas untuk memuat, memutar, dan mengunduh media. || Pilih kualiti untuk memuatkan, memainkan dan memuat turun media.
+Foto memakai ukuran asli secara bawaan, sedangkan kualitas video dipilih otomatis. Kualitas tinggi lebih tajam tetapi memakai lebih banyak data. Unduhan mengikuti pilihan yang sama. || Foto menggunakan saiz asal secara lalai, manakala kualiti video dipilih secara automatik. Kualiti tinggi lebih jelas tetapi menggunakan lebih banyak data. Muat turun mengikut pilihan yang sama.
+Muat foto lebih kecil untuk menghemat data seluler. || Muatkan foto lebih kecil untuk menjimatkan data mudah alih.
+Seimbangkan ketajaman dan kecepatan pemuatan untuk penggunaan sehari-hari. || Imbangkan kejelasan dan kelajuan pemuatan untuk kegunaan harian.
+Pilihan bawaan. Muat dan unduh foto dengan ukuran asli. || Pilihan lalai. Muatkan dan muat turun foto pada saiz asal.
+Pilih bitrate terendah yang setidaknya 500kbps untuk pemutaran cepat dan hemat. || Pilih kadar bit terendah sekurang-kurangnya 500kbps untuk main balik lebih cepat dan ringan.
+Pilihan bawaan. Utamakan bitrate tertinggi yang tersedia. || Pilihan lalai. Utamakan kadar bit tertinggi yang tersedia.
+Mulai dari kualitas sedang; jika tersendat, coba bitrate lebih rendah terlebih dahulu. || Mulakan pada kualiti sederhana; jika tersekat, cuba kadar bit lebih rendah dahulu.
+Pilih versi kualitas standar untuk keseimbangan kejelasan dan kecepatan. || Pilih versi definisi standard untuk mengimbangkan kejelasan dan kelajuan.
+Pilih versi bitrate terendah untuk koneksi lambat. || Pilih versi kadar bit terendah untuk sambungan perlahan.
+Pengenalan teks tidak didukung perangkat ini || Pengecaman teks tidak disokong pada peranti ini
+Pemisahan objek tidak didukung perangkat ini || Pemotongan subjek tidak disokong pada peranti ini
+GIF sedang diunduh. Pilih Simpan ke Galeri setelah siap. || GIF sedang dimuat turun. Pilih Simpan ke Galeri apabila siap.
+Sedang mengunduh. Pilih Simpan ke Galeri setelah siap. || Sedang memuat turun. Pilih Simpan ke Galeri apabila siap.
+Semua gambar asli sedang diunduh. Pilih Simpan ke Galeri setelah siap. || Semua imej asal sedang dimuat turun. Pilih Simpan ke Galeri apabila siap.
+Pantau, jeda, lanjutkan, atau hapus unduhan dan bersihkan cache video. || Pantau, jeda, sambung atau padam muat turun dan kosongkan cache video.
+Saat aplikasi di latar belakang, sistem melanjutkan unduhan sebagai tugas transfer data dan menampilkan progresnya. || Apabila aplikasi berada di latar belakang, sistem meneruskan muat turun sebagai tugas pemindahan data dan memaparkan kemajuannya.
+Transfer bisa berhenti jika aplikasi dihentikan paksa atau perangkat dimatikan. Tugas yang belum selesai disimpan agar bisa dilanjutkan. || Pemindahan mungkin berhenti jika aplikasi dihentikan paksa atau peranti dimatikan. Tugas belum selesai disimpan supaya boleh disambung.
+Hapus file video sementara untuk pemutaran. Foto dan video yang disimpan ke Galeri tetap ada. || Padam fail video sementara untuk main balik. Foto dan video yang disimpan ke Galeri dikekalkan.
+Panggilan antarmuka terbaru dan pemeriksaan API privat. || Panggilan antara muka terkini dan semakan API persendirian.
+Akun ini tidak bisa mengikuti Anda atau melihat postingan Anda. Blokir akun ini? || Akaun ini tidak boleh mengikuti anda atau melihat siaran anda. Sekat akaun ini?
+Terjemahan gagal. Periksa jaringan atau konfigurasi API. || Terjemahan gagal. Semak rangkaian atau konfigurasi API.
+Aktifkan terjemahan web atau atur penyedia dan kunci API di Pengaturan > Terjemahan terlebih dahulu || Hidupkan terjemahan web atau tetapkan penyedia dan kunci API dalam Tetapan > Terjemahan dahulu
+Terjemahkan postingan dengan layanan web atau kunci API Anda sendiri || Terjemahkan siaran menggunakan perkhidmatan web atau kunci API anda sendiri
+Gunakan akun X yang sudah masuk, layanan web Google, atau penyedia model pilihan Anda. Kunci API tersimpan di perangkat ini; jangan masukkan di perangkat bersama. || Gunakan akaun X yang telah dilog masuk, perkhidmatan web Google atau penyedia model pilihan anda. Kunci API disimpan pada peranti ini; elakkan memasukkannya pada peranti berkongsi.
+Tidak memerlukan kunci API. Teks postingan dikirim langsung ke layanan web Google Translate. Ketersediaan bisa berubah karena jaringan, batas permintaan, atau aturan situs. || Tidak memerlukan kunci API. Teks siaran dihantar terus kepada perkhidmatan web Google Translate. Ketersediaan boleh berubah akibat rangkaian, had permintaan atau peraturan laman.
+Tersimpan di preferensi lokal, tidak pernah dikirim ke X atau server proyek ini. || Disimpan dalam pilihan setempat dan tidak pernah dihantar kepada X atau pelayan projek ini.
+Gunakan metode pilihan secara otomatis (aktifkan terjemahan terlebih dahulu) || Gunakan kaedah pilihan secara automatik (hidupkan terjemahan dahulu)
+Diperlukan untuk Azure OpenAI dan gateway mandiri, misalnya https://your-resource.openai.azure.com/openai/v1 || Diperlukan untuk Azure OpenAI dan get laluan kendalian sendiri, contohnya https://your-resource.openai.azure.com/openai/v1
+Gateway adalah layanan harmonyx-gateway yang Anda kelola sendiri. Layanan ini menyimpan sesi cookie X, ID kueri GraphQL, dan header antibot; aplikasi hanya menyimpan token akses. Perubahan antarmuka cukup ditangani dengan pembaruan server. || Get laluan ialah perkhidmatan harmonyx-gateway yang anda kendalikan sendiri. Ia menyimpan sesi kuki X, ID pertanyaan GraphQL dan pengepala antibot; aplikasi hanya menyimpan token akses. Perubahan antara muka hanya memerlukan kemas kini pelayan.
+Harus cocok dengan GATEWAY_TOKEN server. Server tanpa token hanya menerima koneksi lokalnya sendiri, jadi ponsel selalu memerlukan token. || Mesti sepadan dengan GATEWAY_TOKEN pelayan. Pelayan tanpa token hanya menerima sambungan setempatnya sendiri, jadi telefon sentiasa memerlukan token.
+Masuk ke x.com di browser. Salin auth_token dan ct0 dari cookie di alat pengembang, lalu tempel sebagai auth_token=…; ct0=…. Nilai hanya dikirim ke gateway, tidak disimpan di ponsel. || Log masuk ke x.com dalam pelayar. Salin auth_token dan ct0 daripada kuki dalam alat pembangun, kemudian tampal sebagai auth_token=…; ct0=…. Nilai hanya dihantar kepada get laluan dan tidak disimpan pada telefon.
+Kelola sesi cookie untuk API privat || Urus sesi kuki untuk API persendirian
+Antarmuka privat (GraphQL / REST 1.1) memakai cookie: auth_token menentukan akun, dan ct0 dikirim sebagai x-csrf-token. Keduanya ditangkap otomatis saat masuk; tempel di sini jika mesin web tidak memberikannya. || Antara muka persendirian (GraphQL / REST 1.1) menggunakan kuki: auth_token mengenal pasti akaun, dan ct0 dihantar sebagai x-csrf-token. Kedua-duanya ditangkap semasa log masuk; tampal di sini jika enjin web tidak memberikannya.
+Masuk ke x.com di browser, salin auth_token dan ct0 dari alat pengembang, lalu tempel dengan format:\n || Log masuk ke x.com dalam pelayar, salin auth_token dan ct0 daripada alat pembangun, kemudian tampal dalam format:\n
+Cookie belum lengkap: auth_token dan ct0 diperlukan || Kuki tidak lengkap: auth_token dan ct0 diperlukan
+Sesi antarmuka privat kedaluwarsa. Masuk lagi atau tempel cookie di Pengaturan > Sesi antarmuka privat. || Sesi antara muka persendirian tamat tempoh. Log masuk semula atau tampal kuki dalam Tetapan > Sesi antara muka persendirian.
+Pesan langsung memakai enkripsi XChat yang belum didukung. Fitur lainnya tetap tersedia. || Mesej langsung menggunakan penyulitan XChat yang belum disokong. Ciri lain masih tersedia.
+Masuk ke x.com di dalam aplikasi, tanpa membuat aplikasi pengembang. Linimasa, postingan, balasan, pencarian, notifikasi, dan profil tersedia. || Log masuk ke x.com dalam aplikasi tanpa mencipta aplikasi pembangun. Garis masa, siaran, balasan, carian, pemberitahuan dan profil tersedia.
+Memerlukan Client ID aplikasi pengembang X Anda di Pengaturan. || Memerlukan Client ID aplikasi pembangun X anda dalam Tetapan.
+Masuk ke X di bawah. Aplikasi kembali otomatis setelah Anda masuk. || Log masuk ke X di bawah. Aplikasi kembali secara automatik selepas anda log masuk.
+Tambahkan akun X dan beralih di antaranya. Setiap akun menyimpan kredensial di perangkat ini, jadi Anda tidak perlu masuk lagi saat beralih. || Tambah akaun X dan bertukar antaranya. Setiap akaun menyimpan kelayakan pada peranti ini, jadi anda tidak perlu log masuk semula apabila bertukar.
+Tambahkan beberapa akun X dan pilih akun aktif kapan saja. || Tambah beberapa akaun X dan pilih akaun aktif pada bila-bila masa.
+Masuk dengan akun X lain. Akun yang tersimpan tetap masuk. || Log masuk menggunakan akaun X lain. Akaun yang disimpan kekal dilog masuk.
+Menghapus akun akan mengeluarkannya dan menghapus kredensialnya, tanpa memengaruhi akun lain. Hapus akun ini? || Mengalih keluar akaun akan melog keluar dan memadam kelayakannya tanpa menjejaskan akaun lain. Alih keluar akaun ini?
+Sesi cookie dan token akses tersimpan di ruang privat aplikasi, tidak diunggah ke tempat lain. Menghapus akun juga menghapus kredensialnya. || Sesi kuki dan token akses disimpan dalam storan persendirian aplikasi dan tidak dimuat naik ke tempat lain. Mengalih keluar akaun turut memadam kelayakannya.
+x.com masih masuk ke akun yang sudah Anda tambahkan. Keluar dari akun itu atau masuk dengan akun X lain. || x.com masih dilog masuk ke akaun yang sudah anda tambah. Log keluar daripadanya atau log masuk dengan akaun X lain.
+Sedang diputar · tetap berlanjut setelah halaman ini ditutup || Sedang dimainkan · diteruskan selepas meninggalkan halaman ini
+Percakapan ini tidak memiliki pesan yang bisa ditampilkan || Perbualan ini tiada mesej yang boleh dipaparkan
+Pesan ini memakai enkripsi XChat dan belum bisa didekripsi dalam versi ini || Mesej ini menggunakan penyulitan XChat dan belum boleh dinyahsulit dalam versi ini
+X membatasi permintaan pesan untuk sementara. Coba lagi nanti. || X mengehadkan permintaan mesej buat sementara waktu. Cuba lagi nanti.
+Percakapan ini memakai enkripsi XChat; pengiriman teks biasa belum tersedia || Perbualan ini menggunakan penyulitan XChat; penghantaran teks biasa belum tersedia
+Pesan ini berasal dari aliran peristiwa DM resmi dan tidak memiliki ID percakapan untuk dibuka || Mesej ini berasal daripada aliran peristiwa DM rasmi dan tiada ID perbualan untuk dibuka
+Percakapan XChat: versi ini bisa membaca utas dan jumlah pesan. Pengiriman dan dekripsi memerlukan pertukaran kunci. || Perbualan XChat: versi ini boleh membaca utas dan bilangan mesej. Penghantaran dan penyahsulitan memerlukan pertukaran kunci.
+Pesan gagal dimuat. Periksa jaringan atau proxy, lalu coba lagi. || Mesej gagal dimuatkan. Semak rangkaian atau proksi, kemudian cuba lagi.
+Untuk merekam input suara pada Grok web dan pesan suara || Untuk merakam input suara dalam Grok web dan mesej suara
+Beralih ke proxy tersimpan berikutnya jika permintaan gagal || Tukar kepada proksi tersimpan seterusnya jika permintaan gagal
+Berlaku untuk video.twimg.com dan subdomainnya. Permintaan MP4 selalu memakai proxy aplikasi yang dipilih, terlepas dari deteksi VPN sistem. Coba putar lagi setelah diaktifkan. HLS memakai jaringan sistem. || Terpakai kepada video.twimg.com dan subdomainnya. Permintaan MP4 sentiasa menggunakan proksi aplikasi yang dipilih tanpa mengira pengesanan VPN sistem. Cuba main semula selepas dihidupkan. HLS menggunakan rangkaian sistem.
+Proxy berlaku untuk permintaan HTTP aplikasi. Dukungan WebView dan unduhan sistem bergantung pada versi OS. || Proksi terpakai kepada permintaan HTTP aplikasi. Sokongan WebView dan muat turun sistem bergantung pada versi OS.
+SOCKS5 memerlukan HarmonyOS 7 / API 26 atau yang lebih baru || SOCKS5 memerlukan HarmonyOS 7 / API 26 atau lebih baharu
+Bulan purnama dan bunga osmanthus menyambut Festival Pertengahan Musim Gugur. Semoga pertemuan keluarga Anda hangat dan harapan Anda terwujud. || Bulan purnama dan bunga osmanthus menyambut Pesta Pertengahan Musim Luruh. Semoga pertemuan keluarga anda ceria dan segala harapan tercapai.
+Kutipan yang disertai pendapat orang lain akan tampil di sini. || Petikan yang disertai pandangan orang lain akan dipaparkan di sini.
+Pilih cara membuka Grok dari postingan. Mode web memakai situs resmi; mode API memakai konfigurasi xAI Anda. || Pilih cara membuka Grok daripada siaran. Mod web menggunakan laman rasmi; mod API menggunakan konfigurasi xAI anda.
+Buka grok.com di aplikasi dan coba sertakan teks serta tautan postingan. Masuk dan penggunaan dikelola situs resmi. || Buka grok.com dalam aplikasi dan cuba sertakan teks serta pautan siaran. Log masuk dan penggunaan diurus oleh laman rasmi.
+Kirim postingan saat ini sebagai konteks ke xAI API, lalu tampilkan jawaban sebenarnya di aplikasi. || Hantar siaran semasa sebagai konteks kepada xAI API, kemudian paparkan jawapan sebenar dalam aplikasi.
+Sesi web X akun aktif ditulis ke ArkWeb sebelum membuka Grok, agar Masuk dengan X bisa melanjutkan alur resmi. Kredensial X tidak dikirim ke grok.com. || Sesi web X akaun semasa ditulis ke ArkWeb sebelum membuka Grok supaya Log masuk dengan X boleh meneruskan aliran rasmi. Kelayakan X tidak dihantar kepada grok.com.
+Hanya tersimpan di perangkat ini dan dipakai untuk api.x.ai. Mode web tidak memerlukan kunci API. || Hanya disimpan pada peranti ini dan digunakan untuk api.x.ai. Mod web tidak memerlukan kunci API.
+Postingan ini dikirim sebagai konteks ke Grok saat Anda bertanya. || Siaran ini dihantar sebagai konteks kepada Grok apabila anda bertanya.
+Di Pengaturan > Terjemahan & AI, pilih Grok, aktifkan mode API, lalu masukkan kunci xAI API. || Dalam Tetapan > Terjemahan & AI, pilih Grok, hidupkan mod API, kemudian masukkan kunci xAI API.
+Buka grok.com dengan postingan saat ini di parameter alamat. Jika versi web tidak mengisinya, tempel tautan postingan ke kotak Grok. || Buka grok.com dengan siaran semasa dalam parameter alamat. Jika versi web tidak mengisinya, tampal pautan siaran ke ruang menulis Grok.
+Analisis postingan X ini dengan teks dan tautannya sebagai konteks:\n || Analisis siaran X ini menggunakan teks dan pautannya sebagai konteks:\n
+Baca linimasa, temukan percakapan baru, dan ikuti kabar dari orang yang Anda ikuti. || Baca garis masa, temui perbualan baharu dan ikuti perkembangan orang yang anda ikuti.
+Temukan hal yang Anda minati || Temui perkara yang anda minati
+Jelajahi Untuk Anda dan Mengikuti, lalu cari postingan, orang, dan topik tren. || Terokai Untuk anda dan Mengikuti, kemudian cari siaran, orang dan topik sohor.
+Ikut berbincang || Sertai perbualan
+Masuk untuk memposting, membalas, menyukai, dan melihat notifikasi serta profil. || Log masuk untuk menyiarkan, membalas, menyukai serta melihat pemberitahuan dan profil.
+Masuk ke X || Log masuk ke X
+Masuk di halaman web di bawah. Harmony X terbuka otomatis setelah selesai. || Log masuk pada halaman web di bawah. Harmony X dibuka secara automatik selepas selesai.
+Anda sudah masuk, tetapi akun gagal disimpan. Coba lagi atau gunakan pengelolaan akun nanti. || Anda telah log masuk, tetapi akaun gagal disimpan. Cuba lagi atau gunakan pengurusan akaun kemudian.
+Lewati || Langkau
+Jelajahi tanpa masuk || Layari tanpa log masuk
+Pilih linimasa Anda || Pilih garis masa anda
+Beralih antara dua cara membaca beranda. || Tukar antara dua cara membaca halaman utama.
+Temukan postingan melalui topik dan interaksi. || Temui siaran melalui topik dan interaksi.
+Baca postingan akun yang Anda ikuti berdasarkan urutan waktu. || Baca siaran akaun yang anda ikuti mengikut masa.
+Segarkan kapan saja || Muat semula pada bila-bila masa
+Tarik untuk menyegarkan. Konten tersimpan tetap tersedia saat offline. || Tarik untuk memuat semula. Kandungan cache kekal tersedia di luar talian.
+Cari postingan dan topik || Cari siaran dan topik
+Cari kata kunci dan persempit hasil dengan filter. || Cari kata kunci dan kecilkan hasil menggunakan penapis.
+Temukan orang || Cari orang
+Buka profil untuk melihat postingan dan hubungan mengikuti. || Buka profil untuk melihat siaran dan hubungan ikutan.
+Jelajahi konten tren || Terokai kandungan sohor
+Lihat tren, berita, dan rekomendasi di Jelajahi. || Lihat trend, berita dan cadangan dalam Teroka.
+Posting dan balas || Siarkan dan balas
+Tulis postingan, tambahkan foto atau video, dan ikut membalas. || Tulis siaran, tambah foto atau video dan sertai balasan.
+Sukai dan posting ulang || Suka dan siarkan semula
+Sukai, posting ulang, dan markahi postingan yang ingin disimpan. || Suka, siarkan semula dan tandakan siaran yang mahu disimpan.
+Profil Anda || Profil anda
+Lihat postingan, suka, dan informasi profil Anda. || Lihat siaran, suka dan maklumat profil anda.
+Tonton sesuai keinginan || Tonton mengikut cara anda
+Pengaturan ini langsung disimpan dan bisa diubah nanti di Pengaturan. || Tetapan ini disimpan serta-merta dan boleh diubah kemudian dalam Tetapan.
+Disarankan aktif · bisa diubah kapan saja || Disyorkan hidup · boleh diubah pada bila-bila masa
+Tetap tahu kabar terbaru || Ikuti perkembangan terkini
+Notifikasi, peringatan belum dibaca, dan pesan ada di navigasi bawah. || Pemberitahuan, makluman belum dibaca dan mesej terdapat pada navigasi bawah.
+Ketersediaan pesan bergantung pada akun X dan antarmuka saat ini. || Ketersediaan mesej bergantung pada akaun X dan antara muka semasa.
+Izin notifikasi sistem || Kebenaran pemberitahuan sistem
+Untuk notifikasi sistem, masuk lalu aktifkan dan izinkan melalui Pengaturan. || Untuk pemberitahuan sistem, log masuk kemudian hidupkan dan berikan kebenaran melalui Tetapan.
+Tips memulai || Petua bermula
+Beberapa pilihan agar Harmony X sesuai dengan Anda. || Beberapa pilihan supaya Harmony X sesuai dengan anda.
+Sesuaikan dengan selera || Jadikannya milik anda
+Ubah tampilan, bahasa, ukuran teks, dan tata letak beranda di Pengaturan. || Ubah rupa, bahasa, saiz teks dan susun atur utama dalam Tetapan.
+Masuk nanti || Log masuk kemudian
+Jika melewati masuk web, Anda tetap bisa menambah atau beralih akun melalui pengelolaan akun. || Jika melangkau log masuk web, anda masih boleh menambah atau bertukar akaun melalui pengurusan akaun.
+Akun X terhubung. Harmony X siap digunakan. || Akaun X disambungkan. Harmony X sedia digunakan.
+Mulai || Bermula
+Tentang akun ini || Perihal akaun ini
+Nonaktifkan posting ulang || Matikan siaran semula
+Aktifkan posting ulang || Hidupkan siaran semula

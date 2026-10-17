@@ -1,10 +1,28 @@
+import { userIsVerified, userVerifiedType, userAvatarShape, normalizedVerifiedType } from '../utils/UserIdentity';
 // X API v2 client for HarmonyOS (OAuth 2.0 user context + app-only Bearer).
 // Uses @ohos.net.http (stable from API 6 through API 24/26).
 // Every network call returns null/false on failure so the UI can fall
 // back to offline demo data — nothing here may throw across the boundary.
 import http from '@ohos.net.http';
 import hilog from '@ohos.hilog';
-import type { Tweet, DirectMessage, AppNotification, UserProfile, MediaAttachment } from '../models/Tweet';
+import type {
+  Tweet,
+  DirectMessage,
+  AppNotification,
+  UserProfile,
+  MediaAttachment,
+  VideoRendition
+} from '../models/Tweet';
+import { XNotificationParser } from './XNotificationParser';
+import { XPostReceipt, XPostResponse } from './XPostResponse';
+import { ComposerOptions } from '../models/ComposerOptions';
+import { composerV2Fields } from './XComposerRequest';
+import { proxyStore } from './ProxyStore';
+import { normalizedPostMediaType } from '../utils/PostGif';
+import { ReplyConversation } from './ReplyConversation';
+import { XPostCardParser } from './XPostCardParser';
+import { XPostPresentationParser } from './XPostPresentationParser';
+import { NotificationRateLimit } from '../utils/NotificationRateLimit';
 
 const DOMAIN = 0xFF00;
 const TAG = 'HarmonyX-XApi';
@@ -12,11 +30,15 @@ const BASE_URL = 'https://api.x.com/2';
 const AUTHORIZE_URL = 'https://x.com/i/oauth2/authorize';
 const TOKEN_URL = 'https://api.x.com/2/oauth2/token';
 export const REDIRECT_URI = 'harmonyx://callback';
-const TWEET_FIELDS = 'created_at,public_metrics,attachments';
-const USER_FIELDS = 'name,username,verified,profile_image_url';
-const PROFILE_FIELDS = 'name,username,verified,description,public_metrics,profile_image_url,profile_banner_url';
-const MEDIA_FIELDS = 'type,url,preview_image_url,width,height,alt_text,variants';
-const EXPANSIONS = 'author_id,attachments.media_keys';
+const TWEET_FIELDS = 'created_at,lang,public_metrics,attachments,referenced_tweets,in_reply_to_user_id,conversation_id,possibly_sensitive';
+const USER_FIELDS = 'name,username,verified,verified_type,profile_image_url';
+const PROFILE_FIELDS = 'name,username,verified,verified_type,description,public_metrics,profile_image_url,profile_banner_url';
+const MEDIA_FIELDS = 'type,url,preview_image_url,width,height,duration_ms,alt_text,variants';
+const EXPANSIONS = 'author_id,in_reply_to_user_id,attachments.media_keys,attachments.poll_ids,referenced_tweets.id,referenced_tweets.id.author_id';
+const POLL_FIELDS = 'duration_minutes,end_datetime,id,options,voting_status';
+// Matches the private-interface feed rule: a card is small, so the smallest
+// rendition above this bitrate starts fastest without looking blocky.
+const FEED_BITRATE_FLOOR = 500000;
 
 export interface TokenResult {
   ok: boolean;
@@ -34,12 +56,19 @@ export interface MeResult {
 export interface TweetPage {
   tweets: Tweet[];
   nextToken: string;
+  topToken?: string;
 }
 
 export class XApiClient {
   private token: string = '';
   private userId: string = '';
   private lastCode: number = 0;
+  private mentionsLimitReason: string = '';
+  private postReceipt: XPostReceipt = new XPostReceipt();
+
+  lastPostReceipt(): XPostReceipt {
+    return this.postReceipt;
+  }
 
   setToken(token: string): void {
     this.token = token.trim();
@@ -57,6 +86,10 @@ export class XApiClient {
   // 402 means X demands paid API access for that endpoint.
   lastStatus(): number {
     return this.lastCode;
+  }
+
+  mentionsRateLimitReason(): string {
+    return this.mentionsLimitReason;
   }
 
   // ---- OAuth 2.0 -------------------------------------------------------
@@ -90,13 +123,15 @@ export class XApiClient {
       if (secret.length > 0) {
         headers['Authorization'] = 'Basic ' + this.base64Of(clientId.trim() + ':' + secret);
       }
-      const resp: http.HttpResponse = await httpRequest.request(TOKEN_URL, {
+      const options: http.HttpRequestOptions = {
         method: http.RequestMethod.POST,
         header: headers,
         extraData: body,
         readTimeout: 15000,
         connectTimeout: 15000
-      });
+      };
+      await proxyStore.apply(options);
+      const resp: http.HttpResponse = await httpRequest.request(TOKEN_URL, options);
       const text: string = typeof resp.result === 'string' ? resp.result as string : JSON.stringify(resp.result);
       if (resp.responseCode !== 200) {
         hilog.error(DOMAIN, TAG, 'token HTTP %{public}d: %{public}s', resp.responseCode, text.substring(0, 300));
@@ -179,7 +214,7 @@ export class XApiClient {
       '/timelines/reverse_chronological?max_results=20' +
       (paginationToken.length > 0 ? '&pagination_token=' + encodeURIComponent(paginationToken) : '') +
       '&tweet.fields=' + TWEET_FIELDS + '&expansions=' + EXPANSIONS + '&user.fields=' + USER_FIELDS +
-      '&media.fields=' + MEDIA_FIELDS;
+      '&media.fields=' + MEDIA_FIELDS + '&poll.fields=' + POLL_FIELDS;
     const resp: string | null = await this.get(url);
     if (resp === null) {
       return null;
@@ -201,7 +236,7 @@ export class XApiClient {
       encodeURIComponent(query) + '&max_results=20' +
       (nextToken.length > 0 ? '&next_token=' + encodeURIComponent(nextToken) : '') +
       '&tweet.fields=' + TWEET_FIELDS + '&expansions=' + EXPANSIONS + '&user.fields=' + USER_FIELDS +
-      '&media.fields=' + MEDIA_FIELDS;
+      '&media.fields=' + MEDIA_FIELDS + '&poll.fields=' + POLL_FIELDS;
     const resp: string | null = await this.get(url);
     if (resp === null) {
       return null;
@@ -217,12 +252,15 @@ export class XApiClient {
   // The X v2 mentions timeline is the closest API-backed equivalent to the
   // notifications surface: it contains posts directed at the signed-in user.
   async mentions(userId: string): Promise<AppNotification[] | null> {
+    this.mentionsLimitReason = '';
     if (!this.hasToken() || userId.length === 0) {
       return null;
     }
     const url: string = BASE_URL + '/users/' + encodeURIComponent(userId) +
-      '/mentions?max_results=20&tweet.fields=created_at&expansions=author_id&user.fields=name,username';
-    const resp: string | null = await this.get(url);
+      '/mentions?max_results=20&tweet.fields=created_at&expansions=author_id&user.fields=name,username,verified,verified_type';
+    const resp: string | null = await this.get(url, (status: number, body: string): void => {
+      this.mentionsLimitReason = NotificationRateLimit.reason(status, body);
+    });
     if (resp === null) {
       return null;
     }
@@ -236,7 +274,7 @@ export class XApiClient {
       return null;
     }
     const url: string = BASE_URL + '/dm_events?event_types=MessageCreate&max_results=50' +
-      '&dm_event.fields=created_at,sender_id,text&expansions=sender_id&user.fields=name,username,profile_image_url';
+      '&dm_event.fields=created_at,sender_id,text&expansions=sender_id&user.fields=name,username,verified,verified_type,profile_image_url';
     const resp: string | null = await this.get(url);
     if (resp === null) {
       return null;
@@ -283,18 +321,45 @@ export class XApiClient {
 
   // The user Posts endpoint is distinct from the home timeline and returns
   // only the profile owner's public posts.
-  async userPosts(userId: string): Promise<Tweet[] | null> {
+  async userPostsPage(userId: string, nextToken: string = ''): Promise<TweetPage | null> {
     if (!this.hasToken() || userId.length === 0) {
       return null;
     }
-    const url: string = BASE_URL + '/users/' + encodeURIComponent(userId) + '/tweets?max_results=20' +
+    let url: string = BASE_URL + '/users/' + encodeURIComponent(userId) + '/tweets?max_results=20' +
       '&tweet.fields=' + TWEET_FIELDS + '&expansions=' + EXPANSIONS + '&user.fields=' + USER_FIELDS +
-      '&media.fields=' + MEDIA_FIELDS;
+      '&media.fields=' + MEDIA_FIELDS + '&poll.fields=' + POLL_FIELDS;
+    if (nextToken.length > 0) {
+      url += '&pagination_token=' + encodeURIComponent(nextToken);
+    }
     const resp: string | null = await this.get(url);
     if (resp === null) {
       return null;
     }
-    return XApiClient.parseTweets(resp);
+    return XApiClient.parseTweetPage(resp);
+  }
+
+  // OAuth users can read their liked tweets through the same paged v2 API.
+  async userLikesPage(userId: string, nextToken: string = ''): Promise<TweetPage | null> {
+    if (!this.hasToken() || userId.length === 0) {
+      return null;
+    }
+    let url: string = BASE_URL + '/users/' + encodeURIComponent(userId) +
+      '/liked_tweets?max_results=20&tweet.fields=' + TWEET_FIELDS +
+      '&expansions=' + EXPANSIONS + '&user.fields=' + USER_FIELDS + '&media.fields=' + MEDIA_FIELDS + '&poll.fields=' + POLL_FIELDS;
+    if (nextToken.length > 0) {
+      url += '&pagination_token=' + encodeURIComponent(nextToken);
+    }
+    const resp: string | null = await this.get(url);
+    if (resp === null) {
+      return null;
+    }
+    return XApiClient.parseTweetPage(resp);
+  }
+
+  // Existing callers that only need the newest page retain the same contract.
+  async userPosts(userId: string): Promise<Tweet[] | null> {
+    const page: TweetPage | null = await this.userPostsPage(userId);
+    return page === null ? null : page.tweets;
   }
 
   // Fetch the current canonical representation before opening a post detail.
@@ -306,7 +371,7 @@ export class XApiClient {
     }
     const url: string = BASE_URL + '/tweets/' + encodeURIComponent(tweetId) +
       '?tweet.fields=' + TWEET_FIELDS + '&expansions=' + EXPANSIONS + '&user.fields=' + USER_FIELDS +
-      '&media.fields=' + MEDIA_FIELDS;
+      '&media.fields=' + MEDIA_FIELDS + '&poll.fields=' + POLL_FIELDS;
     const resp: string | null = await this.get(url);
     if (resp === null) {
       return null;
@@ -327,7 +392,7 @@ export class XApiClient {
     const url: string = BASE_URL + '/tweets/search/recent?query=' +
       encodeURIComponent('conversation_id:' + tweetId) + '&max_results=100' +
       '&tweet.fields=' + TWEET_FIELDS + '&expansions=' + EXPANSIONS + '&user.fields=' + USER_FIELDS +
-      '&media.fields=' + MEDIA_FIELDS;
+      '&media.fields=' + MEDIA_FIELDS + '&poll.fields=' + POLL_FIELDS;
     const resp: string | null = await this.get(url);
     if (resp === null) {
       return null;
@@ -349,16 +414,24 @@ export class XApiClient {
 
   // ---- Writes (user context) -------------------------------------------
 
-  async postTweet(text: string, replyToId: string = ''): Promise<boolean> {
+  async postTweet(text: string, replyToId: string = '',
+    options: ComposerOptions = new ComposerOptions(), mediaIds: string[] = []): Promise<boolean> {
+    this.postReceipt = new XPostReceipt();
     if (!this.hasToken()) {
+      this.lastCode = 0;
       return false;
     }
     const payload: Record<string, Object> = { 'text': text };
+    composerV2Fields(payload, options);
+    if (mediaIds.length > 0) {
+      const media: Record<string, Object> = { 'media_ids': mediaIds };
+      payload['media'] = media;
+    }
     if (replyToId.length > 0) {
       const reply: Record<string, string> = { 'in_reply_to_tweet_id': replyToId };
       payload['reply'] = reply;
     }
-    return await this.post(BASE_URL + '/tweets', payload, [200, 201]);
+    return await this.post(BASE_URL + '/tweets', payload, [200, 201], true);
   }
 
   async setLike(tweetId: string, like: boolean): Promise<boolean> {
@@ -385,22 +458,26 @@ export class XApiClient {
 
   // ---- HTTP primitives --------------------------------------------------
 
-  private async get(url: string): Promise<string | null> {
+  private async get(url: string, onResponse?: (status: number, body: string) => void): Promise<string | null> {
     let httpRequest: http.HttpRequest | undefined = undefined;
     try {
       httpRequest = http.createHttp();
-      const resp: http.HttpResponse = await httpRequest.request(url, {
+      const options: http.HttpRequestOptions = {
         method: http.RequestMethod.GET,
         header: { 'Authorization': 'Bearer ' + this.token },
         readTimeout: 10000,
         connectTimeout: 10000
-      });
+      };
+      await proxyStore.apply(options);
+      const resp: http.HttpResponse = await httpRequest.request(url, options);
       this.lastCode = resp.responseCode;
+      const body: string = typeof resp.result === 'string' ? resp.result as string : JSON.stringify(resp.result);
+      if (onResponse !== undefined) { onResponse(resp.responseCode, body); }
       if (resp.responseCode !== 200) {
         hilog.error(DOMAIN, TAG, 'GET %{public}d', resp.responseCode);
         return null;
       }
-      return typeof resp.result === 'string' ? resp.result as string : JSON.stringify(resp.result);
+      return body;
     } catch (e) {
       this.lastCode = -1;
       hilog.error(DOMAIN, TAG, 'GET failed: %{public}s', JSON.stringify(e));
@@ -412,11 +489,12 @@ export class XApiClient {
     }
   }
 
-  private async post(url: string, payload: Record<string, Object>, okCodes: number[]): Promise<boolean> {
+  private async post(url: string, payload: Record<string, Object>, okCodes: number[],
+    requirePostReceipt: boolean = false): Promise<boolean> {
     let httpRequest: http.HttpRequest | undefined = undefined;
     try {
       httpRequest = http.createHttp();
-      const resp: http.HttpResponse = await httpRequest.request(url, {
+      const options: http.HttpRequestOptions = {
         method: http.RequestMethod.POST,
         header: {
           'Authorization': 'Bearer ' + this.token,
@@ -425,8 +503,15 @@ export class XApiClient {
         extraData: payload,
         readTimeout: 10000,
         connectTimeout: 10000
-      });
+      };
+      await proxyStore.apply(options);
+      const resp: http.HttpResponse = await httpRequest.request(url, options);
       this.lastCode = resp.responseCode;
+      if (requirePostReceipt) {
+        const body: string = typeof resp.result === 'string' ? resp.result as string : JSON.stringify(resp.result);
+        this.postReceipt = XPostResponse.parse(resp.responseCode, body, false);
+        return this.postReceipt.ok;
+      }
       for (let i = 0; i < okCodes.length; i++) {
         if (resp.responseCode === okCodes[i]) {
           return true;
@@ -435,6 +520,9 @@ export class XApiClient {
       return false;
     } catch (e) {
       this.lastCode = -1;
+      if (requirePostReceipt) {
+        this.postReceipt = XPostResponse.parse(-1, '', false);
+      }
       hilog.error(DOMAIN, TAG, 'POST failed: %{public}s', JSON.stringify(e));
       return false;
     } finally {
@@ -448,12 +536,14 @@ export class XApiClient {
     let httpRequest: http.HttpRequest | undefined = undefined;
     try {
       httpRequest = http.createHttp();
-      const resp: http.HttpResponse = await httpRequest.request(url, {
+      const options: http.HttpRequestOptions = {
         method: http.RequestMethod.DELETE,
         header: { 'Authorization': 'Bearer ' + this.token },
         readTimeout: 10000,
         connectTimeout: 10000
-      });
+      };
+      await proxyStore.apply(options);
+      const resp: http.HttpResponse = await httpRequest.request(url, options);
       this.lastCode = resp.responseCode;
       return resp.responseCode === 200;
     } catch (e) {
@@ -496,6 +586,12 @@ export class XApiClient {
         data.push(rawData as Record<string, Object>);
       }
       const includes: Record<string, Object> = (json['includes'] ?? {}) as Record<string, Object>;
+      const requestedCount: number = data.length;
+      const referencedPosts: Array<Record<string, Object>> =
+        (includes['tweets'] ?? []) as Array<Record<string, Object>>;
+      for (let i: number = 0; i < referencedPosts.length; i++) {
+        data.push(referencedPosts[i]);
+      }
       const users: Array<Record<string, Object>> = (includes['users'] ?? []) as Array<Record<string, Object>>;
       const userById: Map<string, Record<string, Object>> = new Map();
       for (let i = 0; i < users.length; i++) {
@@ -507,13 +603,26 @@ export class XApiClient {
       for (let i = 0; i < rawMedia.length; i++) {
         mediaByKey.set(String(rawMedia[i]['media_key'] ?? ''), rawMedia[i]);
       }
+      const polls: Array<Record<string, Object>> = (includes['polls'] ?? []) as Array<Record<string, Object>>;
       const out: Tweet[] = [];
       for (let i = 0; i < data.length; i++) {
         const t: Record<string, Object> = data[i];
         const authorId: string = String(t['author_id'] ?? t['id'] ?? ('x' + i));
         const u: Record<string, Object> | undefined = userById.get(authorId);
         const metrics: Record<string, Object> = (t['public_metrics'] ?? {}) as Record<string, Object>;
-        const attachments: MediaAttachment[] = XApiClient.parseAttachments(t, mediaByKey);
+        const attachments: MediaAttachment[] = XApiClient.parseAttachments(t, mediaByKey,
+          Boolean(t['possibly_sensitive']));
+        const referenced: Array<Record<string, Object>> =
+          (t['referenced_tweets'] ?? []) as Array<Record<string, Object>>;
+        let replyToTweetId: string = '';
+        for (let refIndex: number = 0; refIndex < referenced.length; refIndex++) {
+          if (String(referenced[refIndex]['type'] ?? '') === 'replied_to') {
+            replyToTweetId = String(referenced[refIndex]['id'] ?? '');
+            break;
+          }
+        }
+        const replyToUserId: string = String(t['in_reply_to_user_id'] ?? '');
+        const replyToUser: Record<string, Object> | undefined = userById.get(replyToUserId);
         out.push({
           id: String(t['id'] ?? ('x' + i)),
           author: {
@@ -521,11 +630,12 @@ export class XApiClient {
             name: String(u?.['name'] ?? 'X User'),
             username: String(u?.['username'] ?? 'x'),
             avatarColor: '#1D9BF0',
-            avatarUrl: String(u?.['profile_image_url'] ?? ''),
-            verified: Boolean(u?.['verified'] ?? false)
+            avatarUrl: XApiClient.highResAvatarUrl(String(u?.['profile_image_url'] ?? '')),
+            verified: userIsVerified(u), verifiedType: userVerifiedType(u), avatarShape: userAvatarShape(u)
           },
           text: String(t['text'] ?? ''),
-          createdAt: String(t['created_at'] ?? 'now'),
+          language: String(t['lang'] ?? ''),
+          createdAt: String(t['created_at'] ?? ''),
           metrics: {
             replyCount: Number(metrics['reply_count'] ?? 0),
             repostCount: Number(metrics['retweet_count'] ?? 0),
@@ -534,18 +644,114 @@ export class XApiClient {
           },
           liked: false,
           reposted: false,
-          attachments: attachments
+          isReply: replyToTweetId.length > 0 || replyToUserId.length > 0,
+          replyToTweetId: replyToTweetId,
+          replyToUsername: String(replyToUser?.['username'] ?? ''),
+          attachments: attachments,
+          poll: XPostCardParser.v2Poll(t, polls),
+          card: XPostCardParser.link(t, String(t['id'] ?? '')),
+          presentation: XPostPresentationParser.parse(t)
         });
       }
-      return out;
+      for (let i: number = 0; i < out.length; i++) {
+        const references: Array<Record<string, Object>> = (data[i]['referenced_tweets'] ?? []) as Array<Record<string, Object>>;
+        for (let j: number = 0; j < references.length; j++) {
+          if (references[j]['type'] !== 'quoted') { continue; }
+          const quotedId: string = String(references[j]['id'] ?? '');
+          for (let k: number = 0; k < out.length; k++) {
+            const quote: Tweet = out[k];
+            if (quote.id === quotedId) {
+              out[i].quotedTweet = { id: quote.id, author: quote.author, text: quote.text,
+                createdAt: quote.createdAt, attachments: quote.attachments, poll: quote.poll, card: quote.card,
+                article: quote.article, presentation: quote.presentation };
+              break;
+            }
+          }
+        }
+      }
+      return ReplyConversation.attach(out).slice(0, requestedCount);
     } catch (e) {
       hilog.error(DOMAIN, TAG, 'parse failed: %{public}s', JSON.stringify(e));
       return null;
     }
   }
 
+  private static highResAvatarUrl(url: string): string {
+    let out: string = url;
+    out = XApiClient.replaceQueryAvatarSize(out, 'normal');
+    out = XApiClient.replaceQueryAvatarSize(out, 'bigger');
+    out = XApiClient.replaceQueryAvatarSize(out, 'mini');
+    return XApiClient.replacePathAvatarSize(out);
+  }
+
+  private static replaceQueryAvatarSize(url: string, size: string): string {
+    const token: string = 'name=' + size;
+    const index: number = url.indexOf(token);
+    if (index < 0) {
+      return url;
+    }
+    return url.substring(0, index) + 'name=400x400' + url.substring(index + token.length);
+  }
+
+  private static replacePathAvatarSize(url: string): string {
+    const markers: string[] = ['_normal.', '_bigger.', '_mini.'];
+    for (let i: number = 0; i < markers.length; i++) {
+      const marker: string = markers[i];
+      const index: number = url.indexOf(marker);
+      if (index >= 0) {
+        return url.substring(0, index) + '_400x400.' + url.substring(index + marker.length);
+      }
+    }
+    return url;
+  }
+
+  private static highResBannerUrl(url: string): string {
+    if (url.length === 0) {
+      return '';
+    }
+    const queryStart: number = url.indexOf('?');
+    let body: string = url;
+    let query: string = '';
+    if (queryStart >= 0) {
+      body = url.substring(0, queryStart);
+      query = url.substring(queryStart);
+    }
+    const size: string = '1500x500';
+    const slash: number = body.lastIndexOf('/');
+    if (slash < 0) {
+      return body + '/' + size + query;
+    }
+    const lastSegment: string = body.substring(slash + 1);
+    if (XApiClient.isBannerSizeSegment(lastSegment)) {
+      return body.substring(0, slash + 1) + size + query;
+    }
+    return body + '/' + size + query;
+  }
+
+  private static isBannerSizeSegment(value: string): boolean {
+    const split: number = value.indexOf('x');
+    if (split <= 0 || split >= value.length - 1) {
+      return false;
+    }
+    return XApiClient.isDigits(value.substring(0, split)) &&
+      XApiClient.isDigits(value.substring(split + 1));
+  }
+
+  private static isDigits(value: string): boolean {
+    if (value.length === 0) {
+      return false;
+    }
+    for (let i: number = 0; i < value.length; i++) {
+      const code: number = value.charCodeAt(i);
+      if (code < 48 || code > 57) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   private static parseAttachments(tweet: Record<string, Object>,
-    mediaByKey: Map<string, Record<string, Object>>): MediaAttachment[] {
+    mediaByKey: Map<string, Record<string, Object>>, sensitive: boolean): MediaAttachment[] {
     const result: MediaAttachment[] = [];
     const rawAttachments: Record<string, Object> = (tweet['attachments'] ?? {}) as Record<string, Object>;
     const mediaKeys: Array<Object> = (rawAttachments['media_keys'] ?? []) as Array<Object>;
@@ -555,20 +761,29 @@ export class XApiClient {
       if (media === undefined) {
         continue;
       }
-      const type: string = String(media['type'] ?? 'photo');
+      const type: string = normalizedPostMediaType(String(media['type'] ?? 'photo'));
       const previewUrl: string = String(media['preview_image_url'] ?? media['url'] ?? '');
       let mediaUrl: string = String(media['url'] ?? '');
-      if (type === 'video' && mediaUrl.length === 0) {
-        mediaUrl = XApiClient.videoVariantUrl(media);
+      let feedUrl: string = '';
+      if (type === 'video' || type === 'animated_gif') {
+        if (mediaUrl.length === 0) {
+          mediaUrl = XApiClient.videoVariantUrl(media);
+        }
+        feedUrl = XApiClient.feedVariantUrl(media);
       }
       result.push({
         id: key,
         type: type,
         mediaUrl: mediaUrl,
+        feedUrl: feedUrl,
+        videoVariantUrls: XApiClient.videoVariantUrls(media),
+        videoVariants: XApiClient.videoRenditions(media),
+        durationMs: Number(media['duration_ms'] ?? media['duration_millis'] ?? 0),
         previewUrl: previewUrl,
         width: Number(media['width'] ?? 0),
         height: Number(media['height'] ?? 0),
-        altText: String(media['alt_text'] ?? '')
+        altText: String(media['alt_text'] ?? ''),
+        sensitive: sensitive
       });
     }
     return result;
@@ -587,7 +802,132 @@ export class XApiClient {
         bitrate = currentBitrate;
       }
     }
-    return selected;
+    return selected.length > 0 ? selected : XApiClient.hlsVariantUrl(variants);
+  }
+
+  // Inline playback wants the opposite of fullscreen: the smallest rendition
+  // still worth watching, so a feed cell shows its first frame quickly.
+  private static feedVariantUrl(media: Record<string, Object>): string {
+    const variants: Array<Record<string, Object>> = (media['variants'] ?? []) as Array<Record<string, Object>>;
+    let selected: string = '';
+    let selectedBitrate: number = -1;
+    let lightest: string = '';
+    let lightestBitrate: number = -1;
+    for (let i = 0; i < variants.length; i++) {
+      const contentType: string = String(variants[i]['content_type'] ?? '');
+      const url: string = String(variants[i]['url'] ?? '');
+      if (contentType !== 'video/mp4' || url.length === 0) {
+        continue;
+      }
+      const bitrate: number = Number(variants[i]['bit_rate'] ?? 0);
+      if (lightest.length === 0 || bitrate < lightestBitrate) {
+        lightest = url;
+        lightestBitrate = bitrate;
+      }
+      if (bitrate >= FEED_BITRATE_FLOOR && (selected.length === 0 || bitrate < selectedBitrate)) {
+        selected = url;
+        selectedBitrate = bitrate;
+      }
+    }
+    if (selected.length > 0) {
+      return selected;
+    }
+    return lightest.length > 0 ? lightest : XApiClient.hlsVariantUrl(variants);
+  }
+
+  private static videoVariantUrls(media: Record<string, Object>): string[] {
+    const variants: Array<Record<string, Object>> = (media['variants'] ?? []) as Array<Record<string, Object>>;
+    const urls: string[] = [];
+    const bitrates: number[] = [];
+    for (let i: number = 0; i < variants.length; i++) {
+      const variant: Record<string, Object> = variants[i];
+      const contentType: string = String(variant['content_type'] ?? '').toLowerCase();
+      const url: string = String(variant['url'] ?? '');
+      if (contentType !== 'video/mp4' || url.length === 0 || urls.indexOf(url) >= 0) {
+        continue;
+      }
+      const bitrate: number = Number(variant['bit_rate'] ?? 0);
+      let insertAt: number = urls.length;
+      for (let j: number = 0; j < bitrates.length; j++) {
+        if (bitrate < bitrates[j]) {
+          insertAt = j;
+          break;
+        }
+      }
+      urls.splice(insertAt, 0, url);
+      bitrates.splice(insertAt, 0, bitrate);
+    }
+    const hls: string = XApiClient.hlsVariantUrl(variants);
+    if (hls.length > 0 && urls.indexOf(hls) < 0) {
+      urls.push(hls);
+    }
+    return urls;
+  }
+
+  private static videoRenditions(media: Record<string, Object>): VideoRendition[] {
+    const variants: Array<Record<string, Object>> = (media['variants'] ?? []) as Array<Record<string, Object>>;
+    const out: VideoRendition[] = [];
+    for (let i: number = 0; i < variants.length; i++) {
+      const variant: Record<string, Object> = variants[i];
+      const contentType: string = String(variant['content_type'] ?? '').toLowerCase();
+      const url: string = String(variant['url'] ?? '');
+      if (contentType !== 'video/mp4' || url.length === 0) {
+        continue;
+      }
+      const bitrate: number = Number(variant['bit_rate'] ?? 0);
+      let width: number = Number(variant['width'] ?? 0);
+      let height: number = Number(variant['height'] ?? 0);
+      if (width === 0 || height === 0) {
+        const dimensions: number[] = XApiClient.dimensionsFromUrl(url);
+        if (width === 0) {
+          width = dimensions[0];
+        }
+        if (height === 0) {
+          height = dimensions[1];
+        }
+      }
+      out.push({ url: url, bitrate: bitrate, width: width, height: height });
+    }
+    for (let i: number = 1; i < out.length; i++) {
+      const current: VideoRendition = out[i];
+      let j: number = i - 1;
+      while (j >= 0 && out[j].bitrate > current.bitrate) {
+        out[j + 1] = out[j];
+        j--;
+      }
+      out[j + 1] = current;
+    }
+    return out;
+  }
+
+  private static dimensionsFromUrl(url: string): number[] {
+    const segments: string[] = url.split('/');
+    for (let i: number = 0; i < segments.length; i++) {
+      const segment: string = segments[i];
+      const separator: number = segment.indexOf('x');
+      if (separator <= 0 || separator >= segment.length - 1) {
+        continue;
+      }
+      const widthText: string = segment.substring(0, separator);
+      const heightText: string = segment.substring(separator + 1);
+      if (XApiClient.isDigits(widthText) && XApiClient.isDigits(heightText)) {
+        return [Number(widthText), Number(heightText)];
+      }
+    }
+    return [0, 0];
+  }
+
+  private static hlsVariantUrl(variants: Array<Record<string, Object>>): string {
+    for (let i: number = 0; i < variants.length; i++) {
+      const variant: Record<string, Object> = variants[i];
+      const url: string = String(variant['url'] ?? '');
+      const contentType: string = String(variant['content_type'] ?? '').toLowerCase();
+      if (url.length > 0 && (contentType.indexOf('application/x-mpegurl') >= 0 ||
+        contentType.indexOf('application/vnd.apple.mpegurl') >= 0 || url.toLowerCase().indexOf('.m3u8') >= 0)) {
+        return url;
+      }
+    }
+    return '';
   }
 
   private static parseMentions(body: string): AppNotification[] | null {
@@ -616,11 +956,32 @@ export class XApiClient {
         const authorId: string = String(mention['author_id'] ?? '');
         const author: Record<string, Object> | undefined = userById.get(authorId);
         const username: string = String(author?.['username'] ?? 'X user');
+        const name: string = String(author?.['name'] ?? username);
+        const avatarUrl: string = XApiClient.highResAvatarUrl(String(author?.['profile_image_url'] ?? ''));
+        const postId: string = String(mention['id'] ?? '');
+        const postText: string = String(mention['text'] ?? '');
+        const createdAt: string = String(mention['created_at'] ?? '');
+        const createdAtMs: number = Date.parse(createdAt);
         result.push({
-          id: String(mention['id'] ?? ('mention-' + i)),
-          kind: '@',
-          text: '@' + username + ': ' + String(mention['text'] ?? ''),
-          time: XApiClient.displayTime(String(mention['created_at'] ?? ''))
+          id: postId.length > 0 ? postId : 'mention-' + i,
+          kind: 'mention',
+          text: '@' + username + ': ' + postText,
+          time: isNaN(createdAtMs) ? XApiClient.displayTime(createdAt) :
+            XNotificationParser.relativeTime(createdAtMs),
+          timestampMs: isNaN(createdAtMs) ? 0 : createdAtMs,
+          targetPostId: postId,
+          postText: postText,
+          authorId: authorId,
+          authorName: name,
+          authorUsername: String(author?.['username'] ?? ''),
+          authorAvatarUrl: avatarUrl, authorVerifiedType: userVerifiedType(author), authorAvatarShape: userAvatarShape(author),
+          fromVerifiedAccount: author?.['verified'] === true ||
+            ['blue', 'business', 'government'].indexOf(String(author?.['verified_type'] ?? '')) >= 0,
+          // The mentions request does not ask for media expansions.
+          imageUrl: '',
+          imageIsVideo: false,
+          unread: false,
+          deepLink: ''
         });
       }
       return result;
@@ -652,7 +1013,7 @@ export class XApiClient {
           preview: String(event['text'] ?? ''),
           time: XApiClient.displayTime(String(event['created_at'] ?? '')),
           unread: 0,
-          avatarUrl: String(sender?.['profile_image_url'] ?? '')
+          avatarUrl: XApiClient.highResAvatarUrl(String(sender?.['profile_image_url'] ?? '')), verifiedType: userVerifiedType(sender), avatarShape: userAvatarShape(sender)
         });
       }
       return result;
@@ -697,9 +1058,9 @@ export class XApiClient {
         followersCount: Number(metrics['followers_count'] ?? 0),
         followingCount: Number(metrics['following_count'] ?? 0),
         postCount: Number(metrics['tweet_count'] ?? 0),
-        verified: Boolean(data['verified'] ?? false),
-        avatarUrl: String(data['profile_image_url'] ?? ''),
-        bannerUrl: String(data['profile_banner_url'] ?? '')
+        verified: userIsVerified(data), verifiedType: userVerifiedType(data), avatarShape: userAvatarShape(data),
+        avatarUrl: XApiClient.highResAvatarUrl(String(data['profile_image_url'] ?? '')),
+        bannerUrl: XApiClient.highResBannerUrl(String(data['profile_banner_url'] ?? ''))
       };
     } catch (e) {
       hilog.error(DOMAIN, TAG, 'profile parse failed: %{public}s', JSON.stringify(e));

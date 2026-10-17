@@ -1,20 +1,29 @@
 // Receives harmonyx://callback from the system browser and completes the
 // PKCE exchange. This page deliberately contains no Web component: Google
 // sign-in remains in the browser the user selected.
+import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY, appFontStore } from '../services/AppFontStore';
 import router from '@ohos.router';
 import promptAction from '@ohos.promptAction';
 import common from '@ohos.app.ability.common';
 import { authStore } from '../services/AuthStore';
 import { oauthFlowStore } from '../services/OAuthFlowStore';
 import { XApiClient } from '../services/XApiClient';
+import { pageSurfaceColor } from '../utils/ThemeColors';
 
 @Entry
 @Component
 struct OAuthCallback {
+  @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @State statusText: string = '';
   @State finished: boolean = false;
   @State succeeded: boolean = false;
   @StorageLink('harmonyx.accent_color') accentColor: string = '#007DFF';
+  @StorageProp('harmonyx.display_mode') private themeDisplayMode: string = '';
+  @StorageProp('harmonyx.dark_surface') private themeDarkSurface: string = '';
+  @StorageProp('harmonyx.status_bar_height') statusBarHeight: number =
+    AppStorage.get<number>('harmonyx.status_bar_height') ?? 0;
+  @StorageProp('harmonyx.navigation_indicator_height') navigationIndicatorHeight: number =
+    AppStorage.get<number>('harmonyx.navigation_indicator_height') ?? 0;
   private api: XApiClient = new XApiClient();
   private started: boolean = false;
 
@@ -24,6 +33,7 @@ struct OAuthCallback {
   }
 
   aboutToAppear(): void {
+    appFontStore.restore(getContext(this) as common.UIAbilityContext, this.getUIContext());
     if (!this.started) {
       this.started = true;
       this.statusText = this.text($r('app.string.auth_finishing'));
@@ -107,16 +117,16 @@ struct OAuthCallback {
     Navigation() {
       Column({ space: 16 }) {
         if (!this.finished) {
-          LoadingProgress().color(this.accentColor)
+          LoadingProgress().width(18).height(18).color(this.accentColor)
         }
-        Text(this.statusText)
-          .fontSize(16)
+        Text(this.statusText).fontFamily(this.appFontFamily)
+          .fontSize($r('sys.float.Body_L'))
           .fontColor($r('app.color.text_primary'))
           .textAlign(TextAlign.Center)
         if (this.finished && !this.succeeded) {
           Button($r('app.string.callback_back_to_login'), { stateEffect: true })
             .backgroundColor(this.accentColor)
-            .fontColor($r('app.color.text_on_brand'))
+            .fontColor($r('app.color.text_on_accent'))
             .onClick(() => {
               router.replaceUrl({ url: 'pages/Login' });
             })
@@ -125,12 +135,17 @@ struct OAuthCallback {
       .width('100%')
       .height('100%')
       .justifyContent(FlexAlign.Center)
-      .padding(24)
+      .padding({
+        left: 24,
+        right: 24,
+        top: Math.max(this.statusBarHeight, 16) + 24,
+        bottom: this.navigationIndicatorHeight + 24
+      })
     }
     .width('100%')
     .height('100%')
-    .backgroundColor($r('app.color.bg_page'))
-    .title($r('app.string.callback_navigation_title'))
+    .backgroundColor(pageSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
+    .hideTitleBar(true)
     .titleMode(NavigationTitleMode.Mini)
   }
 }

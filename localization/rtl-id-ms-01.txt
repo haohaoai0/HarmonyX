@@ -1,0 +1,150 @@
+Latar warna avatar || Latar warna avatar
+Warnai kartu postingan dan baris percakapan dari warna avatar, dengan penyesuaian berbeda untuk tema terang dan gelap. Nonaktif secara bawaan. || Warnakan kad siaran dan baris perbualan mengikut avatar, dengan pelarasan berbeza bagi tema cerah dan gelap. Dimatikan secara lalai.
+Modul utama Harmony X || Modul utama Harmony X
+Ability utama Harmony X || Ability utama Harmony X
+Harmony X || Harmony X
+Menerima tautan yang dibagikan || Menerima pautan yang dikongsi
+Untuk Anda || Untuk anda
+Tayangan || Paparan
+Postingan dan percakapan terbaru || Siaran dan perbualan terkini
+Belum ada balasan yang bisa ditampilkan || Belum ada balasan yang boleh dipaparkan
+Detail terbaru tidak tersedia. Periksa paket X API atau izin akses. || Butiran terkini tidak tersedia. Semak pelan X API atau kebenaran akses.
+Masuk untuk memuat postingan dan balasan terbaru || Log masuk untuk memuatkan siaran dan balasan terkini
+Postingan lokal ini belum tersinkron dengan X || Siaran setempat ini belum disegerakkan dengan X
+Riwayat edit || Sejarah suntingan
+Versi postingan yang tersimpan, diurutkan berdasarkan waktu || Versi siaran yang disimpan mengikut masa
+Riwayat edit tidak tersedia || Tiada sejarah suntingan
+Riwayat edit gagal dimuat || Sejarah suntingan gagal dimuatkan
+Sematkan postingan || Semat siaran
+Lepas sematan postingan || Nyahsemat siaran
+Postingan disematkan || Siaran disematkan
+Sematan postingan dilepas || Siaran dinyahsemat
+Balasan: semua orang || Balasan: semua orang
+Balasan: pengikut saja || Balasan: pengikut sahaja
+Balasan: akun yang disebut saja || Balasan: pengguna yang disebut sahaja
+Izin balasan diperbarui || Kebenaran membalas dikemas kini
+Tindakan gagal dilakukan || Tindakan tidak dapat diselesaikan
+Notifikasi || Pemberitahuan
+Edit gambar || Sunting imej
+Ulangi || Buat semula
+Gambar gagal dimuat || Imej gagal dimuatkan
+Gambar gagal diedit. Coba lagi. || Imej gagal disunting. Cuba lagi.
+Persegi || Segi empat sama
+4:3 || 4:3
+16:9 || 16:9
+Putar ke kiri || Putar ke kiri
+Putar ke kanan || Putar ke kanan
+Balik gambar || Balikkan imej
+Pangkas || Pangkas
+Teks || Teks
+Gambar || Lukis
+Vintage || Vintaj
+Hitam putih || Hitam putih
+Hangat || Hangat
+Dingin || Sejuk
+Sepia || Sepia
+Pudar || Pudar
+Dramatis || Dramatik
+Ketik teks untuk ditambahkan ke gambar || Taip teks untuk ditambah pada imej
+Warna teks || Warna teks
+Hapus semua teks || Kosongkan teks
+Edit teks || Sunting teks
+Hapus teks || Padam teks
+Warna kuas || Warna berus
+Apa yang sedang terjadi? || Apa yang sedang berlaku?
+Draf yang belum diposting dipulihkan || Draf yang belum disiarkan dipulihkan
+Draf yang tersimpan di X dipulihkan || Draf yang disimpan di X dipulihkan
+Hapus draf di X || Padam draf di X
+Hapus draf ini dari X secara permanen? || Padam draf ini daripada X secara kekal?
+Draf di X dihapus || Draf di X dipadamkan
+Draf di X gagal dihapus || Draf di X gagal dipadamkan
+Ini akan diterbitkan sebagai postingan panjang || Ini akan diterbitkan sebagai siaran panjang
+Urungkan kirim aktif || Buat asal penghantaran dihidupkan
+Aktifkan urungkan kirim || Hidupkan buat asal penghantaran
+Anda bisa melampirkan hingga 4 gambar || Anda boleh melampirkan sehingga 4 imej
+Jumlah karakter:  || Bilangan aksara: 
+Tambahkan gambar || Tambah imej
+Tambahkan GIF || Tambah GIF
+Pilih dari perangkat ini || Pilih daripada peranti ini
+Cari di internet || Cari dalam talian
+Hasil || Hasil
+GIF gagal dimuat. Ketuk untuk mencoba lagi. || GIF gagal dimuatkan. Ketik untuk cuba lagi.
+GIF ini gagal diunduh. Coba lagi. || GIF ini gagal dimuat turun. Cuba lagi.
+Tambahkan video || Tambah video
+Ambil foto || Ambil foto
+Rekam video || Rakam video
+Pilih video dari perangkat ini || Pilih video daripada peranti ini
+File dari perangkat lain gagal diterima. Coba lagi. || Fail daripada peranti lain gagal diterima. Cuba lagi.
+Kamera tidak bisa dibuka. Coba lagi. || Kamera tidak dapat dibuka. Cuba lagi.
+Video terlalu besar. Pilih video berukuran di bawah 512 MB. || Video terlalu besar. Pilih video yang kurang daripada 512 MB.
+X gagal memproses video ini. Coba video lebih pendek atau format lain. || X gagal memproses video ini. Cuba video yang lebih pendek atau format lain.
+Video masih diproses. Coba posting lagi sebentar nanti. || Video masih diproses. Cuba siarkan semula sebentar lagi.
+Postingan yang dikutip || Siaran yang dipetik
+Gulir untuk melihat lebih banyak || Tatal untuk melihat lagi
+Anda sudah melihat semuanya || Anda sudah melihat semuanya
+ postingan baru || siaran baharu
+Gulir untuk melihat hasil lainnya || Tatal untuk melihat hasil lagi
+Semua hasil pencarian sudah ditampilkan || Anda sudah melihat semua hasil carian
+ · Terbaru || · Terkini
+Linimasa beranda · terbaru untuk  || Garis masa utama · terkini untuk 
+Belum ada postingan dari akun yang Anda ikuti || Belum ada siaran daripada akaun yang anda ikuti
+Kelola informasi akun, kata sandi, arsip data, dan akun yang masuk. || Urus maklumat akaun, kata laluan, arkib data dan akaun yang dilog masuk.
+Gunakan aplikasi yang Anda buat di Portal Pengembang X. || Gunakan aplikasi yang anda cipta di Portal Pembangun X.
+Gunakan aplikasi OAuth 2.0 bertipe Native App dari Portal Pengembang X. Setelah disimpan, konfigurasi ini dipakai untuk masuk dan permintaan API langsung, serta hanya tersimpan di perangkat ini. || Gunakan aplikasi OAuth 2.0 jenis Native App daripada Portal Pembangun X. Selepas disimpan, konfigurasi ini digunakan untuk log masuk dan permintaan API langsung, dan hanya kekal pada peranti ini.
+Tekan lama alamat untuk menyalinnya, lalu buka di browser. || Tekan lama alamat untuk menyalinnya, kemudian buka dalam pelayar.
+Tambahkan alamat ini ke OAuth 2.0 Redirect URI aplikasi Anda. Tekan lama untuk menyalin; pilih Native App dan aktifkan izin baca/tulis yang diperlukan. || Tambah alamat ini pada OAuth 2.0 Redirect URI aplikasi anda. Tekan lama untuk menyalin; pilih Native App dan hidupkan kebenaran baca/tulis yang diperlukan.
+Aplikasi native memakai PKCE. Jangan masukkan Client Secret di sini. Mengubah Client ID akan mengeluarkan akun aktif. || Aplikasi natif menggunakan PKCE. Jangan masukkan Client Secret di sini. Menukar Client ID akan melog keluar akaun semasa.
+Kelola audiens, konten, pembisuan, cara orang menemukan Anda, dan berbagi data. || Urus khalayak, kandungan, pembisuan, cara orang mencari anda dan perkongsian data.
+Atur pemeriksaan notifikasi otomatis dan titik belum dibaca. || Kawal semakan pemberitahuan automatik dan titik belum dibaca.
+Atur ukuran teks, warna, dan bahasa. || Urus saiz teks, warna dan bahasa.
+Sesuaikan posisi tombol posting mengambang dengan tangan yang memegang perangkat. || Laraskan kedudukan butang siaran terapung mengikut tangan yang memegang peranti.
+Pilih bahasa untuk seluruh Harmony X. Perubahan langsung berlaku dan tersimpan saat aplikasi dibuka lagi. || Pilih bahasa untuk seluruh Harmony X. Perubahan berkuat kuasa serta-merta dan kekal apabila aplikasi dibuka semula.
+Gunakan bahasa sistem di seluruh Harmony X. || Gunakan bahasa sistem di seluruh Harmony X.
+Pilih ikon yang tampil di layar utama dan daftar aplikasi. || Pilih ikon yang dipaparkan pada skrin utama dan senarai aplikasi.
+Pilih ikon Harmony X. Layar utama, daftar aplikasi, dan aplikasi terbaru akan memakai ikon yang sama. || Pilih ikon Harmony X. Skrin utama, senarai aplikasi dan aplikasi terkini akan menggunakan ikon yang sama.
+Ikon sudah disertakan dalam aplikasi, jadi tidak perlu diunduh. Anda bisa kembali ke ikon bawaan kapan saja. || Ikon disertakan bersama aplikasi, jadi tidak perlu dimuat turun. Anda boleh kembali kepada ikon lalai pada bila-bila masa.
+Gunakan satu ikon selama rentang waktu harian yang dipilih, dan ikon di atas pada waktu lainnya. Rentang waktu bisa melewati tengah malam. || Gunakan satu ikon dalam tempoh harian yang dipilih, dan ikon di atas pada waktu lain. Tempoh boleh merentasi tengah malam.
+Pengatur waktu sistem berhenti saat aplikasi di latar belakang atau ditutup. Ikon disesuaikan dengan waktu saat aplikasi dibuka kembali. || Pemasa sistem berhenti apabila aplikasi berada di latar belakang atau ditutup. Ikon diselaraskan mengikut masa semasa apabila aplikasi dibuka semula.
+Jadwal ikon gagal disimpan. Coba lagi. || Jadual ikon gagal disimpan. Cuba lagi.
+Tersimpan. Ikon ini akan dipakai di luar rentang waktu yang dipilih. || Disimpan. Ikon ini akan digunakan di luar tempoh yang dipilih.
+Penggantian ikon memerlukan HarmonyOS 7.0 atau yang lebih baru. || Penukaran ikon memerlukan HarmonyOS 7.0 atau lebih baharu.
+Ikon Festival Pertengahan Musim Gugur hanya tersedia pada 25–28 September. Setelah itu, ikon bawaan kembali. || Ikon Pesta Pertengahan Musim Luruh hanya tersedia pada 25–28 September. Selepas itu, ikon lalai kembali digunakan.
+Masa ikon Festival Pertengahan Musim Gugur berakhir. Ikon bawaan kembali digunakan. || Tempoh ikon Pesta Pertengahan Musim Luruh telah tamat. Ikon lalai kembali digunakan.
+Ikon diganti. Layar utama akan segera diperbarui. || Ikon ditukar. Skrin utama akan dikemas kini sebentar lagi.
+Tema aktif mengatur ikon aplikasi ini. Kembali ke tema resmi terlebih dahulu. || Tema semasa menetapkan ikon aplikasi ini. Tukar kepada tema rasmi dahulu.
+Aplikasi kloning tidak bisa mengganti ikon. Gunakan aplikasi utama. || Aplikasi klon tidak boleh menukar ikon. Gunakan aplikasi utama.
+Pilih hitam pekat atau abu-abu gelap yang lebih lembut. Tersedia saat tema Gelap dipilih. || Pilih hitam pekat atau kelabu gelap yang lebih lembut. Tersedia apabila tema Gelap dipilih.
+Postingan adalah inti X. Pratinjau ini berubah saat Anda mengatur ukuran. || Siaran ialah nadi X. Pratonton ini berubah apabila anda melaraskan saiz.
+Teks mengikuti Aksesibilitas → Ukuran teks, hingga 1.75×. || Teks mengikut Kebolehcapaian → Saiz teks, sehingga 1.75×.
+Menggunakan pengali ukuran aplikasi dan mengabaikan ukuran teks sistem. || Menggunakan pengganda aplikasi dan mengabaikan saiz teks sistem.
+Setelah pengali aplikasi dipakai, aplikasi perlu dibuka ulang untuk kembali mengikuti ukuran sistem karena batasan platform. || Selepas pengganda aplikasi digunakan, aplikasi perlu dimulakan semula untuk mengikut saiz sistem akibat had platform.
+Aplikasi gagal dimulai ulang otomatis. Tutup dan buka lagi aplikasi. || Aplikasi gagal dimulakan semula secara automatik. Tutup dan buka semula aplikasi.
+Pilih font postingan, kutipan, detail, dan teks yang dibacakan. Perubahan langsung berlaku. || Pilih fon siaran, petikan, butiran dan teks bacaan suara. Perubahan berkuat kuasa serta-merta.
+Sesuaikan tingkat material imersif bilah HdsTabs di beranda. Perubahan langsung berlaku. || Laraskan tahap bahan imersif bar HdsTabs di halaman utama. Perubahan berkuat kuasa serta-merta.
+Gunakan tata letak bersusun pada layar lebar untuk menampilkan lebih banyak postingan. Layar sempit tetap satu kolom. || Gunakan susun atur bertingkat pada skrin lebar untuk memaparkan lebih banyak siaran. Skrin sempit kekal satu lajur.
+Sembunyikan bilah judul atau navigasi bawah saat menggulir ke bawah. Keduanya kembali saat menggulir ke atas atau mencapai awal halaman. || Sembunyikan bar tajuk atau navigasi bawah semasa menatal ke bawah. Bar kembali apabila menatal ke atas atau sampai ke awal halaman.
+Bilah judul tersembunyi saat menggulir ke bawah, dan kembali saat menggulir ke atas atau mencapai awal halaman. || Bar tajuk tersembunyi semasa menatal ke bawah dan kembali apabila menatal ke atas atau sampai ke awal halaman.
+Pilih halaman pada navigasi bawah. Aktifkan sedikitnya dua halaman. || Pilih halaman pada navigasi bawah. Kekalkan sekurang-kurangnya dua halaman.
+Saat menggulir ke bawah, tab beranda pindah di samping avatar dan logo X memudar. Gulir ke atas untuk mengembalikannya. Nonaktif secara bawaan. || Semasa menatal ke bawah, tab utama beralih ke sebelah avatar dan logo X memudar. Tatal ke atas untuk memulihkannya. Dimatikan secara lalai.
+Navigasi bawah tersembunyi saat menggulir ke bawah, dan kembali saat menggulir ke atas atau mencapai awal halaman. || Navigasi bawah tersembunyi semasa menatal ke bawah dan kembali apabila menatal ke atas atau sampai ke awal halaman.
+Tombol posting mengambang tersembunyi saat daftar bergerak dan kembali saat gulir berhenti. Jika nonaktif, tombol selalu terlihat. || Butang siaran terapung tersembunyi semasa senarai bergerak dan kembali apabila tatal berhenti. Jika dimatikan, butang sentiasa kelihatan.
+Pilih tampilan bilah saat konten lewat di belakangnya. Gradien imersif memadukan kabur dan cahaya; gradien biasa memakai kabur bertahap; kaca hanya memakai panel sistem tanpa mengaburkan konten. || Pilih rupa bar apabila kandungan bergerak di belakangnya. Kecerunan imersif menggabungkan kabur dan cahaya; kecerunan biasa menggunakan kabur beransur; kaca hanya menggunakan panel sistem tanpa mengaburkan kandungan.
+Pilih kabur gradien imersif, kabur gradien, atau material kaca. || Pilih kabur kecerunan imersif, kabur kecerunan atau bahan kaca.
+Pertahankan panel kaca tanpa kabur yang mengikuti gulir. || Kekalkan panel kaca tanpa kabur yang mengikut tatal.
+Pilih salah satu dari lima tingkat ketebalan material HarmonyOS 7. || Pilih satu daripada lima tahap ketebalan bahan HarmonyOS 7.
+Pilih satu dari lima tingkat ketebalan material sistem untuk panel balasan di detail postingan. || Pilih satu daripada lima tahap ketebalan bahan sistem bagi panel balasan dalam butiran siaran.
+Tampilkan tombol posting mengambang di halaman utama. Matikan untuk menyembunyikannya. || Paparkan butang siaran terapung dalam antara muka utama. Matikan untuk menyembunyikannya.
+Kartu postingan mengecil sedikit saat ditekan. || Kad siaran mengecil sedikit apabila ditekan.
+Periksa notifikasi dan pesan langsung secara otomatis serta tampilkan titik belum dibaca. Pemeriksaan manual tetap tersedia saat dinonaktifkan. || Semak pemberitahuan dan mesej langsung secara automatik serta paparkan titik belum dibaca. Semakan manual masih tersedia apabila dimatikan.
+Terbitkan notifikasi HarmonyOS untuk pemberitahuan atau pesan baru, dan sinkronkan lencana ikon aplikasi. || Terbitkan pemberitahuan HarmonyOS bagi makluman atau mesej baharu, dan segerakkan lencana ikon aplikasi.
+Saat Jangan Ganggu aktif, hanya perbarui titik belum dibaca di aplikasi tanpa mengirim notifikasi sistem. || Apabila Jangan Ganggu dihidupkan, hanya kemas kini titik belum dibaca dalam aplikasi tanpa menghantar pemberitahuan sistem.
+Buka pengelolaan notifikasi HarmonyOS untuk banner, layar kunci, suara, dan getaran. || Buka pengurusan pemberitahuan HarmonyOS untuk sepanduk, skrin kunci, bunyi dan getaran.
+Izinkan notifikasi Harmony X di pengaturan sistem || Benarkan pemberitahuan Harmony X dalam tetapan sistem
+Pilih linimasa awal beranda, saring konten yang tidak ingin dibaca, dan atur tombol baca suara. || Pilih garis masa lalai utama, tapis kandungan yang tidak mahu dibaca dan kawal butang bacaan suara.
+Linimasa ini dimuat saat aplikasi dibuka. Anda tetap bisa beralih dari bagian atas beranda. || Garis masa ini dimuatkan dahulu apabila aplikasi dibuka. Anda masih boleh bertukar dari bahagian atas halaman utama.
+Rekomendasi postingan berdasarkan minat dan aktivitas Anda. || Siaran disyorkan berdasarkan minat dan aktiviti anda.
+Aturan ini hanya memengaruhi tampilan di perangkat ini. Akun X, hubungan mengikuti, dan pemblokiran tidak berubah. || Peraturan ini hanya mengubah paparan pada peranti ini. Tetapan X, hubungan ikutan dan sekatan tidak berubah.
+Sembunyikan postingan tanpa gambar, GIF, atau video. Kutipan yang berisi media tetap terlihat. || Sembunyikan siaran tanpa imej, GIF atau video. Petikan yang mengandungi media kekal kelihatan.
+Saring postingan yang dikenali sebagai posting ulang atau RT. || Tapis siaran yang dikenal pasti sebagai siaran semula atau RT.
+Saring konten yang ditandai X sebagai balasan untuk postingan lain. || Tapis kandungan yang ditandai X sebagai balasan kepada siaran lain.
+Satu kata kunci per baris. Postingan atau kutipan yang cocok akan disembunyikan. || Satu kata kunci setiap baris. Siaran atau petikan yang sepadan akan disembunyikan.

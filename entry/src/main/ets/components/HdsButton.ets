@@ -1,6 +1,8 @@
 import { ConfigurationConstant } from '@kit.AbilityKit';
+import { uiMaterial } from '@kit.ArkUI';
 import { HdsTabs, HdsTabsController, hdsEffect, hdsMaterial } from '@kit.UIDesignKit';
 import { HdsMaterialUtil } from '../utils/HdsMaterialUtil';
+import { SystemMaterialUtil } from '../utils/SystemMaterial';
 
 /**
  * HDS floating material button adapted from F:\\Mark-dev.  The foreground
@@ -23,6 +25,9 @@ export struct HdsButton {
   @Prop barOverlap: boolean = true;
   @Prop forceHdsStyle: boolean = false;
   @Prop materialLevel: number = 2;
+  @Prop useImmersiveMaterial: boolean = false;
+  @Prop immersiveTint: ResourceColor | undefined = undefined;
+  @Prop panLightActive: boolean = false;
 
   @StorageLink('isHdsTabsEnabled') isHdsTabsEnabled: boolean = false;
   @StorageLink('currentColorMode') currentColorMode: number = ConfigurationConstant.ColorMode.COLOR_MODE_DARK;
@@ -50,6 +55,21 @@ export struct HdsButton {
     return (this.forceHdsStyle || this.isHdsTabsEnabled) && HdsMaterialUtil.isHdsMaterialAvailable();
   }
 
+  private shouldUseImmersiveMaterial(): boolean {
+    return this.useImmersiveMaterial && SystemMaterialUtil.isApi26OrAbove();
+  }
+
+  private immersiveMaterial(): uiMaterial.Material {
+    return new uiMaterial.ImmersiveMaterial({
+      style: uiMaterial.ImmersiveStyle.THIN,
+      materialColor: this.immersiveTint,
+      interactive: false,
+      applyShadow: this.enableShadow,
+      colorInvert: false,
+      lightEffect: null
+    });
+  }
+
   private getCornerRadius(): number {
     return Math.min(this.barWidth, this.barHeight - 12) / 2;
   }
@@ -57,7 +77,11 @@ export struct HdsButton {
   build(): void {
     Stack() {
       Stack() {
-        if (this.shouldUseHdsMaterial()) {
+        if (this.shouldUseImmersiveMaterial()) {
+          Column()
+            .width('100%')
+            .height('100%');
+        } else if (this.shouldUseHdsMaterial()) {
           HdsTabs({ controller: this.tabsController, index: 0 }) {
           }
           .clip(false)
@@ -99,7 +123,7 @@ export struct HdsButton {
       .height(this.barHeight - 12)
       .borderRadius(this.getCornerRadius())
       .border({
-        width: this.shouldUseHdsMaterial() ? 0 : 0.5,
+        width: this.shouldUseHdsMaterial() || this.shouldUseImmersiveMaterial() ? 0 : 0.5,
         color: this.currentColorMode === ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT ?
           'rgba(255,255,255,0.72)' : 'rgba(255,255,255,0.14)'
       })
@@ -111,16 +135,22 @@ export struct HdsButton {
       }
       .width(this.barWidth)
       .height(this.barHeight - 12)
-      .hitTestBehavior(HitTestMode.Default);
+      .backgroundColor(Color.Transparent)
+      .borderRadius(this.getCornerRadius())
+      .clip(true)
+      .hitTestBehavior(HitTestMode.Default)
+      .systemMaterial(this.shouldUseImmersiveMaterial() ? this.immersiveMaterial() : undefined);
     }
     .width(this.barWidth)
     .height(this.barHeight - 12)
     .borderRadius(this.getCornerRadius())
     .clip(false)
-    .shadow(this.enableShadow && this.shouldUseHdsMaterial() ? ShadowStyle.OUTER_FLOATING_SM : undefined)
+    .shadow(this.enableShadow && this.shouldUseHdsMaterial() && !this.shouldUseImmersiveMaterial() ?
+      ShadowStyle.OUTER_FLOATING_SM : undefined)
     .visualEffect(new hdsEffect.HdsEffectBuilder()
       .pointLight({
-        sourceType: this.enablePressLight && (this.isPressLightActive || this.isPanLightActive) ?
+          sourceType: this.enablePressLight && (this.isPressLightActive || this.isPanLightActive ||
+            this.panLightActive) ?
           hdsEffect.PointLightSourceType.BRIGHT : hdsEffect.PointLightSourceType.NONE,
         illuminatedType: hdsEffect.PointLightIlluminatedType.BORDER_CONTENT
       })

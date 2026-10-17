@@ -1,12 +1,80 @@
 {
   "color": [
     {
+      "name": "notification_recommendation",
+      "value": "#A56DE2"
+    },
+    {
+      "name": "media_viewer_black_background",
+      "value": "#000000"
+    },
+    {
+      "name": "video_feed_post_scrim",
+      "value": "#99000000"
+    },
+    {
+      "name": "video_feed_player_surface",
+      "value": "#000000"
+    },
+    {
+      "name": "video_feed_backdrop_start",
+      "value": "#26313A"
+    },
+    {
+      "name": "video_feed_backdrop_end",
+      "value": "#0B1118"
+    },
+    {
+      "name": "video_feed_backdrop_scrim",
+      "value": "#66000000"
+    },
+    {
+      "name": "video_feed_secondary_text",
+      "value": "#CCFFFFFF"
+    },
+    {
       "name": "start_window_background",
       "value": "#000000"
     },
     {
       "name": "brand",
       "value": "#007DFF"
+    },
+    {
+      "name": "theme_system_blue",
+      "value": "#007DFF"
+    },
+    {
+      "name": "theme_x_blue",
+      "value": "#1D9BF0"
+    },
+    {
+      "name": "theme_yellow",
+      "value": "#F7B500"
+    },
+    {
+      "name": "theme_pink",
+      "value": "#F91880"
+    },
+    {
+      "name": "theme_purple",
+      "value": "#7856FF"
+    },
+    {
+      "name": "theme_orange",
+      "value": "#FF7A00"
+    },
+    {
+      "name": "theme_green",
+      "value": "#00BA7C"
+    },
+    {
+      "name": "theme_cat_blue",
+      "value": "#345483"
+    },
+    {
+      "name": "theme_huawei_red",
+      "value": "#D8333A"
     },
     {
       "name": "compose_material_overlay",
@@ -17,32 +85,68 @@
       "value": "#80FFFFFF"
     },
     {
+      "name": "video_control_gradient_top",
+      "value": "#00000000"
+    },
+    {
+      "name": "video_control_gradient_bottom",
+      "value": "#DD000000"
+    },
+    {
+      "name": "video_control_progress_track",
+      "value": "#80FFFFFF"
+    },
+    {
+      "name": "video_control_glass_tint",
+      "value": "#704A4548"
+    },
+    {
+      "name": "video_control_glass_border",
+      "value": "#55FFFFFF"
+    },
+    {
       "name": "like",
-      "value": "#F91880"
+      "value": "#FF5FA2"
     },
     {
       "name": "repost",
-      "value": "#00BA7C"
+      "value": "#38D39F"
     },
     {
       "name": "danger",
-      "value": "#F4212E"
+      "value": "#FF6B76"
     },
     {
       "name": "bg_page",
       "value": "#000000"
     },
     {
+      "name": "gentle_bg_page",
+      "value": "#1C1C1E"
+    },
+    {
       "name": "bg_card",
       "value": "#16181C"
+    },
+    {
+      "name": "gentle_bg_card",
+      "value": "#252527"
     },
     {
       "name": "bg_field",
       "value": "#202327"
     },
     {
+      "name": "gentle_bg_field",
+      "value": "#2C2C2E"
+    },
+    {
       "name": "bg_secondary_btn",
       "value": "#2F3336"
+    },
+    {
+      "name": "gentle_bg_secondary_btn",
+      "value": "#363638"
     },
     {
       "name": "text_primary",
@@ -53,15 +157,43 @@
       "value": "#71767B"
     },
     {
+      "name": "text_accent",
+      "value": "#62A8FF"
+    },
+    {
+      "name": "text_on_accent",
+      "value": "#FFFFFF"
+    },
+    {
       "name": "text_on_brand",
       "value": "#FFFFFF"
+    },
+    {
+      "name": "text_on_inverse",
+      "value": "#0F1419"
     },
     {
       "name": "divider",
       "value": "#2F3336"
     },
     {
+      "name": "reply_connector",
+      "value": "#2F3336"
+    },
+    {
+      "name": "title_bar_scrim",
+      "value": "#FF000000"
+    },
+    {
+      "name": "gentle_title_bar_scrim",
+      "value": "#FF1C1C1E"
+    },
+    {
       "name": "profile_hero_scrim",
+      "value": "#66000000"
+    },
+    {
+      "name": "reply_composer_scrim",
       "value": "#66000000"
     },
     {
@@ -79,6 +211,517 @@
     {
       "name": "profile_surface",
       "value": "#16181C"
+    },
+    {
+      "name": "profile_title_scrim",
+      "value": "#D916181C"
+    },
+    {
+      "name": "pill_avatar_ring",
+      "value": "#D9FFFFFF"
+    },
+    {
+      "name": "mid_autumn_moon",
+      "value": "#FFE9A8"
+    },
+    {
+      "name": "mid_autumn_moon_glow",
+      "value": "#66FFC96B"
+    },
+    {
+      "name": "profile_nav_scrim",
+      "value": "#99000000"
+    },
+    {
+      "name": "profile_video_badge",
+      "value": "#BB000000"
+    },
+    {
+      "name": "follow_badge_gold",
+      "value": "#E2B719"
+    },
+    {
+      "name": "timeline_reset_background",
+      "value": "#405763"
+    },
+    {
+      "name": "timeline_pin_accent",
+      "value": "#00BA7C"
+    },
+    {
+      "name": "post_media_badge_background",
+      "value": "#99000000"
+    },
+    {
+      "name": "list_cover_blue",
+      "value": "#1267B1"
+    },
+    {
+      "name": "list_cover_cyan",
+      "value": "#1D9BF0"
+    },
+    {
+      "name": "list_cover_teal",
+      "value": "#00CBB7"
+    },
+    {
+      "name": "list_cover_purple",
+      "value": "#7856C7"
+    },
+    {
+      "name": "list_cover_symbol",
+      "value": "#66FFFFFF"
+    },
+    {
+      "name": "list_cover_button",
+      "value": "#66000000"
+    },
+    {
+      "name": "space_accent",
+      "value": "#B9A0FF"
+    },
+    {
+      "name": "space_button",
+      "value": "#7856FF"
+    },
+    {
+      "name": "space_soft",
+      "value": "#292039"
+    },
+    {
+      "name": "space_border",
+      "value": "#4B3D70"
+    },
+    {
+      "name": "chat_media_remove_tint",
+      "value": "#66B4232D"
+    },
+    {
+      "name": "chat_reaction_selected",
+      "value": "#263391E8"
+    },
+    {
+      "name": "chat_message_menu_mask",
+      "value": "#52000000"
+    },
+    {
+      "name": "chat_background_scrim",
+      "value": "#1F000000"
+    },
+    {
+      "name": "chat_media_play_scrim",
+      "value": "#66000000"
+    },
+    {
+      "name": "chat_background_warm_1",
+      "value": "#573C29"
+    },
+    {
+      "name": "chat_background_warm_2",
+      "value": "#585327"
+    },
+    {
+      "name": "chat_background_warm_3",
+      "value": "#592E43"
+    },
+    {
+      "name": "chat_background_warm_4",
+      "value": "#574528"
+    },
+    {
+      "name": "chat_background_dream_1",
+      "value": "#263A27"
+    },
+    {
+      "name": "chat_background_dream_2",
+      "value": "#283254"
+    },
+    {
+      "name": "chat_background_dream_3",
+      "value": "#3D2C48"
+    },
+    {
+      "name": "chat_background_dream_4",
+      "value": "#273B50"
+    },
+    {
+      "name": "chat_background_zoo_1",
+      "value": "#424238"
+    },
+    {
+      "name": "chat_background_zoo_2",
+      "value": "#203229"
+    },
+    {
+      "name": "chat_background_zoo_3",
+      "value": "#40412A"
+    },
+    {
+      "name": "chat_background_zoo_4",
+      "value": "#293728"
+    },
+    {
+      "name": "chat_background_snow_1",
+      "value": "#133E43"
+    },
+    {
+      "name": "chat_background_snow_2",
+      "value": "#342847"
+    },
+    {
+      "name": "chat_background_snow_3",
+      "value": "#462841"
+    },
+    {
+      "name": "chat_background_snow_4",
+      "value": "#483F1B"
+    },
+    {
+      "name": "chat_background_beach_1",
+      "value": "#463121"
+    },
+    {
+      "name": "chat_background_beach_2",
+      "value": "#484428"
+    },
+    {
+      "name": "chat_background_beach_3",
+      "value": "#492F39"
+    },
+    {
+      "name": "chat_background_beach_4",
+      "value": "#463A21"
+    },
+    {
+      "name": "chat_background_science_1",
+      "value": "#41463D"
+    },
+    {
+      "name": "chat_background_science_2",
+      "value": "#31364D"
+    },
+    {
+      "name": "chat_background_science_3",
+      "value": "#473D4D"
+    },
+    {
+      "name": "chat_background_science_4",
+      "value": "#38444D"
+    },
+    {
+      "name": "chat_background_crystal_1",
+      "value": "#263A29"
+    },
+    {
+      "name": "chat_background_crystal_2",
+      "value": "#444023"
+    },
+    {
+      "name": "chat_background_crystal_3",
+      "value": "#354024"
+    },
+    {
+      "name": "chat_background_crystal_4",
+      "value": "#483A25"
+    },
+    {
+      "name": "chat_background_gifts_1",
+      "value": "#353547"
+    },
+    {
+      "name": "chat_background_gifts_2",
+      "value": "#40323C"
+    },
+    {
+      "name": "chat_background_gifts_3",
+      "value": "#202A40"
+    },
+    {
+      "name": "chat_background_holiday_1",
+      "value": "#311E49"
+    },
+    {
+      "name": "chat_background_holiday_2",
+      "value": "#473417"
+    },
+    {
+      "name": "chat_background_holiday_3",
+      "value": "#462035"
+    },
+    {
+      "name": "chat_background_holiday_4",
+      "value": "#4A4221"
+    },
+    {
+      "name": "chat_background_games_1",
+      "value": "#42472C"
+    },
+    {
+      "name": "chat_background_games_2",
+      "value": "#2B4440"
+    },
+    {
+      "name": "chat_background_games_3",
+      "value": "#1F3149"
+    },
+    {
+      "name": "chat_background_games_4",
+      "value": "#284028"
+    },
+    {
+      "name": "chat_background_pets_1",
+      "value": "#4C3B2D"
+    },
+    {
+      "name": "chat_background_pets_2",
+      "value": "#422038"
+    },
+    {
+      "name": "chat_background_pets_3",
+      "value": "#2D0E39"
+    },
+    {
+      "name": "chat_background_pets_4",
+      "value": "#181B40"
+    },
+    {
+      "name": "chat_background_cats_1",
+      "value": "#233D4D"
+    },
+    {
+      "name": "chat_background_cats_2",
+      "value": "#404A4D"
+    },
+    {
+      "name": "chat_background_cats_3",
+      "value": "#4B2E45"
+    },
+    {
+      "name": "chat_background_cats_4",
+      "value": "#4B4145"
+    },
+    {
+      "name": "chat_background_nature_1",
+      "value": "#294249"
+    },
+    {
+      "name": "chat_background_nature_2",
+      "value": "#292A47"
+    },
+    {
+      "name": "chat_background_nature_3",
+      "value": "#443046"
+    },
+    {
+      "name": "chat_background_nature_4",
+      "value": "#1F2F47"
+    },
+    {
+      "name": "chat_background_home_1",
+      "value": "#2D3947"
+    },
+    {
+      "name": "chat_background_home_2",
+      "value": "#354646"
+    },
+    {
+      "name": "chat_background_home_3",
+      "value": "#3B3548"
+    },
+    {
+      "name": "chat_background_home_4",
+      "value": "#483742"
+    },
+    {
+      "name": "chat_background_space_1",
+      "value": "#443546"
+    },
+    {
+      "name": "chat_background_space_2",
+      "value": "#27233A"
+    },
+    {
+      "name": "chat_background_space_3",
+      "value": "#463841"
+    },
+    {
+      "name": "chat_background_space_4",
+      "value": "#362C45"
+    },
+    {
+      "name": "chat_background_carnival_1",
+      "value": "#3F3144"
+    },
+    {
+      "name": "chat_background_carnival_2",
+      "value": "#47402C"
+    },
+    {
+      "name": "chat_background_carnival_3",
+      "value": "#45303E"
+    },
+    {
+      "name": "chat_background_carnival_4",
+      "value": "#47412C"
+    },
+    {
+      "name": "chat_background_adventure_1",
+      "value": "#31424D"
+    },
+    {
+      "name": "chat_background_adventure_2",
+      "value": "#003042"
+    },
+    {
+      "name": "chat_background_adventure_3",
+      "value": "#192542"
+    },
+    {
+      "name": "chat_badge_blue",
+      "value": "#1D9BF0"
+    },
+    {
+      "name": "chat_media_upload_scrim",
+      "value": "#FF000000"
+    },
+    {
+      "name": "media_viewer_control",
+      "value": "#CC202020"
+    },
+    {
+      "name": "media_viewer_sheet",
+      "value": "#141414"
+    },
+    {
+      "name": "media_viewer_reply",
+      "value": "#222222"
+    },
+    {
+      "name": "media_viewer_placeholder",
+      "value": "#A0A0A0"
+    },
+    {
+      "name": "media_viewer_dot",
+      "value": "#606060"
+    },
+    {
+      "name": "poll_option_surface",
+      "value": "#80212930"
+    },
+    {
+      "name": "poll_selected_surface",
+      "value": "#26007DFF"
+    },
+    {
+      "name": "poll_result_fill",
+      "value": "#718394"
+    },
+    {
+      "name": "poll_result_track",
+      "value": "#24FFFFFF"
+    },
+    {
+      "name": "community_cover_button",
+      "value": "#66000000"
+    },
+    {
+      "name": "space_card_text",
+      "value": "#FFFFFF"
+    },
+    {
+      "name": "space_card_fill",
+      "value": "#6846E4"
+    },
+    {
+      "name": "space_card_footer",
+      "value": "#5338B6"
+    },
+    {
+      "name": "space_card_badge",
+      "value": "#816ACF"
+    },
+    {
+      "name": "space_recording",
+      "value": "#FFA3D3"
+    },
+    {
+      "name": "space_recording_soft",
+      "value": "#402338"
+    },
+    {
+      "name": "space_search_surface",
+      "value": "#242631"
+    },
+    {
+      "name": "space_calendar_button",
+      "value": "#6846E4"
+    },
+    {
+      "name": "space_card_action_surface",
+      "value": "#F7F9F9"
+    },
+    {
+      "name": "space_card_action_text",
+      "value": "#101419"
+    },
+    {
+      "name": "post_card_title_overlay",
+      "value": "#80000000"
+    },
+    {
+      "name": "post_card_overlay_text",
+      "value": "#FFFFFFFF"
+    },
+    {
+      "name": "sidebar_blur_start",
+      "value": "#24202A3A"
+    },
+    {
+      "name": "sidebar_blur_end",
+      "value": "#08151A24"
+    },
+    {
+      "name": "sidebar_handle_surface",
+      "value": "#EA293344"
+    },
+    {
+      "name": "sidebar_preview_line",
+      "value": "#46536D"
+    },
+    {
+      "name": "sidebar_preview_tile",
+      "value": "#29364D"
+    },
+    {
+      "name": "sidebar_preview_accent",
+      "value": "#547BC2"
+    },
+    {"name":"video_episode_surface","value":"#FF17181B"},
+    {"name":"video_danmaku_own","value":"#FFFFD866"},
+    {"name":"video_danmaku_hint","value":"#B3FFFFFF"},
+    {
+      "name": "media_viewer_comment_control_tint",
+      "value": "#60202020"
+    },
+    {
+      "name": "logo_particle_blue",
+      "value": "#167FFF"
+    },
+    {
+      "name": "logo_particle_white",
+      "value": "#F5FAFF"
+    },
+    {
+      "name": "logo_avatar_border",
+      "value": "#85C9FF"
+    },
+    {
+      "name": "logo_glow_blue",
+      "value": "#B00073FF"
+    },
+    {
+      "name": "logo_glow_white",
+      "value": "#50D3E8FF"
     }
   ]
 }

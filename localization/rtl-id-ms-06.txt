@@ -1,0 +1,53 @@
+Hubungi dukungan || Hubungi sokongan
+Lihat kelayakan, analitik, dan alat kreator di X. || Lihat kelayakan, analitik dan alat pencipta di X.
+Tata letak gagal disimpan. Coba lagi. || Susun atur gagal disimpan. Cuba lagi.
+Artikel || Artikel
+Artikel lengkap gagal dimuat || Artikel penuh gagal dimuatkan
+Lihat di X || Lihat di X
+Dibuat dengan AI || Dijana oleh AI
+Promosi berbayar || Promosi berbayar
+Iklan || Iklan
+Pemberitahuan konten || Notis kandungan
+Postingan ini berisi konten khusus pelanggan || Siaran ini mengandungi kandungan untuk pelanggan sahaja
+Konten ini tidak tersedia di wilayah Anda || Kandungan ini tidak tersedia di rantau anda
+Postingan ini tidak tersedia || Siaran ini tidak tersedia
+Beberapa interaksi pada postingan ini dibatasi || Sesetengah interaksi pada siaran ini dihadkan
+Catatan Komunitas || Nota Komuniti
+Lihat dan nilai || Lihat dan nilaikan
+Belanja || Beli-belah
+Lihat toko aplikasi || Lihat gedung aplikasi
+Komunitas || Komuniti
+Daftar || Senarai
+Paket Awal || Pek Permulaan
+Mulai dalam %s || Bermula dalam %s
+Kalender gagal dibuka || Kalendar gagal dibuka
+penonton || penonton
+Geser untuk melihat lainnya || Leret untuk melihat lagi
+Kartu gagal diperbarui || Kad gagal dikemas kini
+Bermanfaat || Membantu
+Cukup bermanfaat || Agak membantu
+Tidak bermanfaat || Tidak membantu
+Apakah catatan ini bermanfaat? || Adakah nota ini membantu?
+Mengapa catatan ini bermanfaat? || Mengapa nota ini membantu?
+Mengapa catatan ini tidak bermanfaat? || Mengapa nota ini tidak membantu?
+Kirim penilaian || Hantar penilaian
+Berlaku untuk semua konten yang cocok || Terpakai kepada semua kandungan sepadan
+Penilaian terkonfirmasi || Penilaian disahkan
+Penilaian belum terkonfirmasi. Segarkan sebelum mencoba lagi. || Penilaian belum disahkan. Muat semula sebelum mencuba lagi.
+Saat ini dinilai bermanfaat || Kini dinilai membantu
+Saat ini dinilai tidak bermanfaat || Kini dinilai tidak membantu
+Perlu lebih banyak penilaian || Memerlukan lebih banyak penilaian
+Sumber yang baik || Sumber yang baik
+Menjawab klaim || Menjelaskan dakwaan
+Konteks penting || Konteks penting
+Bahasa netral || Bahasa tidak berat sebelah
+Tanpa sumber || Tiada sumber
+Sumber tidak relevan || Sumber tidak berkaitan
+Tidak benar || Tidak tepat
+Pendapat atau spekulasi || Pendapat atau spekulasi
+Tidak jelas || Tidak jelas
+Poin penting tidak dicantumkan || Perkara penting tidak disertakan
+Tidak sopan || Kasar
+Catatan tidak diperlukan || Nota tidak diperlukan
+Melanggar aturan X || Melanggar peraturan X
+Aplikasi mengikuti bahasa sistem setelah dibuka ulang. || Aplikasi mengikut bahasa sistem selepas dimulakan semula.

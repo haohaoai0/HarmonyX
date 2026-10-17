@@ -1,0 +1,36 @@
+[package]
+name = "harmonyx-chat"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[workspace]
+
+[lib]
+crate-type = ["staticlib", "rlib"]
+
+[dependencies]
+chat-xdk-core = { path = "../../.codex/dm-reference/chat-xdk-source/crates/core", features = ["juicebox"] }
+tokio = { version = "1", features = ["rt-multi-thread"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+base64 = "0.22"
+zeroize = "1"
+reqwest = { version = "0.11", default-features = false, features = ["socks"] }
+juicebox_sdk = { path = "../../.codex/dm-reference/juicebox-sdk/rust/sdk", features = ["tokio", "reqwest"] }
+async-trait = "0.1"
+hex = "0.4"
+p256 = { version = "0.13", features = ["pkcs8"] }
+
+[patch.crates-io]
+thrift = { path = "../../.codex/dm-reference/thrift/lib/rs" }
+
+[dev-dependencies]
+chat-xdk-core = { path = "../../.codex/dm-reference/chat-xdk-source/crates/core", features = ["juicebox", "internals"] }
+
+[profile.release]
+opt-level = "s"
+lto = true
+strip = "debuginfo"
+panic = "unwind"
+
