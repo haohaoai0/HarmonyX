@@ -1,3 +1,4 @@
+import { AdaptivePostFeed } from '../components/AdaptivePostFeed';
 import { pageTextColor } from '../utils/ThemeColors';
 import { pageBackgroundActive } from '../services/PageBackgroundStore';
 import { appPageBackground } from '../components/PageBackgroundLayer';
@@ -707,15 +708,15 @@ export struct CommunityTimeline {
   }
   @Builder
   private About(): void {
-    ListItem() {
+    Column() {
       Text($r('app.string.community_info_title')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Subtitle_L')).fontWeight(FontWeight.Bold)
         .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)).width('100%').padding(16)
     }
-    ListItem() { this.InfoRow($r('sys.symbol.person_2_fill'), this.text($r('app.string.community_info_members_post'))) }
-    ListItem() { this.InfoRow($r('sys.symbol.globe_badge_message'), this.text(this.needsJoinRequest() ?
+    Column() { this.InfoRow($r('sys.symbol.person_2_fill'), this.text($r('app.string.community_info_members_post'))) }
+    Column() { this.InfoRow($r('sys.symbol.globe_badge_message'), this.text(this.needsJoinRequest() ?
       $r('app.string.community_info_restricted') : $r('app.string.community_info_public'))) }
     if (this.creationLabel().length > 0 || this.communityCreator !== undefined) {
-      ListItem() {
+      Column() {
         Row({ space: 18 }) {
           SymbolGlyph($r('sys.symbol.calendar')).fontSize(23).fontColor([pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)]).width(28)
           Column({ space: 4 }) {
@@ -729,15 +730,15 @@ export struct CommunityTimeline {
         }.width('100%').padding({ left: 20, right: 20, top: 18, bottom: 18 })
       }
     }
-    ListItem() {
+    Column() {
       Text($r('app.string.community_rules_title')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Subtitle_L')).fontWeight(FontWeight.Bold)
         .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)).width('100%').padding(16)
     }
     if (this.communityRules.length === 0) {
-      ListItem() { Text($r('app.string.community_rules_empty')).fontFamily(this.appFontFamily).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).padding(20) }
+      Column() { Text($r('app.string.community_rules_empty')).fontFamily(this.appFontFamily).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).padding(20) }
     }
     ForEach(this.communityRules, (rule: CommunityRule, index: number) => {
-      ListItem() {
+      Column() {
         Row({ space: 16 }) {
           Text((index + 1).toString()).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontWeight(FontWeight.Bold)
             .fontColor($r('app.color.bg_page')).backgroundColor($r('app.color.text_primary'))
@@ -750,9 +751,9 @@ export struct CommunityTimeline {
       }
     }, (rule: CommunityRule): string => rule.id + rule.name)
     if (this.communityModerators.length > 0) {
-      ListItem() { Text($r('app.string.communities_moderators')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Subtitle_L')).fontWeight(FontWeight.Bold).padding(16) }
+      Column() { Text($r('app.string.communities_moderators')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Subtitle_L')).fontWeight(FontWeight.Bold).padding(16) }
       ForEach(this.communityModerators, (member: TweetAuthor) => {
-        ListItem() {
+        Column() {
           Row({ space: 12 }) {
             ProxyAvatar({verifiedType: member.verifiedType ?? '', avatarShape: member.avatarShape ?? '',  url: member.avatarUrl ?? '', avatarSize: 40, radius: 20, fallbackText: member.name.substring(0, 1) })
             Text(member.name).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
@@ -765,7 +766,7 @@ export struct CommunityTimeline {
   @Builder
   private HashtagSearchControl(): void {
     if (this.hashtagSearchOpen) {
-      ListItem() {
+      Column() {
         Search({ value: this.hashtagInput, placeholder: $r('app.string.community_hashtag_placeholder') })
           .height(44).keyboardAppearance(KeyboardAppearance.IMMERSIVE)
           .backgroundColor(fieldSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
@@ -775,11 +776,14 @@ export struct CommunityTimeline {
     }
   }
   @Builder
-  private Content(tab: number): void {
+  private TimelineHeader(tab: number): void {
+    if (tab === 2) { this.About() } else {
+      if (tab === 0) { this.HashtagSearchControl() }
+
     if (this.selectedTab === tab && this.loading && this.visiblePosts(tab).length === 0) {
-      ListItem() { LoadingProgress().color(this.accentColor).width(28).height(28).margin({ top: 40, bottom: 40 }) }
+      Column() { LoadingProgress().color(this.accentColor).width(28).height(28).margin({ top: 40, bottom: 40 }) }
     } else if (this.visiblePosts(tab).length === 0 || (this.selectedTab === tab && this.status.length > 0)) {
-      ListItem() {
+      Column() {
         Column({ space: 16 }) {
           Text(this.selectedTab === tab && this.status.length > 0 ? this.status : this.text(this.emptyLabel(tab))).fontFamily(this.appFontFamily)
             .fontSize($r('sys.float.Body_L')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).textAlign(TextAlign.Center).width('100%')
@@ -790,29 +794,38 @@ export struct CommunityTimeline {
         }.width('100%').padding(24)
       }
     }
-    ForEach(this.visiblePosts(tab), (post: Tweet) => {
-      ListItem() {
-        TweetCard({ tweet: post, onOpen: (item: Tweet): void => this.openPost(item),
-          onReply: (item: Tweet): void => this.openPost(item),
-          onLikeChanged: (item: Tweet, value: boolean): Promise<boolean> => this.reaction(item, true, value),
-          onRepostChanged: (item: Tweet, value: boolean): Promise<boolean> => this.reaction(item, false, value),
-          onBookmarkChanged: (item: Tweet, value: boolean): void => this.bookmark(item, value),
-          onAuthorTapped: (item: Tweet): void => this.openUser(item.author) })
-      }
-    }, (post: Tweet): string => post.id)
-    if (this.loadingMore) { ListItem() { LoadingProgress().width(24).height(24).color(this.accentColor) } }
+
+    }
+  }
+
+  @Builder
+  private TimelinePost(post: Tweet): void {
+    TweetCard({ tweet: post, onOpen: (item: Tweet): void => this.openPost(item),
+      onReply: (item: Tweet): void => this.openPost(item),
+      onLikeChanged: (item: Tweet, value: boolean): Promise<boolean> => this.reaction(item, true, value),
+      onRepostChanged: (item: Tweet, value: boolean): Promise<boolean> => this.reaction(item, false, value),
+      onBookmarkChanged: (item: Tweet, value: boolean): void => this.bookmark(item, value),
+      onAuthorTapped: (item: Tweet): void => this.openUser(item.author) })
+  }
+
+  @Builder
+  private TimelineFooter(tab: number): void {
+    if (tab < 2) {
+
+    if (this.loadingMore) { Column() { LoadingProgress().width(24).height(24).color(this.accentColor) } }
+
+    }
   }
   @Builder
   private ActivityList(tab: number): void {
-    List({ scroller: this.activityScrollers[tab] }) {
-      if (tab === 2) { this.About() }
-      else {
-        if (tab === 0) { this.HashtagSearchControl() }
-        this.Content(tab)
-      }
-    }.width('100%').height('100%').scrollBar(BarState.Off).contentEndOffset(this.navigationIndicatorHeight)
-      .nestedScroll({ scrollForward: NestedScrollMode.PARENT_FIRST, scrollBackward: NestedScrollMode.SELF_FIRST })
-      .onReachEnd((): void => { if (tab === this.selectedTab && tab < 2) { this.load(false); } })
+    AdaptivePostFeed({ scroller: this.activityScrollers[tab],
+      itemKeys: tab === 2 ? [] : this.visiblePosts(tab).map((post: Tweet): string => post.id),
+      feedId: 'community-timeline-post-feed-' + tab.toString(), endOffset: this.navigationIndicatorHeight,
+      forwardMode: NestedScrollMode.PARENT_FIRST, backwardMode: NestedScrollMode.SELF_FIRST,
+      header: (): void => this.TimelineHeader(tab),
+      item: (index: number): void => this.TimelinePost(this.visiblePosts(tab)[index]),
+      footer: (): void => this.TimelineFooter(tab),
+      onLoadMore: (): void => { if (tab === this.selectedTab && tab < 2) { this.load(false); } } })
   }
   @Builder
   private ActivityPager(): void {

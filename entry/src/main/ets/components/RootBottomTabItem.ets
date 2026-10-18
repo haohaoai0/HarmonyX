@@ -1,7 +1,8 @@
 import { mixedAccentRoleColor, accentPageRole, isMixedAccentTheme } from '../utils/AccentPalette';
 import { symbolMotionEnabled } from '../utils/AppMotion';
 import { STORAGE_KEY_REDUCE_MOTION, STORAGE_KEY_SYMBOL_EFFECTS, STORAGE_KEY_MOTION_AMPLITUDE } from '../services/MotionSettingsStore';
-import { DEFAULT_COMPONENT_HDR_RATIO, STORAGE_KEY_COMPONENT_HDR_RATIO } from '../services/ComponentHdrSettingsStore';
+import { DEFAULT_COMPONENT_HDR_ENABLED, DEFAULT_COMPONENT_HDR_RATIO, STORAGE_KEY_COMPONENT_HDR_ENABLED,
+  STORAGE_KEY_COMPONENT_HDR_RATIO } from '../services/ComponentHdrSettingsStore';
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
 import { ComponentHdrHighlight } from '../utils/ComponentHdrHighlight';
 
@@ -18,6 +19,7 @@ export struct RootBottomTabItem {
     if (this.selected && symbolMotionEnabled()) { this.symbolTrigger++; }
   }
 
+  @StorageProp(STORAGE_KEY_COMPONENT_HDR_ENABLED) private componentHdrEnabled: boolean = DEFAULT_COMPONENT_HDR_ENABLED;
   @StorageProp(STORAGE_KEY_COMPONENT_HDR_RATIO) private componentHdrRatio: number = DEFAULT_COMPONENT_HDR_RATIO;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @StorageProp('harmonyx.accent_color') private accentColor: string = '#1D9BF0';
@@ -83,7 +85,7 @@ export struct RootBottomTabItem {
     .width('100%')
     .height('100%')
     .justifyContent(FlexAlign.Center)
-    .compositingFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.selected, this.componentHdrRatio))
+    .compositingFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.componentHdrEnabled && this.selected, this.componentHdrRatio))
     .accessibilityText(this.accessibleLabel)
   }
 }

@@ -42,7 +42,7 @@ export class XXAuthPopupPolicy {
 
   private static numberValue(value: Object | undefined): number | undefined {
     if (value === undefined || value === null) { return undefined; }
-    const parsed: number = typeof value === 'number' ? value : Number.parseInt(String(value).trim(), 10);
+    const parsed: number = typeof value === 'number' ? value : Number(String(value).trim());
     return Number.isFinite(parsed) ? parsed : undefined;
   }
 
@@ -72,6 +72,28 @@ export class XXAuthPopupPolicy {
     if (postCount !== undefined) { config.post_count = postCount; }
     if (commentCount !== undefined) { config.post_comment_count = commentCount; }
     if (revision !== undefined) { config.post_revision = revision; }
+    const dismissible: boolean | undefined = flag('harmonyx_post_dismissible');
+    const force: boolean | undefined = flag('harmonyx_popup_force');
+    const popupDismissible: boolean | undefined = flag('harmonyx_popup_dismissible');
+    if (dismissible !== undefined) { config.post_dismissible = dismissible; }
+    if (force !== undefined) { config.popup_force = force; }
+    if (popupDismissible !== undefined) { config.popup_dismissible = popupDismissible; }
+    const delay: number | undefined = number('harmonyx_popup_delay_seconds');
+    const interval: number | undefined = number('harmonyx_popup_interval_hours');
+    const daily: number | undefined = number('harmonyx_popup_daily_limit');
+    const total: number | undefined = number('harmonyx_popup_total_limit');
+    const session: number | undefined = number('harmonyx_popup_session_limit');
+    const popupRevision: number | undefined = number('harmonyx_popup_revision');
+    if (delay !== undefined) { config.popup_delay_seconds = delay; }
+    if (interval !== undefined) { config.popup_interval_hours = interval; }
+    if (daily !== undefined) { config.popup_daily_limit = daily; }
+    if (total !== undefined) { config.popup_total_limit = total; }
+    if (session !== undefined) { config.popup_session_limit = session; }
+    if (popupRevision !== undefined) { config.popup_revision = popupRevision; }
+    const start: Object | undefined = values.get('harmonyx_popup_start_at');
+    const end: Object | undefined = values.get('harmonyx_popup_end_at');
+    if (typeof start === 'string') { config.popup_start_at = start; }
+    if (typeof end === 'string') { config.popup_end_at = end; }
   }
 
   static isControlRecord(item: XXAuthAnnouncement): boolean {
@@ -217,6 +239,12 @@ export class XXAuthPopupPolicy {
           XXAuthPopupPolicy.text(article.content).length === 0) { continue; }
         panels.push(XXAuthPopupPolicy.contentPanel(article.id, 'article', article.title, article.content));
       }
+    }
+    for (let i: number = 0; i < panels.length; i++) {
+      const panel: XXAuthPanel = panels[i];
+      if (panel.kind !== 'recommendation') { continue; }
+      if (config.popup_force !== undefined) { panel.reminderForced = config.popup_force; }
+      panel.forced = config.popup_dismissible === false;
     }
     return panels;
   }

@@ -19,6 +19,8 @@ import { STORAGE_KEY_PHOTO_FULLSCREEN } from '../services/InteractionSettingsSto
 import { STORAGE_KEY_DESKTOP_LAYOUT } from '../services/LayoutSettingsStore';
 import { MaterialButton } from '../components/MaterialButton';
 import { PhotoViewerAuthorBar } from '../components/PhotoViewerAuthorBar';
+import { SurfaceVideoPlayer } from '../components/PostMedia';
+import { GifPreviewImage } from '../components/GifPreviewImage';
 import type { UserDetailRouteParam } from './UserDetail';
 import { SystemMaterialUtil } from '../utils/SystemMaterial';
 import { pasteboard } from '@kit.BasicServicesKit';
@@ -27,8 +29,9 @@ import { textRecognition, subjectSegmentation } from '@kit.CoreVisionKit';
 import { ResponsiveLayout } from '../utils/ResponsiveLayout';
 import { MediaViewerPostActions } from '../components/MediaViewerPostActions';
 import { PostDetail } from './PostDetail';
-import type { Tweet } from '../models/Tweet';
-import { mediaDownloadService, MEDIA_DOWNLOAD_SUCCESS, MEDIA_DOWNLOAD_CANCELED } from '../services/MediaDownloadService';
+import type { MediaAttachment, Tweet } from '../models/Tweet';
+import { mediaDownloadService, MEDIA_DOWNLOAD_SUCCESS, MEDIA_DOWNLOAD_CANCELED,
+  MEDIA_DOWNLOAD_SAVED_AS_VIDEO } from '../services/MediaDownloadService';
 import promptAction from '@ohos.promptAction';
 import { openExternalLink, requestSearch } from '../utils/PostEntities';
 import { postShareUrl } from '../utils/SharePost';
@@ -58,6 +61,7 @@ export interface PhotoViewerRouteParam {
   onLike?: (post: Tweet, liked: boolean) => Promise<boolean>;
   onRepost?: (post: Tweet, reposted: boolean) => Promise<boolean>;
   onReply?: (post: Tweet) => void;
+  onGifSelect?: (index: number) => Promise<void>;
 }
 
 class PhotoOcrEntry {
@@ -188,6 +192,8 @@ struct PhotoViewerBackdrop {
 @Component
 struct ZoomablePhoto {
   @Prop sourceId: string = '';
+  @Prop gifMedia: MediaAttachment | null = null;
+  @Prop playbackEnabled: boolean = true;
   @Prop @Watch('onPresentationReady') presentImage: boolean = true;
   @State private sharedPhoto: MediaPhotoNode | null = null;
   private sharedOwner: string = '';
@@ -240,6 +246,9 @@ struct ZoomablePhoto {
   aboutToAppear(): void {
     this.alive = true;
     this.sharedPhoto = null;
+    // Animations retain their encoded source; adopting or decoding a photo node
+    // would replace the animation with a single static frame.
+    if (this.gifMedia !== null) { return; }
     if (!this.canAdoptNode()) { return; }
     if (this.sourceId.length > 0) {
       const node: MediaPhotoNode | undefined = mediaPhotoNodeFor(this.sourceId);
@@ -263,6 +272,7 @@ struct ZoomablePhoto {
   }
 
   private onUrlChanged(): void {
+    if (this.gifMedia !== null) { return; }
     if (!this.alive || !this.canAdoptNode()) { return; }
     if (this.sharedPhoto !== null) {
       if (this.presentImage) { this.onAdoptNode(this.sharedPhoto, this.sharedOwner, this.url); }
@@ -288,6 +298,7 @@ struct ZoomablePhoto {
   }
 
   private resolveSource(): void {
+    if (this.gifMedia !== null) { return; }
     this.clearRetryTimer();
     const serial: number = ++this.requestSerial;
     const sourceUrl: string = this.url;
@@ -568,7 +579,17 @@ struct ZoomablePhoto {
   @Builder
   private PhotoImage(): void {
     Stack() {
-      if (this.sharedPhoto !== null) {
+      if (this.gifMedia !== null) {
+        if (this.gifMedia.mediaUrl.length === 0 || this.isGifImage(this.gifMedia.mediaUrl)) {
+          GifPreviewImage({ url: this.playbackEnabled ? this.gifMedia.mediaUrl : '', previewUrl: this.gifMedia.previewUrl,
+            displayHeight: this.viewportHeight, imageFit: ImageFit.Contain,
+            surfaceColor: Color.Transparent, onImageReady: this.onImageReady })
+        } else {
+          SurfaceVideoPlayer({ media: this.gifMedia, manualStart: true, playbackEnabled: this.playbackEnabled,
+            fillVideoViewport: true, containVideo: true, immersiveVideo: true,
+            videoViewportHeight: this.viewportHeight, onViewerSurfaceReady: this.onImageReady })
+        }
+      } else if (this.sharedPhoto !== null) {
         ContentSlot(this.sharedPhoto.pageContent)
       } else {
         Image(this.fallbackPixelMap !== null ? this.fallbackPixelMap : this.source)
@@ -590,6 +611,11 @@ struct ZoomablePhoto {
       .renderGroup(true)
       .hitTestBehavior(HitTestMode.None)
       .accessibilityText(this.alt.length > 0 ? this.alt : 'photo')
+  }
+
+  private isGifImage(url: string): boolean {
+    const lower: string = url.toLowerCase();
+    return lower.split('?')[0].split('#')[0].endsWith('.gif') || lower.indexOf('format=gif') >= 0;
   }
 
   build(): void {
@@ -713,6 +739,8 @@ export struct PhotoViewer {
   private ocrRequestId: number = 0;
   private screenBlocked: boolean = false;
   private subjectRequestId: number = 0;
+  private gifSelectAction: ((index: number) => Promise<void>) | null = null;
+  @State private selectingGif: boolean = false;
 
   aboutToDisappear(): void {
     this.viewerAlive = false;
@@ -742,7 +770,9 @@ export struct PhotoViewer {
     this.resetting = false;
     this.zoomed = false;
     this.originalShown = false;
-    this.controlsVisible = !this.photoFullscreen;
+    this.gifSelectAction = param.onGifSelect ?? null;
+    this.selectingGif = false;
+    this.controlsVisible = this.gifSelectAction !== null || !this.photoFullscreen;
     this.backdropOpacity = 1;
     this.showPostSheet = false;
     this.showMoreSheet = false;
@@ -763,7 +793,8 @@ export struct PhotoViewer {
     }
     this.items = next;
     const initialIndex: number = Math.max(0, Math.min(next.length - 1, param.index));
-    this.initialPhotoReady = param.source === undefined || mediaPhotoNodeFor(next[initialIndex]?.sourceId ?? '') !== undefined;
+    this.initialPhotoReady = param.source === undefined || next[initialIndex]?.animation != null ||
+      mediaPhotoNodeFor(next[initialIndex]?.sourceId ?? '') !== undefined;
     this.alt = param.alt;
     this.current = initialIndex;
     this.transitionPrefix = param.transitionPrefix;
@@ -779,6 +810,10 @@ export struct PhotoViewer {
       return '';
     }
     return this.items[this.current].originalUrl;
+  }
+
+  private currentAnimation(): MediaAttachment | null {
+    return this.items[this.current]?.animation ?? null;
   }
 
   private currentDisplayUrl(): string {
@@ -1242,6 +1277,7 @@ export struct PhotoViewer {
   }
 
   private displayUrl(item: PhotoViewerPhoto, index: number): string {
+    if (item.animation != null) { return item.previewUrl; }
     return this.originalShown && index === this.current ? item.originalUrl : item.previewUrl;
   }
 
@@ -1454,19 +1490,53 @@ export struct PhotoViewer {
     const context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
     const completed: (result: number) => void = (result: number): void => {
       this.downloading = false;
-      const message: Resource = result === MEDIA_DOWNLOAD_SUCCESS ?
+      const message: Resource = result === MEDIA_DOWNLOAD_SAVED_AS_VIDEO ? $r('app.string.gif_save_video_fallback') :
+        result === MEDIA_DOWNLOAD_SUCCESS ?
         (all ? $r('app.string.media_all_images_saved') : $r('app.string.media_image_saved')) :
         (result === MEDIA_DOWNLOAD_CANCELED ? $r('app.string.media_download_canceled') :
         $r('app.string.media_download_failed'));
       promptAction.showToast({ message: this.text(message), duration: 2200 });
     };
-    if (all) {
+    if (all && this.items.some((item: PhotoViewerPhoto): boolean => item.animation != null)) {
+      // The image batch API cannot accept MP4-backed GIFs. Preserve each item's
+      // media kind and stop if the user cancels a destination dialog.
+      let result: number = MEDIA_DOWNLOAD_SUCCESS;
+      const items: PhotoViewerPhoto[] = this.items.slice();
+      for (let i: number = 0; i < items.length; i++) {
+        result = await new Promise<number>((resolve): void => {
+          this.downloadItem(context, items[i], mediaId + '-' + i.toString(), false, resolve);
+        });
+        if (result !== MEDIA_DOWNLOAD_SUCCESS) { break; }
+      }
+      completed(result);
+    } else if (all) {
       mediaDownloadService.downloadImages(context, urls, mediaId, completed);
-    } else if (fromSaveButton) {
-      void mediaDownloadService.downloadPhotoWithSaveButton(context, urls[0], mediaId + '-' + this.current, completed);
     } else {
-      mediaDownloadService.download(context, urls[0], mediaId + '-' + this.current, false, completed);
+      this.downloadItem(context, this.items[this.current], mediaId + '-' + this.current, fromSaveButton, completed);
     }
+  }
+
+  private downloadItem(context: common.UIAbilityContext, item: PhotoViewerPhoto, mediaId: string,
+    fromSaveButton: boolean, completed: (result: number) => void): void {
+    const animation: MediaAttachment | null = item.animation ?? null;
+    const lower: string = item.originalUrl.toLowerCase();
+    const gifImage: boolean = lower.split('?')[0].split('#')[0].endsWith('.gif') || lower.indexOf('format=gif') >= 0;
+    if (animation !== null && !gifImage) {
+      mediaDownloadService.downloadAnimatedGif(context, item.originalUrl, mediaId,
+        animation.durationMs ?? 0, item.width, item.height, completed);
+    } else if (fromSaveButton) {
+      void mediaDownloadService.downloadPhotoWithSaveButton(context, item.originalUrl, mediaId, completed);
+    } else {
+      mediaDownloadService.download(context, item.originalUrl, mediaId, false, completed);
+    }
+  }
+
+  private async selectCurrentGif(): Promise<void> {
+    const action: ((index: number) => Promise<void>) | null = this.gifSelectAction;
+    if (action === null || this.selectingGif) { return; }
+    this.selectingGif = true;
+    try { await action(this.current); }
+    finally { if (this.viewerAlive) { this.selectingGif = false; } }
   }
 
   private async saveBackground(): Promise<void> {
@@ -1495,6 +1565,13 @@ export struct PhotoViewer {
         SymbolGlyph($r('sys.symbol.arrow_left')).fontSize(24).fontColor([this.controlForeground()])
       }
       Blank()
+      if (this.gifSelectAction !== null) {
+        Button(this.text($r('app.string.gif_action_use')))
+          .fontFamily(this.appFontFamily).fontColor($r('app.color.text_on_brand'))
+          .backgroundColor(this.accentColor).enabled(!this.selectingGif)
+          .id('photo-viewer-select-gif').margin({ right: 12 })
+          .onClick((): void => { void this.selectCurrentGif(); })
+      }
       Row({ space: 8 }) {
         if (this.downloading) {
           LoadingProgress().width($r('app.float.photo_viewer_quick_size'))
@@ -1504,7 +1581,6 @@ export struct PhotoViewer {
             .width($r('app.float.photo_viewer_quick_size')).height($r('app.float.photo_viewer_quick_size'))
             .iconSize($r('app.float.photo_viewer_quick_icon_size')).padding(10)
             .iconColor($r('app.color.text_on_brand')).backgroundColor($r('app.color.photo_save_background'))
-            .accessibilityDescription($r('app.string.media_download_photo'))
             .id('photo-viewer-save')
             .onClick((_event: ClickEvent, result: SaveButtonOnClickResult): void => {
               if (result === SaveButtonOnClickResult.SUCCESS) { void this.downloadPhotos(false, true); }
@@ -1595,17 +1671,18 @@ export struct PhotoViewer {
   private MoreSheet(): void {
     Scroll() {
       Column() {
-        if (!['photo.background', 'photo.original', 'photo.ocr', 'photo.subject'].some((id: string): boolean => this.menuVisible(id)) &&
+        if (!(this.currentAnimation() === null &&
+          ['photo.background', 'photo.original', 'photo.ocr', 'photo.subject'].some((id: string): boolean => this.menuVisible(id))) &&
           !(this.tweet !== null && (this.menuVisible('photo.post') || this.menuVisible('photo.report'))) &&
           !(this.items.length > 1 && this.menuVisible('photo.save_all'))) {
           Text($r('app.string.settings_menu_empty')).fontFamily(this.appFontFamily)
             .fontColor($r('app.color.text_secondary')).padding(20)
         }
-        if (this.menuVisible('photo.background')) {
+        if (this.currentAnimation() === null && this.menuVisible('photo.background')) {
           this.MoreRow($r('sys.symbol.picture'), $r('app.string.post_photo_save_background'), !this.savingBackground,
             (): void => { void this.saveBackground(); })
         }
-        if (this.menuVisible('photo.original')) {
+        if (this.currentAnimation() === null && this.menuVisible('photo.original')) {
           this.MoreRow($r('sys.symbol.arrow_up_left_and_arrow_down_right'),
             this.originalShown ? $r('app.string.media_original_loaded') : $r('app.string.media_view_original'),
             !this.originalShown, (): void => {
@@ -1634,12 +1711,12 @@ export struct PhotoViewer {
               (): void => { void this.downloadPhotos(true); })
           }
         }
-        if (this.menuVisible('photo.ocr')) {
+        if (this.currentAnimation() === null && this.menuVisible('photo.ocr')) {
           this.MoreRow($r('sys.symbol.textformat'), $r('app.string.photo_ocr_action'), !this.ocrLoading, (): void => {
             this.showMoreSheet = false; void this.recognizeCurrentPhoto(this.currentDisplayUrl());
           })
         }
-        if (this.menuVisible('photo.subject')) {
+        if (this.currentAnimation() === null && this.menuVisible('photo.subject')) {
           this.MoreRow($r('sys.symbol.cut'), $r('app.string.photo_subject_action'), !this.subjectLoading, (): void => {
             this.showMoreSheet = false; void this.cutOutCurrentSubject();
           })
@@ -1658,6 +1735,8 @@ export struct PhotoViewer {
             ForEach(this.items, (item: PhotoViewerPhoto, index: number) => {
               ZoomablePhoto({
                 sourceId: item.sourceId ?? '',
+                gifMedia: item.animation ?? null,
+                playbackEnabled: this.current === index && !this.closing,
                 presentImage: this.motion.visible,
                 onImageReady: (): void => { if (this.current === index) { this.initialPhotoReady = true; } },
                 canAdoptNode: (): boolean => this.viewerAlive && !this.closing,

@@ -1,3 +1,4 @@
+import { AdaptivePostFeed } from '../components/AdaptivePostFeed';
 import { pageTextColor } from '../utils/ThemeColors';
 import { appPageBackground } from '../components/PageBackgroundLayer';
 import { pageCanvasColor, postCardSurfaceColor } from '../utils/ThemeColors';
@@ -264,42 +265,48 @@ struct BrowsingHistory {
     }.width('100%').height(56).padding({ left: 14, right: 14, top: 4, bottom: 8 })
   }
 
+  @Builder
+  private HistoryHeader(): void {
+    Column() {
+      Row({ space: 6 }) {
+        SymbolGlyph($r('sys.symbol.lock')).fontSize(12).fontColor([pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)])
+        Text($r('app.string.browsing_history_local')).fontFamily(this.appFontFamily).fontSize(12)
+          .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
+      }.width('100%').padding({ left: 18, right: 18, top: 8, bottom: 4 })
+    }
+    if (this.visibleRows.length === 0) {
+      Column() {
+        Column({ space: 16 }) {
+          SymbolGlyph($r('sys.symbol.clock')).fontSize(48).fontColor([pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)])
+          Text(this.query.length > 0 ? $r('app.string.browsing_history_no_results') : $r('app.string.browsing_history_empty'))
+            .fontFamily(this.appFontFamily).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
+        }.width('100%').padding({ top: 72, bottom: 72 })
+      }
+    }
+  }
+
+  @Builder
+  private HistoryRow(row: BrowsingHistoryEntry, index: number): void {
+    Column({ space: 10 }) {
+      if (this.newDay(index)) {
+        Text(this.dayLabel(row)).fontFamily(this.appFontFamily).fontSize(14).fontWeight(FontWeight.Medium)
+          .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).width('100%').padding({ left: 4, top: 10 })
+      }
+      this.HistoryCard(row)
+    }.width('100%').padding({ left: 14, right: 14 })
+  }
+
   build(): void {
     HdsNavDestination() {
       Stack({ alignContent: Alignment.TopStart }) {
         appPageBackground()
-      List({ space: 12, scroller: this.scroller }) {
-        ListItem() {
-          Row({ space: 6 }) {
-            SymbolGlyph($r('sys.symbol.lock')).fontSize(12).fontColor([pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)])
-            Text($r('app.string.browsing_history_local')).fontFamily(this.appFontFamily).fontSize(12)
-              .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
-          }.width('100%').padding({ left: 18, right: 18, top: 8, bottom: 4 })
-        }
-        if (this.visibleRows.length === 0) {
-          ListItem() {
-            Column({ space: 16 }) {
-              SymbolGlyph($r('sys.symbol.clock')).fontSize(48).fontColor([pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)])
-              Text(this.query.length > 0 ? $r('app.string.browsing_history_no_results') : $r('app.string.browsing_history_empty'))
-                .fontFamily(this.appFontFamily).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
-            }.width('100%').padding({ top: 72, bottom: 72 })
-          }
-        }
-        ForEach(this.visibleRows, (row: BrowsingHistoryEntry, index: number) => {
-          ListItem() {
-            Column({ space: 10 }) {
-              if (this.newDay(index)) {
-                Text(this.dayLabel(row)).fontFamily(this.appFontFamily).fontSize(14).fontWeight(FontWeight.Medium)
-                  .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).width('100%').padding({ left: 4, top: 10 })
-              }
-              this.HistoryCard(row)
-            }.width('100%').padding({ left: 14, right: 14 })
-          }
-        }, (row: BrowsingHistoryEntry): string => row.id + '-' + row.viewedAt + '-' + row.authorName + '-' +
-          row.avatarUrl + '-' + row.verified + '-' + row.text + '-' + row.previewUrl)
-      }.width('100%').height('100%').scrollBar(BarState.Off)
-        .contentStartOffset(this.statusBarHeight + 116).contentEndOffset(this.bottomInset + 20)
-        .clip(false).onScrollIndex((start: number, end: number): void => this.loadVisiblePreviews(start - 1, end))
+      AdaptivePostFeed({ scroller: this.scroller,
+        itemKeys: this.visibleRows.map((row: BrowsingHistoryEntry): string => row.id + '-' + row.viewedAt + '-' +
+          row.authorName + '-' + row.avatarUrl + '-' + row.verified + '-' + row.text + '-' + row.previewUrl),
+        feedId: 'browsing-history-post-feed', startOffset: this.statusBarHeight + 116, endOffset: this.bottomInset + 20,
+        header: (): void => this.HistoryHeader(),
+        item: (index: number): void => this.HistoryRow(this.visibleRows[index], index),
+        onVisibleItems: (start: number, end: number): void => this.loadVisiblePreviews(start, end) })
     
       }.width('100%').height('100%')
     }

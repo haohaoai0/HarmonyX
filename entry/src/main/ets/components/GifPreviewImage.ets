@@ -15,6 +15,8 @@ export struct GifPreviewImage {
   @Prop @Watch('onUrlChanged') previewUrl: string = '';
   @Prop displayHeight: number = 228;
   @Prop surfaceColor: ResourceColor = '';
+  @Prop imageFit: ImageFit = ImageFit.Cover;
+  onImageReady: () => void = (): void => {};
   @State private source: string = '';
   @State private previewSource: string = '';
   @State private previewPixelMap: image.PixelMap | null = null;
@@ -63,7 +65,7 @@ export struct GifPreviewImage {
     if (gifUrl.length === 0) {
       return;
     }
-    if (!proxyEnabled) {
+    if (!proxyEnabled || gifUrl.startsWith('file://')) {
       // ArkUI Image handles GIF frame playback for URL sources; do not decode
       // this URL into a PixelMap because that would freeze it on one frame.
       this.source = gifUrl;
@@ -161,25 +163,28 @@ export struct GifPreviewImage {
         Image(this.previewPixelMap)
           .width('100%')
           .height(this.displayHeight)
-          .objectFit(ImageFit.Cover)
+          .objectFit(this.imageFit)
           .draggable(false)
           .renderGroup(true)
+          .onComplete((): void => this.onImageReady())
       } else if (this.previewSource.length > 0) {
         Image(this.previewSource)
           .width('100%')
           .height(this.displayHeight)
-          .objectFit(ImageFit.Cover)
+          .objectFit(this.imageFit)
           .draggable(false)
           .renderGroup(true)
+          .onComplete((): void => this.onImageReady())
           .onError((): void => { this.onPreviewLoadFailed(); })
       }
       if (this.source.length > 0) {
         Image(this.source)
           .width('100%')
           .height(this.displayHeight)
-          .objectFit(ImageFit.Cover)
+          .objectFit(this.imageFit)
           .draggable(false)
           .renderGroup(true)
+          .onComplete((): void => this.onImageReady())
           .onError((): void => { this.onGifLoadFailed(); })
       }
     }

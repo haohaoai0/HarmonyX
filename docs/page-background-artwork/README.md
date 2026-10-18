@@ -1,17 +1,18 @@
 # Generated wallpaper motifs
 
-52 transparent outline motifs, generated with the built-in imagegen tool in generate mode. The signature set used the application's alternate icons as visual references. The Plants vs. Zombies set was generated from a text description. Source atlases remain unchanged; the prep script trims each isolated cell and preserves alpha, then makes matching black and white ink variants for theme-aware rendering.
+100 transparent outline motifs, generated with the built-in imagegen tool in generate mode. The signature set used the application's alternate icons as visual references. The Plants vs. Zombies set was generated from a text description. Source atlases remain unchanged; the prep script trims each isolated cell and preserves alpha, then makes matching black and white ink variants for theme-aware rendering.
 
 - [Selection preview](selection-preview.png)
 - [Signature source atlas](alternate-atlas.png)
 - [Plants vs. Zombies source atlas](pvz-atlas.png)
 - [AI assistant atlas, prompt and preview](ai-generation.md)
 - [Mobile brand/system atlas, prompt and preview](mobile-generation.md)
+- [Popular app atlases, prompts and previews](apps-generation.md)
 - [Crop manifest](motifs.json)
 - Preparation: `tools/Prepare-PageSignatureMotifs.cjs` (Sharp; set HARMONYX_SHARP to its installed module path).
 - Production files: `entry/src/main/resources/{base,dark}/media/page_motif_{signature_icons,garden_defense}_*.png`, 256 by 256, transparent PNG.
 
-All four sets are available in Page background > Individual motifs. Each motif can be selected separately, mixed with any other set, and included in portable .hxb schemes. Full-pattern collections remain available separately.
+All six sets are available in Page background > Individual motifs. Each motif can be selected separately, mixed with any other set, and included in portable .hxb schemes. Full-pattern collections remain available separately.
 
 ## Signature atlas prompt
 

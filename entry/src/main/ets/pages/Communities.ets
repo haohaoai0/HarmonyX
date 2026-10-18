@@ -1,3 +1,4 @@
+import { AdaptivePostFeed } from '../components/AdaptivePostFeed';
 import { pageTextColor } from '../utils/ThemeColors';
 import { pageBackgroundActive } from '../services/PageBackgroundStore';
 import { appPageBackground } from '../components/PageBackgroundLayer';
@@ -236,7 +237,7 @@ export struct Communities {
 
   @Builder
   private JoinedCommunities(): void {
-    ListItem() {
+    Column() {
       Scroll() {
         Row({ space: 22 }) {
           ForEach(this.joined, (row: CommunityRow) => {
@@ -269,7 +270,7 @@ export struct Communities {
   @Builder
   private JoinedStrip(rows: CommunityRow[], label: Resource): void {
     if (rows.length > 0) {
-      ListItem() {
+      Column() {
         Column({ space: 10 }) {
           Text(label).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontWeight(FontWeight.Bold).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
           Scroll() {
@@ -291,14 +292,14 @@ export struct Communities {
   @Builder
   private Recommendations(): void {
     if (this.recommendations.length > 0) {
-      ListItem() {
+      Column() {
         Text($r('app.string.community_discover_new')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Subtitle_L')).fontWeight(FontWeight.Bold)
           .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)).width('100%').padding({ left: 16, top: 20, bottom: 8 })
       }
       ForEach(this.recommendations.slice(0, 3), (row: CommunityRow) => {
-        ListItem() { CommunityRowCard({ community: row, onOpen: (item: CommunityRow): void => this.openCommunity(item) }) }
+        Column() { CommunityRowCard({ community: row, onOpen: (item: CommunityRow): void => this.openCommunity(item) }) }
       }, (row: CommunityRow): string => row.id)
-      ListItem() {
+      Column() {
         Row() {
           Text($r('app.string.community_show_more')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontColor(this.accentColor)
           Blank()
@@ -308,46 +309,11 @@ export struct Communities {
     }
   }
   @Builder
-  private FeedContent(index: number): void {
-    if (this.feed(index).loading && this.feed(index).posts.length === 0) {
-      ListItem() { LoadingProgress().width(28).height(28).color(this.accentColor).margin({ top: 48, bottom: 48 }) }
-    } else if (this.feed(index).status.length > 0) {
-      ListItem() {
-        Column({ space: 14 }) {
-          Text(this.feed(index).status).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).textAlign(TextAlign.Center)
-          Button($r('app.string.common_retry')).backgroundColor(this.accentColor).fontColor($r('app.color.text_on_accent'))
-            .onClick((): void => { this.loadFeed(index, true); })
-        }.width('100%').padding(24)
-      }
-    } else if (this.feed(index).posts.length === 0 && (index === 1 || this.recommendations.length === 0)) {
-      ListItem() {
-        Text($r('app.string.community_home_empty')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
-          .textAlign(TextAlign.Center).width('100%').padding(32)
-      }
-    }
-    ForEach(this.orderedPosts(index), (post: Tweet) => {
-      ListItem() {
-        ConversationTweetCard({ tweet: post,
-          onOpen: (item: Tweet): void => this.openPost(item), onReply: (item: Tweet): void => this.openPost(item),
-          onLikeChanged: (item: Tweet, value: boolean): Promise<boolean> => this.reaction(item, true, value),
-          onRepostChanged: (item: Tweet, value: boolean): Promise<boolean> => this.reaction(item, false, value),
-          onBookmarkChanged: (item: Tweet, value: boolean): void => this.bookmark(item, value),
-          onAuthorTapped: (item: Tweet): void => {
-            const param: UserDetailRouteParam = { author: item.author, posts: [] };
-            this.pageStack.pushPath({ name: 'UserDetail', param: param });
-          } })
-      }
-    }, (post: Tweet): string => post.id)
-    if (this.feed(index).loadingMore) { ListItem() { LoadingProgress().width(24).height(24).color(this.accentColor) } }
-  }
-  @Builder
-  private FeedPage(index: number): void {
-    Refresh({ refreshing: this.feed(index).refreshing }) {
-      List({ scroller: index === 0 ? this.homeScroller : this.exploreScroller }) {
-        if (index === 0) {
+  private FeedHeader(index: number): void {
+    if (index === 0) {
           this.JoinedCommunities()
           this.JoinedStrip(this.favorites, $r('app.string.communities_favorites'))
-          ListItem() {
+          Column() {
             Row({ space: 6 }) {
               SymbolGlyph($r('sys.symbol.arrow_up_and_down_square_portrait')).fontSize(15).fontColor([pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)])
               Text(this.newestFirst ? $r('app.string.community_sort_new') : $r('app.string.community_sort_trending')).fontFamily(this.appFontFamily)
@@ -357,16 +323,57 @@ export struct Communities {
               .onClick((): void => { this.sort(); })
           }
         }
-        this.FeedContent(index)
+
+    if (this.feed(index).loading && this.feed(index).posts.length === 0) {
+      Column() { LoadingProgress().width(28).height(28).color(this.accentColor).margin({ top: 48, bottom: 48 }) }
+    } else if (this.feed(index).status.length > 0) {
+      Column() {
+        Column({ space: 14 }) {
+          Text(this.feed(index).status).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).textAlign(TextAlign.Center)
+          Button($r('app.string.common_retry')).backgroundColor(this.accentColor).fontColor($r('app.color.text_on_accent'))
+            .onClick((): void => { this.loadFeed(index, true); })
+        }.width('100%').padding(24)
+      }
+    } else if (this.feed(index).posts.length === 0 && (index === 1 || this.recommendations.length === 0)) {
+      Column() {
+        Text($r('app.string.community_home_empty')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
+          .textAlign(TextAlign.Center).width('100%').padding(32)
+      }
+    }
+  }
+
+  @Builder
+  private CommunityPost(post: Tweet): void {
+    ConversationTweetCard({ tweet: post,
+      onOpen: (item: Tweet): void => this.openPost(item), onReply: (item: Tweet): void => this.openPost(item),
+      onLikeChanged: (item: Tweet, value: boolean): Promise<boolean> => this.reaction(item, true, value),
+      onRepostChanged: (item: Tweet, value: boolean): Promise<boolean> => this.reaction(item, false, value),
+      onBookmarkChanged: (item: Tweet, value: boolean): void => this.bookmark(item, value),
+      onAuthorTapped: (item: Tweet): void => {
+        const param: UserDetailRouteParam = { author: item.author, posts: [] };
+        this.pageStack.pushPath({ name: 'UserDetail', param: param });
+      } })
+  }
+
+  @Builder
+  private FeedFooter(index: number): void {
+    if (this.feed(index).loadingMore) { Column() { LoadingProgress().width(24).height(24).color(this.accentColor) } }
+
         if (index === 0) { this.Recommendations() }
-      }.width('100%').height('100%').scrollBar(BarState.Off)
-        .contentStartOffset(this.statusBarHeight + 108)
-        .divider({ strokeWidth: 0.5, color: $r('app.color.divider') })
-        .contentEndOffset(this.navigationIndicatorHeight + 80)
-        .clip(false)
-        .onReachEnd((): void => { this.loadFeed(index, false); })
+  }
+  @Builder
+  private FeedPage(index: number): void {
+    Refresh({ refreshing: this.feed(index).refreshing }) {
+      AdaptivePostFeed({ scroller: index === 0 ? this.homeScroller : this.exploreScroller,
+        itemKeys: this.orderedPosts(index).map((post: Tweet): string => post.id),
+        feedId: 'communities-post-feed-' + index.toString(), startOffset: this.statusBarHeight + 108,
+        endOffset: this.navigationIndicatorHeight + 80,
+        header: (): void => this.FeedHeader(index),
+        item: (item: number): void => this.CommunityPost(this.orderedPosts(index)[item]),
+        footer: (): void => this.FeedFooter(index), onLoadMore: (): void => { void this.loadFeed(index, false); } })
     }.width('100%').height('100%').clip(false)
       .onRefreshing((): void => { this.feed(index).refreshing = true; this.loadFeed(index, true); if (index === 0) { this.loadDirectory(); } })
+
   }
   @Builder
   private ComposeSheet(): void {

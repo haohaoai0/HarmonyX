@@ -1,7 +1,8 @@
 import { common } from '@kit.AbilityKit';
 import { preferences } from '@kit.ArkData';
 import util from '@ohos.util';
-import { XXAuthPanel } from '../models/XXAuth';
+import { XXAuthPanel, XXAuthPopupConfig } from '../models/XXAuth';
+import { XXAuthPopupHistory, XXAuthPopupSchedule } from './XXAuthPopupSchedule';
 
 export const XXAUTH_POPUP_REQUEST: string = 'harmonyx.xxauth_popup_request';
 export const XXAUTH_POPUP_CONFIG: string = 'harmonyx_popup';
@@ -24,6 +25,8 @@ export function requestXXAuthPopup(kind: string): void {
 
 export class XXAuthPopupStore {
   private fallbackId: string = '';
+  private popupSessionRevision: number = -1;
+  private popupSessionCount: number = 0;
 
   private open(context: common.Context): preferences.Preferences {
     return preferences.getPreferencesSync(context, { name: STORE });
@@ -43,17 +46,53 @@ export class XXAuthPopupStore {
     return this.fallbackId;
   }
 
-  shouldShow(context: common.Context, panel: XXAuthPanel, now: number): boolean {
+  private popupHistory(store: preferences.Preferences, config: XXAuthPopupConfig): XXAuthPopupHistory {
+    const saved: string = store.getSync('recommendation_schedule_' + XXAuthPopupSchedule.revision(config).toString(), '') as string;
+    if (saved.length === 0) { return new XXAuthPopupHistory(); }
+    const history: XXAuthPopupHistory = JSON.parse(saved) as XXAuthPopupHistory;
+    if (history === null || typeof history.day !== 'string' || !Number.isFinite(history.dayCount) ||
+      !Number.isFinite(history.total) || !Number.isFinite(history.last) || history.dayCount < 0 ||
+      history.total < 0 || history.last < 0) { throw new Error('Invalid recommendation budget'); }
+    return history;
+  }
+
+  private sessionCount(config: XXAuthPopupConfig): number {
+    const revision: number = XXAuthPopupSchedule.revision(config);
+    if (this.popupSessionRevision !== revision) {
+      this.popupSessionRevision = revision;
+      this.popupSessionCount = 0;
+    }
+    return this.popupSessionCount;
+  }
+
+  markRecommendationShown(context: common.Context, config: XXAuthPopupConfig, now: number): boolean {
+    if (!XXAuthPopupSchedule.configured(config)) { return true; }
+    try {
+      const store: preferences.Preferences = this.open(context);
+      const next: XXAuthPopupHistory = XXAuthPopupSchedule.record(this.popupHistory(store, config), now);
+      const key: string = 'recommendation_schedule_' + XXAuthPopupSchedule.revision(config).toString();
+      const previous: string = store.getSync(key, '') as string;
+      try { store.putSync(key, JSON.stringify(next)); store.flushSync(); }
+      catch (error) { store.putSync(key, previous); return false; }
+      this.popupSessionCount = this.sessionCount(config) + 1;
+      return true;
+    } catch (error) { return false; }
+  }
+
+  shouldShow(context: common.Context, panel: XXAuthPanel, now: number,
+    config: XXAuthPopupConfig = {}, readySince: number = 0): boolean {
     try {
       const store: preferences.Preferences = this.open(context);
       if (panel.kind === 'recommendation') {
+        if (!XXAuthPopupSchedule.eligible(config, this.popupHistory(store, config), this.sessionCount(config),
+          now, readySince)) { return false; }
         const key: string = 'recommendation_snooze_until' +
           (panel.recommendationAppId.length > 0 ? '_' + panel.recommendationAppId : '');
-        return panel.reminderForced || (store.getSync(key, 0) as number) <= now;
+        return panel.forced || panel.reminderForced || (store.getSync(key, 0) as number) <= now;
       }
       return panel.forced || panel.repeat ||
         store.getSync('seen_' + panel.kind + '_' + panel.id, '') !== panel.fingerprint;
-    } catch (error) { return true; }
+    } catch (error) { return panel.kind !== 'recommendation' || !XXAuthPopupSchedule.configured(config); }
   }
 
   markRead(context: common.Context, panel: XXAuthPanel): void {

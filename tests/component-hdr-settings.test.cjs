@@ -32,12 +32,20 @@ function fixture() {
   return { exports, disk, live, failWrite: () => { failWrite = true; }, failRead: () => { failRead = true; } };
 }
 
-test('first launch initializes a 1.25 multiplier and custom decimals survive store recreation', () => {
+test('first launch disables the effect and initializes a 1.25 multiplier', () => {
   const f = fixture();
-  const { componentHdrSettingsStore: store, STORAGE_KEY_COMPONENT_HDR_RATIO: key } = f.exports;
+  const { componentHdrSettingsStore: store, STORAGE_KEY_COMPONENT_HDR_RATIO: key,
+    STORAGE_KEY_COMPONENT_HDR_ENABLED: enabledKey } = f.exports;
   store.initialize({});
   assert.equal(store.load({}), 1.25);
   assert.equal(f.live.get(key), 1.25);
+  assert.equal(store.loadEnabled({}), false);
+  assert.equal(f.live.get(enabledKey), false);
+  assert.equal(store.saveEnabled({}, true), true);
+  assert.equal(f.live.get(enabledKey), true);
+  assert.equal(new f.exports.ComponentHdrSettingsStore().loadEnabled({}), true);
+  assert.equal(store.saveEnabled({}, false), true);
+  assert.equal(f.live.get(enabledKey), false);
   assert.equal(store.save({}, 2.375), true);
   assert.equal(f.live.get(key), 2.375);
   assert.equal(new f.exports.ComponentHdrSettingsStore().load({}), 2.375);
@@ -64,8 +72,11 @@ test('corrupted preferences or unavailable storage fall back to 1.25', () => {
     f.disk.set('ratio', value);
     assert.equal(f.exports.componentHdrSettingsStore.load({}), 1.25);
   }
+  f.disk.set('enabled', 'true');
+  assert.equal(f.exports.componentHdrSettingsStore.loadEnabled({}), false);
   f.failRead();
   assert.equal(f.exports.componentHdrSettingsStore.load({}), 1.25);
+  assert.equal(f.exports.componentHdrSettingsStore.loadEnabled({}), false);
 });
 
 test('decimal input accepts arbitrary precision and comma separators without accepting partial garbage', () => {
@@ -103,7 +114,7 @@ test('editing the actual settings handler preserves a trailing decimal and inval
 
 test('every existing locale has the HDR setting labels and the numeric default matches 1.25', () => {
   const resources = 'entry/src/main/resources';
-  const keys = ['settings_component_hdr_ratio', 'settings_component_hdr_desc', 'settings_component_hdr_invalid', 'settings_component_hdr_reset',
+  const keys = ['settings_component_hdr_enabled', 'settings_component_hdr_enabled_desc', 'settings_component_hdr_ratio', 'settings_component_hdr_desc', 'settings_component_hdr_invalid', 'settings_component_hdr_reset',
     'settings_component_hdr_max', 'settings_component_hdr_max_unavailable', 'settings_component_hdr_max_desc'];
   for (const locale of fs.readdirSync(resources)) {
     const file = path.join(resources, locale, 'element/string.json');

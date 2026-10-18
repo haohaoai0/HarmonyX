@@ -1,3 +1,4 @@
+import { AdaptivePostFeed } from '../components/AdaptivePostFeed';
 import { pageTextColor } from '../utils/ThemeColors';
 import { appPageBackground } from '../components/PageBackgroundLayer';
 import { pageCanvasColor, pageReadingSurfaceColor } from '../utils/ThemeColors';
@@ -429,22 +430,27 @@ export struct PostInteractionsPage {
   private QuoteContent(): void {
     if (this.quoteLoading && this.quotes.length === 0) {
       this.LoadingActivity()
-    } else if (this.quotes.length > 0) {
-      ForEach(this.quotes, (quote: Tweet): void => {
-        TweetCard({
-          tweet: quote,
-          showActions: false,
-          onOpen: (opened: Tweet, sourceId: string): void => this.openPost(opened, sourceId),
-          onAuthorTapped: (opened: Tweet): void => this.openQuoteAuthor(opened)
-        })
-      }, (quote: Tweet): string => quote.id)
-      if (this.quoteNextToken.length > 0) {
-        this.LoadMore(this.quoteLoadingMore)
-      }
-    } else {
+    } else if (this.quotes.length === 0) {
       this.EmptyActivity($r('sys.symbol.quote'), this.quoteStatus.length > 0 ? this.quoteStatus :
         this.text($r('app.string.post_interactions_no_quotes')),
         this.text($r('app.string.post_interactions_no_quotes_detail')))
+    }
+  }
+
+  @Builder
+  private QuotePost(quote: Tweet): void {
+    TweetCard({
+      tweet: quote,
+      showActions: false,
+      onOpen: (opened: Tweet, sourceId: string): void => this.openPost(opened, sourceId),
+      onAuthorTapped: (opened: Tweet): void => this.openQuoteAuthor(opened)
+    })
+  }
+
+  @Builder
+  private QuoteFooter(): void {
+    if (this.quoteNextToken.length > 0) {
+      this.LoadMore(this.quoteLoadingMore)
     }
   }
 
@@ -490,16 +496,22 @@ export struct PostInteractionsPage {
 
   @Builder
   private ActivityPage(index: number): void {
-    Scroll(this.activityScrollers[index]) {
-        Column({ space: 14 }) {
-          if (index === 0) { this.QuoteContent() } else { this.RepostContent() }
-        }.width('100%').padding({ left: 12, right: 12, bottom: this.navigationIndicatorHeight + 28 })
+    if (index === 0) {
+      AdaptivePostFeed({ scroller: this.activityScrollers[index],
+        itemKeys: this.quotes.map((post: Tweet): string => post.id), feedId: 'quote-post-feed',
+        endOffset: this.navigationIndicatorHeight + 28,
+        forwardMode: NestedScrollMode.SELF_FIRST, backwardMode: NestedScrollMode.SELF_FIRST,
+        header: (): void => this.QuoteContent(), item: (item: number): void => this.QuotePost(this.quotes[item]),
+        footer: (): void => this.QuoteFooter(), onLoadMore: (): void => { void this.loadQuotes(false); } })
+    } else {
+      Scroll(this.activityScrollers[index]) {
+        Column({ space: 14 }) { this.RepostContent() }
+          .width('100%').padding({ left: 12, right: 12, bottom: this.navigationIndicatorHeight + 28 })
       }.width('100%').height('100%').scrollBar(BarState.Off)
         .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: true })
         .nestedScroll({ scrollForward: NestedScrollMode.SELF_FIRST, scrollBackward: NestedScrollMode.SELF_FIRST })
-        .onReachEnd((): void => {
-          if (index === 0) { this.loadQuotes(false); } else { this.loadReposters(false); }
-        })
+        .onReachEnd((): void => { void this.loadReposters(false); })
+    }
   }
 
   @Builder

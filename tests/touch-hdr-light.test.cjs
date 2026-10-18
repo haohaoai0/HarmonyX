@@ -14,11 +14,16 @@ function methods(file, component, names) {
 }
 
 const hdsFile = 'entry/src/main/ets/components/HdsButton.ets';
-const hdsSource = fs.readFileSync(hdsFile, 'utf8');
+const hdsSource = fs.readFileSync(hdsFile, 'utf8').replace(/\r\n/g, '\n');
 function callback(start, end) {
   const from = hdsSource.indexOf(start);
   assert.ok(from >= 0);
-  const to = hdsSource.indexOf(end, from);
+  const variants = [end, end.replace(')\\n', '})\\n')];
+  let to = -1;
+  for (const variant of variants) {
+    to = hdsSource.indexOf(variant, from);
+    if (to >= 0) break;
+  }
   assert.ok(to > from);
   return hdsSource.slice(from + start.length, to);
 }
@@ -38,6 +43,7 @@ function hdsFixture() {
     exports, TouchType, value => value, () => 'smooth', value => value, () => {});
   const counts = { start: 0, end: 0 };
   const control = Object.assign(new exports.Fixture(), {
+    componentHdrEnabled: true,
     enablePressLight: true, isPressLightActive: false, isPanLightActive: false, panLightActive: false,
     getUIContext: () => ({ animateTo: (_options, update) => update() }),
     onButtonPanStart: () => { counts.start++; }, onButtonPanEnd: () => { counts.end++; }
@@ -80,8 +86,11 @@ test('HDR overlay only appears while active on API 24+ with a multiplier greater
   const deviceInfo = { sdkApiVersion: 26 };
   const exports = {};
   new Function('exports', 'deviceInfo', compile(`class Fixture { ${source} }; exports.Fixture = Fixture;`))(exports, deviceInfo);
-  const control = Object.assign(new exports.Fixture(), { active: false, componentHdrRatio: 3.5 });
+  const control = Object.assign(new exports.Fixture(), { active: false, componentHdrEnabled: true, componentHdrRatio: 3.5 });
   assert.equal(control.lightVisible(), false);
+  control.componentHdrEnabled = false; control.active = true;
+  assert.equal(control.lightVisible(), false);
+  control.componentHdrEnabled = true; control.active = false;
   control.active = true; assert.equal(control.lightVisible(), true);
   for (const ratio of [1, 0, NaN, Infinity]) {
     control.componentHdrRatio = ratio; assert.equal(control.lightVisible(), false);

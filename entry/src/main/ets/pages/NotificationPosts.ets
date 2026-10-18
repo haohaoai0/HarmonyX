@@ -1,3 +1,4 @@
+import { AdaptivePostFeed } from '../components/AdaptivePostFeed';
 import { pageTextColor } from '../utils/ThemeColors';
 import { appPageBackground } from '../components/PageBackgroundLayer';
 import { pageCanvasColor, pageReadingSurfaceColor } from '../utils/ThemeColors';
@@ -148,41 +149,50 @@ struct NotificationPosts {
     } finally { this.requesting = false; this.refreshing = false; }
   }
 
+  @Builder
+  private FeedHeader(): void {
+    if (this.status.length > 0 || this.posts.length === 0) {
+      Column() {
+        Text(this.status.length > 0 ? this.status : $r('app.string.notification_posts_empty'))
+          .fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M'))
+          .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).width('100%').padding(20)
+      }
+    }
+  }
+
+  @Builder
+  private FeedPost(tweet: Tweet): void {
+    TweetCard({ tweet: tweet, videoFeedEnabled: true,
+      onOpen: (post: Tweet, id: string): void => this.openPost(post, id),
+      onAuthorTapped: (post: Tweet): void => this.openAuthor(post),
+      onReply: (post: Tweet): void => this.openPost(post),
+      onVideoOpen: (post: Tweet, media: MediaAttachment): void => this.openVideo(post, media),
+      onLikeChanged: async (post: Tweet, liked: boolean): Promise<boolean> => {
+        return (await xPrivateClient.like(post.id, liked)).ok;
+      },
+      onRepostChanged: async (post: Tweet, reposted: boolean): Promise<boolean> => {
+        return (await xPrivateClient.repost(post.id, reposted)).ok;
+      }
+    })
+  }
+
+  @Builder
+  private FeedFooter(): void {
+    if (this.cursor.length > 0) {
+      Column() { Button($r('app.string.timeline_load_more')).width('100%').enabled(!this.refreshing)
+        .onClick((): void => { void this.refreshPosts(true); }) }
+    }
+  }
+
   build(): void {
     HdsNavDestination() {
       Stack({ alignContent: Alignment.TopStart }) {
         appPageBackground()
       Refresh({ refreshing: $$this.refreshing }) {
-        List({ scroller: this.scroller }) {
-          if (this.status.length > 0 || this.posts.length === 0) {
-            ListItem() {
-              Text(this.status.length > 0 ? this.status : $r('app.string.notification_posts_empty'))
-                .fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M'))
-                .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).width('100%').padding(20)
-            }
-          }
-          ForEach(this.posts, (tweet: Tweet) => {
-            ListItem() {
-              TweetCard({ tweet: tweet, videoFeedEnabled: true,
-                onOpen: (post: Tweet, id: string): void => this.openPost(post, id),
-                onAuthorTapped: (post: Tweet): void => this.openAuthor(post),
-                onReply: (post: Tweet): void => this.openPost(post),
-                onVideoOpen: (post: Tweet, media: MediaAttachment): void => this.openVideo(post, media),
-                onLikeChanged: async (post: Tweet, liked: boolean): Promise<boolean> => {
-                  return (await xPrivateClient.like(post.id, liked)).ok;
-                },
-                onRepostChanged: async (post: Tweet, reposted: boolean): Promise<boolean> => {
-                  return (await xPrivateClient.repost(post.id, reposted)).ok;
-                }
-              })
-            }
-          }, (tweet: Tweet): string => tweet.id)
-          if (this.cursor.length > 0) {
-            ListItem() { Button($r('app.string.timeline_load_more')).width('100%').enabled(!this.refreshing)
-              .onClick((): void => { void this.refreshPosts(true); }) }
-          }
-        }.width('100%').height('100%').scrollBar(BarState.Off)
-          .contentStartOffset(this.statusBarHeight + 56).contentEndOffset(this.bottomInset + 12).clip(false)
+        AdaptivePostFeed({ scroller: this.scroller, itemKeys: this.posts.map((post: Tweet): string => post.id),
+          feedId: 'notification-post-feed', startOffset: this.statusBarHeight + 56, endOffset: this.bottomInset + 12,
+          header: (): void => this.FeedHeader(), item: (index: number): void => this.FeedPost(this.posts[index]),
+          footer: (): void => this.FeedFooter() })
       }.width('100%').height('100%').onRefreshing((): void => {
         void this.refreshPosts();
       })

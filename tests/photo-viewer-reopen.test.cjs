@@ -102,6 +102,7 @@ function zoomHarness(load, proxyEnabled = true) {
   source = source.slice(source.indexOf('struct ZoomablePhoto'));
   source = source.slice(0, source.indexOf('  @Builder')) + '}';
   source = "import { curves } from '@kit.ArkUI';\n" +
+    "import { motionDuration, motionCurve } from '../utils/AppMotion';\n" +
     "import { proxyImageResolver } from '../services/ProxyImageResolver';\n" +
     "import { proxyStore } from '../services/ProxyStore';\n" + source;
   source = source.replace('struct ZoomablePhoto', 'export class ZoomablePhoto')
@@ -109,6 +110,7 @@ function zoomHarness(load, proxyEnabled = true) {
   const timers = new Map(); let timerId = 0;
   const released = [];
   const ZoomablePhoto = evaluate(source, {
+    '../utils/AppMotion': { motionDuration: value => value, motionCurve: () => 0 },
     '@kit.ArkUI': { curves: { springMotion: () => 0 } },
     '../services/ProxyImageResolver': { proxyImageResolver: { loadForViewer: load, release: map => released.push(map) } },
     '../services/ProxyStore': { proxyStore: { snapshot: () => ({ enabled: proxyEnabled }) } }

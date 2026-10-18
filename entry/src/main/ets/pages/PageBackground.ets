@@ -35,7 +35,7 @@ struct PageBackgroundPage {
   @State private picking: boolean = false;
   @State private saving: boolean = false;
   @State private enabledSaving: boolean = false;
-  @State private motifSet: string = 'mobile_brands_systems';
+  @State private motifSet: string = 'popular_apps_cn';
   @State private previewInbox: boolean = false;
   @State private savedPhotos: BackgroundImage[] = [];
   private stagedPath: string = '';
@@ -126,6 +126,8 @@ struct PageBackgroundPage {
   }
   private motifSets(): PageBackgroundMotifSet[] {
     const sets: PageBackgroundMotifSet[] = [
+      { id: 'popular_apps_cn', title: $r('app.string.page_background_set_popular_apps_cn') },
+      { id: 'popular_apps_global', title: $r('app.string.page_background_set_popular_apps_global') },
       { id: 'mobile_brands_systems', title: $r('app.string.page_background_set_mobile_brands_systems') },
       { id: 'ai_assistants', title: $r('app.string.page_background_set_ai_assistants') },
       { id: 'signature_icons', title: $r('app.string.page_background_set_signature_icons') },

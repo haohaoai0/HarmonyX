@@ -1,7 +1,7 @@
 // Post media lives deep inside the page tree, while the full-screen viewer has
 // to be pushed on the root navigation stack. The request travels through
 // AppStorage as JSON so no page in between has to know about it.
-import type { Tweet } from '../models/Tweet';
+import type { MediaAttachment, Tweet } from '../models/Tweet';
 import type { MediaViewerSource } from './MediaViewerMotion';
 
 export const STORAGE_KEY_PHOTO_REQUEST: string = 'harmonyx.photo_request';
@@ -15,9 +15,10 @@ export class PhotoViewerPhoto {
   sourceIndex: number = 0;
   altText: string = '';
   sourceId: string = '';
+  animation: MediaAttachment | null = null;
 
   constructor(previewUrl: string, originalUrl: string, width: number, height: number,
-    sourceIndex: number, altText: string, sourceId: string = '') {
+    sourceIndex: number, altText: string, sourceId: string = '', animation: MediaAttachment | null = null) {
     this.previewUrl = previewUrl;
     this.originalUrl = originalUrl;
     this.width = width;
@@ -25,6 +26,13 @@ export class PhotoViewerPhoto {
     this.sourceIndex = sourceIndex;
     this.altText = altText;
     this.sourceId = sourceId;
+    this.animation = animation;
+    const lower: string = originalUrl.toLowerCase();
+    if (animation === null && (lower.split('?')[0].split('#')[0].endsWith('.gif') || lower.indexOf('format=gif') >= 0)) {
+      this.animation = { id: sourceId.length > 0 ? sourceId : 'gif-' + sourceIndex.toString(),
+        type: 'animated_gif', mediaUrl: originalUrl, feedUrl: '', previewUrl: previewUrl,
+        width: width, height: height, altText: altText };
+    }
   }
 }
 

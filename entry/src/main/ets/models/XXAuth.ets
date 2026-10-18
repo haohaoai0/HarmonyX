@@ -62,6 +62,17 @@ export interface XXAuthPopupConfig {
   // Bumping this makes every reader's "hide for 7 days" expire immediately,
   // without touching the copy.
   post_revision?: number;
+  post_dismissible?: boolean;
+  popup_force?: boolean;
+  popup_dismissible?: boolean;
+  popup_delay_seconds?: number;
+  popup_interval_hours?: number;
+  popup_daily_limit?: number;
+  popup_total_limit?: number;
+  popup_session_limit?: number;
+  popup_start_at?: string;
+  popup_end_at?: string;
+  popup_revision?: number;
 }
 
 export interface XXAuthVariable {

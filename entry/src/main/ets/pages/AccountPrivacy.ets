@@ -27,6 +27,7 @@ import { USER_LIST_BLOCKED, USER_LIST_MUTED, UserListRouteParam } from './UserLi
 import { ProfileWebRouteParam } from './ProfileWeb';
 import { DmSettingsRouteParam } from './DmSettings';
 import { SettingsRouteParam } from './Settings';
+import { NavigationGuard } from '../utils/NavigationGuard';
 
 @Builder
 export function AccountPrivacyBuilder(): void { AccountPrivacyPage(); }
@@ -234,7 +235,8 @@ struct AccountPrivacyPage {
       this.pageStack.pushPath({ name: 'DmSettings', param: param });
     } else if (item.action === 'local_links') {
       const param: SettingsRouteParam = { section: 'link_behavior' };
-      this.pageStack.pushPath({ name: 'SettingsSection', param: param });
+      NavigationGuard.pushPath<SettingsRouteParam>(this.pageStack, { name: 'SettingsSection', param: param },
+        (route: SettingsRouteParam): string => route.section);
     } else if (item.action === 'clear') {
       this.mutate(async (generation: number): Promise<AccountPrivacySnapshot> => {
         await accountPrivacyService.clearData(item.target, generation);

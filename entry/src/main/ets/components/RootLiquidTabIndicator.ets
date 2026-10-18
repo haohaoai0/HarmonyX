@@ -5,7 +5,8 @@ import { curves } from '@kit.ArkUI';
 import { HdsTabs, hdsEffect, hdsMaterial } from '@kit.UIDesignKit';
 import { LiquidTabTarget, RootLiquidTabGeometry } from '../utils/RootLiquidTabGeometry';
 import { RootBottomTabItem } from './RootBottomTabItem';
-import { DEFAULT_COMPONENT_HDR_RATIO, STORAGE_KEY_COMPONENT_HDR_RATIO } from '../services/ComponentHdrSettingsStore';
+import { DEFAULT_COMPONENT_HDR_ENABLED, DEFAULT_COMPONENT_HDR_RATIO, STORAGE_KEY_COMPONENT_HDR_ENABLED,
+  STORAGE_KEY_COMPONENT_HDR_RATIO } from '../services/ComponentHdrSettingsStore';
 import { ComponentHdrHighlight } from '../utils/ComponentHdrHighlight';
 
 // Mark's floating liquid capsule, anchored to the actual native tab items.
@@ -22,6 +23,7 @@ export struct RootLiquidTabIndicator {
   @Prop unreadMessages: number = 0;
   @StorageProp('harmonyx.accent_theme') private accentTheme: string = '';
   @StorageProp('harmonyx.accent_color') private accentColor: string = '#1D9BF0';
+  @StorageProp(STORAGE_KEY_COMPONENT_HDR_ENABLED) private componentHdrEnabled: boolean = DEFAULT_COMPONENT_HDR_ENABLED;
   @StorageProp(STORAGE_KEY_COMPONENT_HDR_RATIO) private componentHdrRatio: number = DEFAULT_COMPONENT_HDR_RATIO;
   onSelect: (visibleIndex: number) => void = (_index: number): void => {};
   onSelectedClick: (visibleIndex: number) => void = (_index: number): void => {};
@@ -350,7 +352,7 @@ export struct RootLiquidTabIndicator {
           .scale({ x: this.scaleX, y: this.scaleY })
           // Boost the material capsule itself. The foreground is a sibling
           // with its own filter, so neither layer receives the ratio twice.
-          .compositingFilter(ComponentHdrHighlight.filter(this.getUIContext(), true, this.componentHdrRatio))
+          .compositingFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.componentHdrEnabled, this.componentHdrRatio))
           .visualEffect(new hdsEffect.HdsEffectBuilder().pointLight({
             sourceType: this.dragging ? hdsEffect.PointLightSourceType.BRIGHT : hdsEffect.PointLightSourceType.NONE,
             illuminatedType: hdsEffect.PointLightIlluminatedType.BORDER

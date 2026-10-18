@@ -3,6 +3,17 @@ const test = require('node:test');
 const { loadGifPreview } = require('./gif-preview-fixture.cjs');
 const flush = () => new Promise(resolve => setImmediate(resolve));
 
+test('local chat and composer GIFs bypass proxy downloading and keep their animated file URI', async () => {
+  let downloads = 0;
+  const { component } = loadGifPreview({ proxyEnabled: true, loadPreview: async () => null,
+    downloadGif: async () => { downloads++; return false; } });
+  component.url = 'file:///private/animation.gif';
+  component.aboutToAppear();
+  await flush();
+  assert.equal(component.source, component.url);
+  assert.equal(downloads, 0);
+});
+
 test('an unavailable post animation still loads its thumbnail through HTTP without an app proxy', async () => {
   const thumbnail = { id: 'thumbnail' };
   const calls = [];

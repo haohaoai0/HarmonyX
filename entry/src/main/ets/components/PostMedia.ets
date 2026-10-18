@@ -1442,12 +1442,12 @@ export struct SurfaceVideoPlayer {
 
   private displayHeight(): number {
     if (this.mediaViewerLayout && this.isWindowLandscape()) { return this.windowHeight; }
+    if (this.fillVideoViewport) {
+      return this.videoViewportHeight > 0 ? this.videoViewportHeight : MEDIA_HEIGHT;
+    }
     if (this.isAnimatedGif()) {
       return postGifHeight(this.videoSourceWidth(), this.videoSourceHeight(),
         this.availableDisplayWidth(), this.windowHeight);
-    }
-    if (this.fillVideoViewport) {
-      return this.videoViewportHeight > 0 ? this.videoViewportHeight : MEDIA_HEIGHT;
     }
     if (this.immersiveVideo && this.windowHeight > 0) {
       return this.windowHeight;
@@ -5920,7 +5920,7 @@ export struct PostMedia {
     this.activeIds = retained;
   }
 
-  // Photos of this post, in payload order, which is the order the full-screen
+  // Photos and animations in payload order, which is the order the full-screen
   // viewer swipes through.
   private viewerPhotoMedia(): MediaAttachment[] {
     return this.photoViewerAttachments.length > 0 ? this.photoViewerAttachments : this.attachments;
@@ -5931,18 +5931,28 @@ export struct PostMedia {
     const attachments: MediaAttachment[] = this.viewerPhotoMedia();
     for (let i: number = 0; i < attachments.length; i++) {
       const media: MediaAttachment = attachments[i];
-      if (isVideoLike(media) || this.isMediaHidden(media)) {
+      if (isVideoLike(media) && !isAnimatedGif(media) || this.isMediaHidden(media)) {
         continue;
       }
       const previewSource: string = media.previewUrl.length > 0 ? media.previewUrl : media.mediaUrl;
-      const originalSource: string = media.mediaUrl.length > 0 ? media.mediaUrl : previewSource;
-      if (previewSource.length > 0) {
-        const previewUrl: string = imageUrlForQuality(previewSource, this.imageQuality);
-        const originalUrl: string = imageUrlForQuality(originalSource, IMAGE_QUALITY_ORIGINAL);
+      const animation: boolean = isAnimatedGif(media) || this.isGifFileUrl(media.mediaUrl);
+      const animationUrl: string = animation ? this.gifActionUrl(media) : '';
+      const originalSource: string = animation ? animationUrl :
+        media.mediaUrl.length > 0 ? media.mediaUrl : previewSource;
+      if (previewSource.length > 0 || originalSource.length > 0) {
+        const previewUrl: string = imageUrlForQuality(previewSource.length > 0 ? previewSource : originalSource,
+          this.imageQuality);
+        const originalUrl: string = animation ? originalSource :
+          imageUrlForQuality(originalSource, IMAGE_QUALITY_ORIGINAL);
+        const animatedMedia: MediaAttachment | null = animation ? {
+          id: media.id, type: 'animated_gif', mediaUrl: animationUrl, feedUrl: media.feedUrl,
+          previewUrl: media.previewUrl, width: media.width, height: media.height, altText: media.altText,
+          durationMs: media.durationMs, videoVariants: media.videoVariants, videoVariantUrls: media.videoVariantUrls
+        } : null;
         const node = mediaPhotoNodeFor(this.mediaSourceId(media));
         items.push(new PhotoViewerPhoto(previewUrl, originalUrl, media.width > 0 ? media.width : node?.width ?? 0,
           media.height > 0 ? media.height : node?.height ?? 0,
-          i, media.altText, this.mediaSourceId(media)));
+          i, media.altText, this.mediaSourceId(media), animatedMedia));
       }
     }
     return items;
@@ -6041,6 +6051,8 @@ export struct PostMedia {
       this.onPhotoViewerReturn(sourceIndex);
       return;
     }
+    // GIFs are independent cells, not members of a horizontally scrolling photo strip.
+    if (!this.isUsablePhoto(this.attachments[sourceIndex])) { return; }
     let runStart: number = sourceIndex;
     while (runStart > 0 && this.isUsablePhoto(this.attachments[runStart - 1])) {
       runStart -= 1;
@@ -6070,31 +6082,24 @@ export struct PostMedia {
   }
 
   private photoIndex(media: MediaAttachment): number {
-    let photoIndex: number = 0;
+    const items: PhotoViewerPhoto[] = this.photoItems();
     const attachments: MediaAttachment[] = this.viewerPhotoMedia();
-    for (let i: number = 0; i < attachments.length; i++) {
-      const candidate: MediaAttachment = attachments[i];
-      if (isVideoLike(candidate) || this.isMediaHidden(candidate)) {
-        continue;
+    for (let i: number = 0; i < items.length; i++) {
+      if (attachments[items[i].sourceIndex]?.id === media.id) {
+        return i;
       }
-      const url: string = candidate.mediaUrl.length > 0 ? candidate.mediaUrl : candidate.previewUrl;
-      if (url.length === 0) {
-        continue;
-      }
-      if (candidate.id === media.id) {
-        return photoIndex;
-      }
-      photoIndex += 1;
     }
     return -1;
   }
 
   private openPhoto(media: MediaAttachment): void {
     const items: PhotoViewerPhoto[] = this.photoItems();
+    const index: number = this.photoIndex(media);
+    hilog.info(DOMAIN, TAG, 'photo viewer requested id=%{public}s kind=%{public}s count=%{public}d index=%{public}d',
+      media.id, media.type, items.length, index);
     if (items.length === 0) {
       return;
     }
-    const index: number = this.photoIndex(media);
     if (index < 0) {
       return;
     }
@@ -6372,6 +6377,7 @@ export struct PostMedia {
         })
           .borderRadius(14)
           .clip(true)
+          .hitTestBehavior(HitTestMode.None)
       } else if (this.showsPlayer(media)) {
         // MP4 is only the decoder input: the GIF surface has no video controls,
         // player handoff, resume time, captions, audio or PiP interaction.
@@ -6385,6 +6391,7 @@ export struct PostMedia {
           naturalVideoSize: true,
           manualStart: this.isManualStart(media.id)
         })
+          .hitTestBehavior(HitTestMode.None)
       } else {
         MediaCover({
           media: media,
@@ -6393,11 +6400,22 @@ export struct PostMedia {
           mediaHeight: this.videoDisplayHeight(media),
           videoContain: false,
           minimalVideoControls: true,
-          wants: this.wantsCover(media),
-          onLongPress: (): void => this.showGifActionMenu(media),
-          onTap: (): void => { this.activate(media, true); }
+          wants: this.wantsCover(media)
         })
+          .hitTestBehavior(HitTestMode.None)
       }
+      // A native target owns the entire animation rectangle. The decoder's
+      // XComponent and its preview cannot consume the post's open gesture.
+      Button({ type: ButtonType.Normal, stateEffect: false }) {
+        Column().width('100%').height('100%')
+      }
+        .width('100%').height('100%').backgroundColor(Color.Transparent)
+        .id('post-gif-open-' + media.id)
+        .accessibilityText($r('app.string.post_gif_label'))
+        .monopolizeEvents(true)
+        .onClick((): void => this.openPhoto(media))
+        .gesture(LongPressGesture({ fingers: 1, repeat: false, duration: 500 })
+          .onAction((): void => this.showGifActionMenu(media)))
       Text($r('app.string.post_gif_label')).fontFamily(this.appFontFamily)
         .fontSize(11)
         .fontWeight(FontWeight.Bold)
@@ -6409,6 +6427,8 @@ export struct PostMedia {
         .hitTestBehavior(HitTestMode.None)
     }
     .width('100%')
+    .height(this.videoDisplayHeight(media))
+    .id(this.mediaSourceId(media))
     .onAreaChange((_oldValue: Area, newValue: Area): void => {
       const width: number = Number(newValue.width);
       if (width > 0 && Math.abs(width - this.videoContainerWidth) > 1) {
@@ -6429,10 +6449,6 @@ export struct PostMedia {
           this.deactivate(media);
         }
       })
-    .parallelGesture(
-      LongPressGesture({ fingers: 1, repeat: false, duration: 500 })
-        .onAction((): void => { this.showGifActionMenu(media); })
-    )
     .bindContextMenu(this.gifActionMenuMediaId === media.id, this.GifActionMenu(media), {
       preview: MenuPreviewMode.IMAGE,
       borderRadius: 16,

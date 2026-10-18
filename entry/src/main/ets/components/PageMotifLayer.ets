@@ -7,6 +7,9 @@ export struct PageMotifLayer {
   @Prop density: number = 50;
   @Prop strength: number = 0.3;
   @Prop ink: number = -1;
+  @Prop fixedWidth: number = 0;
+  @Prop fixedHeight: number = 0;
+  @Prop syncImages: boolean = false;
   @State private viewportWidth: number = 360;
   @State private viewportHeight: number = 640;
 
@@ -14,7 +17,8 @@ export struct PageMotifLayer {
     return PAGE_BACKGROUND_MOTIFS.filter((motif: PageBackgroundMotif): boolean => this.motifIds.indexOf(motif.id) >= 0);
   }
   private tiles(): PageMotifTile[] {
-    return pageMotifTiles(this.viewportWidth, this.viewportHeight, this.density, this.motifs().length);
+    return pageMotifTiles(this.fixedWidth > 0 ? this.fixedWidth : this.viewportWidth,
+      this.fixedHeight > 0 ? this.fixedHeight : this.viewportHeight, this.density, this.motifs().length);
   }
   private imageFor(tile: PageMotifTile): Resource | undefined {
     const motifs: PageBackgroundMotif[] = this.motifs();
@@ -33,13 +37,15 @@ export struct PageMotifLayer {
       ForEach(this.tiles(), (tile: PageMotifTile) => {
         Image(this.imageFor(tile)).width($r('app.float.page_background_motif_size'))
           .height($r('app.float.page_background_motif_size')).objectFit(ImageFit.Contain).draggable(false)
-          .colorFilter(this.filter()).rotate({ angle: tile.rotation }).position({ x: tile.x, y: tile.y })
+          .colorFilter(this.filter()).rotate({ angle: tile.rotation }).position({ x: tile.x, y: tile.y }).syncLoad(this.syncImages)
       }, (tile: PageMotifTile): string => this.keyFor(tile))
     }.width('100%').height('100%').clip(true).opacity(this.strength * 0.5)
       .renderGroup(true).hitTestBehavior(HitTestMode.None)
       .onAreaChange((_old: Area, area: Area): void => {
         const width: number = Number(area.width); const height: number = Number(area.height);
-        if (width > 0 && height > 0) { this.viewportWidth = width; this.viewportHeight = height; }
+        if (this.fixedWidth <= 0 && this.fixedHeight <= 0 && width > 0 && height > 0) {
+          this.viewportWidth = width; this.viewportHeight = height;
+        }
       })
   }
 }

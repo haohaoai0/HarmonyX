@@ -4,6 +4,7 @@ import { videoHdrCapability } from '../services/VideoHdrEnhancement';
 import { STORAGE_KEY_VIDEO_HDR_ENHANCEMENT } from '../services/MediaSettingsStore';
 import { STORAGE_KEY_VIDEO_CAPTIONS_ENABLED, STORAGE_KEY_VIDEO_AUTO_ADVANCE } from '../services/MediaSettingsStore';
 import { pageBackgroundStore } from '../services/PageBackgroundStore';
+import { pageBackgroundTextureCache } from '../services/PageBackgroundTextureCache';
 import { huaweiAccountService } from '../services/HuaweiAccountService';
 import { huaweiCloudSyncService } from '../services/HuaweiCloudSyncService';
 import { antiPeepProtection } from '../services/AntiPeepProtection';
@@ -377,6 +378,7 @@ export default class EntryAbility extends UIAbility {
   }
 
   onDestroy(): void {
+    pageBackgroundTextureCache.clear();
     hilog.info(DOMAIN, TAG, '%{public}s', 'Ability onDestroy');
     huaweiCloudSyncService.dispose();
     huaweiAccountService.dispose();

@@ -7,6 +7,7 @@ import { XXAuthAnnouncement, XXAuthArticle, XXAuthBanner, XXAuthPanel, XXAuthPop
   XXAuthResult, XXAuthVariable, XXAuthVersion, XXAuthVersionCheck } from '../models/XXAuth';
 import { xxAuthService } from '../services/XXAuthService';
 import { XXAuthPopupPolicy } from '../services/XXAuthPopupPolicy';
+import { XXAuthPopupSchedule } from '../services/XXAuthPopupSchedule';
 import { SUPPORTER_ACTIVE_KEY, xxAuthSupporterService } from '../services/XXAuthSupporterService';
 import { XXAuthSupporterPolicy } from '../services/XXAuthSupporterPolicy';
 import { isRecommendationStoreUrl, parseRecommendationConfig, parseRecommendationDescription,
@@ -68,6 +69,7 @@ export struct XXAuthPopupHost {
   private preparing: boolean = false;
   private assets: XXAuthRecommendationAssets | null = null;
   private currentConfig: XXAuthPopupConfig = {};
+  private readySince: number = 0;
 
   private recommendationAssets(): XXAuthRecommendationAssets {
     if (this.assets === null) { this.assets = new XXAuthRecommendationAssets(this.context()); }
@@ -110,6 +112,10 @@ export struct XXAuthPopupHost {
   }
 
   private onBlockedChanged(): void {
+    if (this.blocked) {
+      this.readySince = 0;
+      if (this.timer >= 0) { clearTimeout(this.timer); this.timer = -1; }
+    }
     if (this.blocked && this.manualMode.length === 0 && this.visible && !this.panel.forced) {
       this.visible = false;
     } else { this.scheduleNext(); }
@@ -119,14 +125,14 @@ export struct XXAuthPopupHost {
     if (this.supporterActive) {
       this.pending = this.pending.filter((item: XXAuthPanel): boolean => !XXAuthSupporterPolicy.promotional(item.kind));
       AppStorage.setOrCreate<string>(XXAUTH_PROMOTION_POST, '');
-      if (this.visible && XXAuthSupporterPolicy.promotional(this.panel.kind)) { this.dismiss(); }
+      if (this.visible && XXAuthSupporterPolicy.promotional(this.panel.kind)) { this.visible = false; }
     } else { this.refresh(); }
   }
 
   // The timeline post is owned by this host so the feed never fetches the same
   // configuration twice; consumers watch the published JSON.
   private publishPromotionPost(items: XXAuthAnnouncement[], config: XXAuthPopupConfig): void {
-    if (xxAuthPopupStore.promotionSessionHidden()) {
+    if (config.post_dismissible !== false && xxAuthPopupStore.promotionSessionHidden()) {
       AppStorage.setOrCreate<string>(XXAUTH_PROMOTION_POST, '');
       return;
     }
@@ -134,7 +140,7 @@ export struct XXAuthPopupHost {
       new XXAuthPromotionPlan() : XXAuthPromotionPostPolicy.plan(items, config);
     if (plan.posts.length === 0) { plan.timelineCount = 0; plan.commentCount = 0; }
     const value: string = plan.timelineCount === 0 && plan.commentCount === 0 ? '' : JSON.stringify(plan);
-    const hidden: boolean = value.length > 0 &&
+    const hidden: boolean = plan.dismissible && value.length > 0 &&
       xxAuthPopupStore.promotionHiddenUntil(this.context(), value) > Date.now();
     const published: string = hidden ? '' : value;
     if ((AppStorage.get<string>(XXAUTH_PROMOTION_POST) ?? '') !== published) {
@@ -179,6 +185,12 @@ export struct XXAuthPopupHost {
       // One backend variable per switch; anything absent keeps the JSON value.
       if (variables.ok && variables.data instanceof Array) {
         XXAuthPopupPolicy.applyVariables(config, variables.data);
+      } else {
+        // The batch owns the master switch, post lock and popup budgets. A
+        // successful legacy JSON request alone cannot safely replace them.
+        config.promotion_enabled = false;
+        config.recommendation_enabled = false;
+        config.post_enabled = false;
       }
       // Authentication-gated variables may be unused by a free app. Transport,
       // malformed-body and server failures must never re-enable promotional UI.
@@ -186,6 +198,10 @@ export struct XXAuthPopupHost {
         !((variables.status === 401 || variables.status === 403 || variables.status === 404) &&
         (configResult.status === 401 || configResult.status === 403 || configResult.status === 404))) {
         config.enabled = false;
+      }
+      if (this.timer >= 0 && config.popup_delay_seconds !== this.currentConfig.popup_delay_seconds) {
+        clearTimeout(this.timer);
+        this.timer = -1;
       }
       this.currentConfig = config;
       const panels: XXAuthPanel[] = XXAuthPopupPolicy.startup(
@@ -216,31 +232,40 @@ export struct XXAuthPopupHost {
       if (this.manualMode.length === 0 && this.visible) {
         const current: XXAuthPanel | undefined = panels.find((item: XXAuthPanel): boolean =>
           item.kind === this.panel.kind && item.fingerprint === this.panel.fingerprint);
-        if (current === undefined && (!this.panel.forced || check.ok)) { this.visible = false; }
+        if (current === undefined && (this.panel.kind !== 'update' || !this.panel.forced || check.ok)) { this.visible = false; }
         else if (current !== undefined) { this.panel = current; }
       }
       this.scheduleNext();
     } catch (error) {
       if (this.alive) {
         this.pending = [];
-        if (this.manualMode.length === 0 && !this.panel.forced) { this.visible = false; }
+        if (this.manualMode.length === 0 && (this.panel.kind !== 'update' || !this.panel.forced)) { this.visible = false; }
       }
     } finally { this.refreshing = false; }
   }
 
   private scheduleNext(): void {
     if (!this.alive || this.visible || this.blocked || this.timer >= 0 || this.manualMode.length > 0) { return; }
+    if (!this.appForeground) { return; }
+    if (this.readySince === 0) { this.readySince = Date.now(); }
+    const hasOther: boolean = this.pending.some((item: XXAuthPanel): boolean =>
+      item.kind !== 'recommendation' && this.shown.indexOf(item.kind + ':' + item.fingerprint) < 0 &&
+      xxAuthPopupStore.shouldShow(this.context(), item, Date.now()));
+    const wait: number = hasOther ? 400 : Math.max(400,
+      this.readySince + XXAuthPopupSchedule.delay(this.currentConfig) - Date.now());
     this.timer = setTimeout((): void => {
       this.timer = -1;
       if (!this.alive || this.visible || this.blocked || !this.appForeground || this.manualMode.length > 0) { return; }
       for (let i: number = 0; i < this.pending.length; i++) {
         const item: XXAuthPanel = this.pending[i];
         const key: string = item.kind + ':' + item.fingerprint;
-        if (this.shown.indexOf(key) >= 0 || !xxAuthPopupStore.shouldShow(this.context(), item, Date.now())) { continue; }
+        const scheduled: boolean = item.kind === 'recommendation' && XXAuthPopupSchedule.configured(this.currentConfig);
+        if ((!scheduled && this.shown.indexOf(key) >= 0) ||
+          !xxAuthPopupStore.shouldShow(this.context(), item, Date.now(), this.currentConfig, this.readySince)) { continue; }
         this.present(item);
         return;
       }
-    }, 400);
+    }, wait);
   }
 
   private async present(item: XXAuthPanel): Promise<void> {
@@ -253,6 +278,9 @@ export struct XXAuthPopupHost {
       if (!this.alive || this.visible || this.blocked || !this.appForeground || this.manualMode.length > 0 ||
         (xxAuthSupporterService.active() && XXAuthSupporterPolicy.promotional(item.kind)) ||
         !this.pending.some((candidate: XXAuthPanel): boolean => candidate.fingerprint === item.fingerprint)) { return; }
+      if (!xxAuthPopupStore.shouldShow(this.context(), item, Date.now(), this.currentConfig, this.readySince)) { return; }
+      if (item.kind === 'recommendation' &&
+        !xxAuthPopupStore.markRecommendationShown(this.context(), this.currentConfig, Date.now())) { return; }
       this.panel = item;
       this.iconUri = icon;
       this.descriptionSegments = parseRecommendationDescription(item.content);
@@ -355,6 +383,7 @@ export struct XXAuthPopupHost {
   }
 
   private async confirmSnooze(): Promise<void> {
+    if (this.panel.forced || this.panel.reminderForced) { return; }
     if (this.snoozeLoading || this.opening) { return; }
     if (!this.panel.structuredRecommendation ||
       (this.panel.recommendationAppId.length > 0 && this.panel.snoozeMessage.length === 0) ||
@@ -430,7 +459,10 @@ export struct XXAuthPopupHost {
         (this.panel.kind === 'recommendation' && xxAuthSupporterService.active())) { return; }
       await this.context().startAbility({ action: 'ohos.want.action.viewData',
         entities: ['entity.system.browsable'], uri: url });
-      if (!this.panel.forced) { this.dismiss(); }
+      if (this.panel.kind === 'recommendation' && this.panel.forced) {
+        this.visible = false;
+        this.scheduleNext();
+      } else if (!this.panel.forced) { this.dismiss(); }
     } catch (error) { this.linkFailed = true; }
     finally { this.opening = false; }
   }
@@ -565,7 +597,7 @@ export struct XXAuthPopupHost {
         }.width('100%').alignItems(HorizontalAlign.Start)
       }.layoutWeight(1).width('100%').scrollBar(BarState.Off).align(Alignment.Top)
       Row({ space: 12 }) {
-        if (this.panel.kind === 'recommendation') {
+        if (this.panel.kind === 'recommendation' && !this.panel.forced && !this.panel.reminderForced) {
           Button($r('app.string.xxauth_snooze')).layoutWeight(1)
             .height(46).fontSize(15).borderRadius(23)
             .fontColor($r('app.color.text_primary'))

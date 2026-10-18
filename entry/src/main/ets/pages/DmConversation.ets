@@ -33,6 +33,7 @@ import { ChatPendingMediaAlbum } from '../components/ChatPendingMediaAlbum';
 import { ChatMediaSend, ChatMediaOutbox, chatMediaOutbox } from '../services/ChatMediaOutbox';
 import { chatMessageRenderKey } from '../utils/ChatMessageRenderKey';
 import { ChatVideoViewerRouteParam } from './ChatVideoViewer';
+import type { PhotoViewerRouteParam } from './PhotoViewer';
 import { pendingMediaViewerSource } from '../utils/MediaViewerMotion';
 import { setChatWindowPrivacy } from '../utils/ChatWindowPrivacy';
 import { ChatMovingPhotoCard } from '../components/ChatMovingPhotoCard';
@@ -1258,6 +1259,13 @@ export struct DmConversationPage {
     } else { openPostCardUrl(getContext(this) as common.UIAbilityContext, link); }
   }
 
+  private openPickedGif(uri: string): void {
+    if (!this.active || !xChatService.isUnlocked()) { return; }
+    const param: PhotoViewerRouteParam = { urls: [uri], index: 0, alt: '', transitionPrefix: '',
+      screenBlocked: xChatService.conversationInfo(this.conversationId).screenBlocked };
+    this.pageStack.pushPath({ name: 'PhotoViewer', param: param });
+  }
+
   private openChatVideo(media: MediaAttachment): void {
     if (!this.active || !xChatService.isUnlocked()) { return; }
     const param: ChatVideoViewerRouteParam = { media: media,
@@ -1269,7 +1277,7 @@ export struct DmConversationPage {
   @Builder
   private PendingMedia(send: ChatMediaSend | undefined): void {
     if (send !== undefined) {
-      ChatPendingMediaAlbum({ files: send.files, sendId: send.id })
+      ChatPendingMediaAlbum({ files: send.files, sendId: send.id, conversationId: this.conversationId })
     }
   }
 
@@ -1653,6 +1661,7 @@ export struct DmConversationPage {
               } else {
                 Image(file.uri).width(this.selectedMediaSize()).height(this.selectedMediaSize()).objectFit(ImageFit.Cover).borderRadius(12).clip(true)
                   .accessibilityText(file.type === 2 ? 'GIF' : this.text($r('app.string.chat_photos')))
+                  .onClick((): void => { if (file.type === 2) { this.openPickedGif(file.uri); } })
               }
               this.RemoveAttachmentButton(file)
             }.width(this.selectedMediaSize()).height(this.selectedMediaSize())

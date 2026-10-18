@@ -288,14 +288,19 @@ export interface SettingsRouteParam {
   section: string;
 }
 
+export function settingsSectionForRoute(param: SettingsRouteParam | undefined | null): string {
+  const section: string = param?.section === 'meow' ? 'notifications' : (param?.section ?? '');
+  return section === 'link_behavior' || settingsCategory(section) !== undefined ? section : '';
+}
+
 @Builder
 export function SettingsBuilder(): void {
   SettingsHome();
 }
 
 @Builder
-export function SettingsSectionBuilder(): void {
-  SettingsSection();
+export function SettingsSectionBuilder(param: SettingsRouteParam | undefined | null): void {
+  SettingsSection({ section: settingsSectionForRoute(param) });
 }
 
 @Component
@@ -389,29 +394,35 @@ export struct SettingsHome {
   }
 
   private openCategory(category: SettingsCategory): void {
-    if (this.embedded) { this.pageStack.clear(false); }
+    const info: NavPathInfo = { name: category.destination.length > 0 ? category.destination : 'SettingsSection' };
+    let matches: (param: Object) => boolean = (_param: Object): boolean => false;
     if (category.destination === 'AccountPrivacy') {
       AppStorage.setOrCreate<string>('harmonyx.desktop_settings_section', category.id);
       const param: AccountPrivacyRouteParam = { section: category.id };
-      NavigationGuard.pushPath<AccountPrivacyRouteParam>(this.pageStack, { name: category.destination, param: param },
-        (route: AccountPrivacyRouteParam): string => route.section);
+      info.param = param;
+      matches = (value: Object): boolean => (value as AccountPrivacyRouteParam).section === category.id;
     } else if (category.destination === 'UserList') {
       const param: UserListRouteParam = { mode: USER_LIST_BLOCKED, userId: '' };
-      this.pageStack.pushPath({ name: category.destination, param: param });
+      info.param = param;
+      matches = (value: Object): boolean => (value as UserListRouteParam).mode === USER_LIST_BLOCKED &&
+        (value as UserListRouteParam).userId === '';
     } else if (category.destination === 'Lists') {
       const param: ListsRouteParam = { userId: '', memberships: false, title: '' };
-      this.pageStack.pushPath({ name: category.destination, param: param });
+      info.param = param;
+      matches = (value: Object): boolean => (value as ListsRouteParam).userId === '' &&
+        !(value as ListsRouteParam).memberships;
     } else if (category.destination === 'DmSettings') {
       const param: DmSettingsRouteParam = { section: '' };
-      this.pageStack.pushPath({ name: category.destination, param: param });
-    } else if (category.destination.length > 0) {
-      this.pageStack.pushPath({ name: category.destination });
-    } else {
+      info.param = param;
+      matches = (value: Object): boolean => ((value as DmSettingsRouteParam).section ?? '') === '';
+    } else if (category.destination.length === 0) {
       AppStorage.setOrCreate<string>('harmonyx.desktop_settings_section', category.id);
       const param: SettingsRouteParam = { section: category.id };
-      NavigationGuard.pushPath<SettingsRouteParam>(this.pageStack, { name: 'SettingsSection', param: param },
-        (route: SettingsRouteParam): string => route.section);
+      info.param = param;
+      matches = (value: Object): boolean => settingsSectionForRoute(value as SettingsRouteParam) === category.id;
     }
+    if (this.embedded) { NavigationGuard.selectRootPathMatching(this.pageStack, info, matches); }
+    else { NavigationGuard.pushPathMatching(this.pageStack, info, matches); }
   }
 
   private text(resource: Resource): string {
@@ -553,7 +564,7 @@ export struct SettingsSection {
     AppStorage.get<number>('harmonyx.status_bar_height') ?? 0;
   @StorageProp('harmonyx.navigation_indicator_height') navigationIndicatorHeight: number =
     AppStorage.get<number>('harmonyx.navigation_indicator_height') ?? 0;
-  @State section: string = 'accessibility';
+  @Prop section: string = '';
   @StorageProp(STORAGE_KEY_ANTI_PEEP_ENABLED) private antiPeepEnabled: boolean = false;
   @StorageProp(STORAGE_KEY_ANTI_PEEP_STATE) private antiPeepState: string = AntiPeepState.DISABLED;
   @State private antiPeepBusy: boolean = false;
@@ -1604,11 +1615,12 @@ export struct SettingsSection {
     const category: SettingsCategory | undefined = settingsCategory(section);
     if (category?.destination === 'DmSettings') {
       const param: DmSettingsRouteParam = { section: '' };
-      this.pageStack.pushPath({ name: category.destination, param: param });
+      NavigationGuard.pushPath<DmSettingsRouteParam>(this.pageStack, { name: category.destination, param: param },
+        (route: DmSettingsRouteParam): string => route.section ?? '');
       return;
     }
     if (category !== undefined && category.destination.length > 0) {
-      this.pageStack.pushPath({ name: category.destination });
+      NavigationGuard.pushPathMatching(this.pageStack, { name: category.destination }, (_param: Object): boolean => false);
       return;
     }
     AppStorage.setOrCreate<string>('harmonyx.desktop_settings_section', section);
@@ -4596,7 +4608,9 @@ export struct SettingsSection {
         appPageBackground()
       Scroll(this.scroller) {
         Column({ space: 0 }) {
-          if (this.children().length > 0) {
+          if (this.section.length === 0) {
+            Blank()
+          } else if (this.children().length > 0) {
             this.CategoryContent()
           } else if (this.section === 'anti_peep') {
             this.AntiPeepContent()
@@ -4681,10 +4695,7 @@ export struct SettingsSection {
     .onReady((context: NavDestinationContext): void => {
       this.pageMotion.attach(context);
       const param: SettingsRouteParam = context.pathInfo.param as SettingsRouteParam;
-      if (param !== undefined && param !== null) {
-        // Previously remembered desktop destinations return to notifications while this entry is hidden.
-        this.section = param.section === 'meow' ? 'notifications' : param.section;
-      }
+      this.section = settingsSectionForRoute(param);
     })
     .titleMode(HdsNavDestinationTitleMode.MINI)
     .hideBackButton(false)
@@ -4695,7 +4706,7 @@ export struct SettingsSection {
     .bindToScrollable([this.scroller])
     .titleBar({
       avoidLayoutSafeArea: true,
-      content: { title: { mainTitle: this.title() } },
+      content: { title: { mainTitle: this.section.length > 0 ? this.title() : '' } },
       enableComponentSafeArea: this.desktopLayoutEnabled && ResponsiveLayout.isLarge(this.breakpoint),
       style: destinationTitleBarStyle(ScrollEffectType.GRADIENT_BLUR, this.displayMode, this.darkSurface,
         this.titleBarStyleMode)

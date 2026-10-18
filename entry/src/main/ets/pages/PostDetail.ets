@@ -1,4 +1,6 @@
-import { DEFAULT_COMPONENT_HDR_RATIO, STORAGE_KEY_COMPONENT_HDR_RATIO } from '../services/ComponentHdrSettingsStore';
+import { AdaptivePostGrid } from '../components/AdaptivePostGrid';
+import { DEFAULT_COMPONENT_HDR_ENABLED, DEFAULT_COMPONENT_HDR_RATIO, STORAGE_KEY_COMPONENT_HDR_ENABLED,
+  STORAGE_KEY_COMPONENT_HDR_RATIO } from '../services/ComponentHdrSettingsStore';
 import { ComponentHdrHighlight } from '../utils/ComponentHdrHighlight';
 import { pageTextColor } from '../utils/ThemeColors';
 import { appPageBackground } from '../components/PageBackgroundLayer';
@@ -138,6 +140,7 @@ export function PostDetailBuilder(): void {
 
 @Component
 export struct PostDetail {
+  @StorageProp(STORAGE_KEY_COMPONENT_HDR_ENABLED) private componentHdrEnabled: boolean = DEFAULT_COMPONENT_HDR_ENABLED;
   @StorageProp(STORAGE_KEY_COMPONENT_HDR_RATIO) private componentHdrRatio: number = DEFAULT_COMPONENT_HDR_RATIO;
   @StorageProp('harmonyx.page_background') private pageBackgroundValue: string = '';
   @State private pageMotion: PageTransitionMotion = new PageTransitionMotion();
@@ -1073,12 +1076,14 @@ export struct PostDetail {
   }
 
   private hidePromotionPost(): void {
+    if (this.promotionPlan().dismissible === false) { return; }
     const context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
     xxAuthPopupStore.hidePromotion(context, Date.now(), this.promotionPostJson);
     AppStorage.setOrCreate<string>(XXAUTH_PROMOTION_POST, '');
   }
 
   private hidePromotionForSession(): void {
+    if (this.promotionPlan().dismissible === false) { return; }
     xxAuthPopupStore.hidePromotionForSession();
     AppStorage.setOrCreate<string>(XXAUTH_PROMOTION_POST, '');
   }
@@ -2067,7 +2072,7 @@ export struct PostDetail {
                 new BounceSymbolEffect(EffectScope.WHOLE) : new SymbolEffect(), this.repostSymbolTrigger)
               .fontSize($r('app.float.post_detail_action_icon'))
               .fontColor([this.reposted ? this.postActionColor($r('app.color.repost')) : this.postActionColor($r('app.color.text_secondary'))])
-              .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.reposted, this.componentHdrRatio))
+              .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.componentHdrEnabled && this.reposted, this.componentHdrRatio))
               .scale({ x: this.reposted ? 1.08 : 1, y: this.reposted ? 1.08 : 1 })
               .animation({ duration: 150, curve: Curve.EaseOut })
             Text(formatCount(this.tweet.metrics.repostCount)).fontFamily(this.appFontFamily)
@@ -2091,7 +2096,7 @@ export struct PostDetail {
                 new BounceSymbolEffect(EffectScope.WHOLE) : new SymbolEffect(), this.likeSymbolTrigger)
               .fontSize($r('app.float.post_detail_action_icon'))
               .fontColor([this.liked ? this.postActionColor($r('app.color.like')) : this.postActionColor($r('app.color.text_secondary'))])
-              .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.liked, this.componentHdrRatio))
+              .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.componentHdrEnabled && this.liked, this.componentHdrRatio))
               .scale({ x: this.liked ? 1.08 : 1, y: this.liked ? 1.08 : 1 })
               .animation({ duration: 150, curve: Curve.EaseOut })
             Text(formatCount(this.likeCount)).fontFamily(this.appFontFamily)
@@ -2115,7 +2120,7 @@ export struct PostDetail {
                 new BounceSymbolEffect(EffectScope.WHOLE) : new SymbolEffect(), this.bookmarkSymbolTrigger)
               .fontSize($r('app.float.post_detail_action_icon'))
               .fontColor([this.bookmarked ? this.postActionColor(this.accentColor) : this.postActionColor($r('app.color.text_secondary'))])
-              .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.bookmarked, this.componentHdrRatio))
+              .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.componentHdrEnabled && this.bookmarked, this.componentHdrRatio))
               .scale({ x: this.bookmarked ? 1.08 : 1, y: this.bookmarked ? 1.08 : 1 })
               .animation({ duration: 150, curve: Curve.EaseOut })
           }
@@ -2615,24 +2620,27 @@ export struct PostDetail {
         }
         .width('100%')
         .padding({ left: 4, right: 4, top: 16, bottom: 12 })
-        ForEach(this.discoverMore.filter((post: Tweet): boolean =>
-          !this.filterHideAds || !isAdPost(post.presentation)), (post: Tweet) => {
-          TweetCard({
-            tweet: post,
-            transparentBackground: this.transparentEmbeddedBackground(),
-            sharedElementId: this.tweet === null ? '' : 'post-discover-' + this.tweet.id + '-' + post.id,
-            showActions: true,
-            onOpen: (selected: Tweet, sourceId: string): void => this.openPost(selected, sourceId),
-            onAuthorTapped: (selected: Tweet): void => this.openUser(selected.author),
-            onMentionTapped: (handle: string): void => this.openMention(handle)
-          })
-        }, (post: Tweet) => post.id)
+        AdaptivePostGrid({ itemKeys: this.discoverMore.filter((post: Tweet): boolean => !this.filterHideAds || !isAdPost(post.presentation)).map((post: Tweet): string => post.id),
+        item: (index: number): void => this.DiscoverMorePost(this.discoverMore.filter((post: Tweet): boolean => !this.filterHideAds || !isAdPost(post.presentation))[index]) })
       }
       .width('100%')
       .backgroundColor(this.embeddedSectionBackground())
       .borderRadius(this.embeddedSectionRadius())
       .clip(this.embedded)
     }
+  }
+
+  @Builder
+  private DiscoverMorePost(post: Tweet): void {
+    TweetCard({
+      tweet: post,
+      transparentBackground: this.transparentEmbeddedBackground(),
+      sharedElementId: this.tweet === null ? '' : 'post-discover-' + this.tweet.id + '-' + post.id,
+      showActions: true,
+      onOpen: (selected: Tweet, sourceId: string): void => this.openPost(selected, sourceId),
+      onAuthorTapped: (selected: Tweet): void => this.openUser(selected.author),
+      onMentionTapped: (handle: string): void => this.openMention(handle)
+    })
   }
 
   @Builder

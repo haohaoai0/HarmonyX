@@ -1,6 +1,7 @@
 import { mixedAccentRoleColor, isMixedAccentTheme } from '../utils/AccentPalette';
 import { hapticTick } from '../utils/Haptics';
-import { DEFAULT_COMPONENT_HDR_RATIO, STORAGE_KEY_COMPONENT_HDR_RATIO } from '../services/ComponentHdrSettingsStore';
+import { DEFAULT_COMPONENT_HDR_ENABLED, DEFAULT_COMPONENT_HDR_RATIO, STORAGE_KEY_COMPONENT_HDR_ENABLED,
+  STORAGE_KEY_COMPONENT_HDR_RATIO } from '../services/ComponentHdrSettingsStore';
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
 import type { UserProfile } from '../models/Tweet';
 import { ProxyAvatar } from './ProxyAvatar';
@@ -8,6 +9,7 @@ import { ComponentHdrHighlight } from '../utils/ComponentHdrHighlight';
 
 @Component
 export struct DesktopNavRail {
+  @StorageProp(STORAGE_KEY_COMPONENT_HDR_ENABLED) private componentHdrEnabled: boolean = DEFAULT_COMPONENT_HDR_ENABLED;
   @StorageProp(STORAGE_KEY_COMPONENT_HDR_RATIO) private componentHdrRatio: number = DEFAULT_COMPONENT_HDR_RATIO;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @Prop topInset: number = 0;
@@ -50,7 +52,7 @@ export struct DesktopNavRail {
             .fontColor(this.selected === name ? this.itemColor(name) : $r('app.color.text_primary')).maxLines(1)
         }
       }.width('100%').justifyContent(this.compact ? FlexAlign.Center : FlexAlign.Start)
-        .compositingFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.selected === name, this.componentHdrRatio))
+        .compositingFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.componentHdrEnabled && this.selected === name, this.componentHdrRatio))
     }
     .width('100%').height($r('app.float.desktop_nav_row')).padding({ left: 12, right: 12 })
     .borderRadius(28).backgroundColor(this.hovered === name ? $r('app.color.bg_field') : Color.Transparent)
@@ -127,7 +129,7 @@ export struct DesktopNavRail {
                 .fontColor(mixedAccentRoleColor(this.accentTheme, 'on_action', isMixedAccentTheme(this.accentTheme) ? $r('app.color.mix_preview_on_action') : $r('app.color.text_on_inverse')))
             }
           }.width('100%').height(52).borderRadius(26).backgroundColor(mixedAccentRoleColor(this.accentTheme, 'action', $r('app.color.text_primary')))
-            .compositingFilter(ComponentHdrHighlight.filter(this.getUIContext(), true, this.componentHdrRatio))
+            .compositingFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.componentHdrEnabled, this.componentHdrRatio))
             .margin({ top: 12 }).id('desktop-compose').onClick(this.onCompose)
         }.width('100%')
       }.width('100%').layoutWeight(1).scrollBar(BarState.Auto).align(Alignment.TopStart)

@@ -570,5 +570,533 @@
       "width": 313,
       "height": 313
     }
+  },
+  {
+    "id": "popular_apps_cn_wechat",
+    "setId": "popular_apps_cn",
+    "atlas": "docs/page-background-artwork/apps-cn-social-atlas.png",
+    "crop": {
+      "left": 0,
+      "top": 0,
+      "width": 362,
+      "height": 380
+    }
+  },
+  {
+    "id": "popular_apps_cn_qq",
+    "setId": "popular_apps_cn",
+    "atlas": "docs/page-background-artwork/apps-cn-social-atlas.png",
+    "crop": {
+      "left": 362,
+      "top": 0,
+      "width": 362,
+      "height": 380
+    }
+  },
+  {
+    "id": "popular_apps_cn_weibo",
+    "setId": "popular_apps_cn",
+    "atlas": "docs/page-background-artwork/apps-cn-social-atlas.png",
+    "crop": {
+      "left": 724,
+      "top": 0,
+      "width": 362,
+      "height": 380
+    }
+  },
+  {
+    "id": "popular_apps_cn_douyin",
+    "setId": "popular_apps_cn",
+    "atlas": "docs/page-background-artwork/apps-cn-social-atlas.png",
+    "crop": {
+      "left": 1086,
+      "top": 0,
+      "width": 362,
+      "height": 380
+    }
+  },
+  {
+    "id": "popular_apps_cn_kuaishou",
+    "setId": "popular_apps_cn",
+    "atlas": "docs/page-background-artwork/apps-cn-social-atlas.png",
+    "crop": {
+      "left": 0,
+      "top": 380,
+      "width": 362,
+      "height": 344
+    }
+  },
+  {
+    "id": "popular_apps_cn_bilibili",
+    "setId": "popular_apps_cn",
+    "atlas": "docs/page-background-artwork/apps-cn-social-atlas.png",
+    "crop": {
+      "left": 362,
+      "top": 380,
+      "width": 362,
+      "height": 344
+    }
+  },
+  {
+    "id": "popular_apps_cn_xiaohongshu",
+    "setId": "popular_apps_cn",
+    "atlas": "docs/page-background-artwork/apps-cn-social-atlas.png",
+    "crop": {
+      "left": 724,
+      "top": 380,
+      "width": 362,
+      "height": 344
+    }
+  },
+  {
+    "id": "popular_apps_cn_zhihu",
+    "setId": "popular_apps_cn",
+    "atlas": "docs/page-background-artwork/apps-cn-social-atlas.png",
+    "crop": {
+      "left": 1086,
+      "top": 380,
+      "width": 362,
+      "height": 344
+    }
+  },
+  {
+    "id": "popular_apps_cn_baidu",
+    "setId": "popular_apps_cn",
+    "atlas": "docs/page-background-artwork/apps-cn-social-atlas.png",
+    "crop": {
+      "left": 0,
+      "top": 724,
+      "width": 362,
+      "height": 362
+    }
+  },
+  {
+    "id": "popular_apps_cn_tieba",
+    "setId": "popular_apps_cn",
+    "atlas": "docs/page-background-artwork/apps-cn-social-atlas.png",
+    "crop": {
+      "left": 362,
+      "top": 724,
+      "width": 362,
+      "height": 362
+    }
+  },
+  {
+    "id": "popular_apps_cn_alipay",
+    "setId": "popular_apps_cn",
+    "atlas": "docs/page-background-artwork/apps-cn-social-atlas.png",
+    "crop": {
+      "left": 724,
+      "top": 724,
+      "width": 362,
+      "height": 362
+    }
+  },
+  {
+    "id": "popular_apps_cn_taobao",
+    "setId": "popular_apps_cn",
+    "atlas": "docs/page-background-artwork/apps-cn-social-atlas.png",
+    "crop": {
+      "left": 1086,
+      "top": 724,
+      "width": 362,
+      "height": 362
+    }
+  },
+  {
+    "id": "popular_apps_cn_jd",
+    "setId": "popular_apps_cn",
+    "atlas": "docs/page-background-artwork/apps-cn-daily-atlas.png",
+    "crop": {
+      "left": 0,
+      "top": 0,
+      "width": 385,
+      "height": 365
+    }
+  },
+  {
+    "id": "popular_apps_cn_pinduoduo",
+    "setId": "popular_apps_cn",
+    "atlas": "docs/page-background-artwork/apps-cn-daily-atlas.png",
+    "crop": {
+      "left": 385,
+      "top": 0,
+      "width": 339,
+      "height": 365
+    }
+  },
+  {
+    "id": "popular_apps_cn_meituan",
+    "setId": "popular_apps_cn",
+    "atlas": "docs/page-background-artwork/apps-cn-daily-atlas.png",
+    "crop": {
+      "left": 724,
+      "top": 0,
+      "width": 363,
+      "height": 365
+    }
+  },
+  {
+    "id": "popular_apps_cn_eleme",
+    "setId": "popular_apps_cn",
+    "atlas": "docs/page-background-artwork/apps-cn-daily-atlas.png",
+    "crop": {
+      "left": 1087,
+      "top": 0,
+      "width": 361,
+      "height": 365
+    }
+  },
+  {
+    "id": "popular_apps_cn_dianping",
+    "setId": "popular_apps_cn",
+    "atlas": "docs/page-background-artwork/apps-cn-daily-atlas.png",
+    "crop": {
+      "left": 0,
+      "top": 365,
+      "width": 362,
+      "height": 359
+    }
+  },
+  {
+    "id": "popular_apps_cn_amap",
+    "setId": "popular_apps_cn",
+    "atlas": "docs/page-background-artwork/apps-cn-daily-atlas.png",
+    "crop": {
+      "left": 362,
+      "top": 365,
+      "width": 362,
+      "height": 359
+    }
+  },
+  {
+    "id": "popular_apps_cn_baidu_maps",
+    "setId": "popular_apps_cn",
+    "atlas": "docs/page-background-artwork/apps-cn-daily-atlas.png",
+    "crop": {
+      "left": 724,
+      "top": 365,
+      "width": 362,
+      "height": 359
+    }
+  },
+  {
+    "id": "popular_apps_cn_didi",
+    "setId": "popular_apps_cn",
+    "atlas": "docs/page-background-artwork/apps-cn-daily-atlas.png",
+    "crop": {
+      "left": 1086,
+      "top": 365,
+      "width": 362,
+      "height": 359
+    }
+  },
+  {
+    "id": "popular_apps_cn_netease_music",
+    "setId": "popular_apps_cn",
+    "atlas": "docs/page-background-artwork/apps-cn-daily-atlas.png",
+    "crop": {
+      "left": 0,
+      "top": 724,
+      "width": 362,
+      "height": 362
+    }
+  },
+  {
+    "id": "popular_apps_cn_qq_music",
+    "setId": "popular_apps_cn",
+    "atlas": "docs/page-background-artwork/apps-cn-daily-atlas.png",
+    "crop": {
+      "left": 362,
+      "top": 724,
+      "width": 362,
+      "height": 362
+    }
+  },
+  {
+    "id": "popular_apps_cn_kugou",
+    "setId": "popular_apps_cn",
+    "atlas": "docs/page-background-artwork/apps-cn-daily-atlas.png",
+    "crop": {
+      "left": 724,
+      "top": 724,
+      "width": 362,
+      "height": 362
+    }
+  },
+  {
+    "id": "popular_apps_cn_weread",
+    "setId": "popular_apps_cn",
+    "atlas": "docs/page-background-artwork/apps-cn-daily-atlas.png",
+    "crop": {
+      "left": 1086,
+      "top": 724,
+      "width": 362,
+      "height": 362
+    }
+  },
+  {
+    "id": "popular_apps_global_whatsapp",
+    "setId": "popular_apps_global",
+    "atlas": "docs/page-background-artwork/apps-global-social-atlas.png",
+    "crop": {
+      "left": 0,
+      "top": 0,
+      "width": 362,
+      "height": 362
+    }
+  },
+  {
+    "id": "popular_apps_global_telegram",
+    "setId": "popular_apps_global",
+    "atlas": "docs/page-background-artwork/apps-global-social-atlas.png",
+    "crop": {
+      "left": 362,
+      "top": 0,
+      "width": 362,
+      "height": 362
+    }
+  },
+  {
+    "id": "popular_apps_global_signal",
+    "setId": "popular_apps_global",
+    "atlas": "docs/page-background-artwork/apps-global-social-atlas.png",
+    "crop": {
+      "left": 724,
+      "top": 0,
+      "width": 362,
+      "height": 362
+    }
+  },
+  {
+    "id": "popular_apps_global_instagram",
+    "setId": "popular_apps_global",
+    "atlas": "docs/page-background-artwork/apps-global-social-atlas.png",
+    "crop": {
+      "left": 1086,
+      "top": 0,
+      "width": 362,
+      "height": 362
+    }
+  },
+  {
+    "id": "popular_apps_global_facebook",
+    "setId": "popular_apps_global",
+    "atlas": "docs/page-background-artwork/apps-global-social-atlas.png",
+    "crop": {
+      "left": 0,
+      "top": 362,
+      "width": 362,
+      "height": 362
+    }
+  },
+  {
+    "id": "popular_apps_global_messenger",
+    "setId": "popular_apps_global",
+    "atlas": "docs/page-background-artwork/apps-global-social-atlas.png",
+    "crop": {
+      "left": 362,
+      "top": 362,
+      "width": 362,
+      "height": 362
+    }
+  },
+  {
+    "id": "popular_apps_global_x",
+    "setId": "popular_apps_global",
+    "atlas": "docs/page-background-artwork/apps-global-social-atlas.png",
+    "crop": {
+      "left": 724,
+      "top": 362,
+      "width": 362,
+      "height": 362
+    }
+  },
+  {
+    "id": "popular_apps_global_threads",
+    "setId": "popular_apps_global",
+    "atlas": "docs/page-background-artwork/apps-global-social-atlas.png",
+    "crop": {
+      "left": 1086,
+      "top": 362,
+      "width": 362,
+      "height": 362
+    }
+  },
+  {
+    "id": "popular_apps_global_youtube",
+    "setId": "popular_apps_global",
+    "atlas": "docs/page-background-artwork/apps-global-social-atlas.png",
+    "crop": {
+      "left": 0,
+      "top": 724,
+      "width": 362,
+      "height": 362
+    }
+  },
+  {
+    "id": "popular_apps_global_tiktok",
+    "setId": "popular_apps_global",
+    "atlas": "docs/page-background-artwork/apps-global-social-atlas.png",
+    "crop": {
+      "left": 362,
+      "top": 724,
+      "width": 362,
+      "height": 362
+    }
+  },
+  {
+    "id": "popular_apps_global_reddit",
+    "setId": "popular_apps_global",
+    "atlas": "docs/page-background-artwork/apps-global-social-atlas.png",
+    "crop": {
+      "left": 724,
+      "top": 724,
+      "width": 362,
+      "height": 362
+    }
+  },
+  {
+    "id": "popular_apps_global_discord",
+    "setId": "popular_apps_global",
+    "atlas": "docs/page-background-artwork/apps-global-social-atlas.png",
+    "crop": {
+      "left": 1086,
+      "top": 724,
+      "width": 362,
+      "height": 362
+    }
+  },
+  {
+    "id": "popular_apps_global_spotify",
+    "setId": "popular_apps_global",
+    "atlas": "docs/page-background-artwork/apps-global-tools-atlas.png",
+    "crop": {
+      "left": 0,
+      "top": 0,
+      "width": 362,
+      "height": 362
+    }
+  },
+  {
+    "id": "popular_apps_global_apple_music",
+    "setId": "popular_apps_global",
+    "atlas": "docs/page-background-artwork/apps-global-tools-atlas.png",
+    "crop": {
+      "left": 362,
+      "top": 0,
+      "width": 362,
+      "height": 362
+    }
+  },
+  {
+    "id": "popular_apps_global_netflix",
+    "setId": "popular_apps_global",
+    "atlas": "docs/page-background-artwork/apps-global-tools-atlas.png",
+    "crop": {
+      "left": 724,
+      "top": 0,
+      "width": 362,
+      "height": 362
+    }
+  },
+  {
+    "id": "popular_apps_global_twitch",
+    "setId": "popular_apps_global",
+    "atlas": "docs/page-background-artwork/apps-global-tools-atlas.png",
+    "crop": {
+      "left": 1086,
+      "top": 0,
+      "width": 362,
+      "height": 362
+    }
+  },
+  {
+    "id": "popular_apps_global_line",
+    "setId": "popular_apps_global",
+    "atlas": "docs/page-background-artwork/apps-global-tools-atlas.png",
+    "crop": {
+      "left": 0,
+      "top": 362,
+      "width": 362,
+      "height": 362
+    }
+  },
+  {
+    "id": "popular_apps_global_snapchat",
+    "setId": "popular_apps_global",
+    "atlas": "docs/page-background-artwork/apps-global-tools-atlas.png",
+    "crop": {
+      "left": 362,
+      "top": 362,
+      "width": 362,
+      "height": 362
+    }
+  },
+  {
+    "id": "popular_apps_global_pinterest",
+    "setId": "popular_apps_global",
+    "atlas": "docs/page-background-artwork/apps-global-tools-atlas.png",
+    "crop": {
+      "left": 724,
+      "top": 362,
+      "width": 362,
+      "height": 362
+    }
+  },
+  {
+    "id": "popular_apps_global_chrome",
+    "setId": "popular_apps_global",
+    "atlas": "docs/page-background-artwork/apps-global-tools-atlas.png",
+    "crop": {
+      "left": 1086,
+      "top": 362,
+      "width": 362,
+      "height": 362
+    }
+  },
+  {
+    "id": "popular_apps_global_firefox",
+    "setId": "popular_apps_global",
+    "atlas": "docs/page-background-artwork/apps-global-tools-atlas.png",
+    "crop": {
+      "left": 0,
+      "top": 724,
+      "width": 362,
+      "height": 362
+    }
+  },
+  {
+    "id": "popular_apps_global_edge",
+    "setId": "popular_apps_global",
+    "atlas": "docs/page-background-artwork/apps-global-tools-atlas.png",
+    "crop": {
+      "left": 362,
+      "top": 724,
+      "width": 362,
+      "height": 362
+    }
+  },
+  {
+    "id": "popular_apps_global_gmail",
+    "setId": "popular_apps_global",
+    "atlas": "docs/page-background-artwork/apps-global-tools-atlas.png",
+    "crop": {
+      "left": 724,
+      "top": 724,
+      "width": 362,
+      "height": 362
+    }
+  },
+  {
+    "id": "popular_apps_global_google_maps",
+    "setId": "popular_apps_global",
+    "atlas": "docs/page-background-artwork/apps-global-tools-atlas.png",
+    "crop": {
+      "left": 1086,
+      "top": 724,
+      "width": 362,
+      "height": 362
+    }
   }
 ]

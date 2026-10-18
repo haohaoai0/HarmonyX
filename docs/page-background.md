@@ -24,8 +24,8 @@ changing text opacity. Turning either off restores its normal surface and the
 configured opacity. The selected conversation retains an outline.
 
 Full-pattern mode supports multiple collections at once. Individual-motif mode
-offers 148 motifs across 21 collections: the existing 17 collections, plus 12
-alternate-icon motifs, 12 Plants vs. Zombies motifs, 12 AI assistant motifs, and 16 phone brand/system motifs. The generated artwork
+offers 196 motifs across 23 collections: the existing 17 collections, plus 12
+alternate-icon motifs, 12 Plants vs. Zombies motifs, 12 AI assistant motifs, 16 phone brand/system motifs, and 48 popular app motifs split into China/global collections. The generated artwork
 and exact prompts are documented in [the artwork notes](page-background-artwork/README.md). Selecting an
 entire motif set adds its extracted motifs to the selection; switching the
 collection preserves selections from other collections. Density changes spacing

@@ -2,7 +2,8 @@ import { TouchHdrLight } from './TouchHdrLight';
 import { motionDuration, motionScale, motionCurve, symbolMotionEnabled } from '../utils/AppMotion';
 import { STORAGE_KEY_REDUCE_MOTION, STORAGE_KEY_SYMBOL_EFFECTS, STORAGE_KEY_MOTION_AMPLITUDE } from '../services/MotionSettingsStore';
 import { hapticTick } from '../utils/Haptics';
-import { DEFAULT_COMPONENT_HDR_RATIO, STORAGE_KEY_COMPONENT_HDR_RATIO } from '../services/ComponentHdrSettingsStore';
+import { DEFAULT_COMPONENT_HDR_ENABLED, DEFAULT_COMPONENT_HDR_RATIO, STORAGE_KEY_COMPONENT_HDR_ENABLED,
+  STORAGE_KEY_COMPONENT_HDR_RATIO } from '../services/ComponentHdrSettingsStore';
 import { ComponentHdrHighlight } from '../utils/ComponentHdrHighlight';
 import { ConfigurationConstant } from '@kit.AbilityKit';
 import { uiMaterial } from '@kit.ArkUI';
@@ -22,6 +23,7 @@ export struct HdsButton {
   @StorageProp(STORAGE_KEY_MOTION_AMPLITUDE) private motionAmplitudeValue: number = 1;
   @State private pressScale: number = 1;
   @State private symbolTrigger: number = -1;
+  @StorageProp(STORAGE_KEY_COMPONENT_HDR_ENABLED) private componentHdrEnabled: boolean = DEFAULT_COMPONENT_HDR_ENABLED;
   @StorageProp(STORAGE_KEY_COMPONENT_HDR_RATIO) private componentHdrRatio: number = DEFAULT_COMPONENT_HDR_RATIO;
   @Prop barWidth: number = 52;
   @Prop barHeight: number = 58;
@@ -168,7 +170,7 @@ export struct HdsButton {
         }
         .width(this.barWidth)
         .height(this.barHeight - 12)
-        .compositingFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.enableHdrHighlight, this.componentHdrRatio));
+        .compositingFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.componentHdrEnabled && this.enableHdrHighlight, this.componentHdrRatio));
       }
       .width(this.barWidth)
       .height(this.barHeight - 12)

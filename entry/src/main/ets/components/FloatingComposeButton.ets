@@ -1,6 +1,7 @@
 import { mixedAccentRoleColor } from '../utils/AccentPalette';
 import { motionDuration, motionCurve, motionScale } from '../utils/AppMotion';
-import { DEFAULT_COMPONENT_HDR_RATIO, STORAGE_KEY_COMPONENT_HDR_RATIO } from '../services/ComponentHdrSettingsStore';
+import { DEFAULT_COMPONENT_HDR_ENABLED, DEFAULT_COMPONENT_HDR_RATIO, STORAGE_KEY_COMPONENT_HDR_ENABLED,
+  STORAGE_KEY_COMPONENT_HDR_RATIO } from '../services/ComponentHdrSettingsStore';
 import { common } from '@kit.AbilityKit';
 import { ColorMetrics, curves, display } from '@kit.ArkUI';
 import { HdsButton } from './HdsButton';
@@ -28,6 +29,7 @@ const GRIP_SUBSCRIBER_KEY: string = 'floating-compose-button';
  */
 @Component
 export struct FloatingComposeButton {
+  @StorageProp(STORAGE_KEY_COMPONENT_HDR_ENABLED) private componentHdrEnabled: boolean = DEFAULT_COMPONENT_HDR_ENABLED;
   @StorageProp(STORAGE_KEY_COMPONENT_HDR_RATIO) private componentHdrRatio: number = DEFAULT_COMPONENT_HDR_RATIO;
   @Prop @Watch('onBottomClearanceChanged') bottomInset: number = 0;
   @StorageProp('harmonyx.accent_theme') private accentTheme: string = '';
@@ -254,7 +256,7 @@ export struct FloatingComposeButton {
         .borderRadius(FAB_SIZE / 2);
       SymbolGlyph(this.composeSymbol)
         .fontSize(24)
-        .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), true, this.componentHdrRatio))
+        .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.componentHdrEnabled, this.componentHdrRatio))
         .fontColor([this.actionForegroundColor()]);
     }
     .width(FAB_SIZE)
@@ -272,7 +274,7 @@ export struct FloatingComposeButton {
         .borderRadius(FAB_SIZE / 2);
       SymbolGlyph($r('sys.symbol.chevron_up'))
         .fontSize(26)
-        .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), true, this.componentHdrRatio))
+        .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.componentHdrEnabled, this.componentHdrRatio))
         .fontColor([this.actionForegroundColor()]);
     }
     .width(FAB_SIZE)
@@ -292,12 +294,12 @@ export struct FloatingComposeButton {
         LoadingProgress()
           .width(24)
           .height(24)
-          .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), true, this.componentHdrRatio))
+          .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.componentHdrEnabled, this.componentHdrRatio))
           .color(this.actionForegroundColor())
       } else {
         SymbolGlyph($r('sys.symbol.arrow_clockwise'))
           .fontSize(26)
-          .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), true, this.componentHdrRatio))
+          .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.componentHdrEnabled, this.componentHdrRatio))
           .fontColor([this.actionForegroundColor()]);
       }
     }
@@ -316,7 +318,7 @@ export struct FloatingComposeButton {
         .borderRadius(FAB_SIZE / 2);
       SymbolGlyph($r('sys.symbol.text_speaker_wave_rectangle'))
         .fontSize(26)
-        .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), true, this.componentHdrRatio))
+        .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.componentHdrEnabled, this.componentHdrRatio))
         .fontColor([this.actionForegroundColor()]);
     }
     .width(FAB_SIZE)

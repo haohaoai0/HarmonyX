@@ -28,6 +28,7 @@ export class XXAuthPromotionMedia {
 // A recommendation rendered as a native-looking timeline post. Everything the
 // card shows comes from the remote records, so nothing needs a new release.
 export class XXAuthPromotionPost {
+  dismissible: boolean = true;
   appId: string = '';
   name: string = '';
   handle: string = '';
@@ -45,6 +46,7 @@ export class XXAuthPromotionPost {
 // How many promotions each surface should carry, resolved once per refresh so
 // every reader of the published plan agrees on the numbers.
 export class XXAuthPromotionPlan {
+  dismissible: boolean = true;
   posts: XXAuthPromotionPost[] = [];
   timelineCount: number = 2;
   commentCount: number = 1;
@@ -222,6 +224,8 @@ export class XXAuthPromotionPostPolicy {
   static plan(items: XXAuthAnnouncement[], config: XXAuthPopupConfig): XXAuthPromotionPlan {
     const plan: XXAuthPromotionPlan = new XXAuthPromotionPlan();
     plan.posts = XXAuthPromotionPostPolicy.posts(items, config);
+    plan.dismissible = config.post_dismissible !== false;
+    for (let i: number = 0; i < plan.posts.length; i++) { plan.posts[i].dismissible = plan.dismissible; }
     // One promotion per timeline: several rows in the same feed read as a block
     // of advertising instead of a single native-looking post.
     plan.timelineCount = XXAuthPromotionPostPolicy.count(config.post_count, 1, 1);

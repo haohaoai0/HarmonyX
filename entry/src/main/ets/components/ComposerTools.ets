@@ -1,4 +1,5 @@
-import { DEFAULT_COMPONENT_HDR_RATIO, STORAGE_KEY_COMPONENT_HDR_RATIO } from '../services/ComponentHdrSettingsStore';
+import { DEFAULT_COMPONENT_HDR_ENABLED, DEFAULT_COMPONENT_HDR_RATIO, STORAGE_KEY_COMPONENT_HDR_ENABLED,
+  STORAGE_KEY_COMPONENT_HDR_RATIO } from '../services/ComponentHdrSettingsStore';
 import { ComponentHdrHighlight } from '../utils/ComponentHdrHighlight';
 import { common } from '@kit.AbilityKit';
 import promptAction from '@ohos.promptAction';
@@ -15,6 +16,7 @@ import { DEFAULT_SHEET_MATERIAL_ENABLED, DEFAULT_SHEET_MATERIAL_LEVEL, STORAGE_K
 
 @Component
 export struct ComposerTools {
+  @StorageProp(STORAGE_KEY_COMPONENT_HDR_ENABLED) private componentHdrEnabled: boolean = DEFAULT_COMPONENT_HDR_ENABLED;
   @StorageProp(STORAGE_KEY_COMPONENT_HDR_RATIO) private componentHdrRatio: number = DEFAULT_COMPONENT_HDR_RATIO;
   @StorageProp('harmonyx.compact_window') private compactWindow: boolean = false;
   @StorageProp('harmonyx.breakpoint') private sheetWindowBreakpoint: string = 'sm';
@@ -172,7 +174,7 @@ export struct ComposerTools {
   private Tool(symbol: Resource, label: Resource, action: () => void, enabled: boolean): void {
     Button({ type: ButtonType.Circle }) {
       SymbolGlyph(symbol).fontSize(24).fontColor([enabled ? this.accentColor : $r('app.color.text_secondary')])
-        .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), !this.disabled && enabled, this.componentHdrRatio));
+        .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.componentHdrEnabled && !this.disabled && enabled, this.componentHdrRatio));
     }.width(44).height(48).backgroundColor(Color.Transparent).enabled(!this.disabled && enabled)
       .accessibilityText(this.text(label)).onClick(action);
   }

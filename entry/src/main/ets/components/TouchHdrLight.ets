@@ -1,5 +1,6 @@
 import { deviceInfo } from '@kit.BasicServicesKit';
-import { DEFAULT_COMPONENT_HDR_RATIO, STORAGE_KEY_COMPONENT_HDR_RATIO } from '../services/ComponentHdrSettingsStore';
+import { DEFAULT_COMPONENT_HDR_ENABLED, DEFAULT_COMPONENT_HDR_RATIO, STORAGE_KEY_COMPONENT_HDR_ENABLED,
+  STORAGE_KEY_COMPONENT_HDR_RATIO } from '../services/ComponentHdrSettingsStore';
 import { ComponentHdrHighlight } from '../utils/ComponentHdrHighlight';
 
 // Keep this optical layer separate from existing HDR icons and native material.
@@ -8,10 +9,11 @@ import { ComponentHdrHighlight } from '../utils/ComponentHdrHighlight';
 export struct TouchHdrLight {
   @Prop active: boolean = false;
   @Prop cornerRadius: Length = 0;
+  @StorageProp(STORAGE_KEY_COMPONENT_HDR_ENABLED) private componentHdrEnabled: boolean = DEFAULT_COMPONENT_HDR_ENABLED;
   @StorageProp(STORAGE_KEY_COMPONENT_HDR_RATIO) private componentHdrRatio: number = DEFAULT_COMPONENT_HDR_RATIO;
 
   private lightVisible(): boolean {
-    return this.active && deviceInfo.sdkApiVersion >= 24 &&
+    return this.componentHdrEnabled && this.active && deviceInfo.sdkApiVersion >= 24 &&
       Number.isFinite(this.componentHdrRatio) && this.componentHdrRatio > 1;
   }
 

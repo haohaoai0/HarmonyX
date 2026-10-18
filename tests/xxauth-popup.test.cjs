@@ -15,6 +15,8 @@ function load(file, mocks = {}) {
     if (name === '../models/XXAuth') return load('models/XXAuth');
     if (name === './XXAuthRecommendation') return load('services/XXAuthRecommendation');
     if (name === './XXAuthRecommendationCatalog') return load('services/XXAuthRecommendationCatalog');
+    if (name === './XXAuthPopupSchedule') return load('services/XXAuthPopupSchedule');
+    if (name === './XXAuthPopupPolicy') return load('services/XXAuthPopupPolicy');
     throw new Error('Unexpected dependency ' + name);
   }, module, module.exports, (callback) => { callback(); return 1; });
   return module.exports;
@@ -208,6 +210,153 @@ function serviceFixture(responder) {
   }});
   return {service:new XXAuthService(),calls,destroyed:()=>destroyed};
 }
+
+test('cloud recommendation controls parse independent flags, fractional intervals and campaign boundaries', () => {
+  const config = {};
+  policy.applyVariables(config, [
+    {key:'harmonyx_post_dismissible',value:'off'},
+    {key:'harmonyx_popup_force',value:'on'},
+    {key:'harmonyx_popup_dismissible',value:'off'},
+    {key:'harmonyx_popup_delay_seconds',value:'5'},
+    {key:'harmonyx_popup_interval_hours',value:'0.5'},
+    {key:'harmonyx_popup_daily_limit',value:'2'},
+    {key:'harmonyx_popup_total_limit',value:'10'},
+    {key:'harmonyx_popup_session_limit',value:'1'},
+    {key:'harmonyx_popup_start_at',value:'2026-11-01T09:00:00+08:00'},
+    {key:'harmonyx_popup_end_at',value:'0'},
+    {key:'harmonyx_popup_revision',value:'7'}
+  ]);
+  assert.equal(config.post_dismissible,false);
+  assert.equal(config.popup_interval_hours,0.5);
+  assert.equal(config.popup_daily_limit,2);
+  assert.equal(config.popup_start_at,'2026-11-01T09:00:00+08:00');
+  const panel = policy.startup([announcement()],[],[],config)[0];
+  assert.equal(panel.forced,true);
+  assert.equal(panel.reminderForced,true);
+  assert.deepEqual(policy.startup([announcement()],[],[],{...config,enabled:false}),[]);
+});
+
+test('popup budgets survive restart, cap forced reminders and accept changed cloud limits without a reset', () => {
+  const f = storeFixture();
+  const now = new Date(2026,9,18,12,0,0).getTime();
+  const config = {popup_revision:1,popup_delay_seconds:5,popup_daily_limit:1,popup_total_limit:2,
+    popup_session_limit:1,popup_interval_hours:1,popup_force:true};
+  const panel = policy.startup([announcement()],[],[],config)[0];
+  f.store.snooze({},now);
+  assert.equal(f.store.shouldShow({},panel,now+4999,config,now),false);
+  assert.equal(f.store.shouldShow({},panel,now+5000,config,now),true);
+  assert.equal(f.store.markRecommendationShown({},config,now+5000),true);
+  assert.equal(f.restart().shouldShow({},panel,now+3605000,config,now),false,'daily cap survives restart');
+  assert.equal(f.restart().shouldShow({},panel,now+86405000,config,now),true);
+  const next = f.restart();
+  next.markRecommendationShown({},config,now+86405000);
+  assert.equal(f.restart().shouldShow({},panel,now+2*86400000+5000,config,now),false,'total cap survives restart');
+  const raised = {...config,popup_total_limit:3};
+  assert.equal(f.restart().shouldShow({},panel,now+2*86400000+5000,raised,now),true,'new cloud cap uses existing count');
+  assert.equal(f.store.shouldShow({},panel,now+3605000,{...config,popup_daily_limit:2},now),false,'session cap remains');
+  assert.equal(f.store.shouldShow({},panel,now+5000,{...config,popup_revision:2},now),true,'new campaign resets budget');
+});
+
+test('campaign boundaries are timezone explicit and force never bypasses them', () => {
+  const {XXAuthPopupHistory,XXAuthPopupSchedule:schedule}=load('services/XXAuthPopupSchedule');
+  const history = new XXAuthPopupHistory();
+  const start = Date.parse('2026-11-01T09:00:00+08:00');
+  const end = start+3600000;
+  const config = {popup_revision:1,popup_start_at:'2026-11-01T09:00:00+08:00',
+    popup_end_at:'2026-11-01T10:00:00+08:00'};
+  assert.equal(schedule.eligible(config,history,0,start-1,0),false);
+  assert.equal(schedule.eligible(config,history,0,start,0),true);
+  assert.equal(schedule.eligible(config,history,0,end,0),false);
+  for (const bad of ['tomorrow','2026-11-01T09:00:00','invalid']) {
+    assert.equal(schedule.eligible({...config,popup_start_at:bad},history,0,start,0),false);
+  }
+  assert.equal(schedule.eligible({...config,popup_end_at:config.popup_start_at},history,0,start,0),false);
+});
+
+test('multiple recommended apps share a daily budget; only the actually presented panel is counted', () => {
+  const {store,restart}=storeFixture();
+  const config={popup_revision:1,popup_daily_limit:1,popup_session_limit:0,popup_force:true};
+  const now=new Date(2026,9,18,23,59,0).getTime();
+  const a=policy.startup([announcement()],[],[],config)[0];
+  const b=Object.assign(new XXAuthPanel(),a,{id:'second',recommendationAppId:'second'});
+  assert.equal(store.shouldShow({},a,now,config),true);
+  assert.equal(store.shouldShow({},a,now,config),true,'checking eligibility does not count');
+  store.markRecommendationShown({},config,now);
+  assert.equal(restart().shouldShow({},b,now,config),false);
+  assert.equal(restart().shouldShow({},b,now+120000,config),true,'new local calendar day resets daily count');
+});
+
+function hostMethods(names, dependencies) {
+  const source=fs.readFileSync('entry/src/main/ets/components/XXAuthPopupHost.ets','utf8')
+    .replace('export struct XXAuthPopupHost {','export class XXAuthPopupHost {');
+  const tree=ts.createSourceFile('host.ts',source,ts.ScriptTarget.Latest,true);
+  const host=tree.statements.find(n=>ts.isClassDeclaration(n) && n.name.text==='XXAuthPopupHost');
+  const methods=names.map(name=>host.members.find(n=>ts.isMethodDeclaration(n) && n.name.getText(tree)===name).getText(tree));
+  const code=ts.transpileModule('class Host {'+methods.join('\n')+'}',{
+    compilerOptions:{target:ts.ScriptTarget.ES2020}}).outputText;
+  return new Function(...Object.keys(dependencies),code+';return Host;')(...Object.values(dependencies));
+}
+
+test('a locked published plan ignores both previously saved session and seven-day hides', () => {
+  const promotion=load('services/XXAuthPromotionPost');
+  let published='unset';
+  const Host=hostMethods(['publishPromotionPost'],{
+    ...promotion,xxAuthSupporterService:{active:()=>false},
+    xxAuthPopupStore:{promotionSessionHidden:()=>true,promotionHiddenUntil:()=>Date.now()+86400000},
+    XXAUTH_PROMOTION_POST:'plan',AppStorage:{get:()=>published,setOrCreate:(_key,value)=>{published=value;}}
+  });
+  const host=Object.assign(new Host(),{context:()=>({})});
+  const rows=[{id:'post',priority:15,status:1,content:'帖子昵称：推荐\n帖子正文：推荐内容'}];
+  host.publishPromotionPost(rows,{post_dismissible:false});
+  assert.equal(JSON.parse(published).dismissible,false);
+  host.publishPromotionPost(rows,{post_dismissible:true});
+  assert.equal(published,'');
+  host.publishPromotionPost(rows,{post_dismissible:false,enabled:false});
+  assert.equal(published,'','remote master still wins');
+});
+
+test('already read announcements do not postpone a five-second recommendation delay until the next poll', () => {
+  const {XXAuthPopupSchedule}=load('services/XXAuthPopupSchedule');
+  let now=100000;
+  const timers=[],presented=[];
+  const Host=hostMethods(['scheduleNext'],{XXAuthPopupSchedule,Date:{now:()=>now},
+    xxAuthPopupStore:{shouldShow:(_context,panel)=>panel.kind==='recommendation' && now>=105000},
+    setTimeout:(run,delay)=>{timers.push({run,delay});return timers.length;}
+  });
+  const host=Object.assign(new Host(),{alive:true,visible:false,blocked:false,timer:-1,manualMode:'',
+    appForeground:true,readySince:0,shown:[],context:()=>({}),
+    currentConfig:{popup_delay_seconds:5,popup_revision:1},
+    pending:[{kind:'announcement',fingerprint:'read'},{kind:'recommendation',fingerprint:'rec'}],
+    present:panel=>presented.push(panel.kind)});
+  host.scheduleNext();
+  assert.equal(timers[0].delay,5000);
+  now=105000;timers[0].run();
+  assert.deepEqual(presented,['recommendation']);
+});
+
+test('missing cloud switch data pauses recommendations even if the legacy JSON endpoint still succeeds', async () => {
+  for(const variables of [{ok:false,status:0},{ok:false,status:401},{ok:true,data:{}}]) {
+    let published;
+    const Host=hostMethods(['refresh'],{
+      XXAuthPopupPolicy:policy,XXAUTH_POPUP_CONFIG:'harmonyx_popup',
+      xxAuthSupporterService:{refresh:async()=>{},active:()=>false},
+      xxAuthPopupStore:{deviceId:()=> 'id'},XXAuthSupporterPolicy:{promotional:kind=>kind==='recommendation'},
+      xxAuthService:{announcements:async()=>({ok:true,data:[announcement()]}),
+        banners:async()=>({ok:true,data:[]}),articles:async()=>({ok:true,data:[]}),
+        variables:async()=>variables,variable:async()=>({ok:true,data:{}}),
+        checkVersion:async()=>({ok:false,status:404})}
+    });
+    const host=Object.assign(new Host(),{alive:true,refreshing:false,currentConfig:{},timer:-1,
+      context:()=>({}),versionName:()=> '1.0.0',shown:[],manualMode:'',visible:true,
+      panel:Object.assign(new XXAuthPanel(),{kind:'recommendation',forced:true,fingerprint:'previous'}),
+      scheduleNext(){},publishPromotionPost(_rows,config){published=config;}});
+    await host.refresh();
+    assert.equal(published.post_enabled,false);
+    assert.equal(published.recommendation_enabled,false);
+    assert.deepEqual(host.pending,[]);
+    assert.equal(host.visible,false,'a forced recommendation can still be remotely retired while version service is unavailable');
+  }
+});
 
 test('all software endpoints use only the public app identity, with platform/channel and encoded variable keys', async () => {
   const f=serviceFixture(()=>({responseCode:200,result:'{"code":0,"data":[]}'}));

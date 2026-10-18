@@ -2,9 +2,13 @@ import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFon
 import { image } from '@kit.ImageKit';
 import { ChatPickedFile } from '../services/XChatMedia';
 import { chatVideoPreview, ChatVideoPreview } from '../services/ChatLocalVideo';
+import type { PhotoViewerRouteParam } from '../pages/PhotoViewer';
+import { xChatService } from '../services/XChatService';
 
 @Component
 export struct ChatPendingMediaCard {
+  @Consume('pageStack') pageStack: NavPathStack;
+  @Prop conversationId: string = '';
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @StorageProp('harmonyx.accent_color') accentColor: string = '#007DFF';
   file: ChatPickedFile = { uri: '', filename: '', type: 1 };
@@ -32,6 +36,13 @@ export struct ChatPendingMediaCard {
   }
   private uploadProgress(): number { return Math.min(100, Math.max(0, this.progress)); }
   private shade(): number { return this.failed ? 0.35 : 0.58 * (1 - this.uploadProgress() / 100); }
+
+  private openGif(): void {
+    if (!this.active || this.file.type !== 2 || this.file.uri.length === 0 || !xChatService.isUnlocked()) { return; }
+    const param: PhotoViewerRouteParam = { urls: [this.file.uri], index: 0, alt: '', transitionPrefix: '',
+      screenBlocked: xChatService.conversationInfo(this.conversationId).screenBlocked };
+    this.pageStack.pushPath({ name: 'PhotoViewer', param: param });
+  }
 
   build(): void {
     Stack() {
@@ -64,5 +75,6 @@ export struct ChatPendingMediaCard {
           .accessibilityText($r('app.string.chat_media_sending')).hitTestBehavior(HitTestMode.None)
       }
     }.width(this.mediaWidth).height(this.mediaHeight).clip(true).renderGroup(true)
+      .onClick((): void => this.openGif())
   }
 }

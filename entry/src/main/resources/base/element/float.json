@@ -863,6 +863,8 @@
     {"name":"theme_mix_action_size","value":"32vp"},
     {"name":"theme_mix_title_size","value":"14fp"},
     {"name":"theme_mix_check_size","value":"16vp"},
-    {"name":"theme_mix_preview_icon_size","value":"18vp"}
+    {"name":"theme_mix_preview_icon_size","value":"18vp"},
+    {"name":"post_feed_column_gap","value":"12vp"},
+    {"name":"post_feed_row_gap","value":"12vp"}
   ]
 }

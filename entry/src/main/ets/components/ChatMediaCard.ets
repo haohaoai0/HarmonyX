@@ -12,9 +12,12 @@ import { xChatService } from '../services/XChatService';
 import { ChatVoicePlayer } from './ChatVoicePlayer';
 import { MediaPhotoSurface } from './MediaPhotoSurface';
 import { captureMediaViewerSource, pendingMediaViewerSource } from '../utils/MediaViewerMotion';
+import { PhotoViewerPhoto } from '../utils/PhotoViewerRequest';
+import type { PhotoViewerRouteParam } from '../pages/PhotoViewer';
 
 @Component
 export struct ChatMediaCard {
+  @Consume('pageStack') pageStack: NavPathStack;
   @Prop transitionSourceId: string = '';
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @Prop attachment: DmAttachment;
@@ -25,7 +28,7 @@ export struct ChatMediaCard {
   @Prop mediaWidth: number = 220;
   @Prop mediaHeight: number = 160;
   @Prop albumTile: boolean = false;
-  onPhotoOpen: (attachment: DmAttachment) => void = (_attachment: DmAttachment): void => {};
+  onPhotoOpen: (attachment: DmAttachment) => void = (_attachment: DmAttachment): void => this.openPhotoPreview();
   onVideoOpen: (attachment: MediaAttachment) => void = (_attachment: MediaAttachment): void => {};
   onDimensions: (width: number, height: number) => void = (_width: number, _height: number): void => {};
   onLongPress: () => void = (): void => {};
@@ -100,11 +103,26 @@ export struct ChatMediaCard {
     } else { this.onPhotoOpen(this.attachment); }
   }
 
+  private openPhotoPreview(): void {
+    if (!this.active || !this.visible || !xChatService.isUnlocked() || this.path.length === 0) { return; }
+    const uri: string = fileUri.getUriFromPath(this.path);
+    const attachment: DmAttachment = this.attachment;
+    const animation: MediaAttachment | null = attachment.mediaType === 2 ? {
+      id: attachment.mediaHash, type: 'animated_gif', mediaUrl: uri, feedUrl: '', previewUrl: '',
+      width: attachment.width, height: attachment.height, altText: ''
+    } : null;
+    const item: PhotoViewerPhoto = new PhotoViewerPhoto(uri, uri, attachment.width, attachment.height,
+      0, '', this.transitionSourceId, animation);
+    const param: PhotoViewerRouteParam = { urls: [uri], items: [item], index: 0, alt: '', transitionPrefix: '',
+      screenBlocked: xChatService.conversationInfo(this.conversationId).screenBlocked };
+    this.pageStack.pushPath({ name: 'PhotoViewer', param: param });
+  }
+
   @Builder
   private VisualMedia(): void {
     Stack() {
       if (this.path.length > 0 && this.attachment.mediaType !== 3) {
-        if (this.transitionSourceId.length > 0) {
+        if (this.transitionSourceId.length > 0 && this.attachment.mediaType !== 2) {
           MediaPhotoSurface({ sourceId: this.transitionSourceId, url: fileUri.getUriFromPath(this.path),
             displayHeight: this.mediaHeight, onDimensions: this.onDimensions })
             .width('100%').height('100%').hitTestBehavior(HitTestMode.None)

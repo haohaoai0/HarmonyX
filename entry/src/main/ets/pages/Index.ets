@@ -1,7 +1,10 @@
+import { AdaptivePostGrid } from '../components/AdaptivePostGrid';
+import { AdaptivePostFeed } from '../components/AdaptivePostFeed';
 import { motionDuration, motionCurve } from '../utils/AppMotion';
 import { STORAGE_KEY_REDUCE_MOTION, STORAGE_KEY_MOTION_DURATION } from '../services/MotionSettingsStore';
 import { hapticTick } from '../utils/Haptics';
-import { DEFAULT_COMPONENT_HDR_RATIO, STORAGE_KEY_COMPONENT_HDR_RATIO } from '../services/ComponentHdrSettingsStore';
+import { DEFAULT_COMPONENT_HDR_ENABLED, DEFAULT_COMPONENT_HDR_RATIO, STORAGE_KEY_COMPONENT_HDR_ENABLED,
+  STORAGE_KEY_COMPONENT_HDR_RATIO } from '../services/ComponentHdrSettingsStore';
 import { ComponentHdrHighlight } from '../utils/ComponentHdrHighlight';
 import { pageTextColor } from '../utils/ThemeColors';
 import { PageBackgroundBuilder } from './PageBackground';
@@ -507,6 +510,7 @@ struct NotificationThumb {
 @Entry
 @Component
 struct Index {
+  @StorageProp(STORAGE_KEY_COMPONENT_HDR_ENABLED) private componentHdrEnabled: boolean = DEFAULT_COMPONENT_HDR_ENABLED;
   @StorageProp(STORAGE_KEY_COMPONENT_HDR_RATIO) private componentHdrRatio: number = DEFAULT_COMPONENT_HDR_RATIO;
   @StorageProp('harmonyx.page_background') private pageBackgroundValue: string = '';
   @State private rootPageMotion: PageTransitionMotion = new PageTransitionMotion();
@@ -2398,12 +2402,14 @@ struct Index {
   }
 
   private hidePromotionPost(): void {
+    if (this.promotionPlan().dismissible === false) { return; }
     const context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
     xxAuthPopupStore.hidePromotion(context, Date.now(), this.promotionPostJson);
     AppStorage.setOrCreate<string>(XXAUTH_PROMOTION_POST, '');
   }
 
   private hidePromotionForSession(): void {
+    if (this.promotionPlan().dismissible === false) { return; }
     xxAuthPopupStore.hidePromotionForSession();
     AppStorage.setOrCreate<string>(XXAUTH_PROMOTION_POST, '');
   }
@@ -7279,7 +7285,7 @@ struct Index {
   // Secondary pages are dispatched from the shared HdsNavigation stack,
   // matching PaperTalk's pageStack + HdsNavDestination structure.
   @Builder
-  private NavigationBuilder(name: string): void {
+  private NavigationBuilder(name: string, param: Object): void {
     if (name === 'Notifications') {
       this.NotificationsDestination();
     } else if (name === 'PostDetail') {
@@ -7309,7 +7315,7 @@ struct Index {
         SettingsBuilder();
       }
     } else if (name === 'SettingsSection') {
-      SettingsSectionBuilder();
+      SettingsSectionBuilder(param as SettingsRouteParam);
     } else if (name === 'SidebarHandleSettings') {
       SidebarHandleSettingsBuilder();
     } else if (name === 'ProxySettings') {
@@ -7908,7 +7914,7 @@ struct Index {
         onOptions: (index: number): void => this.openHomeTimelineOptions(index) }).layoutWeight(1)
       Button({ type: ButtonType.Circle }) {
         SymbolGlyph($r('sys.symbol.plus')).fontSize(18).fontColor([$r('app.color.text_secondary')])
-          .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), true, this.componentHdrRatio))
+          .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.componentHdrEnabled, this.componentHdrRatio))
       }.width(32).height(36).padding(6).margin({ right: 12 }).backgroundColor(Color.Transparent)
         .id('home-manage-timelines').accessibilityText(this.text($r('app.string.timeline_manage')))
         .onClick((): void => this.openTimelineManager())
@@ -7945,13 +7951,14 @@ struct Index {
   private NotificationSettingsButton(): void {
     Button({ type: ButtonType.Circle }) {
       SymbolGlyph($r('sys.symbol.gearshape')).fontSize(24).fontColor([$r('app.color.text_primary')])
-          .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), true, this.componentHdrRatio))
+          .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.componentHdrEnabled, this.componentHdrRatio))
     }.width(36).height(36).padding(4).backgroundColor(Color.Transparent)
       .accessibilityText(this.text($r('app.string.settings_notifications')))
       .onClick((): void => {
         this.openContentDestination();
         const param: SettingsRouteParam = { section: 'notifications' };
-        this.navPathStack.pushPath({ name: 'SettingsSection', param: param });
+        NavigationGuard.pushPath<SettingsRouteParam>(this.navPathStack, { name: 'SettingsSection', param: param },
+          (route: SettingsRouteParam): string => route.section);
       })
   }
 
@@ -8040,7 +8047,7 @@ struct Index {
         SymbolGlyph($r('sys.symbol.person_badge_plus'))
           .fontSize($r('app.float.follow_header_symbol_size'))
           .fontColor([$r('app.color.text_primary')])
-          .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), true, this.componentHdrRatio))
+          .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.componentHdrEnabled, this.componentHdrRatio))
         if (this.liveBadge.length > 0) {
           Column().width($r('app.float.follow_status_dot_size')).height($r('app.float.follow_status_dot_size'))
             .backgroundColor($r('app.color.repost')).borderRadius(5)
@@ -8545,11 +8552,15 @@ struct Index {
   private ExplorePostGroup(card: XExploreTimelineCard): void {
     Column({ space: 0 }) {
       this.ExploreCardTitle(card.title)
-      ForEach(contentFilterStore.filter(card.tweets, this.contentFilterSettings()), (tweet: Tweet) => {
-        this.ExploreTweetCard(tweet)
-      }, (tweet: Tweet) => 'explore-card-post-' + card.key + '-' + tweet.id)
+      AdaptivePostGrid({ itemKeys: contentFilterStore.filter(card.tweets, this.contentFilterSettings()).map((post: Tweet): string => post.id),
+        item: (index: number): void => this.ExploreGroupPost(contentFilterStore.filter(card.tweets, this.contentFilterSettings())[index]) })
     }
     .width('100%')
+  }
+
+  @Builder
+  private ExploreGroupPost(tweet: Tweet): void {
+    this.ExploreTweetCard(tweet)
   }
 
   @Builder
@@ -9398,80 +9409,61 @@ struct Index {
     })
   }
 
+  private searchResultKeys(index: number): string[] {
+    return this.searchTimelineRows(index).map((row: SearchTimelineRow): string => row.key)
+      .concat(this.searchPageUsers(index).map((row: UserRow): string => 'user-' + row.id));
+  }
+
+  @Builder
+  private SearchResultItem(page: number, item: number): void {
+    if (item < this.searchTimelineRows(page).length) {
+      if (this.searchTimelineRows(page)[item].promotion !== null) {
+        this.HomePromotion(this.searchTimelineRows(page)[item].promotion as XXAuthPromotionPost)
+      } else { this.ExploreTweetCard(this.searchTimelineRows(page)[item].tweet as Tweet) }
+    } else {
+      UserRowCard({ row: this.searchPageUsers(page)[item - this.searchTimelineRows(page).length],
+        onOpen: (row: UserRow): void => this.openUserRow(row),
+        onFollowChanged: (row: UserRow, next: boolean): Promise<boolean> => this.applyRowFollow(row, next) })
+    }
+  }
+
+  @Builder
+  private SearchResultsHeader(index: number): void {
+    if (this.searchPageLoading(index) && this.searchResultKeys(index).length === 0) {
+      ForEach(this.frameIndexes(4), (skeleton: number) => { this.SearchResultSkeletonRow(skeleton) },
+        (skeleton: number): string => 'search-skeleton-' + skeleton.toString())
+    } else if (this.searchPageStatus(index).length > 0) {
+      Text(this.searchPageStatus(index)).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_S'))
+        .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
+        .width('92%').padding({ top: 6, bottom: 8 })
+    }
+  }
+
+  @Builder
+  private SearchResultsFooter(index: number): void {
+    if (this.searchResultKeys(index).length > 0) {
+      this.ExploreWaterFlowFooter()
+    } else if (!this.searchPageLoading(index) && this.activeExploreQuery.length > 0) {
+      Text(SEARCH_PRODUCT_IDS[index] === 'Lists' ? $r('app.string.search_lists_empty') :
+        this.searchPageStatus(index).length > 0 ? this.searchPageStatus(index) : $r('app.string.search_empty_hint'))
+        .fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L'))
+        .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
+        .width('100%').textAlign(TextAlign.Center).padding({ top: 48, bottom: 48 })
+    }
+  }
+
   @Builder
   private SearchResultsContent(index: number): void {
-      List({ scroller: this.contentPageScroller('search', SEARCH_PRODUCT_IDS[index]) }) {
-        if (this.searchPageLoading(index) && this.searchPagePosts(index).length === 0 && this.searchPageUsers(index).length === 0) {
-          ForEach(this.frameIndexes(4), (index: number) => {
-            ListItem() {
-              this.SearchResultSkeletonRow(index)
-            }
-          }, (index: number) => 'search-skeleton-' + index)
-        } else {
-          if (this.searchPageStatus(index).length > 0) {
-            ListItem() {
-              Text(this.searchPageStatus(index)).fontFamily(this.appFontFamily)
-                .fontSize($r('sys.float.Body_S'))
-                .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
-                .width('92%')
-                .padding({ top: 6, bottom: 8 })
-            }
-          }
-
-          ForEach(this.searchTimelineRows(index), (row: SearchTimelineRow) => {
-            ListItem() {
-              if (row.promotion !== null) { this.HomePromotion(row.promotion as XXAuthPromotionPost) }
-              else { this.ExploreTweetCard(row.tweet as Tweet) }
-            }
-          }, (row: SearchTimelineRow) => row.key)
-
-          ForEach(this.searchPageUsers(index), (row: UserRow) => {
-            ListItem() {
-              UserRowCard({
-                row: row,
-                onOpen: (r: UserRow): void => this.openUserRow(r),
-                onFollowChanged: (r: UserRow, next: boolean): Promise<boolean> => this.applyRowFollow(r, next)
-              })
-            }
-          }, (row: UserRow) => 'surface-user-' + row.id)
-
-          if (this.searchPagePosts(index).length > 0 || this.searchPageUsers(index).length > 0) {
-            ListItem() {
-              this.ExploreWaterFlowFooter()
-            }
-            .onAppear((): void => {
-              if (index === this.searchProductIndex()) { this.requestMoreExploreResults(); }
-            })
-          }
-
-          if (this.searchPagePosts(index).length === 0 && this.searchPageUsers(index).length === 0 &&
-            this.activeExploreQuery.length > 0) {
-            ListItem() {
-              Text(SEARCH_PRODUCT_IDS[index] === 'Lists' ? $r('app.string.search_lists_empty') :
-                this.searchPageStatus(index).length > 0 ? this.searchPageStatus(index) : $r('app.string.search_empty_hint')).fontFamily(this.appFontFamily)
-                .fontSize($r('sys.float.Body_L'))
-                .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
-                .width('100%')
-                .textAlign(TextAlign.Center)
-                .padding({ top: 48, bottom: 48 })
-            }
-          }
-        }
-      }
-      .width('100%')
-      .height('100%')
-      // The product tabs live in the title bar's bottom builder, so the
-      // results start below bar + tabs and still scroll under both.
-      .contentStartOffset(this.isDesktopLayout() ? 0 : this.statusBarHeight + 104)
-      .clip(!this.isDesktopLayout()).cachedCount(8, this.isDesktopLayout())
-      .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: true })
-      .scrollBar(BarState.Off)
-      // The footer also loads on appear, but a list that ends inside the
-      // viewport never fires that callback, so reach-end keeps paging going.
-      .onReachEnd((): void => {
-        if (index === this.searchProductIndex()) { this.requestMoreExploreResults(); }
-      })
-      .backgroundColor(pageCanvasColor(this.displayMode, this.darkSurface, this.pageBackgroundValue))
+    AdaptivePostFeed({ scroller: this.contentPageScroller('search', SEARCH_PRODUCT_IDS[index]),
+      itemKeys: this.searchResultKeys(index), allowColumns: this.searchPagePosts(index).length > 0,
+      feedId: 'search-post-feed-' + SEARCH_PRODUCT_IDS[index],
+      startOffset: this.isDesktopLayout() ? 0 : this.statusBarHeight + 104,
+      clipContent: !this.isDesktopLayout(),
+      header: (): void => this.SearchResultsHeader(index),
+      item: (item: number): void => this.SearchResultItem(index, item),
+      footer: (): void => this.SearchResultsFooter(index),
+      onLoadMore: (): void => { if (index === this.searchProductIndex()) { this.requestMoreExploreResults(); } }
+    }).backgroundColor(pageCanvasColor(this.displayMode, this.darkSurface, this.pageBackgroundValue))
   }
 
   @Builder

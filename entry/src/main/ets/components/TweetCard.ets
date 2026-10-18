@@ -1,4 +1,5 @@
-import { DEFAULT_COMPONENT_HDR_RATIO, STORAGE_KEY_COMPONENT_HDR_RATIO } from '../services/ComponentHdrSettingsStore';
+import { DEFAULT_COMPONENT_HDR_ENABLED, DEFAULT_COMPONENT_HDR_RATIO, STORAGE_KEY_COMPONENT_HDR_ENABLED,
+  STORAGE_KEY_COMPONENT_HDR_RATIO } from '../services/ComponentHdrSettingsStore';
 import { ComponentHdrHighlight } from '../utils/ComponentHdrHighlight';
 import { pageTextColor } from '../utils/ThemeColors';
 import { postCardSurfaceColor } from '../utils/ThemeColors';
@@ -66,6 +67,7 @@ const LONG_TEXT_MAX_LINES_EXPANDED: number = 400;
 
 @Component
 export struct TweetCard {
+  @StorageProp(STORAGE_KEY_COMPONENT_HDR_ENABLED) private componentHdrEnabled: boolean = DEFAULT_COMPONENT_HDR_ENABLED;
   @StorageProp(STORAGE_KEY_COMPONENT_HDR_RATIO) private componentHdrRatio: number = DEFAULT_COMPONENT_HDR_RATIO;
   @StorageProp('harmonyx.page_background') private pageBackgroundValue: string = '';
   @StorageProp(STORAGE_KEY_POST_MODERATION_REVISION) @Watch('loadModeration') private moderationRevision: number = 0;
@@ -121,6 +123,7 @@ export struct TweetCard {
   // A promotion row is a synthetic Tweet: the card keeps the ordinary post
   // layout while the actions that would write to a real post are removed.
   promotion: boolean = false;
+  @Prop promotionDismissible: boolean = true;
   onPromotionHideSession: () => void = (): void => { };
   onPromotionHideWeek: () => void = (): void => { };
   @State private cardHeight: number = 0;
@@ -580,7 +583,7 @@ export struct TweetCard {
             SymbolGlyph($r('sys.symbol.repeat'))
               .fontSize(18)
               .fontColor([this.reposted ? this.readingText($r('app.color.repost')) : this.readingText($r('app.color.text_secondary'))])
-              .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.reposted, this.componentHdrRatio))
+              .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.componentHdrEnabled && this.reposted, this.componentHdrRatio))
             if (this.displayedRepostCount() > 0) {
               Text(formatCount(this.displayedRepostCount())).fontFamily(this.appFontFamily)
                 .fontSize($r('sys.float.Caption_L'))
@@ -594,7 +597,7 @@ export struct TweetCard {
             SymbolGlyph(this.liked ? $r('sys.symbol.heart_fill') : $r('sys.symbol.heart'))
               .fontSize(18)
               .fontColor([this.liked ? this.readingText($r('app.color.like')) : this.readingText($r('app.color.text_secondary'))])
-              .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.liked, this.componentHdrRatio))
+              .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.componentHdrEnabled && this.liked, this.componentHdrRatio))
             if (this.displayedLikeCount() > 0) {
               Text(formatCount(this.displayedLikeCount())).fontFamily(this.appFontFamily)
                 .fontSize($r('sys.float.Caption_L'))
@@ -646,7 +649,7 @@ export struct TweetCard {
             .fontSize(18)
             .fontWeight(FontWeight.Medium)
             .fontColor([this.reposted ? this.readingText($r('app.color.repost')) : this.readingText($r('app.color.text_secondary'))])
-            .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.reposted, this.componentHdrRatio))
+            .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.componentHdrEnabled && this.reposted, this.componentHdrRatio))
             .rotate({ angle: this.reduceMotion ? 0 : this.repostRotation })
           Text(formatCount(Math.max(0, this.tweet.metrics.repostCount +
             (this.reposted === this.tweet.reposted ? 0 : (this.reposted ? 1 : -1))))).fontFamily(this.appFontFamily)
@@ -675,7 +678,7 @@ export struct TweetCard {
           SymbolGlyph(this.liked ? $r('sys.symbol.heart_fill') : $r('sys.symbol.heart'))
             .fontSize(18)
             .fontColor([this.liked ? this.readingText($r('app.color.like')) : this.readingText($r('app.color.text_secondary'))])
-            .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.liked, this.componentHdrRatio))
+            .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.componentHdrEnabled && this.liked, this.componentHdrRatio))
             .scale({ x: this.reduceMotion ? 1 : this.likeScale, y: this.reduceMotion ? 1 : this.likeScale })
           Text(formatCount(this.displayedLikeCount())).fontFamily(this.appFontFamily)
             .fontSize($r('sys.float.Caption_L'))
@@ -701,7 +704,7 @@ export struct TweetCard {
           SymbolGlyph(this.bookmarked ? $r('sys.symbol.bookmark_fill') : $r('sys.symbol.bookmark'))
             .fontSize(18)
             .fontColor([this.bookmarked ? this.readingText(this.accentColor) : this.readingText($r('app.color.text_secondary'))])
-            .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.bookmarked, this.componentHdrRatio))
+            .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.componentHdrEnabled && this.bookmarked, this.componentHdrRatio))
             .scale({ x: this.reduceMotion ? 1 : this.bookmarkScale, y: this.reduceMotion ? 1 : this.bookmarkScale })
         }
         .opacity(this.bookmarkPending ? 0.5 : 1)
@@ -886,7 +889,7 @@ export struct TweetCard {
               SymbolGlyph(this.liked ? $r('sys.symbol.heart_fill') : $r('sys.symbol.heart'))
                 .fontSize($r('app.float.timeline_column_action_icon'))
                 .fontColor([this.liked ? this.readingText($r('app.color.like')) : this.readingText($r('app.color.text_secondary'))])
-                .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.liked, this.componentHdrRatio))
+                .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.componentHdrEnabled && this.liked, this.componentHdrRatio))
                 .scale({ x: this.reduceMotion ? 1 : this.likeScale, y: this.reduceMotion ? 1 : this.likeScale })
               Text(formatCount(this.displayedLikeCount())).fontFamily(this.appFontFamily)
                 .fontSize($r('app.float.timeline_column_meta_font'))
@@ -895,7 +898,7 @@ export struct TweetCard {
               .id('narrow-post-like-' + this.tweet.id).monopolizeEvents(true)
               .accessibilityText(this.metricLabel($r('app.string.action_like'), this.displayedLikeCount()))
               .onClick((): void => { void this.toggleLike(); })
-          } else if (this.promotion) {
+          } else if (this.promotion && this.promotionDismissible) {
             Button({ type: ButtonType.Circle }) {
               SymbolGlyph($r('sys.symbol.xmark')).fontSize($r('app.float.timeline_column_action_icon'))
                 .fontColor([this.readingText($r('app.color.text_secondary'))])
@@ -987,7 +990,7 @@ export struct TweetCard {
               // A promotion row reuses this card for identical layout, so the
               // affordances that need a real post are replaced by the dismissal
               // choices the promotion supports.
-              if (this.promotion) {
+              if (this.promotion && this.promotionDismissible) {
                 Button({ type: ButtonType.Normal, stateEffect: true }) {
                   SymbolGlyph($r('sys.symbol.xmark'))
                     .fontSize(16)
@@ -1004,7 +1007,7 @@ export struct TweetCard {
                   { value: $r('app.string.promotion_hide_once'), action: (): void => this.onPromotionHideSession() },
                   { value: $r('app.string.promotion_hide_week'), action: (): void => this.onPromotionHideWeek() }
                 ])
-              } else {
+              } else if (!this.promotion) {
                 PostOverflowButton({ foreground: this.readingText($r('app.color.text_secondary')), tweet: this.tweet })
               }
               if (this.translationEnabled && !this.showActions && !this.promotion) {

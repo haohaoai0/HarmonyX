@@ -1,4 +1,5 @@
-import { DEFAULT_COMPONENT_HDR_RATIO, STORAGE_KEY_COMPONENT_HDR_RATIO } from '../services/ComponentHdrSettingsStore';
+import { DEFAULT_COMPONENT_HDR_ENABLED, DEFAULT_COMPONENT_HDR_RATIO, STORAGE_KEY_COMPONENT_HDR_ENABLED,
+  STORAGE_KEY_COMPONENT_HDR_RATIO } from '../services/ComponentHdrSettingsStore';
 import { ComponentHdrHighlight } from '../utils/ComponentHdrHighlight';
 import { motionDuration, motionScale, motionCurve } from '../utils/AppMotion';
 import { hapticTick } from '../utils/Haptics';
@@ -6,6 +7,7 @@ import { SystemMaterialUtil } from '../utils/SystemMaterial';
 
 @Component
 export struct MaterialButton {
+  @StorageProp(STORAGE_KEY_COMPONENT_HDR_ENABLED) private componentHdrEnabled: boolean = DEFAULT_COMPONENT_HDR_ENABLED;
   @StorageProp(STORAGE_KEY_COMPONENT_HDR_RATIO) private componentHdrRatio: number = DEFAULT_COMPONENT_HDR_RATIO;
   @Prop buttonWidth: Length | undefined = 42;
   @Prop buttonHeight: Length = 42;
@@ -85,7 +87,7 @@ export struct MaterialButton {
     }
     .width(this.buttonWidth === undefined ? undefined : '100%')
     .height('100%')
-    .compositingFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.enableHdrHighlight && this.buttonEnabled, this.componentHdrRatio))
+    .compositingFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.componentHdrEnabled && this.enableHdrHighlight && this.buttonEnabled, this.componentHdrRatio))
     .hitTestBehavior(HitTestMode.None)
   }
 

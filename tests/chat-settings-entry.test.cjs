@@ -85,7 +85,8 @@ test('settings home and settings subcategories send an explicit chat-root route'
       compilerOptions:{target:ts.ScriptTarget.ES2020}
     }).outputText;
     const category={id:'chat',destination:'DmSettings'};
-    const Settings=new Function('settingsCategory',code+';return Settings;')(()=>category);
+    const guard={pushPath:(stack,path)=>stack.pushPath(path),pushPathMatching:(stack,path)=>stack.pushPath(path)};
+    const Settings=new Function('settingsCategory','NavigationGuard',code+';return Settings;')(()=>category,guard);
     const pushes=[];const instance=Object.assign(new Settings(),{pageStack:{pushPath:path=>pushes.push(path)}});
     if(name==='openCategory')instance.openCategory(category);else instance.openSection('chat');
     assert.deepEqual(pushes,[{name:'DmSettings',param:{section:''}}],component);

@@ -1,4 +1,5 @@
-import { DEFAULT_COMPONENT_HDR_RATIO, STORAGE_KEY_COMPONENT_HDR_RATIO } from '../services/ComponentHdrSettingsStore';
+import { DEFAULT_COMPONENT_HDR_ENABLED, DEFAULT_COMPONENT_HDR_RATIO, STORAGE_KEY_COMPONENT_HDR_ENABLED,
+  STORAGE_KEY_COMPONENT_HDR_RATIO } from '../services/ComponentHdrSettingsStore';
 import { ComponentHdrHighlight } from '../utils/ComponentHdrHighlight';
 import { STORAGE_KEY_PAGE_TRANSITION_MODE, DEFAULT_PAGE_TRANSITION_MODE } from '../services/PageTransitionSettingsStore';
 import { pageSystemTransition, PageTransitionMotion } from '../utils/PageTransition';
@@ -54,6 +55,7 @@ import { destinationTitleBarStyle } from '../utils/DestinationTitleBar';
 import { SystemMaterialUtil } from '../utils/SystemMaterial';
 import { pageSurfaceColor } from '../utils/ThemeColors';
 import type { ImageEditResult, ImageEditRouteParam } from '../pages/ImageEdit';
+import type { PhotoViewerRouteParam } from '../pages/PhotoViewer';
 import {
   DEFAULT_TITLE_BAR_GLASS_MATERIAL_LEVEL,
   STORAGE_KEY_TITLE_BAR_GLASS_MATERIAL_LEVEL,
@@ -737,6 +739,7 @@ export struct ReplyComposerCapsule {
 
 @Component
 export struct ReplyComposerPage {
+  @StorageProp(STORAGE_KEY_COMPONENT_HDR_ENABLED) private componentHdrEnabled: boolean = DEFAULT_COMPONENT_HDR_ENABLED;
   @StorageProp(STORAGE_KEY_COMPONENT_HDR_RATIO) private componentHdrRatio: number = DEFAULT_COMPONENT_HDR_RATIO;
   @State private pageMotion: PageTransitionMotion = new PageTransitionMotion();
   @StorageProp(STORAGE_KEY_PAGE_TRANSITION_MODE) private pageTransitionMode: string = DEFAULT_PAGE_TRANSITION_MODE;
@@ -1913,7 +1916,7 @@ export struct ReplyComposerPage {
         .fontWeight(FontWeight.Bold)
         .fontColor($r('app.color.text_on_accent'))
         .backgroundColor(this.accentColor)
-        .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.canPublish() && !this.publishing, this.componentHdrRatio))
+        .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.componentHdrEnabled && this.canPublish() && !this.publishing, this.componentHdrRatio))
         .borderRadius(24)
         .enabled(this.canPublish() && !this.publishing)
         .onClick((): void => {
@@ -1985,7 +1988,9 @@ export struct ReplyComposerPage {
               this.removeImage(item.uri);
             }
           }, (): void => {
-            if (!item.isGif) {
+            if (item.isGif) {
+              this.openGifPreview(item.uri);
+            } else {
               this.openImageEditor(item.uri);
             }
           }, item.isGif ? ImageFit.Contain : ImageFit.Cover);
@@ -2001,6 +2006,11 @@ export struct ReplyComposerPage {
     .onAreaChange((oldArea: Area, newArea: Area): void => {
       this.onImageGridAreaChanged(oldArea, newArea);
     });
+  }
+
+  private openGifPreview(uri: string): void {
+    const param: PhotoViewerRouteParam = { urls: [uri], index: 0, alt: '', transitionPrefix: '' };
+    this.pageStack.pushPath({ name: 'PhotoViewer', param: param });
   }
 
   private openImageEditor(uri: string): void {
@@ -2035,7 +2045,7 @@ export struct ReplyComposerPage {
       SymbolGlyph($r('sys.symbol.video_fill'))
         .fontSize(34)
         .fontColor([this.accentColor])
-        .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), !this.publishing, this.componentHdrRatio));
+        .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.componentHdrEnabled && !this.publishing, this.componentHdrRatio));
       Text($r('app.string.compose_video_label')).fontFamily(this.appFontFamily)
         .fontSize($r('sys.float.Caption_L'))
         .maxFontScale(1)
@@ -2067,7 +2077,7 @@ export struct ReplyComposerPage {
       SymbolGlyph(symbol)
         .fontSize(25)
         .fontColor([this.accentColor])
-        .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), !this.publishing, this.componentHdrRatio));
+        .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.componentHdrEnabled && !this.publishing, this.componentHdrRatio));
     }
     .width(48)
     .height(48)
@@ -2083,7 +2093,7 @@ export struct ReplyComposerPage {
       SymbolGlyph($r('sys.symbol.picture'))
         .fontSize(25)
         .fontColor([this.accentColor])
-        .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), !this.publishing, this.componentHdrRatio));
+        .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.componentHdrEnabled && !this.publishing, this.componentHdrRatio));
     }
     .width(48)
     .height(48)
@@ -2099,7 +2109,7 @@ export struct ReplyComposerPage {
       SymbolGlyph($r('sys.symbol.gif'))
         .fontSize(25)
         .fontColor([this.accentColor])
-        .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), !this.publishing, this.componentHdrRatio));
+        .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.componentHdrEnabled && !this.publishing, this.componentHdrRatio));
     }
     .width(48)
     .height(48)
@@ -2115,7 +2125,7 @@ export struct ReplyComposerPage {
       SymbolGlyph($r('sys.symbol.camera'))
         .fontSize(25)
         .fontColor([this.accentColor])
-        .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), !this.publishing, this.componentHdrRatio));
+        .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.componentHdrEnabled && !this.publishing, this.componentHdrRatio));
     }
     .width(48)
     .height(48)
@@ -2131,7 +2141,7 @@ export struct ReplyComposerPage {
       SymbolGlyph($r('sys.symbol.video'))
         .fontSize(25)
         .fontColor([this.accentColor])
-        .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), !this.publishing, this.componentHdrRatio));
+        .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.componentHdrEnabled && !this.publishing, this.componentHdrRatio));
     }
     .width(48)
     .height(48)

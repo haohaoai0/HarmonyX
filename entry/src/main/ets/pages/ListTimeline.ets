@@ -1,3 +1,4 @@
+import { AdaptivePostFeed } from '../components/AdaptivePostFeed';
 import { pageTextColor } from '../utils/ThemeColors';
 import { pageBackgroundActive } from '../services/PageBackgroundStore';
 import { appPageBackground } from '../components/PageBackgroundLayer';
@@ -423,8 +424,8 @@ export struct ListTimeline {
 
   @Builder
   private Content(): void {
-    ListItem() { this.Header() }
-    ListItem() {
+    Column() { this.Header() }
+    Column() {
       Row({ space: 10 }) {
         SymbolGlyph($r('sys.symbol.person_2'))
           .fontSize(20)
@@ -445,7 +446,7 @@ export struct ListTimeline {
       })
     }
     if (this.loading) {
-      ListItem() {
+      Column() {
         Column() {
           LoadingProgress().color(this.accentColor).width(18).height(18)
         }
@@ -453,7 +454,7 @@ export struct ListTimeline {
         .padding({ top: 48 })
       }
     } else if (this.visiblePosts().length === 0) {
-      ListItem() {
+      Column() {
         Column({ space: 12 }) {
           Text(this.status.length > 0 ? this.status : this.text($r('app.string.list_waiting_posts'))).fontFamily(this.appFontFamily)
             .fontSize(this.status.length > 0 ? $r('sys.float.Body_L') : $r('app.float.list_empty_title_size'))
@@ -480,37 +481,42 @@ export struct ListTimeline {
         .alignItems(HorizontalAlign.Start)
         .padding({ left: 28, right: 28, top: 30 })
       }
-    } else {
-      ForEach(this.visiblePosts(), (tweet: Tweet) => {
-        ListItem() {
-          TweetCard({
-            tweet: tweet,
-            onLikeChanged: (t: Tweet, liked: boolean): Promise<boolean> => this.toggleLike(t, liked),
-            onRepostChanged: (t: Tweet, reposted: boolean): Promise<boolean> => this.toggleRepost(t, reposted),
-            onOpen: (t: Tweet): void => this.openPost(t),
-            onAuthorTapped: (t: Tweet): void => {
-              const param: UserDetailRouteParam = { author: t.author, posts: [] };
-              this.pageStack.pushPath({ name: 'UserDetail', param: param });
-            },
-            onMentionTapped: (handle: string): void => {
-              if (handle.length === 0) {
-                return;
-              }
-              const author: TweetAuthor = {
-                id: '',
-                name: handle,
-                username: handle,
-                avatarColor: this.accentColor,
-                verified: false
-              };
-              const param: UserDetailRouteParam = { author: author, posts: [] };
-              this.pageStack.pushPath({ name: 'UserDetail', param: param });
-            }
-          })
+    }
+  }
+
+  @Builder
+  private TimelinePost(tweet: Tweet): void {
+    TweetCard({
+      tweet: tweet,
+      onLikeChanged: (t: Tweet, liked: boolean): Promise<boolean> => this.toggleLike(t, liked),
+      onRepostChanged: (t: Tweet, reposted: boolean): Promise<boolean> => this.toggleRepost(t, reposted),
+      onOpen: (t: Tweet): void => this.openPost(t),
+      onAuthorTapped: (t: Tweet): void => {
+        const param: UserDetailRouteParam = { author: t.author, posts: [] };
+        this.pageStack.pushPath({ name: 'UserDetail', param: param });
+      },
+      onMentionTapped: (handle: string): void => {
+        if (handle.length === 0) {
+          return;
         }
-      }, (tweet: Tweet) => tweet.id)
+        const author: TweetAuthor = {
+          id: '',
+          name: handle,
+          username: handle,
+          avatarColor: this.accentColor,
+          verified: false
+        };
+        const param: UserDetailRouteParam = { author: author, posts: [] };
+        this.pageStack.pushPath({ name: 'UserDetail', param: param });
+      }
+    })
+  }
+
+  @Builder
+  private TimelineFooter(): void {
+    if (!this.loading) {
       if (this.nextToken.length > 0) {
-        ListItem() {
+        Column() {
           Row() {
             if (this.loadingMore) {
               LoadingProgress().color(this.accentColor).width(18).height(18)
@@ -549,21 +555,16 @@ export struct ListTimeline {
         }.width('100%').height(this.coverHeight()).align(Alignment.Top)
           .position({ x: 0, y: 0 })
         Refresh({ refreshing: $$this.refreshing }) {
-          List({ scroller: this.scroller }) {
-            this.Content()
-          }
-          .width('100%')
-          .height('100%')
-          .scrollBar(BarState.Off)
-          .contentStartOffset(0)
-          .contentEndOffset(this.navigationIndicatorHeight + 24)
-          .onReachEnd((): void => {
-            this.load(false);
-          })
-          .onDidScroll((_scrollOffset: number): void => {
-            this.coverScrollOffset = Math.max(0, this.scroller.currentOffset().yOffset);
-            this.updateReadAloudFabMode(_scrollOffset);
-          })
+          AdaptivePostFeed({ scroller: this.scroller,
+            itemKeys: this.loading ? [] : this.visiblePosts().map((post: Tweet): string => post.id),
+            feedId: 'list-timeline-post-feed', endOffset: this.navigationIndicatorHeight + 24,
+            header: (): void => this.Content(),
+            item: (index: number): void => this.TimelinePost(this.visiblePosts()[index]),
+            footer: (): void => this.TimelineFooter(), onLoadMore: (): void => { void this.load(false); },
+            onFeedScroll: (offset: number): void => {
+              this.coverScrollOffset = Math.max(0, this.scroller.currentOffset().yOffset);
+              this.updateReadAloudFabMode(offset);
+            } })
         }
         .width('100%')
         .height('100%')

@@ -1,3 +1,4 @@
+import { AdaptivePostFeed } from '../components/AdaptivePostFeed';
 import { pageTextColor } from '../utils/ThemeColors';
 import { pageBackgroundActive } from '../services/PageBackgroundStore';
 import { appPageBackground } from '../components/PageBackgroundLayer';
@@ -343,7 +344,7 @@ export struct BookmarksPage {
 
   @Builder
   private BookmarkControls(): void {
-    ListItem() {
+    Column() {
       Column({ space: 10 }) {
         if (!this.showCollections) {
           Search({ value: this.searchInput, placeholder: $r('app.string.bookmarks_search_placeholder') })
@@ -402,7 +403,7 @@ export struct BookmarksPage {
     }
     if (this.showCollections) {
       if (this.collectionsLoading) {
-        ListItem() {
+        Column() {
           Row({ space: 8 }) {
             LoadingProgress().width(16).height(16).color(this.accentColor)
             Text($r('app.string.bookmarks_collections_loading')).fontFamily(this.appFontFamily)
@@ -414,7 +415,7 @@ export struct BookmarksPage {
           .padding(18)
         }
       } else if (this.collections.length === 0) {
-        ListItem() {
+        Column() {
           Text($r('app.string.bookmarks_collections_empty')).fontFamily(this.appFontFamily)
             .fontSize($r('sys.float.Body_M'))
             .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
@@ -424,7 +425,7 @@ export struct BookmarksPage {
         }
       } else {
         ForEach(this.collections, (collection: BookmarkCollection): void => {
-          ListItem() {
+          Column() {
             Row({ space: 12 }) {
               SymbolGlyph($r('sys.symbol.bookmark'))
                 .fontSize(22)
@@ -507,39 +508,44 @@ export struct BookmarksPage {
       }
       .width('100%')
       .padding({ left: 24, right: 24, top: 48 })
-    } else if (!this.showCollections) {
-      ForEach(this.visiblePosts(), (tweet: Tweet) => {
-        ListItem() {
-          TweetCard({
-            tweet: tweet,
-            onLikeChanged: (t: Tweet, liked: boolean): Promise<boolean> => this.toggleLike(t, liked),
-            onRepostChanged: (t: Tweet, reposted: boolean): Promise<boolean> => this.toggleRepost(t, reposted),
-            onBookmarkChanged: (t: Tweet, bookmarked: boolean): void =>
-              this.onBookmarkChanged(t, bookmarked),
-            onOpen: (t: Tweet): void => this.openPost(t),
-            onAuthorTapped: (t: Tweet): void => {
-              const param: UserDetailRouteParam = { author: t.author, posts: [] };
-              this.pageStack.pushPath({ name: 'UserDetail', param: param });
-            },
-            onMentionTapped: (handle: string): void => {
-              if (handle.length === 0) {
-                return;
-              }
-              const author: TweetAuthor = {
-                id: '',
-                name: handle,
-                username: handle,
-                avatarColor: this.accentColor,
-                verified: false
-              };
-              const param: UserDetailRouteParam = { author: author, posts: [] };
-              this.pageStack.pushPath({ name: 'UserDetail', param: param });
-            }
-          })
+    }
+  }
+
+  @Builder
+  private BookmarkPost(tweet: Tweet): void {
+    TweetCard({
+      tweet: tweet,
+      onLikeChanged: (t: Tweet, liked: boolean): Promise<boolean> => this.toggleLike(t, liked),
+      onRepostChanged: (t: Tweet, reposted: boolean): Promise<boolean> => this.toggleRepost(t, reposted),
+      onBookmarkChanged: (t: Tweet, bookmarked: boolean): void =>
+        this.onBookmarkChanged(t, bookmarked),
+      onOpen: (t: Tweet): void => this.openPost(t),
+      onAuthorTapped: (t: Tweet): void => {
+        const param: UserDetailRouteParam = { author: t.author, posts: [] };
+        this.pageStack.pushPath({ name: 'UserDetail', param: param });
+      },
+      onMentionTapped: (handle: string): void => {
+        if (handle.length === 0) {
+          return;
         }
-      }, (tweet: Tweet) => tweet.id)
+        const author: TweetAuthor = {
+          id: '',
+          name: handle,
+          username: handle,
+          avatarColor: this.accentColor,
+          verified: false
+        };
+        const param: UserDetailRouteParam = { author: author, posts: [] };
+        this.pageStack.pushPath({ name: 'UserDetail', param: param });
+      }
+    })
+  }
+
+  @Builder
+  private BookmarkFooter(): void {
+    if (!this.showCollections && !this.loading) {
       if (this.nextToken.length > 0) {
-        ListItem() {
+        Column() {
           Row() {
             if (this.loadingMore) {
               LoadingProgress().color(this.accentColor).width(18).height(18)
@@ -566,26 +572,16 @@ export struct BookmarksPage {
         appPageBackground()
       Stack({ alignContent: Alignment.BottomEnd }) {
         Refresh({ refreshing: $$this.refreshing }) {
-          List({ scroller: this.scroller }) {
-            this.BookmarkControls()
-            this.Content()
-          }
-          .width('100%')
-          .height('100%')
-          .scrollBar(BarState.Off)
-          .contentStartOffset(this.desktopLayoutEnabled && ResponsiveLayout.isLarge(this.windowBreakpoint) ?
-            0 : this.statusBarHeight + 60)
-          .clip(!(this.desktopLayoutEnabled && ResponsiveLayout.isLarge(this.windowBreakpoint)))
-          .cachedCount(8, this.desktopLayoutEnabled && ResponsiveLayout.isLarge(this.windowBreakpoint))
-          .contentEndOffset(this.navigationIndicatorHeight + 24)
-          .onReachEnd((): void => {
-            if (!this.showCollections) {
-              this.load(false);
-            }
-          })
-          .onDidScroll((_scrollOffset: number): void => {
-            this.updateReadAloudFabMode(_scrollOffset);
-          })
+          AdaptivePostFeed({ scroller: this.scroller,
+            itemKeys: this.showCollections || this.loading ? [] : this.visiblePosts().map((post: Tweet): string => post.id),
+            feedId: 'bookmarks-post-feed',
+            startOffset: this.desktopLayoutEnabled && ResponsiveLayout.isLarge(this.windowBreakpoint) ? 0 : this.statusBarHeight + 60,
+            endOffset: this.navigationIndicatorHeight + 24,
+            header: (): void => { this.BookmarkControls(); this.Content(); },
+            item: (index: number): void => this.BookmarkPost(this.visiblePosts()[index]),
+            footer: (): void => this.BookmarkFooter(),
+            onLoadMore: (): void => { if (!this.showCollections) { this.load(false); } },
+            onFeedScroll: (offset: number): void => this.updateReadAloudFabMode(offset) })
         }
         .width('100%')
           .height('100%')

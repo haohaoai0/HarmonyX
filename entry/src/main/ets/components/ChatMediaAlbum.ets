@@ -88,8 +88,12 @@ export struct ChatMediaAlbum {
         const mediaIndex: number = this.items().findIndex((item: ChatMediaItem): boolean =>
           item.attachment.mediaHash === attachment.mediaHash);
         const size: ChatAlbumSize | undefined = this.sizes[mediaIndex];
+        const animation: MediaAttachment | null = attachment.mediaType === 2 ? {
+          id: attachment.mediaHash, type: 'animated_gif', mediaUrl: uri, feedUrl: '', previewUrl: '',
+          width: size?.width ?? attachment.width, height: size?.height ?? attachment.height, altText: ''
+        } : null;
         items.push(new PhotoViewerPhoto(uri, uri, size?.width ?? attachment.width, size?.height ?? attachment.height, i, '',
-          this.mediaSourcePrefix + attachment.mediaHash));
+          this.mediaSourcePrefix + attachment.mediaHash, animation));
       }
       if (index < 0) { return; }
       const param: PhotoViewerRouteParam = { items: items, urls: items.map((item: PhotoViewerPhoto): string => item.previewUrl),

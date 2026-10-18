@@ -36,7 +36,7 @@ export struct DesktopSettingsHost {
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   // Settings destinations consume the nearest stack, independent of the app's root navigation.
   @Provide({ allowOverride: 'pageStack' }) pageStack: NavPathStack = new NavPathStack();
-  @BuilderParam destinationBuilder: (name: string) => void;
+  @BuilderParam destinationBuilder: (name: string, param: Object) => void;
   @StorageProp('harmonyx.display_mode') displayMode: string = '';
   @StorageProp('harmonyx.dark_surface') darkSurface: string = '';
   @StorageProp('harmonyx.title_bar_style_mode') titleBarStyleMode: number = 0;

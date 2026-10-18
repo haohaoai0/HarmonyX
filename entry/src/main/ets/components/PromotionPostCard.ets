@@ -79,14 +79,15 @@ export struct PromotionPostCard {
       // and every tap leads to the recommended app instead.
       showActions: false,
       promotion: true,
+      promotionDismissible: this.post.dismissible !== false,
       videoFeedEnabled: false,
       homeTimelineVideo: false,
       recordRecommendationSeen: false,
       onOpen: (): void => this.onOpen(),
       onAuthorTapped: (): void => this.onOpen(),
       onMentionTapped: (): void => { },
-      onPromotionHideSession: (): void => this.onHideSession(),
-      onPromotionHideWeek: (): void => this.onHideWeek()
+      onPromotionHideSession: (): void => { if (this.post.dismissible !== false) { this.onHideSession(); } },
+      onPromotionHideWeek: (): void => { if (this.post.dismissible !== false) { this.onHideWeek(); } }
     })
   }
 }

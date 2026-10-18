@@ -15,6 +15,7 @@ function loadGifPreview({ loadPreview, downloadGif = async () => false, proxyEna
   const released = [];
   const removed = [];
   const dependencies = {
+    '@ohos.hilog': { default: { info() {}, warn() {} } },
     '@kit.CoreFileKit': { fileIo: { unlinkSync: path => removed.push(path) },
       fileUri: { getUriFromPath: path => 'file://' + path } },
     '../services/ProxyDownloadService': { proxyDownloadService: { downloadWithRetry: downloadGif } },
@@ -24,8 +25,8 @@ function loadGifPreview({ loadPreview, downloadGif = async () => false, proxyEna
     '../services/ProxyStore': { proxyStore: { snapshot: () => ({ enabled: proxyEnabled }) } }
   };
   const module = { exports: {} };
-  new Function('require', 'module', 'exports', 'getContext', output)(
-    name => dependencies[name] || {}, module, module.exports, () => ({ cacheDir: '/app/cache' }));
+  new Function('require', 'module', 'exports', 'getContext', 'ImageFit', output)(
+    name => dependencies[name] || {}, module, module.exports, () => ({ cacheDir: '/app/cache' }), { Cover: 'cover' });
   return { component: new module.exports.GifPreviewImage(), released, removed };
 }
 

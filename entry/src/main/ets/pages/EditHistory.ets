@@ -1,3 +1,4 @@
+import { AdaptivePostGrid } from '../components/AdaptivePostGrid';
 import { pageTextColor } from '../utils/ThemeColors';
 import { appPageBackground } from '../components/PageBackgroundLayer';
 import { pageCanvasColor, pageReadingSurfaceColor } from '../utils/ThemeColors';
@@ -179,12 +180,8 @@ export struct EditHistoryPage {
               .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
               .width('100%')
               .padding({ left: 16, right: 16, top: 8, bottom: 2 })
-            ForEach(this.revisions, (revision: Tweet, index: number): void => {
-              TweetCard({
-                tweet: revision,
-                showActions: false
-              })
-            }, (revision: Tweet, index: number): string => revision.id + '-' + index.toString())
+            AdaptivePostGrid({ itemKeys: this.revisions.map((post: Tweet): string => post.id),
+        item: (index: number): void => this.RevisionCard(this.revisions[index]) })
             if (this.status.length > 0) {
               Text(this.status).fontFamily(this.appFontFamily)
                 .fontSize($r('sys.float.Body_S'))
@@ -239,6 +236,14 @@ export struct EditHistoryPage {
     .onRefreshing((): void => {
       this.refreshing = true;
       this.loadHistory(true);
+    })
+  }
+
+  @Builder
+  private RevisionCard(revision: Tweet): void {
+    TweetCard({
+      tweet: revision,
+      showActions: false
     })
   }
 

@@ -1,3 +1,4 @@
+import { AdaptivePostFeed } from '../components/AdaptivePostFeed';
 import { pageTextColor } from '../utils/ThemeColors';
 import { appPageBackground } from '../components/PageBackgroundLayer';
 import { pageCanvasColor, pageReadingSurfaceColor } from '../utils/ThemeColors';
@@ -1566,51 +1567,57 @@ export struct UserDetail {
   }
 
   @Builder
-  private ActivityItems(tab: number): void {
+  private ActivityHeader(tab: number): void {
     if (tab === 0) {
       ForEach(this.suggestionGroups.filter((group: FollowSuggestionGroup): boolean => group.afterTweetId.length === 0),
         (group: FollowSuggestionGroup) => {
-          ListItem() { FollowSuggestions({ group: group, contextualUserId: this.resolvedUserId(), showBanner: true }) }
+          Column() { FollowSuggestions({ group: group, contextualUserId: this.resolvedUserId(), showBanner: true }) }
         }, (group: FollowSuggestionGroup): string => group.id)
     }
-    ForEach(this.tabPosts(tab), (post: Tweet, index: number) => {
-      ListItem() {
-        Column() {
-          if (post.pinned && tab === 0 && this.postsFilter === 'posts') {
-            Row({ space: 8 }) {
-              SymbolGlyph($r('sys.symbol.pin')).fontSize(13).fontColor([pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)])
-              Text($r('app.string.profile_pinned')).fontFamily(this.appFontFamily).fontSize(13).fontWeight(FontWeight.Bold)
-                .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
-            }.width('100%').padding({ left: 58, top: 10 })
-          }
-          if (tab === 2 && this.mediaFilter === 'video') {
-            this.VideoRow(post)
-          } else {
-            TweetCard({ tweet: post, naturalVideoSize: true,
-              onLikeChanged: (t: Tweet, liked: boolean): Promise<boolean> => this.onLike(t, liked),
-              onRepostChanged: (t: Tweet, reposted: boolean): Promise<boolean> => this.onRepost(t, reposted),
-              onReply: (t: Tweet): void => this.replyToPost(t),
-              onOpen: (t: Tweet): void => this.openPostFromProfile(t),
-              onAuthorTapped: (t: Tweet): void => {
-                const param: UserDetailRouteParam = { author: t.author, posts: [] };
-                this.pageStack.pushPath({ name: 'UserDetail', param: param });
-              },
-              onMentionTapped: (handle: string): void => this.openMention(handle) })
-          }
-        }.width('100%')
-      }
-      if (tab === 0) {
-        ForEach(this.suggestionGroups.filter((group: FollowSuggestionGroup): boolean => group.afterTweetId === post.id),
-          (group: FollowSuggestionGroup) => {
-            ListItem() { FollowSuggestions({ group: group, contextualUserId: this.resolvedUserId(), showBanner: true }) }
-          }, (group: FollowSuggestionGroup): string => group.id)
-        if (this.privateProfileAvailable && !this.isSelfProfile && this.suggestionGroups.length === 0 &&
-          index === Math.min(2, this.tabPosts(tab).length - 1)) {
-          ListItem() { FollowSuggestions({ autoLoad: true, contextualUserId: this.resolvedUserId(), showBanner: true }) }
+  }
+
+  @Builder
+  private ActivityPost(tab: number, post: Tweet, index: number): void {
+    Column() {
+      Column() {
+        if (post.pinned && tab === 0 && this.postsFilter === 'posts') {
+          Row({ space: 8 }) {
+            SymbolGlyph($r('sys.symbol.pin')).fontSize(13).fontColor([pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)])
+            Text($r('app.string.profile_pinned')).fontFamily(this.appFontFamily).fontSize(13).fontWeight(FontWeight.Bold)
+              .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
+          }.width('100%').padding({ left: 58, top: 10 })
         }
+        if (tab === 2 && this.mediaFilter === 'video') {
+          this.VideoRow(post)
+        } else {
+          TweetCard({ tweet: post, naturalVideoSize: true,
+            onLikeChanged: (t: Tweet, liked: boolean): Promise<boolean> => this.onLike(t, liked),
+            onRepostChanged: (t: Tweet, reposted: boolean): Promise<boolean> => this.onRepost(t, reposted),
+            onReply: (t: Tweet): void => this.replyToPost(t),
+            onOpen: (t: Tweet): void => this.openPostFromProfile(t),
+            onAuthorTapped: (t: Tweet): void => {
+              const param: UserDetailRouteParam = { author: t.author, posts: [] };
+              this.pageStack.pushPath({ name: 'UserDetail', param: param });
+            },
+            onMentionTapped: (handle: string): void => this.openMention(handle) })
+        }
+      }.width('100%')
+    }
+    if (tab === 0) {
+      ForEach(this.suggestionGroups.filter((group: FollowSuggestionGroup): boolean => group.afterTweetId === post.id),
+        (group: FollowSuggestionGroup) => {
+          Column() { FollowSuggestions({ group: group, contextualUserId: this.resolvedUserId(), showBanner: true }) }
+        }, (group: FollowSuggestionGroup): string => group.id)
+      if (this.privateProfileAvailable && !this.isSelfProfile && this.suggestionGroups.length === 0 &&
+        index === Math.min(2, this.tabPosts(tab).length - 1)) {
+        Column() { FollowSuggestions({ autoLoad: true, contextualUserId: this.resolvedUserId(), showBanner: true }) }
       }
-    }, (post: Tweet): string => tab + '-' + (tab === 2 ? this.mediaFilter : (tab === 0 ? this.postsFilter : '')) + '-' + post.id)
-    ListItem() {
+    }
+  }
+
+  @Builder
+  private ActivityFooter(tab: number): void {
+    Column() {
       Column({ space: 12 }) {
         if (this.currentTabLoading(tab)) {
           LoadingProgress().width(26).height(26).color(this.accentColor)
@@ -1631,16 +1638,18 @@ export struct UserDetail {
 
   @Builder
   private ActivityList(tab: number): void {
-    List({ scroller: this.activityScrollers[tab] }) { this.ActivityItems(tab) }
-      .width('100%').height('100%').scrollBar(BarState.Off)
-      .contentEndOffset(this.navigationIndicatorHeight)
-      .nestedScroll({ scrollForward: NestedScrollMode.PARENT_FIRST, scrollBackward: NestedScrollMode.SELF_FIRST })
-      .onReachEnd((): void => {
-        if (this.selectedTab === tab && this.tabMoreCursor(tab).length > 0 &&
+    AdaptivePostFeed({ scroller: this.activityScrollers[tab],
+      itemKeys: this.tabPosts(tab).map((post: Tweet): string => post.id), feedId: 'profile-post-feed-' + tab.toString(),
+      endOffset: this.navigationIndicatorHeight, forwardMode: NestedScrollMode.PARENT_FIRST,
+      backwardMode: NestedScrollMode.SELF_FIRST,
+      header: (): void => this.ActivityHeader(tab),
+      item: (index: number): void => this.ActivityPost(tab, this.tabPosts(tab)[index], index),
+      footer: (): void => this.ActivityFooter(tab), onLoadMore: (): void => {
+      if (this.selectedTab === tab && this.tabMoreCursor(tab).length > 0 &&
           !this.currentTabLoading(tab) && this.currentTabStatus(tab).length === 0) {
           this.loadProfilePage(this.activitySource(tab), false);
         }
-      })
+      } })
   }
 
   @Builder

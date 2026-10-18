@@ -5,7 +5,7 @@ import { HdsNavigation } from '@kit.UIDesignKit';
 @Component
 export struct PhotoViewerOverlay {
   @Provide({ allowOverride: 'pageStack' }) pageStack: NavPathStack = new NavPathStack();
-  @BuilderParam destinationBuilder: (name: string) => void;
+  @BuilderParam destinationBuilder: (name: string, param: Object) => void;
   @Prop active: boolean = false;
 
   build(): void {

@@ -1,7 +1,8 @@
 import { common } from '@kit.AbilityKit';
 import { window } from '@kit.ArkUI';
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
-import { DEFAULT_COMPONENT_HDR_RATIO, STORAGE_KEY_COMPONENT_HDR_RATIO, componentHdrSettingsStore,
+import { DEFAULT_COMPONENT_HDR_ENABLED, DEFAULT_COMPONENT_HDR_RATIO, STORAGE_KEY_COMPONENT_HDR_ENABLED,
+  STORAGE_KEY_COMPONENT_HDR_RATIO, componentHdrSettingsStore,
   parseComponentHdrRatio } from '../services/ComponentHdrSettingsStore';
 import { ComponentHdrHighlight } from '../utils/ComponentHdrHighlight';
 import { fieldSurfaceColor, pageTextColor } from '../utils/ThemeColors';
@@ -10,6 +11,7 @@ import { ComponentHdrBrightnessInfo, ComponentHdrBrightnessMonitor } from '../se
 @Component
 export struct ComponentHdrSettingsContent {
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
+  @StorageLink(STORAGE_KEY_COMPONENT_HDR_ENABLED) private componentHdrEnabled: boolean = DEFAULT_COMPONENT_HDR_ENABLED;
   @StorageProp(STORAGE_KEY_COMPONENT_HDR_RATIO) private ratio: number = DEFAULT_COMPONENT_HDR_RATIO;
   @StorageProp('harmonyx.display_mode') private displayMode: string = '';
   @StorageProp('harmonyx.dark_surface') private darkSurface: string = '';
@@ -59,8 +61,34 @@ export struct ComponentHdrSettingsContent {
     this.saveFailed = context === undefined || !componentHdrSettingsStore.save(context, value);
   }
 
+  private setEnabled(value: boolean): void {
+    const previous: boolean = this.componentHdrEnabled;
+    const context: common.Context | undefined = this.getUIContext().getHostContext();
+    if (context === undefined || !componentHdrSettingsStore.saveEnabled(context, value)) {
+      this.saveFailed = true;
+      return;
+    }
+    this.saveFailed = false;
+    if (previous !== value) { this.componentHdrEnabled = value; }
+  }
+
   build(): void {
     Column({ space: 16 }) {
+      Row() {
+        Column({ space: 4 }) {
+          Text($r('app.string.settings_component_hdr_enabled')).fontFamily(this.appFontFamily)
+            .fontSize($r('sys.float.Title_S')).fontWeight(FontWeight.Bold)
+            .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
+          Text($r('app.string.settings_component_hdr_enabled_desc')).fontFamily(this.appFontFamily)
+            .fontSize($r('sys.float.Body_M'))
+            .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
+        }.layoutWeight(1).alignItems(HorizontalAlign.Start)
+        Toggle({ type: ToggleType.Switch, isOn: this.componentHdrEnabled })
+          .selectedColor(this.accentColor)
+          .accessibilityText($r('app.string.settings_component_hdr_enabled'))
+          .id('settings-component-hdr-enabled')
+          .onChange((value: boolean): void => this.setEnabled(value))
+      }.width('100%').alignItems(VerticalAlign.Center)
       Text($r('app.string.settings_component_hdr_ratio')).fontFamily(this.appFontFamily)
         .fontSize($r('sys.float.Title_S')).fontWeight(FontWeight.Bold)
         .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
@@ -91,6 +119,7 @@ export struct ComponentHdrSettingsContent {
           .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue,
             fieldSurfaceColor(this.displayMode, this.darkSurface)))
           .backgroundColor(fieldSurfaceColor(this.displayMode, this.darkSurface))
+          .enabled(this.componentHdrEnabled)
           .layoutWeight(1).accessibilityText($r('app.string.settings_component_hdr_ratio'))
           .id('settings-component-hdr-input')
           .onChange((text: string): void => this.updateRatio(text))
@@ -106,7 +135,7 @@ export struct ComponentHdrSettingsContent {
       }
       SymbolGlyph($r('sys.symbol.square_and_pencil')).fontSize($r('app.float.component_hdr_preview_size'))
         .fontColor([this.accentColor])
-        .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), true, this.ratio))
+        .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.componentHdrEnabled, this.ratio))
         .accessibilityLevel('no')
       Button($r('app.string.settings_component_hdr_reset'))
         .onClick((): void => this.updateRatio(DEFAULT_COMPONENT_HDR_RATIO.toString()))

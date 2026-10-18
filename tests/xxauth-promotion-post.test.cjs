@@ -55,6 +55,17 @@ test('a promotion post is parsed from the reserved announcement slots', () => {
   assert.ok(post.fingerprint.length > 0);
 });
 
+test('cloud post lock is carried by the plan and every rendered post', () => {
+  const rows=[info(BODY),store(APP_LINK)];
+  const locked=policy.plan(rows,{post_dismissible:false});
+  assert.equal(locked.dismissible,false);
+  assert.equal(locked.posts.length,1);
+  assert.equal(locked.posts[0].dismissible,false);
+  assert.equal(policy.plan(rows,{post_dismissible:true}).posts[0].dismissible,true);
+  assert.equal(policy.plan(rows,{}).dismissible,true,'legacy configurations remain compatible');
+  assert.equal(policy.plan(rows,{enabled:false,post_dismissible:false}).posts.length,0);
+});
+
 test('closed, disabled or incomplete slots never inject a post', () => {
   assert.equal(policy.post([], {}), null);
   assert.equal(policy.post([info('帖子昵称：小僵尸同学')], {}), null);
@@ -242,6 +253,7 @@ function homeRenderingFixture() {
     pageSections(_group, key, count) { sections[key === 'for-you' ? 0 : 1] = count; },
     syncHomeWaterFlowSections() { sources.forEach((row, index) => { sections[index] = row.contentCount(); }); },
     syncAllWaterFlowSections() { this.syncHomeWaterFlowSections(); },
+    rememberTimelinePosts() {},
     getUIContext: () => ({postFrameCallback: frame => frames.push(frame)})
   });
   sources.forEach((row, index) => {

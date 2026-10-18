@@ -8,6 +8,7 @@ import { ChatPendingMediaCard } from './ChatPendingMediaCard';
 export struct ChatPendingMediaAlbum {
   files: ChatPickedFile[] = [];
   sendId: string = '';
+  @Prop conversationId: string = '';
   @State private progress: number[] = [];
   @State private failed: boolean = false;
   @StorageProp('harmonyx.window_height') @Watch('resize') windowHeight: number = 0;
@@ -53,7 +54,8 @@ export struct ChatPendingMediaAlbum {
   @Builder
   private Tile(cell: ChatAlbumCell): void {
     if (this.files[cell.index] !== undefined) {
-      ChatPendingMediaCard({ file: this.files[cell.index], progress: this.progress[cell.index] ?? 0,
+      ChatPendingMediaCard({ file: this.files[cell.index], conversationId: this.conversationId,
+        progress: this.progress[cell.index] ?? 0,
         failed: this.failed, mediaWidth: cell.width, mediaHeight: cell.height,
         onDimensions: (width: number, height: number): void => { this.measured(cell.index, width, height); } })
     }

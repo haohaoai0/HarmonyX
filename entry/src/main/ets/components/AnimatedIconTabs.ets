@@ -1,6 +1,7 @@
 import { motionDuration, motionCurve } from '../utils/AppMotion';
 import { hapticTick } from '../utils/Haptics';
-import { DEFAULT_COMPONENT_HDR_RATIO, STORAGE_KEY_COMPONENT_HDR_RATIO } from '../services/ComponentHdrSettingsStore';
+import { DEFAULT_COMPONENT_HDR_ENABLED, DEFAULT_COMPONENT_HDR_RATIO, STORAGE_KEY_COMPONENT_HDR_ENABLED,
+  STORAGE_KEY_COMPONENT_HDR_RATIO } from '../services/ComponentHdrSettingsStore';
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
 import { LengthMetrics, UIContext } from '@kit.ArkUI';
 import { resourceManager } from '@kit.LocalizationKit';
@@ -30,6 +31,7 @@ const TAB_MIN_GAP_VP: number = 4;
 // label. Pagers supply fractional progress, other surfaces animate selection.
 @Component
 export struct AnimatedIconTabs {
+  @StorageProp(STORAGE_KEY_COMPONENT_HDR_ENABLED) private componentHdrEnabled: boolean = DEFAULT_COMPONENT_HDR_ENABLED;
   @StorageProp(STORAGE_KEY_COMPONENT_HDR_RATIO) private componentHdrRatio: number = DEFAULT_COMPONENT_HDR_RATIO;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @Prop items: IconTabItem[] = [];
@@ -254,7 +256,7 @@ export struct AnimatedIconTabs {
       }
     }.width(LayoutPolicy.fixAtIdealSize).height(this.buttonHeight()).justifyContent(FlexAlign.Center)
       .padding({ left: this.buttonGap, right: this.buttonGap })
-      .compositingFilter(ComponentHdrHighlight.filter(this.getUIContext(), active && this.fraction(index) > 0, this.componentHdrRatio))
+      .compositingFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.componentHdrEnabled && active && this.fraction(index) > 0, this.componentHdrRatio))
       .opacity(active ? this.fraction(index) : 1 - this.fraction(index))
   }
 
@@ -312,7 +314,7 @@ export struct AnimatedIconTabs {
           }
         }.width(this.slotWidthAt(index, this.motionPosition())).height(this.barHeight - 3)
           .justifyContent(FlexAlign.Center)
-          .compositingFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.fraction(index) > 0, this.componentHdrRatio))
+          .compositingFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.componentHdrEnabled && this.fraction(index) > 0, this.componentHdrRatio))
           .scale({ x: Math.max(0.001, this.fraction(index)), y: 1 }).opacity(this.fraction(index))
       }.width(this.slotWidthAt(index, this.motionPosition())).height(this.barHeight - 3).clip(false)
         .translate({ x: this.slotStartAt(index, this.motionPosition()) })
@@ -341,7 +343,7 @@ export struct AnimatedIconTabs {
           }
         }.width(this.expanded()).height(this.barHeight - 3).justifyContent(FlexAlign.Center)
           .translate({ x: (this.base() - this.expanded()) / 2 })
-          .compositingFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.fraction(index) > 0, this.componentHdrRatio))
+          .compositingFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.componentHdrEnabled && this.fraction(index) > 0, this.componentHdrRatio))
           .scale({ x: Math.max(0.001, this.fraction(index)), y: 1 }).opacity(this.fraction(index))
       }.width(this.base()).height(this.barHeight - 3).clip(false)
         .translate({ x: this.motionCenter(index) - this.base() / 2 })

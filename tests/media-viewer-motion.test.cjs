@@ -269,7 +269,7 @@ test('the source keeps its live image until the destination has a visible card f
   const node = { adopt() { moves++; return true; } };
   const Harness = new Function('mediaPhotoNodeFor', 'createMediaSourcePrefix', `${code}; return Harness;`)(
     () => node, () => 'visit-1');
-  const photo = Object.assign(new Harness(), { sourceId: 'card', presentImage: false, sharedPhoto: null,
+  const photo = Object.assign(new Harness(), { sourceId: 'card', presentImage: false, sharedPhoto: null, gifMedia: null,
     canAdoptNode: () => true,
     onAdoptNode: (node, owner, url) => node.adopt({}, owner, url),
     url: 'https://photo', getUIContext: () => ({}), resolveSource() { throw Error('must reuse the live node'); } });

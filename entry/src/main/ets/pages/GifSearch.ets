@@ -20,6 +20,10 @@ import {
 } from '@kit.UIDesignKit';
 import { GifPreviewImage } from '../components/GifPreviewImage';
 import { GifSearchItem, GifSearchParser } from '../services/GifSearchParser';
+import { MediaAttachment } from '../models/Tweet';
+import { PhotoViewerPhoto } from '../utils/PhotoViewerRequest';
+import { PhotoViewerRouteParam } from './PhotoViewer';
+import { captureMediaViewerSource, createMediaSourcePrefix } from '../utils/MediaViewerMotion';
 import { XPrivateClient, XPrivateResult, xPrivateClient } from '../services/XPrivateClient';
 import { proxyDownloadService } from '../services/ProxyDownloadService';
 import {
@@ -60,6 +64,7 @@ export struct GifSearchPage {
   @State private actionMenuItemId: string = '';
   private gifActionBusy: boolean = false;
   private scroller: Scroller = new Scroller();
+  private mediaSourcePrefix: string = createMediaSourcePrefix();
 
   aboutToAppear(): void {
     this.loadResults(true);
@@ -184,6 +189,8 @@ export struct GifSearchPage {
   @Builder
   private GifActionMenu(item: GifSearchItem): void {
     Menu() {
+      MenuItem({ content: $r('app.string.gif_action_use') })
+        .onClick((): void => { void this.chooseGif(item); });
       MenuItem({
         symbolStartIcon: new SymbolGlyphModifier($r('sys.symbol.download')),
         content: $r('app.string.gif_action_save')
@@ -199,7 +206,27 @@ export struct GifSearchPage {
     }
   }
 
-  private async chooseGif(item: GifSearchItem): Promise<void> {
+  private openPreview(selected: GifSearchItem): void {
+    const results: GifSearchItem[] = this.results.slice();
+    const items: PhotoViewerPhoto[] = results.map((item: GifSearchItem, index: number): PhotoViewerPhoto => {
+      const animation: MediaAttachment = { id: item.id, type: 'animated_gif', mediaUrl: item.fullImageUrl,
+        feedUrl: '', previewUrl: item.thumbnailUrl, width: item.width, height: item.height, altText: '' };
+      return new PhotoViewerPhoto(item.thumbnailUrl, item.fullImageUrl, item.width, item.height,
+        index, '', this.mediaSourcePrefix + item.id, animation);
+    });
+    const index: number = results.findIndex((item: GifSearchItem): boolean => item.id === selected.id);
+    if (index < 0) { return; }
+    const param: PhotoViewerRouteParam = { items: items, urls: items.map((item: PhotoViewerPhoto): string => item.previewUrl),
+      index: index, alt: '', transitionPrefix: '',
+      source: captureMediaViewerSource(this.getUIContext(), this.mediaSourcePrefix + selected.id,
+        selected.id, selected.width, selected.height),
+      onGifSelect: async (current: number): Promise<void> => {
+        if (current >= 0 && current < results.length) { await this.chooseGif(results[current], true); }
+      } };
+    this.pageStack.pushPath({ name: 'PhotoViewer', param: param }, param.source === undefined);
+  }
+
+  private async chooseGif(item: GifSearchItem, fromViewer: boolean = false): Promise<void> {
     if (this.downloadingId.length > 0) {
       return;
     }
@@ -213,6 +240,7 @@ export struct GifSearchPage {
       return;
     }
     gifSearchSelectionStore.publish(fileUri.getUriFromPath(filePath));
+    if (fromViewer) { this.pageStack.pop(false); }
     this.pageStack.pop();
   }
 
@@ -318,8 +346,9 @@ export struct GifSearchPage {
               }
             }
             .width('100%')
+            .id(this.mediaSourcePrefix + item.id)
             .onClick((): void => {
-              this.chooseGif(item);
+              this.openPreview(item);
             })
             .parallelGesture(
               LongPressGesture({ fingers: 1, repeat: false, duration: 500 })
