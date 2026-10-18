@@ -41,7 +41,7 @@ test('description highlighting supports multiple pairs, multiline spans and unpa
     {text:'普通',highlighted:false},{text:'红色\n跨行',highlighted:true},{text:'恢复',highlighted:false},{text:'另一个',highlighted:true}]);
   assert.deepEqual(parser.parseRecommendationDescription('保留//未闭合'),[{text:'保留//未闭合',highlighted:false}]);
 });
-test('force reminders override seven-day snooze but remain independent of mandatory app updates',()=>{
+test('force reminders override three-day snooze but remain independent of mandatory app updates',()=>{
   assert.equal(parser.shouldPresentRecommendation('normal',2000,1000),false);
   assert.equal(parser.shouldPresentRecommendation('force',2000,1000),true);
   assert.equal(parser.shouldPresentRecommendation('normal',2000,1000,true),true);

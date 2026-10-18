@@ -3,6 +3,7 @@ import { fileIo } from '@kit.CoreFileKit';
 import { image } from '@kit.ImageKit';
 import util from '@ohos.util';
 import { xChatActions } from './XChatActions';
+import { backgroundImageStore } from './BackgroundImageStore';
 
 export class ChatBackgroundState {
   presetId: string = 'default';
@@ -117,10 +118,13 @@ export function copyChatBackground(state: ChatBackgroundState): ChatBackgroundSt
 
 class ChatBackgroundStore {
   private directory(context: common.Context): string { return context.filesDir + '/chat_backgrounds'; }
+  private ownsIn(directory: string, path: string): boolean {
+    const prefix: string = directory + '/';
+    return path.startsWith(prefix) && /^[a-fA-F0-9-]+\.img$/.test(path.substring(prefix.length));
+  }
 
   private owns(context: common.Context, path: string): boolean {
-    const prefix: string = this.directory(context) + '/';
-    return path.startsWith(prefix) && /^[a-fA-F0-9-]+\.img$/.test(path.substring(prefix.length));
+    return this.ownsIn(this.directory(context), path) || backgroundImageStore.owns(context, path);
   }
 
   load(context: common.Context, conversationId: string): ChatBackgroundState {
@@ -181,7 +185,8 @@ class ChatBackgroundStore {
   }
 
   removePhoto(context: common.Context, path: string): void {
-    if (!this.owns(context, path)) { return; }
+    // Library images may be used by several chats and must survive replacement.
+    if (!this.ownsIn(this.directory(context), path)) { return; }
     try { fileIo.unlinkSync(path); } catch (error) {}
   }
 }

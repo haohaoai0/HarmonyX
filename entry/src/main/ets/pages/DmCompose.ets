@@ -1,3 +1,8 @@
+import { pageTextColor } from '../utils/ThemeColors';
+import { appPageBackground } from '../components/PageBackgroundLayer';
+import { pageCanvasColor, pageReadingSurfaceColor } from '../utils/ThemeColors';
+import { STORAGE_KEY_PAGE_TRANSITION_MODE, DEFAULT_PAGE_TRANSITION_MODE } from '../services/PageTransitionSettingsStore';
+import { pageSystemTransition, PageTransitionMotion } from '../utils/PageTransition';
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
 import { common } from '@kit.AbilityKit';
 import promptAction from '@ohos.promptAction';
@@ -24,6 +29,9 @@ export function DmComposeBuilder(): void { DmComposePage(); }
 
 @Component
 struct DmComposePage {
+  @StorageProp('harmonyx.page_background') private pageBackgroundValue: string = '';
+  @State private pageMotion: PageTransitionMotion = new PageTransitionMotion();
+  @StorageProp(STORAGE_KEY_PAGE_TRANSITION_MODE) private pageTransitionMode: string = DEFAULT_PAGE_TRANSITION_MODE;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @Consume('pageStack') pageStack: NavPathStack;
   @StorageProp('harmonyx.status_bar_height') statusBarHeight: number = 0;
@@ -125,11 +133,11 @@ struct DmComposePage {
       ProxyAvatar({verifiedType: person.verifiedType ?? '', avatarShape: person.avatarShape ?? '',  url: person.avatarUrl, avatarSize: 48, radius: 24, fallbackText: person.name.substring(0, 1) })
       Column({ space: 4 }) {
         Row({ space: 4 }) {
-          Text(person.name).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontWeight(FontWeight.Bold).fontColor($r('app.color.text_primary'))
+          Text(person.name).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontWeight(FontWeight.Bold).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
             .maxLines(1).textOverflow({ overflow: TextOverflow.Ellipsis }).layoutWeight(1)
           if (person.verified) { SymbolGlyph($r('sys.symbol.checkmark_circle_fill')).fontSize(14).fontColor([verificationBadgeColor(person.verifiedType, this.accentColor)]) }
         }.width('100%')
-        Text('@' + person.username).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor($r('app.color.text_secondary')).maxLines(1)
+        Text('@' + person.username).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).maxLines(1)
       }.layoutWeight(1).alignItems(HorizontalAlign.Start)
       if (this.group) {
         Toggle({ type: ToggleType.Checkbox, isOn: this.selected.some((item: ChatPerson): boolean => item.id === person.id) })
@@ -139,6 +147,8 @@ struct DmComposePage {
   }
   build(): void {
     HdsNavDestination() {
+      Stack({ alignContent: Alignment.TopStart }) {
+        appPageBackground()
         List({ scroller: this.scroller }) {
           ListItem() { Column().width('100%').height(this.statusBarHeight + 120) }
           if (this.group) {
@@ -169,7 +179,13 @@ struct DmComposePage {
           }
           ListItem() { Column().height(this.bottomInset + 24) }
         }.height('100%').width('100%').scrollBar(BarState.Off).edgeEffect(EdgeEffect.Spring, { alwaysEnabled: true })
-    }.onReady((context: NavDestinationContext): void => {
+    
+      }.width('100%').height('100%')
+    }
+    .scale({ x: this.pageMotion.scale, y: this.pageMotion.scale })
+    .opacity(this.pageMotion.opacity)
+    .systemTransition(pageSystemTransition(this.pageTransitionMode)).onReady((context: NavDestinationContext): void => {
+      this.pageMotion.attach(context);
       const param: DmComposeRouteParam | undefined = context.pathInfo?.param as DmComposeRouteParam | undefined;
       this.sharedPayload = param?.sharedPayload;
     }).titleMode(HdsNavDestinationTitleMode.MINI).hideBackButton(false).bindToScrollable([this.scroller])
@@ -179,7 +195,7 @@ struct DmComposePage {
           menu: { value: this.titleMenu() } },
         style: destinationTitleBarStyle(ScrollEffectType.GRADIENT_BLUR, this.displayMode, this.darkSurface, this.titleBarStyleMode)
       })
-      .backgroundColor(pageSurfaceColor(this.displayMode, this.darkSurface)).systemMaterial(chatPageMaterial())
+      .backgroundColor(pageCanvasColor(this.displayMode, this.darkSurface, this.pageBackgroundValue)).systemMaterial(chatPageMaterial())
       .onBackPressed((): boolean => {
         if (this.group) { this.group = false; this.selected = []; this.search(); }
         else { ResponsiveLayout.closeContentDestination(this.pageStack); }

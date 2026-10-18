@@ -125,7 +125,7 @@ export struct PostRichCard {
       Stack({ alignContent: Alignment.BottomStart }) {
         if (presentation.media.media.length > 0 && (presentation.media.media[0].type !== 'photo' ||
           presentation.media.media[0].sensitive === true)) {
-          PostMedia({ attachments: presentation.media.media, naturalVideoSize: true, limitNaturalHeight: false,
+          PostMedia({ controlSurface: $r('app.color.poll_option_surface'), attachments: presentation.media.media, naturalVideoSize: true, limitNaturalHeight: false,
             photoViewportHeight: this.websiteHeight(presentation), showDownloadButton: false, linkCardVideo: true,
             onVideoOpen: (): void => this.open(presentation.url) })
         } else {
@@ -196,7 +196,7 @@ export struct PostRichCard {
           ProxyMediaImage({ url: part.media[0].mediaUrl, displayHeight: 170 })
             .onClick((): void => this.open(part.url))
         } else {
-          PostMedia({ attachments: part.media, naturalVideoSize: true, limitNaturalHeight: true })
+          PostMedia({ controlSurface: $r('app.color.poll_option_surface'), attachments: part.media, naturalVideoSize: true, limitNaturalHeight: true })
         }
       } else if (part.imageUrl.length > 0) {
         ProxyMediaImage({ url: part.imageUrl, displayHeight: this.data().content?.compact === true ? 96 : 170 })

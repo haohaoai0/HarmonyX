@@ -1,3 +1,8 @@
+import { pageTextColor } from '../utils/ThemeColors';
+import { appPageBackground } from '../components/PageBackgroundLayer';
+import { pageCanvasColor, pageReadingSurfaceColor } from '../utils/ThemeColors';
+import { STORAGE_KEY_PAGE_TRANSITION_MODE, DEFAULT_PAGE_TRANSITION_MODE } from '../services/PageTransitionSettingsStore';
+import { pageSystemTransition, PageTransitionMotion } from '../utils/PageTransition';
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
 import { STORAGE_KEY_SYSTEM_EMOJI_ENABLED } from '../services/AppearanceStore';
 import { common } from '@kit.AbilityKit';
@@ -22,6 +27,9 @@ export function PostArticleBuilder(): void { PostArticle(); }
 
 @Component
 struct PostArticle {
+  @StorageProp('harmonyx.page_background') private pageBackgroundValue: string = '';
+  @State private pageMotion: PageTransitionMotion = new PageTransitionMotion();
+  @StorageProp(STORAGE_KEY_PAGE_TRANSITION_MODE) private pageTransitionMode: string = DEFAULT_PAGE_TRANSITION_MODE;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @StorageProp(STORAGE_KEY_SYSTEM_EMOJI_ENABLED) private systemEmojiEnabled: boolean = false;
   @StorageProp('harmonyx.status_bar_height') statusBarHeight: number = 0;
@@ -51,7 +59,9 @@ struct PostArticle {
       if (!this.alive || generation !== this.generation || session !== xPrivateClient.sessionGeneration()) { return; }
       const article: ProfileArticle | undefined = result.ok ? this.postId.length > 0 ?
         XTimelineParser.parsePostContent(result.body, this.postId)?.article : XArticleParser.detail(result.body) : undefined;
-      if (article !== undefined && article.id === this.article.id) { this.article = article; }
+      if (article !== undefined && article.id === this.article.id) {
+        this.article = article;
+      }
       this.failed = article === undefined || (article.blocks?.length ?? 0) === 0 && (article.plainText?.length ?? 0) === 0;
       this.status = result.status;
     } catch (error) { if (this.alive && generation === this.generation) { this.failed = true; } }
@@ -68,7 +78,7 @@ struct PostArticle {
       family: this.appFontFamily === DEFAULT_APP_FONT_FAMILY ? (run.code ? 'monospace' : '') : this.appFontFamily,
       decoration: run.strike ? TextDecorationType.LineThrough : run.underline || run.url.length > 0 ?
         TextDecorationType.Underline : TextDecorationType.None,
-      color: run.url.length > 0 ? this.accentColor : $r('app.color.text_primary')
+      color: pageTextColor(run.url.length > 0 ? this.accentColor : $r('app.color.text_primary'), this.pageBackgroundValue)
     };
   }
   @Builder
@@ -76,8 +86,8 @@ struct PostArticle {
     Column({ space: 8 }) {
       if (block.text.length > 0) {
         Row({ space: 8 }) {
-          if (block.kind === 'unordered-list-item') { Text('•').fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontColor(this.accentColor) }
-          if (block.kind === 'ordered-list-item') { Text(String(index + 1) + '.').fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontColor(this.accentColor) }
+          if (block.kind === 'unordered-list-item') { Text('•').fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontColor(pageTextColor(this.accentColor, this.pageBackgroundValue)) }
+          if (block.kind === 'ordered-list-item') { Text(String(index + 1) + '.').fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontColor(pageTextColor(this.accentColor, this.pageBackgroundValue)) }
           Text() {
             ForEach(block.runs, (run: ArticleRun) => {
               EmojiSpans(this.getUIContext(), run.text, this.font(block), this.systemEmojiEnabled,
@@ -98,26 +108,28 @@ struct PostArticle {
   }
   build(): void {
     HdsNavDestination() {
+      Stack({ alignContent: Alignment.TopStart }) {
+        appPageBackground()
       Scroll(this.scroller) {
         Column({ space: 18 }) {
           if (this.article !== undefined) {
             if (this.article.coverUrl.length > 0) { ProxyMediaImage({ url: this.article.coverUrl, displayHeight: 220 }).borderRadius(16).clip(true) }
             Text() { EmojiSpans(this.getUIContext(), this.article.title, $r('sys.float.Title_L'), this.systemEmojiEnabled) }.fontFamily(this.appFontFamily)
-              .width('100%').fontSize($r('sys.float.Title_L')).fontWeight(FontWeight.Bold).fontColor($r('app.color.text_primary'))
+              .width('100%').fontSize($r('sys.float.Title_L')).fontWeight(FontWeight.Bold).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
             if ((this.article.blocks?.length ?? 0) > 0) {
               ForEach(this.article.blocks ?? [], (block: ArticleBlock, index: number) => { this.Block(block, index) }, (block: ArticleBlock): string => block.id)
             } else if ((this.article.plainText?.length ?? 0) > 0) {
               Text() { EmojiSpans(this.getUIContext(), this.article.plainText ?? '', $r('sys.float.Body_L'), this.systemEmojiEnabled) }.fontFamily(this.appFontFamily)
-                .width('100%').fontSize($r('sys.float.Body_L')).fontColor($r('app.color.text_primary')).copyOption(CopyOptions.LocalDevice)
+                .width('100%').fontSize($r('sys.float.Body_L')).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)).copyOption(CopyOptions.LocalDevice)
                 .editMenuOptions(new EmojiCopyMenu(getContext(this) as common.UIAbilityContext, this.article.plainText ?? '', this.systemEmojiEnabled))
             } else {
               Text() { EmojiSpans(this.getUIContext(), this.article.previewText, $r('sys.float.Body_L'), this.systemEmojiEnabled) }.fontFamily(this.appFontFamily)
-                .width('100%').fontSize($r('sys.float.Body_L')).fontColor($r('app.color.text_secondary'))
+                .width('100%').fontSize($r('sys.float.Body_L')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
             }
             if (this.loading) { LoadingProgress().width(28).height(28).color(this.accentColor) }
             if (this.failed) {
-              Text($r('app.string.card_article_failed')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor($r('app.color.text_secondary'))
-              if (this.status > 0) { Text('HTTP ' + this.status).fontFamily(this.appFontFamily).fontSize($r('sys.float.Caption_L')).fontColor($r('app.color.text_secondary')) }
+              Text($r('app.string.card_article_failed')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
+              if (this.status > 0) { Text('HTTP ' + this.status).fontFamily(this.appFontFamily).fontSize($r('sys.float.Caption_L')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)) }
               Button($r('app.string.card_retry')).fontColor(this.accentColor).backgroundColor($r('app.color.poll_option_surface')).onClick((): void => { void this.load(); })
             }
             Button($r('app.string.card_original')).fontColor(this.accentColor).backgroundColor(Color.Transparent)
@@ -126,12 +138,23 @@ struct PostArticle {
         }.width('100%').constraintSize({ maxWidth: 780 }).alignItems(HorizontalAlign.Start)
           .padding({ left: 16, right: 16, top: this.statusBarHeight + 64, bottom: this.navigationIndicatorHeight + 32 })
       }.width('100%').height('100%').scrollBar(BarState.Off)
-    }.onReady((context: NavDestinationContext): void => {
+    
+      }.width('100%').height('100%')
+    }
+    .scale({ x: this.pageMotion.scale, y: this.pageMotion.scale })
+    .opacity(this.pageMotion.opacity)
+    .systemTransition(pageSystemTransition(this.pageTransitionMode)).onReady((context: NavDestinationContext): void => {
+      this.pageMotion.attach(context);
       const param: PostArticleRouteParam = context.pathInfo?.param as PostArticleRouteParam;
-      if (param !== undefined) { this.article = param.article; this.postId = param.postId; this.alive = true; void this.load(); }
+      if (param !== undefined) {
+        this.article = param.article;
+        this.postId = param.postId;
+        this.alive = true;
+        void this.load();
+      }
     }).titleMode(HdsNavDestinationTitleMode.MINI).bindToScrollable([this.scroller]).hideBackButton(false)
       .titleBar({ avoidLayoutSafeArea: true, content: { title: { mainTitle: $r('app.string.card_article') } },
         style: destinationTitleBarStyle(ScrollEffectType.GRADIENT_BLUR, this.themeDisplayMode, this.themeDarkSurface, this.titleBarStyleMode) })
-      .backgroundColor(pageSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
+      .backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue))
   }
 }

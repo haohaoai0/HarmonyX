@@ -1,3 +1,7 @@
+import { appPageBackground } from '../components/PageBackgroundLayer';
+import { pageCanvasColor, pageReadingSurfaceColor } from '../utils/ThemeColors';
+import { STORAGE_KEY_PAGE_TRANSITION_MODE, DEFAULT_PAGE_TRANSITION_MODE } from '../services/PageTransitionSettingsStore';
+import { pageSystemTransition, PageTransitionMotion } from '../utils/PageTransition';
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
 import { common } from '@kit.AbilityKit';
 import { deviceInfo } from '@kit.BasicServicesKit';
@@ -14,6 +18,9 @@ export function SpaceDraftBuilder(): void { SpaceDraftPage(); }
 
 @Component
 struct SpaceDraftPage {
+  @StorageProp('harmonyx.page_background') private pageBackgroundValue: string = '';
+  @State private pageMotion: PageTransitionMotion = new PageTransitionMotion();
+  @StorageProp(STORAGE_KEY_PAGE_TRANSITION_MODE) private pageTransitionMode: string = DEFAULT_PAGE_TRANSITION_MODE;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @Consume('pageStack') pageStack: NavPathStack;
   @StorageProp('harmonyx.status_bar_height') statusBarHeight: number = 0;
@@ -77,6 +84,8 @@ struct SpaceDraftPage {
   }
   build(): void {
     HdsNavDestination() {
+      Stack({ alignContent: Alignment.TopStart }) {
+        appPageBackground()
       Column() {
         Scroll(this.scroller) {
           Column({ space: 24 }) {
@@ -142,12 +151,18 @@ struct SpaceDraftPage {
             }
           })
       }.width('100%').height('100%').padding({ top: this.statusBarHeight + 60 })
-    }.titleMode(HdsNavDestinationTitleMode.MINI).hideBackButton(false).bindToScrollable([this.scroller])
+    
+      }.width('100%').height('100%')
+    }
+    .scale({ x: this.pageMotion.scale, y: this.pageMotion.scale })
+    .opacity(this.pageMotion.opacity)
+    .onReady((context: NavDestinationContext): void => { this.pageMotion.attach(context); })
+    .systemTransition(pageSystemTransition(this.pageTransitionMode)).titleMode(HdsNavDestinationTitleMode.MINI).hideBackButton(false).bindToScrollable([this.scroller])
       .onBackPressed((): boolean => { if (this.save(false)) { this.pageStack.pop(); } return true; })
       .titleBar({ avoidLayoutSafeArea: true, content: { title: { mainTitle: $r('app.string.spaces_create_draft') } },
         style: destinationTitleBarStyle(ScrollEffectType.IMMERSIVE_GRADIENT_BLUR,
           this.themeDisplayMode, this.themeDarkSurface, this.titleBarStyleMode) })
-      .backgroundColor(pageSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
+      .backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue))
       .systemMaterial(deviceInfo.apiAvailable('26.0.0') ? new uiMaterial.ImmersiveMaterial({
         style: uiMaterial.ImmersiveStyle.REGULAR, applyShadow: true, colorInvert: true }) : undefined)
   }

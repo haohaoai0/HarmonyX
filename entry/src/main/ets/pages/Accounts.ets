@@ -1,3 +1,9 @@
+import { pageBackgroundActive } from '../services/PageBackgroundStore';
+import { pageTextColor } from '../utils/ThemeColors';
+import { appPageBackground } from '../components/PageBackgroundLayer';
+import { pageCanvasColor, pageReadingSurfaceColor } from '../utils/ThemeColors';
+import { STORAGE_KEY_PAGE_TRANSITION_MODE, DEFAULT_PAGE_TRANSITION_MODE } from '../services/PageTransitionSettingsStore';
+import { pageSystemTransition, PageTransitionMotion } from '../utils/PageTransition';
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
 import { userAvatarRadius, userVerifiedType, userAvatarShape, verificationBadgeColor } from '../utils/UserIdentity';
 // Multi-account manager: shows every signed-in X account, switches the active
@@ -30,6 +36,9 @@ export function AccountsBuilder(): void {
 
 @Component
 export struct AccountsPage {
+  @StorageProp('harmonyx.page_background') private pageBackgroundValue: string = '';
+  @State private pageMotion: PageTransitionMotion = new PageTransitionMotion();
+  @StorageProp(STORAGE_KEY_PAGE_TRANSITION_MODE) private pageTransitionMode: string = DEFAULT_PAGE_TRANSITION_MODE;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @Consume('pageStack') pageStack: NavPathStack;
   @StorageLink('harmonyx.accent_color') accentColor: string = '#007DFF';
@@ -159,10 +168,10 @@ export struct AccountsPage {
         Text($r('app.string.accounts_add')).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Subtitle_L'))
           .fontWeight(FontWeight.Medium)
-          .fontColor($r('app.color.text_primary'))
+          .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
         Text($r('app.string.accounts_add_desc')).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Body_M'))
-          .fontColor($r('app.color.text_secondary'))
+          .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
           .maxLines(3)
       }
       .layoutWeight(1)
@@ -200,7 +209,7 @@ export struct AccountsPage {
           Text(account.title()).fontFamily(this.appFontFamily)
             .fontSize($r('sys.float.Subtitle_L'))
             .fontWeight(FontWeight.Medium)
-            .fontColor($r('app.color.text_primary'))
+            .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
             .maxLines(1)
             .textOverflow({ overflow: TextOverflow.Ellipsis })
           if (account.id === this.activeId) {
@@ -215,7 +224,7 @@ export struct AccountsPage {
         Text(account.handle().length > 0 ? account.handle() :
           this.text($r('app.string.accounts_private_only'))).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Body_M'))
-          .fontColor($r('app.color.text_secondary'))
+          .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
           .maxLines(1)
           .textOverflow({ overflow: TextOverflow.Ellipsis })
       }
@@ -250,11 +259,13 @@ export struct AccountsPage {
 
   build(): void {
     HdsNavDestination() {
+      Stack({ alignContent: Alignment.TopStart }) {
+        appPageBackground()
       Scroll(this.scroller) {
         Column({ space: 0 }) {
           Text($r('app.string.accounts_intro')).fontFamily(this.appFontFamily)
             .fontSize($r('sys.float.Body_M'))
-            .fontColor($r('app.color.text_secondary'))
+            .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
             .width('100%')
             .padding({ left: 20, right: 20, bottom: 8 })
 
@@ -262,10 +273,10 @@ export struct AccountsPage {
             Column({ space: 8 }) {
               SymbolGlyph($r('sys.symbol.person_2_badge_arrow_2_circlepath'))
                 .fontSize(30)
-                .fontColor([$r('app.color.text_secondary')])
+                .fontColor([pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)])
               Text($r('app.string.accounts_empty')).fontFamily(this.appFontFamily)
                 .fontSize($r('sys.float.Subtitle_L'))
-                .fontColor($r('app.color.text_primary'))
+                .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
             }
             .width('100%')
             .padding({ top: 28, bottom: 28 })
@@ -281,7 +292,7 @@ export struct AccountsPage {
 
           Text($r('app.string.accounts_note')).fontFamily(this.appFontFamily)
             .fontSize($r('sys.float.Body_S'))
-            .fontColor($r('app.color.text_secondary'))
+            .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
             .width('100%')
             .padding({ left: 20, right: 20, top: 12 })
         }
@@ -292,7 +303,13 @@ export struct AccountsPage {
       .height('100%')
       .scrollBar(BarState.Off)
       .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: true })
+    
+      }.width('100%').height('100%')
     }
+    .scale({ x: this.pageMotion.scale, y: this.pageMotion.scale })
+    .opacity(this.pageMotion.opacity)
+    .onReady((context: NavDestinationContext): void => { this.pageMotion.attach(context); })
+    .systemTransition(pageSystemTransition(this.pageTransitionMode))
     .titleMode(HdsNavDestinationTitleMode.MINI)
     .hideBackButton(false)
     .onBackPressed((): boolean => {
@@ -306,7 +323,7 @@ export struct AccountsPage {
       style: destinationTitleBarStyle(ScrollEffectType.GRADIENT_BLUR, this.themeDisplayMode,
         this.themeDarkSurface, this.titleBarStyleMode)
     })
-    .backgroundColor(pageSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
-    .systemMaterial(this.pageMaterial());
+    .backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue))
+    .systemMaterial(pageBackgroundActive(this.pageBackgroundValue) ? undefined : this.pageMaterial());
   }
 }

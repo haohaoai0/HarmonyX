@@ -1,3 +1,9 @@
+import { pageTextColor } from '../utils/ThemeColors';
+import { pageBackgroundActive } from '../services/PageBackgroundStore';
+import { appPageBackground } from '../components/PageBackgroundLayer';
+import { pageCanvasColor, pageReadingSurfaceColor } from '../utils/ThemeColors';
+import { STORAGE_KEY_PAGE_TRANSITION_MODE, DEFAULT_PAGE_TRANSITION_MODE } from '../services/PageTransitionSettingsStore';
+import { pageSystemTransition, PageTransitionMotion } from '../utils/PageTransition';
 // Bookmarks destination. Reads the account's bookmark timeline through the
 // private interface, which is the only credential that can serve it: the
 // official API v2 has no bookmarks endpoint in the free tier.
@@ -43,6 +49,9 @@ export function BookmarksBuilder(): void {
 
 @Component
 export struct BookmarksPage {
+  @StorageProp('harmonyx.page_background') private pageBackgroundValue: string = '';
+  @State private pageMotion: PageTransitionMotion = new PageTransitionMotion();
+  @StorageProp(STORAGE_KEY_PAGE_TRANSITION_MODE) private pageTransitionMode: string = DEFAULT_PAGE_TRANSITION_MODE;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @Consume('pageStack') pageStack: NavPathStack;
   @StorageProp('harmonyx.status_bar_height') statusBarHeight: number =
@@ -90,7 +99,7 @@ export struct BookmarksPage {
   }
 
   private pageMaterial(): uiMaterial.Material | undefined {
-    if (!deviceInfo.apiAvailable('26.0.0')) {
+    if (pageBackgroundActive(this.pageBackgroundValue) || !deviceInfo.apiAvailable('26.0.0')) {
       return undefined;
     }
     return new uiMaterial.ImmersiveMaterial({
@@ -351,7 +360,7 @@ export struct BookmarksPage {
         Row({ space: 8 }) {
           Button($r('app.string.bookmarks_all'), { stateEffect: true })
             .layoutWeight(1)
-            .fontColor(this.showCollections ? $r('app.color.text_primary') : $r('app.color.text_on_accent'))
+            .fontColor(this.showCollections ? pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, this.showCollections ? $r('app.color.bg_field') : this.accentColor) : $r('app.color.text_on_accent'))
             .backgroundColor(this.showCollections ? $r('app.color.bg_field') : this.accentColor)
             .borderRadius(18)
             .onClick((): void => {
@@ -359,7 +368,7 @@ export struct BookmarksPage {
             })
           Button($r('app.string.bookmarks_collections'), { stateEffect: true })
             .layoutWeight(1)
-            .fontColor(this.showCollections ? $r('app.color.text_on_accent') : $r('app.color.text_primary'))
+            .fontColor(this.showCollections ? $r('app.color.text_on_accent') : pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, this.showCollections ? this.accentColor : $r('app.color.bg_field')))
             .backgroundColor(this.showCollections ? this.accentColor : $r('app.color.bg_field'))
             .borderRadius(18)
             .onClick((): void => {
@@ -373,7 +382,7 @@ export struct BookmarksPage {
             Text(this.selectedCollectionName).fontFamily(this.appFontFamily)
               .fontSize($r('sys.float.Body_M'))
               .fontWeight(FontWeight.Medium)
-              .fontColor($r('app.color.text_accent'))
+              .fontColor(pageTextColor($r('app.color.text_accent'), this.pageBackgroundValue, Color.Transparent))
               .layoutWeight(1)
               .maxLines(1)
               .textOverflow({ overflow: TextOverflow.Ellipsis })
@@ -398,7 +407,7 @@ export struct BookmarksPage {
             LoadingProgress().width(16).height(16).color(this.accentColor)
             Text($r('app.string.bookmarks_collections_loading')).fontFamily(this.appFontFamily)
               .fontSize($r('sys.float.Body_M'))
-              .fontColor($r('app.color.text_secondary'))
+              .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
           }
           .width('100%')
           .justifyContent(FlexAlign.Center)
@@ -408,7 +417,7 @@ export struct BookmarksPage {
         ListItem() {
           Text($r('app.string.bookmarks_collections_empty')).fontFamily(this.appFontFamily)
             .fontSize($r('sys.float.Body_M'))
-            .fontColor($r('app.color.text_secondary'))
+            .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
             .width('100%')
             .textAlign(TextAlign.Center)
             .padding(24)
@@ -424,20 +433,20 @@ export struct BookmarksPage {
                 Text(collection.name).fontFamily(this.appFontFamily)
                   .fontSize($r('sys.float.Body_L'))
                   .fontWeight(FontWeight.Medium)
-                  .fontColor($r('app.color.text_primary'))
+                  .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
                   .maxLines(1)
                   .textOverflow({ overflow: TextOverflow.Ellipsis })
                 if (collection.itemCount > 0) {
                   Text(collection.itemCount.toString()).fontFamily(this.appFontFamily)
                     .fontSize($r('sys.float.Body_S'))
-                    .fontColor($r('app.color.text_secondary'))
+                    .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
                 }
               }
               .layoutWeight(1)
               .alignItems(HorizontalAlign.Start)
               SymbolGlyph($r('sys.symbol.chevron_right'))
                 .fontSize(18)
-                .fontColor([$r('app.color.text_secondary')])
+                .fontColor([pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)])
             }
             .width('100%')
             .padding({ left: 20, right: 20, top: 14, bottom: 14 })
@@ -472,7 +481,7 @@ export struct BookmarksPage {
         LoadingProgress().color(this.accentColor).width(18).height(18)
         Text($r('app.string.bookmarks_loading')).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Body_M'))
-          .fontColor($r('app.color.text_secondary'))
+          .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
           .margin({ top: 12 })
       }
       .width('100%')
@@ -481,7 +490,7 @@ export struct BookmarksPage {
       Column() {
         Text(this.status.length > 0 ? this.status : this.text($r('app.string.bookmarks_empty'))).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Body_L'))
-          .fontColor($r('app.color.text_secondary'))
+          .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
           .textAlign(TextAlign.Center)
           .width('100%')
         if (this.status.length > 0) {
@@ -537,7 +546,7 @@ export struct BookmarksPage {
             }
             Text($r('app.string.bookmarks_load_more')).fontFamily(this.appFontFamily)
               .fontSize($r('sys.float.Body_M'))
-              .fontColor($r('app.color.text_accent'))
+              .fontColor(pageTextColor($r('app.color.text_accent'), this.pageBackgroundValue, Color.Transparent))
               .margin({ left: 8 })
           }
           .width('100%')
@@ -553,6 +562,8 @@ export struct BookmarksPage {
 
   build(): void {
     HdsNavDestination() {
+      Stack({ alignContent: Alignment.TopStart }) {
+        appPageBackground()
       Stack({ alignContent: Alignment.BottomEnd }) {
         Refresh({ refreshing: $$this.refreshing }) {
           List({ scroller: this.scroller }) {
@@ -600,7 +611,13 @@ export struct BookmarksPage {
       .width('100%')
       .height('100%')
       .clip(!(this.desktopLayoutEnabled && ResponsiveLayout.isLarge(this.windowBreakpoint)))
+    
+      }.width('100%').height('100%')
     }
+    .scale({ x: this.pageMotion.scale, y: this.pageMotion.scale })
+    .opacity(this.pageMotion.opacity)
+    .onReady((context: NavDestinationContext): void => { this.pageMotion.attach(context); })
+    .systemTransition(pageSystemTransition(this.pageTransitionMode))
     .titleMode(HdsNavDestinationTitleMode.MINI)
     .hideBackButton(false)
     .onBackPressed((): boolean => {
@@ -615,7 +632,7 @@ export struct BookmarksPage {
       style: destinationTitleBarStyle(ScrollEffectType.IMMERSIVE_GRADIENT_BLUR,
         this.themeDisplayMode, this.themeDarkSurface, this.titleBarStyleMode)
     })
-    .backgroundColor(pageSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
-    .systemMaterial(this.pageMaterial());
+    .backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue))
+    .systemMaterial(pageBackgroundActive(this.pageBackgroundValue) ? undefined : this.pageMaterial());
   }
 }

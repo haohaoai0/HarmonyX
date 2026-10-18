@@ -1,0 +1,14 @@
+# AI assistant wallpaper motifs
+
+Generated with the built-in imagegen tool in generate mode. The source atlas is `ai-atlas.png`; 12 isolated motifs were prepared with `tools/Prepare-PageSignatureMotifs.cjs`. The tool normalizes padding and ink color while retaining the generated transparency.
+
+- Preview: [ai-preview.png](ai-preview.png)
+- Production files: `entry/src/main/resources/{base,dark}/media/page_motif_ai_assistants_*.png`.
+- Dimensions: 256 by 256, transparent PNG, matching black and white alpha masks.
+- Names: GPT, Claude, Gemini, DeepSeek, Grok, Qwen, Kimi, Doubao, Copilot, Perplexity, Mistral, AI robot.
+
+These are stylized brand-inspired outline motifs for wallpaper decoration.
+
+## Exact prompt
+
+Use case: logo-brand. Create ONE production sprite atlas of AI assistant brand-inspired wallpaper motifs for an app, exactly 4 columns by 3 rows, 12 separate symbols, landscape canvas about 1536x1152. Actual transparent background, pure black rounded monoline outline ink only, transparent interiors, no white fill, no grey shading, no colors, no words, no captions, no cell borders, no shadows, no background texture. Consistent 7-9px strokes with very generous transparent margins. Each symbol centered inside its equal cell, comparable visual scale about 210px, none touching or crossing any cell edge. Sophisticated simplified symbols recognizable at 40vp. Exact order left to right top to bottom: (1) ChatGPT/OpenAI six-lobed interwoven rounded knot emblem with clear open center and distinct interlaced ribbons; (2) Claude irregular warm sunburst/asterisk emblem with about twelve tapered rays, drawn as clean outlined rays; (3) Gemini elegant concave four-point sparkle with a tall vertical axis and smaller horizontal tips; (4) DeepSeek friendly whale silhouette with curved tail and a little smile, outline only; (5) Grok slanted sharp diagonal slash crossing an open circular orbit, outline only; (6) Qwen three interwoven curved petals forming a triangular looping knot, outline only; (7) Kimi playful bold rounded letter K mark with small crescent moon tucked behind, outlined ribbon construction; (8) Doubao adorable rounded bean-shaped face with tiny eyes and a smile and one soft hair curl; (9) Microsoft Copilot intertwined folded ribbon loop, outlined strips with open negative space; (10) Perplexity geometric compass-like star inside a simple square/diagonal frame, thin clean outline; (11) Mistral pixel-step letter M constructed from outlined square grid blocks, no filled block silhouette; (12) friendly AI robot head, rounded square face, two round eyes, a tiny antenna and a small smile. Letter forms K and M are part of their emblem only; do not include other text. Match the coherent clean doodle outline style of subtle wallpaper motifs, not sticker art. Leave all 12 motifs fully detached from one another with generous gutters.

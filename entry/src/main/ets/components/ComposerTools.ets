@@ -1,3 +1,5 @@
+import { DEFAULT_COMPONENT_HDR_RATIO, STORAGE_KEY_COMPONENT_HDR_RATIO } from '../services/ComponentHdrSettingsStore';
+import { ComponentHdrHighlight } from '../utils/ComponentHdrHighlight';
 import { common } from '@kit.AbilityKit';
 import promptAction from '@ohos.promptAction';
 import hilog from '@ohos.hilog';
@@ -8,11 +10,12 @@ import { composerPlaces, composerScheduledPosts } from '../services/XComposerReq
 import { getComposerLocation, ComposerLocationResult } from '../services/ComposerLocation';
 import { ChatEmojiPanel } from './ChatEmojiPanel';
 import { sheetMaterialOptions } from '../utils/SheetMaterial';
-import { DEFAULT_SHEET_MATERIAL_LEVEL, STORAGE_KEY_SHEET_MATERIAL_ENABLED,
+import { DEFAULT_SHEET_MATERIAL_ENABLED, DEFAULT_SHEET_MATERIAL_LEVEL, STORAGE_KEY_SHEET_MATERIAL_ENABLED,
   STORAGE_KEY_SHEET_MATERIAL_LEVEL } from '../services/SheetMaterialSettingsStore';
 
 @Component
 export struct ComposerTools {
+  @StorageProp(STORAGE_KEY_COMPONENT_HDR_RATIO) private componentHdrRatio: number = DEFAULT_COMPONENT_HDR_RATIO;
   @StorageProp('harmonyx.compact_window') private compactWindow: boolean = false;
   @StorageProp('harmonyx.breakpoint') private sheetWindowBreakpoint: string = 'sm';
   @Link options: ComposerOptions;
@@ -26,7 +29,7 @@ export struct ComposerTools {
   onChange: () => void = (): void => {};
   onOpen: () => void = (): void => {};
   onEmoji: (emoji: string) => void = (_emoji: string): void => {};
-  @StorageProp(STORAGE_KEY_SHEET_MATERIAL_ENABLED) materialEnabled: boolean = false;
+  @StorageProp(STORAGE_KEY_SHEET_MATERIAL_ENABLED) materialEnabled: boolean = DEFAULT_SHEET_MATERIAL_ENABLED;
   @StorageProp(STORAGE_KEY_SHEET_MATERIAL_LEVEL) materialLevel: number = DEFAULT_SHEET_MATERIAL_LEVEL;
   @State private visible: boolean = false;
   @State private sheet: string = '';
@@ -168,7 +171,8 @@ export struct ComposerTools {
   @Builder
   private Tool(symbol: Resource, label: Resource, action: () => void, enabled: boolean): void {
     Button({ type: ButtonType.Circle }) {
-      SymbolGlyph(symbol).fontSize(24).fontColor([enabled ? this.accentColor : $r('app.color.text_secondary')]);
+      SymbolGlyph(symbol).fontSize(24).fontColor([enabled ? this.accentColor : $r('app.color.text_secondary')])
+        .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), !this.disabled && enabled, this.componentHdrRatio));
     }.width(44).height(48).backgroundColor(Color.Transparent).enabled(!this.disabled && enabled)
       .accessibilityText(this.text(label)).onClick(action);
   }

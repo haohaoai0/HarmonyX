@@ -1,5 +1,151 @@
 {
   "string": [
+    {"name":"settings_confirm_app_exit","value":"Подтверждать выход"},
+    {"name":"settings_confirm_app_exit_desc","value":"Спрашивать при возврате с главной страницы. Если выключено, выходить сразу."},
+    {"name":"app_exit_title","value":"Выйти из приложения?"},
+    {"name":"app_exit_message","value":"Вы уверены, что хотите выйти из приложения?"},
+    {"name":"app_exit_action","value":"Выйти"},
+    {"name":"settings_component_hdr_max","value":"Максимальный множитель яркости текущего экрана"},
+    {"name":"settings_component_hdr_max_unavailable","value":"Временно недоступно"},
+    {"name":"settings_component_hdr_max_desc","value":"Значение сообщается системой для этого экрана и автоматически обновляется при изменении яркости или экрана."},
+    {"name":"settings_component_hdr_ratio","value":"Множитель яркости HDR интерфейса"},
+    {"name":"settings_component_hdr_desc","value":"Настройте яркость кнопок, значков и выбранных элементов. По умолчанию: 1.25; значение 1 отключает усиление. Фактическая яркость зависит от устройства. Изменения сохраняются и применяются автоматически."},
+    {"name":"settings_component_hdr_invalid","value":"Введите допустимое число не меньше 1."},
+    {"name":"settings_component_hdr_reset","value":"Сбросить до 1.25"},
+    {"name":"settings_video_hdr_enhancement","value":"Улучшение видео HDR"},
+    {"name":"settings_video_hdr_enhancement_desc","value":"Улучшает контрастность и цвета обычных видео. На неподдерживаемых устройствах автоматически используется обычное воспроизведение."},
+    {"name": "settings_menu_post", "value": "Действия меню публикации"},
+    {"name": "settings_menu_photo", "value": "Действия меню фото"},
+    {"name": "settings_menu_video", "value": "Действия меню видео"},
+    {"name": "settings_menu_item_desc", "value": "Выберите действия в меню. Они отображаются для поддерживаемого содержимого. Настройки можно сбросить."},
+    {"name": "settings_menu_show_action", "value": "Показывать в соответствующих меню"},
+    {"name": "settings_menu_empty", "value": "Действия скрыты. Восстановите их в соответствующем разделе настроек."},
+    {"name": "settings_viewer_video_mute", "value": "Отключать звук в просмотрщике"},
+    {"name": "settings_viewer_video_mute_desc", "value": "Звук открытых видео настраивается отдельно от превью на главной."},
+    {"name": "settings_video_auto_advance_desc", "value": "Автоматически переходить к следующему видео после окончания воспроизведения."},
+    {"name": "settings_video_captions_desc", "value": "По умолчанию включать системные ИИ-субтитры в просмотрщике видео."},
+    {"name": "settings_video_feed_layout_desc", "value": "Выберите вертикальный макет видео на телефоне. Широкие и горизонтальные окна сохраняют свой макет."},
+    {"name": "settings_chat_desc", "value": "Message requests, call permissions, PIN and chat auto-download"},
+    {
+      "name": "settings_video_double_tap_seek",
+      "value": "Двойное нажатие для перемотки"
+    },
+    {
+      "name": "settings_video_double_tap_seek_desc",
+      "value": "Дважды нажмите на правую половину для перемотки вперёд или на левую для перемотки назад"
+    },
+    {
+      "name": "settings_video_double_tap_seek_seconds",
+      "value": "Интервал перемотки"
+    },
+    {
+      "name": "settings_video_double_tap_seek_seconds_value",
+      "value": "%d сек."
+    },
+    {
+      "name": "video_double_tap_forward",
+      "value": "Вперёд на %d сек."
+    },
+    {
+      "name": "video_double_tap_rewind",
+      "value": "Назад на %d сек."
+    },
+    {
+      "name": "settings_app_icon_zombie_x",
+      "value": "Зомби X"
+    },
+    {
+      "name": "card_source_for_you",
+      "value": "For You"
+    },
+    {
+      "name": "card_source_for_you_desc",
+      "value": "The recommendation feed you already read."
+    },
+    {
+      "name": "card_source_following",
+      "value": "Following"
+    },
+    {
+      "name": "card_source_following_desc",
+      "value": "Posts from the accounts you follow."
+    },
+    {
+      "name": "card_source_trends",
+      "value": "Trends"
+    },
+    {
+      "name": "card_source_trends_desc",
+      "value": "What is trending on X right now."
+    },
+    {
+      "name": "card_source_notifications",
+      "value": "Notifications"
+    },
+    {
+      "name": "card_source_notifications_desc",
+      "value": "Your latest mentions and activity."
+    },
+    {
+      "name": "card_empty_for_you",
+      "value": "Refresh For You in the app to fill this card."
+    },
+    {
+      "name": "card_empty_following",
+      "value": "Refresh Following in the app to fill this card."
+    },
+    {
+      "name": "card_empty_trends",
+      "value": "Open Explore to refresh trends."
+    },
+    {
+      "name": "card_empty_notifications",
+      "value": "Open Notifications to refresh this card."
+    },
+    {
+      "name": "card_settings_title",
+      "value": "Card source"
+    },
+    {
+      "name": "card_settings_intro",
+      "value": "Choose what this Home-screen card shows."
+    },
+    {
+      "name": "card_settings_refreshing",
+      "value": "Updating card…"
+    },
+    {
+      "name": "card_settings_updated",
+      "value": "Card updated."
+    },
+    {
+      "name": "card_settings_update_failed",
+      "value": "Couldn't refresh. The card will use saved posts."
+    },
+    {
+      "name": "card_settings_refresh",
+      "value": "Refresh card"
+    },
+    {
+      "name": "card_settings_note",
+      "value": "The card follows the active account. Tap the gear on the card to return here."
+    },
+    {
+      "name": "article_service_card_desc",
+      "value": "Top posts on your Home screen"
+    },
+    {
+      "name": "article_service_card_more",
+      "value": "More"
+    },
+    {
+      "name": "article_service_card_empty",
+      "value": "Open the app to refresh your timeline. The top three posts will appear here."
+    },
+    {
+      "name": "article_service_card_recent",
+      "value": "Recently read"
+    },
     {
       "name": "promotion_hide_week",
       "value": "Hide for 7 days"
@@ -102,7 +248,7 @@
     },
     {
       "name": "xxauth_snooze",
-      "value": "Remind me in 7 days"
+      "value": "Remind me in 3 days"
     },
     {
       "name": "xxauth_experience",
@@ -922,7 +1068,7 @@
     },
     {
       "name": "profile_version",
-      "value": "Harmony X 3.0.0 · HarmonyOS 6.1 (API 23-26) · модель Stage"
+      "value": "Harmony X 3.1.0 · HarmonyOS 6.1 (API 23-26) · модель Stage"
     },
     {
       "name": "profile_following",
@@ -1634,7 +1780,7 @@
     },
     {
       "name": "settings_timeline_columns_desc",
-      "value": "На широком экране мозаичная лента показывает больше публикаций. На узком остаётся один столбец."
+      "value": "На широком экране мозаичная лента показывает больше публикаций. На телефоне можно выбрать два столбца; в режиме «Авто» остаётся один."
     },
     {
       "name": "settings_timeline_columns_label",
@@ -1843,6 +1989,54 @@
     {
       "name": "settings_theme_huawei_red",
       "value": "Красный Huawei"
+    },
+    {
+      "name": "settings_theme_cinnabar",
+      "value": "Киноварно-красный"
+    },
+    {
+      "name": "settings_theme_vermilion",
+      "value": "Киноварь"
+    },
+    {
+      "name": "settings_theme_amber",
+      "value": "Янтарный"
+    },
+    {
+      "name": "settings_theme_autumn_bamboo",
+      "value": "Осенний бамбук"
+    },
+    {
+      "name": "settings_theme_bamboo_green",
+      "value": "Бамбуково-зелёный"
+    },
+    {
+      "name": "settings_theme_azurite",
+      "value": "Лазуритовый синий"
+    },
+    {
+      "name": "settings_theme_cloisonne",
+      "value": "Синий клуазоне"
+    },
+    {
+      "name": "settings_theme_indigo",
+      "value": "Индиго"
+    },
+    {
+      "name": "settings_theme_begonia",
+      "value": "Бегониевый фиолетовый"
+    },
+    {
+      "name": "settings_theme_rouge",
+      "value": "Кармин"
+    },
+    {
+      "name": "settings_theme_sandalwood",
+      "value": "Сандал"
+    },
+    {
+      "name": "settings_theme_mountain",
+      "value": "Горный серый"
     },
     {
       "name": "settings_push",
@@ -4358,7 +4552,7 @@
     },
     {
       "name": "onboarding_profile_detail",
-      "value": "Ваши публикации, понравившееся и сведения профиля."
+      "value": "Просматривайте профиль и статус входа, управляйте аккаунтами и переключайтесь между ними."
     },
     {
       "name": "onboarding_media_title",
@@ -6290,7 +6484,7 @@
     },
     {
       "name": "storage_directory_failed",
-      "value": "Доступ к папке не получен. Повторите или используйте системное «Сохранить как» в задачах загрузки."
+      "value": "Не удалось сохранить настройку загрузки. Повторите попытку."
     },
     {
       "name": "storage_path_note",
@@ -6310,11 +6504,11 @@
     },
     {
       "name": "storage_save_to_folder",
-      "value": "По умолчанию в папку загрузок"
+      "value": "Сохранять в файлы"
     },
     {
       "name": "storage_save_target_note",
-      "value": "Если включено, фото и видео сохраняются в папку загрузок, иначе — в Галерею."
+      "value": "Выбирайте место для каждого файла в системном диалоге. Если выключено, фото и видео сохраняются в галерею."
     },
     {
       "name": "storage_download_files",
@@ -6330,7 +6524,7 @@
     },
     {
       "name": "storage_save_to_downloads",
-      "value": "Сохранить в папку загрузок"
+      "value": "Сохранить файл как"
     },
     {
       "name": "storage_network_title",
@@ -6375,10 +6569,6 @@
     {
       "name": "storage_stats_failed",
       "value": "Не все данные прочитаны. Показана доступная статистика; обновите для повтора."
-    },
-    {
-      "name": "storage_permission_reason",
-      "value": "Для сохранения фото, видео и файлов в выбранную вами папку загрузок."
     },
     {
       "name": "storage_cancel",
@@ -9573,6 +9763,14 @@
       "value": "Gradient blur"
     },
     {
+      "name": "sidebar_material_system",
+      "value": "Системное размытие боковой панели"
+    },
+    {
+      "name": "sidebar_material_system_desc",
+      "value": "Использовать стандартный системный эффект боковой панели. Сила размытия управляется системой."
+    },
+    {
       "name": "sidebar_swipe",
       "value": "Sidebar swipe gestures"
     },
@@ -9930,7 +10128,7 @@
     },
     {
       "name": "logo_universe_desc",
-      "value": "Каждая встреча дополняет HarmonyX."
+      "value": "Каждая встреча дополняет Harmony X."
     },
     {
       "name": "logo_universe_hint",
@@ -9982,7 +10180,7 @@
     },
     {
       "name": "logo_part_of_you",
-      "value": "Вы — часть HarmonyX."
+      "value": "Вы — часть Harmony X."
     },
     {
       "name": "logo_touch_hint",
@@ -10138,7 +10336,7 @@
     },
     {
       "name": "settings_category_home_interaction_desc",
-      "value": "Floating action, auto-refresh, latest posts and Spaces capsule"
+      "value": "Плавающая кнопка, обновление, капсула Spaces и меню публикаций"
     },
     {
       "name": "settings_category_layout",
@@ -10154,7 +10352,7 @@
     },
     {
       "name": "settings_category_photos_desc",
-      "value": "Open photos in fullscreen by default"
+      "value": "Полноэкранный просмотр и действия меню фото"
     },
     {
       "name": "settings_category_playback",
@@ -10162,7 +10360,7 @@
     },
     {
       "name": "settings_category_playback_desc",
-      "value": "Autoplay, mute, picture in picture and background playback"
+      "value": "Автовоспроизведение, отдельный звук, автопереход и фоновое воспроизведение"
     },
     {
       "name": "settings_category_video_controls",
@@ -10170,7 +10368,7 @@
     },
     {
       "name": "settings_category_video_controls_desc",
-      "value": "Picture fill, hold for speed, tap to pause and subtitle background"
+      "value": "Макет видео, управление, субтитры, жесты и меню"
     },
     {
       "name": "settings_category_viewer",
@@ -10222,11 +10420,235 @@
     },
     {"name":"settings_classic_bottom_bar","value":"Классическая нижняя навигация"},
     {"name":"settings_classic_bottom_bar_desc","value":"Панель с иконками и подписями внизу на всю ширину с возможностью автоскрытия. Отключите для возврата к плавающему стилю. Изменения применяются сразу и сохраняются."},
+    {"name":"settings_root_liquid_tab_indicator","value":"Жидкий индикатор"},
+    {"name":"settings_root_liquid_tab_indicator_desc","value":"Показывает перетаскиваемую капсулу с упругим возвратом на плавающей панели. Размер зависит от показа подписей вкладок."},
     {"name":"settings_root_tab_labels","value":"Показывать подписи вкладок"},
     {"name":"settings_root_tab_labels_desc","value":"Действует для плавающей и классической нижней навигации. Если выключено, остаются только иконки и метки непрочитанного."},
     {
       "name": "chat_post_preview",
       "value": "Общий пост"
-    }
+    },
+    {"name": "account_overview_signed_out", "value": "Вход не выполнен"},
+    {"name": "account_overview_no_bio", "value": "Описание пока не добавлено"},
+    {"name": "account_overview_handle", "value": "Имя пользователя"},
+    {"name": "account_overview_location", "value": "Местоположение"},
+    {"name": "account_overview_website", "value": "Сайт"},
+    {"name": "account_overview_manage", "value": "Управление и смена аккаунтов"},
+    {"name": "profile_editor_choose_banner", "value": "Change header photo"},
+    {"name": "profile_editor_choose_avatar", "value": "Change profile photo"},
+    {"name": "profile_editor_birthdate", "value": "Birth date"},
+    {"name": "profile_editor_birthdate_empty", "value": "Add birth date"},
+    {"name": "profile_editor_birthdate_manage", "value": "Edit birth date and visibility"},
+    {"name": "profile_editor_birthdate_privacy", "value": "Month and day: %s\nYear: %s"},
+    {"name": "profile_editor_account_changed", "value": "The signed-in account changed. Go back and reopen the editor."},
+    {"name": "profile_editor_unsaved_title", "value": "Discard unsaved changes?"},
+    {"name": "profile_editor_unsaved_message", "value": "Unsaved profile and photo changes will be lost when you leave."},
+    {"name": "profile_editor_keep_editing", "value": "Keep editing"},
+    {"name": "profile_editor_discard", "value": "Discard changes"},
+    {"name": "profile_editor_partial", "value": "Some changes were saved. Your remaining edits are still here. Try saving again."},
+    {"name": "profile_editor_confirm_failed", "value": "Changes were submitted, but the updated profile could not be loaded. Save again to refresh without uploading the photos again."},
+    {"name": "settings_page_transition", "value": "Переходы между страницами"},
+    {"name": "settings_page_transition_desc", "value": "Выберите анимацию открытия и возврата. Изменения применяются сразу и сохраняются."},
+    {"name": "settings_page_transition_classic", "value": "Прежняя анимация"},
+    {"name": "settings_page_transition_classic_desc", "value": "Сохранить текущие системные переходы навигации."},
+    {"name": "settings_page_transition_official", "value": "Официальный стиль"},
+    {"name": "settings_page_transition_official_desc", "value": "Масштабирование от центра и плавная смена страниц с согласованной анимацией входа и выхода."},
+    {"name":"settings_anti_peep","value":"Защита от подглядывания"},
+    {"name":"settings_anti_peep_desc","value":"Закрывать окно приложения системной маской при обнаружении чужого взгляда."},
+    {"name":"settings_anti_peep_enable","value":"Включить защиту"},
+    {"name":"settings_anti_peep_setup","value":"Настроить системную защиту"},
+    {"name":"settings_anti_peep_recheck","value":"Проверить снова"},
+    {"name":"settings_anti_peep_note","value":"Настройте распознавание лица и разрешите приложение в разделе «Конфиденциальность и безопасность > Защита от подглядывания». Приложение использует только статус системы и не получает изображения лиц."},
+    {"name":"settings_anti_peep_disabled","value":"Выключена"},
+    {"name":"settings_anti_peep_unsupported","value":"Устройство не поддерживает системную защиту от подглядывания."},
+    {"name":"settings_anti_peep_permission","value":"Ожидается разрешение для приложения. После настройки вернитесь в приложение или проверьте снова."},
+    {"name":"settings_anti_peep_system_off","value":"Включите это приложение в системной защите от подглядывания."},
+    {"name":"settings_anti_peep_face","value":"Сначала включите распознавание лица в настройках системы."},
+    {"name":"settings_anti_peep_ready","value":"Активна. Отслеживание чужих взглядов."},
+    {"name":"settings_anti_peep_protected","value":"Обнаружен чужой взгляд. Вызвана системная защитная маска."},
+    {"name":"settings_anti_peep_error","value":"Защита временно недоступна. Проверьте снова."},
+    {"name":"settings_anti_peep_checking","value":"Проверка или включение защиты…"},
+    {"name":"settings_anti_peep_save_failed","value":"Не удалось сохранить. Повторите попытку."},
+    {"name":"huawei_account_title","value":"HUAWEI ID and cloud sync"},
+    {"name":"huawei_account_name","value":"HUAWEI ID"},
+    {"name":"huawei_login","value":"Sign in with HUAWEI ID"},
+    {"name":"huawei_logout","value":"Sign out"},
+    {"name":"huawei_signed_in","value":"Signed in with HUAWEI ID"},
+    {"name":"huawei_logging_in","value":"Signing in…"},
+    {"name":"huawei_signed_out_description","value":"Sign in to bring your preferences with you"},
+    {"name":"huawei_cloud_sync","value":"Cloud sync"},
+    {"name":"huawei_sync_description","value":"Sign in to enable sync for appearance, reading, playback preferences and local content rules across your devices."},
+    {"name":"huawei_local_data_note","value":"X credentials, messages, drafts and caches stay on this device. Some appearance changes take effect after restarting."},
+    {"name":"huawei_logout_title","value":"Sign out of HUAWEI ID?"},
+    {"name":"huawei_logout_description","value":"Cloud sync will pause. Local settings and existing cloud data will be kept. Your X account remains available."},
+    {"name":"huawei_sync_disabled","value":"Off. Settings are saved on this device."},
+    {"name":"huawei_sync_unavailable","value":"Cloud storage is unavailable. Check the system cloud service and this app’s sync switch."},
+    {"name":"huawei_sync_downloading","value":"Reading and merging cloud settings…"},
+    {"name":"huawei_sync_uploading","value":"Uploading settings…"},
+    {"name":"huawei_sync_success","value":"Synced"},
+    {"name":"huawei_sync_pending","value":"Saved locally, waiting to sync"},
+    {"name":"huawei_sync_failed","value":"Sync did not finish. Your local data is safe. Check system cloud settings and try again."},
+    {"name":"huawei_network_error","value":"Network unavailable. Try again when connected."},
+    {"name":"huawei_storage_full","value":"Cloud or device storage is full. Free some space and try again."},
+    {"name":"huawei_login_error","value":"Sign-in did not finish. Check account service configuration or try again later."},
+    {"name":"huawei_authorization_error","value":"Nickname and avatar authorization failed. Check account permissions and try again."},
+    {"name":"huawei_save_error","value":"Could not save settings. Try again."},
+    {"name":"huawei_select_group","value":"Select at least one group to sync."},
+    {"name":"huawei_account_changed","value":"HUAWEI ID has changed. Enabling sync will merge the selected local settings into the current account."},
+    {"name":"huawei_last_sync","value":"Last successful sync:"},
+    {"name":"huawei_syncing","value":"Syncing…"},
+    {"name":"huawei_sync_now","value":"Sync now"},
+    {"name":"huawei_group_appearance","value":"Appearance and navigation"},
+    {"name":"huawei_group_appearance_description","value":"Theme, text size, title bar, tabs and sheet material"},
+    {"name":"huawei_group_media","value":"Reading and playback"},
+    {"name":"huawei_group_media_description","value":"Image and video quality, autoplay and mute preferences"},
+    {"name":"huawei_group_filters","value":"Local content rules"},
+    {"name":"huawei_group_filters_description","value":"Keyword and user filters, and content preferences"},
+    {"name":"post_photo_save_background","value":"Сохранить в библиотеку фонов"},
+    {"name":"chat_background_saving_photo","value":"Сохранение фонового изображения…"},
+    {"name":"chat_background_saved_photo","value":"Сохранено. Выберите в разделе «Фон страницы» или «Фон чата»."},
+    {"name":"chat_background_save_photo_failed","value":"Не удалось сохранить фоновое изображение. Попробуйте снова."},
+    {"name":"chat_background_saved_photos","value":"Изображения, сохранённые из постов"},
+    {"name":"page_background_title","value":"Фон страниц"},
+    {"name":"page_background_description","value":"Colors, photos and mixable patterns"},
+    {"name":"page_background_switch_title","value":"Включить фон страницы"},
+    {"name":"page_background_switch_desc","value":"Выключите, чтобы сразу вернуть фон темы. Текущий стиль сохранится."},
+    {"name":"page_background_base","value":"Основа фона"},
+    {"name":"page_background_pattern","value":"Слой узоров"},
+    {"name":"page_background_pattern_none","value":"Без узора"},
+    {"name":"page_background_content_opacity","value":"Непрозрачность подложки"},
+    {"name":"page_background_reset","value":"Восстановить по умолчанию"},
+    {"name":"page_background_color_placeholder","value":"Custom color #RRGGBB"},
+    {"name":"page_background_preview","value":"Предпросмотр фона"},
+    {"name":"page_background_preview_text","value":"Bring your favorite colors and patterns to every visit."},
+    {"name":"page_background_preview_hint","value":"Text and content surfaces show how readable your background will be."},
+    {"name":"page_background_note","value":"Applies to regular pages. Chats have separate backgrounds; media viewers keep their immersive backgrounds. Tap Apply to save."},
+    {"name":"page_background_layout_preset","value":"Полные узоры"},
+    {"name":"page_background_layout_icons","value":"Отдельные значки"},
+    {"name":"page_background_density","value":"Плотность значков"},
+    {"name":"page_background_set_add","value":"Выбрать весь набор"},
+    {"name":"page_background_set_remove","value":"Снять выбор набора"},
+    {"name":"page_background_mix_hint","value":"Select motifs across sets to mix them, or repeat a single motif."},
+    {"name":"page_background_selected","value":"%d motifs selected"},
+    {"name":"page_background_icons_clear","value":"Очистить значки"},
+    {"name":"page_background_paper","value":"Текстура бумаги"},
+    {"name":"page_background_paper_none","value":"Нет"},
+    {"name":"page_background_kraft","value":"Крафт-бумага"},
+    {"name":"page_background_parchment","value":"Пергамент"},
+    {"name":"page_background_texture_strength","value":"Интенсивность текстуры"},
+    {"name":"page_background_presets_mix","value":"Select multiple full patterns to combine them."},
+    {"name":"page_background_applied","value":"Фон страниц применён"},
+    {"name":"page_background_apply_failed","value":"Не удалось сохранить фон. Повторите попытку."},
+    {"name":"page_background_transparent_posts","value":"Transparent post cards"},
+    {"name":"page_background_transparent_posts_desc","value":"Hide the surface behind posts and quoted posts to reveal the page background."},
+    {"name":"page_background_transparent_inbox","value":"Transparent message list"},
+    {"name":"page_background_transparent_inbox_desc","value":"Hide conversation row surfaces while keeping text, avatars and unread indicators."},
+    {"name":"page_background_post_opacity","value":"Post surface opacity"},
+    {"name":"page_background_inbox_opacity","value":"Message list surface opacity"},
+    {"name":"page_background_scheme_import","value":"Import scheme"},
+    {"name":"page_background_scheme_share","value":"Share scheme"},
+    {"name":"page_background_scheme_title","value":"Page background scheme"},
+    {"name":"page_background_scheme_imported","value":"Scheme imported. Preview it, then tap Apply."},
+    {"name":"page_background_scheme_import_failed","value":"Unable to import. Choose a valid HarmonyX background scheme (up to 48 MB)."},
+    {"name":"page_background_scheme_share_failed","value":"Unable to share. Please try again; background photos must be under 32 MB."},
+    {"name":"page_background_set_signature_icons","value":"Альтернативные значки"},
+    {"name":"page_background_set_garden_defense","value":"Растения против зомби"},
+    {"name":"page_background_motif_signature_icons_frog_face","value":"Frog face"},
+    {"name":"page_background_motif_signature_icons_frog_lily","value":"Frog on a lily pad"},
+    {"name":"page_background_motif_signature_icons_milk_frog","value":"Milk frog"},
+    {"name":"page_background_motif_signature_icons_milk_frog_wave","value":"Waving milk frog"},
+    {"name":"page_background_motif_signature_icons_bird","value":"Flying bird"},
+    {"name":"page_background_motif_signature_icons_bird_wings","value":"Bird with open wings"},
+    {"name":"page_background_motif_signature_icons_ribbon_x","value":"Ribbon X"},
+    {"name":"page_background_motif_signature_icons_blossom_x","value":"Blossom X"},
+    {"name":"page_background_motif_signature_icons_brush_x","value":"Brush X"},
+    {"name":"page_background_motif_signature_icons_prism_x","value":"Prism X"},
+    {"name":"page_background_motif_signature_icons_zombie_x","value":"Zombie X"},
+    {"name":"page_background_motif_signature_icons_lily_blossom","value":"Lily blossom"},
+    {"name":"page_background_motif_garden_defense_peashooter","value":"Peashooter"},
+    {"name":"page_background_motif_garden_defense_sunflower","value":"Sunflower"},
+    {"name":"page_background_motif_garden_defense_wallnut","value":"Wall-nut"},
+    {"name":"page_background_motif_garden_defense_cherry_bomb","value":"Cherry Bomb"},
+    {"name":"page_background_motif_garden_defense_snow_pea","value":"Snow Pea"},
+    {"name":"page_background_motif_garden_defense_potato_mine","value":"Potato Mine"},
+    {"name":"page_background_motif_garden_defense_chomper","value":"Chomper"},
+    {"name":"page_background_motif_garden_defense_squash","value":"Squash"},
+    {"name":"page_background_motif_garden_defense_zombie","value":"Zombie"},
+    {"name":"page_background_motif_garden_defense_conehead","value":"Conehead Zombie"},
+    {"name":"page_background_motif_garden_defense_buckethead","value":"Buckethead Zombie"},
+    {"name":"page_background_motif_garden_defense_lawnmower","value":"Lawn mower"},
+    {"name":"page_background_set_ai_assistants","value":"ИИ-ассистенты"},
+    {"name":"page_background_motif_ai_assistants_gpt","value":"GPT"},
+    {"name":"page_background_motif_ai_assistants_claude","value":"Claude"},
+    {"name":"page_background_motif_ai_assistants_gemini","value":"Gemini"},
+    {"name":"page_background_motif_ai_assistants_deepseek","value":"DeepSeek"},
+    {"name":"page_background_motif_ai_assistants_grok","value":"Grok"},
+    {"name":"page_background_motif_ai_assistants_qwen","value":"Qwen"},
+    {"name":"page_background_motif_ai_assistants_kimi","value":"Kimi"},
+    {"name":"page_background_motif_ai_assistants_doubao","value":"Doubao"},
+    {"name":"page_background_motif_ai_assistants_copilot","value":"Copilot"},
+    {"name":"page_background_motif_ai_assistants_perplexity","value":"Perplexity"},
+    {"name":"page_background_motif_ai_assistants_mistral","value":"Mistral"},
+    {"name":"page_background_motif_ai_assistants_robot","value":"AI robot"},
+    {"name":"page_background_set_mobile_brands_systems","value":"Бренды и системы телефонов"},
+    {"name":"page_background_motif_mobile_brands_systems_apple","value":"Apple"},
+    {"name":"page_background_motif_mobile_brands_systems_huawei","value":"Huawei"},
+    {"name":"page_background_motif_mobile_brands_systems_xiaomi","value":"Xiaomi"},
+    {"name":"page_background_motif_mobile_brands_systems_samsung","value":"Samsung"},
+    {"name":"page_background_motif_mobile_brands_systems_oppo","value":"OPPO"},
+    {"name":"page_background_motif_mobile_brands_systems_vivo","value":"vivo"},
+    {"name":"page_background_motif_mobile_brands_systems_honor","value":"HONOR"},
+    {"name":"page_background_motif_mobile_brands_systems_oneplus","value":"OnePlus"},
+    {"name":"page_background_motif_mobile_brands_systems_meizu","value":"Meizu"},
+    {"name":"page_background_motif_mobile_brands_systems_harmonyos","value":"HarmonyOS"},
+    {"name":"page_background_motif_mobile_brands_systems_android","value":"Android"},
+    {"name":"page_background_motif_mobile_brands_systems_ios","value":"iOS"},
+    {"name":"page_background_motif_mobile_brands_systems_hyperos","value":"HyperOS"},
+    {"name":"page_background_motif_mobile_brands_systems_coloros","value":"ColorOS"},
+    {"name":"page_background_motif_mobile_brands_systems_originos","value":"OriginOS"},
+    {"name":"page_background_motif_mobile_brands_systems_oneui","value":"One UI"},
+    {"name":"motion_title","value":"Animation & haptics"},
+    {"name":"motion_intro","value":"Tune interaction animations and touch feedback. Changes are saved automatically. Tap the preview to try them."},
+    {"name":"motion_preview","value":"Tap to preview animation and haptics"},
+    {"name":"motion_reduce","value":"Reduce motion"},
+    {"name":"motion_reduce_desc","value":"Turn off decorative scaling, movement and Symbol effects, and skip page transitions. Your animation preferences are kept."},
+    {"name":"motion_duration","value":"Animation duration"},
+    {"name":"motion_duration_desc","value":"Reference duration for app animations. Button and page animations scale proportionally. System Symbol effects keep their native timing."},
+    {"name":"motion_amplitude","value":"Movement amplitude"},
+    {"name":"motion_amplitude_desc","value":"Adjust decorative scaling and rotation. At 0%, these effects stop. Gesture tracking and zoom keep their full range."},
+    {"name":"motion_damping","value":"Spring damping"},
+    {"name":"motion_damping_desc","value":"Lower values bounce more; higher values settle more gently."},
+    {"name":"motion_symbol","value":"Animated Symbols"},
+    {"name":"motion_symbol_desc","value":"Play a native Symbol effect once when selecting a tab or using an action button. Effects pause with Reduce motion."},
+    {"name":"motion_haptics","value":"Touch feedback"},
+    {"name":"motion_haptics_desc","value":"Use light feedback for navigation, buttons, switches and actions. Follows the system haptics setting."},
+    {"name":"motion_intensity","value":"Haptic intensity"},
+    {"name":"motion_intensity_desc","value":"Adjust preset effects on supported devices. Other motors use a short system touch vibration."},
+    {"name":"motion_presets","value":"Animation presets"},
+    {"name":"motion_preset_quick","value":"Quick"},
+    {"name":"motion_preset_quick_desc","value":"175 ms · 60% movement · firm settling. Short, crisp feedback."},
+    {"name":"motion_preset_standard","value":"Standard"},
+    {"name":"motion_preset_standard_desc","value":"300 ms · 100% movement · balanced spring. Recommended for everyday use."},
+    {"name":"motion_preset_spring","value":"Bouncy"},
+    {"name":"motion_preset_spring_desc","value":"450 ms · 120% movement · lower damping. Softer, more visible rebound."},
+    {"name":"motion_preset_reduced","value":"Low motion"},
+    {"name":"motion_preset_reduced_desc","value":"Skip page transitions and decorative effects. Keep your previous tuning."},
+    {"name":"motion_preset_custom","value":"Current preset: Custom. Choose a preset to restore its animation values."},
+    {"name":"chat_auto_download","value":"Chat auto-download"},
+    {"name":"storage_chat_retention","value":"Keep chat media"},
+    {"name":"storage_chat_retention_desc","value":"Set how long downloaded chat media stays cached. Chat history and manually saved files are kept."},
+    {"name":"settings_theme_mix","value":"Смешанные палитры"},
+    {"name":"settings_theme_mix_desc","value":"Сочетающиеся цвета переключателей, навигации и кнопок публикации в светлой и тёмной темах."},
+    {"name":"settings_theme_mix_confetti","value":"Конфетти"},
+    {"name":"settings_theme_mix_coast","value":"Морская соль и коралл"},
+    {"name":"settings_theme_mix_sunset","value":"Закатный ирис"},
+    {"name":"settings_theme_mix_forest","value":"Лесной янтарь"},
+    {"name":"settings_theme_mix_berry","value":"Ягоды и мята"},
+    {"name":"settings_theme_mix_morandi","value":"Моранди"},
+    {"name":"settings_theme_solid","value":"Один цвет"},
+    {"name":"settings_theme_mix_candy","value":"Конфетти"},
+    {"name":"settings_theme_mix_sky","value":"Небо и лимон"},
+    {"name":"settings_theme_mix_peach","value":"Персик и мята"},
+    {"name":"settings_theme_mix_lilac","value":"Сирень и ваниль"}
   ]
 }

@@ -1,15 +1,16 @@
 {
   "app": {
+    "cloudFileSyncEnabled": true,
     "bundleName": "com.haohaoai0.harmonx",
     "vendor": "haohaoai0",
-    "versionCode": 22,
-    "versionName": "3.0.0",
+    "versionCode": 23,
+    "versionName": "3.1.0",
     "icon": "$media:app_layered_image",
     // 备用图标在应用包内声明，7.0（API 26）起可由应用自己切换，
     // 不再依赖 AppGallery Connect 的动态图标服务与审核。
     "alternateIcons": [
       {
-        // The classic HarmonyX icon remains selectable.
+        // The pre-Harmony X default icon remains selectable as "Classic".
         "name": "classic",
         "icon": "$media:alt_icon_classic"
       },
@@ -64,6 +65,10 @@
       {
         "name": "milk_frog_black",
         "icon": "$media:alt_icon_milk_frog_black"
+      },
+      {
+        "name": "zombie_x",
+        "icon": "$media:alt_icon_zombie_x"
       },
       {
         // 中秋限时图标，9 月 25 日至 9 月 28 日在设置里可选，

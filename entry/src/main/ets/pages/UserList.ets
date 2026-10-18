@@ -1,3 +1,9 @@
+import { pageBackgroundActive } from '../services/PageBackgroundStore';
+import { pageTextColor } from '../utils/ThemeColors';
+import { appPageBackground } from '../components/PageBackgroundLayer';
+import { pageCanvasColor, pageReadingSurfaceColor } from '../utils/ThemeColors';
+import { STORAGE_KEY_PAGE_TRANSITION_MODE, DEFAULT_PAGE_TRANSITION_MODE } from '../services/PageTransitionSettingsStore';
+import { pageSystemTransition, PageTransitionMotion } from '../utils/PageTransition';
 // Followers / following / blocked-account list. All three are user timelines,
 // so they share one page and differ only by the operation they call.
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
@@ -37,6 +43,9 @@ export function UserListBuilder(): void {
 
 @Component
 export struct UserList {
+  @StorageProp('harmonyx.page_background') private pageBackgroundValue: string = '';
+  @State private pageMotion: PageTransitionMotion = new PageTransitionMotion();
+  @StorageProp(STORAGE_KEY_PAGE_TRANSITION_MODE) private pageTransitionMode: string = DEFAULT_PAGE_TRANSITION_MODE;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @Consume('pageStack') pageStack: NavPathStack;
   @StorageProp('harmonyx.status_bar_height') statusBarHeight: number =
@@ -289,7 +298,7 @@ export struct UserList {
         Column() {
           Text(this.status.length > 0 ? this.status : this.text($r('app.string.user_list_empty'))).fontFamily(this.appFontFamily)
             .fontSize($r('sys.float.Body_L'))
-            .fontColor($r('app.color.text_secondary'))
+            .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
             .textAlign(TextAlign.Center)
             .width('100%')
           if (this.status.length > 0) {
@@ -329,7 +338,7 @@ export struct UserList {
             }
             Text($r('app.string.user_list_load_more')).fontFamily(this.appFontFamily)
               .fontSize($r('sys.float.Body_M'))
-              .fontColor($r('app.color.text_accent'))
+              .fontColor(pageTextColor($r('app.color.text_accent'), this.pageBackgroundValue, Color.Transparent))
               .margin({ left: 8 })
           }
           .width('100%')
@@ -345,6 +354,8 @@ export struct UserList {
 
   build(): void {
     HdsNavDestination() {
+      Stack({ alignContent: Alignment.TopStart }) {
+        appPageBackground()
       Refresh({ refreshing: $$this.refreshing }) {
         List({ scroller: this.scroller }) {
           this.Content()
@@ -366,7 +377,13 @@ export struct UserList {
           this.refreshing = false;
         });
       })
+    
+      }.width('100%').height('100%')
     }
+    .scale({ x: this.pageMotion.scale, y: this.pageMotion.scale })
+    .opacity(this.pageMotion.opacity)
+    .onReady((context: NavDestinationContext): void => { this.pageMotion.attach(context); })
+    .systemTransition(pageSystemTransition(this.pageTransitionMode))
     .titleMode(HdsNavDestinationTitleMode.MINI)
     .hideBackButton(false)
     .onBackPressed((): boolean => {
@@ -380,7 +397,7 @@ export struct UserList {
       style: destinationTitleBarStyle(ScrollEffectType.IMMERSIVE_GRADIENT_BLUR,
         this.themeDisplayMode, this.themeDarkSurface, this.titleBarStyleMode)
     })
-    .backgroundColor(pageSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
-    .systemMaterial(this.pageMaterial());
+    .backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue))
+    .systemMaterial(pageBackgroundActive(this.pageBackgroundValue) ? undefined : this.pageMaterial());
   }
 }

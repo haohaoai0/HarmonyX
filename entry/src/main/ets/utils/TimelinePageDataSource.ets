@@ -30,6 +30,10 @@ export class TimelinePageDataSource implements IDataSource {
   private posts: number = 0;
 
   totalCount(): number { return this.rows.length; }
+  // WaterFlow sections contain a header and footer outside the content section.
+  // Keep this count in the data source so injected promotion rows are included
+  // in the same count as the LazyForEach rows.
+  contentCount(): number { return Math.max(0, this.rows.length - 2); }
   postCount(): number { return this.posts; }
   getData(index: number): TimelinePageItem { return this.rows[index]; }
 
@@ -47,7 +51,7 @@ export class TimelinePageDataSource implements IDataSource {
   // `count` is the remote budget for this surface; the posts list is the pool
   // the injector cycles through, so one timeline only ever carries one row.
   replace(posts: Tweet[], promotions: XXAuthPromotionPost[] = [], salt: string = '',
-    count: number = 0): void {
+    count: number = 0, onRowsReady: ((contentCount: number) => void) | null = null): void {
     const desired: TimelinePageItem[] = [];
     for (let i: number = 0; i < posts.length; i++) {
       desired.push(new TimelinePageItem('post:' + posts[i].id, posts[i], i));
@@ -89,6 +93,10 @@ export class TimelinePageDataSource implements IDataSource {
     }
     rows.push(previous[previous.length - 1]);
     this.rows = rows;
+    // Publish matching WaterFlow sections before LazyForEach receives its
+    // notification. A stale section count can leave an otherwise loaded feed
+    // blank until its container is mounted again.
+    if (onRowsReady !== null) { onRowsReady(this.contentCount()); }
     for (let i: number = 0; i < this.listeners.length; i++) {
       const listener: DataChangeListener = this.listeners[i];
       if (structureChanged) { listener.onDataReloaded(); }

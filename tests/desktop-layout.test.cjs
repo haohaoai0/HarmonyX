@@ -49,8 +49,9 @@ function rootFixture() {
   const parsed = ts.createSourceFile(filename + '.ts', source, ts.ScriptTarget.Latest, true);
   const rootClass = parsed.statements.find(node => ts.isClassDeclaration(node) && node.name.text === 'Index');
   const methods = ['onBreakpointChange', 'onDesktopLayoutChanged', 'updateNavigationMode', 'contentDestinationUsesFullPage',
+    'popupHostBlocked',
     'openContentDestination',
-    'rootTitleBarOptions', 'syncDesktopRoute', 'effectiveTimelineColumns', 'useTimelineWaterFlow', 'syncThreePartWaterFlowSections',
+    'rootTitleBarOptions', 'syncDesktopRoute', 'effectiveTimelineColumns', 'useTimelineWaterFlow', 'useNarrowTimelineCards', 'syncThreePartWaterFlowSections',
     'desktopAsideVisible', 'closeDesktopRail', 'openDesktopRail', 'onDesktopRailSwipe',
     'onDesktopRailCloseSwipe', 'sideDrawerWidth']
     .map(name => rootClass.members.find(node => node.name && node.name.getText(parsed) === name).getText(parsed));
@@ -71,7 +72,10 @@ function rootFixture() {
     breakpoint: 'sm', desktopLayoutEnabled: false, desktopAsideEnabled: true,
     desktopRailAutoHide: true, desktopRailSwipe: true, desktopRailOpen: false, desktopModalOpen: false,
     fullscreenDesktopPhoto: () => false,
-    currentTab: 0, desktopRoute: '', showSideDrawer: false,
+    currentTab: 0, desktopRoute: '', showSideDrawer: false, homeFeedPresented: true,
+    showOnboardingGuide: false, showLoginSheet: false, showMidAutumnGreeting: false,
+    showChatUnlock: false, showLinkPreview: false, photoOverlayOpen: false,
+    showSpacePreview: false, showPauseTopics: false, showFollowingOrder: false,
     timelineColumnsMode: 0, desktopContentWidth: 900,
     navPathStack: { getAllPathName: () => [], getParamByName: () => [] },
     beginHomeViewportChange() {}, syncAllWaterFlowSections() {}, titleBarStyle: () => ({}),
@@ -117,6 +121,18 @@ test('phone drawer remains below 72 percent of the viewport and 280vp after resi
   }
   root.breakpoint = 'lg';
   assert.equal(root.sideDrawerWidth(), 300);
+});
+
+test('large-screen persistent rail does not block the recommendation popup', () => {
+  const { root, storage, responsive } = rootFixture();
+  root.showSideDrawer = true;
+  root.breakpoint = 'lg';
+  assert.equal(root.popupHostBlocked(), false);
+  root.breakpoint = 'sm';
+  assert.equal(root.popupHostBlocked(), true);
+  root.breakpoint = 'lg';
+  storage.set(responsive.CONTENT_DESTINATION_OPEN_KEY, true);
+  assert.equal(root.popupHostBlocked(), true);
 });
 
 test('the existing large-screen rail returns after resizing and switching desktop layout off', () => {
@@ -271,6 +287,65 @@ test('opening and closing a wide detail keeps WaterFlow mounted even when only o
     root.breakpoint = bp;
     assert.equal(root.useTimelineWaterFlow(), false);
     assert.equal(root.effectiveTimelineColumns(), 1);
+  }
+});
+
+test('phones can opt into two timeline columns across narrow widths and detail returns', () => {
+  const { root, responsive, storage } = rootFixture();
+  for (const width of [320, 390, 599, 600, 839, 840, 1200, 390]) {
+    root.breakpoint = responsive.breakpointForWidth(width);
+    root.timelineColumnsMode = 2;
+    for (const open of [false, true, false]) {
+      storage.set(responsive.CONTENT_DESTINATION_OPEN_KEY, open);
+      assert.equal(root.effectiveTimelineColumns(), 2, `${width}vp, detail ${open}`);
+      assert.equal(root.useTimelineWaterFlow(), true);
+    }
+  }
+  for (const bp of ['sm', 'md']) {
+    root.breakpoint = bp;
+    for (const mode of [0, 1, 3]) {
+      root.timelineColumnsMode = mode;
+      assert.equal(root.effectiveTimelineColumns(), 1, `${bp}, mode ${mode}`);
+      assert.equal(root.useTimelineWaterFlow(), false);
+    }
+  }
+});
+
+test('phone two-column sections keep headers and footers full width when switching back to auto', () => {
+  const { root } = rootFixture();
+  const sections = {
+    items: [],
+    splice(start, count, values) { this.items.splice(start, count, ...values); },
+    values() { return this.items; },
+    update(index, section) { this.items[index] = section; }
+  };
+  root.timelineColumnsMode = 2;
+  root.syncThreePartWaterFlowSections(sections, false, 20);
+  assert.deepEqual(sections.items.map(section => section.crossCount), [1, 2, 1]);
+  assert.equal(sections.items[1].columnsGap, 6);
+  assert.equal(sections.items[1].rowsGap, 8);
+  const header = sections.items[0], footer = sections.items[2];
+  root.timelineColumnsMode = 0;
+  root.syncThreePartWaterFlowSections(sections, true, 20);
+  assert.deepEqual(sections.items.map(section => section.crossCount), [1, 1, 1]);
+  assert.equal(sections.items[1].columnsGap, 1);
+  assert.equal(sections.items[1].rowsGap, 0);
+  assert.equal(sections.items[0], header);
+  assert.equal(sections.items[2], footer);
+});
+
+test('media-first cards are limited to narrow two-column feeds through resizing and layout switches', () => {
+  const { root, responsive } = rootFixture();
+  for (const desktop of [false, true]) {
+    root.desktopLayoutEnabled = desktop;
+    for (const mode of [0, 1, 2, 3]) {
+      root.timelineColumnsMode = mode;
+      for (const width of [320, 390, 599, 600, 839, 840, 1200, 390]) {
+        root.breakpoint = responsive.breakpointForWidth(width);
+        assert.equal(root.useNarrowTimelineCards(), width < 840 && mode === 2,
+          `${width}vp, mode ${mode}, desktop preference ${desktop}`);
+      }
+    }
   }
 });
 
@@ -434,7 +509,7 @@ test('desktop left sidebar starts collapsed and its preference survives a restar
 
 test('off and all five sidebar material levels persist; invalid values and failed saves do not publish', () => {
   const f = fixture();
-  assert.equal(f.layoutSettingsStore.loadRailMaterialLevel({}), 0);
+  assert.equal(f.layoutSettingsStore.loadRailMaterialLevel({}), -1);
   for (let level = -1; level < 5; level++) {
     assert.equal(f.layoutSettingsStore.saveRailMaterialLevel({}, level), true);
     assert.equal(f.layoutSettingsStore.loadRailMaterialLevel({}), level);

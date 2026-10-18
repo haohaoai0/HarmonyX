@@ -5,7 +5,13 @@ const path = require('node:path');
 const ts = require(process.env.HARMONYX_TYPESCRIPT || 'D:/DevEco Studio/tools/ohpm/node_modules/typescript/lib/typescript.js');
 
 function fixture(saved = new Map(), failing = false) {
+  const palette = {};
+  const paletteSource = ts.transpileModule(fs.readFileSync('entry/src/main/ets/utils/AccentPalette.ets', 'utf8'), {
+    compilerOptions: { target: ts.ScriptTarget.ES2020, module: ts.ModuleKind.CommonJS }
+  }).outputText;
+  new Function('exports', paletteSource)(palette);
   const dependencies = {
+    '../utils/AccentPalette': palette,
     '@kit.AbilityKit': { ConfigurationConstant: { ColorMode: {} } },
     '@kit.ArkData': { preferences: { getPreferencesSync: () => {
       if (failing) throw Error('Unavailable');
@@ -54,5 +60,21 @@ test('system emoji setting has a title and description in every supported resour
       assert.equal(matches.length, 1, locale + ':' + name);
       assert(matches[0].value.length > 0);
     }
+  }
+});
+
+test('mixed theme ids survive saving, reopening, mode changes, and returning to a single color', () => {
+  const f = fixture();
+  for (const accent of ['mix_candy', 'mix_sky', 'mix_peach', 'mix_lilac', 'mix_confetti', 'mix_coast', 'mix_sunset', 'mix_forest', 'mix_berry', 'mix_morandi', 'cinnabar', '#007DFF']) {
+    const settings = new f.api.AppearanceStore().load({});
+    settings.accentColor = accent;
+    settings.mode = 'dark';
+    new f.api.AppearanceStore().save({}, settings);
+    const restored = new f.api.AppearanceStore().load({});
+    assert.equal(restored.accentColor, accent);
+    assert.equal(restored.mode, 'dark');
+    restored.mode = 'light';
+    new f.api.AppearanceStore().save({}, restored);
+    assert.equal(new f.api.AppearanceStore().load({}).accentColor, accent);
   }
 });

@@ -1,9 +1,14 @@
+import { mixedAccentRoleColor, isMixedAccentTheme } from '../utils/AccentPalette';
+import { hapticTick } from '../utils/Haptics';
+import { DEFAULT_COMPONENT_HDR_RATIO, STORAGE_KEY_COMPONENT_HDR_RATIO } from '../services/ComponentHdrSettingsStore';
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
 import type { UserProfile } from '../models/Tweet';
 import { ProxyAvatar } from './ProxyAvatar';
+import { ComponentHdrHighlight } from '../utils/ComponentHdrHighlight';
 
 @Component
 export struct DesktopNavRail {
+  @StorageProp(STORAGE_KEY_COMPONENT_HDR_RATIO) private componentHdrRatio: number = DEFAULT_COMPONENT_HDR_RATIO;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @Prop topInset: number = 0;
   @Prop bottomInset: number = 0;
@@ -12,6 +17,7 @@ export struct DesktopNavRail {
   @Prop profile: UserProfile | null = null;
   @Prop handle: string = '';
   @Prop unread: number = 0;
+  @StorageProp('harmonyx.accent_theme') private accentTheme: string = '';
   @StorageProp('harmonyx.accent_color') accentColor: string = '#1D9BF0';
   @State private hovered: string = '';
   @State private moreOpen: boolean = false;
@@ -19,13 +25,18 @@ export struct DesktopNavRail {
   onCompose: () => void = (): void => {};
   onAccounts: () => void = (): void => {};
 
+  private itemColor(name: string): ResourceColor {
+    return isMixedAccentTheme(this.accentTheme) ?
+      mixedAccentRoleColor(this.accentTheme, name, this.accentColor) : $r('app.color.text_primary');
+  }
+
   @Builder
   private Item(name: string, title: Resource, icon: Resource): void {
     Button({ type: ButtonType.Normal }) {
       Row({ space: 16 }) {
         Stack({ alignContent: Alignment.TopEnd }) {
           SymbolGlyph(icon).fontSize($r('app.float.desktop_nav_icon'))
-            .fontColor([$r('app.color.text_primary')])
+            .fontColor([this.itemColor(name)])
           if (name === 'notifications' && this.unread > 0) {
             Text(this.unread > 99 ? '99+' : this.unread.toString()).fontFamily(this.appFontFamily)
               .fontSize(11).fontColor($r('app.color.text_on_accent'))
@@ -36,15 +47,16 @@ export struct DesktopNavRail {
         if (!this.compact) {
           Text(title).fontFamily(this.appFontFamily).fontSize($r('app.float.desktop_nav_text'))
             .fontWeight(this.selected === name ? FontWeight.Bold : FontWeight.Regular)
-            .fontColor($r('app.color.text_primary')).maxLines(1)
+            .fontColor(this.selected === name ? this.itemColor(name) : $r('app.color.text_primary')).maxLines(1)
         }
       }.width('100%').justifyContent(this.compact ? FlexAlign.Center : FlexAlign.Start)
+        .compositingFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.selected === name, this.componentHdrRatio))
     }
     .width('100%').height($r('app.float.desktop_nav_row')).padding({ left: 12, right: 12 })
     .borderRadius(28).backgroundColor(this.hovered === name ? $r('app.color.bg_field') : Color.Transparent)
     .onHover((hover: boolean): void => { this.hovered = hover ? name : ''; })
     .id('desktop-nav-' + name).accessibilityText(title)
-    .onClick((): void => { this.moreOpen = false; this.onSelect(name); })
+    .onClick((): void => { hapticTick(); this.moreOpen = false; this.onSelect(name); })
   }
 
   @Builder
@@ -67,7 +79,7 @@ export struct DesktopNavRail {
           .fontColor($r('app.color.text_primary')).layoutWeight(1).textAlign(TextAlign.Start)
       }.width('100%')
     }.width('100%').height(52).padding(12).backgroundColor(Color.Transparent)
-      .onClick((): void => { this.moreOpen = false; this.onSelect(name); })
+      .onClick((): void => { hapticTick(); this.moreOpen = false; this.onSelect(name); })
   }
 
   build(): void {
@@ -109,12 +121,13 @@ export struct DesktopNavRail {
             })
           Button({ type: ButtonType.Normal }) {
             if (this.compact) {
-              SymbolGlyph($r('sys.symbol.square_and_pencil')).fontSize(26).fontColor([$r('app.color.text_on_inverse')])
+              SymbolGlyph($r('sys.symbol.square_and_pencil')).fontSize(26).fontColor([mixedAccentRoleColor(this.accentTheme, 'on_action', isMixedAccentTheme(this.accentTheme) ? $r('app.color.mix_preview_on_action') : $r('app.color.text_on_inverse'))])
             } else {
               Text($r('app.string.action_post')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontWeight(FontWeight.Bold)
-                .fontColor($r('app.color.text_on_inverse'))
+                .fontColor(mixedAccentRoleColor(this.accentTheme, 'on_action', isMixedAccentTheme(this.accentTheme) ? $r('app.color.mix_preview_on_action') : $r('app.color.text_on_inverse')))
             }
-          }.width('100%').height(52).borderRadius(26).backgroundColor($r('app.color.text_primary'))
+          }.width('100%').height(52).borderRadius(26).backgroundColor(mixedAccentRoleColor(this.accentTheme, 'action', $r('app.color.text_primary')))
+            .compositingFilter(ComponentHdrHighlight.filter(this.getUIContext(), true, this.componentHdrRatio))
             .margin({ top: 12 }).id('desktop-compose').onClick(this.onCompose)
         }.width('100%')
       }.width('100%').layoutWeight(1).scrollBar(BarState.Auto).align(Alignment.TopStart)

@@ -1,3 +1,8 @@
+import { pageTextColor } from '../utils/ThemeColors';
+import { appPageBackground } from '../components/PageBackgroundLayer';
+import { pageCanvasColor, pageReadingSurfaceColor } from '../utils/ThemeColors';
+import { STORAGE_KEY_PAGE_TRANSITION_MODE, DEFAULT_PAGE_TRANSITION_MODE } from '../services/PageTransitionSettingsStore';
+import { pageSystemTransition, PageTransitionMotion } from '../utils/PageTransition';
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
 import { SymbolGlyphModifier } from '@kit.ArkUI';
 import { common } from '@kit.AbilityKit';
@@ -32,6 +37,9 @@ export function DmInfoBuilder(): void { DmInfoPage(); }
 
 @Component
 struct DmInfoPage {
+  @StorageProp('harmonyx.page_background') private pageBackgroundValue: string = '';
+  @State private pageMotion: PageTransitionMotion = new PageTransitionMotion();
+  @StorageProp(STORAGE_KEY_PAGE_TRANSITION_MODE) private pageTransitionMode: string = DEFAULT_PAGE_TRANSITION_MODE;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @Consume('pageStack') pageStack: NavPathStack;
   @StorageProp('harmonyx.status_bar_height') statusBarHeight: number = 0;
@@ -261,21 +269,21 @@ struct DmInfoPage {
           .accessibilityText(title).bindMenu(this.MoreMenu())
       } else {
         Button({ type: ButtonType.Circle }) {
-          SymbolGlyph(symbol).fontSize(24).fontColor([$r('app.color.text_primary')])
+          SymbolGlyph(symbol).fontSize(24).fontColor([pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, secondaryButtonSurfaceColor(this.displayMode, this.darkSurface))])
         }.width(56).height(56).backgroundColor(secondaryButtonSurfaceColor(this.displayMode, this.darkSurface))
           .accessibilityText(title)
           .onClick((): void => { if (title.id === $r('app.string.chat_profile').id) { this.profile(); } else { this.call(); } })
       }
-      Text(title).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor($r('app.color.text_primary'))
+      Text(title).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
     }
   }
   @Builder
   private InfoRow(symbol: Resource, title: Resource, value: ResourceStr = ''): void {
     Row({ space: 12 }) {
-      SymbolGlyph(symbol).fontSize(24).fontColor([$r('app.color.text_primary')])
-      Text(title).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontColor($r('app.color.text_primary')).layoutWeight(1)
-      if (value !== '') { Text(value).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor($r('app.color.text_secondary')) }
-      SymbolGlyph($r('sys.symbol.chevron_right')).fontSize(18).fontColor([$r('app.color.text_secondary')])
+      SymbolGlyph(symbol).fontSize(24).fontColor([pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)])
+      Text(title).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)).layoutWeight(1)
+      if (value !== '') { Text(value).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)) }
+      SymbolGlyph($r('sys.symbol.chevron_right')).fontSize(18).fontColor([pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)])
     }.width('100%').height(64).padding({ left: 12, right: 12 })
   }
   @Builder
@@ -283,8 +291,8 @@ struct DmInfoPage {
     Column({ space: 16 }) {
       ProxyAvatar({verifiedType: this.route?.verifiedType ?? this.route?.contactProfile?.verifiedType ?? '', avatarShape: this.route?.avatarShape ?? this.route?.contactProfile?.avatarShape ?? '',  url: this.avatar, avatarSize: 88, radius: 44, fallbackText: this.title.substring(0, 1) })
       Column({ space: 2 }) {
-        Text(this.nickname.length > 0 ? this.nickname : this.title).fontFamily(this.appFontFamily).fontSize($r('sys.float.Title_S')).fontWeight(FontWeight.Bold).fontColor($r('app.color.text_primary'))
-        if (this.username.length > 0) { Text('@' + this.username).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontColor($r('app.color.text_secondary')) }
+        Text(this.nickname.length > 0 ? this.nickname : this.title).fontFamily(this.appFontFamily).fontSize($r('sys.float.Title_S')).fontWeight(FontWeight.Bold).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
+        if (this.username.length > 0) { Text('@' + this.username).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)) }
       }
       Row() {
         Column() { this.Shortcut($r('sys.symbol.phone'), $r('app.string.chat_phone')) }.layoutWeight(1)
@@ -309,6 +317,8 @@ struct DmInfoPage {
   }
   build(): void {
     HdsNavDestination() {
+      Stack({ alignContent: Alignment.TopStart }) {
+        appPageBackground()
       Scroll(this.scroller) {
         Column() {
           if (this.busy) { LoadingProgress().width(24).height(24).color(this.accentColor).margin(12) }
@@ -351,12 +361,18 @@ struct DmInfoPage {
         }.width('100%').padding({ top: this.statusBarHeight + 64, bottom: this.bottomInset + 24 })
       }.width('100%').height('100%').scrollBar(BarState.Off).align(Alignment.Top)
         .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: true })
-    }.titleMode(HdsNavDestinationTitleMode.MINI).hideBackButton(false).bindToScrollable([this.scroller])
+    
+      }.width('100%').height('100%')
+    }
+    .scale({ x: this.pageMotion.scale, y: this.pageMotion.scale })
+    .opacity(this.pageMotion.opacity)
+    .onReady((context: NavDestinationContext): void => { this.pageMotion.attach(context); })
+    .systemTransition(pageSystemTransition(this.pageTransitionMode)).titleMode(HdsNavDestinationTitleMode.MINI).hideBackButton(false).bindToScrollable([this.scroller])
       .titleBar({ avoidLayoutSafeArea: true,
         content: { title: { mainTitle: this.pageTitle() }, menu: { value: this.titleMenu() } },
         style: destinationTitleBarStyle(ScrollEffectType.GRADIENT_BLUR, this.displayMode, this.darkSurface, this.titleBarStyleMode)
       })
-      .backgroundColor(pageSurfaceColor(this.displayMode, this.darkSurface)).systemMaterial(chatPageMaterial())
+      .backgroundColor(pageCanvasColor(this.displayMode, this.darkSurface, this.pageBackgroundValue)).systemMaterial(chatPageMaterial())
       .onShown((): void => { this.load(); })
       .onBackPressed((): boolean => { ResponsiveLayout.closeContentDestination(this.pageStack); return true; })
   }

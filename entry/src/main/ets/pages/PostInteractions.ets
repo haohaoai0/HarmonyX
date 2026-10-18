@@ -1,3 +1,8 @@
+import { pageTextColor } from '../utils/ThemeColors';
+import { appPageBackground } from '../components/PageBackgroundLayer';
+import { pageCanvasColor, pageReadingSurfaceColor } from '../utils/ThemeColors';
+import { STORAGE_KEY_PAGE_TRANSITION_MODE, DEFAULT_PAGE_TRANSITION_MODE } from '../services/PageTransitionSettingsStore';
+import { pageSystemTransition, PageTransitionMotion } from '../utils/PageTransition';
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
 import { AnimatedIconTabs } from '../components/AnimatedIconTabs';
 import { ProfileTabMotion } from '../utils/ProfileTabMotion';
@@ -38,6 +43,9 @@ export function PostInteractionsBuilder(): void {
 
 @Component
 export struct PostInteractionsPage {
+  @StorageProp('harmonyx.page_background') private pageBackgroundValue: string = '';
+  @State private pageMotion: PageTransitionMotion = new PageTransitionMotion();
+  @StorageProp(STORAGE_KEY_PAGE_TRANSITION_MODE) private pageTransitionMode: string = DEFAULT_PAGE_TRANSITION_MODE;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @Consume('pageStack') pageStack: NavPathStack;
   @StorageProp('harmonyx.status_bar_height') statusBarHeight: number =
@@ -332,15 +340,15 @@ export struct PostInteractionsPage {
     Column({ space: 12 }) {
       SymbolGlyph(icon)
         .fontSize(36)
-        .fontColor([$r('app.color.text_secondary')])
+        .fontColor([pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)])
       Text(title).fontFamily(this.appFontFamily)
         .fontSize($r('sys.float.Title_L'))
         .fontWeight(FontWeight.Bold)
-        .fontColor($r('app.color.text_primary'))
+        .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
         .textAlign(TextAlign.Center)
       Text(detail).fontFamily(this.appFontFamily)
         .fontSize($r('sys.float.Body_L'))
-        .fontColor($r('app.color.text_secondary'))
+        .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
         .textAlign(TextAlign.Center)
         .maxLines(4)
       Button($r('app.string.common_retry'), { stateEffect: true })
@@ -388,7 +396,7 @@ export struct PostInteractionsPage {
           Text(row.name).fontFamily(this.appFontFamily)
             .fontSize($r('sys.float.Subtitle_M'))
             .fontWeight(FontWeight.Bold)
-            .fontColor($r('app.color.text_primary'))
+            .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
             .maxLines(1)
             .textOverflow({ overflow: TextOverflow.Ellipsis })
           if (row.verified) {
@@ -399,7 +407,7 @@ export struct PostInteractionsPage {
         }
         Text('@' + row.username).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Body_M'))
-          .fontColor($r('app.color.text_secondary'))
+          .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
           .maxLines(1)
           .textOverflow({ overflow: TextOverflow.Ellipsis })
       }
@@ -407,7 +415,7 @@ export struct PostInteractionsPage {
       .alignItems(HorizontalAlign.Start)
       SymbolGlyph($r('sys.symbol.chevron_right'))
         .fontSize(18)
-        .fontColor([$r('app.color.text_secondary')])
+        .fontColor([pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)])
     }
     .width('100%')
     .padding({ left: 16, right: 16, top: 12, bottom: 12 })
@@ -466,7 +474,7 @@ export struct PostInteractionsPage {
       }
       Text($r('app.string.user_list_load_more')).fontFamily(this.appFontFamily)
         .fontSize($r('sys.float.Body_M'))
-        .fontColor($r('app.color.text_accent'))
+        .fontColor(pageTextColor($r('app.color.text_accent'), this.pageBackgroundValue, Color.Transparent))
     }
     .width('100%')
     .justifyContent(FlexAlign.Center)
@@ -514,9 +522,17 @@ export struct PostInteractionsPage {
 
   build(): void {
     HdsNavDestination() {
+      Stack({ alignContent: Alignment.TopStart }) {
+        appPageBackground()
       this.ContentBuilder();
+    
+      }.width('100%').height('100%')
     }
+    .scale({ x: this.pageMotion.scale, y: this.pageMotion.scale })
+    .opacity(this.pageMotion.opacity)
+    .systemTransition(pageSystemTransition(this.pageTransitionMode))
     .onReady((context: NavDestinationContext): void => {
+      this.pageMotion.attach(context);
       const param: PostInteractionsRouteParam = context.pathInfo?.param as PostInteractionsRouteParam;
       if (param !== undefined && param !== null) {
         this.applyRouteParam(param);
@@ -536,6 +552,6 @@ export struct PostInteractionsPage {
       style: destinationTitleBarStyle(ScrollEffectType.GRADIENT_BLUR, this.themeDisplayMode,
         this.themeDarkSurface, this.titleBarStyleMode)
     })
-    .backgroundColor(pageSurfaceColor(this.themeDisplayMode, this.themeDarkSurface));
+    .backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue));
   }
 }

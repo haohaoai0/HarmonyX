@@ -1,3 +1,24 @@
+import { ComponentHdrSettingsContent } from '../components/ComponentHdrSettingsContent';
+import { MotionSettingsContent } from '../components/MotionSettingsContent';
+import type { DmSettingsRouteParam } from './DmSettings';
+import { xChatActions } from '../services/XChatActions';
+import { hapticTick } from '../utils/Haptics';
+import { menuActionVisible, menuActionsForGroup, MenuActionOption } from '../models/MenuActionCatalog';
+import { STORAGE_KEY_HIDDEN_MENU_ACTIONS, menuSettingsStore } from '../services/MenuSettingsStore';
+import { STORAGE_KEY_VIDEO_HDR_ENHANCEMENT, DEFAULT_VIDEO_HDR_ENHANCEMENT } from '../services/MediaSettingsStore';
+import { STORAGE_KEY_VIEWER_VIDEO_MUTED, STORAGE_KEY_VIDEO_FEED_LAYOUT, VIDEO_FEED_LAYOUT_CLASSIC, VIDEO_FEED_LAYOUT_DOUYIN, VIDEO_FEED_LAYOUT_BILIBILI, STORAGE_KEY_VIDEO_FEED_CONTROLS_ALWAYS_VISIBLE, STORAGE_KEY_VIDEO_CAPTIONS_ENABLED, STORAGE_KEY_VIDEO_AUTO_ADVANCE } from '../services/MediaSettingsStore';
+import { pageBackgroundActive } from '../services/PageBackgroundStore';
+import { pageTextColor } from '../utils/ThemeColors';
+import { appPageBackground } from '../components/PageBackgroundLayer';
+import { pageCanvasColor, pageReadingSurfaceColor } from '../utils/ThemeColors';
+import { HuaweiAccountSheet } from '../components/HuaweiAccountSheet';
+import { HUAWEI_ACCOUNT_SIGNED_IN, HUAWEI_ACCOUNT_AVATAR } from '../services/HuaweiAccountService';
+import { sheetMaterialOptions } from '../utils/SheetMaterial';
+import { antiPeepProtection, AntiPeepState, STORAGE_KEY_ANTI_PEEP_ENABLED,
+  STORAGE_KEY_ANTI_PEEP_STATE } from '../services/AntiPeepProtection';
+import { STORAGE_KEY_PAGE_TRANSITION_MODE, DEFAULT_PAGE_TRANSITION_MODE,
+  PAGE_TRANSITION_CLASSIC, PAGE_TRANSITION_OFFICIAL, pageTransitionSettingsStore } from '../services/PageTransitionSettingsStore';
+import { pageSystemTransition, PageTransitionMotion } from '../utils/PageTransition';
 // Settings destinations use the same shared NavPathStack as post detail.
 // Keeping sidebar callbacks here makes the drawer structure reusable, as in
 // PaperTalk, while each settings group remains a real child page.
@@ -5,15 +26,17 @@ import { SettingsCategory, SettingsGroup, SETTINGS_GROUPS, settingsCategory, set
   settingsRoots, searchSettings, settingsBreadcrumb } from '../models/SettingsCatalog';
 import { uiMaterial } from '@kit.ArkUI';
 import { SystemMaterialUtil } from '../utils/SystemMaterial';
-import { STORAGE_KEY_SIDEBAR_MATERIAL_TYPE, SIDEBAR_MATERIAL_GLASS, STORAGE_KEY_DESKTOP_RAIL_SWIPE } from '../services/LayoutSettingsStore';
+import { STORAGE_KEY_SIDEBAR_MATERIAL_TYPE, SIDEBAR_MATERIAL_GLASS, SIDEBAR_MATERIAL_BLUR,
+  SIDEBAR_MATERIAL_SYSTEM, STORAGE_KEY_DESKTOP_RAIL_SWIPE } from '../services/LayoutSettingsStore';
 import { STORAGE_KEY_HOME_SPACE_CAPSULE_ENABLED, STORAGE_KEY_HOME_SPACE_CAPSULE_HIDDEN_FOR_SESSION,
   spacePreferencesStore } from '../services/SpacePreferencesStore';
 import { HOME_FLOATING_COMPOSE, HOME_FLOATING_REFRESH, HOME_FLOATING_TOP, HOME_FLOATING_HIDDEN,
   STORAGE_KEY_HOME_FLOATING_ACTION, STORAGE_KEY_PHOTO_FULLSCREEN, STORAGE_KEY_REFRESH_ON_FOREGROUND,
   STORAGE_KEY_REFRESH_ON_HOME_TAB, STORAGE_KEY_HOME_DOUBLE_TAP_LATEST, STORAGE_KEY_HOME_PULL_REFRESH_LATEST,
-  interactionSettingsStore } from '../services/InteractionSettingsStore';
+  STORAGE_KEY_CONFIRM_APP_EXIT, interactionSettingsStore } from '../services/InteractionSettingsStore';
 import { deviceInfo } from '@kit.BasicServicesKit';
 import {
+  DEFAULT_SHEET_MATERIAL_ENABLED,
   DEFAULT_SHEET_MATERIAL_LEVEL,
   STORAGE_KEY_SHEET_MATERIAL_ENABLED,
   STORAGE_KEY_SHEET_MATERIAL_LEVEL,
@@ -60,6 +83,7 @@ import {
   STORAGE_KEY_CONTENT_FONT_FAMILY,
   STORAGE_KEY_SYSTEM_EMOJI_ENABLED,
   STORAGE_KEY_DARK_SURFACE,
+  STORAGE_KEY_SYSTEM_DARK,
   STORAGE_KEY_TITLE_BAR_STYLE_MODE,
   STORAGE_KEY_TITLE_BAR_GLASS_MATERIAL_LEVEL,
   STORAGE_KEY_REPLY_CAPSULE_MATERIAL_LEVEL,
@@ -77,6 +101,14 @@ import {
   TITLE_BAR_GLASS_THICK,
   TITLE_BAR_GLASS_ULTRA_THICK
 } from '../services/AppearanceStore';
+import {
+  mixedAccentRoleColor,
+  accentPageRole,
+  accentSwatchColor,
+  accentTintColor,
+  accentUsesDarkMode,
+  resolveAccentColor
+} from '../utils/AccentPalette';
 import {
   BOTTOM_BAR_EXPLORE_PAGE,
   BOTTOM_BAR_HOME_PAGE,
@@ -156,6 +188,12 @@ import {
   STORAGE_KEY_VIDEO_AUTO_PIP,
   STORAGE_KEY_VIDEO_BACKGROUND_MODE,
   STORAGE_KEY_VIDEO_HOLD_SPEED,
+  STORAGE_KEY_VIDEO_DOUBLE_TAP_SEEK,
+  STORAGE_KEY_VIDEO_DOUBLE_TAP_SEEK_SECONDS,
+  DEFAULT_VIDEO_DOUBLE_TAP_SEEK_ENABLED,
+  DEFAULT_VIDEO_DOUBLE_TAP_SEEK_SECONDS,
+  MIN_VIDEO_DOUBLE_TAP_SEEK_SECONDS,
+  MAX_VIDEO_DOUBLE_TAP_SEEK_SECONDS,
   STORAGE_KEY_VIDEO_FEED_TAP_PAUSE,
   STORAGE_KEY_VIDEO_IMMERSIVE_FILL,
   VIDEO_BACKGROUND_AUDIO,
@@ -189,6 +227,7 @@ import {
   HDS_TAB_MATERIAL_SMOOTH,
   hdsTabsSettingsStore,
   STORAGE_KEY_CLASSIC_BOTTOM_BAR,
+  STORAGE_KEY_ROOT_LIQUID_TAB_INDICATOR_ENABLED,
   STORAGE_KEY_HOME_TAB_MATERIAL_LEVEL,
   STORAGE_KEY_ROOT_TAB_LABELS_VISIBLE
 } from '../services/HdsTabsSettingsStore';
@@ -230,6 +269,7 @@ import {
   APP_ICON_TWITTER_WHITE,
   APP_ICON_X_BLACK,
   APP_ICON_X_WHITE,
+  APP_ICON_ZOMBIE_X,
   isKnownAppIcon,
   isMidAutumnIconAvailable
 } from '../services/AppIconStore';
@@ -260,6 +300,7 @@ export function SettingsSectionBuilder(): void {
 
 @Component
 struct SettingsRow {
+  @StorageProp('harmonyx.page_background') private pageBackgroundValue: string = '';
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @StorageProp(STORAGE_KEY_APP_LOCALE) private appLocale: string = effectiveAppLocale();
   @Prop icon: Resource = $r('sys.symbol.gearshape');
@@ -271,34 +312,42 @@ struct SettingsRow {
     Row({ space: 16 }) {
       SymbolGlyph(this.icon)
         .fontSize(25)
-        .fontColor([$r('app.color.text_secondary')])
+        .fontColor([pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, pageReadingSurfaceColor($r('app.color.bg_card'), this.pageBackgroundValue))])
         .width(32)
       Column({ space: 4 }) {
         Text(this.title).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Subtitle_L'))
           .fontWeight(FontWeight.Medium)
-          .fontColor($r('app.color.text_primary'))
+          .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, pageReadingSurfaceColor($r('app.color.bg_card'), this.pageBackgroundValue)))
         Text(this.detail).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Body_M'))
-          .fontColor($r('app.color.text_secondary'))
+          .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, pageReadingSurfaceColor($r('app.color.bg_card'), this.pageBackgroundValue)))
           .width('100%')
       }
       .layoutWeight(1)
       .alignItems(HorizontalAlign.Start)
       SymbolGlyph($r('sys.symbol.chevron_right'))
         .fontSize(15)
-        .fontColor([$r('app.color.text_secondary')])
+        .fontColor([pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, pageReadingSurfaceColor($r('app.color.bg_card'), this.pageBackgroundValue))])
         .scale({ x: isAppRtl(this.appLocale) ? -1 : 1 })
     }
     .width('100%')
     .direction(Direction.Auto)
     .padding({ left: 20, right: 20, top: 16, bottom: 16 })
-    .onClick((): void => this.onRowClick())
+    .onClick((): void => { hapticTick(); this.onRowClick(); })
   }
 }
 
 @Component
 export struct SettingsHome {
+  @StorageProp('harmonyx.page_background') private pageBackgroundValue: string = '';
+  @State private huaweiAccountOpen: boolean = false;
+  @StorageProp(HUAWEI_ACCOUNT_SIGNED_IN) private huaweiSignedIn: boolean = false;
+  @StorageProp(HUAWEI_ACCOUNT_AVATAR) private huaweiAvatar: string = '';
+  @StorageProp(STORAGE_KEY_SHEET_MATERIAL_ENABLED) private accountSheetMaterialEnabled: boolean = DEFAULT_SHEET_MATERIAL_ENABLED;
+  @StorageProp(STORAGE_KEY_SHEET_MATERIAL_LEVEL) private accountSheetMaterialLevel: number = DEFAULT_SHEET_MATERIAL_LEVEL;
+  @State private pageMotion: PageTransitionMotion = new PageTransitionMotion();
+  @StorageProp(STORAGE_KEY_PAGE_TRANSITION_MODE) private pageTransitionMode: string = DEFAULT_PAGE_TRANSITION_MODE;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @Prop embedded: boolean = false;
   @Consume('pageStack') pageStack: NavPathStack;
@@ -352,6 +401,9 @@ export struct SettingsHome {
     } else if (category.destination === 'Lists') {
       const param: ListsRouteParam = { userId: '', memberships: false, title: '' };
       this.pageStack.pushPath({ name: category.destination, param: param });
+    } else if (category.destination === 'DmSettings') {
+      const param: DmSettingsRouteParam = { section: '' };
+      this.pageStack.pushPath({ name: category.destination, param: param });
     } else if (category.destination.length > 0) {
       this.pageStack.pushPath({ name: category.destination });
     } else {
@@ -400,14 +452,14 @@ export struct SettingsHome {
           ForEach(SETTINGS_GROUPS, (group: SettingsGroup) => {
             Column({ space: 8 }) {
               Text(group.title).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M'))
-                .fontWeight(FontWeight.Medium).fontColor($r('app.color.text_secondary'))
+                .fontWeight(FontWeight.Medium).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
                 .width('100%').padding({ left: 12, top: 8 })
               Column() {
                 ForEach(this.roots(group.id), (category: SettingsCategory) => {
                   this.CategoryRow(category)
                 }, (category: SettingsCategory): string => category.id)
               }.width('100%').borderRadius(20)
-                .backgroundColor(cardSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
+                .backgroundColor(pageReadingSurfaceColor(cardSurfaceColor(this.themeDisplayMode, this.themeDarkSurface), this.pageBackgroundValue))
             }.width('100%')
           }, (group: SettingsGroup): string => group.id)
         } else {
@@ -416,10 +468,10 @@ export struct SettingsHome {
               this.CategoryRow(category, true)
             }, (category: SettingsCategory): string => category.id)
           }.width('100%').borderRadius(20)
-            .backgroundColor(cardSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
+            .backgroundColor(pageReadingSurfaceColor(cardSurfaceColor(this.themeDisplayMode, this.themeDarkSurface), this.pageBackgroundValue))
           if (this.results().length === 0) {
             Text($r('app.string.settings_search_no_results')).fontFamily(this.appFontFamily)
-              .fontSize($r('sys.float.Body_L')).fontColor($r('app.color.text_secondary'))
+              .fontSize($r('sys.float.Body_L')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
               .textAlign(TextAlign.Center).width('100%').padding({ top: 48, bottom: 48 })
           }
         }
@@ -430,13 +482,31 @@ export struct SettingsHome {
       .clipContent(ContentClipMode.SAFE_AREA).clip(false)
   }
 
+  @Builder
+  private HuaweiAccountContent(): void {
+    HuaweiAccountSheet({ onClose: (): void => { this.huaweiAccountOpen = false; } })
+  }
+
   build(): void {
     if (this.embedded) {
       this.ListContent()
     } else {
     HdsNavDestination() {
+      Stack({ alignContent: Alignment.TopStart }) {
+        appPageBackground()
       this.ListContent()
+
+      }.width('100%').height('100%')
     }
+    .bindSheet($$this.huaweiAccountOpen, this.HuaweiAccountContent(), sheetMaterialOptions({
+      height: this.huaweiSignedIn ? 560 : 380, preferType: SheetType.BOTTOM, showClose: true, dragBar: true,
+      backgroundColor: pageSurfaceColor(this.themeDisplayMode, this.themeDarkSurface),
+      onDisappear: (): void => { this.huaweiAccountOpen = false; }
+    }, this.accountSheetMaterialEnabled, this.accountSheetMaterialLevel))
+    .scale({ x: this.pageMotion.scale, y: this.pageMotion.scale })
+    .opacity(this.pageMotion.opacity)
+    .onReady((context: NavDestinationContext): void => { this.pageMotion.attach(context); })
+    .systemTransition(pageSystemTransition(this.pageTransitionMode))
     .titleMode(HdsNavDestinationTitleMode.MINI)
     .hideBackButton(false)
     .onBackPressed((): boolean => {
@@ -446,18 +516,25 @@ export struct SettingsHome {
     .bindToScrollable([this.scroller])
     .titleBar({
       avoidLayoutSafeArea: true,
-      content: { title: { mainTitle: $r('app.string.settings_title') } },
+      content: { title: { mainTitle: $r('app.string.settings_title') }, menu: { value: [{ content: {
+        icon: this.huaweiSignedIn && this.huaweiAvatar.length > 0 ? this.huaweiAvatar : $r('sys.symbol.person_crop_circle_fill'),
+        label: this.text($r('app.string.huawei_account_title')), componentId: 'settings-huawei-account',
+        action: (): void => { this.huaweiAccountOpen = true; }
+      } }] } },
       style: destinationTitleBarStyle(ScrollEffectType.GRADIENT_BLUR, this.themeDisplayMode,
         this.themeDarkSurface, this.titleBarStyleMode)
     })
-    .backgroundColor(pageSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
-    .systemMaterial(this.pageMaterial());
+    .backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue))
+    .systemMaterial(pageBackgroundActive(this.pageBackgroundValue) ? undefined : this.pageMaterial());
   }
   }
 }
 
 @Component
 export struct SettingsSection {
+  @StorageProp('harmonyx.page_background') private pageBackgroundValue: string = '';
+  @State private pageMotion: PageTransitionMotion = new PageTransitionMotion();
+  @StorageProp(STORAGE_KEY_PAGE_TRANSITION_MODE) private pageTransitionMode: string = DEFAULT_PAGE_TRANSITION_MODE;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @StorageProp(STORAGE_KEY_APP_LOCALE) private appLocale: string = effectiveAppLocale();
   @StorageProp('harmonyx.breakpoint') private breakpoint: string = 'sm';
@@ -469,7 +546,7 @@ export struct SettingsSection {
   @StorageProp(STORAGE_KEY_SIDEBAR_MATERIAL_TYPE) sidebarMaterialType: number = SIDEBAR_MATERIAL_GLASS;
   @StorageProp(STORAGE_KEY_DESKTOP_RAIL_MATERIAL_LEVEL)
   desktopRailMaterialLevel: number = DEFAULT_DESKTOP_RAIL_MATERIAL_LEVEL;
-  @StorageLink(STORAGE_KEY_SHEET_MATERIAL_ENABLED) private sheetMaterialEnabled: boolean = false;
+  @StorageLink(STORAGE_KEY_SHEET_MATERIAL_ENABLED) private sheetMaterialEnabled: boolean = DEFAULT_SHEET_MATERIAL_ENABLED;
   @StorageLink(STORAGE_KEY_SHEET_MATERIAL_LEVEL) private sheetMaterialLevel: number = DEFAULT_SHEET_MATERIAL_LEVEL;
   @Consume('pageStack') pageStack: NavPathStack;
   @StorageProp('harmonyx.status_bar_height') statusBarHeight: number =
@@ -477,8 +554,13 @@ export struct SettingsSection {
   @StorageProp('harmonyx.navigation_indicator_height') navigationIndicatorHeight: number =
     AppStorage.get<number>('harmonyx.navigation_indicator_height') ?? 0;
   @State section: string = 'accessibility';
+  @StorageProp(STORAGE_KEY_ANTI_PEEP_ENABLED) private antiPeepEnabled: boolean = false;
+  @StorageProp(STORAGE_KEY_ANTI_PEEP_STATE) private antiPeepState: string = AntiPeepState.DISABLED;
+  @State private antiPeepBusy: boolean = false;
   @StorageLink('harmonyx.display_mode') displayMode: string = DISPLAY_MODE_SYSTEM;
   @StorageLink('harmonyx.accent_color') accentColor: string = DEFAULT_ACCENT_COLOR;
+  @StorageLink('harmonyx.accent_theme') accentTheme: string = DEFAULT_ACCENT_COLOR;
+  @StorageProp(STORAGE_KEY_SYSTEM_DARK) private systemDarkAppearance: boolean = false;
   @StorageLink('harmonyx.font_mode') fontMode: string = FONT_MODE_SYSTEM;
   @StorageLink('harmonyx.font_scale') fontScale: number = DEFAULT_FONT_SCALE;
   @StorageLink(STORAGE_KEY_CONTENT_FONT_FAMILY) contentFontFamily: string = DEFAULT_CONTENT_FONT_FAMILY;
@@ -490,6 +572,7 @@ export struct SettingsSection {
   @StorageLink(STORAGE_KEY_BOTTOM_BAR_PAGES) bottomBarPagesMask: number = DEFAULT_BOTTOM_BAR_PAGES_MASK;
   @StorageLink(STORAGE_KEY_CLASSIC_BOTTOM_BAR) classicBottomBar: boolean = false;
   @StorageLink(STORAGE_KEY_ROOT_TAB_LABELS_VISIBLE) rootTabLabelsVisible: boolean = true;
+  @StorageLink(STORAGE_KEY_ROOT_LIQUID_TAB_INDICATOR_ENABLED) rootLiquidTabIndicatorEnabled: boolean = true;
   @StorageLink(STORAGE_KEY_AUTO_HIDE_FAB) autoHideFab: boolean = true;
   @StorageLink(STORAGE_KEY_HOME_HEADER_COLLAPSE) homeHeaderCollapseEnabled: boolean = false;
   @StorageLink(STORAGE_KEY_TITLE_BAR_LOGO) titleBarLogoEnabled: boolean = true;
@@ -508,6 +591,7 @@ export struct SettingsSection {
   @StorageProp(STORAGE_KEY_REFRESH_ON_HOME_TAB) refreshOnHomeTab: boolean = false;
   @StorageProp(STORAGE_KEY_HOME_DOUBLE_TAP_LATEST) homeDoubleTapLatest: boolean = true;
   @StorageProp(STORAGE_KEY_HOME_PULL_REFRESH_LATEST) homePullRefreshLatest: boolean = true;
+  @StorageProp(STORAGE_KEY_CONFIRM_APP_EXIT) confirmAppExit: boolean = true;
   @StorageProp(STORAGE_KEY_HOME_SPACE_CAPSULE_ENABLED) homeSpaceCapsuleEnabled: boolean = true;
   @StorageProp(STORAGE_KEY_HOME_SPACE_CAPSULE_HIDDEN_FOR_SESSION) homeSpaceCapsuleHiddenForSession: boolean = false;
   @StorageLink(STORAGE_KEY_AVATAR_TINT_ENABLED) avatarTintEnabled: boolean = false;
@@ -519,6 +603,12 @@ export struct SettingsSection {
   @StorageLink('harmonyx.video_autoplay') videoAutoplay: boolean = true;
   @StorageLink(STORAGE_KEY_SHOW_SENSITIVE_MEDIA) showSensitiveMedia: boolean = false;
   @State private sensitiveMediaSaving: boolean = false;
+  @StorageProp(STORAGE_KEY_HIDDEN_MENU_ACTIONS) private hiddenMenuActions: string = '';
+  @StorageProp(STORAGE_KEY_VIEWER_VIDEO_MUTED) private viewerVideoMuted: boolean = true;
+  @StorageProp(STORAGE_KEY_VIDEO_FEED_LAYOUT) private videoFeedLayout: number = VIDEO_FEED_LAYOUT_CLASSIC;
+  @StorageProp(STORAGE_KEY_VIDEO_FEED_CONTROLS_ALWAYS_VISIBLE) private videoFeedControlsAlwaysVisible: boolean = false;
+  @StorageProp(STORAGE_KEY_VIDEO_CAPTIONS_ENABLED) private videoCaptionsEnabled: boolean = false;
+  @StorageProp(STORAGE_KEY_VIDEO_AUTO_ADVANCE) private videoAutoAdvance: boolean = true;
   @StorageLink(STORAGE_KEY_HOME_VIDEO_MUTED) homeVideoMuted: boolean = true;
   @StorageProp(STORAGE_KEY_MEDIA_VIEWER_BLACK_BACKGROUND) mediaViewerBlackBackground: boolean = false;
   @StorageProp(STORAGE_KEY_MEDIA_COMMENT_BACKGROUND) mediaCommentBackground: boolean = true;
@@ -526,6 +616,9 @@ export struct SettingsSection {
   @StorageLink(STORAGE_KEY_VIDEO_AUTO_PIP) videoAutoPip: boolean = true;
   @StorageLink(STORAGE_KEY_VIDEO_IMMERSIVE_FILL) videoImmersiveFill: boolean = false;
   @StorageLink(STORAGE_KEY_VIDEO_HOLD_SPEED) videoHoldSpeed: boolean = true;
+  @StorageLink(STORAGE_KEY_VIDEO_HDR_ENHANCEMENT) private videoHdrEnhancement: boolean = DEFAULT_VIDEO_HDR_ENHANCEMENT;
+  @StorageLink(STORAGE_KEY_VIDEO_DOUBLE_TAP_SEEK) private videoDoubleTapSeek: boolean = DEFAULT_VIDEO_DOUBLE_TAP_SEEK_ENABLED;
+  @StorageLink(STORAGE_KEY_VIDEO_DOUBLE_TAP_SEEK_SECONDS) private videoDoubleTapSeekSeconds: number = DEFAULT_VIDEO_DOUBLE_TAP_SEEK_SECONDS;
   @StorageLink(STORAGE_KEY_VIDEO_FEED_TAP_PAUSE) private videoFeedTapPause: boolean = false;
   @StorageLink(STORAGE_KEY_VIDEO_BACKGROUND_MODE) videoBackgroundMode: number = VIDEO_BACKGROUND_AUDIO;
   @StorageLink(STORAGE_KEY_CAPTION_OPACITY) captionOpacity: number = DEFAULT_CAPTION_OPACITY;
@@ -533,6 +626,7 @@ export struct SettingsSection {
   @StorageLink('harmonyx.video_quality') videoQuality: number = VIDEO_QUALITY_DATA_SAVER;
   @StorageLink('harmonyx.app_language') appLanguage: string = DEFAULT_APP_LANGUAGE;
   @StorageLink('harmonyx.notification_alerts') notificationAlertsEnabled: boolean = true;
+  @State private onlyChatPush: boolean = false;
   @StorageLink(STORAGE_KEY_SYSTEM_NOTIFICATIONS) systemNotificationsEnabled: boolean = true;
   @StorageLink(STORAGE_KEY_NOTIFICATION_DND_SILENT) notificationDndSilent: boolean = true;
   @StorageLink('harmonyx.default_home_feed') defaultHomeFeedMode: number = HOME_FEED_FOR_YOU;
@@ -600,7 +694,8 @@ export struct SettingsSection {
     APP_ICON_FROG_WHITE,
     APP_ICON_FROG_BLACK,
     APP_ICON_MILK_FROG_WHITE,
-    APP_ICON_MILK_FROG_BLACK
+    APP_ICON_MILK_FROG_BLACK,
+    APP_ICON_ZOMBIE_X
   ];
   private appIconOptions: AppIconOption[] = [
     new AppIconOption(APP_ICON_CLASSIC, $r('app.string.settings_app_icon_classic'),
@@ -630,7 +725,9 @@ export struct SettingsSection {
     new AppIconOption(APP_ICON_MILK_FROG_WHITE, $r('app.string.settings_app_icon_milk_frog_white'),
       $r('app.media.alt_icon_milk_frog_white_preview')),
     new AppIconOption(APP_ICON_MILK_FROG_BLACK, $r('app.string.settings_app_icon_milk_frog_black'),
-      $r('app.media.alt_icon_milk_frog_black_preview'))
+      $r('app.media.alt_icon_milk_frog_black_preview')),
+    new AppIconOption(APP_ICON_ZOMBIE_X, $r('app.string.settings_app_icon_zombie_x'),
+      $r('app.media.alt_icon_zombie_x_preview'))
   ];
 
   private pageMaterial(): uiMaterial.Material | undefined {
@@ -646,6 +743,7 @@ export struct SettingsSection {
 
   aboutToAppear(): void {
     const context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
+    this.onlyChatPush = xChatActions.localBoolean(context, 'only_chat_push', false);
     this.systemFontScale = this.appearanceStore.systemFontScale(context);
     // EntryAbility applies the in-app scale before the first frame, so a saved
     // app mode means this process already stopped following the system size.
@@ -865,6 +963,30 @@ export struct SettingsSection {
     }
   }
 
+  private setVideoHdrEnhancement(value: boolean): void {
+    const previous: boolean = this.videoHdrEnhancement;
+    this.videoHdrEnhancement = value;
+    if (!mediaSettingsStore.saveVideoHdrEnhancement(getContext(this) as common.UIAbilityContext, value)) {
+      this.videoHdrEnhancement = previous;
+    }
+  }
+
+  private setVideoDoubleTapSeek(value: boolean): void {
+    const previous: boolean = this.videoDoubleTapSeek;
+    this.videoDoubleTapSeek = value;
+    if (!mediaSettingsStore.saveVideoDoubleTapSeek(getContext(this) as common.UIAbilityContext, value)) {
+      this.videoDoubleTapSeek = previous;
+    }
+  }
+
+  private setVideoDoubleTapSeekSeconds(value: number): void {
+    const previous: number = this.videoDoubleTapSeekSeconds;
+    this.videoDoubleTapSeekSeconds = value;
+    if (!mediaSettingsStore.saveVideoDoubleTapSeekSeconds(getContext(this) as common.UIAbilityContext, value)) {
+      this.videoDoubleTapSeekSeconds = previous;
+    }
+  }
+
   private setVideoHoldSpeed(value: boolean): void {
     const previous: boolean = this.videoHoldSpeed;
     this.videoHoldSpeed = value;
@@ -909,12 +1031,28 @@ export struct SettingsSection {
     }
   }
 
+  private setOnlyChatPush(value: boolean): void {
+    const context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
+    if (value === this.onlyChatPush) { return; }
+    if (value) { xChatActions.saveLocal(context, 'alerts_before_chat_only', this.notificationAlertsEnabled); }
+    const alerts: boolean = value ? false : xChatActions.localBoolean(context, 'alerts_before_chat_only', true);
+    xChatActions.saveLocal(context, 'only_chat_push', value);
+    if (!notificationSettingsStore.saveAlertsEnabled(context, alerts)) {
+      xChatActions.saveLocal(context, 'only_chat_push', this.onlyChatPush);
+      this.interactionSaved(false); return;
+    }
+    this.onlyChatPush = value;
+  }
+
   private setNotificationAlertsEnabled(value: boolean): void {
     const previous: boolean = this.notificationAlertsEnabled;
     this.notificationAlertsEnabled = value;
     const context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
     if (!notificationSettingsStore.saveAlertsEnabled(context, value)) {
       this.notificationAlertsEnabled = previous;
+    } else if (this.onlyChatPush) {
+      xChatActions.saveLocal(context, 'only_chat_push', false);
+      this.onlyChatPush = false;
     }
   }
 
@@ -1142,6 +1280,16 @@ export struct SettingsSection {
     const context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
     if (!hdsTabsSettingsStore.saveRootTabLabelsVisible(context, visible)) {
       this.rootTabLabelsVisible = previous;
+      promptAction.showToast({ message: this.text($r('app.string.settings_interaction_save_failed')) });
+    }
+  }
+
+  private setRootLiquidTabIndicatorEnabled(enabled: boolean): void {
+    const previous: boolean = this.rootLiquidTabIndicatorEnabled;
+    this.rootLiquidTabIndicatorEnabled = enabled;
+    const context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
+    if (!hdsTabsSettingsStore.saveRootLiquidTabIndicatorEnabled(context, enabled)) {
+      this.rootLiquidTabIndicatorEnabled = previous;
       promptAction.showToast({ message: this.text($r('app.string.settings_interaction_save_failed')) });
     }
   }
@@ -1402,6 +1550,9 @@ export struct SettingsSection {
     if (index === 14) {
       return $r('app.string.settings_app_icon_milk_frog_black');
     }
+    if (index === 15) {
+      return $r('app.string.settings_app_icon_zombie_x');
+    }
     return $r('app.string.settings_app_icon_default');
   }
 
@@ -1450,6 +1601,16 @@ export struct SettingsSection {
   }
 
   private openSection(section: string): void {
+    const category: SettingsCategory | undefined = settingsCategory(section);
+    if (category?.destination === 'DmSettings') {
+      const param: DmSettingsRouteParam = { section: '' };
+      this.pageStack.pushPath({ name: category.destination, param: param });
+      return;
+    }
+    if (category !== undefined && category.destination.length > 0) {
+      this.pageStack.pushPath({ name: category.destination });
+      return;
+    }
     AppStorage.setOrCreate<string>('harmonyx.desktop_settings_section', section);
     const param: SettingsRouteParam = { section: section };
     NavigationGuard.pushPath<SettingsRouteParam>(this.pageStack, { name: 'SettingsSection', param: param },
@@ -1465,7 +1626,7 @@ export struct SettingsSection {
             onRowClick: (): void => this.openSection(category.id) })
         }, (category: SettingsCategory): string => category.id)
       }.width('100%').borderRadius(20)
-        .backgroundColor(cardSurfaceColor(this.displayMode, this.darkSurface))
+        .backgroundColor(pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue))
     }.width('100%').padding({ left: $r('app.float.settings_page_horizontal_padding'),
       right: $r('app.float.settings_page_horizontal_padding'), top: 12 })
   }
@@ -1475,13 +1636,13 @@ export struct SettingsSection {
     Row() {
       Column({ space: 4 }) {
         Text(title).fontFamily(this.appFontFamily).fontSize($r('sys.float.Subtitle_L')).fontWeight(FontWeight.Medium)
-          .fontColor($r('app.color.text_primary'))
-        Text(detail).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor($r('app.color.text_secondary'))
+          .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
+        Text(detail).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
           .width('100%')
       }
       .layoutWeight(1)
       .alignItems(HorizontalAlign.Start)
-      SymbolGlyph($r('sys.symbol.chevron_right')).fontSize(15).fontColor([$r('app.color.text_secondary')])
+      SymbolGlyph($r('sys.symbol.chevron_right')).fontSize(15).fontColor([pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)])
         .scale({ x: isAppRtl(this.appLocale) ? -1 : 1 })
     }
     .width('100%')
@@ -1491,7 +1652,7 @@ export struct SettingsSection {
 
   private saveAppearance(): void {
     const context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
-    const settings: AppearanceSettings = new AppearanceSettings(this.displayMode, this.accentColor,
+    const settings: AppearanceSettings = new AppearanceSettings(this.displayMode, this.accentTheme,
       this.fontMode, this.fontScale, this.autoHideTitleBar, this.autoHideTabBar, this.autoHideFab,
       this.darkSurface, this.composeButtonEnabled, this.titleBarStyleMode,
       this.titleBarGlassMaterialLevel, this.homeHeaderCollapseEnabled, this.contentFontFamily,
@@ -1688,6 +1849,45 @@ export struct SettingsSection {
     this.saveAppearance();
   }
 
+  private setPageTransitionMode(mode: string): void {
+    const context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
+    if (!pageTransitionSettingsStore.save(context, mode)) {
+      promptAction.showToast({ message: this.text($r('app.string.settings_interaction_save_failed')) });
+    }
+  }
+
+  @Builder
+  private PageTransitionOption(mode: string, title: Resource, detail: Resource): void {
+    Row({ space: 16 }) {
+      Column({ space: 6 }) {
+        Text(title).fontFamily(this.appFontFamily).fontSize($r('sys.float.Subtitle_L'))
+          .fontWeight(FontWeight.Medium).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue)))
+        Text(detail).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M'))
+          .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue))).width('100%')
+      }.layoutWeight(1).alignItems(HorizontalAlign.Start)
+      Radio({ value: mode, group: 'page_transition' })
+        .checked(this.pageTransitionMode === mode)
+        .radioStyle({ checkedBackgroundColor: this.accentColor })
+        .onChange((checked: boolean): void => { if (checked) { this.setPageTransitionMode(mode); } })
+        .accessibilityText(this.text(title))
+    }
+    .width('100%').padding(20).borderRadius(20)
+    .backgroundColor(pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue))
+    .onClick((): void => this.setPageTransitionMode(mode))
+  }
+
+  @Builder
+  private PageTransitionContent(): void {
+    Column({ space: 16 }) {
+      Text($r('app.string.settings_page_transition_desc')).fontFamily(this.appFontFamily)
+        .fontSize($r('sys.float.Body_M')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).width('100%')
+      this.PageTransitionOption(PAGE_TRANSITION_CLASSIC, $r('app.string.settings_page_transition_classic'),
+        $r('app.string.settings_page_transition_classic_desc'))
+      this.PageTransitionOption(PAGE_TRANSITION_OFFICIAL, $r('app.string.settings_page_transition_official'),
+        $r('app.string.settings_page_transition_official_desc'))
+    }.width('100%').padding({ left: 20, right: 20, top: 16, bottom: 28 })
+  }
+
   private setPressEffectEnabled(value: boolean): void {
     const previous: boolean = this.pressEffectEnabled;
     this.pressEffectEnabled = value;
@@ -1789,14 +1989,18 @@ export struct SettingsSection {
     try {
       context.getApplicationContext().setColorMode(this.appearanceStore.colorMode(mode));
       this.displayMode = mode;
+      this.accentColor = resolveAccentColor(this.accentTheme,
+        accentUsesDarkMode(mode, this.systemDarkAppearance));
       this.saveAppearance();
     } catch (error) {
       // Keep the currently rendered color mode when the system rejects a change.
     }
   }
 
-  private selectAccent(color: string): void {
-    this.accentColor = color;
+  private selectAccent(theme: string): void {
+    this.accentTheme = theme;
+    this.accentColor = resolveAccentColor(theme,
+      accentUsesDarkMode(this.displayMode, this.systemDarkAppearance));
     this.saveAppearance();
   }
 
@@ -1847,11 +2051,13 @@ export struct SettingsSection {
     Column({ space: 8 }) {
       SymbolGlyph(icon)
         .fontSize(28)
-        .fontColor([this.displayMode === mode ? this.accentColor : $r('app.color.text_primary')])
+        .fontColor([this.displayMode === mode ? this.accentColor : pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, this.displayMode === mode ?
+      fieldSurfaceColor(this.displayMode, this.darkSurface) : pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue))])
       Text(label).fontFamily(this.appFontFamily)
         .fontSize($r('sys.float.Body_M'))
         .fontWeight(FontWeight.Medium)
-        .fontColor($r('app.color.text_primary'))
+        .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, this.displayMode === mode ?
+      fieldSurfaceColor(this.displayMode, this.darkSurface) : pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue)))
         .width('100%')
         .textAlign(TextAlign.Center)
     }
@@ -1861,7 +2067,7 @@ export struct SettingsSection {
     .justifyContent(FlexAlign.Center)
     .borderRadius(18)
     .backgroundColor(this.displayMode === mode ?
-      fieldSurfaceColor(this.displayMode, this.darkSurface) : cardSurfaceColor(this.displayMode, this.darkSurface))
+      fieldSurfaceColor(this.displayMode, this.darkSurface) : pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue))
     .border({ width: this.displayMode === mode ? 2 : 1,
       color: this.displayMode === mode ? this.accentColor : $r('app.color.divider') })
     .onClick((): void => this.selectDisplayMode(mode))
@@ -1877,7 +2083,8 @@ export struct SettingsSection {
       Text(label).fontFamily(this.appFontFamily)
         .fontSize($r('sys.float.Body_M'))
         .fontWeight(FontWeight.Medium)
-        .fontColor($r('app.color.text_primary'))
+        .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, this.darkSurface === surface ?
+      fieldSurfaceColor(this.displayMode, this.darkSurface) : pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue)))
         .layoutWeight(1)
       if (this.darkSurface === surface) {
         SymbolGlyph($r('sys.symbol.checkmark_circle_fill'))
@@ -1889,28 +2096,74 @@ export struct SettingsSection {
     .padding({ left: 14, right: 14, top: 12, bottom: 12 })
     .borderRadius(16)
     .backgroundColor(this.darkSurface === surface ?
-      fieldSurfaceColor(this.displayMode, this.darkSurface) : cardSurfaceColor(this.displayMode, this.darkSurface))
+      fieldSurfaceColor(this.displayMode, this.darkSurface) : pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue))
     .border({ width: this.darkSurface === surface ? 2 : 1,
       color: this.darkSurface === surface ? this.accentColor : $r('app.color.divider') })
     .onClick((): void => this.selectDarkSurface(surface))
   }
 
   @Builder
-  private AccentOption(color: string, swatch: Resource, label: Resource): void {
+  private MixedAccentOption(theme: string, label: Resource): void {
+    Button({ type: ButtonType.Normal }) {
+      Column({ space: 8 }) {
+        Row() {
+          // Static samples keep the entire card as one accessible hit target.
+          Row() { Circle({ width: 16, height: 16 }).fill(mixedAccentRoleColor(theme, 'on_control', $r('app.color.mix_preview_on_action'))) }
+            .width(34).height(20).padding(2).borderRadius(10).justifyContent(FlexAlign.End)
+            .backgroundColor(mixedAccentRoleColor(theme, 'control', mixedAccentRoleColor(theme, 'primary', this.accentColor)))
+          Blank()
+          Stack() {
+            Circle().fill(mixedAccentRoleColor(theme, 'action', this.accentColor))
+            SymbolGlyph($r('sys.symbol.plus')).fontSize($r('app.float.theme_mix_preview_icon_size'))
+              .fontColor([mixedAccentRoleColor(theme, 'on_action', $r('app.color.mix_preview_on_action'))])
+          }.width($r('app.float.theme_mix_action_size')).height($r('app.float.theme_mix_action_size'))
+        }.width('100%').height($r('app.float.theme_mix_preview_height'))
+        Row() {
+          ForEach([0, 1, 2, 3, 4], (page: number): void => {
+            Circle({ width: $r('app.float.theme_mix_swatch_size'), height: $r('app.float.theme_mix_swatch_size') })
+              .fill(mixedAccentRoleColor(theme, accentPageRole(page), this.accentColor))
+          })
+        }.width('100%').justifyContent(FlexAlign.SpaceBetween)
+        Row({ space: 4 }) {
+          Text(label).fontFamily(this.appFontFamily).fontSize($r('app.float.theme_mix_title_size'))
+            .fontWeight(FontWeight.Medium)
+            .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue,
+              pageReadingSurfaceColor(mixedAccentRoleColor(theme, 'surface', $r('app.color.bg_card')), this.pageBackgroundValue)))
+            .layoutWeight(1).maxLines(2).textAlign(TextAlign.Start)
+          if (this.accentTheme === theme) {
+            SymbolGlyph($r('sys.symbol.checkmark_circle_fill'))
+              .fontSize($r('app.float.theme_mix_check_size'))
+              .fontColor([mixedAccentRoleColor(theme, 'primary', this.accentColor)])
+          }
+        }.width('100%')
+      }.width('100%').padding($r('app.float.theme_mix_tile_padding'))
+    }.layoutWeight(1).borderRadius($r('app.float.theme_mix_tile_radius'))
+      .backgroundColor(pageReadingSurfaceColor(mixedAccentRoleColor(theme, 'surface', $r('app.color.bg_card')), this.pageBackgroundValue))
+      .border({ width: this.accentTheme === theme ? 2 : 1,
+        color: this.accentTheme === theme ? mixedAccentRoleColor(theme, 'primary', this.accentColor) : $r('app.color.divider') })
+      .id('settings-accent-' + theme).accessibilityText(label)
+      .accessibilitySelected(this.accentTheme === theme)
+      .onClick((): void => this.selectAccent(theme))
+  }
+
+  @Builder
+  private AccentOption(theme: string, label: Resource): void {
     Stack({ alignContent: Alignment.Center }) {
-      if (this.accentColor === color) {
+      if (this.accentTheme === theme) {
         Circle({ width: 38, height: 38 }).fill(Color.Transparent)
           .stroke(this.accentColor).strokeWidth(3)
       }
-      Circle({ width: 30, height: 30 }).fill(swatch)
+      Circle({ width: 30, height: 30 }).fill(accentSwatchColor(theme))
     }
     .width(42)
     .height(42)
     .flexShrink(0)
     .margin({ right: 8, bottom: 8 })
-    .id('settings-accent-' + color.substring(1))
+    .borderRadius(14)
+    .backgroundColor(accentTintColor(theme))
+    .id('settings-accent-' + theme.replace('#', ''))
     .accessibilityText(label)
-    .onClick((): void => this.selectAccent(color))
+    .onClick((): void => this.selectAccent(theme))
   }
 
   @Builder
@@ -1918,11 +2171,14 @@ export struct SettingsSection {
     Row({ space: 8 }) {
       SymbolGlyph(icon)
         .fontSize(20)
-        .fontColor([this.fontMode === mode ? $r('app.color.text_accent') : $r('app.color.text_primary')])
+        .fontColor([this.fontMode === mode ? pageTextColor($r('app.color.text_accent'), this.pageBackgroundValue, this.fontMode === mode ?
+      fieldSurfaceColor(this.displayMode, this.darkSurface) : pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue)) : pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, this.fontMode === mode ?
+      fieldSurfaceColor(this.displayMode, this.darkSurface) : pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue))])
       Text(label).fontFamily(this.appFontFamily)
         .fontSize($r('sys.float.Body_M'))
         .fontWeight(FontWeight.Medium)
-        .fontColor($r('app.color.text_primary'))
+        .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, this.fontMode === mode ?
+      fieldSurfaceColor(this.displayMode, this.darkSurface) : pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue)))
         .layoutWeight(1)
         .textAlign(TextAlign.Center)
     }
@@ -1931,7 +2187,7 @@ export struct SettingsSection {
     .padding({ left: 12, right: 12, top: 12, bottom: 12 })
     .borderRadius(16)
     .backgroundColor(this.fontMode === mode ?
-      fieldSurfaceColor(this.displayMode, this.darkSurface) : cardSurfaceColor(this.displayMode, this.darkSurface))
+      fieldSurfaceColor(this.displayMode, this.darkSurface) : pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue))
     .border({ width: this.fontMode === mode ? 2 : 1,
       color: this.fontMode === mode ? this.accentColor : $r('app.color.divider') })
     .onClick((): void => this.selectFontMode(mode))
@@ -1944,11 +2200,13 @@ export struct SettingsSection {
         .fontSize($r('sys.float.Title_S'))
         .fontWeight(FontWeight.Medium)
         .fontFamily(family)
-        .fontColor($r('app.color.text_primary'))
+        .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, this.contentFontFamily === family ?
+      fieldSurfaceColor(this.displayMode, this.darkSurface) : pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue)))
       Text(label).fontFamily(this.appFontFamily)
         .fontSize($r('sys.float.Caption_L'))
         .fontWeight(FontWeight.Medium)
-        .fontColor($r('app.color.text_primary'))
+        .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, this.contentFontFamily === family ?
+      fieldSurfaceColor(this.displayMode, this.darkSurface) : pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue)))
         .width('100%')
         .textAlign(TextAlign.Center)
     }
@@ -1958,7 +2216,7 @@ export struct SettingsSection {
     .padding({ top: 11, bottom: 11, left: 4, right: 4 })
     .borderRadius(14)
     .backgroundColor(this.contentFontFamily === family ?
-      fieldSurfaceColor(this.displayMode, this.darkSurface) : cardSurfaceColor(this.displayMode, this.darkSurface))
+      fieldSurfaceColor(this.displayMode, this.darkSurface) : pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue))
     .border({ width: this.contentFontFamily === family ? 2 : 1,
       color: this.contentFontFamily === family ? this.accentColor : $r('app.color.divider') })
     .onClick((): void => this.selectContentFontFamily(family))
@@ -1970,7 +2228,7 @@ export struct SettingsSection {
       Text($r('app.string.settings_content_font_title')).fontFamily(this.appFontFamily)
         .fontSize($r('sys.float.Title_S'))
         .fontWeight(FontWeight.Bold)
-        .fontColor($r('app.color.text_primary'))
+        .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
         .width('100%')
       Row({ space: 8 }) {
         this.ContentFontOption(CONTENT_FONT_FAMILY_SYSTEM, $r('app.string.settings_content_font_system'))
@@ -1981,7 +2239,7 @@ export struct SettingsSection {
       .width('100%')
       Text($r('app.string.settings_content_font_hint')).fontFamily(this.appFontFamily)
         .fontSize($r('sys.float.Body_M'))
-        .fontColor($r('app.color.text_secondary'))
+        .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
         .lineHeight(20)
         .width('100%')
     }
@@ -1995,16 +2253,16 @@ export struct SettingsSection {
       Text($r('app.string.settings_custom_font_title')).fontFamily(this.appFontFamily)
         .fontSize($r('sys.float.Title_S'))
         .fontWeight(FontWeight.Bold)
-        .fontColor($r('app.color.text_primary'))
+        .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
         .width('100%')
       Row({ space: 10 }) {
         Text($r('app.string.settings_custom_font_current')).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Body_L'))
-          .fontColor($r('app.color.text_primary'))
+          .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
           .layoutWeight(1)
         Text(this.appFontName.length > 0 ? this.appFontName : $r('app.string.settings_custom_font_system')).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Body_M'))
-          .fontColor($r('app.color.text_secondary'))
+          .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
           .maxLines(1)
           .textOverflow({ overflow: TextOverflow.Ellipsis })
       }
@@ -2013,13 +2271,13 @@ export struct SettingsSection {
         Text($r('app.string.settings_custom_font_sample_large')).fontFamily(this.appFontFamily)
           .fontSize(28)
           .fontWeight(FontWeight.Medium)
-          .fontColor($r('app.color.text_primary'))
+          .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, fieldSurfaceColor(this.displayMode, this.darkSurface)))
         Text($r('app.string.settings_custom_font_sample_medium')).fontFamily(this.appFontFamily)
           .fontSize(17)
-          .fontColor($r('app.color.text_primary'))
+          .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, fieldSurfaceColor(this.displayMode, this.darkSurface)))
         Text($r('app.string.settings_custom_font_sample_small')).fontFamily(this.appFontFamily)
           .fontSize(13)
-          .fontColor($r('app.color.text_secondary'))
+          .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, fieldSurfaceColor(this.displayMode, this.darkSurface)))
       }
       .width('100%')
       .alignItems(HorizontalAlign.Start)
@@ -2030,16 +2288,16 @@ export struct SettingsSection {
         Column({ space: 3 }) {
           Text($r('app.string.settings_custom_font_import')).fontFamily(this.appFontFamily)
             .fontSize($r('sys.float.Body_L'))
-            .fontColor($r('app.color.text_primary'))
+            .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
           Text($r('app.string.settings_custom_font_import_desc')).fontFamily(this.appFontFamily)
             .fontSize($r('sys.float.Body_M'))
-            .fontColor($r('app.color.text_secondary'))
+            .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
         }
         .layoutWeight(1)
         .alignItems(HorizontalAlign.Start)
         SymbolGlyph($r('sys.symbol.chevron_right'))
           .fontSize(16)
-          .fontColor([$r('app.color.text_secondary')])
+          .fontColor([pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)])
       }
       .width('100%')
       .opacity(this.appFontBusy ? 0.45 : 1)
@@ -2062,7 +2320,7 @@ export struct SettingsSection {
       Text($r('app.string.settings_font_size')).fontFamily(this.appFontFamily)
         .fontSize($r('sys.float.Title_S'))
         .fontWeight(FontWeight.Bold)
-        .fontColor($r('app.color.text_primary'))
+        .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
         .width('100%')
       Row({ space: 10 }) {
         this.FontModeOption(FONT_MODE_SYSTEM, $r('sys.symbol.gearshape'),
@@ -2073,26 +2331,26 @@ export struct SettingsSection {
       .width('100%')
       Text($r('app.string.settings_font_preview')).fontFamily(this.appFontFamily)
         .fontSize($r('sys.float.Body_L'))
-        .fontColor($r('app.color.text_primary'))
+        .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
         .width('100%')
       Text(this.fontMode === FONT_MODE_APP ?
         $r('app.string.settings_font_app_hint') : $r('app.string.settings_font_system_hint')).fontFamily(this.appFontFamily)
         .fontSize($r('sys.float.Body_M'))
-        .fontColor($r('app.color.text_secondary'))
+        .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
         .width('100%')
       if (this.fontMode === FONT_MODE_SYSTEM) {
         Text(this.text($r('app.string.settings_font_system_scale_label')) +
           this.systemFontScale.toFixed(2) + '×').fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Body_M'))
           .fontWeight(FontWeight.Medium)
-          .fontColor($r('app.color.text_accent'))
+          .fontColor(pageTextColor($r('app.color.text_accent'), this.pageBackgroundValue, Color.Transparent))
           .width('100%')
       }
       if (this.fontMode === FONT_MODE_APP) {
         Row({ space: 10 }) {
           Text('Aa').fontFamily(this.appFontFamily)
             .fontSize($r('sys.float.Body_S'))
-            .fontColor($r('app.color.text_secondary'))
+            .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
           Slider({
             value: this.fontScale,
             min: MIN_FONT_SCALE,
@@ -2101,14 +2359,14 @@ export struct SettingsSection {
             style: SliderStyle.InSet
           })
             .layoutWeight(1)
-            .selectedColor(this.accentColor)
+            .selectedColor(mixedAccentRoleColor(this.accentTheme, 'control', this.accentColor))
             .showTips(true)
             .onChange((value: number): void => {
               this.onFontScaleChange(value);
             })
           Text('Aa').fontFamily(this.appFontFamily)
             .fontSize($r('sys.float.Title_S'))
-            .fontColor($r('app.color.text_secondary'))
+            .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
         }
         .width('100%')
       }
@@ -2116,12 +2374,12 @@ export struct SettingsSection {
         Column({ space: 8 }) {
           Text($r('app.string.settings_font_restart_hint')).fontFamily(this.appFontFamily)
             .fontSize($r('sys.float.Body_M'))
-            .fontColor($r('app.color.text_secondary'))
+            .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
             .width('100%')
           Button($r('app.string.settings_font_restart_action'), { stateEffect: true })
             .width('100%')
             .backgroundColor(secondaryButtonSurfaceColor(this.displayMode, this.darkSurface))
-            .fontColor($r('app.color.text_primary'))
+            .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, secondaryButtonSurfaceColor(this.displayMode, this.darkSurface)))
             .onClick((): void => this.restartApplication())
         }
         .width('100%')
@@ -2138,10 +2396,10 @@ export struct SettingsSection {
         Text($r('app.string.settings_timeline_columns_title')).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Title_S'))
           .fontWeight(FontWeight.Bold)
-          .fontColor($r('app.color.text_primary'))
+          .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
         Text($r('app.string.settings_timeline_columns_desc')).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Body_M'))
-          .fontColor($r('app.color.text_secondary'))
+          .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
           .lineHeight(20)
       }
       .width('100%')
@@ -2149,7 +2407,7 @@ export struct SettingsSection {
       Row({ space: 12 }) {
         Text($r('app.string.settings_timeline_columns_label')).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Subtitle_L'))
-          .fontColor($r('app.color.text_primary'))
+          .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
           .layoutWeight(1)
         Select([
           { value: $r('app.string.settings_timeline_columns_auto') },
@@ -2176,18 +2434,19 @@ export struct SettingsSection {
       Column({ space: 4 }) {
         Text(title).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Subtitle_L'))
-          .fontColor($r('app.color.text_primary'))
+          .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
         Text(detail).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Body_M'))
-          .fontColor($r('app.color.text_secondary'))
+          .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
           .width('100%')
       }
       .layoutWeight(1)
       .alignItems(HorizontalAlign.Start)
       Toggle({ type: ToggleType.Switch, isOn: isOn })
-        .selectedColor(this.accentColor)
+        .selectedColor(mixedAccentRoleColor(this.accentTheme, 'control', this.accentColor))
         .enabled(enabled)
-        .onChange((value: boolean): void => onChange(value))
+        .accessibilityText(title)
+        .onChange((value: boolean): void => { if (value !== isOn) { hapticTick(); onChange(value); } })
     }
     .width('100%')
     .padding({ top: 12, bottom: 12 })
@@ -2201,10 +2460,10 @@ export struct SettingsSection {
         Text($r('app.string.settings_custom_bottom_bar_title')).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Title_S'))
           .fontWeight(FontWeight.Bold)
-          .fontColor($r('app.color.text_primary'))
+          .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
         Text($r('app.string.settings_custom_bottom_bar_desc')).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Body_M'))
-          .fontColor($r('app.color.text_secondary'))
+          .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
           .lineHeight(20)
       }
       .width('100%')
@@ -2244,10 +2503,10 @@ export struct SettingsSection {
         Text($r('app.string.settings_auto_hide_title')).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Title_S'))
           .fontWeight(FontWeight.Bold)
-          .fontColor($r('app.color.text_primary'))
+          .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
         Text($r('app.string.settings_auto_hide_note')).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Body_M'))
-          .fontColor($r('app.color.text_secondary'))
+          .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
           .lineHeight(20)
       }
       .width('100%')
@@ -2272,6 +2531,60 @@ export struct SettingsSection {
     if (!saved) { promptAction.showToast({ message: $r('app.string.settings_interaction_save_failed') }); }
   }
 
+  private menuVisible(id: string): boolean {
+    return menuActionVisible(this.hiddenMenuActions, id);
+  }
+
+  private setMenuVisible(id: string, visible: boolean): void {
+    this.interactionSaved(menuSettingsStore.saveVisible(getContext(this) as common.UIAbilityContext, id, visible));
+  }
+
+  private videoFeedLayoutLabel(): Resource {
+    if (this.videoFeedLayout === VIDEO_FEED_LAYOUT_DOUYIN) { return $r('app.string.video_feed_layout_douyin'); }
+    if (this.videoFeedLayout === VIDEO_FEED_LAYOUT_BILIBILI) { return $r('app.string.video_feed_layout_bilibili'); }
+    return $r('app.string.video_feed_layout_classic');
+  }
+
+  @Builder
+  private MenuActionsContent(group: string, title: Resource): void {
+    Column() {
+      Divider().color($r('app.color.divider')).margin({ top: 12, bottom: 18 })
+      Text(title).fontFamily(this.appFontFamily).fontSize($r('sys.float.Title_S')).fontWeight(FontWeight.Bold)
+        .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)).width('100%')
+      Text($r('app.string.settings_menu_item_desc')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M'))
+        .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
+        .width('100%').padding({ top: 16, bottom: 12 })
+      ForEach(menuActionsForGroup(group), (option: MenuActionOption) => {
+        Column() {
+          this.AutoHideSwitchRow(option.title, $r('app.string.settings_menu_show_action'), this.menuVisible(option.id),
+            (value: boolean): void => this.setMenuVisible(option.id, value))
+        }.width('100%').id('settings-menu-' + option.id)
+      }, (option: MenuActionOption): string => option.id)
+      Button($r('app.string.page_background_reset')).id('settings-menu-reset-' + group)
+        .margin({ top: 16 }).onClick((): void => {
+          this.interactionSaved(menuSettingsStore.resetGroup(getContext(this) as common.UIAbilityContext, group));
+        })
+    }.width('100%').padding({ bottom: 28 })
+  }
+
+  @Builder
+  private VideoFeedLayoutContent(): void {
+    Row({ space: 14 }) {
+      Column({ space: 4 }) {
+        Text($r('app.string.video_feed_layout')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L'))
+          .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
+        Text($r('app.string.settings_video_feed_layout_desc')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M'))
+          .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).width('100%')
+      }.layoutWeight(1).alignItems(HorizontalAlign.Start)
+      Select([{ value: $r('app.string.video_feed_layout_classic') }, { value: $r('app.string.video_feed_layout_douyin') },
+        { value: $r('app.string.video_feed_layout_bilibili') }])
+        .selected(this.videoFeedLayout).value(this.videoFeedLayoutLabel())
+        .onSelect((index: number): void => {
+          this.interactionSaved(mediaSettingsStore.saveVideoFeedLayout(getContext(this) as common.UIAbilityContext, index));
+        })
+    }.width('100%').padding({ top: 12, bottom: 12 })
+  }
+
   private floatingActionIndex(): number {
     if (this.homeFloatingAction === HOME_FLOATING_REFRESH) { return 1; }
     if (this.homeFloatingAction === HOME_FLOATING_TOP) { return 2; }
@@ -2290,13 +2603,17 @@ export struct SettingsSection {
   private HomeInteractionSection(): void {
     Column({ space: 16 }) {
       Text($r('app.string.settings_home_interaction')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Title_S'))
-        .fontWeight(FontWeight.Bold).fontColor($r('app.color.text_primary'))
+        .fontWeight(FontWeight.Bold).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
+      this.AutoHideSwitchRow($r('app.string.settings_confirm_app_exit'),
+        $r('app.string.settings_confirm_app_exit_desc'), this.confirmAppExit,
+        (value: boolean): void => { this.interactionSaved(interactionSettingsStore.saveConfirmAppExit(
+          getContext(this) as common.UIAbilityContext, value)); })
       Row({ space: 12 }) {
         Column({ space: 4 }) {
           Text($r('app.string.settings_floating_action')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L'))
-            .fontColor($r('app.color.text_primary'))
+            .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
           Text($r('app.string.settings_floating_action_desc')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M'))
-            .fontColor($r('app.color.text_secondary'))
+            .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
         }.layoutWeight(1).alignItems(HorizontalAlign.Start)
         Select([
           { value: $r('app.string.settings_floating_compose') },
@@ -2333,6 +2650,7 @@ export struct SettingsSection {
             promptAction.showToast({ message: this.text($r('app.string.spaces_save_failed')) });
           }
         })
+      this.MenuActionsContent('post_menu', $r('app.string.settings_menu_post'))
     }.width('100%').alignItems(HorizontalAlign.Start)
   }
 
@@ -2346,9 +2664,9 @@ export struct SettingsSection {
         Row({ space: 12 }) {
           Column({ space: 4 }) {
             Text($r('app.string.settings_compact_switch_style')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Subtitle_L'))
-              .fontColor($r('app.color.text_primary'))
+              .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
             Text($r('app.string.settings_compact_switch_style_desc')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M'))
-              .fontColor($r('app.color.text_secondary'))
+              .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
           }.layoutWeight(1).alignItems(HorizontalAlign.Start)
           Select([
             { value: $r('app.string.settings_compact_switch_tabs') },
@@ -2369,10 +2687,10 @@ export struct SettingsSection {
         Text($r('app.string.settings_immersive_title_bar_blur')).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Title_S'))
           .fontWeight(FontWeight.Bold)
-          .fontColor($r('app.color.text_primary'))
+          .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
         Text($r('app.string.settings_immersive_title_bar_blur_note')).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Body_M'))
-          .fontColor($r('app.color.text_secondary'))
+          .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
           .lineHeight(20)
       }
       .width('100%')
@@ -2380,7 +2698,7 @@ export struct SettingsSection {
       Row({ space: 12 }) {
         Text($r('app.string.settings_immersive_title_bar_blur_switch')).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Subtitle_L'))
-          .fontColor($r('app.color.text_primary'))
+          .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
           .layoutWeight(1)
         Select([
           { value: $r('app.string.settings_title_bar_style_immersive') },
@@ -2405,10 +2723,10 @@ export struct SettingsSection {
           Column({ space: 4 }) {
             Text($r('app.string.settings_title_bar_glass_level_label')).fontFamily(this.appFontFamily)
               .fontSize($r('sys.float.Subtitle_L'))
-              .fontColor($r('app.color.text_primary'))
+              .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
             Text($r('app.string.settings_title_bar_glass_level_desc')).fontFamily(this.appFontFamily)
               .fontSize($r('sys.float.Body_M'))
-              .fontColor($r('app.color.text_secondary'))
+              .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
               .width('100%')
           }
           .layoutWeight(1)
@@ -2439,21 +2757,21 @@ export struct SettingsSection {
       Text($r('app.string.settings_app_icon_intro')).fontFamily(this.appFontFamily)
         .fontSize($r('sys.float.Body_L'))
         .lineHeight(23)
-        .fontColor($r('app.color.text_secondary'))
+        .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
         .width('100%')
         .padding({ left: 20, right: 20, top: 20, bottom: 10 })
       if (this.appIconSupported) {
         Text($r('app.string.settings_app_icon_note')).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Body_M'))
           .lineHeight(20)
-          .fontColor($r('app.color.text_secondary'))
+          .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
           .width('100%')
           .padding({ left: 20, right: 20, bottom: 14 })
       } else {
         Text($r('app.string.settings_app_icon_unsupported')).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Body_M'))
           .lineHeight(20)
-          .fontColor($r('app.color.text_secondary'))
+          .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
           .width('100%')
           .padding({ left: 20, right: 20, bottom: 14 })
       }
@@ -2463,7 +2781,7 @@ export struct SettingsSection {
         Text($r('app.string.settings_app_icon_mid_autumn_note')).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Body_M'))
           .lineHeight(20)
-          .fontColor($r('app.color.text_accent'))
+          .fontColor(pageTextColor($r('app.color.text_accent'), this.pageBackgroundValue, Color.Transparent))
           .width('100%')
           .padding({ left: 20, right: 20, bottom: 14 })
       }
@@ -2492,11 +2810,11 @@ export struct SettingsSection {
             Text($r('app.string.settings_app_icon_schedule_title')).fontFamily(this.appFontFamily)
               .fontSize($r('sys.float.Subtitle_L'))
               .fontWeight(FontWeight.Bold)
-              .fontColor($r('app.color.text_primary'))
+              .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
             Text($r('app.string.settings_app_icon_schedule_desc')).fontFamily(this.appFontFamily)
               .fontSize($r('sys.float.Body_M'))
               .lineHeight(20)
-              .fontColor($r('app.color.text_secondary'))
+              .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
           }
           .layoutWeight(1)
           .alignItems(HorizontalAlign.Start)
@@ -2517,7 +2835,7 @@ export struct SettingsSection {
           Row({ space: 12 }) {
             Text($r('app.string.settings_app_icon_schedule_target')).fontFamily(this.appFontFamily)
               .fontSize($r('sys.float.Subtitle_L'))
-              .fontColor($r('app.color.text_primary'))
+              .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
               .layoutWeight(1)
             Select([
               { value: $r('app.string.settings_app_icon_default') },
@@ -2534,7 +2852,8 @@ export struct SettingsSection {
               { value: $r('app.string.settings_app_icon_frog_white') },
               { value: $r('app.string.settings_app_icon_frog_black') },
               { value: $r('app.string.settings_app_icon_milk_frog_white') },
-              { value: $r('app.string.settings_app_icon_milk_frog_black') }
+              { value: $r('app.string.settings_app_icon_milk_frog_black') },
+              { value: $r('app.string.settings_app_icon_zombie_x') }
             ])
               .selected(this.appIconScheduleIconIndex())
               .value(this.appIconScheduleIconLabel())
@@ -2548,7 +2867,7 @@ export struct SettingsSection {
           Text($r('app.string.settings_app_icon_schedule_background_note')).fontFamily(this.appFontFamily)
             .fontSize($r('sys.float.Body_S'))
             .lineHeight(19)
-            .fontColor($r('app.color.text_secondary'))
+            .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
             .width('100%')
         }
       }
@@ -2563,10 +2882,10 @@ export struct SettingsSection {
     Column({ space: 5 }) {
       Text(label).fontFamily(this.appFontFamily)
         .fontSize($r('sys.float.Body_S'))
-        .fontColor($r('app.color.text_secondary'))
+        .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, fieldSurfaceColor(this.displayMode, this.darkSurface)))
       Text(this.appIconScheduleTimeLabel(minute)).fontFamily(this.appFontFamily)
         .fontSize($r('sys.float.Subtitle_L'))
-        .fontColor($r('app.color.text_primary'))
+        .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, fieldSurfaceColor(this.displayMode, this.darkSurface)))
         .fontWeight(FontWeight.Medium)
     }
     .layoutWeight(1)
@@ -2606,7 +2925,7 @@ export struct SettingsSection {
       Text(label).fontFamily(this.appFontFamily)
         .fontSize($r('sys.float.Body_S'))
         .fontColor(this.appIconSupported && this.isAppIconTileSelected(name) ? this.accentColor :
-          $r('app.color.text_secondary'))
+          pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
         .width('100%')
         .textAlign(TextAlign.Center)
     }
@@ -2623,7 +2942,7 @@ export struct SettingsSection {
       Text($r('app.string.settings_display_intro')).fontFamily(this.appFontFamily)
         .fontSize($r('sys.float.Body_L'))
         .lineHeight(23)
-        .fontColor($r('app.color.text_secondary'))
+        .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
         .width('100%')
       Row({ space: 10 }) {
         this.DisplayModeOption(DISPLAY_MODE_SYSTEM, $r('sys.symbol.phone'), $r('app.string.settings_theme_system'))
@@ -2637,12 +2956,12 @@ export struct SettingsSection {
           Text($r('app.string.settings_dark_surface_title')).fontFamily(this.appFontFamily)
             .fontSize($r('sys.float.Title_S'))
             .fontWeight(FontWeight.Bold)
-            .fontColor($r('app.color.text_primary'))
+            .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
             .width('100%')
           Text($r('app.string.settings_dark_surface_desc')).fontFamily(this.appFontFamily)
             .fontSize($r('sys.float.Body_M'))
             .lineHeight(20)
-            .fontColor($r('app.color.text_secondary'))
+            .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
             .width('100%')
           this.DarkSurfaceOption(DARK_SURFACE_BLACK, $r('app.string.settings_dark_surface_black'), '#000000')
           this.DarkSurfaceOption(DARK_SURFACE_GENTLE, $r('app.string.settings_dark_surface_gentle'),
@@ -2657,27 +2976,62 @@ export struct SettingsSection {
       Text($r('app.string.settings_theme_color')).fontFamily(this.appFontFamily)
         .fontSize($r('sys.float.Title_S'))
         .fontWeight(FontWeight.Bold)
-        .fontColor($r('app.color.text_primary'))
+        .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
+        .width('100%')
+      Text($r('app.string.settings_theme_mix')).fontFamily(this.appFontFamily)
+        .fontSize($r('sys.float.Body_L')).fontWeight(FontWeight.Medium)
+        .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
+        .width('100%')
+      Text($r('app.string.settings_theme_mix_desc')).fontFamily(this.appFontFamily)
+        .fontSize($r('sys.float.Body_M'))
+        .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
+        .width('100%')
+      Row({ space: 12 }) {
+        this.MixedAccentOption('mix_candy', $r('app.string.settings_theme_mix_candy'))
+        this.MixedAccentOption('mix_sky', $r('app.string.settings_theme_mix_sky'))
+      }.width('100%').alignItems(VerticalAlign.Top)
+      Row({ space: 12 }) {
+        this.MixedAccentOption('mix_peach', $r('app.string.settings_theme_mix_peach'))
+        this.MixedAccentOption('mix_lilac', $r('app.string.settings_theme_mix_lilac'))
+      }.width('100%').alignItems(VerticalAlign.Top)
+      Row({ space: 12 }) {
+        this.MixedAccentOption('mix_confetti', $r('app.string.settings_theme_mix_confetti'))
+        this.MixedAccentOption('mix_coast', $r('app.string.settings_theme_mix_coast'))
+      }.width('100%').alignItems(VerticalAlign.Top)
+      Row({ space: 12 }) {
+        this.MixedAccentOption('mix_sunset', $r('app.string.settings_theme_mix_sunset'))
+        this.MixedAccentOption('mix_forest', $r('app.string.settings_theme_mix_forest'))
+      }.width('100%').alignItems(VerticalAlign.Top)
+      Row({ space: 12 }) {
+        this.MixedAccentOption('mix_berry', $r('app.string.settings_theme_mix_berry'))
+        this.MixedAccentOption('mix_morandi', $r('app.string.settings_theme_mix_morandi'))
+      }.width('100%').alignItems(VerticalAlign.Top)
+      Text($r('app.string.settings_theme_solid')).fontFamily(this.appFontFamily)
+        .fontSize($r('sys.float.Body_L')).fontWeight(FontWeight.Medium)
+        .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
         .width('100%')
       Flex({ wrap: FlexWrap.Wrap, justifyContent: FlexAlign.Start }) {
-        this.AccentOption('#007DFF', $r('app.color.theme_system_blue'),
-          $r('app.string.settings_theme_system_blue'))
-        this.AccentOption('#1D9BF0', $r('app.color.theme_x_blue'),
-          $r('app.string.settings_theme_x_blue'))
-        this.AccentOption('#F7B500', $r('app.color.theme_yellow'),
-          $r('app.string.settings_theme_yellow'))
-        this.AccentOption('#F91880', $r('app.color.theme_pink'),
-          $r('app.string.settings_theme_pink'))
-        this.AccentOption('#7856FF', $r('app.color.theme_purple'),
-          $r('app.string.settings_theme_purple'))
-        this.AccentOption('#FF7A00', $r('app.color.theme_orange'),
-          $r('app.string.settings_theme_orange'))
-        this.AccentOption('#00BA7C', $r('app.color.theme_green'),
-          $r('app.string.settings_theme_green'))
-        this.AccentOption('#345483', $r('app.color.theme_cat_blue'),
-          $r('app.string.settings_theme_cat_blue'))
-        this.AccentOption('#D8333A', $r('app.color.theme_huawei_red'),
-          $r('app.string.settings_theme_huawei_red'))
+        this.AccentOption('cinnabar', $r('app.string.settings_theme_cinnabar'))
+        this.AccentOption('vermilion', $r('app.string.settings_theme_vermilion'))
+        this.AccentOption('amber', $r('app.string.settings_theme_amber'))
+        this.AccentOption('autumn_bamboo', $r('app.string.settings_theme_autumn_bamboo'))
+        this.AccentOption('bamboo_green', $r('app.string.settings_theme_bamboo_green'))
+        this.AccentOption('azurite', $r('app.string.settings_theme_azurite'))
+        this.AccentOption('cloisonne', $r('app.string.settings_theme_cloisonne'))
+        this.AccentOption('indigo', $r('app.string.settings_theme_indigo'))
+        this.AccentOption('begonia', $r('app.string.settings_theme_begonia'))
+        this.AccentOption('rouge', $r('app.string.settings_theme_rouge'))
+        this.AccentOption('sandalwood', $r('app.string.settings_theme_sandalwood'))
+        this.AccentOption('mountain', $r('app.string.settings_theme_mountain'))
+        this.AccentOption('#007DFF', $r('app.string.settings_theme_system_blue'))
+        this.AccentOption('#1D9BF0', $r('app.string.settings_theme_x_blue'))
+        this.AccentOption('#F7B500', $r('app.string.settings_theme_yellow'))
+        this.AccentOption('#F91880', $r('app.string.settings_theme_pink'))
+        this.AccentOption('#7856FF', $r('app.string.settings_theme_purple'))
+        this.AccentOption('#FF7A00', $r('app.string.settings_theme_orange'))
+        this.AccentOption('#00BA7C', $r('app.string.settings_theme_green'))
+        this.AccentOption('#345483', $r('app.string.settings_theme_cat_blue'))
+        this.AccentOption('#D8333A', $r('app.string.settings_theme_huawei_red'))
       }
       .width('100%')
 
@@ -2688,18 +3042,18 @@ export struct SettingsSection {
   private DesktopLayoutSection(): void {
     Column({ space: 10 }) {
       Text($r('app.string.settings_desktop_layout')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Title_S'))
-        .fontWeight(FontWeight.Bold).fontColor($r('app.color.text_primary'))
+        .fontWeight(FontWeight.Bold).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
       Text($r('app.string.settings_desktop_layout_desc')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M'))
-        .fontColor($r('app.color.text_secondary')).lineHeight(20)
+        .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).lineHeight(20)
       Row({ space: 12 }) {
         this.LayoutOption(false, $r('app.string.settings_layout_current'))
         this.LayoutOption(true, $r('app.string.settings_layout_desktop'))
       }.width('100%')
       Column({ space: 8 }) {
         Text($r('app.string.settings_desktop_video_layout')).fontFamily(this.appFontFamily)
-          .fontSize($r('sys.float.Subtitle_L')).fontColor($r('app.color.text_primary'))
+          .fontSize($r('sys.float.Subtitle_L')).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
         Text($r('app.string.settings_desktop_video_layout_desc')).fontFamily(this.appFontFamily)
-          .fontSize($r('sys.float.Body_M')).fontColor($r('app.color.text_secondary'))
+          .fontSize($r('sys.float.Body_M')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
         Select([
           { value: $r('app.string.settings_desktop_video_split') },
           { value: $r('app.string.settings_desktop_video_feed') }
@@ -2743,11 +3097,11 @@ export struct SettingsSection {
         Row({ space: 12 }) {
           Column({ space: 4 }) {
             Text($r('app.string.sidebar_handle_style')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Subtitle_L'))
-              .fontColor($r('app.color.text_primary'))
+              .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
             Text($r('app.string.sidebar_handle_style_desc')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M'))
-              .fontColor($r('app.color.text_secondary'))
+              .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
           }.layoutWeight(1).alignItems(HorizontalAlign.Start)
-          SymbolGlyph($r('sys.symbol.chevron_right')).fontSize(20).fontColor([$r('app.color.text_secondary')])
+          SymbolGlyph($r('sys.symbol.chevron_right')).fontSize(20).fontColor([pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)])
         }.width('100%')
       }.width('100%').padding({ top: 12, bottom: 12 }).backgroundColor(Color.Transparent)
         .id('settings-sidebar-handle-style').onClick((): void => { this.pageStack.pushPath({ name: 'SidebarHandleSettings' }); })
@@ -2756,27 +3110,39 @@ export struct SettingsSection {
 
   @Builder
   private SidebarMaterialSection(): void {
-      if (SystemMaterialUtil.isApi26OrAbove()) {
+      if (deviceInfo.sdkApiVersion >= 20) {
         Row({ space: 12 }) {
           Text($r('app.string.sidebar_material_type')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Subtitle_L'))
-            .fontColor($r('app.color.text_primary')).layoutWeight(1)
-          Select([{ value: $r('app.string.sidebar_material_glass') }, { value: $r('app.string.sidebar_material_blur') }])
-            .selected(this.sidebarMaterialType)
-            .value(this.sidebarMaterialType === SIDEBAR_MATERIAL_GLASS ?
-              $r('app.string.sidebar_material_glass') : $r('app.string.sidebar_material_blur'))
+            .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)).layoutWeight(1)
+          Select(this.sidebarMaterialOptions())
+            .selected(SystemMaterialUtil.isApi26OrAbove() ? this.sidebarMaterialType :
+              (this.sidebarMaterialType === SIDEBAR_MATERIAL_SYSTEM ? 1 : 0))
+            .value(this.sidebarMaterialTypeLabel())
             .onSelect((index: number): void => {
-              if (!layoutSettingsStore.saveSidebarMaterialType(getContext(this) as common.UIAbilityContext, index)) {
+              const type: number = SystemMaterialUtil.isApi26OrAbove() ? index : index + SIDEBAR_MATERIAL_BLUR;
+              if (!layoutSettingsStore.saveSidebarMaterialType(getContext(this) as common.UIAbilityContext, type)) {
                 promptAction.showToast({ message: this.text($r('app.string.settings_layout_save_failed')) });
               }
             })
         }.width('100%').padding({ top: 12, bottom: 12 }).id('settings-sidebar-material-type')
       }
+      if (this.sidebarMaterialType === SIDEBAR_MATERIAL_SYSTEM) {
+        Column() {
+          this.AutoHideSwitchRow($r('app.string.settings_desktop_rail_material'),
+            $r('app.string.sidebar_material_system_desc'), this.desktopRailMaterialLevel >= 0,
+            (enabled: boolean): void => {
+              if (!layoutSettingsStore.saveRailMaterialLevel(getContext(this) as common.UIAbilityContext, enabled ? 2 : -1)) {
+                promptAction.showToast({ message: this.text($r('app.string.settings_layout_save_failed')) });
+              }
+            })
+        }.width('100%').id('settings-sidebar-system-material')
+      } else {
       Row({ space: 12 }) {
         Column({ space: 4 }) {
           Text($r('app.string.settings_desktop_rail_material')).fontFamily(this.appFontFamily)
-            .fontSize($r('sys.float.Subtitle_L')).fontColor($r('app.color.text_primary'))
+            .fontSize($r('sys.float.Subtitle_L')).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
           Text($r('app.string.settings_desktop_rail_material_desc')).fontFamily(this.appFontFamily)
-            .fontSize($r('sys.float.Body_M')).fontColor($r('app.color.text_secondary'))
+            .fontSize($r('sys.float.Body_M')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
         }.layoutWeight(1).alignItems(HorizontalAlign.Start)
         Select([
           { value: $r('app.string.chat_off') },
@@ -2795,12 +3161,31 @@ export struct SettingsSection {
           })
       }.width('100%').padding({ top: 12, bottom: 12 })
         .id('settings-desktop-rail-material')
+      }
+  }
+
+  private sidebarMaterialOptions(): SelectOption[] {
+    if (SystemMaterialUtil.isApi26OrAbove()) {
+      return [{ value: $r('app.string.sidebar_material_glass') },
+        { value: $r('app.string.sidebar_material_blur') },
+        { value: $r('app.string.sidebar_material_system') }];
+    }
+    return [{ value: $r('app.string.sidebar_material_blur') },
+      { value: $r('app.string.sidebar_material_system') }];
+  }
+
+  private sidebarMaterialTypeLabel(): Resource {
+    if (this.sidebarMaterialType === SIDEBAR_MATERIAL_SYSTEM) { return $r('app.string.sidebar_material_system'); }
+    if (this.sidebarMaterialType === SIDEBAR_MATERIAL_GLASS && SystemMaterialUtil.isApi26OrAbove()) {
+      return $r('app.string.sidebar_material_glass');
+    }
+    return $r('app.string.sidebar_material_blur');
   }
 
   @Builder
   private LayoutOption(desktop: boolean, title: Resource): void {
     Button(title).layoutWeight(1).height(48).borderRadius(12)
-      .fontColor(this.desktopLayoutEnabled === desktop ? this.accentColor : $r('app.color.text_primary'))
+      .fontColor(this.desktopLayoutEnabled === desktop ? this.accentColor : pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
       .backgroundColor(Color.Transparent)
       .border({ width: this.desktopLayoutEnabled === desktop ? 2 : 1,
         color: this.desktopLayoutEnabled === desktop ? this.accentColor : $r('app.color.divider') })
@@ -2840,7 +3225,7 @@ export struct SettingsSection {
         .alignItems(HorizontalAlign.Start)
         Toggle({ type: ToggleType.Switch, isOn: this.sheetMaterialEnabled })
           .id('sheetMaterialToggle')
-          .selectedColor(this.accentColor)
+          .selectedColor(mixedAccentRoleColor(this.accentTheme, 'control', this.accentColor))
           .onChange((enabled: boolean): void => this.saveSheetMaterial(enabled, this.sheetMaterialLevel))
       }
       .width('100%')
@@ -2885,10 +3270,10 @@ export struct SettingsSection {
         Text($r('app.string.settings_hds_tabs_material_title')).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Title_S'))
           .fontWeight(FontWeight.Bold)
-          .fontColor($r('app.color.text_primary'))
+          .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
         Text($r('app.string.settings_hds_tabs_material_note')).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Body_M'))
-          .fontColor($r('app.color.text_secondary'))
+          .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
           .lineHeight(20)
       }
       .width('100%')
@@ -2896,7 +3281,7 @@ export struct SettingsSection {
       Row({ space: 12 }) {
         Text($r('app.string.settings_hds_tabs_material_label')).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Subtitle_L'))
-          .fontColor($r('app.color.text_primary'))
+          .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
           .layoutWeight(1)
         Select([
           { value: $r('app.string.settings_hds_tabs_material_exquisite') },
@@ -2924,10 +3309,12 @@ export struct SettingsSection {
         Text(title).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Subtitle_L'))
           .fontWeight(FontWeight.Medium)
-          .fontColor($r('app.color.text_primary'))
+          .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, this.videoBackgroundMode === mode ?
+      fieldSurfaceColor(this.displayMode, this.darkSurface) : Color.Transparent))
         Text(detail).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Body_M'))
-          .fontColor($r('app.color.text_secondary'))
+          .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, this.videoBackgroundMode === mode ?
+      fieldSurfaceColor(this.displayMode, this.darkSurface) : Color.Transparent))
           .width('100%')
       }
       .layoutWeight(1)
@@ -2952,10 +3339,12 @@ export struct SettingsSection {
         Text(title).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Subtitle_L'))
           .fontWeight(FontWeight.Medium)
-          .fontColor($r('app.color.text_primary'))
+          .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, this.imageQuality === value ?
+      fieldSurfaceColor(this.displayMode, this.darkSurface) : Color.Transparent))
         Text(detail).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Body_M'))
-          .fontColor($r('app.color.text_secondary'))
+          .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, this.imageQuality === value ?
+      fieldSurfaceColor(this.displayMode, this.darkSurface) : Color.Transparent))
           .width('100%')
       }
       .layoutWeight(1)
@@ -2980,10 +3369,12 @@ export struct SettingsSection {
         Text(title).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Subtitle_L'))
           .fontWeight(FontWeight.Medium)
-          .fontColor($r('app.color.text_primary'))
+          .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, this.videoQuality === value ?
+      fieldSurfaceColor(this.displayMode, this.darkSurface) : Color.Transparent))
         Text(detail).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Body_M'))
-          .fontColor($r('app.color.text_secondary'))
+          .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, this.videoQuality === value ?
+      fieldSurfaceColor(this.displayMode, this.darkSurface) : Color.Transparent))
           .width('100%')
       }
       .layoutWeight(1)
@@ -3026,6 +3417,9 @@ export struct SettingsSection {
       this.AutoHideSwitchRow($r('app.string.settings_root_tab_labels'),
         $r('app.string.settings_root_tab_labels_desc'), this.rootTabLabelsVisible,
         (value: boolean): void => this.setRootTabLabelsVisible(value))
+      this.AutoHideSwitchRow($r('app.string.settings_root_liquid_tab_indicator'),
+        $r('app.string.settings_root_liquid_tab_indicator_desc'), this.rootLiquidTabIndicatorEnabled,
+        (value: boolean): void => this.setRootLiquidTabIndicatorEnabled(value), !this.classicBottomBar)
       Divider().color($r('app.color.divider'))
       this.CustomBottomBarSection()
       Divider().color($r('app.color.divider'))
@@ -3044,10 +3438,10 @@ export struct SettingsSection {
         Column({ space: 4 }) {
           Text($r('app.string.settings_reply_capsule_material_level_label')).fontFamily(this.appFontFamily)
             .fontSize($r('sys.float.Subtitle_L'))
-            .fontColor($r('app.color.text_primary'))
+            .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
           Text($r('app.string.settings_reply_capsule_material_level_desc')).fontFamily(this.appFontFamily)
             .fontSize($r('sys.float.Body_M'))
-            .fontColor($r('app.color.text_secondary'))
+            .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
             .width('100%')
         }
         .layoutWeight(1)
@@ -3091,12 +3485,12 @@ export struct SettingsSection {
       Text($r('app.string.settings_default_feed')).fontFamily(this.appFontFamily)
         .fontSize($r('sys.float.Title_S'))
         .fontWeight(FontWeight.Bold)
-        .fontColor($r('app.color.text_primary'))
+        .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
         .width('100%')
         .padding({ left: 20, right: 20, top: 20, bottom: 4 })
       Text($r('app.string.settings_default_feed_desc')).fontFamily(this.appFontFamily)
         .fontSize($r('sys.float.Body_M'))
-        .fontColor($r('app.color.text_secondary'))
+        .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
         .width('100%')
         .padding({ left: 20, right: 20, bottom: 8 })
       this.HomeFeedOption(HOME_FEED_FOR_YOU, $r('app.string.home_for_you'),
@@ -3114,6 +3508,7 @@ export struct SettingsSection {
         $r('app.string.settings_photo_fullscreen_desc'), this.photoFullscreen,
         (value: boolean): void => { this.interactionSaved(interactionSettingsStore.savePhotoFullscreen(
           getContext(this) as common.UIAbilityContext, value)); })
+      this.MenuActionsContent('photo_menu', $r('app.string.settings_menu_photo'))
     }.width('100%').padding({ left: 20, right: 20, top: 16, bottom: 28 })
   }
 
@@ -3139,9 +3534,20 @@ export struct SettingsSection {
       this.AutoHideSwitchRow($r('app.string.settings_video_autoplay'),
         $r('app.string.settings_video_autoplay_desc'), this.videoAutoplay,
         (value: boolean): void => this.setVideoAutoplay(value))
+      this.AutoHideSwitchRow($r('app.string.settings_video_hdr_enhancement'),
+        $r('app.string.settings_video_hdr_enhancement_desc'), this.videoHdrEnhancement,
+        (value: boolean): void => this.setVideoHdrEnhancement(value))
       this.AutoHideSwitchRow($r('app.string.settings_home_video_mute'),
         $r('app.string.settings_home_video_mute_desc'), this.homeVideoMuted,
         (value: boolean): void => this.setHomeVideoMuted(value))
+      this.AutoHideSwitchRow($r('app.string.settings_viewer_video_mute'),
+        $r('app.string.settings_viewer_video_mute_desc'), this.viewerVideoMuted,
+        (value: boolean): void => { this.interactionSaved(mediaSettingsStore.saveViewerVideoMuted(
+          getContext(this) as common.UIAbilityContext, value)); })
+      this.AutoHideSwitchRow($r('app.string.video_feed_auto_advance'),
+        $r('app.string.settings_video_auto_advance_desc'), this.videoAutoAdvance,
+        (value: boolean): void => { this.interactionSaved(mediaSettingsStore.saveVideoAutoAdvance(
+          getContext(this) as common.UIAbilityContext, value)); })
       this.AutoHideSwitchRow($r('app.string.settings_video_auto_pip'),
         $r('app.string.settings_video_auto_pip_desc'), this.videoAutoPip,
         (value: boolean): void => this.setVideoAutoPip(value))
@@ -3150,10 +3556,10 @@ export struct SettingsSection {
         Text($r('app.string.settings_video_background')).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Title_S'))
           .fontWeight(FontWeight.Bold)
-          .fontColor($r('app.color.text_primary'))
+          .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
         Text($r('app.string.settings_video_background_intro')).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Body_M'))
-          .fontColor($r('app.color.text_secondary'))
+          .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
           .lineHeight(20)
       }
       .width('100%')
@@ -3172,20 +3578,53 @@ export struct SettingsSection {
   @Builder
   private VideoControlsContent(): void {
     Column() {
+      Column() {
+        this.VideoFeedLayoutContent()
+        this.AutoHideSwitchRow($r('app.string.video_feed_controls_always_visible'),
+          $r('app.string.video_feed_controls_always_visible_desc'), this.videoFeedControlsAlwaysVisible,
+          (value: boolean): void => { this.interactionSaved(mediaSettingsStore.saveVideoFeedControlsAlwaysVisible(
+            getContext(this) as common.UIAbilityContext, value)); })
+        this.AutoHideSwitchRow($r('app.string.video_feed_subtitles'),
+          $r('app.string.settings_video_captions_desc'), this.videoCaptionsEnabled,
+          (value: boolean): void => { this.interactionSaved(mediaSettingsStore.saveVideoCaptionsEnabled(
+            getContext(this) as common.UIAbilityContext, value)); })
+      }.width('100%').padding({ left: 20, right: 20 })
+      Column() {
+        this.AutoHideSwitchRow($r('app.string.settings_video_double_tap_seek'),
+          $r('app.string.settings_video_double_tap_seek_desc'), this.videoDoubleTapSeek,
+          (value: boolean): void => this.setVideoDoubleTapSeek(value))
+        Column({ space: 10 }) {
+          Row({ space: 12 }) {
+            Text($r('app.string.settings_video_double_tap_seek_seconds')).fontFamily(this.appFontFamily)
+              .fontSize($r('sys.float.Subtitle_L')).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)).layoutWeight(1)
+            Text($r('app.string.settings_video_double_tap_seek_seconds_value', this.videoDoubleTapSeekSeconds))
+              .fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
+          }.width('100%')
+          Slider({ value: this.videoDoubleTapSeekSeconds, min: MIN_VIDEO_DOUBLE_TAP_SEEK_SECONDS,
+            max: MAX_VIDEO_DOUBLE_TAP_SEEK_SECONDS, step: 1, style: SliderStyle.InSet })
+            .width('100%').selectedColor(mixedAccentRoleColor(this.accentTheme, 'control', this.accentColor)).showTips(true)
+            .accessibilityText($r('app.string.settings_video_double_tap_seek_seconds'))
+            .onChange((value: number, mode: SliderChangeMode): void => {
+              if (mode === SliderChangeMode.Begin || mode === SliderChangeMode.Moving) { return; }
+              this.setVideoDoubleTapSeekSeconds(value);
+            })
+        }.width('100%').enabled(this.videoDoubleTapSeek).opacity(this.videoDoubleTapSeek ? 1 : 0.4)
+          .padding({ bottom: 16 })
+      }.width('100%').padding({ left: 20, right: 20 })
       Row({ space: 14 }) {
         Column({ space: 4 }) {
           Text($r('app.string.settings_video_immersive_fill')).fontFamily(this.appFontFamily)
             .fontSize($r('sys.float.Subtitle_L'))
-            .fontColor($r('app.color.text_primary'))
+            .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
           Text($r('app.string.settings_video_immersive_fill_desc')).fontFamily(this.appFontFamily)
             .fontSize($r('sys.float.Body_M'))
-            .fontColor($r('app.color.text_secondary'))
+            .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
             .width('100%')
         }
         .layoutWeight(1)
         .alignItems(HorizontalAlign.Start)
         Toggle({ type: ToggleType.Switch, isOn: this.videoImmersiveFill })
-          .selectedColor(this.accentColor)
+          .selectedColor(mixedAccentRoleColor(this.accentTheme, 'control', this.accentColor))
           .onChange((value: boolean): void => this.setVideoImmersiveFill(value))
       }
       .width('100%')
@@ -3194,16 +3633,16 @@ export struct SettingsSection {
         Column({ space: 4 }) {
           Text($r('app.string.settings_video_hold_speed')).fontFamily(this.appFontFamily)
             .fontSize($r('sys.float.Subtitle_L'))
-            .fontColor($r('app.color.text_primary'))
+            .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
           Text($r('app.string.settings_video_hold_speed_desc')).fontFamily(this.appFontFamily)
             .fontSize($r('sys.float.Body_M'))
-            .fontColor($r('app.color.text_secondary'))
+            .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
             .width('100%')
         }
         .layoutWeight(1)
         .alignItems(HorizontalAlign.Start)
         Toggle({ type: ToggleType.Switch, isOn: this.videoHoldSpeed })
-          .selectedColor(this.accentColor)
+          .selectedColor(mixedAccentRoleColor(this.accentTheme, 'control', this.accentColor))
           .onChange((value: boolean): void => this.setVideoHoldSpeed(value))
       }
       .width('100%')
@@ -3211,12 +3650,12 @@ export struct SettingsSection {
       Row({ space: 14 }) {
         Column({ space: 4 }) {
           Text($r('app.string.settings_video_feed_tap_pause')).fontFamily(this.appFontFamily)
-            .fontSize($r('sys.float.Subtitle_L')).fontColor($r('app.color.text_primary'))
+            .fontSize($r('sys.float.Subtitle_L')).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
           Text($r('app.string.settings_video_feed_tap_pause_desc')).fontFamily(this.appFontFamily)
-            .fontSize($r('sys.float.Body_M')).fontColor($r('app.color.text_secondary')).width('100%')
+            .fontSize($r('sys.float.Body_M')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).width('100%')
         }.layoutWeight(1).alignItems(HorizontalAlign.Start)
         Toggle({ type: ToggleType.Switch, isOn: this.videoFeedTapPause })
-          .selectedColor(this.accentColor)
+          .selectedColor(mixedAccentRoleColor(this.accentTheme, 'control', this.accentColor))
           .onChange((value: boolean): void => this.setVideoFeedTapPause(value))
       }.width('100%').padding({ top: 0, bottom: 16, left: 20, right: 20 })
       // The system caption component only reads the panel opacity while it is
@@ -3225,11 +3664,11 @@ export struct SettingsSection {
         Row({ space: 12 }) {
           Text($r('app.string.video_feed_caption_background')).fontFamily(this.appFontFamily)
             .fontSize($r('sys.float.Subtitle_L'))
-            .fontColor($r('app.color.text_primary'))
+            .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
             .layoutWeight(1)
           Text(Math.round(this.captionOpacity * 100).toString() + '%').fontFamily(this.appFontFamily)
             .fontSize($r('sys.float.Body_M'))
-            .fontColor($r('app.color.text_secondary'))
+            .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
         }
         .width('100%')
         Slider({
@@ -3240,7 +3679,7 @@ export struct SettingsSection {
           style: SliderStyle.InSet
         })
           .width('100%')
-          .selectedColor(this.accentColor)
+          .selectedColor(mixedAccentRoleColor(this.accentTheme, 'control', this.accentColor))
           .showTips(true)
           .onChange((value: number, mode: SliderChangeMode): void => {
             if (mode === SliderChangeMode.Begin || mode === SliderChangeMode.Moving) {
@@ -3252,6 +3691,8 @@ export struct SettingsSection {
       .width('100%')
       .padding({ left: 20, right: 20, bottom: 16 })
 
+      Column() { this.MenuActionsContent('video_menu', $r('app.string.settings_menu_video')) }
+        .width('100%').padding({ left: 20, right: 20 })
     }.width('100%')
   }
 
@@ -3261,7 +3702,7 @@ export struct SettingsSection {
       Text($r('app.string.settings_image_quality')).fontFamily(this.appFontFamily)
         .fontSize($r('sys.float.Title_S'))
         .fontWeight(FontWeight.Bold)
-        .fontColor($r('app.color.text_primary'))
+        .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
         .width('100%')
         .padding({ left: 20, right: 20, bottom: 4 })
       this.ImageQualityOption(IMAGE_QUALITY_DATA_SAVER, $r('app.string.settings_quality_data_saver'),
@@ -3276,7 +3717,7 @@ export struct SettingsSection {
       Text($r('app.string.settings_video_quality')).fontFamily(this.appFontFamily)
         .fontSize($r('sys.float.Title_S'))
         .fontWeight(FontWeight.Bold)
-        .fontColor($r('app.color.text_primary'))
+        .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
         .width('100%')
         .padding({ left: 20, right: 20, bottom: 4 })
       this.VideoQualityOption(VIDEO_QUALITY_DATA_SAVER, $r('app.string.settings_quality_auto'),
@@ -3295,7 +3736,10 @@ export struct SettingsSection {
   private AlertsContent(): void {
     Column() {
         this.SettingsSwitchRow($r('app.string.settings_push'), $r('app.string.settings_push_desc'),
-          this.notificationAlertsEnabled, (value: boolean): void => this.setNotificationAlertsEnabled(value))
+          this.notificationAlertsEnabled || this.onlyChatPush,
+          (value: boolean): void => this.setNotificationAlertsEnabled(value))
+        this.SettingsSwitchRow($r('app.string.chat_only_push'), $r('app.string.chat_only_push_hint'),
+          this.onlyChatPush, (value: boolean): void => this.setOnlyChatPush(value))
         this.SettingsSwitchRow($r('app.string.settings_system_notifications'),
           $r('app.string.settings_system_notifications_desc'), this.systemNotificationsEnabled,
           (value: boolean): void => this.setSystemNotificationsEnabled(value))
@@ -3316,16 +3760,16 @@ export struct SettingsSection {
         Text($r('app.string.settings_grip_hand')).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Subtitle_L'))
           .fontWeight(FontWeight.Medium)
-          .fontColor($r('app.color.text_primary'))
+          .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
         Text($r('app.string.settings_grip_hand_desc')).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Body_M'))
-          .fontColor($r('app.color.text_secondary'))
+          .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
           .width('100%')
       }
       .layoutWeight(1)
       .alignItems(HorizontalAlign.Start)
       Toggle({ type: ToggleType.Switch, isOn: this.gripHandEnabled })
-        .selectedColor(this.accentColor)
+        .selectedColor(mixedAccentRoleColor(this.accentTheme, 'control', this.accentColor))
         .onChange((value: boolean): void => this.setGripHandEnabled(value))
     }
     .width('100%')
@@ -3335,10 +3779,10 @@ export struct SettingsSection {
       Column({ space: 4 }) {
         Text($r('app.string.settings_grip_hand_preference')).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Subtitle_L'))
-          .fontColor($r('app.color.text_primary'))
+          .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
         Text($r('app.string.settings_grip_hand_preference_desc')).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Body_M'))
-          .fontColor($r('app.color.text_secondary'))
+          .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
           .width('100%')
       }.layoutWeight(1).alignItems(HorizontalAlign.Start)
       Select([
@@ -3357,16 +3801,16 @@ export struct SettingsSection {
       Column({ space: 4 }) {
         Text($r('app.string.settings_link_in_app')).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Subtitle_L'))
-          .fontColor($r('app.color.text_primary'))
+          .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
         Text($r('app.string.settings_link_in_app_desc')).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Body_M'))
-          .fontColor($r('app.color.text_secondary'))
+          .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
           .width('100%')
       }
       .layoutWeight(1)
       .alignItems(HorizontalAlign.Start)
       Toggle({ type: ToggleType.Switch, isOn: this.linkInApp })
-        .selectedColor(this.accentColor)
+        .selectedColor(mixedAccentRoleColor(this.accentTheme, 'control', this.accentColor))
         .onChange((value: boolean): void => this.setLinkInApp(value))
     }
     .width('100%')
@@ -3389,11 +3833,11 @@ export struct SettingsSection {
         Text(title).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Subtitle_L'))
           .fontWeight(FontWeight.Medium)
-          .fontColor($r('app.color.text_primary'))
+          .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
         if (detail !== undefined) {
           Text(detail).fontFamily(this.appFontFamily)
             .fontSize($r('sys.float.Body_M'))
-            .fontColor($r('app.color.text_secondary'))
+            .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
         }
       }
       .layoutWeight(1)
@@ -3414,7 +3858,7 @@ export struct SettingsSection {
     Column({ space: 0 }) {
       Text($r('app.string.settings_language_intro')).fontFamily(this.appFontFamily)
         .fontSize($r('sys.float.Body_L'))
-        .fontColor($r('app.color.text_secondary'))
+        .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
         .width('100%')
         .padding({ left: 20, right: 20, top: 20, bottom: 8 })
       this.LanguageOption(APP_LANGUAGE_SYSTEM, $r('app.string.settings_language_system'),
@@ -3433,7 +3877,8 @@ export struct SettingsSection {
       Text(provider.name).fontFamily(this.appFontFamily)
         .fontSize($r('sys.float.Body_M'))
         .fontColor(this.translationProviderId === provider.id ?
-          $r('app.color.text_on_accent') : $r('app.color.text_primary'))
+          $r('app.color.text_on_accent') : pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, this.translationProviderId === provider.id ? this.accentColor :
+      fieldSurfaceColor(this.displayMode, this.darkSurface)))
       if (this.translationProviderId === provider.id) {
         SymbolGlyph($r('sys.symbol.checkmark'))
           .fontSize(12)
@@ -3456,7 +3901,8 @@ export struct SettingsSection {
   private TranslationModeChip(id: string, label: Resource): void {
     Text(label).fontFamily(this.appFontFamily)
       .fontSize($r('sys.float.Body_M'))
-      .fontColor(this.translationMode === id ? $r('app.color.text_on_accent') : $r('app.color.text_primary'))
+      .fontColor(this.translationMode === id ? $r('app.color.text_on_accent') : pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, this.translationMode === id ? this.accentColor :
+        fieldSurfaceColor(this.displayMode, this.darkSurface)))
       .padding({ left: 14, right: 14, top: 9, bottom: 9 })
       .backgroundColor(this.translationMode === id ? this.accentColor :
         fieldSurfaceColor(this.displayMode, this.darkSurface))
@@ -3471,7 +3917,8 @@ export struct SettingsSection {
   private GrokModeChip(id: string, label: Resource): void {
     Text(label).fontFamily(this.appFontFamily)
       .fontSize($r('sys.float.Body_M'))
-      .fontColor(this.grokMode === id ? $r('app.color.text_on_accent') : $r('app.color.text_primary'))
+      .fontColor(this.grokMode === id ? $r('app.color.text_on_accent') : pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, this.grokMode === id ? this.accentColor :
+        fieldSurfaceColor(this.displayMode, this.darkSurface)))
       .padding({ left: 14, right: 14, top: 9, bottom: 9 })
       .backgroundColor(this.grokMode === id ? this.accentColor :
         fieldSurfaceColor(this.displayMode, this.darkSurface))
@@ -3486,7 +3933,8 @@ export struct SettingsSection {
   private TargetChip(id: string, label: Resource): void {
     Text(label).fontFamily(this.appFontFamily)
       .fontSize($r('sys.float.Body_M'))
-      .fontColor(this.translationTarget === id ? $r('app.color.text_on_accent') : $r('app.color.text_primary'))
+      .fontColor(this.translationTarget === id ? $r('app.color.text_on_accent') : pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, this.translationTarget === id ? this.accentColor :
+        fieldSurfaceColor(this.displayMode, this.darkSurface)))
       .padding({ left: 14, right: 14, top: 9, bottom: 9 })
       .backgroundColor(this.translationTarget === id ? this.accentColor :
         fieldSurfaceColor(this.displayMode, this.darkSurface))
@@ -3501,7 +3949,8 @@ export struct SettingsSection {
   private SourceChip(id: string, label: Resource): void {
     Text(label).fontFamily(this.appFontFamily)
       .fontSize($r('sys.float.Body_M'))
-      .fontColor(this.translationSource === id ? $r('app.color.text_on_accent') : $r('app.color.text_primary'))
+      .fontColor(this.translationSource === id ? $r('app.color.text_on_accent') : pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, this.translationSource === id ? this.accentColor :
+        fieldSurfaceColor(this.displayMode, this.darkSurface)))
       .padding({ left: 14, right: 14, top: 9, bottom: 9 })
       .backgroundColor(this.translationSource === id ? this.accentColor :
         fieldSurfaceColor(this.displayMode, this.darkSurface))
@@ -3544,7 +3993,8 @@ export struct SettingsSection {
     Text(label).fontFamily(this.appFontFamily)
       .fontSize($r('sys.float.Body_M'))
       .fontColor(this.isAutoExcludedLanguage(id) ? $r('app.color.text_on_accent') :
-        $r('app.color.text_primary'))
+        pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, this.isAutoExcludedLanguage(id) ? this.accentColor :
+        fieldSurfaceColor(this.displayMode, this.darkSurface)))
       .padding({ left: 14, right: 14, top: 9, bottom: 9 })
       .backgroundColor(this.isAutoExcludedLanguage(id) ? this.accentColor :
         fieldSurfaceColor(this.displayMode, this.darkSurface))
@@ -3560,7 +4010,7 @@ export struct SettingsSection {
     Text(title).fontFamily(this.appFontFamily)
       .fontSize($r('sys.float.Subtitle_L'))
       .fontWeight(FontWeight.Medium)
-      .fontColor($r('app.color.text_primary'))
+      .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
       .width('100%')
   }
 
@@ -3570,7 +4020,7 @@ export struct SettingsSection {
       Text($r('app.string.settings_translation_intro')).fontFamily(this.appFontFamily)
         .fontSize($r('sys.float.Body_L'))
         .lineHeight(22)
-        .fontColor($r('app.color.text_secondary'))
+        .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
         .width('100%')
 
       Row() {
@@ -3578,16 +4028,16 @@ export struct SettingsSection {
           Text($r('app.string.settings_translation_enable')).fontFamily(this.appFontFamily)
             .fontSize($r('sys.float.Subtitle_L'))
             .fontWeight(FontWeight.Medium)
-            .fontColor($r('app.color.text_primary'))
+            .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
           Text($r('app.string.settings_translation_enable_desc')).fontFamily(this.appFontFamily)
             .fontSize($r('sys.float.Body_M'))
-            .fontColor($r('app.color.text_secondary'))
+            .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
             .width('100%')
         }
         .layoutWeight(1)
         .alignItems(HorizontalAlign.Start)
         Toggle({ type: ToggleType.Switch, isOn: this.translationEnabled })
-          .selectedColor(this.accentColor)
+          .selectedColor(mixedAccentRoleColor(this.accentTheme, 'control', this.accentColor))
           .onChange((value: boolean): void => {
             this.translationEnabled = value;
           })
@@ -3599,17 +4049,17 @@ export struct SettingsSection {
           Text($r('app.string.settings_translation_replace_original')).fontFamily(this.appFontFamily)
             .fontSize($r('sys.float.Subtitle_L'))
             .fontWeight(FontWeight.Medium)
-            .fontColor($r('app.color.text_primary'))
+            .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, fieldSurfaceColor(this.displayMode, this.darkSurface)))
           Text($r('app.string.settings_translation_replace_original_desc')).fontFamily(this.appFontFamily)
             .fontSize($r('sys.float.Body_M'))
             .lineHeight(20)
-            .fontColor($r('app.color.text_secondary'))
+            .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, fieldSurfaceColor(this.displayMode, this.darkSurface)))
             .width('100%')
         }
         .layoutWeight(1)
         .alignItems(HorizontalAlign.Start)
         Toggle({ type: ToggleType.Switch, isOn: this.translationReplaceOriginal })
-          .selectedColor(this.accentColor)
+          .selectedColor(mixedAccentRoleColor(this.accentTheme, 'control', this.accentColor))
           .onChange((value: boolean): void => {
             this.translationReplaceOriginal = value;
           })
@@ -3631,13 +4081,13 @@ export struct SettingsSection {
         Text($r('app.string.settings_translation_web_note')).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Body_M'))
           .lineHeight(20)
-          .fontColor($r('app.color.text_secondary'))
+          .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
           .width('100%')
       } else if (this.translationMode === TRANSLATION_MODE_X) {
         Text($r('app.string.settings_translation_x_note')).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Body_M'))
           .lineHeight(20)
-          .fontColor($r('app.color.text_secondary'))
+          .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
           .width('100%')
       } else {
         this.FieldLabel($r('app.string.settings_translation_provider'))
@@ -3663,7 +4113,7 @@ export struct SettingsSection {
           })
         Text(this.translationModelHint()).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Body_M'))
-          .fontColor($r('app.color.text_secondary'))
+          .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
           .width('100%')
 
         this.FieldLabel($r('app.string.settings_translation_api_key'))
@@ -3686,7 +4136,7 @@ export struct SettingsSection {
         Text($r('app.string.settings_translation_api_key_note')).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Body_M'))
           .lineHeight(20)
-          .fontColor($r('app.color.text_secondary'))
+          .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
           .width('100%')
       }
 
@@ -3716,17 +4166,17 @@ export struct SettingsSection {
             Text($r('app.string.settings_translation_auto_enable')).fontFamily(this.appFontFamily)
               .fontSize($r('sys.float.Subtitle_L'))
               .fontWeight(FontWeight.Medium)
-              .fontColor($r('app.color.text_primary'))
+              .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, fieldSurfaceColor(this.displayMode, this.darkSurface)))
             Text($r('app.string.settings_translation_auto_enable_desc')).fontFamily(this.appFontFamily)
               .fontSize($r('sys.float.Body_M'))
               .lineHeight(20)
-              .fontColor($r('app.color.text_secondary'))
+              .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, fieldSurfaceColor(this.displayMode, this.darkSurface)))
               .width('100%')
           }
           .layoutWeight(1)
           .alignItems(HorizontalAlign.Start)
           Toggle({ type: ToggleType.Switch, isOn: this.translationAutoEnabled })
-            .selectedColor(this.accentColor)
+            .selectedColor(mixedAccentRoleColor(this.accentTheme, 'control', this.accentColor))
             .onChange((value: boolean): void => {
               this.translationAutoEnabled = value;
             })
@@ -3740,7 +4190,7 @@ export struct SettingsSection {
           this.FieldLabel($r('app.string.settings_translation_auto_exclude'))
           Text($r('app.string.settings_translation_auto_exclude_desc')).fontFamily(this.appFontFamily)
             .fontSize($r('sys.float.Body_M'))
-            .fontColor($r('app.color.text_secondary'))
+            .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
             .width('100%')
           Flex({ wrap: FlexWrap.Wrap }) {
             ForEach(this.translationLanguageList, (language: AppLanguageOption): void => {
@@ -3769,7 +4219,7 @@ export struct SettingsSection {
         Text($r('app.string.settings_translation_base_url_note')).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Body_M'))
           .lineHeight(20)
-          .fontColor($r('app.color.text_secondary'))
+          .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
           .width('100%')
       }
 
@@ -3791,7 +4241,7 @@ export struct SettingsSection {
       Text($r('app.string.settings_grok_intro')).fontFamily(this.appFontFamily)
         .fontSize($r('sys.float.Body_L'))
         .lineHeight(22)
-        .fontColor($r('app.color.text_secondary'))
+        .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
         .width('100%')
 
       this.FieldLabel($r('app.string.settings_grok_mode'))
@@ -3804,7 +4254,7 @@ export struct SettingsSection {
         $r('app.string.settings_grok_mode_api_note')).fontFamily(this.appFontFamily)
         .fontSize($r('sys.float.Body_M'))
         .lineHeight(20)
-        .fontColor($r('app.color.text_secondary'))
+        .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
         .width('100%')
 
       Row({ space: 14 }) {
@@ -3812,17 +4262,17 @@ export struct SettingsSection {
           Text($r('app.string.settings_grok_x_session')).fontFamily(this.appFontFamily)
             .fontSize($r('sys.float.Subtitle_L'))
             .fontWeight(FontWeight.Medium)
-            .fontColor($r('app.color.text_primary'))
+            .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
           Text($r('app.string.settings_grok_x_session_desc')).fontFamily(this.appFontFamily)
             .fontSize($r('sys.float.Body_M'))
             .lineHeight(20)
-            .fontColor($r('app.color.text_secondary'))
+            .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
             .width('100%')
         }
         .layoutWeight(1)
         .alignItems(HorizontalAlign.Start)
         Toggle({ type: ToggleType.Switch, isOn: this.grokUseXWebSession })
-          .selectedColor(this.accentColor)
+          .selectedColor(mixedAccentRoleColor(this.accentTheme, 'control', this.accentColor))
           .onChange((value: boolean): void => {
             this.grokUseXWebSession = value;
           })
@@ -3864,7 +4314,7 @@ export struct SettingsSection {
         Text($r('app.string.settings_grok_api_key_note')).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Body_M'))
           .lineHeight(20)
-          .fontColor($r('app.color.text_secondary'))
+          .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
           .width('100%')
 
         this.FieldLabel($r('app.string.settings_grok_base_url'))
@@ -3907,16 +4357,16 @@ export struct SettingsSection {
           Text($r('app.string.settings_link_in_app')).fontFamily(this.appFontFamily)
             .fontSize($r('sys.float.Subtitle_L'))
             .fontWeight(FontWeight.Medium)
-            .fontColor($r('app.color.text_primary'))
+            .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
           Text($r('app.string.settings_link_in_app_desc')).fontFamily(this.appFontFamily)
             .fontSize($r('sys.float.Body_M'))
-            .fontColor($r('app.color.text_secondary'))
+            .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
             .width('100%')
         }
         .layoutWeight(1)
         .alignItems(HorizontalAlign.Start)
         Toggle({ type: ToggleType.Switch, isOn: this.linkInApp })
-          .selectedColor(this.accentColor)
+          .selectedColor(mixedAccentRoleColor(this.accentTheme, 'control', this.accentColor))
           .onChange((value: boolean): void => this.setLinkInApp(value))
       }
       .width('100%')
@@ -3929,6 +4379,61 @@ export struct SettingsSection {
     }
   }
 
+  private antiPeepStatus(): Resource {
+    switch (this.antiPeepState) {
+      case AntiPeepState.DISABLED: return $r('app.string.settings_anti_peep_disabled');
+      case AntiPeepState.UNSUPPORTED: return $r('app.string.settings_anti_peep_unsupported');
+      case AntiPeepState.PERMISSION_REQUIRED: return $r('app.string.settings_anti_peep_permission');
+      case AntiPeepState.SYSTEM_OFF: return $r('app.string.settings_anti_peep_system_off');
+      case AntiPeepState.FACE_REQUIRED: return $r('app.string.settings_anti_peep_face');
+      case AntiPeepState.READY: return $r('app.string.settings_anti_peep_ready');
+      case AntiPeepState.PROTECTED: return $r('app.string.settings_anti_peep_protected');
+      case AntiPeepState.ERROR: return $r('app.string.settings_anti_peep_error');
+      default: return $r('app.string.settings_anti_peep_checking');
+    }
+  }
+
+  @Builder
+  private AntiPeepContent(): void {
+    Column({ space: 16 }) {
+      this.AutoHideSwitchRow($r('app.string.settings_anti_peep_enable'),
+        $r('app.string.settings_anti_peep_desc'), this.antiPeepEnabled, (enabled: boolean): void => {
+          if (!antiPeepProtection.saveEnabled(getContext(this) as common.UIAbilityContext, enabled)) {
+            promptAction.showToast({ message: this.text($r('app.string.settings_anti_peep_save_failed')) });
+          }
+        }, !this.antiPeepBusy)
+      Text(this.antiPeepStatus()).fontFamily(this.appFontFamily)
+        .fontSize($r('sys.float.Body_L'))
+        .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
+        .width('100%')
+        .id('anti_peep_status')
+      Text($r('app.string.settings_anti_peep_note')).fontFamily(this.appFontFamily)
+        .fontSize($r('sys.float.Body_M'))
+        .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
+        .width('100%')
+      Button($r('app.string.settings_anti_peep_setup'), { stateEffect: true })
+        .width('100%')
+        .backgroundColor(this.accentColor)
+        .fontColor($r('app.color.text_on_accent'))
+        .enabled(this.antiPeepEnabled && !this.antiPeepBusy && this.antiPeepState !== AntiPeepState.UNSUPPORTED)
+        .onClick(async (): Promise<void> => {
+          this.antiPeepBusy = true;
+          try { await antiPeepProtection.configure(getContext(this) as common.UIAbilityContext); }
+          finally { this.antiPeepBusy = false; }
+        })
+      Button($r('app.string.settings_anti_peep_recheck'), { stateEffect: true })
+        .width('100%')
+        .enabled(this.antiPeepEnabled && !this.antiPeepBusy)
+        .onClick(async (): Promise<void> => {
+          this.antiPeepBusy = true;
+          try { await antiPeepProtection.refresh(); }
+          finally { this.antiPeepBusy = false; }
+        })
+    }
+    .width('100%')
+    .padding({ left: 20, right: 20, top: 20, bottom: 28 })
+  }
+
   @Builder
   private SettingsSwitchRow(title: Resource, detail: Resource, enabled: boolean,
     onChange: (value: boolean) => void): void {
@@ -3937,16 +4442,16 @@ export struct SettingsSection {
         Text(title).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Subtitle_L'))
           .fontWeight(FontWeight.Medium)
-          .fontColor($r('app.color.text_primary'))
+          .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
         Text(detail).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Body_M'))
-          .fontColor($r('app.color.text_secondary'))
+          .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
           .width('100%')
       }
       .layoutWeight(1)
       .alignItems(HorizontalAlign.Start)
       Toggle({ type: ToggleType.Switch, isOn: enabled })
-        .selectedColor(this.accentColor)
+        .selectedColor(mixedAccentRoleColor(this.accentTheme, 'control', this.accentColor))
         .onChange(onChange)
     }
     .width('100%')
@@ -3960,10 +4465,10 @@ export struct SettingsSection {
         Text(title).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Subtitle_L'))
           .fontWeight(FontWeight.Medium)
-          .fontColor($r('app.color.text_primary'))
+          .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
         Text(detail).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Body_M'))
-          .fontColor($r('app.color.text_secondary'))
+          .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
           .width('100%')
       }
       .layoutWeight(1)
@@ -3986,16 +4491,16 @@ export struct SettingsSection {
         Column({ space: 4 }) {
           Text($r('app.string.settings_sensitive_media')).fontFamily(this.appFontFamily)
             .fontSize($r('sys.float.Subtitle_L'))
-            .fontColor($r('app.color.text_primary'))
+            .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
           Text($r('app.string.settings_sensitive_media_desc')).fontFamily(this.appFontFamily)
             .fontSize($r('sys.float.Body_M'))
-            .fontColor($r('app.color.text_secondary'))
+            .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
             .width('100%')
         }
         .layoutWeight(1)
         .alignItems(HorizontalAlign.Start)
         Toggle({ type: ToggleType.Switch, isOn: this.showSensitiveMedia })
-          .selectedColor(this.accentColor)
+          .selectedColor(mixedAccentRoleColor(this.accentTheme, 'control', this.accentColor))
           .enabled(!this.sensitiveMediaSaving)
           .onChange((value: boolean): void => { this.setShowSensitiveMedia(value); })
       }
@@ -4013,11 +4518,11 @@ export struct SettingsSection {
       Text(title).fontFamily(this.appFontFamily)
         .fontSize($r('sys.float.Subtitle_L'))
         .fontWeight(FontWeight.Medium)
-        .fontColor($r('app.color.text_primary'))
+        .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
         .width('100%')
       Text(detail).fontFamily(this.appFontFamily)
         .fontSize($r('sys.float.Body_M'))
-        .fontColor($r('app.color.text_secondary'))
+        .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
         .lineHeight(20)
         .width('100%')
       TextArea({ placeholder: placeholder, text: text }).fontFamily(this.appFontFamily)
@@ -4025,7 +4530,7 @@ export struct SettingsSection {
         .width('100%')
         .height(92)
         .fontSize($r('sys.float.Body_M'))
-        .fontColor($r('app.color.text_primary'))
+        .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, fieldSurfaceColor(this.displayMode, this.darkSurface)))
         .placeholderColor($r('app.color.text_secondary'))
         .backgroundColor(fieldSurfaceColor(this.displayMode, this.darkSurface))
         .borderRadius(12)
@@ -4043,18 +4548,18 @@ export struct SettingsSection {
       Text($r('app.string.settings_filter_title')).fontFamily(this.appFontFamily)
         .fontSize($r('sys.float.Title_S'))
         .fontWeight(FontWeight.Bold)
-        .fontColor($r('app.color.text_primary'))
+        .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
         .width('100%')
         .padding({ left: 20, right: 20, top: 12, bottom: 4 })
       Text($r('app.string.settings_filter_desc')).fontFamily(this.appFontFamily)
         .fontSize($r('sys.float.Body_M'))
-        .fontColor($r('app.color.text_secondary'))
+        .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
         .lineHeight(20)
         .width('100%')
         .padding({ left: 20, right: 20, bottom: 8 })
       Text($r('app.string.xsettings_local_filter_note')).fontFamily(this.appFontFamily)
         .fontSize($r('sys.float.Body_M'))
-        .fontColor($r('app.color.text_secondary'))
+        .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
         .width('100%')
         .padding({ left: 20, right: 20, bottom: 8 })
       Column({ space: 0 }) {
@@ -4087,12 +4592,22 @@ export struct SettingsSection {
 
   build(): void {
     HdsNavDestination() {
+      Stack({ alignContent: Alignment.TopStart }) {
+        appPageBackground()
       Scroll(this.scroller) {
         Column({ space: 0 }) {
           if (this.children().length > 0) {
             this.CategoryContent()
+          } else if (this.section === 'anti_peep') {
+            this.AntiPeepContent()
           } else if (this.section === 'theme') {
             this.DisplayContent()
+          } else if (this.section === 'uihdr') {
+            ComponentHdrSettingsContent()
+          } else if (this.section === 'motion') {
+            MotionSettingsContent()
+          } else if (this.section === 'transitions') {
+            this.PageTransitionContent()
           } else if (this.section === 'fonts') {
             this.FontsContent()
           } else if (this.section === 'titlebar') {
@@ -4157,8 +4672,14 @@ export struct SettingsSection {
       .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: true })
       .clipContent(ContentClipMode.SAFE_AREA)
       .clip(false)
+
+      }.width('100%').height('100%')
     }
+    .scale({ x: this.pageMotion.scale, y: this.pageMotion.scale })
+    .opacity(this.pageMotion.opacity)
+    .systemTransition(pageSystemTransition(this.pageTransitionMode))
     .onReady((context: NavDestinationContext): void => {
+      this.pageMotion.attach(context);
       const param: SettingsRouteParam = context.pathInfo.param as SettingsRouteParam;
       if (param !== undefined && param !== null) {
         // Previously remembered desktop destinations return to notifications while this entry is hidden.
@@ -4179,7 +4700,7 @@ export struct SettingsSection {
       style: destinationTitleBarStyle(ScrollEffectType.GRADIENT_BLUR, this.displayMode, this.darkSurface,
         this.titleBarStyleMode)
     })
-    .backgroundColor(pageSurfaceColor(this.displayMode, this.darkSurface))
-    .systemMaterial(this.pageMaterial());
+    .backgroundColor(pageCanvasColor(this.displayMode, this.darkSurface, this.pageBackgroundValue))
+    .systemMaterial(pageBackgroundActive(this.pageBackgroundValue) ? undefined : this.pageMaterial());
   }
 }

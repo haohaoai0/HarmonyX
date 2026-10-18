@@ -66,6 +66,28 @@ test('a failed label preference write keeps the previous visible labels', () => 
   assert.equal(new f.api.HdsTabsSettingsStore().loadRootTabLabelsVisible({}), false);
 });
 
+test('the liquid indicator defaults on and persists independently of labels and bar style', () => {
+  const f = fixture(), store = new f.api.HdsTabsSettingsStore();
+  assert.equal(store.loadRootLiquidTabIndicatorEnabled({}), true);
+  assert.equal(store.saveRootLiquidTabIndicatorEnabled({}, false), true);
+  store.saveRootTabLabelsVisible({}, false);
+  store.saveClassicBottomBar({}, true);
+  store.saveClassicBottomBar({}, false);
+  assert.equal(new f.api.HdsTabsSettingsStore().loadRootLiquidTabIndicatorEnabled({}), false);
+  assert.equal(f.published.get(f.api.STORAGE_KEY_ROOT_LIQUID_TAB_INDICATOR_ENABLED), false);
+  assert.equal(store.saveRootLiquidTabIndicatorEnabled({}, true), true);
+  assert.equal(new f.api.HdsTabsSettingsStore().loadRootLiquidTabIndicatorEnabled({}), true);
+});
+
+test('failed liquid-indicator writes retain the saved and published setting', () => {
+  const f = fixture(), store = new f.api.HdsTabsSettingsStore();
+  store.saveRootLiquidTabIndicatorEnabled({}, false);
+  f.fail();
+  assert.equal(store.saveRootLiquidTabIndicatorEnabled({}, true), false);
+  assert.equal(f.published.get(f.api.STORAGE_KEY_ROOT_LIQUID_TAB_INDICATOR_ENABLED), false);
+  assert.equal(new f.api.HdsTabsSettingsStore().loadRootLiquidTabIndicatorEnabled({}), false);
+});
+
 test('failed writes do not publish a new bar mode or replace the saved choice', () => {
   const f = fixture(), store = new f.api.HdsTabsSettingsStore();
   store.saveClassicBottomBar({}, true);

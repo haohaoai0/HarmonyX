@@ -1,3 +1,7 @@
+import { appPageBackground } from '../components/PageBackgroundLayer';
+import { pageCanvasColor, pageReadingSurfaceColor } from '../utils/ThemeColors';
+import { STORAGE_KEY_PAGE_TRANSITION_MODE, DEFAULT_PAGE_TRANSITION_MODE } from '../services/PageTransitionSettingsStore';
+import { pageSystemTransition, PageTransitionMotion } from '../utils/PageTransition';
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
 import { common } from '@kit.AbilityKit';
 import { HdsNavDestination, HdsNavDestinationTitleMode, ScrollEffectType } from '@kit.UIDesignKit';
@@ -17,6 +21,9 @@ export function CommunityRulesBuilder(): void { CommunityRules(); }
 
 @Component
 export struct CommunityRules {
+  @StorageProp('harmonyx.page_background') private pageBackgroundValue: string = '';
+  @State private pageMotion: PageTransitionMotion = new PageTransitionMotion();
+  @StorageProp(STORAGE_KEY_PAGE_TRANSITION_MODE) private pageTransitionMode: string = DEFAULT_PAGE_TRANSITION_MODE;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @Consume('pageStack') pageStack: NavPathStack;
   @StorageProp('harmonyx.status_bar_height') statusBarHeight: number = 0;
@@ -86,6 +93,8 @@ export struct CommunityRules {
   }
   build(): void {
     HdsNavDestination() {
+      Stack({ alignContent: Alignment.TopStart }) {
+        appPageBackground()
       Column({ space: 0 }) {
         List({ scroller: this.scroller }) {
           ListItem() {
@@ -140,15 +149,21 @@ export struct CommunityRules {
             .margin({ left: 16, right: 16, top: 12, bottom: this.navigationIndicatorHeight + 16 })
         }
       }.width('100%').height('100%').padding({ top: this.statusBarHeight + 60 })
-    }.titleMode(HdsNavDestinationTitleMode.MINI).hideBackButton(false)
-      .onReady((context: NavDestinationContext): void => { this.readRoute(context.pathInfo.param as CommunityRulesRouteParam); })
+    
+      }.width('100%').height('100%')
+    }
+    .scale({ x: this.pageMotion.scale, y: this.pageMotion.scale })
+    .opacity(this.pageMotion.opacity)
+    .systemTransition(pageSystemTransition(this.pageTransitionMode)).titleMode(HdsNavDestinationTitleMode.MINI).hideBackButton(false)
+      .onReady((context: NavDestinationContext): void => {
+      this.pageMotion.attach(context); this.readRoute(context.pathInfo.param as CommunityRulesRouteParam); })
       .onBackPressed((): boolean => { if (!this.busy) { ResponsiveLayout.closeContentDestination(this.pageStack); } return true; })
       .bindToScrollable([this.scroller])
       .titleBar({ avoidLayoutSafeArea: true,
         content: { title: { mainTitle: this.communityId.length > 0 ? $r('app.string.community_join_action') : $r('app.string.community_rules_title') } },
         style: destinationTitleBarStyle(ScrollEffectType.IMMERSIVE_GRADIENT_BLUR,
           this.themeDisplayMode, this.themeDarkSurface, this.titleBarStyleMode) })
-      .backgroundColor(pageSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
+      .backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue))
       .systemMaterial(deviceInfo.apiAvailable('26.0.0') ? new uiMaterial.ImmersiveMaterial({
         style: uiMaterial.ImmersiveStyle.REGULAR, applyShadow: true, colorInvert: true }) : undefined)
   }

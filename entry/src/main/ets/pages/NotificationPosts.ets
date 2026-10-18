@@ -1,3 +1,8 @@
+import { pageTextColor } from '../utils/ThemeColors';
+import { appPageBackground } from '../components/PageBackgroundLayer';
+import { pageCanvasColor, pageReadingSurfaceColor } from '../utils/ThemeColors';
+import { STORAGE_KEY_PAGE_TRANSITION_MODE, DEFAULT_PAGE_TRANSITION_MODE } from '../services/PageTransitionSettingsStore';
+import { pageSystemTransition, PageTransitionMotion } from '../utils/PageTransition';
 import { common } from '@kit.AbilityKit';
 import { HdsNavDestination, HdsNavDestinationTitleMode, ScrollEffectType } from '@kit.UIDesignKit';
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
@@ -26,6 +31,9 @@ export function NotificationPostsBuilder(): void { NotificationPosts(); }
 
 @Component
 struct NotificationPosts {
+  @StorageProp('harmonyx.page_background') private pageBackgroundValue: string = '';
+  @State private pageMotion: PageTransitionMotion = new PageTransitionMotion();
+  @StorageProp(STORAGE_KEY_PAGE_TRANSITION_MODE) private pageTransitionMode: string = DEFAULT_PAGE_TRANSITION_MODE;
   @Consume('pageStack') pageStack: NavPathStack;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @StorageProp('harmonyx.status_bar_height') private statusBarHeight: number = 0;
@@ -142,13 +150,15 @@ struct NotificationPosts {
 
   build(): void {
     HdsNavDestination() {
+      Stack({ alignContent: Alignment.TopStart }) {
+        appPageBackground()
       Refresh({ refreshing: $$this.refreshing }) {
         List({ scroller: this.scroller }) {
           if (this.status.length > 0 || this.posts.length === 0) {
             ListItem() {
               Text(this.status.length > 0 ? this.status : $r('app.string.notification_posts_empty'))
                 .fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M'))
-                .fontColor($r('app.color.text_secondary')).width('100%').padding(20)
+                .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).width('100%').padding(20)
             }
           }
           ForEach(this.posts, (tweet: Tweet) => {
@@ -176,8 +186,14 @@ struct NotificationPosts {
       }.width('100%').height('100%').onRefreshing((): void => {
         void this.refreshPosts();
       })
+    
+      }.width('100%').height('100%')
     }
+    .scale({ x: this.pageMotion.scale, y: this.pageMotion.scale })
+    .opacity(this.pageMotion.opacity)
+    .systemTransition(pageSystemTransition(this.pageTransitionMode))
     .onReady((context: NavDestinationContext): void => {
+      this.pageMotion.attach(context);
       const param: NotificationPostsRouteParam = context.pathInfo?.param as NotificationPostsRouteParam;
       if (param === undefined || param === null) { return; }
       this.applyRoute(param);
@@ -189,7 +205,7 @@ struct NotificationPosts {
       content: { title: { mainTitle: $r('app.string.notification_posts_title') } },
       style: destinationTitleBarStyle(ScrollEffectType.GRADIENT_BLUR, this.themeDisplayMode,
         this.themeDarkSurface, this.titleBarStyleMode) })
-    .backgroundColor(pageSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
+    .backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue))
     .onBackPressed((): boolean => { ResponsiveLayout.closeContentDestination(this.pageStack); return true; })
   }
 }

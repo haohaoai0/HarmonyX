@@ -1,3 +1,8 @@
+import { pageTextColor } from '../utils/ThemeColors';
+import { appPageBackground } from '../components/PageBackgroundLayer';
+import { pageCanvasColor, postCardSurfaceColor } from '../utils/ThemeColors';
+import { STORAGE_KEY_PAGE_TRANSITION_MODE, DEFAULT_PAGE_TRANSITION_MODE } from '../services/PageTransitionSettingsStore';
+import { pageSystemTransition, PageTransitionMotion } from '../utils/PageTransition';
 import { common } from '@kit.AbilityKit';
 import { LengthMetrics } from '@kit.ArkUI';
 import { BottomBuilderShowType, HdsNavDestination, HdsNavDestinationTitleMode, ScrollEffectType, TextStyleMode } from '@kit.UIDesignKit';
@@ -20,6 +25,9 @@ export function BrowsingHistoryBuilder(): void { BrowsingHistory(); }
 
 @Component
 struct BrowsingHistory {
+  @StorageProp('harmonyx.page_background') private pageBackgroundValue: string = '';
+  @State private pageMotion: PageTransitionMotion = new PageTransitionMotion();
+  @StorageProp(STORAGE_KEY_PAGE_TRANSITION_MODE) private pageTransitionMode: string = DEFAULT_PAGE_TRANSITION_MODE;
   @Consume('pageStack') pageStack: NavPathStack;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @StorageProp('harmonyx.status_bar_height') private statusBarHeight: number = 0;
@@ -173,7 +181,7 @@ struct BrowsingHistory {
         Column({ space: 2 }) {
           Row({ space: 4 }) {
             Text(this.authorName(row)).fontFamily(this.appFontFamily).fontSize(15).fontWeight(FontWeight.Bold)
-              .fontColor($r('app.color.text_primary')).maxLines(1).textOverflow({ overflow: TextOverflow.Ellipsis })
+              .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, postCardSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue))).maxLines(1).textOverflow({ overflow: TextOverflow.Ellipsis })
               .constraintSize({ maxWidth: '85%' }).flexShrink(1)
             if (row.verified) {
               SymbolGlyph($r('sys.symbol.checkmark_circle_fill')).fontSize(14).fontColor([$r('app.color.brand')])
@@ -181,12 +189,12 @@ struct BrowsingHistory {
           }.width('100%').justifyContent(FlexAlign.Start)
           if (row.authorHandle.length > 0) {
             Text('@' + row.authorHandle).fontFamily(this.appFontFamily).fontSize(12)
-              .fontColor($r('app.color.text_secondary')).maxLines(1).textOverflow({ overflow: TextOverflow.Ellipsis })
+              .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, postCardSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue))).maxLines(1).textOverflow({ overflow: TextOverflow.Ellipsis })
           }
         }.layoutWeight(1).alignItems(HorizontalAlign.Start)
-        Text(this.time(row)).fontFamily(this.appFontFamily).fontSize(12).fontColor($r('app.color.text_secondary'))
+        Text(this.time(row)).fontFamily(this.appFontFamily).fontSize(12).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, postCardSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue)))
         Button({ type: ButtonType.Circle }) {
-          SymbolGlyph($r('sys.symbol.ellipsis_circle')).fontSize(20).fontColor([$r('app.color.text_secondary')])
+          SymbolGlyph($r('sys.symbol.ellipsis_circle')).fontSize(20).fontColor([pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, postCardSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue))])
         }.width(32).height(36).backgroundColor(Color.Transparent).monopolizeEvents(true)
           .accessibilityText($r('app.string.profile_more'))
           .bindMenu([{ value: this.text($r('app.string.browsing_history_delete')), action: (): void => this.remove(row) }])
@@ -196,7 +204,7 @@ struct BrowsingHistory {
           if (this.failedIds.indexOf(row.id) >= 0) {
             Column({ space: 6 }) {
               Text($r('app.string.post_detail_unavailable')).fontFamily(this.appFontFamily).fontSize(14)
-                .fontColor($r('app.color.text_secondary'))
+                .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, postCardSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue)))
               Button($r('app.string.common_retry')).fontFamily(this.appFontFamily).fontSize(14)
                 .backgroundColor(Color.Transparent).fontColor($r('app.color.brand')).monopolizeEvents(true)
                 .onClick((): void => this.retry(row))
@@ -205,11 +213,11 @@ struct BrowsingHistory {
             Row({ space: 8 }) {
               LoadingProgress().width(18).height(18).color($r('app.color.brand'))
               Text($r('app.string.status_loading')).fontFamily(this.appFontFamily).fontSize(14)
-                .fontColor($r('app.color.text_secondary'))
+                .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, postCardSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue)))
             }.layoutWeight(1).height(52)
           }
         } else if (row.text.length > 0) {
-          Text(row.text).fontFamily(this.appFontFamily).fontSize(16).fontColor($r('app.color.text_primary'))
+          Text(row.text).fontFamily(this.appFontFamily).fontSize(16).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, postCardSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue)))
             .maxLines(4).textOverflow({ overflow: TextOverflow.Ellipsis }).layoutWeight(1)
             .lineSpacing(LengthMetrics.vp(4))
         } else {
@@ -229,15 +237,15 @@ struct BrowsingHistory {
       Row({ space: 6 }) {
         SymbolGlyph(this.video(row) ? $r('sys.symbol.play_fill') : row.mediaCount > 0 ?
           $r('sys.symbol.picture') : $r('sys.symbol.text_alignleft'))
-          .fontSize(13).fontColor([$r('app.color.text_secondary')])
+          .fontSize(13).fontColor([pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, postCardSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue))])
         Text(this.video(row) ? $r('app.string.compose_video_label') : row.mediaCount > 0 ?
           $r('app.string.profile_photos_tab') : $r('app.string.profile_detail_posts'))
-          .fontFamily(this.appFontFamily).fontSize(12).fontColor($r('app.color.text_secondary'))
+          .fontFamily(this.appFontFamily).fontSize(12).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, postCardSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue)))
         Blank()
-        SymbolGlyph($r('sys.symbol.chevron_right')).fontSize(12).fontColor([$r('app.color.text_secondary')])
+        SymbolGlyph($r('sys.symbol.chevron_right')).fontSize(12).fontColor([pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, postCardSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue))])
       }.width('100%')
     }.width('100%').padding(14).alignItems(HorizontalAlign.Start)
-      .backgroundColor(cardSurfaceColor(this.displayMode, this.darkSurface)).borderRadius(20)
+      .backgroundColor(postCardSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue)).borderRadius(20)
       .border({ width: 0.5, color: $r('app.color.divider') }).onClick((): void => this.open(row))
   }
 
@@ -258,20 +266,22 @@ struct BrowsingHistory {
 
   build(): void {
     HdsNavDestination() {
+      Stack({ alignContent: Alignment.TopStart }) {
+        appPageBackground()
       List({ space: 12, scroller: this.scroller }) {
         ListItem() {
           Row({ space: 6 }) {
-            SymbolGlyph($r('sys.symbol.lock')).fontSize(12).fontColor([$r('app.color.text_secondary')])
+            SymbolGlyph($r('sys.symbol.lock')).fontSize(12).fontColor([pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)])
             Text($r('app.string.browsing_history_local')).fontFamily(this.appFontFamily).fontSize(12)
-              .fontColor($r('app.color.text_secondary'))
+              .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
           }.width('100%').padding({ left: 18, right: 18, top: 8, bottom: 4 })
         }
         if (this.visibleRows.length === 0) {
           ListItem() {
             Column({ space: 16 }) {
-              SymbolGlyph($r('sys.symbol.clock')).fontSize(48).fontColor([$r('app.color.text_secondary')])
+              SymbolGlyph($r('sys.symbol.clock')).fontSize(48).fontColor([pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)])
               Text(this.query.length > 0 ? $r('app.string.browsing_history_no_results') : $r('app.string.browsing_history_empty'))
-                .fontFamily(this.appFontFamily).fontColor($r('app.color.text_secondary'))
+                .fontFamily(this.appFontFamily).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
             }.width('100%').padding({ top: 72, bottom: 72 })
           }
         }
@@ -280,7 +290,7 @@ struct BrowsingHistory {
             Column({ space: 10 }) {
               if (this.newDay(index)) {
                 Text(this.dayLabel(row)).fontFamily(this.appFontFamily).fontSize(14).fontWeight(FontWeight.Medium)
-                  .fontColor($r('app.color.text_secondary')).width('100%').padding({ left: 4, top: 10 })
+                  .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).width('100%').padding({ left: 4, top: 10 })
               }
               this.HistoryCard(row)
             }.width('100%').padding({ left: 14, right: 14 })
@@ -290,7 +300,13 @@ struct BrowsingHistory {
       }.width('100%').height('100%').scrollBar(BarState.Off)
         .contentStartOffset(this.statusBarHeight + 116).contentEndOffset(this.bottomInset + 20)
         .clip(false).onScrollIndex((start: number, end: number): void => this.loadVisiblePreviews(start - 1, end))
-    }.onShown((): void => this.shown()).onHidden((): void => this.hidden())
+    
+      }.width('100%').height('100%')
+    }
+    .scale({ x: this.pageMotion.scale, y: this.pageMotion.scale })
+    .opacity(this.pageMotion.opacity)
+    .onReady((context: NavDestinationContext): void => { this.pageMotion.attach(context); })
+    .systemTransition(pageSystemTransition(this.pageTransitionMode)).onShown((): void => this.shown()).onHidden((): void => this.hidden())
       .titleMode(HdsNavDestinationTitleMode.MINI).bindToScrollable([this.scroller])
       .titleBar({ avoidLayoutSafeArea: true,
         content: { title: { mainTitle: $r('app.string.browsing_history_title') },
@@ -300,7 +316,7 @@ struct BrowsingHistory {
           menu: { value: [{ content: { label: $r('app.string.browsing_history_clear'), type: TextStyleMode.NORMAL,
             isEnabled: this.rows.length > 0, action: (): void => this.clear() } }] } },
         style: destinationTitleBarStyle(ScrollEffectType.GRADIENT_BLUR, this.displayMode, this.darkSurface, this.titleBarStyleMode) })
-      .backgroundColor(pageSurfaceColor(this.displayMode, this.darkSurface))
+      .backgroundColor(pageCanvasColor(this.displayMode, this.darkSurface, this.pageBackgroundValue))
       .onBackPressed((): boolean => { ResponsiveLayout.closeContentDestination(this.pageStack); return true; })
   }
 }

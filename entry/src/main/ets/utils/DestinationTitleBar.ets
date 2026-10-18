@@ -16,6 +16,7 @@ import { pageSurfaceColor, titleBarScrimColor } from './ThemeColors';
 import { ResponsiveLayout } from './ResponsiveLayout';
 import { LengthMetrics, uiMaterial } from '@kit.ArkUI';
 import { SystemMaterialUtil } from './SystemMaterial';
+import { pageBackgroundActive } from '../services/PageBackgroundStore';
 import {
   TITLE_BAR_STYLE_GLASS,
   TITLE_BAR_STYLE_GLASS_ONLY,
@@ -114,6 +115,7 @@ export function titleBarScrollEffectDisabled(titleBarStyleMode: number): boolean
 export function rootTitleBarStyle(displayMode: string, darkSurface: string,
   titleBarStyleMode: number, desktop: boolean): TitleBarStyleOptions {
   const full: boolean = titleBarFullStyleEnabled(titleBarStyleMode);
+  const custom: boolean = pageBackgroundActive(AppStorage.get<string>('harmonyx.page_background') ?? '');
   return {
     scrollEffectOpts: full ? {
       enableScrollEffect: true,
@@ -121,12 +123,13 @@ export function rootTitleBarStyle(displayMode: string, darkSurface: string,
       blurEffectiveStartOffset: LengthMetrics.vp(0),
       blurEffectiveEndOffset: LengthMetrics.vp(16)
     } : (titleBarScrollEffectDisabled(titleBarStyleMode) ? { enableScrollEffect: false } : undefined),
-    originalStyle: full ? {
-      backgroundStyle: { backgroundColor: desktop ? Color.Transparent : titleBarScrimColor(displayMode, darkSurface) },
+    originalStyle: full || custom ? {
+      backgroundStyle: { backgroundColor: custom ? pageSurfaceColor(displayMode, darkSurface) :
+        (desktop ? Color.Transparent : titleBarScrimColor(displayMode, darkSurface)) },
       contentStyle: titleContentStyle()
     } : undefined,
-    scrollEffectStyle: full ? {
-      backgroundStyle: { backgroundColor: desktop ? Color.Transparent : pageSurfaceColor(displayMode, darkSurface) },
+    scrollEffectStyle: full || custom ? {
+      backgroundStyle: { backgroundColor: desktop && !custom ? Color.Transparent : pageSurfaceColor(displayMode, darkSurface) },
       contentStyle: titleContentStyle()
     } : undefined,
     systemMaterialEffect: {
@@ -152,7 +155,8 @@ export function destinationTitleBarStyle(
   const desktop: boolean = (AppStorage.get<boolean>('harmonyx.desktop_layout') ?? false) &&
     ResponsiveLayout.isLarge(AppStorage.get<string>('harmonyx.breakpoint') ?? 'sm');
   const full: boolean = destinationTitleBarFullStyleEnabled(titleBarStyleMode);
-  const hasExplicitBackground: boolean = full || backgroundDimmed;
+  const custom: boolean = pageBackgroundActive(AppStorage.get<string>('harmonyx.page_background') ?? '');
+  const hasExplicitBackground: boolean = full || backgroundDimmed || custom;
   return {
     scrollEffectOpts: full ? {
       enableScrollEffect: true,
@@ -161,16 +165,16 @@ export function destinationTitleBarStyle(
     originalStyle: hasExplicitBackground ? {
       backgroundStyle: {
         backgroundColor: backgroundDimmed ? $r('app.color.reply_composer_scrim') :
-          (desktop ? Color.Transparent : titleBarScrimColor(displayMode, darkSurface))
+          (custom ? pageSurfaceColor(displayMode, darkSurface) : (desktop ? Color.Transparent : titleBarScrimColor(displayMode, darkSurface)))
       },
-      contentStyle: full ? titleContentStyle() : undefined
+      contentStyle: full || custom ? titleContentStyle() : undefined
     } : undefined,
     scrollEffectStyle: hasExplicitBackground ? {
       backgroundStyle: {
         backgroundColor: backgroundDimmed ? $r('app.color.reply_composer_scrim') :
-          (desktop ? Color.Transparent : pageSurfaceColor(displayMode, darkSurface))
+          (desktop && !custom ? Color.Transparent : pageSurfaceColor(displayMode, darkSurface))
       },
-      contentStyle: full ? titleContentStyle() : undefined
+      contentStyle: full || custom ? titleContentStyle() : undefined
     } : undefined,
     systemMaterialEffect: {
       materialType: hdsMaterial.MaterialType.IMMERSIVE,

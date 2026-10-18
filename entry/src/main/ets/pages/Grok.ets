@@ -1,3 +1,8 @@
+import { pageTextColor } from '../utils/ThemeColors';
+import { appPageBackground } from '../components/PageBackgroundLayer';
+import { pageCanvasColor, pageReadingSurfaceColor } from '../utils/ThemeColors';
+import { STORAGE_KEY_PAGE_TRANSITION_MODE, DEFAULT_PAGE_TRANSITION_MODE } from '../services/PageTransitionSettingsStore';
+import { pageSystemTransition, PageTransitionMotion } from '../utils/PageTransition';
 // Grok chat opened from a post detail's native title-bar menu. The original
 // post is sent as explicit xAI context for every reply, not simulated locally.
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
@@ -38,6 +43,9 @@ export function GrokBuilder(): void {
 
 @Component
 export struct GrokPage {
+  @StorageProp('harmonyx.page_background') private pageBackgroundValue: string = '';
+  @State private pageMotion: PageTransitionMotion = new PageTransitionMotion();
+  @StorageProp(STORAGE_KEY_PAGE_TRANSITION_MODE) private pageTransitionMode: string = DEFAULT_PAGE_TRANSITION_MODE;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @Consume('pageStack') pageStack: NavPathStack;
   @StorageProp('harmonyx.status_bar_height') statusBarHeight: number =
@@ -218,7 +226,7 @@ export struct GrokPage {
   private Suggestion(label: Resource): void {
     Text(label).fontFamily(this.appFontFamily)
       .fontSize($r('sys.float.Body_M'))
-      .fontColor($r('app.color.text_primary'))
+      .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, fieldSurfaceColor(this.themeDisplayMode, this.themeDarkSurface)))
       .padding({ left: 12, right: 12, top: 9, bottom: 9 })
       .borderRadius(18)
       .backgroundColor(fieldSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
@@ -235,14 +243,15 @@ export struct GrokPage {
       Text(message.text).fontFamily(this.appFontFamily)
         .width('100%')
         .fontSize($r('sys.float.Body_L'))
-        .fontColor(message.role === 'user' ? $r('app.color.text_on_accent') : $r('app.color.text_primary'))
+        .fontColor(message.role === 'user' ? $r('app.color.text_on_accent') : pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, message.role === 'user' ? this.accentColor :
+      pageReadingSurfaceColor(cardSurfaceColor(this.themeDisplayMode, this.themeDarkSurface), this.pageBackgroundValue)))
         .lineHeight(22)
     }
     .width('88%')
     .padding(14)
     .borderRadius(18)
     .backgroundColor(message.role === 'user' ? this.accentColor :
-      cardSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
+      pageReadingSurfaceColor(cardSurfaceColor(this.themeDisplayMode, this.themeDarkSurface), this.pageBackgroundValue))
     .alignSelf(message.role === 'user' ? ItemAlign.End : ItemAlign.Start)
   }
 
@@ -258,7 +267,7 @@ export struct GrokPage {
         LoadingProgress().color(this.accentColor).width(18).height(18)
         Text($r('app.string.grok_processing')).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Body_M'))
-          .fontColor($r('app.color.text_secondary'))
+          .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
       }
       .padding({ left: 10, top: 2, bottom: 2 })
     }
@@ -280,13 +289,13 @@ export struct GrokPage {
             Text($r('app.string.grok_context_title')).fontFamily(this.appFontFamily)
               .fontSize($r('sys.float.Subtitle_L'))
               .fontWeight(FontWeight.Bold)
-              .fontColor($r('app.color.text_primary'))
+              .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, pageReadingSurfaceColor(cardSurfaceColor(this.themeDisplayMode, this.themeDarkSurface), this.pageBackgroundValue)))
           }
           .width('100%')
           Text($r('app.string.grok_context_hint')).fontFamily(this.appFontFamily)
             .width('100%')
             .fontSize($r('sys.float.Body_L'))
-            .fontColor($r('app.color.text_secondary'))
+            .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, pageReadingSurfaceColor(cardSurfaceColor(this.themeDisplayMode, this.themeDarkSurface), this.pageBackgroundValue)))
             .lineHeight(22)
           Flex({ wrap: FlexWrap.Wrap, space: { main: LengthMetrics.vp(8), cross: LengthMetrics.vp(8) } }) {
             this.Suggestion($r('app.string.grok_suggestion_summary'))
@@ -298,7 +307,7 @@ export struct GrokPage {
         .width('100%')
         .padding(16)
         .borderRadius(20)
-        .backgroundColor(cardSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
+        .backgroundColor(pageReadingSurfaceColor(cardSurfaceColor(this.themeDisplayMode, this.themeDarkSurface), this.pageBackgroundValue))
 
         this.Conversation()
       }
@@ -326,7 +335,7 @@ export struct GrokPage {
         .layoutWeight(1)
         .height(52)
         .fontSize($r('sys.float.Body_L'))
-        .fontColor($r('app.color.text_primary'))
+        .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, fieldSurfaceColor(this.themeDisplayMode, this.themeDarkSurface)))
         .placeholderColor($r('app.color.text_secondary'))
         .backgroundColor(fieldSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
         .borderRadius(20)
@@ -361,7 +370,7 @@ export struct GrokPage {
     }
     .width('100%')
     .padding({ left: 12, right: 12, top: 8, bottom: this.navigationIndicatorHeight + 8 })
-    .backgroundColor(pageSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
+    .backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue))
     .border({ width: { top: 1 }, color: $r('app.color.divider') })
   }
 
@@ -428,7 +437,7 @@ export struct GrokPage {
                 event.request.deny();
               });
           })
-          .backgroundColor(pageSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
+          .backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue))
       } else {
         Column({ space: 12 }) {
           LoadingProgress().color(this.accentColor).width(18).height(18)
@@ -446,11 +455,13 @@ export struct GrokPage {
       top: this.desktopLayoutEnabled && ResponsiveLayout.isLarge(this.windowBreakpoint) ?
         0 : this.statusBarHeight + 56
     })
-    .backgroundColor(pageSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
+    .backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue))
   }
 
   build(): void {
     HdsNavDestination() {
+      Stack({ alignContent: Alignment.TopStart }) {
+        appPageBackground()
       if (this.mode === GROK_MODE_WEB) {
         this.GrokWebContent()
       } else {
@@ -461,8 +472,14 @@ export struct GrokPage {
         .width('100%')
         .height('100%')
       }
+    
+      }.width('100%').height('100%')
     }
+    .scale({ x: this.pageMotion.scale, y: this.pageMotion.scale })
+    .opacity(this.pageMotion.opacity)
+    .systemTransition(pageSystemTransition(this.pageTransitionMode))
     .onReady((context: NavDestinationContext): void => {
+      this.pageMotion.attach(context);
       const param: GrokRouteParam = context.pathInfo?.param as GrokRouteParam;
       if (param !== undefined && param !== null) {
         this.applyRouteParam(param);
@@ -482,6 +499,6 @@ export struct GrokPage {
       style: destinationTitleBarStyle(ScrollEffectType.GRADIENT_BLUR, this.themeDisplayMode,
         this.themeDarkSurface, this.titleBarStyleMode)
     })
-    .backgroundColor(pageSurfaceColor(this.themeDisplayMode, this.themeDarkSurface));
+    .backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue));
   }
 }

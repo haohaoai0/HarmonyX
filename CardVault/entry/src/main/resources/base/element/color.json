@@ -1,0 +1,100 @@
+{
+  "color": [
+    {
+      "name": "start_window_background",
+      "value": "#F4F6FA"
+    },
+    {
+      "name": "app_bg",
+      "value": "#F4F6FA"
+    },
+    {
+      "name": "surface",
+      "value": "#FFFFFF"
+    },
+    {
+      "name": "surface_alt",
+      "value": "#F7F8FB"
+    },
+    {
+      "name": "surface_strong",
+      "value": "#EEF1F7"
+    },
+    {
+      "name": "text_primary",
+      "value": "#16191F"
+    },
+    {
+      "name": "text_secondary",
+      "value": "#697181"
+    },
+    {
+      "name": "text_tertiary",
+      "value": "#939BAA"
+    },
+    {
+      "name": "line",
+      "value": "#E6E9F0"
+    },
+    {
+      "name": "accent",
+      "value": "#315CF4"
+    },
+    {
+      "name": "accent_soft",
+      "value": "#EAF0FF"
+    },
+    {
+      "name": "accent_text",
+      "value": "#2448C8"
+    },
+    {
+      "name": "positive",
+      "value": "#12895A"
+    },
+    {
+      "name": "positive_soft",
+      "value": "#E5F7EF"
+    },
+    {
+      "name": "warning",
+      "value": "#B96D00"
+    },
+    {
+      "name": "warning_soft",
+      "value": "#FFF3DB"
+    },
+    {
+      "name": "danger",
+      "value": "#C33D48"
+    },
+    {
+      "name": "danger_soft",
+      "value": "#FDECEE"
+    },
+    {
+      "name": "neutral_soft",
+      "value": "#EEF0F4"
+    },
+    {
+      "name": "hero_start",
+      "value": "#172B6B"
+    },
+    {
+      "name": "hero_end",
+      "value": "#315CF4"
+    },
+    {
+      "name": "hero_text",
+      "value": "#FFFFFF"
+    },
+    {
+      "name": "hero_muted",
+      "value": "#D8E2FF"
+    },
+    {
+      "name": "scrim",
+      "value": "#66000000"
+    }
+  ]
+}

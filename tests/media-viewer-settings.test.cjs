@@ -66,3 +66,21 @@ test('unknown saved layout values fall back and failed writes keep the published
   assert.equal(f.storage.get(f.api.STORAGE_KEY_VIDEO_FEED_LAYOUT), f.api.VIDEO_FEED_LAYOUT_DOUYIN);
   assert.equal(new f.api.MediaSettingsStore().loadVideoFeedLayout({}), f.api.VIDEO_FEED_LAYOUT_DOUYIN);
 });
+
+
+test('caption and auto-advance choices persist and failed writes keep the active preference', () => {
+  for (const [name, key, fallback] of [
+    ['VideoCaptionsEnabled', 'STORAGE_KEY_VIDEO_CAPTIONS_ENABLED', false],
+    ['VideoAutoAdvance', 'STORAGE_KEY_VIDEO_AUTO_ADVANCE', true]
+  ]) {
+    const f = fixture(), store = new f.api.MediaSettingsStore();
+    assert.equal(store['load' + name]({}), fallback);
+    assert.equal(store['save' + name]({}, !fallback), true);
+    assert.equal(new f.api.MediaSettingsStore()['load' + name]({}), !fallback);
+    assert.equal(f.storage.get(f.api[key]), !fallback);
+    f.fail();
+    assert.equal(store['save' + name]({}, fallback), false);
+    assert.equal(f.storage.get(f.api[key]), !fallback);
+    assert.equal(new f.api.MediaSettingsStore()['load' + name]({}), !fallback);
+  }
+});

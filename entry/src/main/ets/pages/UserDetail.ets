@@ -1,7 +1,12 @@
+import { pageTextColor } from '../utils/ThemeColors';
+import { appPageBackground } from '../components/PageBackgroundLayer';
+import { pageCanvasColor, pageReadingSurfaceColor } from '../utils/ThemeColors';
+import { STORAGE_KEY_PAGE_TRANSITION_MODE, DEFAULT_PAGE_TRANSITION_MODE } from '../services/PageTransitionSettingsStore';
+import { pageSystemTransition, PageTransitionMotion } from '../utils/PageTransition';
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
 import { STORAGE_KEY_SYSTEM_EMOJI_ENABLED } from '../services/AppearanceStore';
 import { userAvatarRadius, verificationBadgeColor } from '../utils/UserIdentity';
-import { DEFAULT_SHEET_MATERIAL_LEVEL, STORAGE_KEY_SHEET_MATERIAL_ENABLED, STORAGE_KEY_SHEET_MATERIAL_LEVEL } from '../services/SheetMaterialSettingsStore';
+import { DEFAULT_SHEET_MATERIAL_ENABLED, DEFAULT_SHEET_MATERIAL_LEVEL, STORAGE_KEY_SHEET_MATERIAL_ENABLED, STORAGE_KEY_SHEET_MATERIAL_LEVEL } from '../services/SheetMaterialSettingsStore';
 import { sheetMaterialOptions } from '../utils/SheetMaterial';
 // Profile destination with one continuous banner behind the toolbar and hero.
 import common from '@ohos.app.ability.common';
@@ -21,6 +26,9 @@ import { followStateStore, STORAGE_KEY_FOLLOW_REVISION } from '../services/Follo
 import { FloatingComposeButton } from '../components/FloatingComposeButton';
 import { HdsButton } from '../components/HdsButton';
 import { ProfileActionButtons } from '../components/ProfileActionButtons';
+import { AnchoredCover } from '../components/AnchoredCover';
+import type { EditProfileRouteParam } from './EditProfile';
+import { STORAGE_KEY_EDITED_PROFILE, lastEditedProfile } from '../services/ProfileEditService';
 import type { Tweet, TweetAuthor, UserProfile, MediaAttachment, ListPage, ListRow } from '../models/Tweet';
 import { formatCount } from '../models/Tweet';
 import { formatPostTime, STORAGE_KEY_POST_TIME_NOW } from '../utils/PostTime';
@@ -53,7 +61,6 @@ import { ProfileHeaderAnchor, ProfileHeaderMotion } from '../utils/ProfileHeader
 import { STORAGE_KEY_HOME_FLOATING_ACTION, HOME_FLOATING_COMPOSE, HOME_FLOATING_HIDDEN,
   HOME_FLOATING_TOP } from '../services/InteractionSettingsStore';
 import { destinationTitleBarFullStyleEnabled } from '../utils/DestinationTitleBar';
-import { SHARED_ELEMENT_CURVE, SHARED_ELEMENT_DURATION } from '../utils/SharedElementMotion';
 import { SystemMaterialUtil } from '../utils/SystemMaterial';
 import { cardSurfaceColor, fieldSurfaceColor, pageSurfaceColor } from '../utils/ThemeColors';
 import { USER_LIST_FOLLOWERS, USER_LIST_FOLLOWING } from './UserList';
@@ -80,6 +87,7 @@ const PROFILE_COMPACT_ACTIONS_WIDTH: number = 144;
 export interface UserDetailRouteParam {
   author: TweetAuthor;
   posts: Tweet[];
+  profile?: UserProfile | null;
 }
 
 @Builder
@@ -89,12 +97,15 @@ export function UserDetailBuilder(): void {
 
 @Component
 export struct UserDetail {
+  @StorageProp('harmonyx.page_background') private pageBackgroundValue: string = '';
+  @State private pageMotion: PageTransitionMotion = new PageTransitionMotion();
+  @StorageProp(STORAGE_KEY_PAGE_TRANSITION_MODE) private pageTransitionMode: string = DEFAULT_PAGE_TRANSITION_MODE;
   @StorageProp('harmonyx.compact_window') private sheetCompactWindow: boolean = false;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @StorageProp(STORAGE_KEY_HOME_FLOATING_ACTION) private homeFloatingAction: string = HOME_FLOATING_COMPOSE;
   @StorageProp(STORAGE_KEY_SYSTEM_EMOJI_ENABLED) private systemEmojiEnabled: boolean = false;
   @StorageProp('harmonyx.breakpoint') private sheetWindowBreakpoint: string = 'sm';
-  @StorageProp(STORAGE_KEY_SHEET_MATERIAL_ENABLED) private sheetMaterialEnabled: boolean = false;
+  @StorageProp(STORAGE_KEY_SHEET_MATERIAL_ENABLED) private sheetMaterialEnabled: boolean = DEFAULT_SHEET_MATERIAL_ENABLED;
   @StorageProp(STORAGE_KEY_SHEET_MATERIAL_LEVEL) private sheetMaterialLevel: number = DEFAULT_SHEET_MATERIAL_LEVEL;
   @StorageProp(STORAGE_KEY_FOLLOW_REVISION) @Watch('syncFollowState') private followRevision: number = 0;
   @StorageProp(STORAGE_KEY_POST_TIME_NOW) private postTimeNow: number = Date.now();
@@ -136,10 +147,7 @@ export struct UserDetail {
   @State mediaLoading: boolean = false;
   @State repliesStatus: string = '';
   @State mediaStatus: string = '';
-  @State editing: boolean = false;
-  @State editName: string = '';
-  @State editBio: string = '';
-  @State savingProfile: boolean = false;
+  @StorageProp(STORAGE_KEY_EDITED_PROFILE) @Watch('onProfileEdited') private editedProfileRevision: number = 0;
   private postsCursor: string = '';
   private replyCursor: string = '';
   private mediaCursor: string = '';
@@ -178,12 +186,12 @@ export struct UserDetail {
   private alive: boolean = true;
   @State private suggestionGroups: FollowSuggestionGroup[] = [];
   @State private headerScrollOffset: number = 0;
+  @State private headerPullOffset: number = 0;
   @State private headerOriginX: number = 0;
   @State private headerOriginY: number = 0;
   @State private heroAvatarAnchor: ProfileHeaderAnchor = new ProfileHeaderAnchor();
   @State private heroNameAnchor: ProfileHeaderAnchor = new ProfileHeaderAnchor();
   @State private titleNameAnchor: ProfileHeaderAnchor = new ProfileHeaderAnchor();
-  @State private titleCountAnchor: ProfileHeaderAnchor = new ProfileHeaderAnchor();
   @State private heroActionsAnchor: ProfileHeaderAnchor = new ProfileHeaderAnchor();
   @State private titleActionsAnchor: ProfileHeaderAnchor = new ProfileHeaderAnchor();
   @State viewportHeight: number = 0;
@@ -210,6 +218,12 @@ export struct UserDetail {
     const param: UserDetailRouteParam = params[params.length - 1];
     this.author = param.author;
     this.posts = param.posts;
+    // Self controls and the known header do not depend on a network response.
+    this.isSelfProfile = param.author.id.length > 0 &&
+      (param.author.id === xPrivateClient.viewerId() || param.author.id === authStore.getUserId());
+    if (param.profile !== undefined && param.profile !== null && param.profile.id === param.author.id) {
+      this.profile = param.profile;
+    }
   }
 
   private async loadLiveProfile(): Promise<void> {
@@ -339,15 +353,6 @@ export struct UserDetail {
     return this.author === null || this.author.avatarUrl === undefined ? '' : this.author.avatarUrl;
   }
 
-  private profileTransitionId(suffix: string): string {
-    const author: TweetAuthor | null = this.author;
-    if (author === null) {
-      return '';
-    }
-    const identity: string = author.id.length > 0 ? author.id : author.username;
-    return 'profile-' + identity + '-' + suffix;
-  }
-
   private updateHeaderScroll(): void {
     const offset: number = this.scroller.currentOffset().yOffset;
     if (isFinite(offset) && this.headerScrollOffset !== offset) {
@@ -363,7 +368,7 @@ export struct UserDetail {
 
   private headerAnchorsReady(): boolean {
     return this.heroAvatarAnchor.width > 0 && this.heroNameAnchor.width > 0 &&
-      this.titleNameAnchor.width > 0 && this.titleCountAnchor.width > 0;
+      this.titleNameAnchor.width > 0;
   }
 
   private headerProgress(): number {
@@ -376,20 +381,6 @@ export struct UserDetail {
       (this.headerOriginY + this.statusBarHeight + 60));
     const end: number = Math.max(start + 1, this.heroNameAnchor.y - this.titleNameAnchor.y);
     return ProfileHeaderMotion.progress(this.headerScrollOffset, start, end);
-  }
-
-  private headerNameX(): number {
-    return ProfileHeaderMotion.interpolate(this.heroNameAnchor.x, this.titleNameAnchor.x,
-      this.headerProgress()) - this.headerOriginX;
-  }
-
-  private headerNameY(): number {
-    return ProfileHeaderMotion.interpolate(this.heroNameAnchor.y - this.headerScrollOffset,
-      this.titleNameAnchor.y, this.headerProgress()) - this.headerOriginY;
-  }
-
-  private headerNameScale(): number {
-    return ProfileHeaderMotion.interpolate(1, 17 / 24, this.headerProgress());
   }
 
   private actionAnchorsReady(): boolean {
@@ -1096,42 +1087,19 @@ export struct UserDetail {
 
   private startEditing(): void {
     const current: UserProfile | null = this.profile;
-    this.editName = current === null ? this.authorName() : current.name;
-    this.editBio = current === null ? '' : current.description;
-    this.editing = true;
+    if (current === null || !this.isSelfProfile || !xPrivateClient.isSignedIn()) {
+      promptAction.showToast({ message: this.text($r('app.string.profile_follow_sign_in')), duration: 1800 });
+      return;
+    }
+    const param: EditProfileRouteParam = { profile: current };
+    this.pageStack.pushPath({ name: 'EditProfile', param: param });
   }
 
-  private async saveProfile(): Promise<void> {
-    const name: string = this.editName.trim();
-    if (name.length === 0) {
-      promptAction.showToast({
-        message: this.text($r('app.string.profile_edit_name_required')),
-        duration: 2000
-      });
-      return;
+  private onProfileEdited(): void {
+    const fresh: UserProfile | null = lastEditedProfile();
+    if (fresh !== null && this.resolvedUserId() === fresh.id && xPrivateClient.viewerId() === fresh.id) {
+      this.profile = fresh;
     }
-    if (!xPrivateClient.isSignedIn()) {
-      promptAction.showToast({
-        message: this.text($r('app.string.profile_follow_sign_in')),
-        duration: 2000
-      });
-      return;
-    }
-    this.savingProfile = true;
-    const form: Record<string, string> = { 'name': name, 'description': this.editBio };
-    const result: XPrivateResult =
-      await xPrivateClient.rest('POST', '/1.1/account/update_profile.json', form);
-    this.savingProfile = false;
-    if (!result.ok) {
-      promptAction.showToast({
-        message: this.text($r('app.string.profile_edit_failed')) + ' · HTTP ' + result.status,
-        duration: 2500
-      });
-      return;
-    }
-    this.editing = false;
-    promptAction.showToast({ message: this.text($r('app.string.profile_edit_saved')), duration: 1500 });
-    await this.loadLiveProfile();
   }
 
   @Builder
@@ -1140,8 +1108,6 @@ export struct UserDetail {
       fallbackText: this.authorName().substring(0, 1).toUpperCase(), fallbackColor: this.accentColor,
       onProfile: (): void => this.openProfileImage(false, source) })
       .id(this.profileMediaPrefix + source)
-      .border({ width: 3, color: pageSurfaceColor(this.themeDisplayMode, this.themeDarkSurface) })
-      .borderRadius(userAvatarRadius(84, 42, this.profile?.verifiedType ?? this.author?.verifiedType ?? '', this.profile?.avatarShape ?? this.author?.avatarShape ?? ''))
   }
 
   @Builder
@@ -1150,7 +1116,7 @@ export struct UserDetail {
       HdsButton({ barWidth: 40, barHeight: 52, lightColor: this.accentColor,
         useImmersiveMaterial: true, materialLevel: 2, forceHdsStyle: true,
         enableShadow: true, enablePressLight: true, onButtonClick: action }) {
-        SymbolGlyph(symbol).fontSize(23).fontColor([$r('app.color.text_primary')])
+        SymbolGlyph(symbol).fontSize(23).fontColor([pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)])
       }
     }
     .width(40).height(40).accessibilityText(this.text(label))
@@ -1160,7 +1126,7 @@ export struct UserDetail {
   private NameRow(size: number): void {
     Row({ space: 5 }) {
       Text(this.authorName()).fontFamily(this.appFontFamily).fontSize(size).fontWeight(FontWeight.Bold)
-        .fontColor($r('app.color.text_primary')).maxLines(1).textOverflow({ overflow: TextOverflow.Ellipsis })
+        .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)).maxLines(1).textOverflow({ overflow: TextOverflow.Ellipsis })
         .flexShrink(1)
       if (this.isVerified()) {
         SymbolGlyph($r('sys.symbol.checkmark_circle_fill')).fontSize(18).fontColor([verificationBadgeColor(this.profile?.verifiedType ?? this.author?.verifiedType ?? '', this.accentColor)])
@@ -1171,6 +1137,7 @@ export struct UserDetail {
 
   @Builder
   private ProfileBanner(): void {
+    AnchoredCover({ coverHeight: this.statusBarHeight + 120, pullOffset: this.headerPullOffset }) {
     Stack() {
       if (this.bannerUrl().length > 0) {
         ProxyMediaImage({ url: this.bannerUrl(), displayHeight: this.statusBarHeight + 120,
@@ -1181,9 +1148,10 @@ export struct UserDetail {
       Column().width('100%').height('100%').backgroundColor($r('app.color.profile_nav_scrim'))
         .opacity(this.headerProgress())
     }
-    .width('100%').height(this.statusBarHeight + 120).clip(true)
+    .width('100%').height('100%').clip(true)
     .id(this.profileMediaPrefix + 'banner')
     .hitTestBehavior(HitTestMode.None)
+    }
   }
 
   @Builder
@@ -1200,16 +1168,11 @@ export struct UserDetail {
               }
             })
           Text(this.exactCount(this.profilePostCount()) + ' ' + this.text($r('app.string.profile_detail_posts'))).fontFamily(this.appFontFamily)
-            .fontSize(13).fontColor($r('app.color.text_secondary'))
+            .fontSize(13).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
             .maxLines(1).textOverflow({ overflow: TextOverflow.Ellipsis }).width('100%')
-            .onAreaChange((_oldArea: Area, area: Area): void => {
-              const anchor: ProfileHeaderAnchor = this.headerAnchor(area, false);
-              if (!ProfileHeaderMotion.sameAnchor(this.titleCountAnchor, anchor)) {
-                this.titleCountAnchor = anchor;
-              }
-            })
         }
-        .alignItems(HorizontalAlign.Start).layoutWeight(1).opacity(0).accessibilityLevel('no-hide-descendants')
+        .alignItems(HorizontalAlign.Start).layoutWeight(1).opacity(this.headerProgress())
+        .accessibilityLevel(this.headerProgress() >= 0.5 ? 'auto' : 'no-hide-descendants')
         if (!this.isSelfProfile) {
           Stack({ alignContent: Alignment.End }) {
             Row().width(PROFILE_COMPACT_ACTIONS_WIDTH).height(36).hitTestBehavior(HitTestMode.None)
@@ -1248,7 +1211,7 @@ export struct UserDetail {
             useImmersiveMaterial: true, materialLevel: 2, forceHdsStyle: true,
             enableShadow: true, enablePressLight: true,
             onButtonClick: (): void => { this.profileMenuOpen = true; } }) {
-            SymbolGlyph($r('sys.symbol.ellipsis_circle')).fontSize(25).fontColor([$r('app.color.text_primary')])
+            SymbolGlyph($r('sys.symbol.ellipsis_circle')).fontSize(25).fontColor([pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)])
           }
         }
         .width(40).height(40).accessibilityText(this.text($r('app.string.profile_more')))
@@ -1281,47 +1244,10 @@ export struct UserDetail {
   }
 
   @Builder
-  private ProfileHeaderOverlay(): void {
-    // Keep both text layouts mounted at the same moving origin. Their crossfade
-    // preserves the expanded name width and the title's own ellipsis/badge size.
-    // The overlay can cross the List's clip boundary without changing its slots.
+  private ProfileActionsOverlay(): void {
+    // Only the action buttons travel into the toolbar. Profile identity stays
+    // in the List so scrolling and Refresh move it with the rest of the hero.
     Stack({ alignContent: Alignment.TopStart }) {
-      Stack() { this.HeroAvatar('overlay') }
-        .width(84).height(84)
-        .renderGroup(true)
-        .scale({ x: ProfileHeaderMotion.interpolate(1, 0.4, this.headerProgress()),
-          y: ProfileHeaderMotion.interpolate(1, 0.4, this.headerProgress()), centerX: 0, centerY: 0 })
-        .translate({
-          x: ProfileHeaderMotion.interpolate(this.heroAvatarAnchor.x, this.titleNameAnchor.x,
-            this.headerProgress()) - this.headerOriginX,
-          y: ProfileHeaderMotion.interpolate(this.heroAvatarAnchor.y - this.headerScrollOffset,
-            this.titleNameAnchor.y, this.headerProgress()) - this.headerOriginY
-        })
-        .opacity(1 - ProfileHeaderMotion.progress(this.headerProgress(), 0, 0.7))
-        .hitTestBehavior(this.headerProgress() < 0.1 ? HitTestMode.Default : HitTestMode.None)
-        .accessibilityLevel(this.headerProgress() < 0.1 ? 'auto' : 'no-hide-descendants')
-      Row() { this.NameRow(24) }
-        .width(this.heroNameAnchor.width).renderGroup(true)
-        .scale({ x: this.headerNameScale(), y: this.headerNameScale(), centerX: 0, centerY: 0 })
-        .translate({ x: this.headerNameX(), y: this.headerNameY() })
-        .opacity(1 - this.headerProgress()).hitTestBehavior(HitTestMode.None)
-        .accessibilityLevel(this.headerProgress() < 0.5 ? 'auto' : 'no-hide-descendants')
-      Row() { this.NameRow(17) }
-        .width(this.titleNameAnchor.width).renderGroup(true)
-        .scale({ x: this.headerNameScale() * 24 / 17, y: this.headerNameScale() * 24 / 17,
-          centerX: 0, centerY: 0 })
-        .translate({ x: this.headerNameX(), y: this.headerNameY() })
-        .opacity(this.headerProgress()).hitTestBehavior(HitTestMode.None)
-        .accessibilityLevel(this.headerProgress() >= 0.5 ? 'auto' : 'no-hide-descendants')
-      Text(this.exactCount(this.profilePostCount()) + ' ' + this.text($r('app.string.profile_detail_posts'))).fontFamily(this.appFontFamily)
-        .fontSize(13).fontColor($r('app.color.text_secondary'))
-        .maxLines(1).textOverflow({ overflow: TextOverflow.Ellipsis })
-        .width(this.titleCountAnchor.width).renderGroup(true)
-        .translate({ x: this.titleCountAnchor.x - this.headerOriginX,
-          y: this.titleCountAnchor.y - this.headerOriginY + 10 * (1 - this.headerProgress()) })
-        .opacity(ProfileHeaderMotion.progress(this.headerProgress(), 0.35, 1))
-        .hitTestBehavior(HitTestMode.None)
-        .accessibilityLevel(this.headerProgress() >= 0.5 ? 'auto' : 'no-hide-descendants')
       if (this.actionAnchorsReady() && this.headerActionsProgress() > 0) {
         ProfileActionButtons({ expandedWidth: this.heroActionsAnchor.width,
           progress: this.headerActionsProgress(), following: this.following, followLabel: this.followLabel(),
@@ -1331,7 +1257,7 @@ export struct UserDetail {
           .translate({ x: this.headerActionsX(), y: this.headerActionsY() })
       }
     }
-    .width('100%').height('100%').opacity(this.headerAnchorsReady() ? 1 : 0)
+    .width('100%').height('100%')
     .hitTestBehavior(HitTestMode.Transparent)
   }
 
@@ -1344,9 +1270,7 @@ export struct UserDetail {
       Column({ space: 0 }) {
         Row({ space: 8 }) {
           Stack() { this.HeroAvatar() }
-            .width(84).height(84).opacity(this.headerAnchorsReady() ? 0 : 1)
-            .hitTestBehavior(this.headerAnchorsReady() ? HitTestMode.None : HitTestMode.Default)
-            .accessibilityLevel(this.headerAnchorsReady() ? 'no-hide-descendants' : 'auto')
+            .width(84).height(84)
             .onAreaChange((_oldArea: Area, area: Area): void => {
               const anchor: ProfileHeaderAnchor = this.headerAnchor(area, true);
               if (!ProfileHeaderMotion.sameAnchor(this.heroAvatarAnchor, anchor)) {
@@ -1358,7 +1282,7 @@ export struct UserDetail {
             Button({ type: ButtonType.Circle }) {
               SymbolGlyph(this.notificationMode >= 0 && this.notificationMode !== 3 ?
                 $r('sys.symbol.bell_fill') : $r('sys.symbol.bell'))
-                .fontSize(23).fontColor([$r('app.color.text_primary')])
+                .fontSize(23).fontColor([pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)])
             }
             .width(40).height(40).backgroundColor(Color.Transparent)
             .border({ width: 1, color: $r('app.color.divider') }).borderRadius(20)
@@ -1369,7 +1293,7 @@ export struct UserDetail {
             }, this.sheetMaterialEnabled, this.sheetMaterialLevel, this.sheetWindowBreakpoint, this.sheetCompactWindow))
           }
           Button({ type: ButtonType.Circle }) {
-            SymbolGlyph($r('sys.symbol.share')).fontSize(22).fontColor([$r('app.color.text_primary')])
+            SymbolGlyph($r('sys.symbol.share')).fontSize(22).fontColor([pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)])
           }
           .width(40).height(40).backgroundColor(Color.Transparent)
           .border({ width: 1, color: $r('app.color.divider') }).borderRadius(20)
@@ -1381,15 +1305,14 @@ export struct UserDetail {
         }
         .width('100%').margin({ top: -14, bottom: 16 })
         Row() { this.NameRow(24) }
-          .width('100%').opacity(this.headerAnchorsReady() ? 0 : 1)
-          .accessibilityLevel(this.headerAnchorsReady() ? 'no-hide-descendants' : 'auto')
+          .width('100%')
           .onAreaChange((_oldArea: Area, area: Area): void => {
             const anchor: ProfileHeaderAnchor = this.headerAnchor(area, true);
             if (!ProfileHeaderMotion.sameAnchor(this.heroNameAnchor, anchor)) {
               this.heroNameAnchor = anchor;
             }
           })
-        Text(this.authorHandle()).fontFamily(this.appFontFamily).fontSize(15).fontColor($r('app.color.text_secondary'))
+        Text(this.authorHandle()).fontFamily(this.appFontFamily).fontSize(15).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
           .width('100%').margin({ top: 3, bottom: 18 })
         if (this.profileDescription().length > 0) {
           Text() {
@@ -1407,7 +1330,7 @@ export struct UserDetail {
           .fontSize(15).width('100%').margin({ bottom: 16 })
         }
         if (this.profile !== null && (this.profile.location ?? '').length > 0) {
-          Text(this.profile.location).fontFamily(this.appFontFamily).fontSize(14).fontColor($r('app.color.text_secondary'))
+          Text(this.profile.location).fontFamily(this.appFontFamily).fontSize(14).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
             .width('100%').margin({ bottom: 8 })
         }
         if (this.profile !== null && (this.profile.website ?? '').length > 0) {
@@ -1418,26 +1341,26 @@ export struct UserDetail {
             })
         }
         Row({ space: 6 }) {
-          SymbolGlyph($r('sys.symbol.calendar')).fontSize(16).fontColor([$r('app.color.text_secondary')])
+          SymbolGlyph($r('sys.symbol.calendar')).fontSize(16).fontColor([pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)])
           Text(this.text($r('app.string.profile_joined')) + ' ' + this.joinedDate()).fontFamily(this.appFontFamily)
-            .fontSize(14).fontColor($r('app.color.text_secondary')).maxLines(2).layoutWeight(1)
-          SymbolGlyph($r('sys.symbol.chevron_right')).fontSize(13).fontColor([$r('app.color.text_secondary')])
+            .fontSize(14).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).maxLines(2).layoutWeight(1)
+          SymbolGlyph($r('sys.symbol.chevron_right')).fontSize(13).fontColor([pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)])
         }
         .width('100%').margin({ bottom: 18 }).onClick((): void => { this.openAbout(); })
         Row({ space: 18 }) {
           Row({ space: 4 }) {
-            Text(this.followingCount()).fontFamily(this.appFontFamily).fontSize(15).fontWeight(FontWeight.Bold).fontColor($r('app.color.text_primary'))
-            Text($r('app.string.profile_following')).fontFamily(this.appFontFamily).fontSize(14).fontColor($r('app.color.text_secondary'))
+            Text(this.followingCount()).fontFamily(this.appFontFamily).fontSize(15).fontWeight(FontWeight.Bold).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
+            Text($r('app.string.profile_following')).fontFamily(this.appFontFamily).fontSize(14).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
           }.onClick((): void => this.openUserList(USER_LIST_FOLLOWING))
           Row({ space: 4 }) {
-            Text(this.followersCount()).fontFamily(this.appFontFamily).fontSize(15).fontWeight(FontWeight.Bold).fontColor($r('app.color.text_primary'))
-            Text($r('app.string.profile_followers')).fontFamily(this.appFontFamily).fontSize(14).fontColor($r('app.color.text_secondary'))
+            Text(this.followersCount()).fontFamily(this.appFontFamily).fontSize(15).fontWeight(FontWeight.Bold).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
+            Text($r('app.string.profile_followers')).fontFamily(this.appFontFamily).fontSize(14).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
           }.onClick((): void => this.openUserList(USER_LIST_FOLLOWERS))
         }
         .width('100%').margin({ bottom: 16 })
         if (this.isSelfProfile) {
           Button($r('app.string.profile_detail_edit')).width('100%').height(42).fontSize(16)
-            .fontWeight(FontWeight.Bold).fontColor($r('app.color.text_primary')).backgroundColor(Color.Transparent)
+            .fontWeight(FontWeight.Bold).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)).backgroundColor(Color.Transparent)
             .border({ width: 1, color: $r('app.color.divider') }).borderRadius(22)
             .onClick((): void => this.startEditing())
         } else {
@@ -1457,7 +1380,7 @@ export struct UserDetail {
         }
       }
       .width('100%').padding({ left: 14, right: 14, bottom: 10 }).alignItems(HorizontalAlign.Start)
-      .backgroundColor(pageSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
+      .backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue))
     }
     .width('100%')
   }
@@ -1473,7 +1396,7 @@ export struct UserDetail {
 
   private filterCheck(selected: boolean): SymbolGlyphModifier {
     return new SymbolGlyphModifier($r('sys.symbol.checkmark'))
-      .fontColor([selected ? $r('app.color.text_primary') : Color.Transparent]);
+      .fontColor([selected ? pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent) : Color.Transparent]);
   }
 
   @Builder
@@ -1542,12 +1465,12 @@ export struct UserDetail {
     Stack({ alignContent: Alignment.TopStart }) {
       Row() {
         Text(this.tabLabel(tab)).fontFamily(this.appFontFamily).fontSize($r('app.float.icon_tabs_label_size')).fontWeight(FontWeight.Medium)
-          .fontColor($r('app.color.text_secondary')).maxLines(1).textOverflow({ overflow: TextOverflow.Ellipsis })
+          .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).maxLines(1).textOverflow({ overflow: TextOverflow.Ellipsis })
           .constraintSize({ maxWidth: Math.max(1, ProfileTabMotion.baseWidth(this.tabBarWidth) - 10) })
       }.width(ProfileTabMotion.baseWidth(this.tabBarWidth)).height(50).justifyContent(FlexAlign.Center)
         .opacity(1 - ProfileTabMotion.fraction(position, this.tabPosition))
       Stack() {
-        SymbolGlyph(this.tabSymbol(tab)).fontSize(22).fontColor([$r('app.color.text_primary')])
+        SymbolGlyph(this.tabSymbol(tab)).fontSize(22).fontColor([pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)])
       }
       .width(22).height(50)
       .translate({ x: (ProfileTabMotion.baseWidth(this.tabBarWidth) - 22) / 2 +
@@ -1556,13 +1479,13 @@ export struct UserDetail {
       .opacity(ProfileTabMotion.fraction(position, this.tabPosition))
       .hitTestBehavior(HitTestMode.None)
       Row({ space: 5 }) {
-        Text(this.tabLabel(tab)).fontFamily(this.appFontFamily).fontSize(16).fontWeight(FontWeight.Bold).fontColor($r('app.color.text_primary'))
+        Text(this.tabLabel(tab)).fontFamily(this.appFontFamily).fontSize(16).fontWeight(FontWeight.Bold).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
           .maxLines(1).textOverflow({ overflow: TextOverflow.Ellipsis })
           .constraintSize({ maxWidth: Math.max(1, ProfileTabMotion.expandedWidth(this.tabBarWidth) - 27 -
             (tab === 0 || tab === 2 ? 27 : 0)) })
           .onAreaChange((oldArea: Area, area: Area): void => this.measureTabText(position, area))
         if (tab === 0 || tab === 2) {
-          SymbolGlyph($r('sys.symbol.chevron_down')).fontSize(12).fontColor([$r('app.color.text_secondary')])
+          SymbolGlyph($r('sys.symbol.chevron_down')).fontSize(12).fontColor([pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)])
             .width(22)
         }
       }
@@ -1589,19 +1512,18 @@ export struct UserDetail {
         .height($r('app.float.icon_tabs_indicator_height')).borderRadius($r('app.float.icon_tabs_indicator_radius'))
         .backgroundColor($r('app.color.text_primary')).hitTestBehavior(HitTestMode.None)
         .translate({ x: ProfileTabMotion.indicatorLeft(this.tabPosition, this.tabBarWidth), y: 49 })
-      // A separate hit area keeps the filter tappable even when its label extends past the icon's fixed slot.
+      // The selected tab's whole slot opens its filter, including the icon, label, chevron and padding.
       if ((this.selectedTab === 0 || this.selectedTab === 2) && Math.abs(this.tabPosition - this.activityIndex) < 0.01) {
-        Button({ type: ButtonType.Circle }) { Row() }
-          .width(22).height(30).backgroundColor(Color.Transparent)
-          .translate({ x: ProfileTabMotion.center(this.activityIndex, this.tabPosition, this.tabBarWidth) +
-            16 + this.tabIconOffset(this.selectedTab, this.activityIndex) + this.tabTextWidths[this.activityIndex] + 5,
-            y: 10 })
+        Button({ type: ButtonType.Normal }) { Row() }
+          .width(ProfileTabMotion.expandedWidth(this.tabBarWidth)).height(PROFILE_TAB_BAR_HEIGHT)
+          .borderRadius(0).backgroundColor(Color.Transparent)
+          .translate({ x: ProfileTabMotion.slotStart(this.activityIndex, this.tabPosition, this.tabBarWidth) })
           .accessibilityText(this.text($r('app.string.profile_content_filter')))
           .bindMenu(this.ActivityFilterMenu)
       }
     }
     .width('100%').height(PROFILE_TAB_BAR_HEIGHT).clip(true)
-    .backgroundColor(pageSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
+    .backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue))
     .border({ width: { bottom: 0.5 }, color: $r('app.color.divider') })
     .onAreaChange((oldArea: Area, area: Area): void => {
       this.tabBarOriginX = Number(area.globalPosition.x);
@@ -1619,7 +1541,7 @@ export struct UserDetail {
           ProxyMediaImage({ url: ProfileAccountData.video(post)?.previewUrl ?? '', displayHeight: 100, contain: true,
             surfaceColor: fieldSurfaceColor(this.themeDisplayMode, this.themeDarkSurface) })
         } else {
-          SymbolGlyph($r('sys.symbol.eye_slash')).fontSize(24).fontColor([$r('app.color.text_secondary')])
+          SymbolGlyph($r('sys.symbol.eye_slash')).fontSize(24).fontColor([pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, fieldSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))])
         }
         if (ProfileAccountData.duration(ProfileAccountData.video(post)).length > 0) {
           Text(ProfileAccountData.duration(ProfileAccountData.video(post))).fontFamily(this.appFontFamily).fontSize(13).fontWeight(FontWeight.Bold)
@@ -1631,11 +1553,11 @@ export struct UserDetail {
       .backgroundColor(fieldSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
       Column({ space: 5 }) {
         Text() { EmojiSpans(this.getUIContext(), post.text.length > 0 ? post.text : this.text($r('app.string.profile_videos_tab')), 16, this.systemEmojiEnabled) }.fontFamily(this.appFontFamily)
-          .fontSize(16).fontWeight(FontWeight.Bold).fontColor($r('app.color.text_primary'))
+          .fontSize(16).fontWeight(FontWeight.Bold).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
           .maxLines(3).textOverflow({ overflow: TextOverflow.Ellipsis }).width('100%')
         Text(formatCount(post.metrics.viewCount) + ' ' + this.text($r('app.string.profile_video_views')) +
           ' · ' + formatPostTime(post.createdAt, this.postTimeNow)).fontFamily(this.appFontFamily)
-          .fontSize(14).fontColor($r('app.color.text_secondary')).width('100%')
+          .fontSize(14).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).width('100%')
       }
       .layoutWeight(1).alignItems(HorizontalAlign.Start)
     }
@@ -1656,9 +1578,9 @@ export struct UserDetail {
         Column() {
           if (post.pinned && tab === 0 && this.postsFilter === 'posts') {
             Row({ space: 8 }) {
-              SymbolGlyph($r('sys.symbol.pin')).fontSize(13).fontColor([$r('app.color.text_secondary')])
+              SymbolGlyph($r('sys.symbol.pin')).fontSize(13).fontColor([pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)])
               Text($r('app.string.profile_pinned')).fontFamily(this.appFontFamily).fontSize(13).fontWeight(FontWeight.Bold)
-                .fontColor($r('app.color.text_secondary'))
+                .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
             }.width('100%').padding({ left: 58, top: 10 })
           }
           if (tab === 2 && this.mediaFilter === 'video') {
@@ -1693,14 +1615,14 @@ export struct UserDetail {
         if (this.currentTabLoading(tab)) {
           LoadingProgress().width(26).height(26).color(this.accentColor)
         } else if (this.currentTabStatus(tab).length > 0) {
-          Text(this.currentTabStatus(tab)).fontFamily(this.appFontFamily).fontSize(14).fontColor($r('app.color.text_secondary')).textAlign(TextAlign.Center)
+          Text(this.currentTabStatus(tab)).fontFamily(this.appFontFamily).fontSize(14).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).textAlign(TextAlign.Center)
           Button($r('app.string.profile_retry')).backgroundColor(Color.Transparent).fontColor(this.accentColor)
             .onClick((): void => this.retryTab(tab))
         } else if (this.tabMoreCursor(tab).length > 0) {
           Button($r('app.string.timeline_load_more')).backgroundColor(Color.Transparent).fontColor(this.accentColor)
             .onClick((): void => { this.loadProfilePage(this.activitySource(tab), false); })
         } else if (this.tabPosts(tab).length === 0) {
-          Text($r('app.string.profile_activity_empty')).fontFamily(this.appFontFamily).fontSize(15).fontColor($r('app.color.text_secondary'))
+          Text($r('app.string.profile_activity_empty')).fontFamily(this.appFontFamily).fontSize(15).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
         }
       }
       .width('100%').padding({ top: 24, bottom: 100, left: 20, right: 20 }).constraintSize({ minHeight: 180 })
@@ -1730,7 +1652,7 @@ export struct UserDetail {
     .width('100%').height(Math.max(1, this.viewportHeight - PROFILE_TAB_BAR_HEIGHT))
     .index(this.activityIndex).loop(false).indicator(false).cachedCount(1)
     .duration(PROFILE_TAB_TRANSITION_DURATION).curve(Curve.EaseOut).clip(true)
-    .disableSwipe(this.refreshing || this.aboutOpen || this.editing)
+    .disableSwipe(this.refreshing || this.aboutOpen)
     .onChange((index: number): void => this.activityChanged(index))
     .onContentDidScroll((selectedIndex: number, index: number, position: number, length: number): void => {
       this.onActivityScroll(index, position);
@@ -1745,11 +1667,11 @@ export struct UserDetail {
   private NotificationOption(title: Resource, subtitle: Resource, index: number): void {
     Row({ space: 20 }) {
       Column({ space: 5 }) {
-        Text(title).fontFamily(this.appFontFamily).fontSize(17).fontWeight(FontWeight.Medium).fontColor($r('app.color.text_primary')).width('100%')
-        Text(subtitle).fontFamily(this.appFontFamily).fontSize(14).fontColor($r('app.color.text_secondary')).width('100%')
+        Text(title).fontFamily(this.appFontFamily).fontSize(17).fontWeight(FontWeight.Medium).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)).width('100%')
+        Text(subtitle).fontFamily(this.appFontFamily).fontSize(14).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).width('100%')
       }.layoutWeight(1)
       SymbolGlyph(this.notificationMode === index ? $r('sys.symbol.checkmark_circle_fill') : $r('sys.symbol.circle'))
-        .fontSize(24).fontColor([this.notificationMode === index ? this.accentColor : $r('app.color.text_secondary')])
+        .fontSize(24).fontColor([this.notificationMode === index ? this.accentColor : pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)])
     }
     .width('100%').padding({ top: 18, bottom: 18 }).enabled(!this.actionPending)
     .accessibilitySelected(this.notificationMode === index)
@@ -1810,11 +1732,11 @@ export struct UserDetail {
   @Builder
   private AboutRow(symbol: Resource, label: Resource, value: string): void {
     Row({ space: 20 }) {
-      SymbolGlyph(symbol).fontSize(25).fontColor([$r('app.color.text_primary')])
+      SymbolGlyph(symbol).fontSize(25).fontColor([pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)])
       Column({ space: 5 }) {
-        Text(label).fontFamily(this.appFontFamily).fontSize(17).fontColor($r('app.color.text_primary')).width('100%')
+        Text(label).fontFamily(this.appFontFamily).fontSize(17).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)).width('100%')
         Text(value.length > 0 ? value : this.text($r('app.string.profile_info_unavailable'))).fontFamily(this.appFontFamily)
-          .fontSize(15).fontColor($r('app.color.text_secondary')).width('100%')
+          .fontSize(15).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).width('100%')
       }.layoutWeight(1)
     }.width('100%').padding({ top: 16, bottom: 16 })
   }
@@ -1826,7 +1748,7 @@ export struct UserDetail {
         Row() {
           this.IconButton($r('sys.symbol.arrow_left'), $r('app.string.common_back'), (): void => { this.aboutOpen = false; })
           Text($r('app.string.profile_about_title')).fontFamily(this.appFontFamily).fontSize(20).fontWeight(FontWeight.Bold)
-            .fontColor($r('app.color.text_primary')).layoutWeight(1).textAlign(TextAlign.Center)
+            .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)).layoutWeight(1).textAlign(TextAlign.Center)
           Blank().width(40)
         }
         .width('100%').height(this.statusBarHeight + 60).padding({ left: 10, right: 10, top: this.statusBarHeight })
@@ -1834,18 +1756,18 @@ export struct UserDetail {
           Column() {
             this.HeroAvatar('about')
             this.NameRow(20)
-            Text(this.authorHandle()).fontFamily(this.appFontFamily).fontSize(15).fontColor($r('app.color.text_secondary')).margin({ bottom: 30 })
+            Text(this.authorHandle()).fontFamily(this.appFontFamily).fontSize(15).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).margin({ bottom: 30 })
             this.AboutRow($r('sys.symbol.calendar'), $r('app.string.profile_join_date'), this.joinedDate())
             this.AboutRow($r('sys.symbol.location_up'), $r('app.string.profile_account_country'), this.accountAbout?.country ?? '')
             if (this.accountAbout?.locationAccurate === false) {
-              Text($r('app.string.profile_location_approximate')).fontFamily(this.appFontFamily).fontSize(13).fontColor($r('app.color.text_secondary')).width('100%')
+              Text($r('app.string.profile_location_approximate')).fontFamily(this.appFontFamily).fontSize(13).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).width('100%')
             }
             this.AboutRow($r('sys.symbol.checkmark_circle'), $r('app.string.profile_verified'),
               this.text(this.isVerified() ? $r('app.string.profile_verified_yes') : $r('app.string.profile_verified_no')))
             this.AboutRow($r('sys.symbol.globe_badge_message'), $r('app.string.profile_connected_via'), this.accountAbout?.source ?? '')
             if (this.aboutLoading) { LoadingProgress().width(26).height(26).color(this.accentColor) }
             if (this.aboutFailed) {
-              Text($r('app.string.profile_about_failed')).fontFamily(this.appFontFamily).fontSize(14).fontColor($r('app.color.text_secondary'))
+              Text($r('app.string.profile_about_failed')).fontFamily(this.appFontFamily).fontSize(14).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
               Button($r('app.string.profile_retry')).onClick((): void => { this.openAbout(); })
             }
           }
@@ -1856,75 +1778,14 @@ export struct UserDetail {
           .fontColor($r('app.color.bg_page')).margin({ bottom: this.navigationIndicatorHeight + 16, top: 8 })
           .onClick((): void => this.openWeb('https://x.com/i/premium_sign_up', this.text($r('app.string.profile_get_verified'))))
       }
-      .width('100%').height('100%').backgroundColor(pageSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
+      .width('100%').height('100%').backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue))
     }
   }
-
-  // The private interface has no profile-update mutation, so the editor uses
-  // the legacy update_profile endpoint, which still accepts the cookie session.
-  @Builder
-  private EditProfileOverlay(): void {
-    if (this.editing) {
-      Column() {
-        Column({ space: 14 }) {
-          Text($r('app.string.profile_edit_title')).fontFamily(this.appFontFamily)
-            .fontSize($r('sys.float.Subtitle_L'))
-            .fontWeight(FontWeight.Bold)
-            .fontColor($r('app.color.text_primary'))
-            .width('100%')
-
-          TextInput({ text: this.editName, placeholder: this.text($r('app.string.profile_edit_name')) }).fontFamily(this.appFontFamily)
-            .keyboardAppearance(KeyboardAppearance.IMMERSIVE)
-            .fontSize($r('sys.float.Body_L'))
-            .onChange((value: string): void => {
-              this.editName = value;
-            })
-
-          TextArea({ text: this.editBio, placeholder: this.text($r('app.string.profile_edit_bio')) }).fontFamily(this.appFontFamily)
-            .keyboardAppearance(KeyboardAppearance.IMMERSIVE)
-            .fontSize($r('sys.float.Body_L'))
-            .height(130)
-            .onChange((value: string): void => {
-              this.editBio = value;
-            })
-
-          Row({ space: 12 }) {
-            Button($r('app.string.compose_cancel'), { stateEffect: true })
-              .layoutWeight(1)
-              .fontColor($r('app.color.text_primary'))
-              .backgroundColor(fieldSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
-              .onClick((): void => {
-                this.editing = false;
-              })
-            Button($r('app.string.profile_edit_save'), { stateEffect: true })
-              .layoutWeight(1)
-              .fontColor($r('app.color.text_on_accent'))
-              .backgroundColor(this.accentColor)
-              .enabled(!this.savingProfile)
-              .onClick((): void => {
-                this.saveProfile();
-              })
-          }
-          .width('100%')
-        }
-        .width('86%')
-        .padding(20)
-        .borderRadius(20)
-        .backgroundColor($r('app.color.profile_surface'))
-      }
-      .width('100%')
-      .height('100%')
-      .justifyContent(FlexAlign.Center)
-      .backgroundColor('#99000000')
-      .onClick((): void => {
-      })
-    }
-  }
-
-
 
   build(): void {
     HdsNavDestination() {
+      Stack({ alignContent: Alignment.TopStart }) {
+        appPageBackground()
       Stack({ alignContent: Alignment.Top }) {
         this.ProfileBanner()
         Column() {
@@ -1942,12 +1803,15 @@ export struct UserDetail {
             })
           }
           .width('100%').layoutWeight(1).onRefreshing((): void => this.refreshCurrentProfilePage())
+          .onOffsetChange((offset: number): void => { this.headerPullOffset = offset; })
           .onAreaChange((oldArea: Area, area: Area): void => {
             const height: number = Number(area.height);
             if (Math.abs(this.viewportHeight - height) > 0.5) { this.viewportHeight = height; }
           })
         }.width('100%').height('100%')
-        this.ProfileHeaderOverlay()
+        if (this.actionAnchorsReady() && this.headerActionsProgress() > 0) {
+          this.ProfileActionsOverlay()
+        }
         FloatingComposeButton({ bottomInset: this.navigationIndicatorHeight,
           mode: this.homeFloatingAction === HOME_FLOATING_TOP ? 'top' : 'reply',
           hidden: this.homeFloatingAction === HOME_FLOATING_HIDDEN,
@@ -1956,21 +1820,29 @@ export struct UserDetail {
           onTop: (): void => { this.scroller.scrollEdge(Edge.Top); this.headerScrollOffset = 0; },
           onReply: (): void => this.replyToAuthor() })
         this.AboutAccount()
-        this.EditProfileOverlay()
+
       }.width('100%').height('100%')
+        .ignoreLayoutSafeArea([LayoutSafeAreaType.SYSTEM], [LayoutSafeAreaEdge.TOP])
         .onAreaChange((_oldArea: Area, area: Area): void => {
           this.headerOriginX = Number(area.globalPosition.x);
           this.headerOriginY = Number(area.globalPosition.y);
         })
+    
+      }.width('100%').height('100%')
     }
+    .scale({ x: this.pageMotion.scale, y: this.pageMotion.scale })
+    .opacity(this.pageMotion.opacity)
+    .onReady((context: NavDestinationContext): void => { this.pageMotion.attach(context); })
+    .systemTransition(pageSystemTransition(this.pageTransitionMode))
     .hideTitleBar(true).hideBackButton(true)
+    .ignoreLayoutSafeArea([LayoutSafeAreaType.SYSTEM], [LayoutSafeAreaEdge.TOP])
     .onBackPressed((): boolean => {
       if (this.aboutOpen) { this.aboutOpen = false; }
-      else if (this.editing) { this.editing = false; }
+
       else { this.back(); }
       return true;
     })
-    .backgroundColor(pageSurfaceColor(this.themeDisplayMode, this.themeDarkSurface));
+    .backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue));
   }
 
 

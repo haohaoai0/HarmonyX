@@ -1,3 +1,4 @@
+import { TouchHdrLight } from './TouchHdrLight';
 import { bundleManager, common } from '@kit.AbilityKit';
 import hilog from '@ohos.hilog';
 import { hdsEffect } from '@kit.UIDesignKit';
@@ -16,7 +17,7 @@ import { XXAuthPromotionPlan, XXAuthPromotionPostPolicy } from '../services/XXAu
 import { XXAUTH_POPUP_CONFIG, XXAUTH_POPUP_REQUEST, XXAUTH_PROMOTION_POST,
   xxAuthPopupStore } from '../services/XXAuthPopupStore';
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
-import { DEFAULT_SHEET_MATERIAL_LEVEL, STORAGE_KEY_SHEET_MATERIAL_ENABLED,
+import { DEFAULT_SHEET_MATERIAL_ENABLED, DEFAULT_SHEET_MATERIAL_LEVEL, STORAGE_KEY_SHEET_MATERIAL_ENABLED,
   STORAGE_KEY_SHEET_MATERIAL_LEVEL } from '../services/SheetMaterialSettingsStore';
 import { sheetMaterialOptions } from '../utils/SheetMaterial';
 import { pageSurfaceColor, fieldSurfaceColor } from '../utils/ThemeColors';
@@ -35,7 +36,7 @@ export struct XXAuthPopupHost {
   @StorageProp('harmonyx.display_mode') private displayMode: string = '';
   @StorageProp('harmonyx.dark_surface') private darkSurface: string = '';
   @StorageProp('harmonyx.accent_color') private accentColor: string = '#007DFF';
-  @StorageProp(STORAGE_KEY_SHEET_MATERIAL_ENABLED) private sheetMaterialEnabled: boolean = true;
+  @StorageProp(STORAGE_KEY_SHEET_MATERIAL_ENABLED) private sheetMaterialEnabled: boolean = DEFAULT_SHEET_MATERIAL_ENABLED;
   @StorageProp(STORAGE_KEY_SHEET_MATERIAL_LEVEL) private sheetMaterialLevel: number = DEFAULT_SHEET_MATERIAL_LEVEL;
   @State private visible: boolean = false;
   @State private panel: XXAuthPanel = new XXAuthPanel();
@@ -88,6 +89,8 @@ export struct XXAuthPopupHost {
 
   aboutToDisappear(): void {
     this.alive = false;
+    this.snoozeLight = hdsEffect.PointLightSourceType.NONE;
+    this.experienceLight = hdsEffect.PointLightSourceType.NONE;
     this.manualRevision++;
     if (this.timer >= 0) { clearTimeout(this.timer); this.timer = -1; }
     if (this.poll >= 0) { clearInterval(this.poll); this.poll = -1; }
@@ -478,6 +481,11 @@ export struct XXAuthPopupHost {
   }
 
   @Builder
+  private HdrButtonLight(active: boolean): void {
+    TouchHdrLight({ active: active, cornerRadius: 23 })
+  }
+
+  @Builder
   private Content(): void {
     Column({ space: 20 }) {
       Row({ space: 12 }) {
@@ -567,6 +575,7 @@ export struct XXAuthPopupHost {
               illuminatedType: hdsEffect.PointLightIlluminatedType.BORDER,
               options: { color: Color.White, intensity: this.snoozeLight === hdsEffect.PointLightSourceType.NONE ? 0 : 10, height: 150 }
             }).buildEffect())
+            .overlay(this.HdrButtonLight(this.snoozeLight !== hdsEffect.PointLightSourceType.NONE))
             .onTouch((event: TouchEvent): void => { this.snoozeLight = event.type === TouchType.Down ?
               hdsEffect.PointLightSourceType.BRIGHT : hdsEffect.PointLightSourceType.NONE; })
             .clickEffect({ level: ClickEffectLevel.LIGHT, scale: 0.94 })
@@ -580,6 +589,7 @@ export struct XXAuthPopupHost {
               illuminatedType: hdsEffect.PointLightIlluminatedType.BORDER,
               options: { color: Color.White, intensity: this.experienceLight === hdsEffect.PointLightSourceType.NONE ? 0 : 10, height: 150 }
             }).buildEffect())
+            .overlay(this.HdrButtonLight(this.experienceLight !== hdsEffect.PointLightSourceType.NONE))
             .onTouch((event: TouchEvent): void => { this.experienceLight = event.type === TouchType.Down ?
               hdsEffect.PointLightSourceType.BRIGHT : hdsEffect.PointLightSourceType.NONE; })
             .fontColor($r('app.color.text_on_accent')).onClick((): void => { this.openLink(); })

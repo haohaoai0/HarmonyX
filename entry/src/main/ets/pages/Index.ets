@@ -1,11 +1,23 @@
+import { motionDuration, motionCurve } from '../utils/AppMotion';
+import { STORAGE_KEY_REDUCE_MOTION, STORAGE_KEY_MOTION_DURATION } from '../services/MotionSettingsStore';
+import { hapticTick } from '../utils/Haptics';
+import { DEFAULT_COMPONENT_HDR_RATIO, STORAGE_KEY_COMPONENT_HDR_RATIO } from '../services/ComponentHdrSettingsStore';
+import { ComponentHdrHighlight } from '../utils/ComponentHdrHighlight';
+import { pageTextColor } from '../utils/ThemeColors';
+import { PageBackgroundBuilder } from './PageBackground';
+import { appPageBackground } from '../components/PageBackgroundLayer';
+import { pageCanvasColor, pageReadingSurfaceColor } from '../utils/ThemeColors';
+import { STORAGE_KEY_PAGE_TRANSITION_MODE, DEFAULT_PAGE_TRANSITION_MODE } from '../services/PageTransitionSettingsStore';
+import { pageSystemTransition, PageTransitionMotion, officialPageTransition } from '../utils/PageTransition';
 import { STORAGE_KEY_SYSTEM_EMOJI_ENABLED } from '../services/AppearanceStore';
 import { XXAuthPopupHost } from '../components/XXAuthPopupHost';
 import { userAvatarRadius, userVerifiedType, userAvatarShape, verificationBadgeColor } from '../utils/UserIdentity';
-import { DEFAULT_SHEET_MATERIAL_LEVEL, STORAGE_KEY_SHEET_MATERIAL_ENABLED, STORAGE_KEY_SHEET_MATERIAL_LEVEL } from '../services/SheetMaterialSettingsStore';
+import { DEFAULT_SHEET_MATERIAL_ENABLED, DEFAULT_SHEET_MATERIAL_LEVEL, STORAGE_KEY_SHEET_MATERIAL_ENABLED, STORAGE_KEY_SHEET_MATERIAL_LEVEL } from '../services/SheetMaterialSettingsStore';
 import { sheetContentBackground, sheetMaterialOptions } from '../utils/SheetMaterial';
 import { HOME_FLOATING_COMPOSE, HOME_FLOATING_HIDDEN, STORAGE_KEY_HOME_FLOATING_ACTION, STORAGE_KEY_PHOTO_FULLSCREEN,
   STORAGE_KEY_REFRESH_ON_FOREGROUND, STORAGE_KEY_REFRESH_ON_HOME_TAB,
-  STORAGE_KEY_HOME_DOUBLE_TAP_LATEST, STORAGE_KEY_HOME_PULL_REFRESH_LATEST } from '../services/InteractionSettingsStore';
+  STORAGE_KEY_HOME_DOUBLE_TAP_LATEST, STORAGE_KEY_HOME_PULL_REFRESH_LATEST,
+  STORAGE_KEY_CONFIRM_APP_EXIT } from '../services/InteractionSettingsStore';
 // Harmony X main page. ArkUI renders the browsing surfaces and opens the
 // shared full-screen composer for new posts and replies.
 import router from '@ohos.router';
@@ -47,6 +59,7 @@ import { XXAuthPromotionInjector, XXAuthPromotionSlot } from '../utils/XXAuthPro
 import { XXAUTH_PROMOTION_POST, xxAuthPopupStore } from '../services/XXAuthPopupStore';
 import { HomeSpacePill } from '../components/HomeSpacePill';
 import { RootBottomTabItem } from '../components/RootBottomTabItem';
+import { RootLiquidTabIndicator } from '../components/RootLiquidTabIndicator';
 import { SpacePreviewSheet } from '../components/SpacePreviewSheet';
 import { SPACE_SURFACE_REVISION, SPACE_PREVIEW_REQUEST, spaceSurfaceStore } from '../services/SpaceSurfaceStore';
 import { STORAGE_KEY_HOME_SPACE_CAPSULE_ENABLED, STORAGE_KEY_HOME_SPACE_CAPSULE_HIDDEN_FOR_SESSION,
@@ -57,6 +70,7 @@ import { ProxyAvatar } from '../components/ProxyAvatar';
 import { AnimatedIconTabs, IconTabItem } from '../components/AnimatedIconTabs';
 import { RootRefreshIndicator } from '../components/RootRefreshIndicator';
 import { ProfileTabMotion } from '../utils/ProfileTabMotion';
+import { AccountOverview, AccountOverviewBanner } from '../components/AccountOverview';
 import { RootTitleBarLayout } from '../utils/RootTitleBarLayout';
 import { NotificationPresentation } from '../utils/NotificationPresentation';
 import { NotificationSummary } from '../components/NotificationSummary';
@@ -87,6 +101,15 @@ import type {
 import { MockData } from '../services/MockData';
 import { WebProxyCredential, proxyStore } from '../services/ProxyStore';
 import { CachedFeed, FeedCache } from '../services/FeedCache';
+import {
+  ArticleCardStore,
+  CARD_SOURCE_FOLLOWING,
+  CARD_SOURCE_FOR_YOU,
+  CARD_SOURCE_NOTIFICATIONS
+} from '../services/ArticleCardStore';
+import { ArticleCardPublisher } from '../services/ArticleCardPublisher';
+import { ArticleCardLaunch, articleCardPostPreview, STORAGE_KEY_ARTICLE_CARD_REQUEST } from '../utils/ArticleCardRoute';
+import { ArticleCardItem } from '../models/ArticleCardItem';
 import { ConnectivityMonitor } from '../services/ConnectivityMonitor';
 import { XApiClient } from '../services/XApiClient';
 import { XWebClient } from '../services/XWebClient';
@@ -138,6 +161,8 @@ import { HelpCenterBuilder } from './HelpCenter';
 import { AboutBuilder } from './About';
 import { LogoUniverseBuilder } from './LogoUniverse';
 import { UserDetailBuilder } from './UserDetail';
+import { EditProfileBuilder } from './EditProfile';
+import { STORAGE_KEY_EDITED_PROFILE, lastEditedProfile } from '../services/ProfileEditService';
 import { ProfileWebBuilder } from './ProfileWeb';
 import { AccountPrivacyBuilder } from './AccountPrivacy';
 import { NativeAccountBuilder } from './NativeAccount';
@@ -155,6 +180,7 @@ import { SPACE_PLAYBACK_REVISION, spacePlayback } from '../services/SpacePlaybac
 import { SpaceParticipant, SpaceRoom, SpaceRouteParam } from '../models/Space';
 import type { ListTimelineRouteParam } from './Lists';
 import { TimelineManagerBuilder } from './TimelineManager';
+import { CardSettingsBuilder } from './CardSettings';
 import { PauseTopicsSheet, FollowingOrderSheet } from '../components/HomeTimelineSheets';
 import { homeTimelineStore, STORAGE_KEY_HOME_TIMELINE_REVISION, TimelineTopic } from '../services/HomeTimelineStore';
 import { ListTimelineBuilder } from './ListTimeline';
@@ -241,7 +267,8 @@ import { CreatorStudioBuilder } from './CreatorStudio';
 import { DesktopLayout } from '../utils/DesktopLayout';
 import { layoutSettingsStore, STORAGE_KEY_DESKTOP_LAYOUT, STORAGE_KEY_DESKTOP_ASIDE,
   STORAGE_KEY_DESKTOP_RAIL_AUTO_HIDE, STORAGE_KEY_DESKTOP_RAIL_MATERIAL_LEVEL,
-  DEFAULT_DESKTOP_RAIL_MATERIAL_LEVEL } from '../services/LayoutSettingsStore';
+  DEFAULT_DESKTOP_RAIL_MATERIAL_LEVEL, STORAGE_KEY_SIDEBAR_MATERIAL_TYPE,
+  SIDEBAR_MATERIAL_GLASS, SIDEBAR_MATERIAL_BLUR, SIDEBAR_MATERIAL_SYSTEM } from '../services/LayoutSettingsStore';
 import { RootContentNavigation } from '../utils/RootContentNavigation';
 import { NavigationGuard } from '../utils/NavigationGuard';
 import { SideBarMaterialLayer } from '../components/SideBarMaterialLayer';
@@ -290,6 +317,7 @@ import {
   HDS_TAB_MATERIAL_SMOOTH,
   STORAGE_KEY_HOME_TAB_MATERIAL_LEVEL,
   STORAGE_KEY_CLASSIC_BOTTOM_BAR,
+  STORAGE_KEY_ROOT_LIQUID_TAB_INDICATOR_ENABLED,
   STORAGE_KEY_ROOT_TAB_LABELS_VISIBLE,
   DEFAULT_HOME_TAB_MATERIAL_LEVEL
 } from '../services/HdsTabsSettingsStore';
@@ -447,6 +475,7 @@ class ExploreCategoryPage {
 // column instead of leaving an empty square behind.
 @Component
 struct NotificationThumb {
+  @StorageProp('harmonyx.page_background') private pageBackgroundValue: string = '';
   @Prop url: string = '';
   @Prop isVideo: boolean = false;
   @State failed: boolean = false;
@@ -478,6 +507,13 @@ struct NotificationThumb {
 @Entry
 @Component
 struct Index {
+  @StorageProp(STORAGE_KEY_COMPONENT_HDR_RATIO) private componentHdrRatio: number = DEFAULT_COMPONENT_HDR_RATIO;
+  @StorageProp('harmonyx.page_background') private pageBackgroundValue: string = '';
+  @State private rootPageMotion: PageTransitionMotion = new PageTransitionMotion();
+  @State private pageMotion0: PageTransitionMotion = new PageTransitionMotion();
+  @State private pageMotion1: PageTransitionMotion = new PageTransitionMotion();
+  @State private pageMotion2: PageTransitionMotion = new PageTransitionMotion();
+  @StorageProp(STORAGE_KEY_PAGE_TRANSITION_MODE) private pageTransitionMode: string = DEFAULT_PAGE_TRANSITION_MODE;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @StorageProp(STORAGE_KEY_SYSTEM_EMOJI_ENABLED) private systemEmojiEnabled: boolean = false;
   @StorageProp('harmonyx.breakpoint') private sheetWindowBreakpoint: string = 'sm';
@@ -486,6 +522,7 @@ struct Index {
   @StorageProp(STORAGE_KEY_DESKTOP_RAIL_AUTO_HIDE) @Watch('closeDesktopRail') desktopRailAutoHide: boolean = true;
   @StorageProp(STORAGE_KEY_DESKTOP_RAIL_MATERIAL_LEVEL)
   desktopRailMaterialLevel: number = DEFAULT_DESKTOP_RAIL_MATERIAL_LEVEL;
+  @StorageProp(STORAGE_KEY_SIDEBAR_MATERIAL_TYPE) private sidebarMaterialType: number = SIDEBAR_MATERIAL_GLASS;
   @State private desktopRailOpen: boolean = false;
   @StorageProp(STORAGE_KEY_DESKTOP_RAIL_SWIPE) private desktopRailSwipe: boolean = true;
   @StorageProp(STORAGE_KEY_SIDEBAR_HANDLE_STYLE) private desktopHandleStyle: string = SIDEBAR_HANDLE_DEFAULT;
@@ -496,7 +533,7 @@ struct Index {
   @State private desktopInlineDraft: string = '';
   @State private desktopAdvancedSearchOpen: boolean = false;
   @State private desktopAdvancedValues: string[] = ['', '', '', '', '', '', '', '', ''];
-  @StorageProp(STORAGE_KEY_SHEET_MATERIAL_ENABLED) private sheetMaterialEnabled: boolean = false;
+  @StorageProp(STORAGE_KEY_SHEET_MATERIAL_ENABLED) private sheetMaterialEnabled: boolean = DEFAULT_SHEET_MATERIAL_ENABLED;
   @StorageProp(STORAGE_KEY_SHEET_MATERIAL_LEVEL) private sheetMaterialLevel: number = DEFAULT_SHEET_MATERIAL_LEVEL;
   @State currentTab: number = 0;
   // `currentTab` drives the tab content. The shared title-bar content follows
@@ -504,6 +541,8 @@ struct Index {
   // page swipe to settle, because changing that mid-swipe rebuilds the material
   // bar. Keeping the two moments separate gives the bar motion without that
   // rebuild.
+  @StorageProp(STORAGE_KEY_REDUCE_MOTION) @Watch('onMotionPreferenceChanged') private reduceMotion: boolean = false;
+  @StorageProp(STORAGE_KEY_MOTION_DURATION) private preferredMotionDuration: number = 300;
   @State private chromeTab: number = 0;
   @State private chromeTabSettled: number = 0;
   // Global vp geometry of the single title-bar surface. Its top is the top of
@@ -522,7 +561,7 @@ struct Index {
   private exploreSearchMaterialCache: TitleBarControlMaterialCache = new TitleBarControlMaterialCache();
   private rootTitleBarBuilder: CustomBuilder = (): void => { this.RootTitleBarContent(); };
   private rootTitleBarBottomBuilder: CustomBuilder = (): void => { this.RootTitleBarBottomContent(); };
-  private sideBarPanelBuilder: CustomBuilder = (): void => { this.SideBarPanelBuilder(); };
+  private sideBarPanelBuilder: CustomBuilder = (): void => { this.SideBarPanelBuilder(SIDEBAR_MATERIAL_SYSTEM); };
   private contentPanelBuilder: CustomBuilder = (): void => { this.ContentPanelBuilder(); };
   // While reading down the Home feed, the feed switch moves beside the avatar
   // and the centered brand mark fades out as one title-bar transition.
@@ -547,7 +586,11 @@ struct Index {
   @StorageLink('harmonyx.default_home_feed') @Watch('onDefaultHomeFeedChanged')
   defaultHomeFeedMode: number = 0;
   @State @Watch('onTimelineChanged') timeline: Tweet[] = [];
-  @State trends: string[] = [];
+  @State private homeFeedPresented: boolean = false;
+  private homePresentationPending: boolean = false;
+  private homePresentationRevision: number = 0;
+  private homePageAlive: boolean = false;
+  @State @Watch('onTrendsForCardChanged') trends: string[] = [];
   @State private exploreSections: XExploreSection[] = [];
   @State private exploreHomePosts: Tweet[] = [];
   @State private exploreHomeTrends: string[] = [];
@@ -577,6 +620,8 @@ struct Index {
   // Another app handed us an x.com link through the system's 打开方式 chooser.
   @StorageLink(STORAGE_KEY_EXTERNAL_LINK) @Watch('onExternalLinkRequested')
   externalLinkRequest: string = '';
+  @StorageLink(STORAGE_KEY_ARTICLE_CARD_REQUEST) @Watch('onArticleCardRequested')
+  articleCardRequest: string = '';
   @StorageProp(STORAGE_KEY_APP_LOCALE) private appLocale: string = effectiveAppLocale();
   @StorageLink(STORAGE_KEY_EXTERNAL_SHARE) @Watch('onExternalShareRequested') externalShareRequest: string = '';
   private externalShareBusy: boolean = false;
@@ -698,6 +743,7 @@ struct Index {
   @State private notificationsRefreshPullOffset: number = 0;
   @State private messagesRefreshPullOffset: number = 0;
   @State private meRefreshPullOffset: number = 0;
+  @State private meBannerScrollOffset: number = 0;
   private homeRefreshInFlight: boolean = false;
   private homeRefreshFailed: boolean = false;
   @State loading: boolean = true;
@@ -716,6 +762,7 @@ struct Index {
   // Bumped by the account store whenever an account is added, removed or made
   // active, which is what reloads every account-scoped surface below.
   @StorageLink('harmonyx.accounts_changed') @Watch('onAccountsChanged') accountsChanged: number = 0;
+  @StorageProp(STORAGE_KEY_EDITED_PROFILE) @Watch('onOwnProfileEdited') private editedProfileRevision: number = 0;
   @State showSideDrawer: boolean = false;
   // 中秋祝福弹窗，窗口见 MidAutumnGreetingStore（2026-09-25 起三天）。
   @State showMidAutumnGreeting: boolean = false;
@@ -750,11 +797,13 @@ struct Index {
   @StorageLink(STORAGE_KEY_CLASSIC_BOTTOM_BAR) @Watch('onClassicBottomBarChanged')
   classicBottomBar: boolean = false;
   @StorageLink(STORAGE_KEY_ROOT_TAB_LABELS_VISIBLE) rootTabLabelsVisible: boolean = true;
+  @StorageLink(STORAGE_KEY_ROOT_LIQUID_TAB_INDICATOR_ENABLED) rootLiquidTabIndicatorEnabled: boolean = true;
   @StorageLink(STORAGE_KEY_AUTO_HIDE_FAB) @Watch('onAutoHideFabChanged')
   autoHideFab: boolean = true;
   @StorageLink(STORAGE_KEY_COMPOSE_BUTTON_ENABLED) composeButtonEnabled: boolean = true;
   @StorageProp(STORAGE_KEY_PHOTO_FULLSCREEN) private photoFullscreen: boolean = true;
   @State private tabBarHidden: boolean = false;
+  @State private liquidTabRequestedPage: number = 0;
   @StorageProp(SPACE_PLAYBACK_REVISION) spacePlaybackRevision: number = 0;
   @StorageLink(STORAGE_KEY_HOME_TAB_MATERIAL_LEVEL)
   homeTabMaterialLevel: number = DEFAULT_HOME_TAB_MATERIAL_LEVEL;
@@ -784,6 +833,8 @@ struct Index {
   @Provide('pageStack') navPathStack: NavPathStack = new NavPathStack();
   private photoOverlayStack: NavPathStack = new NavPathStack();
   @State private photoOverlayOpen: boolean = false;
+  private exitConfirmationPending: boolean = false;
+  @StorageProp(STORAGE_KEY_CONFIRM_APP_EXIT) private confirmExitEnabled: boolean = true;
   private handledContinuationRestoreRequest: number = 0;
   private homePager: SwiperController = new SwiperController();
   private explorePager: SwiperController = new SwiperController();
@@ -881,7 +932,14 @@ struct Index {
   @State private ownPostsWaterFlowSections: WaterFlowSections = new WaterFlowSections();
   private ownPostsWaterFlowSectionsReady: boolean = false;
 
+  private onMotionPreferenceChanged(): void {
+    this.navPathStack.disableAnimation(this.reduceMotion);
+    this.photoOverlayStack.disableAnimation(this.reduceMotion);
+  }
+
   aboutToAppear(): void {
+    this.onMotionPreferenceChanged();
+    this.homePageAlive = true;
     const context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
     appFontStore.restore(context, this.getUIContext());
     xPrivateClient.load(context);
@@ -908,6 +966,7 @@ struct Index {
     // A link launch sets the request before this page exists, so the watcher
     // alone would miss the cold start.
     this.onExternalLinkRequested();
+    this.onArticleCardRequested();
     this.onNotificationLaunchRequested();
     this.onMessageLaunchRequested();
     this.onExternalShareRequested();
@@ -920,6 +979,9 @@ struct Index {
   }
 
   aboutToDisappear(): void {
+    this.homePageAlive = false;
+    this.homePresentationRevision++;
+    this.homePresentationPending = false;
     homeSeenTweetStore.flush(getContext(this) as common.UIAbilityContext);
     this.spaceRecommendationsAlive = false;
     if (this.spaceRecommendationTimer >= 0) { clearTimeout(this.spaceRecommendationTimer); this.spaceRecommendationTimer = -1; }
@@ -1205,6 +1267,16 @@ struct Index {
     return ResponsiveLayout.isLarge(this.breakpoint);
   }
 
+  private popupHostBlocked(): boolean {
+    // A large-screen rail is persistent navigation, not a modal surface. It
+    // must not suppress the recommendation sheet while the narrow overlay
+    // drawer still needs to keep the sheet behind it.
+    return !this.homeFeedPresented || this.showOnboardingGuide || this.showLoginSheet || this.showMidAutumnGreeting ||
+      this.showChatUnlock || this.showLinkPreview || (this.showSideDrawer && !this.isLargeScreen()) ||
+      this.contentDestinationOpen || this.photoOverlayOpen || this.showSpacePreview ||
+      this.showPauseTopics || this.showFollowingOrder;
+  }
+
   private sideDrawerWidth(): number {
     if (this.isLargeScreen()) {
       return 300;
@@ -1218,7 +1290,39 @@ struct Index {
       this.showSideDrawer = false;
       return true;
     }
-    return false;
+    if (this.navPathStack.size() > 0 || this.photoOverlayOpen || this.photoOverlayStack.size() > 0) {
+      return false;
+    }
+    if (!this.confirmExitEnabled) { return false; }
+    this.confirmAppExit();
+    return true;
+  }
+
+  private async confirmAppExit(): Promise<void> {
+    if (this.exitConfirmationPending) { return; }
+    this.exitConfirmationPending = true;
+    try {
+      const result: promptAction.ShowDialogSuccessResponse = await this.getUIContext().getPromptAction().showDialog({
+        title: this.text($r('app.string.app_exit_title')),
+        message: this.text($r('app.string.app_exit_message')),
+        buttons: [
+          { text: this.text($r('app.string.compose_cancel')), color: $r('app.color.text_secondary'), primary: true },
+          { text: this.text($r('app.string.app_exit_action')), color: $r('app.color.text_accent') }
+        ]
+      });
+      if (result.index !== 1) { return; }
+      const context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
+      try {
+        await context.terminateSelf();
+      } catch (error) {
+        hilog.error(0xFF00, 'HarmonyX-Exit', 'Failed to close ability: %{public}s', (error as Error).message);
+      }
+    } catch (error) {
+      // Back, Escape, and outside-tap dismissal keep the current page open.
+      hilog.info(0xFF00, 'HarmonyX-Exit', 'Exit dialog ended without selection: %{public}s', JSON.stringify(error));
+    } finally {
+      this.exitConfirmationPending = false;
+    }
   }
 
   private isWideScreen(): boolean {
@@ -1230,7 +1334,7 @@ struct Index {
       return DesktopLayout.timelineColumns(this.timelineColumnsMode, this.desktopContentWidth);
     }
     if (!this.isLargeScreen()) {
-      return 1;
+      return this.timelineColumnsMode === TIMELINE_COLUMNS_TWO ? 2 : 1;
     }
     if (this.timelineColumnsMode === TIMELINE_COLUMNS_ONE) {
       return 1;
@@ -1250,6 +1354,10 @@ struct Index {
     return 2;
   }
 
+  private useNarrowTimelineCards(): boolean {
+    return !this.isLargeScreen() && this.effectiveTimelineColumns() === 2;
+  }
+
   private timelineColumnsTemplate(): string {
     const columns: number = this.effectiveTimelineColumns();
     if (columns >= 3) {
@@ -1264,7 +1372,7 @@ struct Index {
   private useTimelineWaterFlow(): boolean {
     // A split changes the column count, not the mounted scroll container.
     // Switching WaterFlow to List destroys the visible post/media subtree.
-    return this.isLargeScreen();
+    return this.isLargeScreen() || this.timelineColumnsMode === TIMELINE_COLUMNS_TWO;
   }
 
   private homeFlowItems(): number[] {
@@ -1295,8 +1403,8 @@ struct Index {
     const contentSection: SectionOptions = {
       itemsCount: contentCount,
       crossCount: this.effectiveTimelineColumns(),
-      columnsGap: 1,
-      rowsGap: 0
+      columnsGap: this.useNarrowTimelineCards() ? 6 : 1,
+      rowsGap: this.useNarrowTimelineCards() ? 8 : 0
     };
     const footerSection: SectionOptions = {
       itemsCount: 1,
@@ -1317,10 +1425,16 @@ struct Index {
   }
 
   private syncHomeWaterFlowSections(): void {
+    const tabs: IconTabItem[] = this.homeTabItems();
+    for (let index: number = 0; index < tabs.length; index++) {
+      const source: TimelinePageDataSource = this.homePageDataSource(index);
+      this.pageSections('home', tabs[index].key, source.contentCount());
+    }
+    const activeSource: TimelinePageDataSource = this.homePageDataSource(this.homeTabIndex());
     this.homeWaterFlowSectionsReady = this.syncThreePartWaterFlowSections(
       this.homeWaterFlowSections,
       this.homeWaterFlowSectionsReady,
-      this.filteredTimeline().length
+      activeSource.contentCount()
     );
   }
 
@@ -1356,10 +1470,33 @@ struct Index {
   }
 
   private onTimelineChanged(): void {
+    this.replaceHomePageData(this.homeTabIndex());
     this.syncHomeWaterFlowSections();
-    this.homePageDataSource(this.homeTabIndex()).replace(this.filteredTimeline(),
-      this.promotionsForTab(this.homeTabIndex()), this.tabKey(this.homeTabIndex()),
-      this.promotionCountForTab(this.homeTabIndex()));
+  }
+
+  private replaceHomePageData(index: number): void {
+    const key: string = this.tabKey(index);
+    this.homePageDataSource(index).replace(this.filteredTimeline(index),
+      this.promotionsForTab(index), key, this.promotionCountForTab(index),
+      (count: number): void => { this.pageSections('home', key, count); });
+  }
+
+  private onHomeFeedRendered(index: number, last: number): void {
+    if (index !== this.homeTabIndex() || this.homeFeedPresented || this.homePresentationPending ||
+      last < 1 || this.homePageDataSource(index).postCount() === 0) { return; }
+    this.homePresentationPending = true;
+    const revision: number = this.homePresentationRevision;
+    const key: string = this.tabKey(index);
+    this.getUIContext().postFrameCallback(new HomeViewportFrameCallback((): void => {
+      if (revision !== this.homePresentationRevision) { return; }
+      this.homePresentationPending = false;
+      if (!this.homePageAlive || index !== this.homeTabIndex() || key !== this.tabKey(index) ||
+        this.homePageDataSource(index).postCount() === 0) { return; }
+      // First let the ordinary feed commit a visible frame. Only then may
+      // promotions change its rows or the startup sheet cover its content.
+      this.homeFeedPresented = true;
+      this.onPromotionPostChanged();
+    }));
   }
 
   private onExploreResultsChanged(): void {
@@ -1368,6 +1505,33 @@ struct Index {
 
   private onNotificationsChanged(): void {
     this.syncNotificationsWaterFlowSections();
+    this.rememberNotificationsForCard();
+  }
+
+  private onTrendsForCardChanged(): void {
+    try {
+      const context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
+      if (ArticleCardStore.rememberTrends(context, this.trends)) {
+        ArticleCardPublisher.publish(context);
+      }
+    } catch (error) {
+    }
+  }
+
+  private rememberNotificationsForCard(): void {
+    try {
+      const context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
+      if (ArticleCardStore.rememberNotifications(context, this.notifications)) {
+        ArticleCardPublisher.publish(context);
+        ArticleCardStore.refineAvatarGradients(context, CARD_SOURCE_NOTIFICATIONS).then((changed: boolean): void => {
+          if (changed) {
+            ArticleCardPublisher.publish(context);
+          }
+        }).catch((): void => {
+        });
+      }
+    } catch (error) {
+    }
   }
 
   private visibleNotifications(index: number = this.notificationFilter): AppNotification[] {
@@ -1498,11 +1662,11 @@ struct Index {
   }
 
   private onContentFilterChanged(): void {
-    this.syncAllWaterFlowSections();
     for (let index: number = 0; index < this.homeTabItems().length; index++) {
-      this.homePageDataSource(index).replace(this.filteredTimeline(index),
-        this.promotionsForTab(index), this.tabKey(index), this.promotionCountForTab(index));
+      this.replaceHomePageData(index);
     }
+    this.syncAllWaterFlowSections();
+    this.rememberTimelinePosts();
   }
 
   private contentFilterSettings(): ContentFilterSettings {
@@ -1546,8 +1710,7 @@ struct Index {
 
   private onPostModerationChanged(): void {
     for (let index: number = 0; index < this.homeTabItems().length; index++) {
-      this.homePageDataSource(index).replace(this.filteredTimeline(index),
-        this.promotionsForTab(index), this.tabKey(index), this.promotionCountForTab(index));
+      this.replaceHomePageData(index);
     }
     this.syncAllWaterFlowSections();
   }
@@ -1675,6 +1838,7 @@ struct Index {
 
   private contentTopInset(): number {
     if (this.isDesktopLayout()) { return 0; }
+    if (this.currentTab === ME_TAB_INDEX) { return this.statusBarHeight; }
     if (!this.supportsHdsNavigation()) {
       return 12;
     }
@@ -1800,6 +1964,7 @@ struct Index {
   }
 
   private rootTitleBarBottomHeight(): number {
+    if (this.currentTab === ME_TAB_INDEX) { return 0; }
     if (this.isDesktopLayout()) { return Math.max(0, this.desktopHeaderHeight() - this.desktopTitleBarHeight()); }
     if (this.chromeTab === EXPLORE_TAB_INDEX && this.exploreTitleContentBottom > 0) {
       return RootTitleBarLayout.measuredBottomHeight(this.exploreTitleContentBottom - this.titleBarSurfaceTop,
@@ -1827,7 +1992,17 @@ struct Index {
   private hasActiveSpace(): boolean { return this.spacePlaybackRevision >= 0 && spacePlayback.room !== null; }
 
   private titleBarStyle(): TitleBarStyleOptions {
-    return rootTitleBarStyle(this.displayMode, this.darkSurface, this.titleBarStyleMode, this.isDesktopLayout());
+    const style: TitleBarStyleOptions = rootTitleBarStyle(this.displayMode, this.darkSurface,
+      this.titleBarStyleMode, this.isDesktopLayout());
+    if (this.currentTab === ME_TAB_INDEX) {
+      style.scrollEffectOpts = { enableScrollEffect: false };
+      style.originalStyle = { backgroundStyle: { backgroundColor: Color.Transparent },
+        contentStyle: style.originalStyle?.contentStyle };
+      style.scrollEffectStyle = { backgroundStyle: { backgroundColor: Color.Transparent },
+        contentStyle: style.scrollEffectStyle?.contentStyle };
+      style.systemMaterialEffect = { materialType: hdsMaterial.MaterialType.NONE };
+    }
+    return style;
   }
 
   private rootTitleBarOptions(): HdsNavigationTitleBarOptions {
@@ -2022,7 +2197,7 @@ struct Index {
   // 一滑就立刻展开。SCROLL_UP_TO 是按滚动位置的渐隐模式，那种模式要退回列表
   // 顶部标题栏才会完整出现，和"自动隐藏"的预期相反。
   private titleBarHideParams(): DynamicHideParams {
-    if (this.isDesktopLayout() || (!this.autoHideTitleBar && !this.compactWindow)) {
+    if (this.currentTab === ME_TAB_INDEX || this.isDesktopLayout() || (!this.autoHideTitleBar && !this.compactWindow)) {
       return {
         hideTitleArea: false,
         hideBottomBuilder: false,
@@ -2141,15 +2316,17 @@ struct Index {
     return source;
   }
 
-  // The remote recommendation post belongs to the for-you feed only; pinned
-  // topics and the following feed keep showing exactly what X returned.
+  // A promotion joins a returned feed batch; an unrequested/empty page must
+  // never display a promotion as a placeholder while its real posts load.
   private promotionsForTab(index: number): XXAuthPromotionPost[] {
+    if (!this.homeFeedPresented) { return []; }
     const items: IconTabItem[] = this.homeTabItems();
     if (index < 0 || index >= items.length) { return []; }
     const key: string = items[index].key;
     // Recommended and following timelines carry the promotions; a pinned topic
     // stays exactly what the reader asked for.
     if (key !== 'for-you' && key !== 'following') { return []; }
+    if (this.filteredTimeline(index).length === 0) { return []; }
     const posts: XXAuthPromotionPost[] = this.promotionPlan().posts;
     return posts;
   }
@@ -2211,10 +2388,13 @@ struct Index {
   }
 
   private onPromotionPostChanged(): void {
+    if (!this.homeFeedPresented) { return; }
     for (let index: number = 0; index < this.homeTabItems().length; index++) {
-      this.homePageDataSource(index).replace(this.filteredTimeline(index),
-        this.promotionsForTab(index), this.tabKey(index), this.promotionCountForTab(index));
+      this.replaceHomePageData(index);
     }
+    // The promotion is published after the WaterFlow is already mounted. Its
+    // section count must be refreshed with the injected row included.
+    this.syncHomeWaterFlowSections();
   }
 
   private hidePromotionPost(): void {
@@ -2361,6 +2541,26 @@ struct Index {
     };
     this.lastFeedAt = feed.savedAt;
     FeedCache.save(context, this.feedCacheKey(), feed);
+    this.rememberTimelinePosts();
+  }
+
+  // The home-screen card has to stay useful without waking the timeline.
+  // Keep a tiny account-scoped preview set and push it to every placed form.
+  private rememberTimelinePosts(): void {
+    if (this.activeHomeTopicId.length > 0 || this.timelineSource === 'sample' || this.timelineSource.length === 0) {
+      return;
+    }
+    const context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
+    const source: string = this.homeFeedMode === 0 ? CARD_SOURCE_FOR_YOU : CARD_SOURCE_FOLLOWING;
+    if (ArticleCardStore.rememberTweets(context, source, this.filteredTimeline())) {
+      ArticleCardPublisher.publish(context);
+      ArticleCardStore.refineAvatarGradients(context, source).then((changed: boolean): void => {
+        if (changed) {
+          ArticleCardPublisher.publish(context);
+        }
+      }).catch((): void => {
+      });
+    }
   }
 
   // Returns true when the cached page took over the timeline. Paging stops at
@@ -2382,6 +2582,7 @@ struct Index {
     this.lastFeedAt = feed.savedAt;
     this.liveBadge = '';
     this.statusLine = this.offlineStatusLine(feed.savedAt);
+    this.rememberTimelinePosts();
     return true;
   }
 
@@ -2748,12 +2949,12 @@ struct Index {
       Text(account.title()).fontFamily(this.appFontFamily)
         .fontSize($r('sys.float.Subtitle_L'))
         .fontWeight(FontWeight.Medium)
-        .fontColor($r('app.color.text_primary'))
+        .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, this.themedCardSurface()))
         .maxLines(1)
         .textOverflow({ overflow: TextOverflow.Ellipsis })
       Text(account.handle()).fontFamily(this.appFontFamily)
         .fontSize($r('sys.float.Body_M'))
-        .fontColor($r('app.color.text_secondary'))
+        .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, this.themedCardSurface()))
         .maxLines(1)
         .textOverflow({ overflow: TextOverflow.Ellipsis })
     }
@@ -2774,10 +2975,10 @@ struct Index {
         .fontColor([this.accentColor])
       Text($r('app.string.accounts_add')).fontFamily(this.appFontFamily)
         .fontSize($r('sys.float.Subtitle_L'))
-        .fontColor($r('app.color.text_primary'))
+        .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, this.themedCardSurface()))
       Text($r('app.string.accounts_add_desc')).fontFamily(this.appFontFamily)
         .fontSize($r('sys.float.Body_S'))
-        .fontColor($r('app.color.text_secondary'))
+        .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, this.themedCardSurface()))
         .maxLines(2)
         .textAlign(TextAlign.Center)
     }
@@ -3052,10 +3253,7 @@ struct Index {
     });
   }
 
-  // Pull-to-refresh for the Me tab. X recomputes the profile header (avatar,
-  // banner, counts) separately from the first page of the user's own posts, so
-  // a manual refresh reads both again and rewrites the cached account identity
-  // that the switcher and the title bar read from.
+  // The Me tab refreshes account information; timelines belong to UserDetail.
   private onMeRefresh(): void {
     if (this.meRefreshInFlight) {
       return;
@@ -3073,16 +3271,11 @@ struct Index {
 
   private async refreshMe(): Promise<void> {
     await this.refreshOwnProfile();
-    if (this.hasAnySession()) {
-      if (this.meTimelineTab === 1) {
-        await this.loadLikedPosts(true);
-      } else {
-        await this.loadOwnPosts(true);
-      }
-    }
   }
 
   private async refreshOwnProfile(): Promise<void> {
+    const accountRevision: number = this.accountsChanged;
+    const editRevision: number = this.editedProfileRevision;
     if (!this.hasAnySession()) {
       this.profile = null;
       return;
@@ -3095,7 +3288,8 @@ struct Index {
       }
       const result: XPrivateResult = await this.xPrivate.userByRestId(viewerId);
       const fresh: UserProfile | null = result.ok ? XUserParser.parse(result.body) : null;
-      if (fresh !== null) {
+      if (fresh !== null && accountRevision === this.accountsChanged && editRevision === this.editedProfileRevision &&
+        this.xPrivate.viewerId() === viewerId) {
         this.profile = fresh;
         this.cacheAccountProfile();
       }
@@ -3103,7 +3297,15 @@ struct Index {
     }
 
     const fresh: UserProfile | null = await this.api.profile();
-    if (fresh !== null) {
+    if (fresh !== null && accountRevision === this.accountsChanged && this.hasAnySession()) {
+      this.profile = fresh;
+      this.cacheAccountProfile();
+    }
+  }
+
+  private onOwnProfileEdited(): void {
+    const fresh: UserProfile | null = lastEditedProfile();
+    if (fresh !== null && this.xPrivate.isSignedIn() && this.xPrivate.viewerId() === fresh.id) {
       this.profile = fresh;
       this.cacheAccountProfile();
     }
@@ -4072,6 +4274,7 @@ struct Index {
       }
     }
     this.timeline = combined;
+    this.rememberTimelinePosts();
     return addedCount;
   }
 
@@ -4973,6 +5176,89 @@ struct Index {
     this.openIncomingXLink(link);
   }
 
+  private onArticleCardRequested(): void {
+    const raw: string = this.articleCardRequest;
+    if (raw.length === 0) {
+      return;
+    }
+    this.articleCardRequest = '';
+    try {
+      const launch: ArticleCardLaunch = JSON.parse(raw) as ArticleCardLaunch;
+      if (launch.kind === 'home') {
+        this.showSideDrawer = false;
+        this.showLinkPreview = false;
+        this.linkPreviewUrl = '';
+        ResponsiveLayout.closeToMain(this.navPathStack);
+        this.updateNavigationMode();
+        this.onTabChange(HOME_TAB_INDEX);
+        return;
+      }
+      if (launch.kind === 'post') {
+        if (launch.postId.length === 0) {
+          return;
+        }
+        this.openArticleCardPost(launch);
+        return;
+      }
+      if (launch.kind === 'trend') {
+        if (launch.query.length === 0) {
+          return;
+        }
+        this.openContentDestination();
+        this.searchRequest = launch.query;
+        return;
+      }
+      if (launch.kind === 'notification') {
+        this.openContentDestination();
+        if (launch.postId.length > 0) {
+          this.openArticleCardPost(launch);
+        } else {
+          this.goNotifications();
+        }
+        return;
+      }
+      if (launch.kind === 'settings') {
+        this.openContentDestination();
+        this.navPathStack.pushPath({ name: 'CardSettings' });
+        return;
+      }
+      if (launch.kind !== 'article' || (launch.articleId.length === 0 && launch.postId.length === 0)) {
+        return;
+      }
+      this.openContentDestination();
+      const param: PostArticleRouteParam = {
+        postId: launch.postId,
+        article: {
+          id: launch.articleId,
+          title: launch.title,
+          previewText: launch.previewText,
+          coverUrl: launch.coverUrl
+        }
+      };
+      this.navPathStack.pushPath({ name: 'PostArticle', param: param });
+    } catch (error) {
+    }
+  }
+
+  private openArticleCardPost(launch: ArticleCardLaunch): void {
+    const context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
+    const item: ArticleCardItem = ArticleCardStore.findPost(context, launch.postId) ?? new ArticleCardItem();
+    item.postId = launch.postId;
+    if (item.title.length === 0) { item.title = launch.title; }
+    if (item.label.length === 0) { item.label = launch.label; }
+    const cached: Tweet | undefined = this.timeline.find((tweet: Tweet): boolean => tweet.id === launch.postId);
+    const param: PostDetailRouteParam = {
+      tweet: cached ?? articleCardPostPreview(item, this.accentColor),
+      refreshContent: true
+    };
+    this.showSideDrawer = false;
+    this.showLinkPreview = false;
+    this.linkPreviewUrl = '';
+    this.openRootContent({ name: 'PostDetail', param: param }, (existing: Object): boolean => {
+      return (existing as PostDetailRouteParam).tweet.id === launch.postId;
+    });
+  }
+
   private onExternalShareRequested(): void {
     if (this.externalShareRequest.length === 0 || this.externalShareBusy) { return; }
     this.openExternalShare().catch((): void => {});
@@ -5394,7 +5680,7 @@ struct Index {
             }).catch((): void => {
             });
           })
-          .backgroundColor(this.themedPageSurface())
+          .backgroundColor(pageCanvasColor(this.displayMode, this.darkSurface, this.pageBackgroundValue))
       }
     }
     .width('100%')
@@ -5424,7 +5710,7 @@ struct Index {
   }
 
   private themedCardSurface(): ResourceColor {
-    return cardSurfaceColor(this.displayMode, this.darkSurface);
+    return pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue);
   }
 
   private themedFieldSurface(): ResourceColor {
@@ -5528,11 +5814,33 @@ struct Index {
     this.selectRootTabPage(MESSAGES_TAB_INDEX);
   }
 
-  private goMe(): void {
+  private openOwnProfile(): void {
+    this.showSideDrawer = false;
     this.showLinkPreview = false;
     this.linkPreviewUrl = '';
-    ResponsiveLayout.closeToMain(this.navPathStack);
-    this.selectRootTabPage(ME_TAB_INDEX);
+    if (!this.hasAnySession()) { this.goLogin(); return; }
+    const account: XAccount | null = accountStore.active(getContext(this) as common.UIAbilityContext);
+    const current: UserProfile | null = this.profile;
+    const author: TweetAuthor = {
+      id: current?.id || account?.userId || this.xPrivate.viewerId() || authStore.getUserId(),
+      name: current?.name || account?.displayName || account?.username || this.handleText,
+      username: current?.username || account?.username || authStore.getUsername(),
+      avatarUrl: current?.avatarUrl || account?.avatarUrl || '',
+      avatarColor: this.accentColor,
+      verified: current?.verified ?? false,
+      verifiedType: current?.verifiedType ?? account?.verifiedType ?? '',
+      avatarShape: current?.avatarShape ?? account?.avatarShape ?? ''
+    };
+    if (author.id.length === 0 && author.username.length === 0) {
+      promptAction.showToast({ message: this.text($r('app.string.profile_not_ready')), duration: 2000 });
+      return;
+    }
+    // Preserve the known header while the profile page refreshes its data.
+    const param: UserDetailRouteParam = { author: author, posts: [], profile: current };
+    this.openRootContent({ name: 'UserDetail', param: param }, (existing: Object): boolean => {
+      const route: UserDetailRouteParam = existing as UserDetailRouteParam;
+      return author.id.length > 0 ? route.author.id === author.id : route.author.username === author.username;
+    });
   }
 
   private openConversation(message: DirectMessage): void {
@@ -5799,6 +6107,7 @@ struct Index {
       this.saveCurrentFeedSnapshot();
     }
     this.currentTab = index;
+    this.liquidTabRequestedPage = index;
     this.updateNavigationMode();
     this.scheduleChromeTab(index, changed);
     this.fabHidden = false;
@@ -5810,15 +6119,8 @@ struct Index {
     if (index !== 0 && index !== 1) {
       this.fabMode = 'compose';
     }
-    if (index === 4 && this.hasAnySession()) {
-      const viewerId: string = this.xPrivate.isSignedIn() ? this.xPrivate.viewerId() : authStore.getUserId();
-      if (this.meTimelineTab === 1) {
-        if (viewerId.length > 0 && viewerId !== this.likedPostsLoadedFor) {
-          this.loadLikedPosts(true).catch((): void => {});
-        }
-      } else if (viewerId.length > 0 && viewerId !== this.ownPostsLoadedFor) {
-        this.loadOwnPosts(true).catch((): void => {});
-      }
+    if (changed && index === ME_TAB_INDEX && this.hasAnySession()) {
+      this.onMeRefresh();
     }
     if (index === NOTIFICATIONS_TAB_INDEX) {
       this.onNotificationsOpened();
@@ -5831,6 +6133,8 @@ struct Index {
   }
 
   private onRootTabBarClick(visibleIndex: number): void {
+    hapticTick();
+    this.liquidTabRequestedPage = this.bottomBarPageAt(visibleIndex);
     if (this.bottomBarPageAt(visibleIndex) !== HOME_TAB_INDEX) {
       this.lastHomeTabClickAt = 0;
       return;
@@ -5863,14 +6167,14 @@ struct Index {
     // content, which made the height change feel like a second, late step.
     // Morph it together with the incoming page instead.
     this.getUIContext().animateTo({
-      duration: TITLE_BAR_MORPH_DURATION_MS, curve: Curve.EaseOut
+      duration: motionDuration(TITLE_BAR_MORPH_DURATION_MS), curve: motionCurve()
     }, (): void => {
       this.chromeTab = index;
     });
     this.chromeTabTimer = setTimeout((): void => {
       this.chromeTabTimer = -1;
       this.chromeTabSettled = index;
-    }, ROOT_TAB_SWITCH_DURATION_MS);
+    }, motionDuration(ROOT_TAB_SWITCH_DURATION_MS));
   }
 
   // Require the tab content and the shared title bar to agree before showing
@@ -5954,6 +6258,9 @@ struct Index {
   // otherwise the reader briefly sees the previous account's posts, mentions
   // and profile.
   private onAccountsChanged(): void {
+    this.homeFeedPresented = false;
+    this.homePresentationPending = false;
+    this.homePresentationRevision++;
     postModerationStore.load(getContext(this) as common.UIAbilityContext);
     homeSeenTweetStore.load(getContext(this) as common.UIAbilityContext);
     this.showSpacePreview = false;
@@ -6004,7 +6311,9 @@ struct Index {
     this.forYouSnapshot = new HomeFeedSnapshot();
     this.followingSnapshot = new HomeFeedSnapshot();
     this.topicSnapshots.clear();
-    this.homePageSources.forEach((source: TimelinePageDataSource): void => { source.replace([]); });
+    this.homePageSources.forEach((source: TimelinePageDataSource, key: string): void => {
+      source.replace([], [], key, 0, (count: number): void => { this.pageSections('home', key, count); });
+    });
     this.homeTimelineRequestId += 1;
     this.recommendationSignalsLoaded = false;
     this.scrollDepth = 0;
@@ -6116,22 +6425,13 @@ struct Index {
       this.navPathStack.pushPath({ name: 'FollowDiscovery', param: param });
     } else if (name === 'grok') { this.navPathStack.pushPath({ name: 'Grok' }); }
     else if (name === 'profile') {
-      if (this.profile === null) { this.selectRootTabPage(ME_TAB_INDEX); return; }
-      const author: TweetAuthor = { id: this.profile.id, name: this.profile.name,
-        username: this.profile.username, avatarUrl: this.profile.avatarUrl ?? '',
-        avatarColor: this.accentColor, verified: this.profile.verified, verifiedType: this.profile.verifiedType, avatarShape: this.profile.avatarShape };
-      const param: UserDetailRouteParam = { author: author, posts: this.ownPosts };
-      this.navPathStack.pushPath({ name: 'UserDetail', param: param });
+      this.openOwnProfile();
     } else { this.showDrawerFeature(name); }
     this.syncDesktopRoute();
   }
 
   @Builder
-  private DesktopRail(): void {
-    Stack({ alignContent: Alignment.TopStart }) {
-      if (this.desktopRailMaterialLevel >= 0) {
-        SideBarMaterialLayer({ materialLevel: this.desktopRailMaterialLevel, layerPrefix: 'desktop-rail' })
-      }
+  private DesktopRailContent(): void {
     DesktopNavRail({
         compact: DesktopLayout.compactRail(this.breakpoint, this.currentTab === MESSAGES_TAB_INDEX),
         selected: this.desktopSelected(), profile: this.profile, handle: this.handleText,
@@ -6143,6 +6443,40 @@ struct Index {
         .width(DesktopLayout.compactRail(this.breakpoint, this.currentTab === MESSAGES_TAB_INDEX) ?
           $r('app.float.desktop_rail_compact') : $r('app.float.desktop_rail_width'))
         .opacity(this.desktopModalOpen ? 0.4 : 1).enabled(!this.desktopModalOpen)
+  }
+
+  @Builder
+  private CustomDesktopRail(materialType: number): void {
+    Stack({ alignContent: Alignment.TopStart }) {
+      SideBarMaterialLayer({ materialType: materialType, materialLevel: this.desktopRailMaterialLevel,
+        layerPrefix: materialType === SIDEBAR_MATERIAL_GLASS ? 'desktop-glass' : 'desktop-gradient' })
+      this.DesktopRailContent()
+    }.width('100%').height('100%')
+  }
+
+  @Builder
+  private DesktopRail(): void {
+    Stack({ alignContent: Alignment.TopStart }) {
+      if (this.sidebarMaterialType === SIDEBAR_MATERIAL_SYSTEM) {
+        if (this.supportsHdsNavigation() && this.desktopRailMaterialLevel >= 0) {
+          HdsSideBar({
+            sideBarPanelBuilder: (): void => { this.DesktopRailContent(); },
+            contentPanelBuilder: (): void => {},
+            isShowSideBar: true,
+            sideBarWidth: '100%', minSideBarWidth: '100%', maxSideBarWidth: '100%',
+            minContentWidth: 0,
+            sideBarContainerType: SideBarContainerType.Embed,
+            contentAreaMask: false,
+            autoHide: false
+          }).width('100%').height('100%').id('desktop-system-sidebar-host')
+        } else {
+          this.DesktopRailContent()
+        }
+      } else if (this.sidebarMaterialType === SIDEBAR_MATERIAL_BLUR) {
+        this.CustomDesktopRail(SIDEBAR_MATERIAL_BLUR)
+      } else {
+        this.CustomDesktopRail(SIDEBAR_MATERIAL_GLASS)
+      }
     }.width(DesktopLayout.compactRail(this.breakpoint, this.currentTab === MESSAGES_TAB_INDEX) ?
       $r('app.float.desktop_rail_compact') : $r('app.float.desktop_rail_width')).height('100%').borderRadius(0).clip(false)
       .backgroundColor(this.desktopRailMaterialLevel < 0 ? this.themedPageSurface() : Color.Transparent)
@@ -6233,7 +6567,7 @@ struct Index {
       .padding({ left: this.desktopMediaDestination() || !this.desktopRailAutoHide ? 0 : $r('app.float.desktop_outer_gutter'),
         right: this.desktopMediaDestination() ? 0 : $r('app.float.desktop_outer_gutter') })
       .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
-      .backgroundColor(this.themedPageSurface())
+      .backgroundColor(pageCanvasColor(this.displayMode, this.darkSurface, this.pageBackgroundValue))
     this.DesktopRailOverlay()
     }.width('100%').height('100%')
   }
@@ -6263,7 +6597,8 @@ struct Index {
   private DesktopTitleBarContent(): void {
     Column() { this.DesktopHeader() }.width('100%').height(this.desktopTitleBarHeight())
       .justifyContent(FlexAlign.Center)
-      .systemMaterial(titleBarGlassMaterial(this.titleBarStyleMode, this.titleBarGlassMaterialLevel))
+      .systemMaterial(this.currentTab === ME_TAB_INDEX ? undefined :
+        titleBarGlassMaterial(this.titleBarStyleMode, this.titleBarGlassMaterialLevel))
   }
 
   @Builder
@@ -6274,18 +6609,18 @@ struct Index {
       } else if (this.currentTab === EXPLORE_TAB_INDEX) {
         Search({ value: this.searchText, placeholder: $r('app.string.search_placeholder') })
           .width('calc(100% - 32vp)').height(this.exploreSearchHeight()).margin({ top: 8, bottom: 8 })
-          .backgroundColor(this.themedFieldSurface()).fontColor($r('app.color.text_primary'))
+          .backgroundColor(this.themedFieldSurface()).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, this.themedFieldSurface()))
           .onChange((value: string): void => { this.searchText = value; })
           .onSubmit((value: string): void => this.submitSearchFromHeader(value, false))
       } else {
         Row() {
           Text(this.currentTab === MESSAGES_TAB_INDEX ? $r('app.string.chat_title') :
             this.currentTab === ME_TAB_INDEX ? $r('app.string.side_profile') : $r('app.string.tab_alerts')).fontFamily(this.appFontFamily)
-            .fontSize($r('sys.float.Title_M')).fontWeight(FontWeight.Bold).fontColor($r('app.color.text_primary'))
+            .fontSize($r('sys.float.Title_M')).fontWeight(FontWeight.Bold).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
             .layoutWeight(1)
           if (this.currentTab === MESSAGES_TAB_INDEX) {
             Button({ type: ButtonType.Circle }) {
-              SymbolGlyph($r('sys.symbol.message_badge_plus')).fontSize(24).fontColor([$r('app.color.text_primary')])
+              SymbolGlyph($r('sys.symbol.message_badge_plus')).fontSize(24).fontColor([pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)])
             }.width(44).height(44).backgroundColor(Color.Transparent).onClick((): void => this.openChatComposer())
           } else if (this.currentTab === NOTIFICATIONS_TAB_INDEX) {
             this.NotificationSettingsButton()
@@ -6302,7 +6637,8 @@ struct Index {
       else if (this.currentTab === MESSAGES_TAB_INDEX) { this.ChatTitleBarSearch() }
       else if (this.currentTab === NOTIFICATIONS_TAB_INDEX) { this.NotificationTabs(false) }
     }.width('100%').height(Math.max(0, this.desktopHeaderHeight() - this.desktopTitleBarHeight()))
-      .systemMaterial(titleBarGlassMaterial(this.titleBarStyleMode, this.titleBarGlassMaterialLevel))
+      .systemMaterial(this.currentTab === ME_TAB_INDEX ? undefined :
+        titleBarGlassMaterial(this.titleBarStyleMode, this.titleBarGlassMaterialLevel))
   }
 
   @Builder
@@ -6331,12 +6667,12 @@ struct Index {
   @Builder
   private DesktopChatEmpty(): void {
     Column({ space: 20 }) {
-      SymbolGlyph($r('sys.symbol.message')).fontSize(58).fontColor([$r('app.color.text_primary')])
+      SymbolGlyph($r('sys.symbol.message')).fontSize(58).fontColor([pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, this.themedFieldSurface())])
         .width(96).height(96).backgroundColor(this.themedFieldSurface()).borderRadius(48)
       Text($r('app.string.desktop_chat_empty')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Title_L')).fontWeight(FontWeight.Bold)
-        .fontColor($r('app.color.text_primary'))
+        .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
       Text($r('app.string.desktop_chat_empty_desc')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L'))
-        .fontColor($r('app.color.text_secondary')).textAlign(TextAlign.Center)
+        .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).textAlign(TextAlign.Center)
       Button($r('app.string.chat_new')).height(44).padding({ left: 24, right: 24 })
         .fontColor($r('app.color.text_on_inverse')).backgroundColor($r('app.color.text_primary'))
         .onClick((): void => this.openChatComposer())
@@ -6351,7 +6687,7 @@ struct Index {
           fallbackText: this.avatarInitial(), fallbackColor: this.accentColor })
         TextArea({ text: this.desktopInlineDraft, placeholder: $r('app.string.compose_placeholder') }).fontFamily(this.appFontFamily)
           .layoutWeight(1).height(78).padding(8).backgroundColor(Color.Transparent)
-          .fontSize($r('sys.float.Title_S')).fontColor($r('app.color.text_primary'))
+          .fontSize($r('sys.float.Title_S')).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
           .onChange((value: string): void => { this.desktopInlineDraft = value; })
       }.width('100%').alignItems(VerticalAlign.Top)
       Row({ space: 16 }) {
@@ -6378,11 +6714,11 @@ struct Index {
         Row({ space: 8 }) {
           Search({ placeholder: $r('app.string.search_placeholder') }).layoutWeight(1).height(44)
             .backgroundColor(Color.Transparent).border({ width: 1, color: $r('app.color.divider') })
-            .fontColor($r('app.color.text_primary')).borderRadius(22)
+            .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)).borderRadius(22)
             .onSubmit((value: string): void => this.submitSearchFromHeader(value, false))
           Button({ type: ButtonType.Circle }) {
             SymbolGlyph($r('sys.symbol.xmark')).fontSize($r('app.float.desktop_aside_close_icon'))
-              .fontColor([$r('app.color.text_secondary')])
+              .fontColor([pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)])
           }.width($r('app.float.desktop_aside_close_size')).height($r('app.float.desktop_aside_close_size'))
             .backgroundColor(Color.Transparent).id('desktop-aside-close')
             .accessibilityText(this.text($r('app.string.desktop_aside_close')))
@@ -6391,8 +6727,8 @@ struct Index {
         if (this.desktopRoute === 'SearchResultsPage') {
           Column({ space: 16 }) {
             Text($r('app.string.search_filter_title')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Title_M')).fontWeight(FontWeight.Bold)
-              .fontColor($r('app.color.text_primary')).width('100%')
-            Button($r('app.string.search_filter_people')).fontColor($r('app.color.text_primary'))
+              .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)).width('100%')
+            Button($r('app.string.search_filter_people')).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
               .backgroundColor(Color.Transparent).onClick((): void => this.openSearchFilters())
             Button($r('app.string.desktop_advanced_search')).fontColor(this.accentColor).backgroundColor(Color.Transparent)
               .onClick((): void => { this.desktopAdvancedSearchOpen = true; })
@@ -6401,9 +6737,9 @@ struct Index {
         } else {
           Column({ space: 12 }) {
             Text($r('app.string.desktop_premium_title')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Title_M')).fontWeight(FontWeight.Bold)
-              .fontColor($r('app.color.text_primary')).width('100%')
+              .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)).width('100%')
             Text($r('app.string.desktop_premium_desc')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M'))
-              .fontColor($r('app.color.text_primary')).width('100%')
+              .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)).width('100%')
             Button($r('app.string.side_premium')).height(38).backgroundColor(this.accentColor)
               .fontColor($r('app.color.text_on_accent')).onClick((): void => this.showDrawerFeature('premium'))
           }.width('100%').alignItems(HorizontalAlign.Start).padding(16)
@@ -6411,7 +6747,7 @@ struct Index {
         }
         Column({ space: 8 }) {
           Text($r('app.string.desktop_whats_happening')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Title_M')).fontWeight(FontWeight.Bold)
-            .fontColor($r('app.color.text_primary')).width('100%').padding(16)
+            .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)).width('100%').padding(16)
           if (this.exploreTrendItems.length > 0) {
             ForEach(this.exploreTrendItems.slice(0, 4), (item: XExploreTrend) => {
               this.ExploreRichTrendRow(item)
@@ -6420,7 +6756,7 @@ struct Index {
             ForEach(this.trends.slice(0, 4), (trend: string) => { this.ExploreTrendRow(trend) }, (trend: string): string => trend)
           } else {
             Text($r('app.string.explore_section_empty')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M'))
-              .fontColor($r('app.color.text_secondary')).padding(16)
+              .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).padding(16)
           }
           Button($r('app.string.follow_show_more')).width('100%').fontColor(this.accentColor)
             .backgroundColor(Color.Transparent).onClick((): void => this.desktopNavigate('explore'))
@@ -6467,7 +6803,7 @@ struct Index {
   private AdvancedField(index: number, title: Resource): void {
     TextInput({ text: this.desktopAdvancedValues[index], placeholder: title }).fontFamily(this.appFontFamily)
       .width('100%').height(56).borderRadius(4).backgroundColor(Color.Transparent)
-      .border({ width: 1, color: $r('app.color.divider') }).fontColor($r('app.color.text_primary'))
+      .border({ width: 1, color: $r('app.color.divider') }).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
       .onChange((value: string): void => {
         const values: string[] = this.desktopAdvancedValues.slice(); values[index] = value; this.desktopAdvancedValues = values;
       })
@@ -6478,11 +6814,11 @@ struct Index {
     Column() {
       Row({ space: 16 }) {
         Button({ type: ButtonType.Circle }) {
-          SymbolGlyph($r('sys.symbol.xmark')).fontSize(22).fontColor([$r('app.color.text_primary')])
+          SymbolGlyph($r('sys.symbol.xmark')).fontSize(22).fontColor([pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)])
         }.width(40).height(40).backgroundColor(Color.Transparent)
           .onClick((): void => { this.desktopAdvancedSearchOpen = false; })
         Text($r('app.string.desktop_advanced_search')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Title_M')).fontWeight(FontWeight.Bold)
-          .fontColor($r('app.color.text_primary')).layoutWeight(1)
+          .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)).layoutWeight(1)
         Button($r('app.string.search_action')).height(38).backgroundColor($r('app.color.text_primary'))
           .fontColor($r('app.color.text_on_inverse')).onClick((): void => this.advancedSearchSubmit())
       }.width('100%').padding(16)
@@ -6513,7 +6849,7 @@ struct Index {
             this.NewPostsCapsule()
           }
 
-          if (this.composeButtonEnabled && !this.isDesktopLayout() &&
+          if (this.composeButtonEnabled && !this.isDesktopLayout() && this.currentTab !== ME_TAB_INDEX &&
             (this.currentTab !== HOME_TAB_INDEX || this.homeFloatingAction !== HOME_FLOATING_HIDDEN)) {
             FloatingComposeButton({
               bottomInset: this.floatingTabBottomMargin(),
@@ -6544,11 +6880,16 @@ struct Index {
         .width('100%')
         .height('100%')
         .clip(false)
+        .scale({ x: this.rootPageMotion.scale, y: this.rootPageMotion.scale })
+        .opacity(this.rootPageMotion.opacity)
       }
+      .customNavContentTransition((from: NavContentInfo, to: NavContentInfo,
+        operation: NavigationOperation): NavigationAnimatedTransition | undefined =>
+        officialPageTransition(this.getUIContext(), this.rootPageMotion, this.pageTransitionMode, from, to, operation))
       .direction(isAppRtl(this.appLocale) ? Direction.Rtl : Direction.Ltr)
       .titleBar(this.rootTitleBarOptions())
       .titleMode(HdsNavigationTitleMode.MINI)
-      .hideTitleBar(false)
+      .hideTitleBar(this.currentTab === ME_TAB_INDEX)
       .mode(this.mainNavigationMode)
       .enableModeChangeAnimation(true)
       .navBarWidth(this.isDesktopLayout() ? 360 : 480)
@@ -6563,8 +6904,9 @@ struct Index {
       .ignoreLayoutSafeArea([LayoutSafeAreaType.SYSTEM], [LayoutSafeAreaEdge.BOTTOM])
       .width('100%')
       .height('100%')
-      .backgroundColor(this.themedPageSurface())
-      .clip(true)
+      .backgroundColor(pageCanvasColor(this.displayMode, this.darkSurface, this.pageBackgroundValue))
+      .clip(this.currentTab !== ME_TAB_INDEX && this.desktopRoute !== 'UserDetail' &&
+        this.desktopRoute !== 'CommunityTimeline' && this.desktopRoute !== 'ListTimeline')
     } else {
       Navigation() {
         Stack({ alignContent: Alignment.TopStart }) {
@@ -6572,7 +6914,7 @@ struct Index {
           if (this.isHomeChromeVisible() && this.pendingNewPosts.length > 0) {
             this.NewPostsCapsule()
           }
-          if (this.composeButtonEnabled &&
+          if (this.composeButtonEnabled && this.currentTab !== ME_TAB_INDEX &&
             (this.currentTab !== HOME_TAB_INDEX || this.homeFloatingAction !== HOME_FLOATING_HIDDEN)) {
             FloatingComposeButton({
               bottomInset: 0,
@@ -6604,24 +6946,20 @@ struct Index {
       }
       .width('100%')
       .height('100%')
-      .backgroundColor(this.themedPageSurface())
+      .backgroundColor(pageCanvasColor(this.displayMode, this.darkSurface, this.pageBackgroundValue))
       .title(this.RootNavigationTitle())
       .titleMode(NavigationTitleMode.Mini)
-      .hideTitleBar(false)
+      .hideTitleBar(this.currentTab === ME_TAB_INDEX)
       .mode(NavigationMode.Stack)
       .hideBackButton(true)
       .id(MAIN_NAVIGATION_ID)
     }
   }
 
-  build(): void {
-    Stack() {
-      if (this.isDesktopLayout()) {
-        this.DesktopShell()
-      } else if (this.supportsHdsNavigation()) {
-        Stack() {
+  @Builder
+  private CustomSideBarHost(materialType: number): void {
         HdsSideBar({
-          sideBarPanelBuilder: this.sideBarPanelBuilder,
+          sideBarPanelBuilder: (): void => { this.SideBarPanelBuilder(materialType); },
           contentPanelBuilder: this.contentPanelBuilder,
           isShowSideBar: this.showSideDrawer,
           $isShowSideBar: (show: boolean): void => { this.showSideDrawer = show; },
@@ -6641,11 +6979,55 @@ struct Index {
         .width('100%')
         .height('100%')
         .backgroundColor(Color.Transparent)
+        .id(materialType === SIDEBAR_MATERIAL_GLASS ? 'glass-sidebar-host' :
+          (materialType === SIDEBAR_MATERIAL_BLUR ? 'gradient-sidebar-host' : 'plain-sidebar-host'))
+  }
+
+  @Builder
+  private SystemSideBarHost(): void {
+        HdsSideBar({
+          sideBarPanelBuilder: this.sideBarPanelBuilder,
+          contentPanelBuilder: this.contentPanelBuilder,
+          isShowSideBar: this.showSideDrawer,
+          $isShowSideBar: (show: boolean): void => { this.showSideDrawer = show; },
+          onChange: (show: boolean): void => { this.showSideDrawer = show; },
+          sideBarWidth: this.sideDrawerWidth(),
+          sideBarPosition: SideBarPosition.Start,
+          maxSideBarWidth: this.sideDrawerWidth(),
+          minContentWidth: this.isLargeScreen() ? 520 : 0,
+          sideBarContainerType: this.isLargeScreen() ? SideBarContainerType.Embed : SideBarContainerType.Overlay,
+          contentAreaMask: !this.isLargeScreen(),
+          autoHide: ResponsiveLayout.isSmall(this.breakpoint),
+          scaleContentEnabled: this.isLargeScreen(),
+          swipeEnabled: !this.isLargeScreen()
+        })
+        .width('100%')
+        .height('100%')
+        .id('system-sidebar-host')
+  }
+
+  build(): void {
+    Stack() {
+      appPageBackground()
+      if (this.isDesktopLayout()) {
+        this.DesktopShell()
+      } else if (this.supportsHdsNavigation()) {
+        Stack() {
+          // Each mode owns a distinct host. Destroying the previous branch
+          // clears native blur/material state instead of mutating one host.
+          if (this.sidebarMaterialType === SIDEBAR_MATERIAL_SYSTEM) {
+            if (this.desktopRailMaterialLevel >= 0) { this.SystemSideBarHost() }
+            else { this.CustomSideBarHost(SIDEBAR_MATERIAL_SYSTEM) }
+          } else if (this.sidebarMaterialType === SIDEBAR_MATERIAL_BLUR) {
+            this.CustomSideBarHost(SIDEBAR_MATERIAL_BLUR)
+          } else {
+            this.CustomSideBarHost(SIDEBAR_MATERIAL_GLASS)
+          }
 
         }
         .width('100%')
         .height('100%')
-        .backgroundColor(this.themedPageSurface())
+        .backgroundColor(pageCanvasColor(this.displayMode, this.darkSurface, this.pageBackgroundValue))
         .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
       } else {
         this.ContentPanelBuilder();
@@ -6666,10 +7048,7 @@ struct Index {
       // 半模态以宿主节点 id 作为 key（引擎侧 SheetKey(targetId)），一个节点只能挂一个。
       // 同一节点上排在后面的 bindSheet(isShow = false) 会把前面刚拉起来的弹窗直接关掉，
       // 所以登录、引导与中秋弹窗各挂一个零尺寸宿主节点，根节点只保留链接预览。
-      XXAuthPopupHost({ blocked: this.showOnboardingGuide || this.showLoginSheet ||
-        this.showMidAutumnGreeting || this.showChatUnlock || this.showLinkPreview ||
-        this.showSideDrawer || this.contentDestinationOpen || this.photoOverlayOpen ||
-        this.showSpacePreview || this.showPauseTopics || this.showFollowingOrder })
+      XXAuthPopupHost({ blocked: this.popupHostBlocked() })
       Column().width(0).height(0)
         .bindSheet($$this.showSpacePreview, this.SpacePreviewContent(), sheetMaterialOptions({
           width: 560,
@@ -6769,15 +7148,15 @@ struct Index {
   }
 
   @Builder
-  private SideBarPanelBuilder(): void {
+  private SideBarPanelBuilder(materialType: number): void {
     XSideDrawer({
+      sidebarMaterialType: materialType,
       profile: this.profile,
       fallbackName: this.handleText.length > 1 ? this.handleText.substring(1) : 'Harmony X',
       fallbackHandle: this.handleText.length > 0 ? this.handleText : '@harmonyx',
       onClose: (): void => { this.showSideDrawer = false; },
       onProfile: (): void => {
-        this.showSideDrawer = false;
-        this.goMe();
+        this.openOwnProfile();
       },
       onFollowing: (): void => {
         this.showSideDrawer = false;
@@ -6806,7 +7185,17 @@ struct Index {
         this.DesktopRootPage()
       } else if (this.supportsHdsNavigation()) {
         this.RootHdsTabs()
-        if (!this.usesFloatingTabBar()) {
+        if (this.usesFloatingTabBar() && this.rootLiquidTabIndicatorEnabled) {
+          RootLiquidTabIndicator({ selectedPage: this.currentTab, pagesMask: this.bottomBarPagesMask,
+            requestedPage: this.liquidTabRequestedPage,
+            showLabel: this.rootTabLabelsVisible, hidden: this.tabBarHidden,
+            materialLevel: this.resolveHomeTabMaterialLevel(),
+            unreadNotifications: this.unreadNotifications, unreadMessages: this.unreadMessages,
+            onSelect: (visibleIndex: number): void => this.hdsTabsController.changeIndex(visibleIndex),
+            onSelectedClick: (visibleIndex: number): void => this.onRootTabBarClick(visibleIndex) })
+            .width('100%').height($r('app.float.root_liquid_tab_overlay_height'))
+            .align(Alignment.Bottom)
+        } else if (!this.usesFloatingTabBar()) {
           this.ClassicTabTouchLayer()
         }
       } else {
@@ -6846,7 +7235,7 @@ struct Index {
         }
         .width('100%')
         .height('100%')
-        .backgroundColor(this.themedPageSurface())
+        .backgroundColor(pageCanvasColor(this.displayMode, this.darkSurface, this.pageBackgroundValue))
         .barPosition(BarPosition.End)
         .barOverlap(this.usesFloatingTabBar())
         .vertical(false)
@@ -6856,7 +7245,7 @@ struct Index {
         // a modifier before HdsTabs mounts can leave its first layout at 0vp.
         .barFloatingStyle(this.rootTabFloatingStyle())
         .scrollable(this.rootTabsAreSwipeEnabled())
-        .animationDuration(ROOT_TAB_SWITCH_DURATION_MS)
+        .animationDuration(this.reduceMotion ? 0 : Math.round(ROOT_TAB_SWITCH_DURATION_MS * this.preferredMotionDuration / 300))
         .onChange((index: number) => {
           this.onTabChange(this.bottomBarPageAt(index));
         })
@@ -6877,7 +7266,7 @@ struct Index {
         .barOverlap(true)
         .barHeight(this.tabBarHidden ? 0 : this.classicTabBarHeight())
         .scrollable(this.rootTabsAreSwipeEnabled())
-        .animationDuration(ROOT_TAB_SWITCH_DURATION_MS)
+        .animationDuration(this.reduceMotion ? 0 : Math.round(ROOT_TAB_SWITCH_DURATION_MS * this.preferredMotionDuration / 300))
         .onChange((index: number) => {
           this.onTabChange(this.bottomBarPageAt(index));
         })
@@ -6943,6 +7332,8 @@ struct Index {
       NativeAccountBuilder();
     } else if (name === 'UserDetail') {
       UserDetailBuilder();
+    } else if (name === 'EditProfile') {
+      EditProfileBuilder();
     } else if (name === 'Bookmarks') {
       BookmarksBuilder();
     } else if (name === 'UserList') {
@@ -6963,6 +7354,8 @@ struct Index {
       SpaceDraftBuilder();
     } else if (name === 'TimelineManager') {
       TimelineManagerBuilder();
+    } else if (name === 'CardSettings') {
+      CardSettingsBuilder();
     } else if (name === 'ListTimeline') {
       ListTimelineBuilder();
     } else if (name === 'ListMembers') {
@@ -7001,6 +7394,8 @@ struct Index {
       DmInfoBuilder();
     } else if (name === 'DmGroup') {
       DmGroupBuilder();
+    } else if (name === 'PageBackground') {
+      PageBackgroundBuilder();
     } else if (name === 'ChatBackground') {
       ChatBackgroundBuilder();
     } else if (name === 'DmRequests') {
@@ -7139,6 +7534,7 @@ struct Index {
   @Builder
   private ClassicTabBar(index: number, icon: Resource, label: Resource): void {
     RootBottomTabItem({
+      page: index,
       icon: icon,
       activeIcon: icon,
       label: label,
@@ -7186,6 +7582,7 @@ struct Index {
   @Builder
   private HdsTabBar(index: number, icon: Resource, label: Resource): void {
     RootBottomTabItem({
+      page: index,
       icon: icon,
       activeIcon: icon,
       label: label,
@@ -7195,6 +7592,7 @@ struct Index {
       showLabel: this.rootTabLabelsVisible,
       accessibleLabel: this.text(label)
     })
+    .id('root-floating-tab-' + index.toString())
   }
 
   // Fallback for systems without API 26 material support.
@@ -7205,7 +7603,7 @@ struct Index {
     }
     .width('100%')
     .padding({ left: 12, right: 12, top: this.statusBarHeight + 8, bottom: 8 })
-    .backgroundColor(this.themedPageSurface())
+    .backgroundColor(pageCanvasColor(this.displayMode, this.darkSurface, this.pageBackgroundValue))
   }
 
   // The root navigation owns the common title-bar identity row for every tab.
@@ -7414,7 +7812,7 @@ struct Index {
   private TitleBarMaterialLayer(): void {
     // 只有"玻璃材质"这一档才挂我们自制的这块玻璃面板；另外两档完全交给 HDS
     // 自己的标题栏样式，所以这里连背景都不留。
-    if (customTitleBarGlassEnabled(this.titleBarStyleMode)) {
+    if (this.chromeTab !== ME_TAB_INDEX && customTitleBarGlassEnabled(this.titleBarStyleMode)) {
       if (this.supportsImmersiveMaterial()) {
         Column()
           // Size and place the surface by hand: it is oversized on the top, left
@@ -7510,6 +7908,7 @@ struct Index {
         onOptions: (index: number): void => this.openHomeTimelineOptions(index) }).layoutWeight(1)
       Button({ type: ButtonType.Circle }) {
         SymbolGlyph($r('sys.symbol.plus')).fontSize(18).fontColor([$r('app.color.text_secondary')])
+          .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), true, this.componentHdrRatio))
       }.width(32).height(36).padding(6).margin({ right: 12 }).backgroundColor(Color.Transparent)
         .id('home-manage-timelines').accessibilityText(this.text($r('app.string.timeline_manage')))
         .onClick((): void => this.openTimelineManager())
@@ -7546,6 +7945,7 @@ struct Index {
   private NotificationSettingsButton(): void {
     Button({ type: ButtonType.Circle }) {
       SymbolGlyph($r('sys.symbol.gearshape')).fontSize(24).fontColor([$r('app.color.text_primary')])
+          .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), true, this.componentHdrRatio))
     }.width(36).height(36).padding(4).backgroundColor(Color.Transparent)
       .accessibilityText(this.text($r('app.string.settings_notifications')))
       .onClick((): void => {
@@ -7640,6 +8040,7 @@ struct Index {
         SymbolGlyph($r('sys.symbol.person_badge_plus'))
           .fontSize($r('app.float.follow_header_symbol_size'))
           .fontColor([$r('app.color.text_primary')])
+          .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), true, this.componentHdrRatio))
         if (this.liveBadge.length > 0) {
           Column().width($r('app.float.follow_status_dot_size')).height($r('app.float.follow_status_dot_size'))
             .backgroundColor($r('app.color.repost')).borderRadius(5)
@@ -7756,6 +8157,7 @@ struct Index {
   @Builder
   private TabBar(index: number, icon: Resource, activeIcon: Resource, label: string): void {
     RootBottomTabItem({
+      page: index,
       icon: icon,
       activeIcon: activeIcon,
       label: label,
@@ -7778,6 +8180,7 @@ struct Index {
     }
     TweetCard({
       tweet: tweet,
+      narrowColumn: this.useNarrowTimelineCards(),
       videoFeedEnabled: true,
       homeTimelineVideo: true,
       recordRecommendationSeen: index === 0,
@@ -7821,10 +8224,11 @@ struct Index {
           .height(18)
           .color(this.accentColor)
           .margin({ top: 14, bottom: 14 })
-      } else {
+      } else if (this.filteredTimeline(index).length > 0 ||
+        !(index === this.homeTabIndex() ? this.loading : !this.homeSnapshotAt(index).loaded)) {
         Text((index === this.homeTabIndex() ? this.hasMoreTimeline : this.homeSnapshotAt(index).hasMore) ? $r('app.string.timeline_load_more') : $r('app.string.timeline_no_more')).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Body_S'))
-          .fontColor($r('app.color.text_secondary'))
+          .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
           .margin({ top: 16, bottom: 16 })
       }
     }
@@ -7846,6 +8250,7 @@ struct Index {
   private HomePromotion(post: XXAuthPromotionPost): void {
     PromotionPostCard({
       post: post,
+      narrowColumn: this.useNarrowTimelineCards(),
       onOpen: (): void => { this.openPromotionLink(post.link); },
       onHideSession: (): void => { this.hidePromotionForSession(); },
       onHideWeek: (): void => { this.hidePromotionPost(); }
@@ -7862,7 +8267,7 @@ struct Index {
     .width('100%')
     .height('100%')
     .id('harmonyx-home-list-' + this.homeTabItems()[index].key)
-    .backgroundColor(this.themedPageSurface())
+    .backgroundColor(pageCanvasColor(this.displayMode, this.darkSurface, this.pageBackgroundValue))
     .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: true })
     .scrollBar(BarState.Off)
     .contentEndOffset(this.contentBottomInset())
@@ -7871,6 +8276,7 @@ struct Index {
     .nestedScroll({ scrollForward: NestedScrollMode.SELF_FIRST, scrollBackward: NestedScrollMode.SELF_FIRST })
     .cachedCount(4, this.isDesktopLayout())
     .onScrollIndex((first: number, last: number): void => {
+      this.onHomeFeedRendered(index, last);
       if (index === this.homeTabIndex()) {
         this.rememberHomeVisibleItem(first);
         if (!this.homeViewportChanging && last >= this.timeline.length - 6) { this.requestMoreTimeline(); }
@@ -7889,19 +8295,20 @@ struct Index {
   @Builder
   private HomeWaterFlow(index: number): void {
       WaterFlow({ scroller: this.contentPageScroller('home', this.homeTabItems()[index].key),
-        sections: this.pageSections('home', this.homeTabItems()[index].key, this.filteredTimeline(index).length),
+        sections: this.pageSections('home', this.homeTabItems()[index].key,
+          this.homePageDataSource(index).contentCount()),
         layoutMode: WaterFlowLayoutMode.SLIDING_WINDOW }) {
         LazyForEach(this.homePageDataSource(index), (item: TimelinePageItem) => {
           FlowItem() { this.HomePageItem(item, index) }.width('100%')
         }, (item: TimelinePageItem): string => item.key)
       }
       .columnsTemplate(this.timelineColumnsTemplate())
-      .columnsGap(1)
-      .rowsGap(0)
+      .columnsGap(this.useNarrowTimelineCards() ? 6 : 1)
+      .rowsGap(this.useNarrowTimelineCards() ? 8 : 0)
       .width('100%')
       .height('100%')
       .id('harmonyx-home-flow-' + this.homeTabItems()[index].key)
-      .backgroundColor(this.themedPageSurface())
+      .backgroundColor(pageCanvasColor(this.displayMode, this.darkSurface, this.pageBackgroundValue))
       .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: true })
       .scrollBar(BarState.Off)
       .contentEndOffset(this.contentBottomInset())
@@ -7910,6 +8317,7 @@ struct Index {
       .nestedScroll({ scrollForward: NestedScrollMode.SELF_FIRST, scrollBackward: NestedScrollMode.SELF_FIRST })
       .cachedCount(8, this.isDesktopLayout())
       .onScrollIndex((first: number, last: number): void => {
+        this.onHomeFeedRendered(index, last);
         if (index === this.homeTabIndex()) { this.rememberHomeVisibleItem(first); }
         if (index === this.homeTabIndex() && !this.homeViewportChanging && last >= this.timeline.length - 6) {
           this.requestMoreTimeline();
@@ -7999,7 +8407,7 @@ struct Index {
         ListItem() {
           Text(this.exploreCategoryPages[index].status).fontFamily(this.appFontFamily)
             .fontSize($r('sys.float.Body_S'))
-            .fontColor($r('app.color.text_secondary'))
+            .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
             .width('92%')
             .padding({ top: 4, bottom: 8 })
         }
@@ -8034,7 +8442,7 @@ struct Index {
             Text(this.exploreCategoryPages[index].status.length > 0 ? this.exploreCategoryPages[index].status :
               $r('app.string.explore_section_empty')).fontFamily(this.appFontFamily)
               .fontSize($r('sys.float.Body_L'))
-              .fontColor($r('app.color.text_secondary'))
+              .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
               .width('100%')
               .textAlign(TextAlign.Center)
               .padding({ top: 48, bottom: 48 })
@@ -8044,7 +8452,7 @@ struct Index {
       }
       .width('100%')
       .height('100%')
-      .backgroundColor(this.themedPageSurface())
+      .backgroundColor(pageCanvasColor(this.displayMode, this.darkSurface, this.pageBackgroundValue))
       .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: true })
       .scrollBar(BarState.Off)
       .contentEndOffset(this.contentBottomInset())
@@ -8076,7 +8484,7 @@ struct Index {
       Text(title).fontFamily(this.appFontFamily)
         .fontSize($r('sys.float.Title_M'))
         .fontWeight(FontWeight.Bold)
-        .fontColor($r('app.color.text_primary'))
+        .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
         .width('92%')
         .padding({ top: 14, bottom: 6 })
     }
@@ -8113,6 +8521,11 @@ struct Index {
           onOpen: (r: UserRow): void => this.openUserRow(r),
           onFollowChanged: (r: UserRow, next: boolean): Promise<boolean> => this.applyRowFollow(r, next)
         })
+          .visualEffect(new hdsEffect.HdsEffectBuilder()
+            .pointLight({
+              illuminatedType: hdsEffect.PointLightIlluminatedType.BORDER_CONTENT
+            })
+            .buildEffect())
       }, (row: UserRow) => 'explore-card-user-' + card.key + '-' + row.id)
       if (card.footerText.length > 0) {
         Text(card.footerText).fontFamily(this.appFontFamily)
@@ -8159,12 +8572,12 @@ struct Index {
                 .fontSize($r('sys.float.Body_S'))
                 .fontWeight(tile.status === 'LIVE' ? FontWeight.Bold : FontWeight.Medium)
                 .fontColor(tile.status === 'LIVE' ? this.accentColor :
-                  $r('app.color.text_secondary'))
+                  pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, this.themedFieldSurface()))
                 .maxLines(1)
               Blank()
               Text(tile.schedule).fontFamily(this.appFontFamily)
                 .fontSize($r('sys.float.Body_S'))
-                .fontColor($r('app.color.text_secondary'))
+                .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, this.themedFieldSurface()))
                 .maxLines(1)
             }
             .width('100%')
@@ -8180,7 +8593,7 @@ struct Index {
                 Text(tile.teamOne).fontFamily(this.appFontFamily)
                   .fontSize($r('sys.float.Subtitle_S'))
                   .fontWeight(FontWeight.Bold)
-                  .fontColor($r('app.color.text_primary'))
+                  .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, this.themedFieldSurface()))
                   .maxLines(1)
               }
               Blank()
@@ -8188,7 +8601,7 @@ struct Index {
                 Text(tile.scoreOne).fontFamily(this.appFontFamily)
                   .fontSize($r('sys.float.Title_M'))
                   .fontWeight(FontWeight.Bold)
-                  .fontColor($r('app.color.text_primary'))
+                  .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, this.themedFieldSurface()))
               }
             }
             .width('100%')
@@ -8205,7 +8618,7 @@ struct Index {
                 Text(tile.teamTwo).fontFamily(this.appFontFamily)
                   .fontSize($r('sys.float.Subtitle_S'))
                   .fontWeight(FontWeight.Bold)
-                  .fontColor($r('app.color.text_primary'))
+                  .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, this.themedFieldSurface()))
                   .maxLines(1)
               }
               Blank()
@@ -8213,7 +8626,7 @@ struct Index {
                 Text(tile.scoreTwo).fontFamily(this.appFontFamily)
                   .fontSize($r('sys.float.Title_M'))
                   .fontWeight(FontWeight.Bold)
-                  .fontColor($r('app.color.text_primary'))
+                  .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, this.themedFieldSurface()))
               }
             }
             .width('100%')
@@ -8224,6 +8637,11 @@ struct Index {
           .padding({ left: 12, right: 12, top: 12, bottom: 12 })
           .backgroundColor(this.themedFieldSurface())
           .borderRadius(14)
+          .visualEffect(new hdsEffect.HdsEffectBuilder()
+            .pointLight({
+              illuminatedType: hdsEffect.PointLightIlluminatedType.BORDER_CONTENT
+            })
+            .buildEffect())
           .onClick((): void => {
             this.openExploreDestination(tile.destinationUrl);
           })
@@ -8250,13 +8668,13 @@ struct Index {
         Text(frame.title).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Title_M'))
           .fontWeight(FontWeight.Bold)
-          .fontColor($r('app.color.text_primary'))
+          .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, this.themedFieldSurface()))
           .maxLines(1)
           .textOverflow({ overflow: TextOverflow.Ellipsis })
         if (frame.subtitle.length > 0) {
           Text(frame.subtitle).fontFamily(this.appFontFamily)
             .fontSize($r('sys.float.Body_M'))
-            .fontColor($r('app.color.text_secondary'))
+            .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, this.themedFieldSurface()))
             .maxLines(2)
             .textOverflow({ overflow: TextOverflow.Ellipsis })
         }
@@ -8270,6 +8688,11 @@ struct Index {
     .backgroundColor(this.themedFieldSurface())
     .borderRadius(14)
     .margin({ top: 6, bottom: 10 })
+    .visualEffect(new hdsEffect.HdsEffectBuilder()
+      .pointLight({
+        illuminatedType: hdsEffect.PointLightIlluminatedType.BORDER_CONTENT
+      })
+      .buildEffect())
     .onClick((): void => {
       this.openExploreDestination(frame.destinationUrl);
     })
@@ -8305,11 +8728,11 @@ struct Index {
       Column({ space: 3 }) {
         Text($r('app.string.explore_category_trending')).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Body_S'))
-          .fontColor($r('app.color.text_secondary'))
+          .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
         Text(trend).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Title_S'))
           .fontWeight(FontWeight.Bold)
-          .fontColor($r('app.color.text_primary'))
+          .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
           .maxLines(2)
           .textOverflow({ overflow: TextOverflow.Ellipsis })
       }
@@ -8317,7 +8740,7 @@ struct Index {
       .alignItems(HorizontalAlign.Start)
       SymbolGlyph($r('sys.symbol.ellipsis_circle'))
         .fontSize(20)
-        .fontColor([$r('app.color.text_secondary')])
+        .fontColor([pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)])
     }
     .width('92%')
     .padding({ top: 14, bottom: 14 })
@@ -8339,7 +8762,7 @@ struct Index {
         if (item.context.length > 0) {
           Text(item.context).fontFamily(this.appFontFamily)
             .fontSize($r('sys.float.Body_S'))
-            .fontColor($r('app.color.text_secondary'))
+            .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
             .maxLines(1)
             .textOverflow({ overflow: TextOverflow.Ellipsis })
         }
@@ -8348,7 +8771,7 @@ struct Index {
           Text(item.name).fontFamily(this.appFontFamily)
             .fontSize($r('sys.float.Title_S'))
             .fontWeight(FontWeight.Bold)
-            .fontColor($r('app.color.text_primary'))
+            .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
             .maxLines(2)
             .textOverflow({ overflow: TextOverflow.Ellipsis })
             .layoutWeight(1)
@@ -8382,11 +8805,16 @@ struct Index {
 
       SymbolGlyph($r('sys.symbol.ellipsis_circle'))
         .fontSize(20)
-        .fontColor([$r('app.color.text_secondary')])
+        .fontColor([pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)])
     }
     .width('92%')
     .padding({ top: 14, bottom: 14 })
     .border({ width: { bottom: 1 }, color: $r('app.color.divider') })
+    .visualEffect(new hdsEffect.HdsEffectBuilder()
+      .pointLight({
+        illuminatedType: hdsEffect.PointLightIlluminatedType.BORDER_CONTENT
+      })
+      .buildEffect())
     .onClick((): void => {
       this.submitSearchFromTrendItem(item);
     })
@@ -8499,6 +8927,11 @@ struct Index {
     .width('100%')
     .height(this.exploreHeroHeight(hero))
     .clip(true)
+    .visualEffect(new hdsEffect.HdsEffectBuilder()
+      .pointLight({
+        illuminatedType: hdsEffect.PointLightIlluminatedType.BORDER_CONTENT
+      })
+      .buildEffect())
     .onClick((): void => {
       if (!this.heroHasMedia(hero)) {
         this.openExploreDestination(hero.url);
@@ -8569,7 +9002,7 @@ struct Index {
       Text($r('app.string.explore_category_sports')).fontFamily(this.appFontFamily)
         .fontSize($r('sys.float.Title_S'))
         .fontWeight(FontWeight.Bold)
-        .fontColor($r('app.color.text_primary'))
+        .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
         .width('92%')
         .padding({ top: 12 })
 
@@ -8584,7 +9017,7 @@ struct Index {
                 Text(this.exploreTrendItems[index].name).fontFamily(this.appFontFamily)
                   .fontSize($r('sys.float.Body_M'))
                   .fontWeight(FontWeight.Medium)
-                  .fontColor($r('app.color.text_primary'))
+                  .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, this.themedFieldSurface()))
                   .maxLines(2)
                   .textAlign(TextAlign.Center)
                   .padding({ left: 12, right: 12, top: 64 })
@@ -8653,7 +9086,7 @@ struct Index {
     .width('100%')
     .height('100%')
     .onAreaChange((_oldValue: Area, newValue: Area): void => { this.captureExploreContentTop(newValue); })
-    .backgroundColor(this.themedPageSurface())
+    .backgroundColor(pageCanvasColor(this.displayMode, this.darkSurface, this.pageBackgroundValue))
     .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: true })
     .scrollBar(BarState.Off)
     .contentEndOffset(this.contentBottomInset())
@@ -8661,8 +9094,8 @@ struct Index {
     .clip(!this.isDesktopLayout())
     .cachedCount(8, this.isDesktopLayout())
     .columnsTemplate(this.timelineColumnsTemplate())
-    .rowsGap(0)
-    .columnsGap(1)
+    .rowsGap(this.useNarrowTimelineCards() ? 8 : 0)
+    .columnsGap(this.useNarrowTimelineCards() ? 6 : 1)
     .onScrollIndex((start: number): void => {
       if (start >= this.exploreResults.length - 2) {
         this.requestMoreExploreResults();
@@ -8689,7 +9122,7 @@ struct Index {
       }
       Text(this.exploreStatus).fontFamily(this.appFontFamily)
         .fontSize($r('sys.float.Body_S'))
-        .fontColor($r('app.color.text_secondary'))
+        .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
         .width('92%')
         .padding({ top: 4, bottom: 8 })
       if (this.activeExploreQuery.length > 0) {
@@ -8706,6 +9139,7 @@ struct Index {
   private ExploreTweetCard(tweet: Tweet): void {
     TweetCard({
       tweet: tweet,
+      narrowColumn: this.useNarrowTimelineCards(),
       videoFeedEnabled: true,
       onLikeChanged: (t: Tweet, liked: boolean): Promise<boolean> => this.onLike(t, liked),
       onRepostChanged: (t: Tweet, reposted: boolean): Promise<boolean> => this.onRepost(t, reposted),
@@ -8728,7 +9162,7 @@ struct Index {
       } else {
         Text(this.hasMoreExplore ? $r('app.string.explore_load_more') : $r('app.string.explore_no_more')).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Body_S'))
-          .fontColor(this.hasMoreExplore ? $r('app.color.text_accent') : $r('app.color.text_secondary'))
+          .fontColor(this.hasMoreExplore ? pageTextColor($r('app.color.text_accent'), this.pageBackgroundValue, Color.Transparent) : pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
       }
     }
     .width('100%')
@@ -8789,7 +9223,7 @@ struct Index {
           .layoutWeight(1)
           .height(40)
           .backgroundColor(this.themedFieldSurface())
-          .fontColor($r('app.color.text_primary'))
+          .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, this.themedFieldSurface()))
           .placeholderColor($r('app.color.text_secondary'))
           .borderRadius(20)
           .defaultFocus(autoFocus)
@@ -8815,6 +9249,8 @@ struct Index {
   @Builder
   private SearchHistoryPage(): void {
     HdsNavDestination() {
+      Stack({ alignContent: Alignment.TopStart }) {
+        appPageBackground()
       Column({ space: 0 }) {
         List({ scroller: this.searchHistoryScroller }) {
           ListItem() {
@@ -8822,7 +9258,7 @@ struct Index {
               Text($r('app.string.search_history_title')).fontFamily(this.appFontFamily)
                 .fontSize($r('sys.float.Title_S'))
                 .fontWeight(FontWeight.Bold)
-                .fontColor($r('app.color.text_primary'))
+                .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
                 .layoutWeight(1)
               MaterialButton({
                 buttonWidth: 38,
@@ -8841,7 +9277,7 @@ struct Index {
               }) {
                 SymbolGlyph($r('sys.symbol.trash'))
                   .fontSize(23)
-                  .fontColor([$r('app.color.text_primary')])
+                  .fontColor([pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)])
               }
             }
             .width('100%')
@@ -8854,7 +9290,7 @@ struct Index {
                 ForEach(this.searchHistory, (term: string) => {
                   Text(term).fontFamily(this.appFontFamily)
                     .fontSize($r('sys.float.Body_L'))
-                    .fontColor($r('app.color.text_primary'))
+                    .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, this.themedFieldSurface()))
                     .maxLines(1)
                     .textOverflow({ overflow: TextOverflow.Ellipsis })
                     .constraintSize({ maxWidth: 260 })
@@ -8874,7 +9310,7 @@ struct Index {
             ListItem() {
               Text($r('app.string.search_history_empty')).fontFamily(this.appFontFamily)
                 .fontSize($r('sys.float.Body_M'))
-                .fontColor($r('app.color.text_secondary'))
+                .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
                 .width('100%')
                 .padding({ top: 2, bottom: 20 })
             }
@@ -8884,7 +9320,7 @@ struct Index {
             Text($r('app.string.search_suggestion_title')).fontFamily(this.appFontFamily)
               .fontSize($r('sys.float.Title_S'))
               .fontWeight(FontWeight.Bold)
-              .fontColor($r('app.color.text_primary'))
+              .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
               .width('100%')
               .padding({ top: 18, bottom: 10 })
           }
@@ -8898,7 +9334,7 @@ struct Index {
                 Stack({ alignContent: Alignment.Center }) {
                   SymbolGlyph($r('sys.symbol.magnifyingglass'))
                     .fontSize(22)
-                    .fontColor([$r('app.color.text_secondary')])
+                    .fontColor([pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, this.themedFieldSurface())])
                 }
                 .width(48)
                 .height(48)
@@ -8908,7 +9344,7 @@ struct Index {
                 Text(trend).fontFamily(this.appFontFamily)
                   .fontSize($r('sys.float.Body_L'))
                   .fontWeight(FontWeight.Medium)
-                  .fontColor($r('app.color.text_primary'))
+                  .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
                   .layoutWeight(1)
                   .maxLines(2)
                   .textOverflow({ overflow: TextOverflow.Ellipsis })
@@ -8933,8 +9369,14 @@ struct Index {
       }
       .width('100%')
       .height('100%')
-      .backgroundColor(this.themedPageSurface())
+      .backgroundColor(pageCanvasColor(this.displayMode, this.darkSurface, this.pageBackgroundValue))
+    
+      }.width('100%').height('100%')
     }
+    .scale({ x: this.pageMotion0.scale, y: this.pageMotion0.scale })
+    .opacity(this.pageMotion0.opacity)
+    .onReady((context: NavDestinationContext): void => { this.pageMotion0.attach(context); })
+    .systemTransition(pageSystemTransition(this.pageTransitionMode))
     .transition(TransitionEffect.OPACITY)
     .titleMode(HdsNavDestinationTitleMode.MINI)
     .hideBackButton(false)
@@ -8949,7 +9391,7 @@ struct Index {
         this.displayMode, this.darkSurface, this.titleBarStyleMode)
     })
     .bindToScrollable([this.searchHistoryScroller])
-    .backgroundColor(this.themedPageSurface())
+    .backgroundColor(pageCanvasColor(this.displayMode, this.darkSurface, this.pageBackgroundValue))
     .onBackPressed((): boolean => {
       this.closeSearchHistoryPage();
       return true;
@@ -8970,7 +9412,7 @@ struct Index {
             ListItem() {
               Text(this.searchPageStatus(index)).fontFamily(this.appFontFamily)
                 .fontSize($r('sys.float.Body_S'))
-                .fontColor($r('app.color.text_secondary'))
+                .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
                 .width('92%')
                 .padding({ top: 6, bottom: 8 })
             }
@@ -9008,7 +9450,7 @@ struct Index {
               Text(SEARCH_PRODUCT_IDS[index] === 'Lists' ? $r('app.string.search_lists_empty') :
                 this.searchPageStatus(index).length > 0 ? this.searchPageStatus(index) : $r('app.string.search_empty_hint')).fontFamily(this.appFontFamily)
                 .fontSize($r('sys.float.Body_L'))
-                .fontColor($r('app.color.text_secondary'))
+                .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
                 .width('100%')
                 .textAlign(TextAlign.Center)
                 .padding({ top: 48, bottom: 48 })
@@ -9029,12 +9471,14 @@ struct Index {
       .onReachEnd((): void => {
         if (index === this.searchProductIndex()) { this.requestMoreExploreResults(); }
       })
-      .backgroundColor(this.themedPageSurface())
+      .backgroundColor(pageCanvasColor(this.displayMode, this.darkSurface, this.pageBackgroundValue))
   }
 
   @Builder
   private SearchResultsPage(): void {
     HdsNavDestination() {
+      Stack({ alignContent: Alignment.TopStart }) {
+        appPageBackground()
       Swiper(this.searchPager) {
         ForEach(SEARCH_PRODUCT_IDS, (product: string, index: number) => { this.SearchResultsContent(index) },
           (product: string): string => product)
@@ -9059,7 +9503,13 @@ struct Index {
           this.searchFilterOpen = false;
         }
       }, this.sheetMaterialEnabled, this.sheetMaterialLevel, this.sheetWindowBreakpoint, this.compactWindow))
+    
+      }.width('100%').height('100%')
     }
+    .scale({ x: this.pageMotion1.scale, y: this.pageMotion1.scale })
+    .opacity(this.pageMotion1.opacity)
+    .onReady((context: NavDestinationContext): void => { this.pageMotion1.attach(context); })
+    .systemTransition(pageSystemTransition(this.pageTransitionMode))
     .transition(TransitionEffect.OPACITY)
     .titleMode(HdsNavDestinationTitleMode.MINI)
     .hideBackButton(false)
@@ -9097,7 +9547,7 @@ struct Index {
         this.displayMode, this.darkSurface, this.titleBarStyleMode)
     })
     .bindToScrollable([this.getSearchSurfaceScroller()])
-    .backgroundColor(this.themedPageSurface())
+    .backgroundColor(pageCanvasColor(this.displayMode, this.darkSurface, this.pageBackgroundValue))
     .onBackPressed((): boolean => {
       this.closeSearchResultsPage();
       return true;
@@ -9369,7 +9819,7 @@ struct Index {
         .constraintSize({ maxWidth: 720 })
         .height(this.exploreSearchHeight())
         .backgroundColor(this.themedFieldSurface())
-        .fontColor($r('app.color.text_primary'))
+        .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, this.themedFieldSurface()))
         .placeholderColor($r('app.color.text_secondary'))
         .borderRadius(19)
         .defaultFocus(false)
@@ -9402,7 +9852,7 @@ struct Index {
       .margin({ top: this.contentTopInset(), bottom: 12 })
       .placeholderColor($r('app.color.text_secondary'))
       .backgroundColor(this.themedFieldSurface())
-      .fontColor($r('app.color.text_primary'))
+      .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, this.themedFieldSurface()))
       .borderRadius(22)
       .defaultFocus(false)
       .focusOnTouch(false)
@@ -9527,8 +9977,16 @@ struct Index {
   @Builder
   private NotificationsDestination(): void {
     HdsNavDestination() {
+      Stack({ alignContent: Alignment.TopStart }) {
+        appPageBackground()
       this.NotificationsTab(true)
+    
+      }.width('100%').height('100%')
     }
+    .scale({ x: this.pageMotion2.scale, y: this.pageMotion2.scale })
+    .opacity(this.pageMotion2.opacity)
+    .onReady((context: NavDestinationContext): void => { this.pageMotion2.attach(context); })
+    .systemTransition(pageSystemTransition(this.pageTransitionMode))
     .titleMode(HdsNavDestinationTitleMode.MINI)
     .titleBar({
       avoidLayoutSafeArea: true,
@@ -9541,7 +9999,7 @@ struct Index {
         this.displayMode, this.darkSurface, this.titleBarStyleMode)
     })
     .bindToScrollable(this.rootPageScrollers(NOTIFICATIONS_TAB_INDEX))
-    .backgroundColor(this.themedPageSurface())
+    .backgroundColor(pageCanvasColor(this.displayMode, this.darkSurface, this.pageBackgroundValue))
     .onBackPressed((): boolean => {
       ResponsiveLayout.closeContentDestination(this.navPathStack);
       return true;
@@ -9586,7 +10044,7 @@ struct Index {
             ListItem() {
               Text(this.notificationPageStatus(index)).fontFamily(this.appFontFamily)
                 .fontSize($r('sys.float.Body_S'))
-                .fontColor($r('app.color.text_secondary'))
+                .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
                 .width('92%')
                 .padding({ top: 4, bottom: 8 })
             }
@@ -9607,7 +10065,7 @@ struct Index {
           .align(Alignment.Center)
         }
         .width('100%')
-        .backgroundColor(this.themedPageSurface())
+        .backgroundColor(pageCanvasColor(this.displayMode, this.darkSurface, this.pageBackgroundValue))
         .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: true })
         .scrollBar(BarState.Off)
         .contentEndOffset(this.contentBottomInset())
@@ -9633,7 +10091,7 @@ struct Index {
     }
     .width('100%')
     .height('100%')
-    .backgroundColor(this.themedPageSurface())
+    .backgroundColor(pageCanvasColor(this.displayMode, this.darkSurface, this.pageBackgroundValue))
   }
 
   @Builder
@@ -9658,7 +10116,7 @@ struct Index {
     }
     .width('100%')
     .height('100%')
-    .backgroundColor(this.themedPageSurface())
+    .backgroundColor(pageCanvasColor(this.displayMode, this.darkSurface, this.pageBackgroundValue))
     .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: true })
     .scrollBar(BarState.Off)
     .contentEndOffset(this.contentBottomInset())
@@ -9667,8 +10125,8 @@ struct Index {
     .nestedScroll({ scrollForward: NestedScrollMode.SELF_FIRST, scrollBackward: NestedScrollMode.SELF_FIRST })
     .cachedCount(8, this.isDesktopLayout())
     .columnsTemplate(this.timelineColumnsTemplate())
-    .rowsGap(0)
-    .columnsGap(1)
+    .rowsGap(this.useNarrowTimelineCards() ? 8 : 0)
+    .columnsGap(this.useNarrowTimelineCards() ? 6 : 1)
     .onScrollIndex((start: number): void => {
       if (start >= this.visibleNotifications(index).length - 2) {
         if (index === this.notificationFilter) { this.requestMoreNotifications(); }
@@ -9694,7 +10152,7 @@ struct Index {
       if (this.notificationPageStatus(index).length > 0) {
         Text(this.notificationPageStatus(index)).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Body_S'))
-          .fontColor($r('app.color.text_secondary'))
+          .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
           .width('92%')
           .padding({ top: 4, bottom: 8 })
       }
@@ -9708,6 +10166,7 @@ struct Index {
     if (NotificationPresentation.isPost(n)) {
       NotificationTweetCard({ tweet: this.notificationTweet(n), compactAuthorHeader: true, showReplyContext: true,
         videoFeedEnabled: true,
+      narrowColumn: this.useNarrowTimelineCards(),
         onLikeChanged: (tweet: Tweet, liked: boolean): Promise<boolean> => this.onLike(tweet, liked),
         onRepostChanged: (tweet: Tweet, reposted: boolean): Promise<boolean> => this.onRepost(tweet, reposted),
         onReply: (tweet: Tweet): void => this.onReply(tweet),
@@ -9736,7 +10195,7 @@ struct Index {
       } else if (this.notificationPageHasMore(index)) {
         Text($r('app.string.timeline_load_more')).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Body_S'))
-          .fontColor($r('app.color.text_secondary'))
+          .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
       }
     }
     .width('100%')
@@ -9796,7 +10255,7 @@ struct Index {
         if (this.messagesStatus.length > 0 && this.messages.length === 0) {
           ListItem() {
             Column({ space: 12 }) {
-              Text(this.messagesStatus).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor($r('app.color.text_secondary'))
+              Text(this.messagesStatus).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
                 .textAlign(TextAlign.Center)
               Button($r('app.string.common_retry')).fontColor(this.accentColor).backgroundColor(Color.Transparent)
                 .onClick((): void => this.refreshMessages())
@@ -9805,7 +10264,7 @@ struct Index {
         } else if (this.visibleChats().length === 0 && !this.messagesLoading) {
           ListItem() {
             Text(this.chatSearch.length > 0 ? $r('app.string.chat_no_results') : $r('app.string.dm_empty')).fontFamily(this.appFontFamily)
-              .fontSize($r('sys.float.Body_L')).fontColor($r('app.color.text_secondary')).width('100%')
+              .fontSize($r('sys.float.Body_L')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).width('100%')
               .textAlign(TextAlign.Center).padding(24)
           }
         }
@@ -9820,7 +10279,7 @@ struct Index {
           }
         }, (message: DirectMessage): string => message.id + '|' + message.preview + '|' + message.time + '|' + message.unread + '|' + (message.pinned ?? false) + '|' + (message.avatarUrl ?? ''))
         ListItem() { Column().height(this.navigationIndicatorHeight + 96) }
-      }.width('100%').height('100%').padding({ left: 16, right: 16 }).backgroundColor(this.themedPageSurface())
+      }.width('100%').height('100%').padding({ left: 16, right: 16 }).backgroundColor(pageCanvasColor(this.displayMode, this.darkSurface, this.pageBackgroundValue))
         .clip(!this.isDesktopLayout()).cachedCount(4, this.isDesktopLayout())
         .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: true }).scrollBar(BarState.Off)
         .onDidScroll((scrollOffset: number): void => { this.onChromeScroll(scrollOffset); })
@@ -9834,523 +10293,34 @@ struct Index {
 
   @Builder
   private MeTab(): void {
-    if (!this.hasAnySession()) { this.LegacyMeTab() }
-    else {
-      Stack({ alignContent: Alignment.Top }) {
+    Stack({ alignContent: Alignment.Top }) {
+      AccountOverviewBanner({ url: this.hasAnySession() ? this.profile?.bannerUrl ?? '' : '',
+        topInset: this.contentTopInset(), pullOffset: this.meRefreshPullOffset,
+        scrollOffset: this.meBannerScrollOffset })
       Refresh({ refreshing: $$this.meRefreshing, builder: this.HiddenRefreshSpinner() }) {
         Scroll(this.profileScroller) {
-          Column({ space: 12 }) {
-            this.MeProfileSummary()
-            this.MeTimelinePicker()
-            Swiper(this.mePager) {
-              this.MeWaterFlow(0)
-              this.MeWaterFlow(1)
-            }.width('100%').height(Math.max(1, (this.windowHeight > 0 ? this.windowHeight : 844) - this.contentTopInset() - 52))
-              .index(this.meTimelineTab).loop(false).indicator(false).cachedCount(1)
-              .duration(280).curve(Curve.EaseOut).clip(true).disableSwipe(this.meRefreshing)
-              .onAppear((): void => { this.meTabPosition = this.meTimelineTab; })
-              .onChange((index: number): void => { this.selectMeTimeline(index); })
-              .onContentDidScroll((_selected: number, index: number, position: number, _length: number): void => {
-                this.meTabPosition = ProfileTabMotion.scrollPosition(index, position, 2);
-                this.ensureMeTimelineLoaded(index);
-              })
-              .onAnimationStart((_index: number, target: number): void => { this.ensureMeTimelineLoaded(target); })
-              .onAnimationEnd((index: number): void => { this.meTabPosition = index; })
-          }.width('100%').padding({ top: this.contentTopInset() })
+          Column() {
+            AccountOverview({ profile: this.profile, signedIn: this.hasAnySession(), topInset: this.contentTopInset(),
+              onProfile: (): void => this.openOwnProfile(),
+              onFollowing: (): void => this.openOwnUserList(USER_LIST_FOLLOWING),
+              onFollowers: (): void => this.openOwnUserList(USER_LIST_FOLLOWERS),
+              onAccounts: (): void => this.openAccounts(),
+              onLogin: (): void => this.goLogin(),
+              onSignOut: (): void => { this.signOut(); } })
+          }.width('100%').padding({ bottom: this.navigationIndicatorHeight + 96 })
         }.width('100%').height('100%').scrollBar(BarState.Off)
-          .onDidScroll((offset: number): void => { this.onChromeScroll(offset); })
-          .onScrollStop((): void => { this.onChromeScrollStop(); })
-      }.width('100%').height('100%').onRefreshing((): void => { this.onMeRefresh(); })
+          .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: true }).clip(!this.isDesktopLayout())
+          .onDidScroll((offset: number): void => {
+            this.meBannerScrollOffset = Math.max(0, this.profileScroller.currentOffset().yOffset);
+            this.onChromeScroll(offset);
+          })
+          .onScrollStop((): void => this.onChromeScrollStop())
+      }.width('100%').height('100%').onRefreshing((): void => this.onMeRefresh())
         .onOffsetChange((offset: number): void => { this.meRefreshPullOffset = offset; })
+        .ignoreLayoutSafeArea([LayoutSafeAreaType.SYSTEM], [LayoutSafeAreaEdge.TOP])
       RootRefreshIndicator({ topInset: this.contentTopInset(), pullOffset: this.meRefreshPullOffset,
         refreshing: this.meRefreshing, phoneLayout: !this.isDesktopLayout() })
-      }.width('100%').height('100%')
-    }
-  }
-
-  @Builder
-  private LegacyMeTab(): void {
-    if (this.useTimelineWaterFlow() && this.hasAnySession() && this.visibleMePosts().length > 0) {
-      Stack({ alignContent: Alignment.Top }) {
-      Refresh({ refreshing: $$this.meRefreshing, builder: this.HiddenRefreshSpinner() }) {
-        this.MeWaterFlow()
-      }
-      .width('100%')
-      .height('100%')
-      .clip(!this.isDesktopLayout())
-      .onOffsetChange((offset: number): void => { this.meRefreshPullOffset = offset; })
-      .onRefreshing((): void => {
-        this.onMeRefresh();
-      })
-      RootRefreshIndicator({ topInset: this.contentTopInset(), pullOffset: this.meRefreshPullOffset,
-        refreshing: this.meRefreshing, phoneLayout: !this.isDesktopLayout() })
-      }.width('100%').height('100%')
-    } else {
-      Stack({ alignContent: Alignment.Top }) {
-      Refresh({ refreshing: $$this.meRefreshing, builder: this.HiddenRefreshSpinner() }) {
-        Scroll(this.profileScroller) {
-      Column({ space: 12 }) {
-        Stack({ alignContent: Alignment.TopStart }) {
-          if (this.profileCardBannerUrl().length > 0) {
-            Image(this.profileCardBannerUrl())
-              .width('100%')
-              .height('100%')
-              .objectFit(ImageFit.Cover)
-          } else {
-            Column()
-              .width('100%')
-              .height('100%')
-              .linearGradient({
-                angle: 132,
-                colors: [
-                  [this.profileCardColor(0.64, 28), 0.0],
-                  [this.profileCardColor(0.42, 0), 0.56],
-                  [this.profileCardColor(0.22, -26), 1.0]
-                ]
-              })
-          }
-
-          Column()
-            .width('100%')
-            .height('100%')
-            .backgroundColor($r('app.color.profile_hero_scrim'))
-
-          Column({ space: 6 }) {
-            if (this.profile !== null && this.profile.avatarUrl !== undefined && this.profile.avatarUrl.length > 0) {
-              Image(this.profile.avatarUrl)
-                .width(64)
-                .height(64)
-                .objectFit(ImageFit.Cover)
-                .borderRadius(userAvatarRadius(64, 32, this.profile?.verifiedType ?? '', this.profile?.avatarShape ?? ''))
-                .clip(true)
-            } else {
-              Text(this.avatarInitial()).fontFamily(this.appFontFamily)
-                .width(64)
-                .height(64)
-                .fontSize($r('sys.float.Title_L'))
-                .fontWeight(FontWeight.Bold)
-                .fontColor($r('app.color.text_on_accent'))
-                .backgroundColor(this.accentColor)
-                .borderRadius(userAvatarRadius(64, 32, this.profile?.verifiedType ?? '', this.profile?.avatarShape ?? ''))
-                .textAlign(TextAlign.Center)
-            }
-            Text(this.profile !== null && this.profile.name.length > 0 ? this.profile.name :
-              (this.handleText.length > 0 ? this.handleText : $r('app.string.profile_welcome'))).fontFamily(this.appFontFamily)
-              .fontSize($r('sys.float.Title_S'))
-              .fontWeight(FontWeight.Bold)
-              .fontColor($r('app.color.text_on_brand'))
-            Row({ space: 4 }) {
-                if (this.hasAnySession()) {
-                  SymbolGlyph($r('sys.symbol.checkmark_circle_fill'))
-                    .fontSize(14)
-                    .fontColor([$r('app.color.repost')])
-                }
-              Text(this.hasAnySession() ? $r('app.string.profile_signed_in') : $r('app.string.profile_browse_free')).fontFamily(this.appFontFamily)
-                .fontSize($r('sys.float.Body_M'))
-                .fontColor($r('app.color.profile_hero_muted'))
-            }
-          }
-          .width('100%')
-          .padding(18)
-          .alignItems(HorizontalAlign.Start)
-        }
-        .width('92%')
-        .height(184)
-        .borderRadius(22)
-        .clip(true)
-        .margin({ top: 12 })
-        .visualEffect(new hdsEffect.HdsEffectBuilder()
-          .pointLight({
-            illuminatedType: hdsEffect.PointLightIlluminatedType.BORDER_CONTENT
-          })
-          .buildEffect())
-
-        if (this.profile !== null) {
-          if (this.profile.description.length > 0) {
-            Text(this.profile.description).fontFamily(this.appFontFamily)
-              .width('92%')
-              .fontSize($r('sys.float.Body_M'))
-              .fontColor($r('app.color.text_primary'))
-          }
-          Row({ space: 16 }) {
-            Row({ space: 4 }) {
-              Text(formatCount(this.profile.followingCount)).fontFamily(this.appFontFamily)
-                .fontSize($r('sys.float.Body_M'))
-                .fontWeight(FontWeight.Medium)
-                .fontColor($r('app.color.text_primary'))
-              Text($r('app.string.profile_following')).fontFamily(this.appFontFamily)
-                .fontSize($r('sys.float.Body_M'))
-                .fontColor($r('app.color.text_secondary'))
-            }
-            .padding({ top: 8, bottom: 8 })
-            .onClick((): void => {
-              this.openOwnUserList(USER_LIST_FOLLOWING);
-            })
-
-            Row({ space: 4 }) {
-              Text(formatCount(this.profile.followersCount)).fontFamily(this.appFontFamily)
-                .fontSize($r('sys.float.Body_M'))
-                .fontWeight(FontWeight.Medium)
-                .fontColor($r('app.color.text_primary'))
-              Text($r('app.string.profile_followers')).fontFamily(this.appFontFamily)
-                .fontSize($r('sys.float.Body_M'))
-                .fontColor($r('app.color.text_secondary'))
-            }
-            .padding({ top: 8, bottom: 8 })
-            .onClick((): void => {
-              this.openOwnUserList(USER_LIST_FOLLOWERS);
-            })
-
-            Text(formatCount(this.profile.postCount) + ' ' + this.text($r('app.string.profile_posts'))).fontFamily(this.appFontFamily)
-              .fontSize($r('sys.float.Body_M'))
-              .fontColor($r('app.color.text_secondary'))
-          }
-          .width('92%')
-        }
-
-        if (this.hasAnySession()) {
-          this.MeTimelinePicker()
-          if (this.visibleMeTimelineLoading()) {
-            LoadingProgress().width(18).height(18).color(this.accentColor).margin(16)
-          } else if (this.visibleMePosts().length === 0) {
-            Text(this.visibleMeTimelineStatus()).fontFamily(this.appFontFamily)
-              .fontSize($r('sys.float.Body_M'))
-              .fontColor($r('app.color.text_secondary'))
-              .width('92%')
-          }
-          ForEach(this.visibleMePosts(), (tweet: Tweet) => {
-            TweetCard({
-              tweet: tweet,
-              videoFeedEnabled: true,
-              onLikeChanged: (t: Tweet, liked: boolean): Promise<boolean> => this.onLike(t, liked),
-              onRepostChanged: (t: Tweet, reposted: boolean): Promise<boolean> => this.onRepost(t, reposted),
-              onReply: (t: Tweet): void => this.onReply(t),
-              onOpen: (t: Tweet): void => this.openPost(t),
-              onVideoOpen: (t: Tweet, media: MediaAttachment): void => this.openVideoFeed(t, media),
-              onAuthorTapped: (t: Tweet): void => this.openUser(t),
-              onMentionTapped: (handle: string): void => this.openMention(handle)
-            })
-          }, (tweet: Tweet) => tweet.id)
-          if (this.visibleMeTimelineHasMore()) {
-            Button(this.visibleMeTimelineLoadingMore() ? $r('app.string.status_loading') :
-              $r('app.string.timeline_load_more'), { stateEffect: true })
-              .width('92%')
-              .enabled(!this.visibleMeTimelineLoadingMore())
-              .onClick((): void => { this.loadMoreMeTimeline(); })
-          }
-        }
-
-        if (this.hasAnySession()) {
-          Button($r('app.string.accounts_manage'), { stateEffect: true })
-            .width('92%')
-            .backgroundColor(this.themedSecondaryButtonSurface())
-            .fontColor($r('app.color.text_primary'))
-            .onClick((): void => this.openLoginSheet())
-          Button($r('app.string.profile_sign_out'), { stateEffect: true })
-            .width('92%')
-            .backgroundColor(this.themedSecondaryButtonSurface())
-            .fontColor($r('app.color.danger'))
-            .onClick(() => this.signOut())
-        } else {
-          Button($r('app.string.profile_sign_in'), { stateEffect: true })
-            .width('92%')
-            .backgroundColor(this.accentColor)
-            .fontColor($r('app.color.text_on_accent'))
-            .onClick(() => this.goLogin())
-        }
-
-        Button($r('app.string.about_title'), { stateEffect: true }).fontFamily(this.appFontFamily)
-          .fontSize($r('sys.float.Body_M'))
-          .fontColor(this.accentColor)
-          .backgroundColor(Color.Transparent)
-          .width('92%')
-          .padding($r('app.float.about_row_gap'))
-          .margin({ top: 8 })
-          .onClick((): void => this.openRootContent({ name: 'About' }))
-      }
-      .width('100%')
-      .padding({ top: this.contentTopInset(), bottom: this.navigationIndicatorHeight + 96 })
-    }
-    .width('100%')
-    .height('100%')
-    .backgroundColor(this.themedPageSurface())
-    .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: true })
-      .scrollBar(BarState.Off)
-      .clip(!this.isDesktopLayout())
-      .onDidScroll((scrollOffset: number): void => {
-        this.onChromeScroll(scrollOffset);
-      })
-      .onScrollStop((): void => {
-        this.onChromeScrollStop();
-      })
-      }
-      .width('100%')
-      .height('100%')
-      .clip(!this.isDesktopLayout())
-      .onOffsetChange((offset: number): void => { this.meRefreshPullOffset = offset; })
-      .onRefreshing((): void => {
-        this.onMeRefresh();
-      })
-      RootRefreshIndicator({ topInset: this.contentTopInset(), pullOffset: this.meRefreshPullOffset,
-        refreshing: this.meRefreshing, phoneLayout: !this.isDesktopLayout() })
-      }.width('100%').height('100%')
-    }
-  }
-
-  @Builder
-  private MeTimelinePicker(): void {
-    AnimatedIconTabs({ items: [
-      { key: 'posts', label: $r('app.string.profile_detail_posts'), icon: $r('sys.symbol.doc_plaintext') },
-      { key: 'likes', label: $r('app.string.profile_detail_likes'), icon: $r('sys.symbol.heart') }
-    ], selected: this.meTimelineTab, tabPosition: this.meTabPosition,
-      onSelect: (index: number): void => this.mePager.changeIndex(index, true) })
-      .width('92%').margin({ top: 10 })
-  }
-
-  @Builder
-  private MeWaterFlow(index: number = this.meTimelineTab): void {
-    WaterFlow({
-      scroller: this.contentPageScroller('me', index.toString()),
-      sections: this.pageSections('me', index.toString(), this.visibleMePosts(index).length),
-      layoutMode: WaterFlowLayoutMode.SLIDING_WINDOW
-    }) {
-      ForEach(this.pagedFlowItems(this.visibleMePosts(index).length), (itemIndex: number) => {
-        FlowItem() {
-          if (itemIndex === 0) {
-            this.MeWaterFlowHeader(index)
-          } else if (itemIndex > this.visibleMePosts(index).length) {
-            this.MeWaterFlowFooter(index)
-          } else {
-            this.MeOwnPostCard(this.visibleMePosts(index)[itemIndex - 1])
-          }
-        }
-        .width('100%')
-      }, (itemIndex: number): string => 'me-flow-' + itemIndex.toString())
-    }
-    .width('100%')
-    .height('100%')
-    .backgroundColor(this.themedPageSurface())
-    .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: true })
-    .scrollBar(BarState.Off)
-    .nestedScroll({ scrollForward: NestedScrollMode.PARENT_FIRST, scrollBackward: NestedScrollMode.SELF_FIRST })
-    .clipContent(this.isDesktopLayout() ? ContentClipMode.SAFE_AREA : ContentClipMode.BOUNDARY)
-    .clip(!this.isDesktopLayout())
-    .cachedCount(8, this.isDesktopLayout())
-    .columnsTemplate(this.timelineColumnsTemplate())
-    .rowsGap(0)
-    .columnsGap(1)
-    .onScrollIndex((start: number): void => {
-      if (start >= this.visibleMePosts(index).length - 2 && this.visibleMeTimelineHasMore(index) &&
-        !this.visibleMeTimelineLoadingMore(index)) {
-        if (index === this.meTimelineTab) { this.loadMoreMeTimeline(index); }
-      }
-    })
-    .onDidScroll((scrollOffset: number): void => {
-      if (index === this.meTimelineTab) { this.onChromeScroll(scrollOffset); }
-    })
-    .onScrollStop((): void => {
-      if (index === this.meTimelineTab) { this.onChromeScrollStop(); }
-    })
-    .onReachEnd((): void => {
-      if (this.visibleMeTimelineHasMore(index) && !this.visibleMeTimelineLoadingMore(index)) {
-        if (index === this.meTimelineTab) { this.loadMoreMeTimeline(index); }
-      }
-    })
-  }
-
-  @Builder
-  private MeWaterFlowHeader(index: number): void {
-    Column({ space: 12 }) {
-      if (this.visibleMeTimelineLoading(index)) {
-        LoadingProgress()
-          .width(18)
-          .height(18)
-          .color(this.accentColor)
-          .margin(16)
-      } else if (this.visibleMePosts(index).length === 0) {
-        Text(this.visibleMeTimelineStatus(index)).fontFamily(this.appFontFamily)
-          .fontSize($r('sys.float.Body_M'))
-          .fontColor($r('app.color.text_secondary'))
-          .width('92%')
-      }
-    }
-    .width('100%')
-    .padding({ top: 8 })
-  }
-
-  @Builder
-  private MeProfileSummary(): void {
-    Column({ space: 12 }) {
-      Stack({ alignContent: Alignment.TopStart }) {
-        if (this.profileCardBannerUrl().length > 0) {
-          Image(this.profileCardBannerUrl())
-            .width('100%')
-            .height('100%')
-            .objectFit(ImageFit.Cover)
-        } else {
-          Column()
-            .width('100%')
-            .height('100%')
-            .linearGradient({
-              angle: 132,
-              colors: [
-                [this.profileCardColor(0.64, 28), 0.0],
-                [this.profileCardColor(0.42, 0), 0.56],
-                [this.profileCardColor(0.22, -26), 1.0]
-              ]
-            })
-        }
-
-        Column()
-          .width('100%')
-          .height('100%')
-          .backgroundColor($r('app.color.profile_hero_scrim'))
-
-        Column({ space: 6 }) {
-          if (this.profile !== null && this.profile.avatarUrl !== undefined && this.profile.avatarUrl.length > 0) {
-            Image(this.profile.avatarUrl)
-              .width(64)
-              .height(64)
-              .objectFit(ImageFit.Cover)
-              .borderRadius(userAvatarRadius(64, 32, this.profile?.verifiedType ?? '', this.profile?.avatarShape ?? ''))
-              .clip(true)
-          } else {
-            Text(this.avatarInitial()).fontFamily(this.appFontFamily)
-              .width(64)
-              .height(64)
-              .fontSize($r('sys.float.Title_L'))
-              .fontWeight(FontWeight.Bold)
-              .fontColor($r('app.color.text_on_accent'))
-              .backgroundColor(this.accentColor)
-              .borderRadius(userAvatarRadius(64, 32, this.profile?.verifiedType ?? '', this.profile?.avatarShape ?? ''))
-              .textAlign(TextAlign.Center)
-          }
-          Text(this.profile !== null && this.profile.name.length > 0 ? this.profile.name :
-            (this.handleText.length > 0 ? this.handleText : $r('app.string.profile_welcome'))).fontFamily(this.appFontFamily)
-            .fontSize($r('sys.float.Title_S'))
-            .fontWeight(FontWeight.Bold)
-            .fontColor($r('app.color.text_on_brand'))
-          Row({ space: 4 }) {
-            if (this.hasAnySession()) {
-              SymbolGlyph($r('sys.symbol.checkmark_circle_fill'))
-                .fontSize(14)
-                .fontColor([$r('app.color.repost')])
-            }
-            Text(this.hasAnySession() ? $r('app.string.profile_signed_in') : $r('app.string.profile_browse_free')).fontFamily(this.appFontFamily)
-              .fontSize($r('sys.float.Body_M'))
-              .fontColor($r('app.color.profile_hero_muted'))
-          }
-        }
-        .width('100%')
-        .padding(18)
-        .alignItems(HorizontalAlign.Start)
-      }
-      .width('92%')
-      .height(184)
-      .borderRadius(22)
-      .clip(true)
-      .margin({ top: 12 })
-      .visualEffect(new hdsEffect.HdsEffectBuilder()
-        .pointLight({
-          illuminatedType: hdsEffect.PointLightIlluminatedType.BORDER_CONTENT
-        })
-        .buildEffect())
-
-      if (this.profile !== null) {
-        if (this.profile.description.length > 0) {
-          Text(this.profile.description).fontFamily(this.appFontFamily)
-            .width('92%')
-            .fontSize($r('sys.float.Body_M'))
-            .fontColor($r('app.color.text_primary'))
-        }
-        Row({ space: 16 }) {
-          Row({ space: 4 }) {
-            Text(formatCount(this.profile.followingCount)).fontFamily(this.appFontFamily)
-              .fontSize($r('sys.float.Body_M'))
-              .fontWeight(FontWeight.Medium)
-              .fontColor($r('app.color.text_primary'))
-            Text($r('app.string.profile_following')).fontFamily(this.appFontFamily)
-              .fontSize($r('sys.float.Body_M'))
-              .fontColor($r('app.color.text_secondary'))
-          }
-          .padding({ top: 8, bottom: 8 })
-          .onClick((): void => {
-            this.openOwnUserList(USER_LIST_FOLLOWING);
-          })
-
-          Row({ space: 4 }) {
-            Text(formatCount(this.profile.followersCount)).fontFamily(this.appFontFamily)
-              .fontSize($r('sys.float.Body_M'))
-              .fontWeight(FontWeight.Medium)
-              .fontColor($r('app.color.text_primary'))
-            Text($r('app.string.profile_followers')).fontFamily(this.appFontFamily)
-              .fontSize($r('sys.float.Body_M'))
-              .fontColor($r('app.color.text_secondary'))
-          }
-          .padding({ top: 8, bottom: 8 })
-          .onClick((): void => {
-            this.openOwnUserList(USER_LIST_FOLLOWERS);
-          })
-
-          Text(formatCount(this.profile.postCount) + ' ' + this.text($r('app.string.profile_posts'))).fontFamily(this.appFontFamily)
-            .fontSize($r('sys.float.Body_M'))
-            .fontColor($r('app.color.text_secondary'))
-        }
-        .width('92%')
-      }
-    }
-    .width('100%')
-  }
-
-  @Builder
-  private MeOwnPostCard(tweet: Tweet): void {
-    TweetCard({
-      tweet: tweet,
-      videoFeedEnabled: true,
-      onLikeChanged: (t: Tweet, liked: boolean): Promise<boolean> => this.onLike(t, liked),
-      onRepostChanged: (t: Tweet, reposted: boolean): Promise<boolean> => this.onRepost(t, reposted),
-      onReply: (t: Tweet): void => this.onReply(t),
-      onOpen: (t: Tweet): void => this.openPost(t),
-      onVideoOpen: (t: Tweet, media: MediaAttachment): void => this.openVideoFeed(t, media),
-      onAuthorTapped: (t: Tweet): void => this.openUser(t),
-      onMentionTapped: (handle: string): void => this.openMention(handle)
-    })
-  }
-
-  @Builder
-  private MeWaterFlowFooter(index: number = this.meTimelineTab): void {
-    Column({ space: 12 }) {
-      if (this.visibleMeTimelineHasMore(index)) {
-        Button(this.visibleMeTimelineLoadingMore(index) ? $r('app.string.status_loading') :
-          $r('app.string.timeline_load_more'), { stateEffect: true })
-          .width('92%')
-          .enabled(!this.visibleMeTimelineLoadingMore(index))
-          .onClick((): void => {
-            this.loadMoreMeTimeline(index);
-          })
-      }
-      Button($r('app.string.accounts_manage'), { stateEffect: true })
-        .width('92%')
-        .backgroundColor(this.themedSecondaryButtonSurface())
-        .fontColor($r('app.color.text_primary'))
-        .onClick((): void => this.openLoginSheet())
-      Button($r('app.string.profile_sign_out'), { stateEffect: true })
-        .width('92%')
-        .backgroundColor(this.themedSecondaryButtonSurface())
-        .fontColor($r('app.color.danger'))
-        .onClick((): void => {
-          this.signOut();
-        })
-      Button($r('app.string.about_title'), { stateEffect: true }).fontFamily(this.appFontFamily)
-        .fontSize($r('sys.float.Body_M'))
-        .fontColor(this.accentColor)
-        .backgroundColor(Color.Transparent)
-        .width('92%')
-        .padding($r('app.float.about_row_gap'))
-        .margin({ top: 8 })
-        .onClick((): void => this.openRootContent({ name: 'About' }))
-    }
-    .width('100%')
-    .padding({ bottom: this.navigationIndicatorHeight + 96 })
+    }.width('100%').height('100%').backgroundColor(pageCanvasColor(this.displayMode, this.darkSurface, this.pageBackgroundValue))
+      .ignoreLayoutSafeArea([LayoutSafeAreaType.SYSTEM], [LayoutSafeAreaEdge.TOP])
   }
 }

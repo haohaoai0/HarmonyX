@@ -1,3 +1,8 @@
+import { pageTextColor } from '../utils/ThemeColors';
+import { appPageBackground } from '../components/PageBackgroundLayer';
+import { pageCanvasColor, pageReadingSurfaceColor } from '../utils/ThemeColors';
+import { STORAGE_KEY_PAGE_TRANSITION_MODE, DEFAULT_PAGE_TRANSITION_MODE } from '../services/PageTransitionSettingsStore';
+import { pageSystemTransition, PageTransitionMotion } from '../utils/PageTransition';
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
 import { STORAGE_KEY_SYSTEM_EMOJI_ENABLED } from '../services/AppearanceStore';
 import { userAvatarRadius, userVerifiedType, userAvatarShape, verificationBadgeColor } from '../utils/UserIdentity';
@@ -41,6 +46,9 @@ export function ReadAloudBuilder(): void {
 
 @Component
 export struct ReadAloudPage {
+  @StorageProp('harmonyx.page_background') private pageBackgroundValue: string = '';
+  @State private pageMotion: PageTransitionMotion = new PageTransitionMotion();
+  @StorageProp(STORAGE_KEY_PAGE_TRANSITION_MODE) private pageTransitionMode: string = DEFAULT_PAGE_TRANSITION_MODE;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @StorageProp(STORAGE_KEY_SYSTEM_EMOJI_ENABLED) private systemEmojiEnabled: boolean = false;
   @StorageProp(STORAGE_KEY_POST_TIME_NOW) private postTimeNow: number = Date.now();
@@ -243,13 +251,13 @@ export struct ReadAloudPage {
           Text(article.tweet.author.name).fontFamily(this.appFontFamily)
             .fontSize($r('sys.float.Body_L'))
             .fontWeight(FontWeight.Medium)
-            .fontColor($r('app.color.text_primary'))
+            .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, pageReadingSurfaceColor(cardSurfaceColor(this.themeDisplayMode, this.themeDarkSurface), this.pageBackgroundValue)))
             .maxLines(1)
             .textOverflow({ overflow: TextOverflow.Ellipsis })
           Text('@' + article.tweet.author.username + ' · ' +
             formatPostTime(article.tweet.createdAt, this.postTimeNow)).fontFamily(this.appFontFamily)
             .fontSize($r('sys.float.Body_M'))
-            .fontColor($r('app.color.text_secondary'))
+            .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, pageReadingSurfaceColor(cardSurfaceColor(this.themeDisplayMode, this.themeDarkSurface), this.pageBackgroundValue)))
             .maxLines(1)
             .textOverflow({ overflow: TextOverflow.Ellipsis })
         }
@@ -263,7 +271,7 @@ export struct ReadAloudPage {
         .fontSize($r('sys.float.Body_L'))
         .fontFamily(this.appFontFamily === DEFAULT_APP_FONT_FAMILY ? this.contentFontFamily : this.appFontFamily)
         .fontWeight(FontWeight.Medium)
-        .fontColor($r('app.color.text_primary'))
+        .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, pageReadingSurfaceColor(cardSurfaceColor(this.themeDisplayMode, this.themeDarkSurface), this.pageBackgroundValue)))
         .maxLines(12)
         .textOverflow({ overflow: TextOverflow.Ellipsis })
 
@@ -272,7 +280,7 @@ export struct ReadAloudPage {
           .width('100%')
           .fontSize($r('sys.float.Body_M'))
           .fontFamily(this.appFontFamily === DEFAULT_APP_FONT_FAMILY ? this.contentFontFamily : this.appFontFamily)
-          .fontColor($r('app.color.text_secondary'))
+          .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, fieldSurfaceColor(this.themeDisplayMode, this.themeDarkSurface)))
           .maxLines(4)
           .textOverflow({ overflow: TextOverflow.Ellipsis })
           .padding(10)
@@ -283,7 +291,7 @@ export struct ReadAloudPage {
     .width('100%')
     .padding(16)
     .borderRadius(20)
-    .backgroundColor(cardSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
+    .backgroundColor(pageReadingSurfaceColor(cardSurfaceColor(this.themeDisplayMode, this.themeDarkSurface), this.pageBackgroundValue))
   }
 
   @Builder
@@ -323,7 +331,7 @@ export struct ReadAloudPage {
       Button({ type: ButtonType.Normal, stateEffect: true }) {
         SymbolGlyph($r('sys.symbol.backward_end_fill'))
           .fontSize(24)
-          .fontColor([$r('app.color.text_primary')])
+          .fontColor([pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, secondaryButtonSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))])
       }
       .height(46)
       .layoutWeight(1)
@@ -341,7 +349,7 @@ export struct ReadAloudPage {
       Button({ type: ButtonType.Normal, stateEffect: true }) {
         SymbolGlyph($r('sys.symbol.forward_end_fill'))
           .fontSize(24)
-          .fontColor([$r('app.color.text_primary')])
+          .fontColor([pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, secondaryButtonSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))])
       }
       .height(46)
       .layoutWeight(1)
@@ -359,7 +367,7 @@ export struct ReadAloudPage {
       Button({ type: ButtonType.Normal, stateEffect: true }) {
         SymbolGlyph($r('sys.symbol.stop_circle_fill'))
           .fontSize(24)
-          .fontColor([$r('app.color.text_primary')])
+          .fontColor([pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, secondaryButtonSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))])
       }
       .height(46)
       .layoutWeight(1)
@@ -392,7 +400,7 @@ export struct ReadAloudPage {
       }
       Text(this.failure.length > 0 ? this.failure : this.text(this.statusText())).fontFamily(this.appFontFamily)
         .fontSize($r('sys.float.Body_M'))
-        .fontColor(this.failure.length > 0 ? $r('app.color.danger') : $r('app.color.text_secondary'))
+        .fontColor(this.failure.length > 0 ? $r('app.color.danger') : pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
         .maxLines(2)
     }
     .width('100%')
@@ -405,20 +413,20 @@ export struct ReadAloudPage {
       Text((index + 1).toString()).fontFamily(this.appFontFamily)
         .width(24)
         .fontSize($r('sys.float.Body_M'))
-        .fontColor($r('app.color.text_secondary'))
+        .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
         .textAlign(TextAlign.Center)
       Column({ space: 3 }) {
         Text(article.tweet.author.name + ' · @' + article.tweet.author.username).fontFamily(this.appFontFamily)
           .width('100%')
           .fontSize($r('sys.float.Body_M'))
-          .fontColor($r('app.color.text_secondary'))
+          .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
           .maxLines(1)
           .textOverflow({ overflow: TextOverflow.Ellipsis })
         Text() { EmojiSpans(this.getUIContext(), article.tweet.text, $r('sys.float.Body_L'), this.systemEmojiEnabled) }
           .width('100%')
           .fontSize($r('sys.float.Body_L'))
           .fontFamily(this.appFontFamily === DEFAULT_APP_FONT_FAMILY ? this.contentFontFamily : this.appFontFamily)
-          .fontColor($r('app.color.text_primary'))
+          .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
           .maxLines(2)
           .textOverflow({ overflow: TextOverflow.Ellipsis })
       }
@@ -434,7 +442,7 @@ export struct ReadAloudPage {
     .width('100%')
     .padding(12)
     .borderRadius(14)
-    .backgroundColor(pageSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
+    .backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue))
     .border({
       width: 1,
       color: article.tweet.id === this.currentId ? this.accentColor : $r('app.color.divider')
@@ -460,7 +468,7 @@ export struct ReadAloudPage {
             .width('100%')
             .fontSize($r('sys.float.Subtitle_L'))
             .fontWeight(FontWeight.Bold)
-            .fontColor($r('app.color.text_primary'))
+            .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
             .margin({ top: 4 })
           ForEach(this.articles, (article: ReadAloudArticle, index: number) => {
             this.QueueRow(article, index)
@@ -483,9 +491,17 @@ export struct ReadAloudPage {
 
   build(): void {
     HdsNavDestination() {
+      Stack({ alignContent: Alignment.TopStart }) {
+        appPageBackground()
       this.ContentBuilder();
+    
+      }.width('100%').height('100%')
     }
+    .scale({ x: this.pageMotion.scale, y: this.pageMotion.scale })
+    .opacity(this.pageMotion.opacity)
+    .systemTransition(pageSystemTransition(this.pageTransitionMode))
     .onReady((context: NavDestinationContext): void => {
+      this.pageMotion.attach(context);
       const param: ReadAloudRouteParam = context.pathInfo?.param as ReadAloudRouteParam;
       if (param !== undefined && param !== null) {
         void this.begin(param);
@@ -500,6 +516,6 @@ export struct ReadAloudPage {
       style: destinationTitleBarStyle(ScrollEffectType.GRADIENT_BLUR, this.themeDisplayMode,
         this.themeDarkSurface, this.titleBarStyleMode)
     })
-    .backgroundColor(pageSurfaceColor(this.themeDisplayMode, this.themeDarkSurface));
+    .backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue));
   }
 }

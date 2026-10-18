@@ -1,3 +1,5 @@
+import { menuActionVisible } from '../models/MenuActionCatalog';
+import { STORAGE_KEY_HIDDEN_MENU_ACTIONS } from '../services/MenuSettingsStore';
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
 import { common } from '@kit.AbilityKit';
 import { image } from '@kit.ImageKit';
@@ -13,6 +15,7 @@ import { MEDIA_DOWNLOAD_CANCELED, MEDIA_DOWNLOAD_SUCCESS, mediaDownloadService }
 import { chooseVideoDownloadUrl } from '../services/VideoDownloadChoice';
 import { proxyDownloadService } from '../services/ProxyDownloadService';
 import { proxyImageResolver } from '../services/ProxyImageResolver';
+import { backgroundImageStore } from '../services/BackgroundImageStore';
 import { chatPageMaterial } from '../utils/ChatMaterial';
 import { SystemMaterialUtil } from '../utils/SystemMaterial';
 import { ResponsiveLayout } from '../utils/ResponsiveLayout';
@@ -24,6 +27,7 @@ function EmptyMediaActionContent(_onLongPress: () => void): void { Column() {} }
 // clipboard and navigation start only after the context menu releases focus.
 @Component
 export struct PostMediaActions {
+  @StorageProp(STORAGE_KEY_HIDDEN_MENU_ACTIONS) private hiddenMenuActions: string = '';
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @Prop media: MediaAttachment;
   @BuilderParam content: (onLongPress: () => void) => void = EmptyMediaActionContent;
@@ -33,11 +37,17 @@ export struct PostMediaActions {
   private busy: boolean = false;
   private afterDismiss: (() => void) | null = null;
   private requestActions: () => void = (): void => {
-    if (!this.busy) { this.menuShown = true; }
+    const ids: string[] = this.media.type === 'photo' ?
+      ['photo.publish', 'photo.copy', 'photo.save', 'photo.background', 'photo.share'] : ['video.download', 'video.share'];
+    if (!this.busy && ids.some((id: string): boolean => this.menuVisible(id))) { this.menuShown = true; }
   };
 
   private text(resource: Resource): string {
     return (this.getUIContext().getHostContext() as common.UIAbilityContext).resourceManager.getStringSync(resource);
+  }
+
+  private menuVisible(id: string): boolean {
+    return menuActionVisible(this.hiddenMenuActions, id);
   }
 
   private sourceUrl(): string {
@@ -97,6 +107,19 @@ export struct PostMediaActions {
       if (pixels !== null) { proxyImageResolver.release(pixels); }
       this.busy = false;
     }
+  }
+
+  private async saveBackground(): Promise<void> {
+    if (this.busy) { return; }
+    this.busy = true;
+    const context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
+    promptAction.showToast({ message: this.text($r('app.string.chat_background_saving_photo')) });
+    try {
+      await backgroundImageStore.savePhoto(context, this.sourceUrl());
+      promptAction.showToast({ message: this.text($r('app.string.chat_background_saved_photo')), duration: 2600 });
+    } catch (error) {
+      promptAction.showToast({ message: this.text($r('app.string.chat_background_save_photo_failed')), duration: 2200 });
+    } finally { this.busy = false; }
   }
 
   private async localPhoto(): Promise<string> {
@@ -189,12 +212,25 @@ export struct PostMediaActions {
   private Actions(): void {
     Column() {
       if (this.media.type === 'photo') {
-        this.ActionRow($r('app.string.post_photo_publish'), $r('sys.symbol.square_and_pencil'), (): void => { void this.publishPhoto(); })
-        this.ActionRow($r('app.string.post_photo_copy'), $r('sys.symbol.plus_square_on_square'), (): void => { void this.copyPhoto(); })
+        if (this.menuVisible('photo.publish')) {
+          this.ActionRow($r('app.string.post_photo_publish'), $r('sys.symbol.square_and_pencil'), (): void => { void this.publishPhoto(); })
+        }
+        if (this.menuVisible('photo.copy')) {
+          this.ActionRow($r('app.string.post_photo_copy'), $r('sys.symbol.plus_square_on_square'), (): void => { void this.copyPhoto(); })
+        }
       }
-      this.ActionRow(this.media.type === 'photo' ? $r('app.string.post_photo_save_original') : $r('app.string.media_download'),
-        $r('sys.symbol.download'), (): void => this.save())
-      this.ActionRow($r('app.string.action_share'), $r('sys.symbol.share'), (): void => { void this.share(); })
+      if (this.menuVisible(this.media.type === 'photo' ? 'photo.save' : 'video.download')) {
+        this.ActionRow(this.media.type === 'photo' ? $r('app.string.post_photo_save_original') : $r('app.string.media_download'),
+          $r('sys.symbol.download'), (): void => this.save())
+      }
+      if (this.media.type === 'photo') {
+        if (this.menuVisible('photo.background')) {
+          this.ActionRow($r('app.string.post_photo_save_background'), $r('sys.symbol.picture'), (): void => { void this.saveBackground(); })
+        }
+      }
+      if (this.menuVisible(this.media.type === 'photo' ? 'photo.share' : 'video.share')) {
+        this.ActionRow($r('app.string.action_share'), $r('sys.symbol.share'), (): void => { void this.share(); })
+      }
     }.width(300).padding({ top: 8, bottom: 8 }).borderRadius(18).clip(true)
       .backgroundColor(SystemMaterialUtil.isApi26OrAbove() ? Color.Transparent : $r('app.color.bg_field'))
       .systemMaterial(chatPageMaterial())

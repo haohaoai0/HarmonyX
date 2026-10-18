@@ -159,7 +159,7 @@ export struct PostPollCard {
   build(): void {
     Column({ space: 8 }) {
       if (this.showMedia && (this.data().media?.length ?? 0) > 0) {
-        PostMedia({ attachments: this.data().media ?? [], naturalVideoSize: true, limitNaturalHeight: true })
+        PostMedia({ controlSurface: $r('app.color.poll_option_surface'), attachments: this.data().media ?? [], naturalVideoSize: true, limitNaturalHeight: true })
       } else if (this.showMedia && this.data().imageUrl.length > 0) {
         ProxyMediaImage({ url: this.data().imageUrl, displayHeight: 160 })
           .borderRadius(12).clip(true)

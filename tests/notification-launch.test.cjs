@@ -42,7 +42,8 @@ function fixture({ wide = false, large = false } = {}) {
     accountStore: { setActive: (context, id) => { if (id === 'removed') return false; activeAccount = id; return true; } },
     xPrivateClient: { load: () => sessions.push(activeAccount) }, promptAction: { showToast: value => toasts.push(value) }, $r: value => value
   }).Entry;
-  const names = ['aboutToAppear', 'onNotificationLaunchRequested', 'onMessageLaunchRequested', 'goNotifications', 'goMessages', 'updateNavigationMode', 'selectRootTabPage'];
+  const names = ['aboutToAppear', 'onMotionPreferenceChanged', 'contentDestinationUsesFullPage',
+    'onNotificationLaunchRequested', 'onMessageLaunchRequested', 'goNotifications', 'goMessages', 'updateNavigationMode', 'selectRootTabPage'];
   const { Root } = load('export class Root {\n' + methods('entry/src/main/ets/pages/Index.ets', 'Index', names) + '\n}', {
     ResponsiveLayout, NOTIFICATIONS_TAB_INDEX: 2, MESSAGES_TAB_INDEX: 4, NavigationMode: { Split: 'split', Stack: 'stack' },
     getContext: () => ({}), $r: value => value,
@@ -67,8 +68,9 @@ function fixture({ wide = false, large = false } = {}) {
     get: () => storage.get(ResponsiveLayout.CONTENT_DESTINATION_OPEN_KEY)
   });
   Object.assign(root, {
-    navPathStack: { clear: () => { pages.length = 0; clears++; }, size: () => pages.length, setInterception() {} }, currentTab: 0,
-    photoOverlayStack: { setInterception() {} },
+    navPathStack: { clear: () => { pages.length = 0; clears++; }, size: () => pages.length,
+      getAllPathName: () => pages.slice(), disableAnimation() {}, setInterception() {} }, currentTab: 0,
+    photoOverlayStack: { setInterception() {}, disableAnimation() {} },
     showSideDrawer: true, showLinkPreview: true, linkPreviewUrl: 'https://x.com/example',
     isWideScreen: () => wide, isLargeScreen: () => large, isDesktopLayout: () => false, isBottomBarPageEnabled: () => true,
     firstBottomBarPage: () => 0, supportsHdsNavigation: () => false, usesFloatingTabBar: () => false,
@@ -77,7 +79,8 @@ function fixture({ wide = false, large = false } = {}) {
   });
   for (const name of ['loadOnboardingState', 'syncAllWaterFlowSections', 'onBreakpointChange', 'configureImmersiveTabs',
     'bindHdsTabScrollers', 'watchConnectivity', 'loadSearchHistory', 'loadTimeline', 'startNotificationPolling',
-    'scheduleMidAutumnGreeting', 'syncDesktopRoute', 'refreshHomeSpaces', 'onExternalLinkRequested', 'onExternalShareRequested', 'restoreContinuationIfRequested']) root[name] = () => {};
+    'scheduleMidAutumnGreeting', 'syncDesktopRoute', 'refreshHomeSpaces', 'onExternalLinkRequested', 'onArticleCardRequested',
+    'onExternalShareRequested', 'restoreContinuationIfRequested']) root[name] = () => {};
   const entry = new launch();
   entry.context = { resourceManager: { getStringSync: value => value } };
   return { root, entry, pages, storage, clears: () => clears, sessions, toasts, active: () => activeAccount };

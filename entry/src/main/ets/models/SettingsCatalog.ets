@@ -1,3 +1,5 @@
+import { menuActionsForGroup, MenuActionOption } from './MenuActionCatalog';
+
 // Single navigation catalog for phone, desktop, nested settings and search.
 export class SettingsGroup {
   id: string;
@@ -41,6 +43,13 @@ export const SETTINGS_CATEGORIES: SettingsCategory[] = [
   new SettingsCategory('security', 'account', '', $r('app.string.settings_security'),
     $r('app.string.settings_security_desc'), $r('sys.symbol.lock'), 'AccountPrivacy', [
     ]),
+  new SettingsCategory('anti_peep', 'account', '', $r('app.string.settings_anti_peep'),
+    $r('app.string.settings_anti_peep_desc'), $r('sys.symbol.lock'), '', [
+      $r('app.string.settings_anti_peep_enable'),
+      $r('app.string.settings_anti_peep_setup'),
+      $r('app.string.settings_anti_peep_permission'),
+      $r('app.string.settings_anti_peep_system_off')
+    ]),
   new SettingsCategory('blocked', 'account', '', $r('app.string.settings_blocked_accounts'),
     $r('app.string.settings_blocked_accounts_desc'), $r('sys.symbol.person'), 'UserList', [
     ]),
@@ -52,6 +61,11 @@ export const SETTINGS_CATEGORIES: SettingsCategory[] = [
     ]),
   new SettingsCategory('media', 'experience', '', $r('app.string.settings_category_media'),
     $r('app.string.settings_category_media_desc'), $r('sys.symbol.play_circle'), '', [
+    ]),
+  new SettingsCategory('chat', 'experience', '', $r('app.string.chat_settings'),
+    $r('app.string.settings_chat_desc'), $r('sys.symbol.message'), 'DmSettings', [
+      $r('app.string.chat_dm_requests'), $r('app.string.chat_calls'),
+      $r('app.string.chat_change_pin'), $r('app.string.chat_auto_download'), $r('app.string.chat_reset')
     ]),
   new SettingsCategory('notifications', 'experience', '', $r('app.string.settings_notifications'),
     $r('app.string.settings_notifications_desc'), $r('sys.symbol.bell'), '', [
@@ -113,7 +127,8 @@ export const SETTINGS_CATEGORIES: SettingsCategory[] = [
       $r('app.string.download_manager_desc'),
       $r('app.string.download_cache_title'),
       $r('app.string.download_cache_desc'),
-      $r('app.string.storage_download_path')
+      $r('app.string.storage_download_path'), $r('app.string.storage_chat_cache'),
+      $r('app.string.storage_chat_retention'), $r('app.string.chat_storage')
     ]),
   new SettingsCategory('resources', 'support', '', $r('app.string.settings_resources'),
     $r('app.string.settings_resources_desc'), $r('sys.symbol.questionmark_circle'), '', [
@@ -141,6 +156,18 @@ export const SETTINGS_CATEGORIES: SettingsCategory[] = [
       $r('app.string.settings_dark_surface_black'),
       $r('app.string.settings_dark_surface_gentle'),
       $r('app.string.settings_theme_color'),
+      $r('app.string.settings_theme_mix'),
+      $r('app.string.settings_theme_mix_desc'),
+      $r('app.string.settings_theme_mix_candy'),
+      $r('app.string.settings_theme_mix_sky'),
+      $r('app.string.settings_theme_mix_peach'),
+      $r('app.string.settings_theme_mix_lilac'),
+      $r('app.string.settings_theme_mix_confetti'),
+      $r('app.string.settings_theme_mix_coast'),
+      $r('app.string.settings_theme_mix_sunset'),
+      $r('app.string.settings_theme_mix_forest'),
+      $r('app.string.settings_theme_mix_berry'),
+      $r('app.string.settings_theme_mix_morandi'),
       $r('app.string.settings_theme_system_blue'),
       $r('app.string.settings_theme_x_blue'),
       $r('app.string.settings_theme_yellow'),
@@ -150,6 +177,32 @@ export const SETTINGS_CATEGORIES: SettingsCategory[] = [
       $r('app.string.settings_theme_green'),
       $r('app.string.settings_theme_cat_blue'),
       $r('app.string.settings_theme_huawei_red')
+    ]),
+  new SettingsCategory('pagebackground', 'experience', 'display', $r('app.string.page_background_title'),
+    $r('app.string.page_background_description'), $r('sys.symbol.square_grid_2x2'), 'PageBackground', [
+      $r('app.string.page_background_base'), $r('app.string.page_background_pattern'),
+      $r('app.string.page_background_content_opacity'), $r('app.string.page_background_transparent_posts'),
+      $r('app.string.page_background_transparent_inbox'), $r('app.string.page_background_paper'),
+      $r('app.string.page_background_kraft'), $r('app.string.page_background_parchment'),
+      $r('app.string.page_background_density')
+    ]),
+  new SettingsCategory('uihdr', 'experience', 'display', $r('app.string.settings_component_hdr_ratio'),
+    $r('app.string.settings_component_hdr_desc'), $r('sys.symbol.sun_max'), '', [
+      $r('app.string.settings_component_hdr_reset')
+    ]),
+  new SettingsCategory('motion', 'experience', 'display', $r('app.string.motion_title'),
+    $r('app.string.motion_intro'), $r('sys.symbol.wand_and_stars'), '', [
+      $r('app.string.motion_duration'), $r('app.string.motion_amplitude'), $r('app.string.motion_damping'),
+      $r('app.string.motion_reduce'), $r('app.string.motion_symbol'), $r('app.string.motion_haptics'),
+      $r('app.string.motion_presets'), $r('app.string.motion_preset_quick'),
+      $r('app.string.motion_preset_standard'), $r('app.string.motion_preset_spring'), $r('app.string.motion_preset_reduced')
+    ]),
+  new SettingsCategory('transitions', 'experience', 'display', $r('app.string.settings_page_transition'),
+    $r('app.string.settings_page_transition_desc'), $r('sys.symbol.square_and_square'), '', [
+      $r('app.string.settings_page_transition_classic'),
+      $r('app.string.settings_page_transition_classic_desc'),
+      $r('app.string.settings_page_transition_official'),
+      $r('app.string.settings_page_transition_official_desc')
     ]),
   new SettingsCategory('fonts', 'experience', 'display', $r('app.string.settings_category_fonts'),
     $r('app.string.settings_category_fonts_desc'), $r('sys.symbol.textformat'), '', [
@@ -297,6 +350,8 @@ export const SETTINGS_CATEGORIES: SettingsCategory[] = [
       $r('app.string.settings_classic_bottom_bar_desc'),
       $r('app.string.settings_root_tab_labels'),
       $r('app.string.settings_root_tab_labels_desc'),
+      $r('app.string.settings_root_liquid_tab_indicator'),
+      $r('app.string.settings_root_liquid_tab_indicator_desc'),
       $r('app.string.settings_compose_button'),
       $r('app.string.settings_compose_button_desc'),
       $r('app.string.settings_custom_bottom_bar_title'),
@@ -326,6 +381,8 @@ export const SETTINGS_CATEGORIES: SettingsCategory[] = [
   new SettingsCategory('home_interaction', 'experience', 'home', $r('app.string.settings_home_interaction'),
     $r('app.string.settings_category_home_interaction_desc'), $r('sys.symbol.arrow_clockwise'), '', [
       $r('app.string.settings_home_interaction'),
+      $r('app.string.settings_confirm_app_exit'),
+      $r('app.string.settings_confirm_app_exit_desc'),
       $r('app.string.settings_floating_action'),
       $r('app.string.settings_floating_action_desc'),
       $r('app.string.settings_floating_compose'),
@@ -342,8 +399,9 @@ export const SETTINGS_CATEGORIES: SettingsCategory[] = [
       $r('app.string.settings_home_pull_refresh_latest_desc'),
       $r('app.string.settings_home_space_capsule'),
       $r('app.string.settings_home_space_capsule_desc'),
-      $r('app.string.spaces_save_failed')
-    ]),
+      $r('app.string.spaces_save_failed'),
+      $r('app.string.settings_menu_post')
+    ].concat(menuActionsForGroup('post_menu').map((option: MenuActionOption): Resource => option.title))),
   new SettingsCategory('layout', 'experience', 'home', $r('app.string.settings_category_layout'),
     $r('app.string.settings_category_layout_desc'), $r('sys.symbol.rectangle'), '', [
       $r('app.string.settings_desktop_layout'),
@@ -371,17 +429,28 @@ export const SETTINGS_CATEGORIES: SettingsCategory[] = [
       $r('app.string.settings_timeline_columns_two'),
       $r('app.string.settings_timeline_columns_three')
     ]),
+  new SettingsCategory('cards', 'experience', 'home', $r('app.string.card_settings_title'),
+    $r('app.string.card_settings_intro'), $r('sys.symbol.square_grid_2x2'), 'CardSettings', [
+      $r('app.string.card_settings_refresh'), $r('app.string.card_settings_note')
+    ]),
   new SettingsCategory('photos', 'experience', 'media', $r('app.string.settings_category_photos'),
     $r('app.string.settings_category_photos_desc'), $r('sys.symbol.ohos_photo'), '', [
       $r('app.string.settings_photo_fullscreen'),
-      $r('app.string.settings_photo_fullscreen_desc')
-    ]),
+      $r('app.string.settings_photo_fullscreen_desc'),
+      $r('app.string.settings_menu_photo')
+    ].concat(menuActionsForGroup('photo_menu').map((option: MenuActionOption): Resource => option.title))),
   new SettingsCategory('playback', 'experience', 'media', $r('app.string.settings_category_playback'),
     $r('app.string.settings_category_playback_desc'), $r('sys.symbol.play_circle'), '', [
       $r('app.string.settings_video_autoplay'),
       $r('app.string.settings_video_autoplay_desc'),
+      $r('app.string.settings_video_hdr_enhancement'),
+      $r('app.string.settings_video_hdr_enhancement_desc'),
       $r('app.string.settings_home_video_mute'),
       $r('app.string.settings_home_video_mute_desc'),
+      $r('app.string.settings_viewer_video_mute'),
+      $r('app.string.settings_viewer_video_mute_desc'),
+      $r('app.string.video_feed_auto_advance'),
+      $r('app.string.settings_video_auto_advance_desc'),
       $r('app.string.settings_video_auto_pip'),
       $r('app.string.settings_video_auto_pip_desc'),
       $r('app.string.settings_video_background'),
@@ -393,14 +462,27 @@ export const SETTINGS_CATEGORIES: SettingsCategory[] = [
     ]),
   new SettingsCategory('video_controls', 'experience', 'media', $r('app.string.settings_category_video_controls'),
     $r('app.string.settings_category_video_controls_desc'), $r('sys.symbol.play_circle'), '', [
+      $r('app.string.video_feed_layout'),
+      $r('app.string.settings_video_feed_layout_desc'),
+      $r('app.string.video_feed_layout_classic'),
+      $r('app.string.video_feed_layout_douyin'),
+      $r('app.string.video_feed_layout_bilibili'),
+      $r('app.string.video_feed_controls_always_visible'),
+      $r('app.string.video_feed_controls_always_visible_desc'),
+      $r('app.string.video_feed_subtitles'),
+      $r('app.string.settings_video_captions_desc'),
       $r('app.string.settings_video_immersive_fill'),
       $r('app.string.settings_video_immersive_fill_desc'),
       $r('app.string.settings_video_hold_speed'),
       $r('app.string.settings_video_hold_speed_desc'),
+      $r('app.string.settings_video_double_tap_seek'),
+      $r('app.string.settings_video_double_tap_seek_desc'),
+      $r('app.string.settings_video_double_tap_seek_seconds'),
       $r('app.string.settings_video_feed_tap_pause'),
       $r('app.string.settings_video_feed_tap_pause_desc'),
-      $r('app.string.video_feed_caption_background')
-    ]),
+      $r('app.string.video_feed_caption_background'),
+      $r('app.string.settings_menu_video')
+    ].concat(menuActionsForGroup('video_menu').map((option: MenuActionOption): Resource => option.title))),
   new SettingsCategory('viewer', 'experience', 'media', $r('app.string.settings_category_viewer'),
     $r('app.string.settings_category_viewer_desc'), $r('sys.symbol.message'), '', [
       $r('app.string.settings_media_black_background'),
@@ -488,6 +570,7 @@ export const SETTINGS_CATEGORIES: SettingsCategory[] = [
     $r('app.string.settings_category_alerts_desc'), $r('sys.symbol.bell'), '', [
       $r('app.string.settings_push'),
       $r('app.string.settings_push_desc'),
+      $r('app.string.chat_notifications'), $r('app.string.chat_only_push'), $r('app.string.chat_only_push_hint'),
       $r('app.string.settings_system_notifications'),
       $r('app.string.settings_system_notifications_desc'),
       $r('app.string.settings_notification_dnd_silent'),

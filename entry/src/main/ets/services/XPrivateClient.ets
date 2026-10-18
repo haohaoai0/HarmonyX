@@ -893,7 +893,8 @@ export class XPrivateClient {
     }
     const paths: string[] = ['/1.1/account/settings.json', '/1.1/users/email_phone_info.json',
       '/1.1/account/verify_password.json', '/1.1/account/resend_confirmation_email.json', '/i/account/change_password.json', '/1.1/account/deactivate.json',
-      '/1.1/account/update_profile.json', '/1.1/account/personalization/p13n_preferences.json',
+      '/1.1/account/update_profile.json', '/1.1/account/update_profile_image.json',
+      '/1.1/account/update_profile_banner.json', '/1.1/account/personalization/p13n_preferences.json',
       '/1.1/account/personalization/p13n_data.json', '/1.1/account/personalization/partner_interests.json',
       '/1.1/account/personalization/email_advertiser_list.json', '/1.1/account/personalization/email_your_data.json',
       '/1.1/mutes/keywords/list.json', '/1.1/mutes/keywords/create.json', '/1.1/mutes/keywords/update.json',
@@ -2770,6 +2771,49 @@ export class XPrivateClient {
     const body: ArrayBuffer = XPrivateClient.multipartBody(boundary, bytes, mimeType, category, altText);
     return await this.postBinary(UPLOAD_BASE + '/1.1/media/upload.json', body,
       'multipart/form-data; boundary=' + boundary, 'media/upload');
+  }
+
+  // Profile photos use account endpoints, not tweet media uploads. Decode from
+  // the picker descriptor, center-crop to the preview's ratio and bound the JPEG.
+  async updateProfilePhoto(uri: string, banner: boolean, generation: number): Promise<XPrivateResult> {
+    const label: string = 'account_settings:profile_photo';
+    if (!this.isSignedIn() || generation !== this.sessionGeneration()) {
+      return new XPrivateResult(false, 0, '', 'account_changed', label);
+    }
+    let file: fs.File | undefined = undefined;
+    let source: image.ImageSource | undefined = undefined;
+    let pixels: image.PixelMap | undefined = undefined;
+    let packer: image.ImagePacker | undefined = undefined;
+    try {
+      file = fs.openSync(uri, fs.OpenMode.READ_ONLY);
+      source = image.createImageSource(file.fd);
+      const info: image.ImageInfo = await source.getImageInfo();
+      if (info.size.width <= 0 || info.size.height <= 0) { throw new Error('invalid_image'); }
+      const scale: number = Math.min(1, 2048 / Math.max(info.size.width, info.size.height));
+      const width: number = Math.max(1, Math.round(info.size.width * scale));
+      const height: number = Math.max(1, Math.round(info.size.height * scale));
+      pixels = await source.createPixelMap({ editable: true, desiredSize: { width: width, height: height } });
+      const ratio: number = banner ? 3 : 1;
+      const cropHeight: number = Math.max(1, Math.min(height, Math.floor(width / ratio)));
+      const cropWidth: number = Math.max(1, Math.min(width, Math.round(cropHeight * ratio)));
+      await pixels.crop({ x: Math.floor((width - cropWidth) / 2), y: Math.floor((height - cropHeight) / 2),
+        size: { width: cropWidth, height: cropHeight } });
+      const outputWidth: number = Math.min(banner ? 1500 : 400, cropWidth);
+      await pixels.scale(outputWidth / cropWidth, outputWidth / cropWidth);
+      packer = image.createImagePacker();
+      const bytes: ArrayBuffer = await packer.packing(pixels, { format: 'image/jpeg', quality: 90 });
+      const encoded: string = new util.Base64Helper().encodeToStringSync(new Uint8Array(bytes));
+      const payload: Record<string, Object | null> = banner ? { 'banner': encoded } : { 'image': encoded, 'skip_status': true };
+      return await this.accountManagementRequest('POST', banner ? '/1.1/account/update_profile_banner.json' :
+        '/1.1/account/update_profile_image.json', payload, false, generation);
+    } catch (error) {
+      return new XPrivateResult(false, 0, '', 'profile_image_failed', label);
+    } finally {
+      if (packer !== undefined) { try { await packer.release(); } catch (error) {} }
+      if (pixels !== undefined) { try { await pixels.release(); } catch (error) {} }
+      if (source !== undefined) { try { await source.release(); } catch (error) {} }
+      if (file !== undefined) { try { fs.closeSync(file); } catch (error) {} }
+    }
   }
 
   async uploadListBanner(uri: string): Promise<XPrivateResult> {

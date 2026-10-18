@@ -1,5 +1,10 @@
+import { pageTextColor } from '../utils/ThemeColors';
+import { appPageBackground } from '../components/PageBackgroundLayer';
+import { pageCanvasColor, pageReadingSurfaceColor } from '../utils/ThemeColors';
+import { STORAGE_KEY_PAGE_TRANSITION_MODE, DEFAULT_PAGE_TRANSITION_MODE } from '../services/PageTransitionSettingsStore';
+import { pageSystemTransition, PageTransitionMotion } from '../utils/PageTransition';
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
-import { DEFAULT_SHEET_MATERIAL_LEVEL, STORAGE_KEY_SHEET_MATERIAL_ENABLED, STORAGE_KEY_SHEET_MATERIAL_LEVEL } from '../services/SheetMaterialSettingsStore';
+import { DEFAULT_SHEET_MATERIAL_ENABLED, DEFAULT_SHEET_MATERIAL_LEVEL, STORAGE_KEY_SHEET_MATERIAL_ENABLED, STORAGE_KEY_SHEET_MATERIAL_LEVEL } from '../services/SheetMaterialSettingsStore';
 import { sheetMaterialOptions } from '../utils/SheetMaterial';
 import { common } from '@kit.AbilityKit';
 import promptAction from '@ohos.promptAction';
@@ -7,10 +12,10 @@ import { HdsNavDestination, HdsNavDestinationTitleMode, ScrollEffectType } from 
 import { ChatPinPad } from '../components/ChatPinPad';
 import { ChatSettings, xChatActions } from '../services/XChatActions';
 import { xChatService } from '../services/XChatService';
-import { ChatMediaStats, xChatMedia } from '../services/XChatMedia';
+import { xChatMedia } from '../services/XChatMedia';
 import { xPrivateClient } from '../services/XPrivateClient';
 import { xPrivateStore } from '../services/XPrivateStore';
-import { notificationSettingsStore } from '../services/NotificationSettingsStore';
+import type { SettingsRouteParam } from './Settings';
 import { pageSurfaceColor } from '../utils/ThemeColors';
 import { destinationTitleBarStyle } from '../utils/DestinationTitleBar';
 import { chatPageMaterial } from '../utils/ChatMaterial';
@@ -23,10 +28,13 @@ export function DmSettingsBuilder(): void { DmSettingsPage(); }
 
 @Component
 struct DmSettingsPage {
+  @StorageProp('harmonyx.page_background') private pageBackgroundValue: string = '';
+  @State private pageMotion: PageTransitionMotion = new PageTransitionMotion();
+  @StorageProp(STORAGE_KEY_PAGE_TRANSITION_MODE) private pageTransitionMode: string = DEFAULT_PAGE_TRANSITION_MODE;
   @StorageProp('harmonyx.compact_window') private sheetCompactWindow: boolean = false;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @StorageProp('harmonyx.breakpoint') private sheetWindowBreakpoint: string = 'sm';
-  @StorageProp(STORAGE_KEY_SHEET_MATERIAL_ENABLED) private sheetMaterialEnabled: boolean = false;
+  @StorageProp(STORAGE_KEY_SHEET_MATERIAL_ENABLED) private sheetMaterialEnabled: boolean = DEFAULT_SHEET_MATERIAL_ENABLED;
   @StorageProp(STORAGE_KEY_SHEET_MATERIAL_LEVEL) private sheetMaterialLevel: number = DEFAULT_SHEET_MATERIAL_LEVEL;
   @Consume('pageStack') pageStack: NavPathStack;
   @StorageProp('harmonyx.status_bar_height') statusBarHeight: number = 0;
@@ -40,12 +48,9 @@ struct DmSettingsPage {
   @State private settings: ChatSettings | null = null;
   @State private busy: boolean = false;
   @State private failure: string = '';
-  @State private onlyChatPush: boolean = false;
   @State private photoPolicy: string = 'all';
   @State private videoPolicy: string = 'all';
   @State private documentPolicy: string = 'all';
-  @State private retention: string = '30';
-  @State private mediaStats: ChatMediaStats = { photos: 0, documents: 0, voice: 0, total: 0 };
   @State private pinSheet: boolean = false;
   @State private pinStep: number = 0;
   @State private pinError: string = '';
@@ -59,18 +64,17 @@ struct DmSettingsPage {
   private text(resource: Resource): string { return this.context().resourceManager.getStringSync(resource); }
   aboutToAppear(): void {
     const params: DmSettingsRouteParam[] = this.pageStack.getParamByName('DmSettings') as DmSettingsRouteParam[];
-    this.section = params.length > 0 ? params[params.length - 1].section : '';
+    const param: DmSettingsRouteParam | undefined = params.length > 0 ? params[params.length - 1] : undefined;
+    this.section = param?.section ?? '';
     const context: common.UIAbilityContext = this.context();
     xPrivateClient.load(context);
     this.account = xPrivateStore.load(context).cacheIdentity();
     this.username = xPrivateStore.load(context).username;
-    this.onlyChatPush = xChatActions.localBoolean(context, 'only_chat_push', false);
     this.photoPolicy = xChatActions.localString(context, 'download_photos', 'all');
     this.videoPolicy = xChatActions.localString(context, 'download_videos', 'all');
     this.documentPolicy = xChatActions.localString(context, 'download_documents', 'all');
-    this.retention = xChatActions.localString(context, 'retention_days', '30');
-    xChatMedia.initialize(context); this.mediaStats = xChatMedia.stats();
-    this.load();
+    xChatMedia.initialize(context);
+    if (this.section === 'requests' || this.section === 'calls') { this.load(); }
   }
   aboutToDisappear(): void { this.active = false; this.oldPin = ''; this.newPin = ''; }
   private valid(): boolean { return this.active && this.account === xPrivateStore.load(this.context()).cacheIdentity(); }
@@ -107,7 +111,7 @@ struct DmSettingsPage {
     if (this.section === 'notifications') { return $r('app.string.chat_notifications'); }
     if (this.section === 'requests') { return $r('app.string.chat_dm_requests'); }
     if (this.section === 'calls') { return $r('app.string.chat_calls'); }
-    if (this.section === 'data') { return $r('app.string.chat_data'); }
+    if (this.section === 'data') { return $r('app.string.chat_auto_download'); }
     if (this.section === 'storage') { return $r('app.string.chat_storage'); }
     return $r('app.string.chat_settings');
   }
@@ -124,12 +128,7 @@ struct DmSettingsPage {
     if (key === 'download_photos') { this.photoPolicy = value; }
     if (key === 'download_videos') { this.videoPolicy = value; }
     if (key === 'download_documents') { this.documentPolicy = value; }
-    if (key === 'retention_days') { this.retention = value; xChatMedia.prune(this.context()); this.mediaStats = xChatMedia.stats(); }
   }
-  private bytes(value: number): string {
-    return value < 1024 ? value.toString() + ' B' : value < 1048576 ? (value / 1024).toFixed(1) + ' KB' : (value / 1048576).toFixed(1) + ' MB';
-  }
-  private clearMedia(): void { xChatMedia.clear(); this.mediaStats = xChatMedia.stats(); }
   private async pin(value: string): Promise<void> {
     if (this.pinStep === 0) { this.oldPin = value; this.pinStep = 1; return; }
     if (this.pinStep === 1) { this.newPin = value; this.pinStep = 2; return; }
@@ -162,10 +161,10 @@ struct DmSettingsPage {
   @Builder
   private Option(symbol: Resource, title: Resource, value: ResourceStr = '', danger: boolean = false): void {
     Row({ space: 20 }) {
-      SymbolGlyph(symbol).fontSize(24).fontColor([danger ? $r('app.color.danger') : $r('app.color.text_secondary')])
-      Text(title).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontColor(danger ? $r('app.color.danger') : $r('app.color.text_primary')).layoutWeight(1)
-      if (value !== '') { Text(value).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor($r('app.color.text_secondary')) }
-      SymbolGlyph($r('sys.symbol.chevron_right')).fontSize(18).fontColor([$r('app.color.text_secondary')])
+      SymbolGlyph(symbol).fontSize(24).fontColor([danger ? $r('app.color.danger') : pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)])
+      Text(title).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontColor(danger ? $r('app.color.danger') : pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)).layoutWeight(1)
+      if (value !== '') { Text(value).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)) }
+      SymbolGlyph($r('sys.symbol.chevron_right')).fontSize(18).fontColor([pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)])
     }.width('100%').constraintSize({ minHeight: 60 }).padding({ left: 16, right: 20 })
   }
   @Builder
@@ -188,18 +187,12 @@ struct DmSettingsPage {
   private ToggleRow(title: Resource, hint: Resource, enabled: boolean, field: string): void {
     Row({ space: 16 }) {
       Column({ space: 6 }) {
-        Text(title).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontColor($r('app.color.text_primary'))
-        Text(hint).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor($r('app.color.text_secondary'))
+        Text(title).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
+        Text(hint).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
       }.layoutWeight(1).alignItems(HorizontalAlign.Start)
       Toggle({ type: ToggleType.Switch, isOn: enabled }).selectedColor(this.accentColor).enabled(!this.busy)
         .onChange((value: boolean): void => {
-          if (field === 'push') {
-            if (value) { xChatActions.saveLocal(this.context(), 'alerts_before_chat_only', notificationSettingsStore.loadAlertsEnabled(this.context())); }
-            xChatActions.saveLocal(this.context(), 'only_chat_push', value);
-            notificationSettingsStore.saveAlertsEnabled(this.context(), value ? false :
-              xChatActions.localBoolean(this.context(), 'alerts_before_chat_only', true));
-            this.onlyChatPush = value;
-          } else { this.update(field, value); }
+          this.update(field, value);
         })
     }.width('100%').padding(16)
   }
@@ -207,8 +200,6 @@ struct DmSettingsPage {
   private Body(): void {
     Column() {
       if (this.section === '') {
-        Column() { this.Option($r('sys.symbol.bell'), $r('app.string.chat_notifications')) }
-          .onClick((): void => this.open('notifications'))
         Column() { this.Option($r('sys.symbol.envelope'), $r('app.string.chat_dm_requests')) }
           .onClick((): void => this.open('requests'))
         Column() { this.Option($r('sys.symbol.video'), $r('app.string.chat_calls')) }.onClick((): void => this.open('calls'))
@@ -216,20 +207,16 @@ struct DmSettingsPage {
           if (!xChatService.isUnlocked()) { promptAction.showToast({ message: this.text($r('app.string.dm_unlock_hint')) }); return; }
           this.pinStep = 0; this.pinError = ''; this.pinSheet = true;
         })
-        Column() { this.Option($r('sys.symbol.clock'), $r('app.string.chat_data')) }.onClick((): void => this.open('data'))
-        Column() { this.Option($r('sys.symbol.doc'), $r('app.string.chat_storage')) }.onClick((): void => this.open('storage'))
-        Column() { this.Option($r('sys.symbol.info_circle'), $r('app.string.chat_help')) }.onClick((): void => {
-          this.pageStack.pushPath({ name: 'HelpCenter' });
-        })
-      } else if (this.section === 'notifications') {
-        this.ToggleRow($r('app.string.chat_only_push'), $r('app.string.chat_only_push_hint'), this.onlyChatPush, 'push')
+        Column() { this.Option($r('sys.symbol.clock'), $r('app.string.chat_auto_download')) }.onClick((): void => this.open('data'))
+        Column() { this.Option($r('sys.symbol.lock'), $r('app.string.chat_reset'), '', true) }
+          .onClick((): void => { this.reset(); })
       } else if (this.section === 'requests') {
         Row() {
-          Text($r('app.string.chat_requests_from')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontColor($r('app.color.text_primary')).layoutWeight(1)
-          Text(this.audience(this.settings?.allow_dms_from ?? 'following')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor($r('app.color.text_secondary'))
+          Text($r('app.string.chat_requests_from')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)).layoutWeight(1)
+          Text(this.audience(this.settings?.allow_dms_from ?? 'following')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
         }.width('100%').padding(16).enabled(this.settings !== null && !this.busy)
           .bindMenu(this.AudienceMenu('requests'))
-        Text($r('app.string.chat_requests_hint')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor($r('app.color.text_secondary'))
+        Text($r('app.string.chat_requests_hint')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
           .width('100%').padding(16).margin({ top: 16 })
       } else if (this.section === 'calls') {
         this.ToggleRow($r('app.string.chat_enable_calls'), $r('app.string.chat_enable_calls_hint'),
@@ -240,12 +227,12 @@ struct DmSettingsPage {
         }
           .enabled(this.settings?.av_settings.has_av_calls_enabled === true).opacity(this.settings?.av_settings.has_av_calls_enabled === true ? 1 : 0.4)
         Row() {
-          Text($r('app.string.chat_calls_from')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontColor($r('app.color.text_primary')).layoutWeight(1)
+          Text($r('app.string.chat_calls_from')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)).layoutWeight(1)
           Text(this.audience(this.settings?.av_settings.av_call_permissions.accept_calls_from_everyone === true ? 'all' :
             this.settings?.av_settings.av_call_permissions.accept_calls_from_verified === true ? 'verified' : 'following')).fontFamily(this.appFontFamily)
-            .fontSize($r('sys.float.Body_M')).fontColor($r('app.color.text_secondary'))
+            .fontSize($r('sys.float.Body_M')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
         }.width('100%').padding(16).enabled(this.settings !== null && !this.busy).bindMenu(this.AudienceMenu('call_audience'))
-        Text($r('app.string.chat_calls_hint')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor($r('app.color.text_secondary'))
+        Text($r('app.string.chat_calls_hint')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
           .padding(16).margin({ top: 16 })
       } else if (this.section === 'data') {
         Column() { this.Option($r('sys.symbol.camera'), $r('app.string.chat_photos'), this.policy(this.photoPolicy)) }
@@ -254,28 +241,22 @@ struct DmSettingsPage {
           .bindMenu(this.PolicyMenu('download_videos'))
         Column() { this.Option($r('sys.symbol.doc'), $r('app.string.chat_documents'), this.policy(this.documentPolicy)) }
           .bindMenu(this.PolicyMenu('download_documents'))
-      } else if (this.section === 'storage') {
-        Column() { this.Option($r('sys.symbol.clock'), $r('app.string.chat_keep_media'), this.retention === '0' ?
-          $r('app.string.chat_forever') : this.retention === '7' ? $r('app.string.chat_7_days') : $r('app.string.chat_30_days')) }
-          .bindMenu(this.RetentionMenu())
-        Column() { this.Option($r('sys.symbol.camera'), $r('app.string.chat_photos_videos'), this.bytes(this.mediaStats.photos)) }
-        Column() { this.Option($r('sys.symbol.doc'), $r('app.string.chat_documents'), this.bytes(this.mediaStats.documents)) }
-        Column() { this.Option($r('sys.symbol.waveform'), $r('app.string.chat_voice_messages'), this.bytes(this.mediaStats.voice)) }
-        Column() { this.Option($r('sys.symbol.trash'), $r('app.string.chat_clear_media'), this.bytes(this.mediaStats.total)) }.onClick((): void => this.clearMedia())
-        Column() { this.Option($r('sys.symbol.trash'), $r('app.string.chat_reset'), '', true) }.onClick((): void => { this.reset(); })
       }
     }.width('100%').padding({ top: 8, bottom: this.bottomInset + 20 })
   }
-  @Builder
-  private RetentionMenu(): void {
-    Menu() {
-      MenuItem({ content: $r('app.string.chat_7_days') }).onClick((): void => this.savePolicy('retention_days', '7'))
-      MenuItem({ content: $r('app.string.chat_30_days') }).onClick((): void => this.savePolicy('retention_days', '30'))
-      MenuItem({ content: $r('app.string.chat_forever') }).onClick((): void => this.savePolicy('retention_days', '0'))
+  private redirectSharedSettings(): void {
+    if (this.section === 'notifications') {
+      const param: SettingsRouteParam = { section: 'alerts' };
+      this.pageStack.replacePath({ name: 'SettingsSection', param: param }, false);
+    } else if (this.section === 'storage') {
+      this.pageStack.replacePath({ name: 'DataStorage' }, false);
     }
   }
+
   build(): void {
     HdsNavDestination() {
+      Stack({ alignContent: Alignment.TopStart }) {
+        appPageBackground()
       Scroll(this.scroller) {
         Column() {
           if (this.busy) { LoadingProgress().width(20).height(20).color(this.accentColor).margin(12) }
@@ -289,12 +270,19 @@ struct DmSettingsPage {
         .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: true })
         .bindSheet($$this.pinSheet, this.PinSheet(), sheetMaterialOptions({ height: SheetSize.FIT_CONTENT, showClose: false, dragBar: false,
           onDisappear: (): void => { this.oldPin = ''; this.newPin = ''; } }, this.sheetMaterialEnabled, this.sheetMaterialLevel, this.sheetWindowBreakpoint, this.sheetCompactWindow))
-    }.titleMode(HdsNavDestinationTitleMode.MINI).hideBackButton(false).bindToScrollable([this.scroller])
+    
+      }.width('100%').height('100%')
+    }
+    .scale({ x: this.pageMotion.scale, y: this.pageMotion.scale })
+    .opacity(this.pageMotion.opacity)
+    .onReady((context: NavDestinationContext): void => { this.pageMotion.attach(context); })
+    .onShown((): void => this.redirectSharedSettings())
+    .systemTransition(pageSystemTransition(this.pageTransitionMode)).titleMode(HdsNavDestinationTitleMode.MINI).hideBackButton(false).bindToScrollable([this.scroller])
       .titleBar({ avoidLayoutSafeArea: true,
         content: { title: { mainTitle: this.title(), subTitle: this.username.length > 0 ? '@' + this.username : '' } },
         style: destinationTitleBarStyle(ScrollEffectType.GRADIENT_BLUR, this.displayMode, this.darkSurface, this.titleBarStyleMode)
       })
-      .backgroundColor(pageSurfaceColor(this.displayMode, this.darkSurface)).systemMaterial(chatPageMaterial())
+      .backgroundColor(pageCanvasColor(this.displayMode, this.darkSurface, this.pageBackgroundValue)).systemMaterial(chatPageMaterial())
       .onBackPressed((): boolean => { ResponsiveLayout.closeContentDestination(this.pageStack); return true; })
   }
 }

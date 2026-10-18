@@ -1,3 +1,5 @@
+import { pageTextColor } from '../utils/ThemeColors';
+import { postCardSurfaceColor } from '../utils/ThemeColors';
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
 import { STORAGE_KEY_SYSTEM_EMOJI_ENABLED } from '../services/AppearanceStore';
 import { PostAdLabel } from './PostAdLabel';
@@ -18,9 +20,11 @@ import {
 
 @Component
 export struct QuotedPostCard {
+  @StorageProp('harmonyx.page_background') private pageBackgroundValue: string = '';
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @StorageProp(STORAGE_KEY_SYSTEM_EMOJI_ENABLED) private systemEmojiEnabled: boolean = false;
   @Prop quoted: QuotedTweet;
+  @Prop narrowColumn: boolean = false;
   @StorageProp(STORAGE_KEY_POST_POLL_REVISION) private pollRevision: number = 0;
   @StorageProp(STORAGE_KEY_POST_TIME_NOW) private postTimeNow: number = Date.now();
   @Prop accentColor: string = '#007DFF';
@@ -83,6 +87,11 @@ export struct QuotedPostCard {
     };
   }
 
+  private readingText(color: ResourceColor): ResourceColor {
+    return pageTextColor(color, this.pageBackgroundValue, postCardSurfaceColor(avatarTintSurface(this.palette, this.quoted.author.avatarUrl ?? '', this.avatarTintEnabled,
+      this.themeDisplayMode, this.themeDarkSurface, this.themeDark), this.pageBackgroundValue));
+  }
+
   build(): void {
     Column({ space: 8 }) {
       Row({ space: 8 }) {
@@ -94,10 +103,10 @@ export struct QuotedPostCard {
             onProfile: (): void => this.onOpen(this.asTweet()) })
         Column({ space: 1 }) {
           Flex({ alignItems: ItemAlign.Center }) {
-            Text() { EmojiSpans(this.getUIContext(), this.quoted.author.name, $r('sys.float.Body_M'), this.systemEmojiEnabled) }.fontFamily(this.appFontFamily)
-              .fontSize($r('sys.float.Body_M'))
+            Text() { EmojiSpans(this.getUIContext(), this.quoted.author.name, (this.narrowColumn ? $r('app.float.timeline_column_meta_font') : $r('sys.float.Body_M')), this.systemEmojiEnabled) }.fontFamily(this.appFontFamily)
+              .fontSize((this.narrowColumn ? $r('app.float.timeline_column_meta_font') : $r('sys.float.Body_M')))
               .fontWeight(FontWeight.Bold)
-              .fontColor($r('app.color.text_primary'))
+              .fontColor(this.readingText($r('app.color.text_primary')))
               .maxLines(1)
               .textOverflow({ overflow: TextOverflow.Ellipsis })
               .flexShrink(1)
@@ -111,23 +120,23 @@ export struct QuotedPostCard {
           }
           .width('100%')
           Text(this.authorTimeLabel()).fontFamily(this.appFontFamily)
-            .fontSize($r('sys.float.Body_M'))
-            .fontColor($r('app.color.text_secondary'))
+            .fontSize((this.narrowColumn ? $r('app.float.timeline_column_meta_font') : $r('sys.float.Body_M')))
+            .fontColor(this.readingText($r('app.color.text_secondary')))
             .maxLines(1)
             .textOverflow({ overflow: TextOverflow.Ellipsis })
             .width('100%')
         }
         .alignItems(HorizontalAlign.Start)
         .layoutWeight(1)
-        PostAdLabel({ presentation: this.quoted.presentation })
+        PostAdLabel({ foreground: this.readingText($r('app.color.text_secondary')), presentation: this.quoted.presentation })
       }
       .width('100%')
       if (this.quoted.text.length > 0 && this.quoted.presentation?.visibility?.hidden !== true) {
-        Text() { EmojiSpans(this.getUIContext(), this.quoted.text, $r('sys.float.Body_L'), this.systemEmojiEnabled) }
+        Text() { EmojiSpans(this.getUIContext(), this.quoted.text, (this.narrowColumn ? $r('app.float.timeline_column_body_font') : $r('sys.float.Body_L')), this.systemEmojiEnabled) }
           .width('100%')
-          .fontSize($r('sys.float.Body_L'))
+          .fontSize((this.narrowColumn ? $r('app.float.timeline_column_body_font') : $r('sys.float.Body_L')))
           .fontFamily(this.appFontFamily === DEFAULT_APP_FONT_FAMILY ? this.contentFontFamily : this.appFontFamily)
-          .fontColor($r('app.color.text_primary'))
+          .fontColor(this.readingText($r('app.color.text_primary')))
           .maxLines(4)
           .textOverflow({ overflow: TextOverflow.Ellipsis })
       }
@@ -164,10 +173,10 @@ export struct QuotedPostCard {
       }
     }
     .width('100%')
-    .padding(12)
+    .padding(this.narrowColumn ? $r('app.float.timeline_column_inset') : 12)
     .margin({ top: 8 })
-    .backgroundColor(avatarTintSurface(this.palette, this.quoted.author.avatarUrl ?? '', this.avatarTintEnabled,
-      this.themeDisplayMode, this.themeDarkSurface, this.themeDark))
+    .backgroundColor(postCardSurfaceColor(avatarTintSurface(this.palette, this.quoted.author.avatarUrl ?? '', this.avatarTintEnabled,
+      this.themeDisplayMode, this.themeDarkSurface, this.themeDark), this.pageBackgroundValue))
     .border({ width: 1, color: $r('app.color.divider') })
     .borderRadius(16)
     .clip(true)

@@ -1,3 +1,8 @@
+import { pageTextColor } from '../utils/ThemeColors';
+import { appPageBackground } from '../components/PageBackgroundLayer';
+import { pageCanvasColor, pageReadingSurfaceColor } from '../utils/ThemeColors';
+import { STORAGE_KEY_PAGE_TRANSITION_MODE, DEFAULT_PAGE_TRANSITION_MODE } from '../services/PageTransitionSettingsStore';
+import { pageSystemTransition, PageTransitionMotion } from '../utils/PageTransition';
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
 import { userAvatarRadius, verificationBadgeColor, userVerifiedType, userAvatarShape } from '../utils/UserIdentity';
 import { common } from '@kit.AbilityKit';
@@ -29,6 +34,9 @@ export function SpaceRoomBuilder(): void { SpaceRoomPage(); }
 
 @Component
 struct Spaces {
+  @StorageProp('harmonyx.page_background') private pageBackgroundValue: string = '';
+  @State private pageMotion: PageTransitionMotion = new PageTransitionMotion();
+  @StorageProp(STORAGE_KEY_PAGE_TRANSITION_MODE) private pageTransitionMode: string = DEFAULT_PAGE_TRANSITION_MODE;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @Consume('pageStack') pageStack: NavPathStack;
   @StorageProp('harmonyx.status_bar_height') statusBarHeight: number = 0;
@@ -125,8 +133,8 @@ struct Spaces {
   private Heading(title: Resource, subtitle: Resource): void {
     Column({ space: 5 }) {
       Text(title).fontFamily(this.appFontFamily).fontSize($r('app.float.space_section_title_size')).fontWeight(FontWeight.Bold)
-        .fontColor($r('app.color.text_primary')).width('100%')
-      Text(subtitle).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor($r('app.color.text_secondary')).width('100%')
+        .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)).width('100%')
+      Text(subtitle).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).width('100%')
     }.width('100%').alignItems(HorizontalAlign.Start).padding({ top: 16, bottom: 8 })
   }
   @Builder
@@ -148,9 +156,9 @@ struct Spaces {
         .onClick((): void => this.open(room))
       Column({ space: 5 }) {
         Text(room.host.name || room.host.username).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontWeight(FontWeight.Medium)
-          .fontColor($r('app.color.text_secondary')).maxLines(1).textOverflow({ overflow: TextOverflow.Ellipsis })
+          .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).maxLines(1).textOverflow({ overflow: TextOverflow.Ellipsis })
         Text(room.title || $r('app.string.spaces_untitled')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontWeight(FontWeight.Bold)
-          .fontColor($r('app.color.text_primary')).maxLines(3).textOverflow({ overflow: TextOverflow.Ellipsis })
+          .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)).maxLines(3).textOverflow({ overflow: TextOverflow.Ellipsis })
         Text(spaceTime(getContext(this) as common.UIAbilityContext, room.scheduledStart)).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Body_M')).fontWeight(FontWeight.Bold).fontColor($r('app.color.space_accent'))
       }.layoutWeight(1).alignItems(HorizontalAlign.Start).onClick((): void => this.open(room))
@@ -167,7 +175,7 @@ struct Spaces {
     ListItem() {
       Search({ value: this.query, placeholder: this.text($r('app.string.spaces_search_placeholder')) })
         .keyboardAppearance(KeyboardAppearance.IMMERSIVE).height($r('app.float.space_search_height'))
-        .fontColor($r('app.color.text_primary')).backgroundColor($r('app.color.space_search_surface'))
+        .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, $r('app.color.space_search_surface'))).backgroundColor($r('app.color.space_search_surface'))
         .searchButton(this.text($r('app.string.list_search_action')))
         .onChange((value: string): void => {
           this.query = value;
@@ -183,9 +191,9 @@ struct Spaces {
             .fontColor([$r('app.color.space_accent')])
           Text(!this.signedIn ? $r('app.string.user_list_sign_in') : this.failed ?
             $r('app.string.spaces_load_failed') : $r('app.string.spaces_empty_title')).fontFamily(this.appFontFamily)
-            .fontSize($r('sys.float.Title_S')).fontWeight(FontWeight.Bold).fontColor($r('app.color.text_primary'))
+            .fontSize($r('sys.float.Title_S')).fontWeight(FontWeight.Bold).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
           Text(this.failed ? $r('app.string.spaces_load_failed_body') : $r('app.string.spaces_empty_body')).fontFamily(this.appFontFamily)
-            .fontSize($r('sys.float.Body_L')).fontColor($r('app.color.text_secondary'))
+            .fontSize($r('sys.float.Body_L')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
           if (this.signedIn) {
             Button($r('app.string.common_retry')).backgroundColor($r('app.color.space_button'))
               .fontColor($r('app.color.text_on_accent')).onClick((): void => { this.load(); })
@@ -194,7 +202,7 @@ struct Spaces {
       }
     } else {
       if (this.failed) {
-        ListItem() { Text($r('app.string.spaces_refresh_failed')).fontFamily(this.appFontFamily).fontColor($r('app.color.text_secondary')) }
+        ListItem() { Text($r('app.string.spaces_refresh_failed')).fontFamily(this.appFontFamily).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)) }
       }
       if (this.live().length > 0) {
         ListItem() { this.Heading(this.liveHeading(), this.liveSubtitle()) }
@@ -212,6 +220,8 @@ struct Spaces {
   }
   build(): void {
     HdsNavDestination() {
+      Stack({ alignContent: Alignment.TopStart }) {
+        appPageBackground()
       Stack({ alignContent: Alignment.BottomEnd }) {
         Column() {
           Refresh({ refreshing: $$this.refreshing }) {
@@ -231,13 +241,19 @@ struct Spaces {
           accessibilityLabel: this.text($r('app.string.spaces_create_draft')),
           onCompose: (): void => { this.pageStack.pushPath({ name: 'SpaceDraft' }); } })
       }.width('100%').height('100%')
-    }.titleMode(HdsNavDestinationTitleMode.MINI).hideBackButton(false)
+    
+      }.width('100%').height('100%')
+    }
+    .scale({ x: this.pageMotion.scale, y: this.pageMotion.scale })
+    .opacity(this.pageMotion.opacity)
+    .onReady((context: NavDestinationContext): void => { this.pageMotion.attach(context); })
+    .systemTransition(pageSystemTransition(this.pageTransitionMode)).titleMode(HdsNavDestinationTitleMode.MINI).hideBackButton(false)
       .onBackPressed((): boolean => { ResponsiveLayout.closeContentDestination(this.pageStack); return true; })
       .bindToScrollable([this.scroller])
       .titleBar({ avoidLayoutSafeArea: true, content: { title: { mainTitle: $r('app.string.side_spaces') } },
         style: destinationTitleBarStyle(ScrollEffectType.IMMERSIVE_GRADIENT_BLUR,
           this.themeDisplayMode, this.themeDarkSurface, this.titleBarStyleMode) })
-      .backgroundColor(pageSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
+      .backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue))
       .systemMaterial(deviceInfo.apiAvailable('26.0.0') ? new uiMaterial.ImmersiveMaterial({
         style: uiMaterial.ImmersiveStyle.REGULAR, applyShadow: true, colorInvert: true }) : undefined)
   }
@@ -245,6 +261,9 @@ struct Spaces {
 
 @Component
 struct SpaceRoomPage {
+  @StorageProp('harmonyx.page_background') private pageBackgroundValue: string = '';
+  @State private pageMotion: PageTransitionMotion = new PageTransitionMotion();
+  @StorageProp(STORAGE_KEY_PAGE_TRANSITION_MODE) private pageTransitionMode: string = DEFAULT_PAGE_TRANSITION_MODE;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @Consume('pageStack') pageStack: NavPathStack;
   @StorageProp('harmonyx.status_bar_height') statusBarHeight: number = 0;
@@ -335,15 +354,15 @@ struct SpaceRoomPage {
         fallbackColor: $r('app.color.space_button') })
       Row({ space: 3 }) {
         Text(person.name || person.username).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontWeight(FontWeight.Bold)
-          .fontColor($r('app.color.text_primary')).maxLines(1).textOverflow({ overflow: TextOverflow.Ellipsis }).layoutWeight(1)
+          .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)).maxLines(1).textOverflow({ overflow: TextOverflow.Ellipsis }).layoutWeight(1)
         if (person.verified) {
-          SymbolGlyph($r('sys.symbol.checkmark_circle_fill')).fontSize(12).fontColor([verificationBadgeColor(person.verifiedType, $r('app.color.text_accent'))])
+          SymbolGlyph($r('sys.symbol.checkmark_circle_fill')).fontSize(12).fontColor([verificationBadgeColor(person.verifiedType, pageTextColor($r('app.color.text_accent'), this.pageBackgroundValue, Color.Transparent))])
         }
         if (person.protected) {
-          SymbolGlyph($r('sys.symbol.lock_fill')).fontSize(12).fontColor([$r('app.color.text_primary')])
+          SymbolGlyph($r('sys.symbol.lock_fill')).fontSize(12).fontColor([pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)])
         }
       }.width('100%')
-      Text(spaceRole(person)).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_S')).fontColor($r('app.color.text_secondary'))
+      Text(spaceRole(person)).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_S')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
     }.width('25%').padding({ left: 5, right: 5, top: 12, bottom: 12 }).onClick((): void => {
       this.pageStack.pushPath({ name: 'UserDetail', param: spaceUserParam(person) });
     })
@@ -365,7 +384,7 @@ struct SpaceRoomPage {
         Blank()
       }.width('100%')
       Text(room.title || $r('app.string.spaces_untitled')).fontFamily(this.appFontFamily).fontSize($r('app.float.space_room_title_size'))
-        .fontWeight(FontWeight.Bold).fontColor($r('app.color.text_primary')).width('100%')
+        .fontWeight(FontWeight.Bold).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)).width('100%')
       if (room.isScheduled()) {
         Text(spaceTime(getContext(this) as common.UIAbilityContext, room.scheduledStart)).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Body_L')).fontWeight(FontWeight.Bold).fontColor($r('app.color.space_accent'))
@@ -374,10 +393,10 @@ struct SpaceRoomPage {
         ForEach(this.people(room), (person: SpaceParticipant): void => { this.Participant(person) }, (person: SpaceParticipant): string => person.id)
       }.width('100%')
       Button($r('app.string.spaces_view_members', formatCount(room.participantCount)))
-        .fontSize($r('sys.float.Body_M')).fontColor($r('app.color.text_secondary')).backgroundColor(Color.Transparent)
+        .fontSize($r('sys.float.Body_M')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).backgroundColor(Color.Transparent)
         .onClick((): void => this.members())
       if (this.failed) {
-        Text($r('app.string.spaces_refresh_failed')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor($r('app.color.text_secondary'))
+        Text($r('app.string.spaces_refresh_failed')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
       }
     }.width('100%').constraintSize({ maxWidth: $r('app.float.space_content_width') })
       .padding({ left: 16, right: 16, top: 20, bottom: 24 }).alignItems(HorizontalAlign.Start)
@@ -396,16 +415,16 @@ struct SpaceRoomPage {
         }.width('100%').padding({ left: 16, right: 8 }).borderRadius(12).backgroundColor($r('app.color.space_button'))
       }
       if (this.playbackState() === 'error') {
-        Text($r('app.string.spaces_audio_failed')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor($r('app.color.text_secondary'))
+        Text($r('app.string.spaces_audio_failed')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, pageReadingSurfaceColor(cardSurfaceColor(this.themeDisplayMode, this.themeDarkSurface), this.pageBackgroundValue)))
       } else if (room.isScheduled()) {
-        Text($r('app.string.spaces_not_started')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor($r('app.color.text_secondary'))
+        Text($r('app.string.spaces_not_started')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, pageReadingSurfaceColor(cardSurfaceColor(this.themeDisplayMode, this.themeDarkSurface), this.pageBackgroundValue)))
       } else {
         Text(room.canListen() ? $r('app.string.spaces_listen_only_body') : $r('app.string.spaces_no_audio')).fontFamily(this.appFontFamily)
-          .fontSize($r('sys.float.Body_S')).fontColor($r('app.color.text_secondary')).textAlign(TextAlign.Center)
+          .fontSize($r('sys.float.Body_S')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, pageReadingSurfaceColor(cardSurfaceColor(this.themeDisplayMode, this.themeDarkSurface), this.pageBackgroundValue))).textAlign(TextAlign.Center)
       }
       Row({ space: 12 }) {
         Button({ type: ButtonType.Circle }) {
-          SymbolGlyph($r('sys.symbol.person_2')).fontSize(22).fontColor([$r('app.color.text_primary')])
+          SymbolGlyph($r('sys.symbol.person_2')).fontSize(22).fontColor([pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, $r('app.color.space_soft'))])
         }.width(48).height(48).backgroundColor($r('app.color.space_soft'))
           .accessibilityText($r('app.string.spaces_members')).onClick((): void => this.members())
         Button(room.isScheduled() ? $r('app.string.spaces_add_calendar') : this.busy() ? $r('app.string.spaces_connecting') :
@@ -424,14 +443,16 @@ struct SpaceRoomPage {
       }.width('100%')
       if (this.active()) {
         Button($r('app.string.spaces_leave')).width('100%').backgroundColor(Color.Transparent)
-          .fontColor($r('app.color.text_secondary')).onClick((): void => { spacePlayback.stop(); })
+          .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, pageReadingSurfaceColor(cardSurfaceColor(this.themeDisplayMode, this.themeDarkSurface), this.pageBackgroundValue))).onClick((): void => { spacePlayback.stop(); })
       }
     }.width('100%').constraintSize({ maxWidth: $r('app.float.space_content_width') })
       .padding({ left: 16, right: 16, top: 14, bottom: this.navigationIndicatorHeight + 16 })
-      .backgroundColor(cardSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
+      .backgroundColor(pageReadingSurfaceColor(cardSurfaceColor(this.themeDisplayMode, this.themeDarkSurface), this.pageBackgroundValue))
   }
   build(): void {
     HdsNavDestination() {
+      Stack({ alignContent: Alignment.TopStart }) {
+        appPageBackground()
       Column() {
         Scroll(this.scroller) {
           Column() {
@@ -449,7 +470,13 @@ struct SpaceRoomPage {
         }.width('100%').layoutWeight(1).align(Alignment.TopStart).scrollBar(BarState.Off)
         if (this.room !== null) { this.Controls(this.room) }
       }.width('100%').height('100%').padding({ top: this.statusBarHeight + 60 })
-    }.titleMode(HdsNavDestinationTitleMode.MINI).hideBackButton(false)
+    
+      }.width('100%').height('100%')
+    }
+    .scale({ x: this.pageMotion.scale, y: this.pageMotion.scale })
+    .opacity(this.pageMotion.opacity)
+    .onReady((context: NavDestinationContext): void => { this.pageMotion.attach(context); })
+    .systemTransition(pageSystemTransition(this.pageTransitionMode)).titleMode(HdsNavDestinationTitleMode.MINI).hideBackButton(false)
       .onHidden((): void => { this.visible = false; this.clearPoll(); })
       .onShown((): void => { this.visible = true; if (!this.loading) { this.load(); } })
       .onBackPressed((): boolean => { ResponsiveLayout.closeContentDestination(this.pageStack); return true; })
@@ -459,7 +486,7 @@ struct SpaceRoomPage {
           action: (): void => this.info('welcome') } }], maxCount: 1 } },
         style: destinationTitleBarStyle(ScrollEffectType.IMMERSIVE_GRADIENT_BLUR,
           this.themeDisplayMode, this.themeDarkSurface, this.titleBarStyleMode) })
-      .backgroundColor(pageSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
+      .backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue))
       .systemMaterial(deviceInfo.apiAvailable('26.0.0') ? new uiMaterial.ImmersiveMaterial({
         style: uiMaterial.ImmersiveStyle.REGULAR, applyShadow: true, colorInvert: true }) : undefined)
   }

@@ -4,11 +4,12 @@ import { isAdPost } from '../utils/PostDisclosure';
 
 @Component
 export struct PostAdLabel {
+  @Prop foreground: ResourceColor = $r('app.color.text_secondary');
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @Prop presentation: PostPresentation | undefined = undefined;
   build(): void {
     if (isAdPost(this.presentation)) {
-      Text($r('app.string.post_ad_label')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor($r('app.color.text_secondary'))
+      Text($r('app.string.post_ad_label')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor(this.foreground)
         .maxLines(1).flexShrink(0).accessibilityText($r('app.string.card_ad'))
     }
   }

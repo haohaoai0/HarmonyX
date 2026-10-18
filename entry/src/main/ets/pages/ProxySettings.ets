@@ -1,3 +1,9 @@
+import { pageBackgroundActive } from '../services/PageBackgroundStore';
+import { pageTextColor } from '../utils/ThemeColors';
+import { appPageBackground } from '../components/PageBackgroundLayer';
+import { pageCanvasColor, pageReadingSurfaceColor } from '../utils/ThemeColors';
+import { STORAGE_KEY_PAGE_TRANSITION_MODE, DEFAULT_PAGE_TRANSITION_MODE } from '../services/PageTransitionSettingsStore';
+import { pageSystemTransition, PageTransitionMotion } from '../utils/PageTransition';
 // Network proxy management for the app's HTTP clients. The page mirrors the
 // proxy workflow of the reference client while adding multiple saved servers,
 // HTTP authentication, latency checks, SOCKS5 on API 26, and failover.
@@ -34,6 +40,9 @@ export function ProxySettingsBuilder(): void {
 
 @Component
 export struct ProxySettingsPage {
+  @StorageProp('harmonyx.page_background') private pageBackgroundValue: string = '';
+  @State private pageMotion: PageTransitionMotion = new PageTransitionMotion();
+  @StorageProp(STORAGE_KEY_PAGE_TRANSITION_MODE) private pageTransitionMode: string = DEFAULT_PAGE_TRANSITION_MODE;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @Consume('pageStack') pageStack: NavPathStack;
   @StorageProp('harmonyx.status_bar_height') statusBarHeight: number =
@@ -250,7 +259,7 @@ export struct ProxySettingsPage {
   private FieldLabel(label: Resource): void {
     Text(label).fontFamily(this.appFontFamily)
       .fontSize($r('sys.float.Body_M'))
-      .fontColor($r('app.color.text_secondary'))
+      .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue)))
       .width('100%')
   }
 
@@ -280,11 +289,11 @@ export struct ProxySettingsPage {
         Text(this.editingId.length > 0 ? $r('app.string.proxy_edit') : $r('app.string.proxy_add')).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Title_S'))
           .fontWeight(FontWeight.Bold)
-          .fontColor($r('app.color.text_primary'))
+          .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue)))
           .layoutWeight(1)
         Button($r('app.string.proxy_cancel'), { stateEffect: true })
           .backgroundColor(secondaryButtonSurfaceColor(this.displayMode, this.darkSurface))
-          .fontColor($r('app.color.text_primary'))
+          .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, secondaryButtonSurfaceColor(this.displayMode, this.darkSurface)))
           .onClick((): void => this.cancelEdit())
       }
       .width('100%')
@@ -353,7 +362,7 @@ export struct ProxySettingsPage {
     .width('100%')
     .padding(16)
     .borderRadius(16)
-    .backgroundColor(cardSurfaceColor(this.displayMode, this.darkSurface))
+    .backgroundColor(pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue))
     .border({ width: 1, color: $r('app.color.divider') })
   }
 
@@ -366,7 +375,9 @@ export struct ProxySettingsPage {
             Text(proxy.displayName()).fontFamily(this.appFontFamily)
               .fontSize($r('sys.float.Subtitle_L'))
               .fontWeight(FontWeight.Medium)
-              .fontColor($r('app.color.text_primary'))
+              .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, this.proxyEnabled && proxy.id === this.activeProxyId ?
+      fieldSurfaceColor(this.displayMode, this.darkSurface) :
+      pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue)))
               .maxLines(1)
               .textOverflow({ overflow: TextOverflow.Ellipsis })
               .layoutWeight(1)
@@ -383,13 +394,19 @@ export struct ProxySettingsPage {
           Text((proxy.isSocks5() ? 'SOCKS5' : 'HTTP') + '  ·  ' +
             proxy.host + ':' + proxy.port.toString()).fontFamily(this.appFontFamily)
             .fontSize($r('sys.float.Body_M'))
-            .fontColor($r('app.color.text_secondary'))
+            .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, this.proxyEnabled && proxy.id === this.activeProxyId ?
+      fieldSurfaceColor(this.displayMode, this.darkSurface) :
+      pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue)))
             .maxLines(1)
             .textOverflow({ overflow: TextOverflow.Ellipsis })
           Text(this.latencyText(proxy)).fontFamily(this.appFontFamily)
             .fontSize($r('sys.float.Body_S'))
-            .fontColor(proxy.latencyMs >= 0 ? $r('app.color.text_accent') :
-              $r('app.color.text_secondary'))
+            .fontColor(proxy.latencyMs >= 0 ? pageTextColor($r('app.color.text_accent'), this.pageBackgroundValue, this.proxyEnabled && proxy.id === this.activeProxyId ?
+      fieldSurfaceColor(this.displayMode, this.darkSurface) :
+      pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue)) :
+              pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, this.proxyEnabled && proxy.id === this.activeProxyId ?
+      fieldSurfaceColor(this.displayMode, this.darkSurface) :
+      pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue)))
         }
         .layoutWeight(1)
         .alignItems(HorizontalAlign.Start)
@@ -400,7 +417,9 @@ export struct ProxySettingsPage {
         } else {
           SymbolGlyph($r('sys.symbol.circle'))
             .fontSize(22)
-            .fontColor([$r('app.color.text_secondary')])
+            .fontColor([pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, this.proxyEnabled && proxy.id === this.activeProxyId ?
+      fieldSurfaceColor(this.displayMode, this.darkSurface) :
+      pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue))])
         }
       }
       .width('100%')
@@ -410,7 +429,7 @@ export struct ProxySettingsPage {
         Button($r('app.string.proxy_test'), { stateEffect: true })
           .layoutWeight(1)
           .backgroundColor(secondaryButtonSurfaceColor(this.displayMode, this.darkSurface))
-          .fontColor($r('app.color.text_primary'))
+          .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, secondaryButtonSurfaceColor(this.displayMode, this.darkSurface)))
           .enabled(this.testingId.length === 0)
           .onClick((): void => {
             this.test(proxy);
@@ -418,7 +437,7 @@ export struct ProxySettingsPage {
         Button($r('app.string.proxy_edit'), { stateEffect: true })
           .layoutWeight(1)
           .backgroundColor(secondaryButtonSurfaceColor(this.displayMode, this.darkSurface))
-          .fontColor($r('app.color.text_primary'))
+          .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, secondaryButtonSurfaceColor(this.displayMode, this.darkSurface)))
           .onClick((): void => this.beginEdit(proxy))
         Button($r('app.string.proxy_delete'), { stateEffect: true })
           .layoutWeight(1)
@@ -433,7 +452,7 @@ export struct ProxySettingsPage {
     .borderRadius(16)
     .backgroundColor(this.proxyEnabled && proxy.id === this.activeProxyId ?
       fieldSurfaceColor(this.displayMode, this.darkSurface) :
-      cardSurfaceColor(this.displayMode, this.darkSurface))
+      pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue))
     .border({
       width: this.proxyEnabled && proxy.id === this.activeProxyId ? 2 : 1,
       color: this.proxyEnabled && proxy.id === this.activeProxyId ?
@@ -443,6 +462,8 @@ export struct ProxySettingsPage {
 
   build(): void {
     HdsNavDestination() {
+      Stack({ alignContent: Alignment.TopStart }) {
+        appPageBackground()
       Scroll(this.scroller) {
         Column({ space: 16 }) {
           Column({ space: 12 }) {
@@ -451,10 +472,10 @@ export struct ProxySettingsPage {
                 Text($r('app.string.proxy_enable')).fontFamily(this.appFontFamily)
                   .fontSize($r('sys.float.Subtitle_L'))
                   .fontWeight(FontWeight.Medium)
-                  .fontColor($r('app.color.text_primary'))
+                  .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue)))
                 Text(this.proxyEnabled ? this.activeProxyName() : $r('app.string.proxy_direct')).fontFamily(this.appFontFamily)
                   .fontSize($r('sys.float.Body_M'))
-                  .fontColor($r('app.color.text_secondary'))
+                  .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue)))
               }
               .layoutWeight(1)
               .alignItems(HorizontalAlign.Start)
@@ -468,10 +489,10 @@ export struct ProxySettingsPage {
               Column({ space: 4 }) {
                 Text($r('app.string.proxy_auto_switch')).fontFamily(this.appFontFamily)
                   .fontSize($r('sys.float.Subtitle_L'))
-                  .fontColor($r('app.color.text_primary'))
+                  .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue)))
                 Text($r('app.string.proxy_auto_switch_desc')).fontFamily(this.appFontFamily)
                   .fontSize($r('sys.float.Body_M'))
-                  .fontColor($r('app.color.text_secondary'))
+                  .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue)))
                   .maxLines(3)
               }
               .layoutWeight(1)
@@ -486,10 +507,10 @@ export struct ProxySettingsPage {
               Column({ space: 4 }) {
                 Text($r('app.string.proxy_video_cdn')).fontFamily(this.appFontFamily)
                   .fontSize($r('sys.float.Subtitle_L'))
-                  .fontColor($r('app.color.text_primary'))
+                  .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue)))
                 Text($r('app.string.proxy_video_cdn_desc')).fontFamily(this.appFontFamily)
                   .fontSize($r('sys.float.Body_M'))
-                  .fontColor($r('app.color.text_secondary'))
+                  .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue)))
                   .maxLines(4)
               }
               .layoutWeight(1)
@@ -502,13 +523,13 @@ export struct ProxySettingsPage {
 
             Text($r('app.string.proxy_scope_note')).fontFamily(this.appFontFamily)
               .fontSize($r('sys.float.Body_M'))
-              .fontColor($r('app.color.text_secondary'))
+              .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue)))
               .width('100%')
           }
           .width('100%')
           .padding(16)
           .borderRadius(16)
-          .backgroundColor(cardSurfaceColor(this.displayMode, this.darkSurface))
+          .backgroundColor(pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue))
           .border({ width: 1, color: $r('app.color.divider') })
 
           if (this.editorVisible) {
@@ -519,7 +540,7 @@ export struct ProxySettingsPage {
             Text($r('app.string.proxy_saved_servers')).fontFamily(this.appFontFamily)
               .fontSize($r('sys.float.Title_S'))
               .fontWeight(FontWeight.Bold)
-              .fontColor($r('app.color.text_primary'))
+              .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
               .layoutWeight(1)
             Button($r('app.string.proxy_add'), { stateEffect: true })
               .backgroundColor(this.accentColor)
@@ -532,10 +553,10 @@ export struct ProxySettingsPage {
             Column({ space: 10 }) {
               SymbolGlyph($r('sys.symbol.link'))
                 .fontSize(30)
-                .fontColor([$r('app.color.text_secondary')])
+                .fontColor([pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)])
               Text($r('app.string.proxy_empty')).fontFamily(this.appFontFamily)
                 .fontSize($r('sys.float.Body_L'))
-                .fontColor($r('app.color.text_secondary'))
+                .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
                 .textAlign(TextAlign.Center)
             }
             .width('100%')
@@ -558,7 +579,13 @@ export struct ProxySettingsPage {
       .height('100%')
       .scrollBar(BarState.Off)
       .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: true })
+    
+      }.width('100%').height('100%')
     }
+    .scale({ x: this.pageMotion.scale, y: this.pageMotion.scale })
+    .opacity(this.pageMotion.opacity)
+    .onReady((context: NavDestinationContext): void => { this.pageMotion.attach(context); })
+    .systemTransition(pageSystemTransition(this.pageTransitionMode))
     .titleMode(HdsNavDestinationTitleMode.MINI)
     .hideBackButton(false)
     .onBackPressed((): boolean => {
@@ -572,7 +599,7 @@ export struct ProxySettingsPage {
       style: destinationTitleBarStyle(ScrollEffectType.GRADIENT_BLUR,
         this.displayMode, this.darkSurface, this.titleBarStyleMode)
     })
-    .backgroundColor(pageSurfaceColor(this.displayMode, this.darkSurface))
-    .systemMaterial(this.pageMaterial());
+    .backgroundColor(pageCanvasColor(this.displayMode, this.darkSurface, this.pageBackgroundValue))
+    .systemMaterial(pageBackgroundActive(this.pageBackgroundValue) ? undefined : this.pageMaterial());
   }
 }

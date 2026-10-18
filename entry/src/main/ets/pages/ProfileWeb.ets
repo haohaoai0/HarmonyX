@@ -1,3 +1,9 @@
+import { pageBackgroundActive } from '../services/PageBackgroundStore';
+import { pageTextColor } from '../utils/ThemeColors';
+import { appPageBackground } from '../components/PageBackgroundLayer';
+import { pageCanvasColor, pageReadingSurfaceColor } from '../utils/ThemeColors';
+import { STORAGE_KEY_PAGE_TRANSITION_MODE, DEFAULT_PAGE_TRANSITION_MODE } from '../services/PageTransitionSettingsStore';
+import { pageSystemTransition, PageTransitionMotion } from '../utils/PageTransition';
 // X account flows use the active cookie session and application proxy.
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
 import common from '@ohos.app.ability.common';
@@ -34,6 +40,9 @@ export function ProfileWebBuilder(): void {
 
 @Component
 export struct ProfileWebPage {
+  @StorageProp('harmonyx.page_background') private pageBackgroundValue: string = '';
+  @State private pageMotion: PageTransitionMotion = new PageTransitionMotion();
+  @StorageProp(STORAGE_KEY_PAGE_TRANSITION_MODE) private pageTransitionMode: string = DEFAULT_PAGE_TRANSITION_MODE;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @Consume('pageStack') pageStack: NavPathStack;
   @StorageProp('harmonyx.status_bar_height') statusBarHeight: number =
@@ -190,11 +199,11 @@ export struct ProfileWebPage {
     Column({ space: 12 }) {
       SymbolGlyph($r('sys.symbol.exclamationmark_circle'))
         .fontSize(32)
-        .fontColor([$r('app.color.text_secondary')])
+        .fontColor([pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)])
       Text(this.failureText.length > 0 ? this.failureText :
         this.text($r('app.string.profile_web_failed'))).fontFamily(this.appFontFamily)
         .fontSize($r('sys.float.Body_L'))
-        .fontColor($r('app.color.text_secondary'))
+        .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
         .textAlign(TextAlign.Center)
         .width('100%')
       Button($r('app.string.common_retry'), { stateEffect: true })
@@ -222,7 +231,7 @@ export struct ProfileWebPage {
           LoadingProgress().color(this.accentColor).width(18).height(18)
           Text($r('app.string.status_loading')).fontFamily(this.appFontFamily)
             .fontSize($r('sys.float.Body_M'))
-            .fontColor($r('app.color.text_secondary'))
+            .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
         }
         .width('100%')
         .layoutWeight(1)
@@ -237,7 +246,7 @@ export struct ProfileWebPage {
           .userAgent(xUserAgent.value())
           .darkMode(this.webDarkMode())
           .forceDarkAccess(this.webForceDark())
-          .backgroundColor(pageSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
+          .backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue))
           .onPageBegin((): void => {
             this.loading = true;
           })
@@ -313,7 +322,7 @@ export struct ProfileWebPage {
             LoadingProgress().color(this.accentColor).width(18).height(18)
             Text($r('app.string.status_loading')).fontFamily(this.appFontFamily)
               .fontSize($r('sys.float.Body_M'))
-              .fontColor($r('app.color.text_secondary'))
+              .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
           }
           .width('100%')
           .justifyContent(FlexAlign.Center)
@@ -329,13 +338,21 @@ export struct ProfileWebPage {
       top: this.statusBarHeight + 56,
       bottom: this.navigationIndicatorHeight
     })
-    .backgroundColor(pageSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
+    .backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue))
   }
 
   build(): void {
     HdsNavDestination() {
+      Stack({ alignContent: Alignment.TopStart }) {
+        appPageBackground()
       this.WebContent()
+    
+      }.width('100%').height('100%')
     }
+    .scale({ x: this.pageMotion.scale, y: this.pageMotion.scale })
+    .opacity(this.pageMotion.opacity)
+    .onReady((context: NavDestinationContext): void => { this.pageMotion.attach(context); })
+    .systemTransition(pageSystemTransition(this.pageTransitionMode))
     .titleMode(HdsNavDestinationTitleMode.MINI)
     .hideBackButton(false)
     .onBackPressed((): boolean => {
@@ -361,7 +378,7 @@ export struct ProfileWebPage {
       style: destinationTitleBarStyle(ScrollEffectType.IMMERSIVE_GRADIENT_BLUR,
         this.themeDisplayMode, this.themeDarkSurface, this.titleBarStyleMode)
     })
-    .backgroundColor(pageSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
-    .systemMaterial(this.pageMaterial());
+    .backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue))
+    .systemMaterial(pageBackgroundActive(this.pageBackgroundValue) ? undefined : this.pageMaterial());
   }
 }

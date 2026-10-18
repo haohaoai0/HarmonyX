@@ -1,3 +1,9 @@
+import { pageTextColor } from '../utils/ThemeColors';
+import { pageBackgroundActive } from '../services/PageBackgroundStore';
+import { appPageBackground } from '../components/PageBackgroundLayer';
+import { pageCanvasColor, pageReadingSurfaceColor } from '../utils/ThemeColors';
+import { STORAGE_KEY_PAGE_TRANSITION_MODE, DEFAULT_PAGE_TRANSITION_MODE } from '../services/PageTransitionSettingsStore';
+import { pageSystemTransition, PageTransitionMotion } from '../utils/PageTransition';
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
 import { AnimatedIconTabs } from '../components/AnimatedIconTabs';
 import { ProfileTabMotion } from '../utils/ProfileTabMotion';
@@ -25,7 +31,7 @@ import { communityRoute } from '../utils/CommunityNavigation';
 import { pageSurfaceColor } from '../utils/ThemeColors';
 import { ResponsiveLayout } from '../utils/ResponsiveLayout';
 import { sheetMaterialOptions } from '../utils/SheetMaterial';
-import { DEFAULT_SHEET_MATERIAL_LEVEL, STORAGE_KEY_SHEET_MATERIAL_ENABLED,
+import { DEFAULT_SHEET_MATERIAL_ENABLED, DEFAULT_SHEET_MATERIAL_LEVEL, STORAGE_KEY_SHEET_MATERIAL_ENABLED,
   STORAGE_KEY_SHEET_MATERIAL_LEVEL } from '../services/SheetMaterialSettingsStore';
 import type { PostDetailRouteParam } from './PostDetail';
 import type { UserDetailRouteParam } from './UserDetail';
@@ -66,6 +72,9 @@ export function CommunitiesBuilder(): void { Communities(); }
 
 @Component
 export struct Communities {
+  @StorageProp('harmonyx.page_background') private pageBackgroundValue: string = '';
+  @State private pageMotion: PageTransitionMotion = new PageTransitionMotion();
+  @StorageProp(STORAGE_KEY_PAGE_TRANSITION_MODE) private pageTransitionMode: string = DEFAULT_PAGE_TRANSITION_MODE;
   @StorageProp('harmonyx.compact_window') private sheetCompactWindow: boolean = false;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @StorageProp('harmonyx.breakpoint') private sheetWindowBreakpoint: string = 'sm';
@@ -76,7 +85,7 @@ export struct Communities {
   @StorageProp('harmonyx.display_mode') themeDisplayMode: string = '';
   @StorageProp('harmonyx.dark_surface') themeDarkSurface: string = '';
   @StorageLink('harmonyx.title_bar_style_mode') titleBarStyleMode: number = 0;
-  @StorageProp(STORAGE_KEY_SHEET_MATERIAL_ENABLED) sheetMaterialEnabled: boolean = false;
+  @StorageProp(STORAGE_KEY_SHEET_MATERIAL_ENABLED) sheetMaterialEnabled: boolean = DEFAULT_SHEET_MATERIAL_ENABLED;
   @StorageProp(STORAGE_KEY_SHEET_MATERIAL_LEVEL) sheetMaterialLevel: number = DEFAULT_SHEET_MATERIAL_LEVEL;
   @StorageProp('harmonyx.community_membership_changed') @Watch('membershipChanged') membershipRevision: number = 0;
   @StorageProp('harmonyx.posts_changed') @Watch('postsChanged') postRevision: number = 0;
@@ -236,19 +245,19 @@ export struct Communities {
                 if (row.bannerUrl.length > 0) {
                   ProxyMediaImage({ url: row.bannerUrl, displayHeight: 52 })
                 } else {
-                  SymbolGlyph($r('sys.symbol.person_2_fill')).fontSize(24).fontColor([$r('app.color.text_secondary')])
+                  SymbolGlyph($r('sys.symbol.person_2_fill')).fontSize(24).fontColor([pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, $r('app.color.bg_field'))])
                 }
               }.width('100%').height(52).clip(true).backgroundColor($r('app.color.bg_field'))
               Text(row.name).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontWeight(FontWeight.Bold)
-                .fontColor($r('app.color.text_primary')).maxLines(1).textOverflow({ overflow: TextOverflow.Ellipsis })
+                .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)).maxLines(1).textOverflow({ overflow: TextOverflow.Ellipsis })
                 .width('100%').height(32).padding({ left: 8, right: 8 })
             }.width(130).height(84).borderRadius(12).clip(true)
-              .backgroundColor(pageSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
+              .backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue))
               .border({ width: 0.5, color: $r('app.color.divider') })
               .onClick((): void => this.openCommunity(row))
           }, (row: CommunityRow): string => row.id)
           Button({ type: ButtonType.Circle }) {
-            SymbolGlyph($r('sys.symbol.arrow_right')).fontSize(24).fontColor([$r('app.color.text_primary')])
+            SymbolGlyph($r('sys.symbol.arrow_right')).fontSize(24).fontColor([pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)])
           }.width(52).height(52).backgroundColor(Color.Transparent)
             .border({ width: 1, color: $r('app.color.divider') })
             .accessibilityText($r('app.string.community_explore_more')).id('community-explore-more')
@@ -262,14 +271,14 @@ export struct Communities {
     if (rows.length > 0) {
       ListItem() {
         Column({ space: 10 }) {
-          Text(label).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontWeight(FontWeight.Bold).fontColor($r('app.color.text_primary'))
+          Text(label).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontWeight(FontWeight.Bold).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
           Scroll() {
             Row({ space: 16 }) {
               ForEach(rows, (row: CommunityRow) => {
                 Column({ space: 6 }) {
                   ProxyAvatar({ url: row.bannerUrl, avatarSize: 52, radius: 14,
                     fallbackText: row.name.substring(0, 1), fallbackColor: this.accentColor })
-                  Text(row.name).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_S')).fontColor($r('app.color.text_primary'))
+                  Text(row.name).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_S')).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
                     .maxLines(1).textOverflow({ overflow: TextOverflow.Ellipsis }).width(80).textAlign(TextAlign.Center)
                 }.width(80).onClick((): void => this.openCommunity(row))
               }, (row: CommunityRow): string => row.id)
@@ -284,7 +293,7 @@ export struct Communities {
     if (this.recommendations.length > 0) {
       ListItem() {
         Text($r('app.string.community_discover_new')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Subtitle_L')).fontWeight(FontWeight.Bold)
-          .fontColor($r('app.color.text_primary')).width('100%').padding({ left: 16, top: 20, bottom: 8 })
+          .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)).width('100%').padding({ left: 16, top: 20, bottom: 8 })
       }
       ForEach(this.recommendations.slice(0, 3), (row: CommunityRow) => {
         ListItem() { CommunityRowCard({ community: row, onOpen: (item: CommunityRow): void => this.openCommunity(item) }) }
@@ -293,7 +302,7 @@ export struct Communities {
         Row() {
           Text($r('app.string.community_show_more')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontColor(this.accentColor)
           Blank()
-          SymbolGlyph($r('sys.symbol.chevron_right')).fontSize(14).fontColor([$r('app.color.text_secondary')])
+          SymbolGlyph($r('sys.symbol.chevron_right')).fontSize(14).fontColor([pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)])
         }.width('100%').padding(16).onClick((): void => this.search())
       }
     }
@@ -305,14 +314,14 @@ export struct Communities {
     } else if (this.feed(index).status.length > 0) {
       ListItem() {
         Column({ space: 14 }) {
-          Text(this.feed(index).status).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor($r('app.color.text_secondary')).textAlign(TextAlign.Center)
+          Text(this.feed(index).status).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).textAlign(TextAlign.Center)
           Button($r('app.string.common_retry')).backgroundColor(this.accentColor).fontColor($r('app.color.text_on_accent'))
             .onClick((): void => { this.loadFeed(index, true); })
         }.width('100%').padding(24)
       }
     } else if (this.feed(index).posts.length === 0 && (index === 1 || this.recommendations.length === 0)) {
       ListItem() {
-        Text($r('app.string.community_home_empty')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontColor($r('app.color.text_secondary'))
+        Text($r('app.string.community_home_empty')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
           .textAlign(TextAlign.Center).width('100%').padding(32)
       }
     }
@@ -340,9 +349,9 @@ export struct Communities {
           this.JoinedStrip(this.favorites, $r('app.string.communities_favorites'))
           ListItem() {
             Row({ space: 6 }) {
-              SymbolGlyph($r('sys.symbol.arrow_up_and_down_square_portrait')).fontSize(15).fontColor([$r('app.color.text_primary')])
+              SymbolGlyph($r('sys.symbol.arrow_up_and_down_square_portrait')).fontSize(15).fontColor([pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)])
               Text(this.newestFirst ? $r('app.string.community_sort_new') : $r('app.string.community_sort_trending')).fontFamily(this.appFontFamily)
-                .fontSize($r('sys.float.Body_M')).fontWeight(FontWeight.Medium).fontColor($r('app.color.text_primary'))
+                .fontSize($r('sys.float.Body_M')).fontWeight(FontWeight.Medium).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
             }.padding({ left: 14, right: 14, top: 7, bottom: 7 }).borderRadius(20)
               .border({ width: 1, color: $r('app.color.divider') }).margin({ left: 16, top: 8, bottom: 8 })
               .onClick((): void => { this.sort(); })
@@ -370,6 +379,8 @@ export struct Communities {
   }
   build(): void {
     HdsNavDestination() {
+      Stack({ alignContent: Alignment.TopStart }) {
+        appPageBackground()
       Stack() {
         Swiper(this.pager) { this.FeedPage(0); this.FeedPage(1) }
           .width('100%').height('100%').loop(false).indicator(false).cachedCount(1).clip(false)
@@ -383,7 +394,13 @@ export struct Communities {
           gripSubscriberKey: 'communities-compose', accessibilityLabel: this.text($r('app.string.community_post_action')),
           onCompose: (): void => { if (this.joined.length > 0) { this.composeOpen = true; } else { this.search(); } } })
       }.width('100%').height('100%')
-    }.titleMode(HdsNavDestinationTitleMode.MINI).hideBackButton(false)
+    
+      }.width('100%').height('100%')
+    }
+    .scale({ x: this.pageMotion.scale, y: this.pageMotion.scale })
+    .opacity(this.pageMotion.opacity)
+    .onReady((context: NavDestinationContext): void => { this.pageMotion.attach(context); })
+    .systemTransition(pageSystemTransition(this.pageTransitionMode)).titleMode(HdsNavDestinationTitleMode.MINI).hideBackButton(false)
       .onShown((): void => { this.favorites = communityFavoritesStore.load(getContext(this) as common.UIAbilityContext); })
       .onBackPressed((): boolean => { ResponsiveLayout.closeContentDestination(this.pageStack); return true; })
       .bindToScrollable([this.homeScroller, this.exploreScroller])
@@ -396,8 +413,8 @@ export struct Communities {
             label: $r('app.string.community_search_placeholder'), action: (): void => this.search() } }], maxCount: 1 } },
         style: destinationTitleBarStyle(ScrollEffectType.IMMERSIVE_GRADIENT_BLUR,
           this.themeDisplayMode, this.themeDarkSurface, this.titleBarStyleMode) })
-      .backgroundColor(pageSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
-      .systemMaterial(deviceInfo.apiAvailable('26.0.0') ? new uiMaterial.ImmersiveMaterial({
+      .backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue))
+      .systemMaterial(!pageBackgroundActive(this.pageBackgroundValue) && deviceInfo.apiAvailable('26.0.0') ? new uiMaterial.ImmersiveMaterial({
         style: uiMaterial.ImmersiveStyle.REGULAR, applyShadow: true, colorInvert: true }) : undefined)
       .bindSheet($$this.composeOpen, this.ComposeSheet(), sheetMaterialOptions({ height: SheetSize.LARGE,
         showClose: true, backgroundColor: pageSurfaceColor(this.themeDisplayMode, this.themeDarkSurface) },

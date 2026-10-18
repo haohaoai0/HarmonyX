@@ -1,3 +1,6 @@
+import { BackgroundImage, backgroundImageStore } from '../services/BackgroundImageStore';
+import { STORAGE_KEY_PAGE_TRANSITION_MODE, DEFAULT_PAGE_TRANSITION_MODE } from '../services/PageTransitionSettingsStore';
+import { pageSystemTransition, PageTransitionMotion } from '../utils/PageTransition';
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
 import { common } from '@kit.AbilityKit';
 import { photoAccessHelper } from '@kit.MediaLibraryKit';
@@ -20,6 +23,8 @@ export function ChatBackgroundBuilder(): void { ChatBackgroundPage(); }
 // destination chrome and account/conversation preferences instead of TDLib.
 @Component
 struct ChatBackgroundPage {
+  @State private pageMotion: PageTransitionMotion = new PageTransitionMotion();
+  @StorageProp(STORAGE_KEY_PAGE_TRANSITION_MODE) private pageTransitionMode: string = DEFAULT_PAGE_TRANSITION_MODE;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @Consume('pageStack') pageStack: NavPathStack;
   @StorageProp('harmonyx.status_bar_height') statusBarHeight: number = 0;
@@ -31,6 +36,7 @@ struct ChatBackgroundPage {
   @StorageProp('harmonyx.accounts_changed') @Watch('accountChanged') accountRevision: number = 0;
   @State private selected: ChatBackgroundState = new ChatBackgroundState();
   @State private photoPath: string = '';
+  @State private savedPhotos: BackgroundImage[] = [];
   @State private picking: boolean = false;
   @State private saving: boolean = false;
   private conversationId: string = '';
@@ -48,6 +54,7 @@ struct ChatBackgroundPage {
     this.account = xPrivateStore.load(this.context()).cacheIdentity();
     this.selected = chatBackgroundStore.load(this.context(), this.conversationId);
     this.photoPath = this.selected.path;
+    this.savedPhotos = backgroundImageStore.photos(this.context());
   }
 
   aboutToDisappear(): void { this.disposed = true; this.removeStaged(); }
@@ -233,18 +240,18 @@ struct ChatBackgroundPage {
   }
 
   @Builder
-  private PhotoTile(): void {
+  private PhotoTile(path: string): void {
     Column({ space: 8 }) {
       Button({ type: ButtonType.Normal }) {
         Stack({ alignContent: Alignment.TopEnd }) {
-          Image('file://' + this.photoPath).width('100%').height('100%').autoResize(true).objectFit(ImageFit.Cover).draggable(false)
-          if (this.selected.presetId === 'photo') { this.SelectionMark() }
+          Image('file://' + path).width('100%').height('100%').autoResize(true).objectFit(ImageFit.Cover).draggable(false)
+          if (this.selected.path === path) { this.SelectionMark() }
         }.width('100%').height('100%')
       }.width('100%').height($r('app.float.chat_background_tile_height')).padding(0).borderRadius(16).clip(true)
-        .border({ width: this.selected.presetId === 'photo' ? 2 : 1,
-          color: this.selected.presetId === 'photo' ? this.accentColor : $r('app.color.divider') })
+        .border({ width: this.selected.path === path ? 2 : 1,
+          color: this.selected.path === path ? this.accentColor : $r('app.color.divider') })
         .accessibilityText($r('app.string.chat_background_my_photo')).enabled(!this.picking && !this.saving)
-        .onClick((): void => { this.selectPhoto(); })
+        .onClick((): void => { this.photoPath = path; this.selectPhoto(); })
       Text($r('app.string.chat_background_my_photo')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_S')).fontColor($r('app.color.text_secondary'))
     }.width('100%')
   }
@@ -258,18 +265,33 @@ struct ChatBackgroundPage {
             .fontColor($r('app.color.text_secondary'))
           this.PhotoPickerRow()
           if (this.selected.presetId !== 'default') { this.Adjustments() }
+          if (this.savedPhotos.length > 0) {
+            Text($r('app.string.chat_background_saved_photos')).fontFamily(this.appFontFamily).width('100%').fontSize($r('sys.float.Body_L'))
+              .fontWeight(FontWeight.Medium).fontColor($r('app.color.text_primary'))
+            GridRow({ columns: 3, gutter: { x: 12, y: 16 } }) {
+              ForEach(this.savedPhotos, (photo: BackgroundImage) => {
+                GridCol() { this.PhotoTile(photo.path) }
+              }, (photo: BackgroundImage): string => photo.path)
+            }.id('chat-background-saved-photos')
+          }
           Text($r('app.string.chat_background_presets')).fontFamily(this.appFontFamily).width('100%').fontSize($r('sys.float.Body_L'))
             .fontWeight(FontWeight.Medium).fontColor($r('app.color.text_primary'))
           GridRow({ columns: 3, gutter: { x: 12, y: 16 } }) {
             ForEach(chatBackgroundPresets(), (preset: ChatBackgroundPreset) => {
               GridCol() { this.PresetTile(preset) }
             }, (preset: ChatBackgroundPreset): string => preset.id)
-            if (this.photoPath.length > 0) { GridCol() { this.PhotoTile() } }
+            if (this.photoPath.length > 0 && !this.savedPhotos.some((photo: BackgroundImage): boolean => photo.path === this.photoPath)) {
+              GridCol() { this.PhotoTile(this.photoPath) }
+            }
           }
         }.width('100%').padding({ left: 16, right: 16, top: this.statusBarHeight + 80, bottom: this.bottomInset + 24 })
       }.width('100%').height('100%').scrollBar(BarState.Off).align(Alignment.Top)
         .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: true })
-    }.titleMode(HdsNavDestinationTitleMode.MINI).hideBackButton(false).bindToScrollable([this.scroller])
+    }
+    .scale({ x: this.pageMotion.scale, y: this.pageMotion.scale })
+    .opacity(this.pageMotion.opacity)
+    .onReady((context: NavDestinationContext): void => { this.pageMotion.attach(context); })
+    .systemTransition(pageSystemTransition(this.pageTransitionMode)).titleMode(HdsNavDestinationTitleMode.MINI).hideBackButton(false).bindToScrollable([this.scroller])
       .titleBar({ avoidLayoutSafeArea: true,
         content: { title: { mainTitle: $r('app.string.chat_background') }, menu: { value: [
           { content: { label: $r('app.string.chat_background_apply'), type: TextStyleMode.NORMAL,

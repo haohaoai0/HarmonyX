@@ -24,9 +24,10 @@ function fixture() {
     action => { const id = ++timerId; timers.set(id, action); return id; }, id => timers.delete(id));
   const store = new exported.VideoPlayerHandoffStore();
   const Player = methods('entry/src/main/ets/components/PostMedia.ets', 'SurfaceVideoPlayer', [
-    'registerPlayerHandoff', 'adoptPlayerHandoff', 'receivePlayerHandoff', 'takeRequestedPlayer', 'detachPlayerEvents',
+    'registerPlayerHandoff', 'playerReturnTarget', 'adoptPlayerHandoff', 'receivePlayerHandoff', 'takeRequestedPlayer', 'detachPlayerEvents',
     'attachSurfaceAndPrepare', 'pause', 'aboutToDisappear', 'destroyPlayer', 'closeCacheLease', 'closeDataSourceLease',
-    'isCoveredByVideoFeed', 'onVideoFeedActiveChanged', 'onVisibleChange', 'releasePip', 'syncBackgroundPlayback', 'canControlPlayer'
+    'isCoveredByVideoFeed', 'onVideoFeedActiveChanged', 'onVisibleChange', 'releasePip', 'syncBackgroundPlayback', 'canControlPlayer',
+    'clearDoubleTapSeekHint', 'onInlineSurfaceLoaded'
   ], {
     videoPlayerHandoff: store, VideoPlayerHandoffPayload: exported.VideoPlayerHandoffPayload,
     VideoPlayerReturnTarget: exported.VideoPlayerReturnTarget,
@@ -37,13 +38,15 @@ function fixture() {
     videoPipPlaybackKeeper: { unregister: id => events.push(['pip-unregister', id]) },
     videoPlaybackCoordinator: { release: id => { events.push(['owner-release', id]); owner = ''; } },
     videoBackgroundPlayback: { start() {}, stop: id => events.push(['background-stop', id]) },
-    PLAYER_PLAY_RATIO: 0.35, PLAYER_HIDE_RATIO: 0.05, VIDEO_BACKGROUND_PIP: 1
+    PLAYER_PLAY_RATIO: 0.35, PLAYER_HIDE_RATIO: 0.05, VIDEO_BACKGROUND_PIP: 1,
+    clearTimeout: id => timers.delete(id)
   });
   const native = (name, state = 'playing') => {
     let surface = name; const calls = [];
     return { state, calls, on() {}, off() {},
       get surfaceId() { return surface; }, set surfaceId(value) { surface = value; calls.push(['surface', value]); },
-      pause() { calls.push('pause'); this.state = 'paused'; },
+      setVolume(value) { calls.push(['volume', value]); },
+      pause() { calls.push('pause'); this.state = 'paused'; return Promise.resolve(); },
       async play() { calls.push('play'); this.state = 'playing'; },
       async release() { calls.push('release'); }, duration: 110000 };
   };
@@ -52,6 +55,7 @@ function fixture() {
     media: { id: 'video' }, mediaViewerLayout: viewer, transitionSourceId: 'card-' + name,
     fullscreenInstanceKey: name, alive: true, player, handedOff: false, playerEpoch: 0, proxyPrepareEpoch: 0,
     fullscreen: false, pipActive: false, casting: false, pipController: null, aiCaptionShown: false,
+    doubleTapSeekHintTimer: -1, doubleTapSeekDirection: 0,
     playbackEnabled: true, videoFeedActive: viewer, lastRatio: 1, wantsPlay: true, playing: player !== null,
     playerState: player?.state || 'idle', ready: player !== null, failed: false, preparing: false,
     currentSource: 'https://video.test/video.mp4', positionSec: 38, durationSec: 110, muted: true,
@@ -86,7 +90,10 @@ test('the actual player returns into the original source before teardown, preser
     assert.equal(source.cacheLease, file); assert.equal(source.dataSourceLease, stream);
     assert.equal(h.owner(), 'inline');
     source.onVisibleChange(false, 0);
+    viewer.doubleTapSeekHintTimer = 1000 + visit;
+    h.timers.set(viewer.doubleTapSeekHintTimer, () => {});
     const beforeCleanup = h.events.length; viewer.aboutToDisappear();
+    assert.equal(h.timers.has(1000 + visit), false, 'viewer teardown cancels its pending seek hint');
     assert.equal(h.events.length, beforeCleanup, 'late viewer teardown must not release the returned player/session/PiP owner');
     assert.equal(source.player, native); assert.equal(h.owner(), 'inline');
     source.videoFeedActive = false; h.store.completeReturn('video'); source.onVideoFeedActiveChanged();
@@ -182,9 +189,11 @@ function routeHarness(canReturn = true) {
   const Viewer = methods('entry/src/main/ets/pages/VideoFeedViewer.ets', 'VideoFeedViewer', ['close'], {
     videoPlayerHandoff: { returnToSource: (id, source) => { events.push(['return', id, source]); return canReturn; },
       request: id => events.push(['request', id]) },
-    ResponsiveLayout: { closeContentDestination: () => events.push(['pop']) }, MediaViewerMotionFrame: Frame
+    ResponsiveLayout: { closeContentDestination: () => events.push(['pop']) }, MediaViewerMotionFrame: Frame,
+    measureMediaViewerGeometry: () => ({ viewport: {}, target: {} }), captureMediaViewerSource: () => undefined
   });
   const view = Object.assign(new Viewer(), { viewerAlive: true, closing: false, returningMediaId: '',
+    pageShown: true,
     motion: { enabled: () => false, source: { mediaId: 'video', id: 'card' } },
     recommendationStream: { close() {} }, currentVideo: () => ({ id: 'video' }),
     getUIContext: () => ({ animateTo: (_options, action) => action(), postFrameCallback: frame => frames.push(frame) }) });
@@ -205,4 +214,74 @@ test('a destroyed source uses the normal requested handoff and stale frame callb
   assert.deepEqual(missing.events, [['return', 'video', 'card'], ['request', 'video'], ['pop']]);
   const stale = routeHarness(); stale.view.close(); stale.view.viewerAlive = false; stale.frames.shift().onFrame();
   assert.equal(stale.events.length, 2); assert.equal(stale.frames.length, 0);
+});
+
+test('a cold video exposes its destination as soon as its surface exists while the cover still awaits decoding', () => {
+  const h = fixture(), view = h.view('cold', h.native('cold', 'initialized'), true);
+  const events = [];
+  Object.assign(view, { ready: false, buffering: true,
+    inlineController: { getXComponentSurfaceId: () => 'cold-surface' },
+    attachSurfaceAndPrepare() { events.push(['prepare', this.inlineSurfaceId]); },
+    onViewerSurfaceReady() { events.push(['show-destination', this.ready]); } });
+  view.onInlineSurfaceLoaded();
+  assert.deepEqual(events, [['prepare', 'cold-surface'], ['show-destination', false]]);
+  assert.equal(view.ready, false, 'surface readiness must not dismiss the undecoded cover');
+  assert.equal(view.buffering, true, 'the visible destination retains its loading indicator');
+});
+
+test('a source surface without an inline AVPlayer accepts the playing viewer when autoplay was disabled', () => {
+  const h = fixture(), source = h.view('inline'), native = h.native('viewer'), viewer = h.view('viewer', native, true);
+  source.videoAutoplay = false;
+  source.wantsPlay = false;
+  source.videoFeedActive = true;
+  h.store.registerReturnTarget('video', source.playerReturnTarget());
+  viewer.registerPlayerHandoff(native);
+  const file = viewer.cacheLease, stream = viewer.dataSourceLease;
+  assert.equal(h.store.returnToSource('video', 'card-inline'), true);
+  assert.equal(source.player, native); assert.equal(native.surfaceId, 'inline');
+  assert.equal(source.wantsPlay, true); assert.equal(native.state, 'playing');
+  assert.equal(source.isCoveredByVideoFeed(), false);
+  viewer.aboutToDisappear();
+  assert.equal(source.cacheLease, file); assert.equal(source.dataSourceLease, stream);
+  assert.equal(file.closed, 0); assert.equal(stream.closed, 0);
+  assert.equal(native.calls.includes('pause'), false); assert.equal(native.calls.includes('release'), false);
+});
+
+test('opening a static cover mounts its original return surface before either viewer navigation path', () => {
+  for (const videoFeedEnabled of [true, false]) {
+    const events = [];
+    const Post = methods('entry/src/main/ets/components/PostMedia.ets', 'PostMedia',
+      ['openVideo', 'retainInlinePlayer', 'isRetainedPlayer', 'isActive', 'showsPlayer', 'canStream', 'mediaSourceId'], {
+        isAnimatedGif: () => false, isVideoLike: media => media.type === 'video',
+        MAX_RETAINED_INLINE_PLAYERS_PER_POST: 1,
+        captureMediaViewerSource: (_ui, id, mediaId) => ({ id, mediaId }),
+        pendingMediaViewerSource: { request: () => events.push('source') },
+        requestVideoViewer: () => events.push('navigate'), videoPlaybackPositionStore: { positionFor: () => 38 }
+      });
+    const post = Object.assign(new Post(), { mediaSourcePrefix: 'card-', videoFeedEnabled,
+      mediaViewerLayout: false, videoAutoplay: false, retainedPlayerIds: [], activeIds: [], manualStartMediaId: '',
+      sourceTweet: { id: 'post' }, getUIContext: () => ({}),
+      onVideoOpen() { assert.equal(this.showsPlayer(media), true); events.push('navigate'); } });
+    const media = { id: 'video', type: 'video', mediaUrl: 'https://video.test/clip.mp4' };
+    assert.equal(post.showsPlayer(media), false);
+    assert.equal(post.openVideo(media), true);
+    assert.equal(post.showsPlayer(media), true, 'the source remains a real player surface for Back');
+    assert.equal(post.videoAutoplay, false, 'manual viewing does not change the global autoplay preference');
+    assert.equal(events.at(-1), 'navigate');
+  }
+});
+
+test('teardown silences a native playing state immediately and keeps leases until release finishes', async () => {
+  const h = fixture(), native = h.native('viewer'), view = h.view('viewer', native, true);
+  const file = view.cacheLease, stream = view.dataSourceLease; let finishRelease;
+  view.playerState = 'prepared'; // UI state is behind the already-audible native player.
+  native.release = () => { native.calls.push('release'); return new Promise(resolve => { finishRelease = resolve; }); };
+  view.registerPlayerHandoff(native);
+  view.aboutToDisappear();
+  assert.deepEqual(native.calls, [['volume', 0], 'pause', 'release']);
+  assert.equal(view.wantsPlay, false); assert.equal(view.playing, false);
+  assert.equal(h.store.isRequested('video'), false);
+  assert.equal(file.closed, 0); assert.equal(stream.closed, 0);
+  finishRelease(); await flush();
+  assert.equal(file.closed, 1); assert.equal(stream.closed, 1);
 });

@@ -21,6 +21,8 @@
 //     step through parsed variants when its current stream stalls.
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
 import type { MediaAttachment, Tweet, VideoRendition } from '../models/Tweet';
+import { STORAGE_KEY_VIDEO_HDR_ENHANCEMENT, DEFAULT_VIDEO_HDR_ENHANCEMENT } from '../services/MediaSettingsStore';
+import { STORAGE_KEY_VIDEO_HDR_SUPPORTED, VideoHdrEnhancementModifier } from '../services/VideoHdrEnhancement';
 import { videoKeepAwake } from '../services/VideoKeepAwake';
 import { normalizedPostMediaType, postGifHeight } from '../utils/PostGif';
 import { GifPreviewImage } from './GifPreviewImage';
@@ -91,6 +93,11 @@ import {
   STORAGE_KEY_VIDEO_FEED_TAP_PAUSE,
   STORAGE_KEY_VIDEO_AUTO_BITRATE_CAP,
   STORAGE_KEY_VIDEO_HOLD_SPEED,
+  STORAGE_KEY_VIDEO_DOUBLE_TAP_SEEK,
+  STORAGE_KEY_VIDEO_DOUBLE_TAP_SEEK_SECONDS,
+  DEFAULT_VIDEO_DOUBLE_TAP_SEEK_ENABLED,
+  DEFAULT_VIDEO_DOUBLE_TAP_SEEK_SECONDS,
+  normalizeVideoDoubleTapSeekSeconds,
   videoHoldSpeedLabel,
   VIDEO_HOLD_SPEED_RATE,
   VIDEO_HOLD_SPEED_MAX_RATE,
@@ -116,6 +123,7 @@ import { VideoFeedBackdrop } from './VideoFeedBackdrop';
 import { VideoHoldSpeedCapsule } from './VideoHoldSpeedCapsule';
 import { MAIN_NAVIGATION_ID } from '../utils/NavigationIdentity';
 import { fieldSurfaceColor } from '../utils/ThemeColors';
+import { pageTextColor } from '../utils/ThemeColors';
 
 const DOMAIN = 0xFF00;
 const TAG = 'HarmonyX-Media';
@@ -562,6 +570,12 @@ function clockLabel(seconds: number): string {
 
 @Component
 export struct SurfaceVideoPlayer {
+  @StorageProp(STORAGE_KEY_VIDEO_HDR_ENHANCEMENT) private videoHdrEnhancement: boolean = DEFAULT_VIDEO_HDR_ENHANCEMENT;
+  @StorageProp(STORAGE_KEY_VIDEO_HDR_SUPPORTED) private videoHdrSupported: boolean = false;
+  @StorageProp('harmonyx.page_background') private pageBackgroundValue: string = '';
+  @Prop controlsUsePageBackground: boolean = false;
+  @Prop controlSurface: ResourceColor = Color.Transparent;
+  private controlMaterial: uiMaterial.Material | undefined = undefined;
   @Prop transitionSourceId: string = '';
   onViewerSurfaceReady: () => void = (): void => {};
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
@@ -587,6 +601,7 @@ export struct SurfaceVideoPlayer {
   @Prop @Watch('onVideoScaleModeChanged') containVideo: boolean = false;
   @Prop @Watch('applyVideoScaleType') videoViewportHeight: number = 0;
   @Prop controlsAtScreenBottom: boolean = false;
+  @Prop hideInlineControls: boolean = false;
   @Prop @Watch('applyVideoScaleType') compactFeedLayout: boolean = false;
   @Prop mediaViewerLayout: boolean = false;
   @Prop viewerUsesSideComments: boolean = false;
@@ -652,6 +667,8 @@ export struct SurfaceVideoPlayer {
   // Holding a playing video raises its rate instead of seeking. The reader
   // chooses between the two gestures in Media settings.
   @StorageLink(STORAGE_KEY_VIDEO_HOLD_SPEED) holdSpeedEnabled: boolean = true;
+  @StorageProp(STORAGE_KEY_VIDEO_DOUBLE_TAP_SEEK) doubleTapSeekEnabled: boolean = DEFAULT_VIDEO_DOUBLE_TAP_SEEK_ENABLED;
+  @StorageProp(STORAGE_KEY_VIDEO_DOUBLE_TAP_SEEK_SECONDS) doubleTapSeekSeconds: number = DEFAULT_VIDEO_DOUBLE_TAP_SEEK_SECONDS;
   // What this video does when the reader leaves the app while it is playing
   // fullscreen: keep the sound going through the control centre, or move the
   // picture into the system picture-in-picture window.
@@ -701,6 +718,9 @@ export struct SurfaceVideoPlayer {
   @State private fullscreenGestureValue: number = 0;
   @State private playerControlsLocked: boolean = false;
   @State private holdSeekDirection: number = 0;
+  @State private doubleTapSeekDirection: number = 0;
+  @State private doubleTapSeekAmount: number = 0;
+  private doubleTapSeekHintTimer: number = -1;
   @State private holdSpeedActive: boolean = false;
   @State private holdSpeedRate: number = VIDEO_HOLD_SPEED_RATE;
   private holdSpeedRestoreIndex: number = 1;
@@ -815,6 +835,10 @@ export struct SurfaceVideoPlayer {
       this.fullscreenInstanceKey = this.media.id + '-' + Date.now().toString() + '-' +
         Math.floor(Math.random() * 1000000).toString();
     }
+    // Returning needs a surface owner even if autoplay was off and this
+    // component never created a native player underneath the viewer.
+    const returnTarget: VideoPlayerReturnTarget | null = this.playerReturnTarget();
+    if (returnTarget !== null) { videoPlayerHandoff.registerReturnTarget(this.media.id, returnTarget); }
     this.syncDecodedVideoSize();
     this.muted = !this.playbackEnabled || this.startMuted();
     this.playbackVolume = this.muted ? 0 : 1;
@@ -912,6 +936,10 @@ export struct SurfaceVideoPlayer {
     return isAnimatedGif(this.media);
   }
 
+  private hideInlineVideoControls(): boolean {
+    return this.hideInlineControls && !this.fullscreen && !this.mediaViewerLayout;
+  }
+
   private hideVideoChrome(): boolean {
     return this.exploreHeroVideo || this.isAnimatedGif() || this.linkCardVideo && !this.fullscreen;
   }
@@ -966,6 +994,7 @@ export struct SurfaceVideoPlayer {
     }
     this.finishHoldSeek(false);
     this.keepAwakeVisible = false;
+    this.clearDoubleTapSeekHint();
     this.releaseKeepAwake();
     if (this.aiCaptionShown) {
       this.captureCaptionOpacity();
@@ -1554,14 +1583,14 @@ export struct SurfaceVideoPlayer {
   }
 
   private showsProgressBelowVideo(): boolean {
-    return !this.controlsAtScreenBottom && !this.adaptiveShortVideo && !this.hideVideoChrome();
+    return !this.controlsAtScreenBottom && !this.adaptiveShortVideo && !this.hideVideoChrome() && !this.hideInlineVideoControls();
   }
 
   private playerContainerHeight(): number {
     if (this.hasFeedControlStrip()) {
       return this.displayHeight();
     }
-    if (this.controlsAtScreenBottom && !this.hideVideoChrome() && this.windowHeight > 0) {
+    if (this.controlsAtScreenBottom && !this.hideVideoChrome() && !this.hideInlineVideoControls() && this.windowHeight > 0) {
       return this.windowHeight;
     }
     if (!this.showsProgressBelowVideo()) {
@@ -1785,15 +1814,19 @@ export struct SurfaceVideoPlayer {
     });
   }
 
-  private registerPlayerHandoff(player: mediaKit.AVPlayer): void {
-    if (!this.playbackEnabled || this.isAnimatedGif()) {
-      return;
-    }
-    const target: VideoPlayerReturnTarget | null = this.mediaViewerLayout || this.transitionSourceId.length === 0 ? null :
+  private playerReturnTarget(): VideoPlayerReturnTarget | null {
+    return this.mediaViewerLayout || this.isAnimatedGif() || this.transitionSourceId.length === 0 ? null :
       new VideoPlayerReturnTarget(this.fullscreenInstanceKey, this.transitionSourceId,
         (): boolean => this.alive && this.playbackEnabled && this.inlineSurfaceId.length > 0 &&
           !this.fullscreen && !this.pipActive && !this.casting,
         (payload: VideoPlayerHandoffPayload): void => this.receivePlayerHandoff(payload));
+  }
+
+  private registerPlayerHandoff(player: mediaKit.AVPlayer): void {
+    if (!this.playbackEnabled || this.isAnimatedGif()) {
+      return;
+    }
+    const target: VideoPlayerReturnTarget | null = this.playerReturnTarget();
     videoPlayerHandoff.register(this.media.id, player, (): VideoPlayerHandoffPayload | null => {
       if (this.player !== player) {
         return null;
@@ -2386,6 +2419,8 @@ export struct SurfaceVideoPlayer {
     this.releaseKeepAwake();
     this.clearProgressWatchdog();
     if (this.handedOff && this.player === null) { return; }
+    this.wantsPlay = false;
+    this.playing = false;
     this.sourceResetPending = false;
     const player: mediaKit.AVPlayer | null = this.player;
     const activeLease: VideoCacheLease | null = this.cacheLease;
@@ -2417,6 +2452,18 @@ export struct SurfaceVideoPlayer {
     }
     videoPlayerPreparation.cancel(player);
     videoMediaSession.release(this.media.id);
+    // Native release can finish after the page has gone. Stop its output now,
+    // while retaining the leases until the asynchronous release completes.
+    try {
+      if (this.canControlPlayer(player)) { player.setVolume(0); }
+      if (player.state === 'playing') {
+        player.pause().catch((error: BusinessError): void => {
+          hilog.warn(DOMAIN, TAG, 'player teardown pause failed: %{public}d', error.code);
+        });
+      }
+    } catch (error) {
+      hilog.warn(DOMAIN, TAG, 'player teardown mute skipped id=%{public}s', this.media.id);
+    }
     player.release().then((): void => {
       this.closeCacheLease(activeLease);
       this.closeCacheLease(resettingLease);
@@ -2429,6 +2476,14 @@ export struct SurfaceVideoPlayer {
       this.closeDataSourceLease(resettingDataSource);
       hilog.warn(DOMAIN, TAG, 'player release failed: %{public}d', error.code);
     });
+  }
+
+  private onInlineSurfaceLoaded(): void {
+    this.inlineSurfaceId = this.inlineController.getXComponentSurfaceId();
+    this.attachSurfaceAndPrepare();
+    // A cold video must open with its cover/loading UI while decoding. Waiting
+    // for the first frame here keeps the entire destination invisible.
+    this.onViewerSurfaceReady();
   }
 
   // ---- Playback ------------------------------------------------------------
@@ -2598,8 +2653,24 @@ export struct SurfaceVideoPlayer {
   }
 
   private toggleMutedFromUser(): void {
-    this.setMuted(!this.muted);
+    this.setMuted(!this.muted, true, true);
     this.saveFeedMuteChoice();
+  }
+
+  private onInlineAudioTap(): void {
+    if (!this.playing) {
+      this.setMuted(false, true, true);
+      this.saveFeedMuteChoice();
+    } else {
+      this.toggleMutedFromUser();
+    }
+    if (!this.muted && !this.playing) {
+      this.play();
+    }
+  }
+
+  private inlineAudioMuted(): boolean {
+    return this.muted || this.hideInlineVideoControls() && (!this.playing || this.failed);
   }
 
   private saveFeedMuteChoice(): void {
@@ -2619,7 +2690,7 @@ export struct SurfaceVideoPlayer {
     }
   }
 
-  private setMuted(muted: boolean, claimPlayback: boolean = true): void {
+  private setMuted(muted: boolean, claimPlayback: boolean = true, selected: boolean = false): void {
     if (this.casting) {
       if (this.muted !== muted) {
         this.muted = muted;
@@ -2629,8 +2700,10 @@ export struct SurfaceVideoPlayer {
       return;
     }
     this.muted = this.isAnimatedGif() || !this.playbackEnabled ? true : muted;
-    if (!this.muted && this.playbackEnabled && claimPlayback) {
-      this.claimExclusivePlayback();
+    if (this.muted) {
+      videoPlaybackCoordinator.release(this.media.id);
+    } else if (this.playbackEnabled && claimPlayback) {
+      this.claimExclusivePlayback(selected);
     }
     this.playbackVolume = this.muted ? 0 : 1;
     const player: mediaKit.AVPlayer | null = this.player;
@@ -2644,14 +2717,27 @@ export struct SurfaceVideoPlayer {
     }
   }
 
-  private claimExclusivePlayback(): void {
+  private claimExclusivePlayback(selected: boolean = false): void {
     if (!this.playbackEnabled || this.muted) {
       return;
     }
-    videoPlaybackCoordinator.claim(this.media.id, (): void => {
+    const onReplaced: () => void = (): void => {
       this.setMuted(true);
-      this.pause();
-    });
+      // Visible Home previews share the screen; only their audio is exclusive.
+      // Viewer, fullscreen and PiP playback keep the existing pause behavior.
+      if (!this.homeTimelineVideo || this.mediaViewerLayout || this.fullscreen || this.pipActive ||
+        this.casting || this.isCoveredByVideoFeed()) {
+        this.pause();
+      }
+    };
+    if (this.homeTimelineVideo && !this.mediaViewerLayout && !this.fullscreen && !this.pipActive &&
+      !this.casting && !this.isCoveredByVideoFeed()) {
+      if (!videoPlaybackCoordinator.claimPreview(this.media.id, onReplaced, selected)) {
+        this.setMuted(true, false);
+      }
+    } else {
+      videoPlaybackCoordinator.claim(this.media.id, onReplaced);
+    }
   }
 
   private fullscreenGestureWidth(): number {
@@ -2677,6 +2763,44 @@ export struct SurfaceVideoPlayer {
     const touchX: number = event.fingerList[0].globalX;
     const centerX: number = this.getUIContext().vp2px(this.fullscreenGestureWidth() / 2);
     return touchX >= centerX;
+  }
+
+  private onVideoDoubleTap(event: GestureEvent): void {
+    // With the setting off the recognizer is a single tap, preserving the
+    // original immediate control/entry action without the double-tap delay.
+    if (!this.doubleTapSeekEnabled) {
+      if (this.fullscreen) { this.onFullscreenSurfaceTap(); }
+      else { this.onVideoSurfaceTap(); }
+      return;
+    }
+    if (!this.alive || !this.ready || this.failed || !this.playbackEnabled || this.playerControlsLocked ||
+      this.isAnimatedGif() || this.retainViewerPlayback || this.pipActive || this.casting ||
+      this.sourceTransitioning || this.scrubbing || this.holdSpeedActive || this.holdSeekDirection !== 0 ||
+      Date.now() < this.suppressVideoTapUntil || this.durationSec <= 0 || event.fingerList.length === 0) { return; }
+    const width: number = this.fullscreen ? this.fullscreenGestureWidth() : this.measuredWidth;
+    if (width <= 0) { return; }
+    const direction: number = event.fingerList[0].localX >= width / 2 ? 1 : -1;
+    const target: number = Math.max(0, Math.min(this.durationSec,
+      this.positionSec + direction * normalizeVideoDoubleTapSeekSeconds(this.doubleTapSeekSeconds)));
+    this.clearDoubleTapSeekHint();
+    this.doubleTapSeekAmount = Math.round(Math.abs(target - this.positionSec));
+    this.doubleTapSeekDirection = direction;
+    this.seekTo(target);
+    hapticTick();
+    // Seeking keeps the reader's play/pause, mute and speed choices intact.
+    this.doubleTapSeekHintTimer = setTimeout((): void => {
+      this.doubleTapSeekHintTimer = -1;
+      this.doubleTapSeekDirection = 0;
+    }, 800);
+    hilog.info(DOMAIN, TAG, 'double tap seek direction=%{public}d target=%{public}d', direction, Math.round(target));
+  }
+
+  private clearDoubleTapSeekHint(): void {
+    if (this.doubleTapSeekHintTimer >= 0) {
+      clearTimeout(this.doubleTapSeekHintTimer);
+      this.doubleTapSeekHintTimer = -1;
+    }
+    this.doubleTapSeekDirection = 0;
   }
 
   private holdSeek(event: GestureEvent): void {
@@ -2874,7 +2998,9 @@ export struct SurfaceVideoPlayer {
     this.playbackVolume = volume;
     this.muted = volume <= 0.01;
     if (!this.muted && this.playbackEnabled && this.usesFeedMutePreference()) {
-      this.claimExclusivePlayback();
+      this.claimExclusivePlayback(true);
+    } else if (this.muted) {
+      videoPlaybackCoordinator.release(this.media.id);
     }
     this.saveFeedMuteChoice();
     if (player === null) {
@@ -3111,6 +3237,13 @@ export struct SurfaceVideoPlayer {
     if (this.playbackEnabled && this.manualStart && !this.wantsPlay) {
       this.play();
     }
+  }
+
+  private onFullscreenSurfaceTap(): void {
+    if (this.holdSeekDirection !== 0 || Date.now() < this.suppressVideoTapUntil) { return; }
+    if (this.playerControlsLocked) { this.unlockPlayerControls(); return; }
+    if (this.mediaViewerLayout && this.videoFeedTapPause) { this.togglePlay(); }
+    else { this.toggleControls(); }
   }
 
   private onVideoSurfaceTap(): void {
@@ -4035,8 +4168,9 @@ export struct SurfaceVideoPlayer {
     })
       .width('100%')
       .height(INLINE_PROGRESS_LINE_HEIGHT)
-      .selectedColor($r('app.color.text_on_brand'))
-      .trackColor($r('app.color.video_control_progress_track'))
+      .selectedColor(this.inlineContrastColor($r('app.color.text_on_brand')))
+      .trackColor(this.inlineContrastColor($r('app.color.video_control_progress_track'), 3.2))
+      .blockColor(this.inlineContrastColor($r('app.color.text_on_brand')))
       .onChange((value: number, mode: SliderChangeMode): void => this.onSliderChange(value, mode))
       .monopolizeEvents(true)
       .onClick((): void => {
@@ -4172,7 +4306,10 @@ export struct SurfaceVideoPlayer {
   }
 
   private fullscreenControlsMaterial(): uiMaterial.Material | undefined {
-    return SystemMaterialUtil.immersiveMaterial(0, false, false, true, undefined);
+    if (this.controlMaterial === undefined) {
+      this.controlMaterial = SystemMaterialUtil.immersiveMaterial(0, false, false, true, undefined);
+    }
+    return this.controlMaterial;
   }
 
   private fullscreenControlsBackground(): ResourceColor {
@@ -4248,6 +4385,7 @@ export struct SurfaceVideoPlayer {
           .trackThickness($r('app.float.video_viewer_seek_track'))
           .blockSize({ width: $r('app.float.video_viewer_seek_thumb'), height: $r('app.float.video_viewer_seek_thumb') })
           .selectedColor($r('app.color.text_on_brand'))
+        .blockColor($r('app.color.text_on_brand'))
           .trackColor($r('app.color.video_control_progress_track'))
           .onChange((value: number, mode: SliderChangeMode): void => this.onSliderChange(value, mode))
           .monopolizeEvents(true)
@@ -4346,6 +4484,7 @@ export struct SurfaceVideoPlayer {
         .trackThickness($r('app.float.video_viewer_seek_track'))
         .blockSize({ width: $r('app.float.video_viewer_seek_thumb'), height: $r('app.float.video_viewer_seek_thumb') })
         .selectedColor($r('app.color.text_on_brand'))
+        .blockColor($r('app.color.text_on_brand'))
         .trackColor($r('app.color.video_control_progress_track'))
         .onChange((value: number, mode: SliderChangeMode): void => {
           this.onSliderChange(value, mode);
@@ -4388,6 +4527,8 @@ export struct SurfaceVideoPlayer {
         .trackThickness($r('app.float.video_viewer_seek_track'))
         .blockSize({ width: $r('app.float.video_viewer_seek_thumb'), height: $r('app.float.video_viewer_seek_thumb') })
         .selectedColor($r('app.color.text_on_brand'))
+        .blockColor($r('app.color.text_on_brand'))
+        .systemMaterial(this.fullscreenControlsMaterial())
         .trackColor($r('app.color.video_control_progress_track'))
         .onChange((value: number, mode: SliderChangeMode): void => this.onSliderChange(value, mode))
         .monopolizeEvents(true)
@@ -4414,6 +4555,7 @@ export struct SurfaceVideoPlayer {
         .width('100%')
         .height(22)
         .selectedColor($r('app.color.text_on_brand'))
+        .blockColor($r('app.color.text_on_brand'))
         .trackColor($r('app.color.video_control_progress_track'))
         .onChange((value: number, mode: SliderChangeMode): void => {
           this.onSliderChange(value, mode);
@@ -4494,6 +4636,7 @@ export struct SurfaceVideoPlayer {
       })
     }
     .width('100%')
+    .systemMaterial(this.fullscreenControlsMaterial())
     .backgroundBlurStyle(BlurStyle.COMPONENT_ULTRA_THIN)
     .linearGradient({
       angle: 180,
@@ -4512,11 +4655,16 @@ export struct SurfaceVideoPlayer {
   }
 
   private inlineControlColor(): ResourceColor {
-    return this.mediaViewerLayout ? $r('app.color.text_on_brand') : $r('app.color.text_primary');
+    return this.mediaViewerLayout ? $r('app.color.text_on_brand') : this.inlineContrastColor($r('app.color.text_primary'));
   }
 
   private inlineSecondaryControlColor(): ResourceColor {
-    return this.mediaViewerLayout ? $r('app.color.video_feed_secondary_text') : $r('app.color.text_secondary');
+    return this.mediaViewerLayout ? $r('app.color.video_feed_secondary_text') : this.inlineContrastColor($r('app.color.text_secondary'));
+  }
+
+  private inlineContrastColor(original: ResourceColor, minimum: number = 4.6): ResourceColor {
+    return this.controlsUsePageBackground && !this.mediaViewerLayout && !this.fullscreen ?
+      pageTextColor(original, this.pageBackgroundValue, this.controlSurface, minimum) : original;
   }
 
   @Builder
@@ -4532,9 +4680,10 @@ export struct SurfaceVideoPlayer {
         .width('100%')
         .height(16)
         .padding({ left: 12, right: 12 })
-        .selectedColor(this.mediaViewerLayout ? $r('app.color.text_on_brand') : $r('app.color.brand'))
+        .selectedColor(this.mediaViewerLayout ? $r('app.color.text_on_brand') : this.inlineContrastColor($r('app.color.brand')))
         .trackColor(this.mediaViewerLayout ? $r('app.color.video_control_progress_track') :
-          $r('app.color.text_secondary'))
+          this.inlineContrastColor($r('app.color.text_secondary'), 3.2))
+        .blockColor(this.inlineControlColor())
         .onChange((value: number, mode: SliderChangeMode): void => {
           this.onSliderChange(value, mode);
         })
@@ -4626,6 +4775,7 @@ export struct SurfaceVideoPlayer {
         .id('video-viewer-seek')
         .accessibilityText($r('app.string.video_progress'))
         .selectedColor($r('app.color.text_on_brand'))
+        .blockColor($r('app.color.text_on_brand'))
         .trackColor($r('app.color.video_control_progress_track'))
         .onChange((value: number, mode: SliderChangeMode): void => {
           this.onSliderChange(value, mode);
@@ -4688,6 +4838,7 @@ export struct SurfaceVideoPlayer {
     }
     .width('100%')
     .id('video-feed-player-bar')
+    .systemMaterial(this.fullscreenControlsMaterial())
     .height(this.feedPlayerBarHeight())
     .padding({ bottom: this.navigationIndicatorHeight + 8 })
   }
@@ -4754,6 +4905,7 @@ export struct SurfaceVideoPlayer {
   private LegacyPlayerBar(): void {
     Stack() {
       HdsButton({
+        useImmersiveMaterial: true, adaptiveForeground: true,
         barWidth: this.legacyPlayerBarWidth(),
         barHeight: 68,
         surfaceColor: $r('app.color.video_control_glass_tint'),
@@ -4778,6 +4930,7 @@ export struct SurfaceVideoPlayer {
   private LegacyShortVideoControlPanel(): void {
     Column({ space: 2 }) {
       HdsButton({
+        useImmersiveMaterial: true, adaptiveForeground: true,
         barWidth: this.legacyPlayerBarWidth(),
         barHeight: 68,
         surfaceColor: $r('app.color.video_control_glass_tint'),
@@ -4800,6 +4953,8 @@ export struct SurfaceVideoPlayer {
         .width(this.legacyPlayerBarWidth())
         .height(INLINE_PROGRESS_LINE_HEIGHT)
         .selectedColor($r('app.color.text_on_brand'))
+        .blockColor($r('app.color.text_on_brand'))
+        .systemMaterial(this.fullscreenControlsMaterial())
         .trackColor($r('app.color.video_control_progress_track'))
         .onChange((value: number, mode: SliderChangeMode): void => this.onSliderChange(value, mode))
         .monopolizeEvents(true)
@@ -4850,10 +5005,16 @@ export struct SurfaceVideoPlayer {
 
   @Builder
   private HoldSeekHint(): void {
-    if (this.holdSeekDirection !== 0) {
+    if (this.holdSeekDirection !== 0 || this.doubleTapSeekDirection !== 0) {
       Column({ space: 6 }) {
+        if (this.holdSeekDirection === 0) {
+          Text(this.doubleTapSeekDirection > 0 ? $r('app.string.video_double_tap_forward', this.doubleTapSeekAmount) :
+            $r('app.string.video_double_tap_rewind', this.doubleTapSeekAmount)).fontFamily(this.appFontFamily)
+            .fontSize($r('sys.float.Body_M')).fontColor($r('app.color.text_on_brand'))
+        } else {
         Text(this.holdSeekDirection > 0 ? $r('app.string.video_hold_fast_forward') : $r('app.string.video_hold_rewind')).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Body_M')).fontColor($r('app.color.text_on_brand'))
+        }
         Text(clockLabel(this.positionSec) + ' / ' + clockLabel(this.durationSec)).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Title_S')).fontWeight(FontWeight.Medium).fontColor($r('app.color.text_on_brand'))
       }.padding({ left: 16, right: 16, top: 10, bottom: 10 }).borderRadius(16)
@@ -4866,6 +5027,7 @@ export struct SurfaceVideoPlayer {
     Stack({ alignContent: Alignment.Center }) {
       Stack({ alignContent: Alignment.Bottom }) {
         XComponent(this.fullOptions)
+          .attributeModifier(new VideoHdrEnhancementModifier(this.videoHdrEnhancement && !this.isAnimatedGif(), this.videoHdrSupported))
           .width('100%')
           .height('100%')
           .backgroundColor(Color.Black)
@@ -4879,24 +5041,20 @@ export struct SurfaceVideoPlayer {
           .onDestroy((): void => {
             this.fullSurfaceId = '';
           })
-          .onClick((): void => {
-            if (this.holdSeekDirection !== 0 || Date.now() < this.suppressVideoTapUntil) { return; }
-            if (this.playerControlsLocked) {
-              this.unlockPlayerControls();
-              return;
-            }
-            if (this.mediaViewerLayout && this.videoFeedTapPause) { this.togglePlay(); }
-            else { this.toggleControls(); }
-          })
           .onTouch((event: TouchEvent): void => this.onHoldSpeedTouch(event))
-          .gesture(LongPressGesture({ fingers: 1, repeat: true, duration: HOLD_SEEK_DURATION_MS })
+          .gesture(GestureGroup(GestureMode.Exclusive,
+            LongPressGesture({ fingers: 1, repeat: true, duration: HOLD_SEEK_DURATION_MS })
             .onAction((event: GestureEvent): void => {
               if (!this.holdSpeedEnabled) {
                 this.holdSeek(event);
               }
             })
             .onActionEnd((): void => this.finishHoldGesture())
-            .onActionCancel((): void => this.finishHoldGesture()))
+            .onActionCancel((): void => this.finishHoldGesture()),
+            TapGesture({ count: this.doubleTapSeekEnabled ? 2 : 1, fingers: 1 })
+              .onAction((event: GestureEvent): void => this.onVideoDoubleTap(event)),
+            TapGesture({ count: 1, fingers: 1 })
+              .onAction((): void => this.onFullscreenSurfaceTap())))
         Stack({ alignContent: Alignment.TopStart }) {
           this.viewerDanmakuContent()
         }.width('100%').height('100%').padding({ top: this.statusBarHeight + 52 })
@@ -5008,21 +5166,20 @@ export struct SurfaceVideoPlayer {
         Stack({ alignContent: Alignment.Center }) {
           if (!this.isAnimatedGif() || !this.failed) {
             XComponent(this.inlineOptions)
+            .attributeModifier(new VideoHdrEnhancementModifier(this.videoHdrEnhancement && !this.isAnimatedGif(), this.videoHdrSupported))
             .width(this.mediaViewerLayout ? '100%' : this.displayWidth())
             .height(this.mediaViewerLayout ? '100%' : this.displayHeight())
             .backgroundColor(Color.Black)
             .borderRadius(this.videoRadius())
             .clip(true)
             .onLoad((): void => {
-              this.inlineSurfaceId = this.inlineController.getXComponentSurfaceId();
-              this.attachSurfaceAndPrepare();
-              if (this.ready) { this.onViewerSurfaceReady(); }
+              this.onInlineSurfaceLoaded();
             })
             .onDestroy((): void => {
               this.inlineSurfaceId = '';
             })
           }
-          if (this.ready && !this.playing && !this.failed && !this.hideVideoChrome() &&
+          if (this.ready && !this.playing && !this.failed && !this.hideVideoChrome() && !this.hideInlineVideoControls() &&
             !this.mediaViewerLayout) {
             Stack() {
               SymbolGlyph($r('sys.symbol.play_fill'))
@@ -5053,7 +5210,7 @@ export struct SurfaceVideoPlayer {
               mediaHeight: this.videoFrameHeight(),
               videoContain: this.mediaViewerLayout ? !this.fillsSmallFeedGap() : this.containVideo,
               cornerRadius: this.videoRadius(),
-              minimalVideoControls: this.hideVideoChrome(),
+              minimalVideoControls: this.hideVideoChrome() || this.hideInlineVideoControls(),
               wants: true,
               spinner: this.buffering && this.wantsPlay && !this.failed,
               failed: this.failed,
@@ -5105,7 +5262,7 @@ export struct SurfaceVideoPlayer {
             .combine(TransitionEffect.scale({ x: 0.9, y: 0.9 }))
             .combine(TransitionEffect.translate({ y: -6 })))
         }
-        if (!this.mediaViewerLayout && !this.fullscreen && !this.isAnimatedGif() && this.fullscreenFeedSwipeEnabled) {
+        if (!this.mediaViewerLayout && !this.fullscreen && !this.isAnimatedGif() && this.fullscreenFeedSwipeEnabled && !this.hideInlineVideoControls()) {
           Stack({ alignContent: Alignment.TopEnd }) {
             Button({ type: ButtonType.Circle }) {
               SymbolGlyph($r('sys.symbol.arrow_up_left_and_arrow_down_right'))
@@ -5119,18 +5276,27 @@ export struct SurfaceVideoPlayer {
         if (this.aiCaptionShown && !this.fullscreen) {
           this.AiCaptionLayer()
         }
-        if (this.linkCardVideo && !this.fullscreen && !this.isAnimatedGif()) {
+        if ((this.linkCardVideo || this.hideInlineVideoControls()) && !this.fullscreen && !this.isAnimatedGif()) {
           Stack({ alignContent: Alignment.BottomEnd }) {
             Button({ type: ButtonType.Circle }) {
-              SymbolGlyph(this.muted ? $r('sys.symbol.speaker_slash_fill') : $r('sys.symbol.speaker_wave_2_fill'))
+              SymbolGlyph(this.inlineAudioMuted() ? $r('sys.symbol.speaker_slash_fill') : $r('sys.symbol.speaker_wave_2_fill'))
                 .fontSize($r('app.float.post_card_video_control_icon')).fontColor([$r('app.color.post_card_overlay_text')])
             }.width($r('app.float.post_card_video_control_size')).height($r('app.float.post_card_video_control_size'))
-              .backgroundColor($r('app.color.post_card_title_overlay')).margin($r('app.float.post_card_cover_inset'))
-              .accessibilityText(this.muted ? $r('app.string.video_unmute') : $r('app.string.video_mute'))
-              .monopolizeEvents(true).onClick((): void => this.toggleMutedFromUser())
+              .backgroundColor(!this.inlineAudioMuted() && this.hideInlineVideoControls() ?
+                $r('app.color.brand') : $r('app.color.post_card_title_overlay'))
+              .margin($r('app.float.post_card_cover_inset'))
+              .id('inline-video-audio-' + this.media.id)
+              .accessibilityText(this.inlineAudioMuted() ? $r('app.string.video_unmute') : $r('app.string.video_mute'))
+              .monopolizeEvents(true).onClick((): void => {
+                if (this.hideInlineVideoControls()) {
+                  this.onInlineAudioTap();
+                } else {
+                  this.toggleMutedFromUser();
+                }
+              })
           }.width('100%').height(this.videoLayerHeight()).hitTestBehavior(HitTestMode.Transparent)
         }
-        if (this.controlsVisible && !this.hideVideoChrome() && !this.controlsAtScreenBottom &&
+        if (this.controlsVisible && !this.hideVideoChrome() && !this.hideInlineVideoControls() && !this.controlsAtScreenBottom &&
           !this.hasFeedControlStrip()) {
           Stack({ alignContent: Alignment.Bottom }) {
             if (this.videoControlStyle === VIDEO_CONTROL_STYLE_ORIGINAL) {
@@ -5151,11 +5317,19 @@ export struct SurfaceVideoPlayer {
       .width('100%')
       .height(this.videoLayerHeight())
       .id(this.mediaViewerLayout ? 'video-viewer-layer' : '')
-      .onClick((): void => this.onVideoSurfaceTap())
+      .gesture(GestureGroup(GestureMode.Exclusive,
+        TapGesture({ count: this.doubleTapSeekEnabled ? 2 : 1, fingers: 1 })
+          .onAction((event: GestureEvent): void => this.onVideoDoubleTap(event)),
+        TapGesture({ count: 1, fingers: 1 })
+          .onAction((): void => this.onVideoSurfaceTap())))
       if (this.hasFeedControlStrip() && !this.compactFeedLayout) {
         Column() {
           Column() {
-            this.FeedPlayerBar()
+            // Keep the strip geometry, but remove hidden buttons and sliders
+            // from the hit-test tree until a video tap restores the controls.
+            if (this.controlsVisible) {
+              this.FeedPlayerBar()
+            }
           }
           .opacity(this.controlsVisible ? 1 - this.viewerCommentProgress : 0)
           .width('100%')
@@ -5183,7 +5357,11 @@ export struct SurfaceVideoPlayer {
       .justifyContent(this.controlsAtScreenBottom ? FlexAlign.Center : FlexAlign.Start)
       if (this.hasFeedControlStrip() && this.compactFeedLayout) {
         Stack({ alignContent: Alignment.Bottom }) {
-          Column() { this.FeedPlayerBar() }
+          Column() {
+            if (this.controlsVisible) {
+              this.FeedPlayerBar()
+            }
+          }
             .width('100%')
             .height(this.feedPlayerBarHeight())
             .linearGradient({ angle: 180, colors: [
@@ -5196,7 +5374,7 @@ export struct SurfaceVideoPlayer {
         .height(this.displayHeight())
         .hitTestBehavior(HitTestMode.Transparent)
       }
-      if (this.controlsAtScreenBottom && this.controlsVisible && !this.hideVideoChrome()) {
+      if (this.controlsAtScreenBottom && this.controlsVisible && !this.hideVideoChrome() && !this.hideInlineVideoControls()) {
         Stack({ alignContent: Alignment.Bottom }) {
           if (this.mediaViewerLayout && this.isWindowLandscape()) {
             this.LandscapeViewerControls()
@@ -5248,6 +5426,8 @@ export struct SurfaceVideoPlayer {
 
 @Component
 export struct PostMedia {
+  @Prop controlsUsePageBackground: boolean = true;
+  @Prop controlSurface: ResourceColor = Color.Transparent;
   private mediaSourcePrefix: string = createMediaSourcePrefix();
   onViewerSurfaceReady: () => void = (): void => {};
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
@@ -5288,6 +5468,7 @@ export struct PostMedia {
   @Prop fillVideoViewport: boolean = false;
   @Prop videoViewportHeight: number = 0;
   @Prop controlsAtScreenBottom: boolean = false;
+  @Prop hideInlineControls: boolean = false;
   @Prop compactFeedLayout: boolean = false;
   @Prop mediaViewerLayout: boolean = false;
   @Prop viewerUsesSideComments: boolean = false;
@@ -6042,11 +6223,13 @@ export struct PostMedia {
       this.naturalVideoSize && !this.fillVideoViewport && !this.immersiveVideo,
       this.immersiveVideo ? 0 : (this.fillVideoViewport ? 22 : 14));
     if (this.videoFeedEnabled) {
+      this.retainInlinePlayer(media.id);
       pendingMediaViewerSource.request(source);
       this.onVideoOpen(media);
       return true;
     }
     if (this.sourceTweet !== null) {
+      this.retainInlinePlayer(media.id);
       requestVideoViewer(this.sourceTweet, media, videoPlaybackPositionStore.positionFor(media.id), source);
       return true;
     }
@@ -6119,7 +6302,7 @@ export struct PostMedia {
       mediaHeight: this.videoDisplayHeight(media),
       videoContain: this.naturalVideoSize && !this.fillVideoViewport && !this.immersiveVideo,
       cornerRadius: this.immersiveVideo ? 0 : (this.fillVideoViewport ? 22 : 14),
-      minimalVideoControls: this.exploreHeroVideo, wants: this.wantsCover(media),
+      minimalVideoControls: this.exploreHeroVideo || this.hideInlineControls, wants: this.wantsCover(media),
       onLongPress: onLongPress,
       onTap: (): void => {
         if (this.linkCardVideo) { this.onVideoOpen(media); return; }
@@ -6193,6 +6376,8 @@ export struct PostMedia {
         // MP4 is only the decoder input: the GIF surface has no video controls,
         // player handoff, resume time, captions, audio or PiP interaction.
         SurfaceVideoPlayer({
+              controlsUsePageBackground: this.controlsUsePageBackground, controlSurface: this.controlSurface,
+          hideInlineControls: this.hideInlineControls,
           media: media,
           imageQuality: this.imageQuality,
           videoQuality: this.videoQuality,
@@ -6284,6 +6469,8 @@ export struct PostMedia {
         Stack({ alignContent: Alignment.TopEnd }) {
           if (this.showsPlayer(media)) {
             SurfaceVideoPlayer({
+              controlsUsePageBackground: this.controlsUsePageBackground, controlSurface: this.controlSurface,
+              hideInlineControls: this.hideInlineControls,
               transitionSourceId: this.mediaSourceId(media),
               onViewerSurfaceReady: this.onViewerSurfaceReady,
               castRequestSerial: this.castRequestSerial,

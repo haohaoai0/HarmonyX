@@ -10,7 +10,8 @@ export const XXAUTH_PROMOTION_POST: string = 'harmonyx.promotion_post';
 // Session-only dismissal; AppStorage keeps it for this run of the app only.
 export const XXAUTH_PROMOTION_SESSION: string = 'harmonyx.promotion_post_session_hidden';
 const STORE: string = 'harmonyx_update';
-const SNOOZE_MS: number = 7 * 24 * 60 * 60 * 1000;
+const SNOOZE_MS: number = 3 * 24 * 60 * 60 * 1000;
+const PROMOTION_HIDE_MS: number = 7 * 24 * 60 * 60 * 1000;
 
 interface PromotionHideRecord {
   until: number;
@@ -90,7 +91,7 @@ export class XXAuthPopupStore {
   hidePromotion(context: common.Context, now: number, plan: string): boolean {
     try {
       const store: preferences.Preferences = this.open(context);
-      const record: PromotionHideRecord = { until: now + SNOOZE_MS, plan: plan };
+      const record: PromotionHideRecord = { until: now + PROMOTION_HIDE_MS, plan: plan };
       store.putSync('promotion_post_hidden', JSON.stringify(record));
       store.flushSync();
       return true;

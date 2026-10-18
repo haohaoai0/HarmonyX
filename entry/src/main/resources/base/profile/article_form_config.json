@@ -1,0 +1,27 @@
+{
+  "forms": [
+    {
+      "name": "ArticleServiceCard",
+      "displayName": "$string:app_name",
+      "description": "$string:article_service_card_desc",
+      "src": "./ets/articleform/pages/ArticleCard.ets",
+      "uiSyntax": "arkts",
+      "window": {
+        "designWidth": 720,
+        "autoDesignWidth": true
+      },
+      "colorMode": "auto",
+      "isDynamic": true,
+      "isDefault": true,
+      "updateEnabled": true,
+      "scheduledUpdateTime": "10:30",
+      "updateDuration": 1,
+      "defaultDimension": "2*4",
+      "supportDimensions": [
+        "2*2",
+        "2*4",
+        "4*4"
+      ]
+    }
+  ]
+}

@@ -1,5 +1,10 @@
+import { motionDuration, motionCurve } from '../utils/AppMotion';
+import { menuActionVisible } from '../models/MenuActionCatalog';
+import { STORAGE_KEY_HIDDEN_MENU_ACTIONS } from '../services/MenuSettingsStore';
+import { STORAGE_KEY_PAGE_TRANSITION_MODE, DEFAULT_PAGE_TRANSITION_MODE } from '../services/PageTransitionSettingsStore';
+import { pageSystemTransition } from '../utils/PageTransition';
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
-import { DEFAULT_SHEET_MATERIAL_LEVEL, STORAGE_KEY_SHEET_MATERIAL_ENABLED, STORAGE_KEY_SHEET_MATERIAL_LEVEL } from '../services/SheetMaterialSettingsStore';
+import { DEFAULT_SHEET_MATERIAL_ENABLED, DEFAULT_SHEET_MATERIAL_LEVEL, STORAGE_KEY_SHEET_MATERIAL_ENABLED, STORAGE_KEY_SHEET_MATERIAL_LEVEL } from '../services/SheetMaterialSettingsStore';
 import { sheetMaterialActive, sheetMaterialOptions, sheetUsesCenteredPresentation } from '../utils/SheetMaterial';
 // Full-screen photo viewer: swipe between photos, pinch or double-tap to zoom,
 // tap to hide controls, and drag down or use Back to return to the post.
@@ -13,6 +18,8 @@ import { captureMediaViewerSource, createMediaSourcePrefix, measureMediaViewerGe
 import { STORAGE_KEY_PHOTO_FULLSCREEN } from '../services/InteractionSettingsStore';
 import { STORAGE_KEY_DESKTOP_LAYOUT } from '../services/LayoutSettingsStore';
 import { MaterialButton } from '../components/MaterialButton';
+import { PhotoViewerAuthorBar } from '../components/PhotoViewerAuthorBar';
+import type { UserDetailRouteParam } from './UserDetail';
 import { SystemMaterialUtil } from '../utils/SystemMaterial';
 import { pasteboard } from '@kit.BasicServicesKit';
 import { fileIo, fileUri } from '@kit.CoreFileKit';
@@ -32,6 +39,7 @@ import { image } from '@kit.ImageKit';
 import { proxyImageResolver } from '../services/ProxyImageResolver';
 import { proxyStore } from '../services/ProxyStore';
 import { setChatWindowPrivacy } from '../utils/ChatWindowPrivacy';
+import { backgroundImageStore } from '../services/BackgroundImageStore';
 import {
   PhotoViewerPhoto,
   STORAGE_KEY_PHOTO_RETURN
@@ -171,7 +179,7 @@ struct PhotoViewerBackdrop {
     .height('100%')
     .clip(true)
       .transition(TransitionEffect.OPACITY.animation({
-        duration: 220,
+        duration: motionDuration(220),
         curve: Curve.EaseOut
       }))
   }
@@ -385,7 +393,7 @@ struct ZoomablePhoto {
     if (!this.closing) {
       return;
     }
-    this.getUIContext().animateTo({ duration: 130, curve: Curve.EaseOut }, (): void => {
+    this.getUIContext().animateTo({ duration: motionDuration(130), curve: Curve.EaseOut }, (): void => {
       this.reset();
     });
   }
@@ -423,7 +431,7 @@ struct ZoomablePhoto {
   private doubleTap(event: GestureEvent): void {
     this.onZoomStart();
     if (this.zoomScale > 1) {
-      this.getUIContext().animateTo({ duration: 280, curve: curves.springMotion(0.35, 0.9) }, (): void => {
+      this.getUIContext().animateTo({ duration: motionDuration(280), curve: motionCurve() }, (): void => {
         this.reset();
       });
       return;
@@ -438,7 +446,7 @@ struct ZoomablePhoto {
     const nextX: number = this.boundX((touchX - this.viewportWidth / 2) * (1 - nextScale), nextScale);
     const nextY: number = this.boundY((touchY - this.viewportHeight / 2) * (1 - nextScale), nextScale);
     this.reportZoom(true);
-    this.getUIContext().animateTo({ duration: 280, curve: curves.springMotion(0.35, 0.9) }, (): void => {
+    this.getUIContext().animateTo({ duration: motionDuration(280), curve: motionCurve() }, (): void => {
       this.zoomScale = nextScale;
       this.offsetX = nextX;
       this.offsetY = nextY;
@@ -480,7 +488,7 @@ struct ZoomablePhoto {
     const ratio: number = scale / this.zoomScale;
     const x: number = this.boundX(this.offsetX * ratio, scale);
     const y: number = this.boundY(this.offsetY * ratio, scale);
-    this.getUIContext().animateTo({ duration: 240, curve: curves.springMotion(0.35, 0.9) }, (): void => {
+    this.getUIContext().animateTo({ duration: motionDuration(240), curve: motionCurve() }, (): void => {
       this.zoomScale = scale;
       this.offsetX = x;
       this.offsetY = y;
@@ -528,7 +536,7 @@ struct ZoomablePhoto {
       this.panEnd();
       return;
     }
-    this.getUIContext().animateTo({ duration: 200, curve: Curve.EaseOut }, (): void => {
+    this.getUIContext().animateTo({ duration: motionDuration(200), curve: Curve.EaseOut }, (): void => {
       this.dismissY = 0;
       this.onDismissDrag(0);
     });
@@ -541,7 +549,7 @@ struct ZoomablePhoto {
       const velocityY: number = event === undefined ? 0 : event.velocityY;
       const x: number = this.boundX(this.offsetX + velocityX * 0.12, this.zoomScale);
       const y: number = this.boundY(this.offsetY + velocityY * 0.12, this.zoomScale);
-      this.getUIContext().animateTo({ duration: 240, curve: Curve.EaseOut }, (): void => {
+      this.getUIContext().animateTo({ duration: motionDuration(240), curve: Curve.EaseOut }, (): void => {
         this.offsetX = x;
         this.offsetY = y;
       });
@@ -551,7 +559,7 @@ struct ZoomablePhoto {
       this.onDismiss();
       return;
     }
-    this.getUIContext().animateTo({ duration: 200, curve: Curve.EaseOut }, (): void => {
+    this.getUIContext().animateTo({ duration: motionDuration(200), curve: Curve.EaseOut }, (): void => {
       this.dismissY = 0;
       this.onDismissDrag(0);
     });
@@ -634,6 +642,8 @@ struct ZoomablePhoto {
 }
 @Component
 export struct PhotoViewer {
+  @StorageProp(STORAGE_KEY_HIDDEN_MENU_ACTIONS) private hiddenMenuActions: string = '';
+  @StorageProp(STORAGE_KEY_PAGE_TRANSITION_MODE) private pageTransitionMode: string = DEFAULT_PAGE_TRANSITION_MODE;
   private photoSession: MediaPhotoSession = new MediaPhotoSession();
   @State private motion: MediaViewerMotionState = new MediaViewerMotionState();
   @State private initialPhotoReady: boolean = false;
@@ -653,7 +663,7 @@ export struct PhotoViewer {
   @State private viewerHeight: number = 0;
   @StorageProp('harmonyx.window_width') @Watch('onPhotoViewportChanged') private windowWidth: number = 0;
   private desktop(): boolean { return !this.photoFullscreen && ResponsiveLayout.isLarge(this.breakpoint); }
-  @StorageProp(STORAGE_KEY_SHEET_MATERIAL_ENABLED) private sheetMaterialEnabled: boolean = false;
+  @StorageProp(STORAGE_KEY_SHEET_MATERIAL_ENABLED) private sheetMaterialEnabled: boolean = DEFAULT_SHEET_MATERIAL_ENABLED;
   @StorageProp(STORAGE_KEY_SHEET_MATERIAL_LEVEL) private sheetMaterialLevel: number = DEFAULT_SHEET_MATERIAL_LEVEL;
   @Consume('pageStack') pageStack: NavPathStack;
   @StorageProp('harmonyx.status_bar_height') @Watch('onPhotoViewportChanged') statusBarHeight: number =
@@ -674,6 +684,7 @@ export struct PhotoViewer {
   @State private postControlsOpacity: number = 1;
   private postSheetOpening: boolean = false;
   @State private downloading: boolean = false;
+  @State private savingBackground: boolean = false;
   @State private postRevision: number = 0;
   private likeAction: (post: Tweet, liked: boolean) => Promise<boolean> = async (): Promise<boolean> => false;
   private repostAction: (post: Tweet, reposted: boolean) => Promise<boolean> = async (): Promise<boolean> => false;
@@ -713,6 +724,10 @@ export struct PhotoViewer {
   private text(resource: Resource): string {
     const context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
     return context.resourceManager.getStringSync(resource);
+  }
+
+  private menuVisible(id: string): boolean {
+    return menuActionVisible(this.hiddenMenuActions, id);
   }
 
   private readRoute(param: PhotoViewerRouteParam): void {
@@ -1336,7 +1351,7 @@ export struct PhotoViewer {
   private setControlsVisible(visible: boolean): void {
     if (this.controlsVisible === visible) { return; }
     // The image viewport never changes; only floating controls transform.
-    this.getUIContext().animateTo({ duration: visible ? 240 : 180, curve: Curve.EaseOut }, (): void => {
+    this.getUIContext().animateTo({ duration: motionDuration(visible ? 240 : 180), curve: Curve.EaseOut }, (): void => {
       this.controlsVisible = visible;
     });
   }
@@ -1428,7 +1443,7 @@ export struct PhotoViewer {
     if (movePhoto) { setTimeout((): void => { this.resetting = false; }, 0); }
   }
 
-  private async downloadPhotos(all: boolean): Promise<void> {
+  private async downloadPhotos(all: boolean, fromSaveButton: boolean = false): Promise<void> {
     if (this.downloading || this.items.length === 0) { return; }
     const urls: string[] = all ? this.originalUrls() : [this.currentOriginalUrl()];
     const mediaId: string = this.tweet === null ? 'photo' : this.tweet.id;
@@ -1447,9 +1462,26 @@ export struct PhotoViewer {
     };
     if (all) {
       mediaDownloadService.downloadImages(context, urls, mediaId, completed);
+    } else if (fromSaveButton) {
+      void mediaDownloadService.downloadPhotoWithSaveButton(context, urls[0], mediaId + '-' + this.current, completed);
     } else {
       mediaDownloadService.download(context, urls[0], mediaId + '-' + this.current, false, completed);
     }
+  }
+
+  private async saveBackground(): Promise<void> {
+    const url: string = this.currentOriginalUrl();
+    if (this.savingBackground || url.length === 0) { return; }
+    this.savingBackground = true;
+    this.showMoreSheet = false;
+    const context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
+    promptAction.showToast({ message: this.text($r('app.string.chat_background_saving_photo')) });
+    try {
+      await backgroundImageStore.savePhoto(context, url);
+      promptAction.showToast({ message: this.text($r('app.string.chat_background_saved_photo')), duration: 2600 });
+    } catch (error) {
+      promptAction.showToast({ message: this.text($r('app.string.chat_background_save_photo_failed')), duration: 2200 });
+    } finally { this.savingBackground = false; }
   }
 
   @Builder
@@ -1464,20 +1496,19 @@ export struct PhotoViewer {
       }
       Blank()
       Row({ space: 8 }) {
-        MaterialButton({ buttonWidth: $r('app.float.photo_viewer_quick_size'),
-          buttonHeight: $r('app.float.photo_viewer_quick_size'), buttonRadius: $r('app.float.photo_viewer_quick_radius'),
-          surfaceColor: $r('app.color.media_viewer_control'), materialLevel: 1, applyShadow: true,
-          adaptiveForeground: true,
-          lightColor: this.accentColor, buttonEnabled: !this.downloading,
-          accessibilityLabel: this.text($r('app.string.media_download_photo')), buttonMonopolizeEvents: true,
-          onButtonClick: (): void => { void this.downloadPhotos(false); } }) {
-          if (this.downloading) {
-            LoadingProgress().width($r('app.float.photo_viewer_quick_icon_size'))
-              .height($r('app.float.photo_viewer_quick_icon_size')).color($r('app.color.text_on_brand'))
-          } else {
-            SymbolGlyph($r('sys.symbol.download')).fontSize($r('app.float.photo_viewer_quick_icon_size'))
-              .fontColor([this.controlForeground()])
-          }
+        if (this.downloading) {
+          LoadingProgress().width($r('app.float.photo_viewer_quick_size'))
+            .height($r('app.float.photo_viewer_quick_size')).color($r('app.color.text_on_brand'))
+        } else {
+          SaveButton({ icon: SaveIconStyle.LINES, buttonType: ButtonType.Circle })
+            .width($r('app.float.photo_viewer_quick_size')).height($r('app.float.photo_viewer_quick_size'))
+            .iconSize($r('app.float.photo_viewer_quick_icon_size')).padding(10)
+            .iconColor($r('app.color.text_on_brand')).backgroundColor($r('app.color.photo_save_background'))
+            .accessibilityDescription($r('app.string.media_download_photo'))
+            .id('photo-viewer-save')
+            .onClick((_event: ClickEvent, result: SaveButtonOnClickResult): void => {
+              if (result === SaveButtonOnClickResult.SUCCESS) { void this.downloadPhotos(false, true); }
+            })
         }
       }.margin({ right: 12 })
       MaterialButton({ buttonWidth: 44, buttonHeight: 44, buttonRadius: 22,
@@ -1564,33 +1595,55 @@ export struct PhotoViewer {
   private MoreSheet(): void {
     Scroll() {
       Column() {
-        this.MoreRow($r('sys.symbol.arrow_up_left_and_arrow_down_right'),
-          this.originalShown ? $r('app.string.media_original_loaded') : $r('app.string.media_view_original'),
-          !this.originalShown, (): void => {
-            this.showMoreSheet = false;
-            this.originalShown = true;
-          })
+        if (!['photo.background', 'photo.original', 'photo.ocr', 'photo.subject'].some((id: string): boolean => this.menuVisible(id)) &&
+          !(this.tweet !== null && (this.menuVisible('photo.post') || this.menuVisible('photo.report'))) &&
+          !(this.items.length > 1 && this.menuVisible('photo.save_all'))) {
+          Text($r('app.string.settings_menu_empty')).fontFamily(this.appFontFamily)
+            .fontColor($r('app.color.text_secondary')).padding(20)
+        }
+        if (this.menuVisible('photo.background')) {
+          this.MoreRow($r('sys.symbol.picture'), $r('app.string.post_photo_save_background'), !this.savingBackground,
+            (): void => { void this.saveBackground(); })
+        }
+        if (this.menuVisible('photo.original')) {
+          this.MoreRow($r('sys.symbol.arrow_up_left_and_arrow_down_right'),
+            this.originalShown ? $r('app.string.media_original_loaded') : $r('app.string.media_view_original'),
+            !this.originalShown, (): void => {
+              this.showMoreSheet = false;
+              this.originalShown = true;
+            })
+        }
         if (this.tweet !== null) {
-          this.MoreRow($r('sys.symbol.link'), $r('app.string.video_feed_go_to_post'), true,
-            (): void => this.openPostSheet())
-          this.MoreRow($r('sys.symbol.flag'), $r('app.string.video_feed_report_post'), true, (): void => {
-            this.showMoreSheet = false;
-            if (this.tweet !== null) {
-              openExternalLink(getContext(this) as common.UIAbilityContext, postShareUrl(this.tweet));
-              promptAction.showToast({ message: this.text($r('app.string.video_feed_report_handoff')) });
-            }
-          })
+          if (this.menuVisible('photo.post')) {
+            this.MoreRow($r('sys.symbol.link'), $r('app.string.video_feed_go_to_post'), true,
+              (): void => this.openPostSheet())
+          }
+          if (this.menuVisible('photo.report')) {
+            this.MoreRow($r('sys.symbol.flag'), $r('app.string.video_feed_report_post'), true, (): void => {
+              this.showMoreSheet = false;
+              if (this.tweet !== null) {
+                openExternalLink(getContext(this) as common.UIAbilityContext, postShareUrl(this.tweet));
+                promptAction.showToast({ message: this.text($r('app.string.video_feed_report_handoff')) });
+              }
+            })
+          }
         }
         if (this.items.length > 1) {
-          this.MoreRow($r('sys.symbol.download'), $r('app.string.media_download_all_originals'), !this.downloading,
-            (): void => { void this.downloadPhotos(true); })
+          if (this.menuVisible('photo.save_all')) {
+            this.MoreRow($r('sys.symbol.download'), $r('app.string.media_download_all_originals'), !this.downloading,
+              (): void => { void this.downloadPhotos(true); })
+          }
         }
-        this.MoreRow($r('sys.symbol.textformat'), $r('app.string.photo_ocr_action'), !this.ocrLoading, (): void => {
-          this.showMoreSheet = false; void this.recognizeCurrentPhoto(this.currentDisplayUrl());
-        })
-        this.MoreRow($r('sys.symbol.cut'), $r('app.string.photo_subject_action'), !this.subjectLoading, (): void => {
-          this.showMoreSheet = false; void this.cutOutCurrentSubject();
-        })
+        if (this.menuVisible('photo.ocr')) {
+          this.MoreRow($r('sys.symbol.textformat'), $r('app.string.photo_ocr_action'), !this.ocrLoading, (): void => {
+            this.showMoreSheet = false; void this.recognizeCurrentPhoto(this.currentDisplayUrl());
+          })
+        }
+        if (this.menuVisible('photo.subject')) {
+          this.MoreRow($r('sys.symbol.cut'), $r('app.string.photo_subject_action'), !this.subjectLoading, (): void => {
+            this.showMoreSheet = false; void this.cutOutCurrentSubject();
+          })
+        }
       }.width('100%').padding({ top: 8, bottom: this.navigationIndicatorHeight + 12 })
     }.width('100%').scrollBar(BarState.Auto)
   }
@@ -1628,7 +1681,7 @@ export struct PhotoViewer {
                 onSingleTap: (): void => this.onPhotoTap(index),
                 onLongPress: (url: string): void => {
                   if (this.current === index) {
-                    void this.recognizeCurrentPhoto(url);
+                    if (!this.showPostSheet && !this.closing) { this.showMoreSheet = true; }
                   }
                 },
                 onDismissDrag: (progress: number): void => {
@@ -1674,8 +1727,19 @@ export struct PhotoViewer {
         }
 
         Stack({ alignContent: Alignment.Top }) {
-          Column() { this.TopControls() }
+          Column() {
+            this.TopControls()
+            if (this.tweet !== null) {
+              PhotoViewerAuthorBar({ author: this.tweet.author, onOpenAuthor: (): void => {
+                if (this.tweet === null) { return; }
+                const param: UserDetailRouteParam = { author: this.tweet.author, posts: [] };
+                this.pageStack.pushPath({ name: 'UserDetail', param: param });
+              } })
+            }
+          }
             .width('100%')
+            .linearGradient({ angle: 180, colors: [[$r('app.color.photo_viewer_author_scrim'), 0],
+              [$r('app.color.photo_viewer_author_scrim'), 0.8], [Color.Transparent, 1]] })
             .translate({ y: this.controlsVisible ? 0 : -12 })
           Stack({ alignContent: Alignment.Bottom }) {
             Column() { this.BottomControls() }
@@ -1786,9 +1850,9 @@ export struct PhotoViewer {
       }
     }
     .mode(NavDestinationMode.DIALOG)
-    .systemTransition(this.motion.enabled() ? NavigationSystemTransitionType.NONE :
+    .systemTransition(pageSystemTransition(this.pageTransitionMode, this.motion.enabled() ? NavigationSystemTransitionType.NONE :
       this.photoFullscreen && this.desktopLayoutEnabled && ResponsiveLayout.isLarge(this.breakpoint) ?
-      NavigationSystemTransitionType.FADE : NavigationSystemTransitionType.DEFAULT)
+      NavigationSystemTransitionType.FADE : NavigationSystemTransitionType.DEFAULT))
     .onReady((context: NavDestinationContext): void => {
       const param: PhotoViewerRouteParam = context.pathInfo?.param as PhotoViewerRouteParam;
       if (param !== undefined && param !== null &&

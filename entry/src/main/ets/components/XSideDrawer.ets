@@ -8,7 +8,8 @@ import { formatCount } from '../models/Tweet';
 import { MaterialButton } from './MaterialButton';
 import { secondaryButtonSurfaceColor } from '../utils/ThemeColors';
 import { SideBarMaterialLayer } from './SideBarMaterialLayer';
-import { DEFAULT_DESKTOP_RAIL_MATERIAL_LEVEL, STORAGE_KEY_DESKTOP_RAIL_MATERIAL_LEVEL } from '../services/LayoutSettingsStore';
+import { DEFAULT_DESKTOP_RAIL_MATERIAL_LEVEL, STORAGE_KEY_DESKTOP_RAIL_MATERIAL_LEVEL,
+  SIDEBAR_MATERIAL_GLASS, SIDEBAR_MATERIAL_SYSTEM } from '../services/LayoutSettingsStore';
 
 @Component
 export struct XSideDrawer {
@@ -33,6 +34,7 @@ export struct XSideDrawer {
   @StorageProp('harmonyx.dark_surface') private themeDarkSurface: string = '';
   @StorageProp(STORAGE_KEY_DESKTOP_RAIL_MATERIAL_LEVEL)
   private sidebarMaterialLevel: number = DEFAULT_DESKTOP_RAIL_MATERIAL_LEVEL;
+  @Prop sidebarMaterialType: number = SIDEBAR_MATERIAL_GLASS;
 
   private name(): string {
     if (this.profile !== null && this.profile.name.length > 0) {
@@ -225,8 +227,9 @@ export struct XSideDrawer {
 
   build(): void {
     Stack({ alignContent: Alignment.TopStart }) {
-      if (this.sidebarMaterialLevel >= 0) {
-        SideBarMaterialLayer({ materialLevel: this.sidebarMaterialLevel, layerPrefix: 'account-sidebar', useBackdropBlur: true })
+      if (this.sidebarMaterialLevel >= 0 && this.sidebarMaterialType !== SIDEBAR_MATERIAL_SYSTEM) {
+        SideBarMaterialLayer({ materialType: this.sidebarMaterialType, materialLevel: this.sidebarMaterialLevel,
+          layerPrefix: 'account-sidebar' })
       }
       if (this.compactWindow) {
         // The account header must scroll with the menu on a short cover screen.

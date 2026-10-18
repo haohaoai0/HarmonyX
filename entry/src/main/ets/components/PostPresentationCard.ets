@@ -5,7 +5,7 @@ import { PostDisclosure, PostPresentation } from '../models/PostContent';
 import { openPostCardUrl } from '../utils/PostCardAction';
 import { CommunityNoteDetailSheet } from './CommunityNoteDetailSheet';
 import { sheetMaterialOptions } from '../utils/SheetMaterial';
-import { STORAGE_KEY_SHEET_MATERIAL_ENABLED, STORAGE_KEY_SHEET_MATERIAL_LEVEL } from '../services/SheetMaterialSettingsStore';
+import { DEFAULT_SHEET_MATERIAL_ENABLED, STORAGE_KEY_SHEET_MATERIAL_ENABLED, STORAGE_KEY_SHEET_MATERIAL_LEVEL } from '../services/SheetMaterialSettingsStore';
 import { EmojiSpans } from './EmojiSpans';
 import { EmojiCopyMenu } from '../utils/EmojiCopyMenu';
 
@@ -20,7 +20,7 @@ export struct PostPresentationCard {
   @Prop accentColor: string = '#007DFF';
   @State private expanded: boolean = false;
   @State private showNote: boolean = false;
-  @StorageProp(STORAGE_KEY_SHEET_MATERIAL_ENABLED) private sheetMaterialEnabled: boolean = false;
+  @StorageProp(STORAGE_KEY_SHEET_MATERIAL_ENABLED) private sheetMaterialEnabled: boolean = DEFAULT_SHEET_MATERIAL_ENABLED;
   @StorageProp(STORAGE_KEY_SHEET_MATERIAL_LEVEL) private sheetMaterialLevel: number = 0;
   @Builder
   private NoteSheet(): void {

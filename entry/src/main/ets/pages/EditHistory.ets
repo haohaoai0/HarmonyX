@@ -1,3 +1,8 @@
+import { pageTextColor } from '../utils/ThemeColors';
+import { appPageBackground } from '../components/PageBackgroundLayer';
+import { pageCanvasColor, pageReadingSurfaceColor } from '../utils/ThemeColors';
+import { STORAGE_KEY_PAGE_TRANSITION_MODE, DEFAULT_PAGE_TRANSITION_MODE } from '../services/PageTransitionSettingsStore';
+import { pageSystemTransition, PageTransitionMotion } from '../utils/PageTransition';
 // Revision timeline for an editable X post.  X returns each retained version
 // in a regular timeline envelope, so this page uses the same parser and card
 // component as the rest of the app instead of duplicating result handling.
@@ -30,6 +35,9 @@ export function EditHistoryBuilder(): void {
 
 @Component
 export struct EditHistoryPage {
+  @StorageProp('harmonyx.page_background') private pageBackgroundValue: string = '';
+  @State private pageMotion: PageTransitionMotion = new PageTransitionMotion();
+  @StorageProp(STORAGE_KEY_PAGE_TRANSITION_MODE) private pageTransitionMode: string = DEFAULT_PAGE_TRANSITION_MODE;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @Consume('pageStack') pageStack: NavPathStack;
   @StorageProp('harmonyx.status_bar_height') statusBarHeight: number =
@@ -168,7 +176,7 @@ export struct EditHistoryPage {
           } else if (this.revisions.length > 0) {
             Text($r('app.string.post_edit_history_hint')).fontFamily(this.appFontFamily)
               .fontSize($r('sys.float.Body_M'))
-              .fontColor($r('app.color.text_secondary'))
+              .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
               .width('100%')
               .padding({ left: 16, right: 16, top: 8, bottom: 2 })
             ForEach(this.revisions, (revision: Tweet, index: number): void => {
@@ -180,7 +188,7 @@ export struct EditHistoryPage {
             if (this.status.length > 0) {
               Text(this.status).fontFamily(this.appFontFamily)
                 .fontSize($r('sys.float.Body_S'))
-                .fontColor($r('app.color.text_secondary'))
+                .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
                 .width('100%')
                 .textAlign(TextAlign.Center)
                 .padding({ left: 24, right: 24, top: 8, bottom: 4 })
@@ -193,7 +201,7 @@ export struct EditHistoryPage {
                 Text(this.loadingMore ? $r('app.string.status_loading') :
                   $r('app.string.timeline_load_more')).fontFamily(this.appFontFamily)
                   .fontSize($r('sys.float.Body_M'))
-                  .fontColor($r('app.color.text_accent'))
+                  .fontColor(pageTextColor($r('app.color.text_accent'), this.pageBackgroundValue, Color.Transparent))
                   .margin({ left: this.loadingMore ? 8 : 0 })
               }
               .width('100%')
@@ -206,7 +214,7 @@ export struct EditHistoryPage {
           } else {
             Text(this.status).fontFamily(this.appFontFamily)
               .fontSize($r('sys.float.Body_M'))
-              .fontColor($r('app.color.text_secondary'))
+              .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
               .width('100%')
               .textAlign(TextAlign.Center)
               .padding({ left: 24, right: 24, top: 64 })
@@ -236,9 +244,17 @@ export struct EditHistoryPage {
 
   build(): void {
     HdsNavDestination() {
+      Stack({ alignContent: Alignment.TopStart }) {
+        appPageBackground()
       this.Content();
+    
+      }.width('100%').height('100%')
     }
+    .scale({ x: this.pageMotion.scale, y: this.pageMotion.scale })
+    .opacity(this.pageMotion.opacity)
+    .systemTransition(pageSystemTransition(this.pageTransitionMode))
     .onReady((context: NavDestinationContext): void => {
+      this.pageMotion.attach(context);
       const param: EditHistoryRouteParam = context.pathInfo?.param as EditHistoryRouteParam;
       if (param !== undefined && param !== null) {
         this.tweet = param.tweet;
@@ -258,6 +274,6 @@ export struct EditHistoryPage {
       style: destinationTitleBarStyle(ScrollEffectType.GRADIENT_BLUR, this.themeDisplayMode,
         this.themeDarkSurface, this.titleBarStyleMode)
     })
-    .backgroundColor(pageSurfaceColor(this.themeDisplayMode, this.themeDarkSurface));
+    .backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue));
   }
 }

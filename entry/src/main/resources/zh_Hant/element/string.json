@@ -1,5 +1,151 @@
 {
   "string": [
+    {"name":"settings_confirm_app_exit","value":"結束前確認"},
+    {"name":"settings_confirm_app_exit_desc","value":"在主頁返回時先詢問是否結束，關閉後直接結束應用程式。"},
+    {"name":"app_exit_title","value":"確認結束"},
+    {"name":"app_exit_message","value":"確定要結束應用程式嗎？"},
+    {"name":"app_exit_action","value":"結束"},
+    {"name":"settings_component_hdr_max","value":"目前螢幕最大提亮倍數"},
+    {"name":"settings_component_hdr_max_unavailable","value":"暫時無法取得"},
+    {"name":"settings_component_hdr_max_desc","value":"由系統依目前螢幕回報，亮度或螢幕變化時自動更新。"},
+    {"name":"settings_component_hdr_ratio","value":"元件 HDR 提亮倍數"},
+    {"name":"settings_component_hdr_desc","value":"調整按鈕、圖示和選取狀態的高光亮度。預設 1.25；設為 1 可關閉提亮。實際亮度取決於裝置，修改後自動儲存並生效。"},
+    {"name":"settings_component_hdr_invalid","value":"請輸入不小於 1 的有效數字。"},
+    {"name":"settings_component_hdr_reset","value":"還原預設 1.25"},
+    {"name":"settings_video_hdr_enhancement","value":"HDR 影片增強"},
+    {"name":"settings_video_hdr_enhancement_desc","value":"增強一般影片的明暗層次與色彩，不支援的裝置會自動使用一般播放。"},
+    {"name": "settings_menu_post", "value": "貼文選單操作"},
+    {"name": "settings_menu_photo", "value": "圖片選單操作"},
+    {"name": "settings_menu_video", "value": "影片選單操作"},
+    {"name": "settings_menu_item_desc", "value": "選擇相關選單中顯示的操作項。僅在目前內容支援時出現，可隨時還原預設。"},
+    {"name": "settings_menu_show_action", "value": "在相關選單中顯示"},
+    {"name": "settings_menu_empty", "value": "選單操作已隱藏，可在設定的對應分類中還原。"},
+    {"name": "settings_viewer_video_mute", "value": "媒體檢視器預設靜音"},
+    {"name": "settings_viewer_video_mute_desc", "value": "開啟影片檢視器時預設靜音，獨立於首頁影片。"},
+    {"name": "settings_video_auto_advance_desc", "value": "影片播放結束後自動切換到下一部。"},
+    {"name": "settings_video_captions_desc", "value": "在影片檢視器中預設開啟系統 AI 字幕。"},
+    {"name": "settings_video_feed_layout_desc", "value": "設定手機直向影片檢視器的版面，大螢幕和橫向沿用對應版面。"},
+    {"name": "settings_chat_desc", "value": "訊息請求、通話權限、PIN 碼與聊天自動下載"},
+    {
+      "name": "settings_video_double_tap_seek",
+      "value": "雙擊快轉/倒退"
+    },
+    {
+      "name": "settings_video_double_tap_seek_desc",
+      "value": "雙擊影片右半邊快轉，左半邊倒退"
+    },
+    {
+      "name": "settings_video_double_tap_seek_seconds",
+      "value": "每次快轉/倒退時長"
+    },
+    {
+      "name": "settings_video_double_tap_seek_seconds_value",
+      "value": "%d 秒"
+    },
+    {
+      "name": "video_double_tap_forward",
+      "value": "快轉 %d 秒"
+    },
+    {
+      "name": "video_double_tap_rewind",
+      "value": "倒退 %d 秒"
+    },
+    {
+      "name": "settings_app_icon_zombie_x",
+      "value": "紅眼殭屍 X"
+    },
+    {
+      "name": "card_source_for_you",
+      "value": "為你推薦"
+    },
+    {
+      "name": "card_source_for_you_desc",
+      "value": "你平時瀏覽的推薦時間軸。"
+    },
+    {
+      "name": "card_source_following",
+      "value": "正在關注"
+    },
+    {
+      "name": "card_source_following_desc",
+      "value": "你關注帳號發布的最新動態。"
+    },
+    {
+      "name": "card_source_trends",
+      "value": "趨勢"
+    },
+    {
+      "name": "card_source_trends_desc",
+      "value": "X 上正在流行的趨勢話題。"
+    },
+    {
+      "name": "card_source_notifications",
+      "value": "通知"
+    },
+    {
+      "name": "card_source_notifications_desc",
+      "value": "最新的提及、互動和帳號動態。"
+    },
+    {
+      "name": "card_empty_for_you",
+      "value": "開啟應用重新整理「為你推薦」，卡片就會填滿"
+    },
+    {
+      "name": "card_empty_following",
+      "value": "開啟應用重新整理「正在關注」，卡片就會填滿"
+    },
+    {
+      "name": "card_empty_trends",
+      "value": "開啟探索頁重新整理趨勢"
+    },
+    {
+      "name": "card_empty_notifications",
+      "value": "開啟通知頁重新整理卡片"
+    },
+    {
+      "name": "card_settings_title",
+      "value": "卡片資料來源"
+    },
+    {
+      "name": "card_settings_intro",
+      "value": "選擇桌面卡片顯示的內容。"
+    },
+    {
+      "name": "card_settings_refreshing",
+      "value": "正在更新卡片…"
+    },
+    {
+      "name": "card_settings_updated",
+      "value": "卡片已更新"
+    },
+    {
+      "name": "card_settings_update_failed",
+      "value": "暫時無法重新整理，卡片會使用已儲存的內容"
+    },
+    {
+      "name": "card_settings_refresh",
+      "value": "重新整理卡片"
+    },
+    {
+      "name": "card_settings_note",
+      "value": "卡片跟隨目前帳號。點擊卡片右上角齒輪可回到這裡。"
+    },
+    {
+      "name": "article_service_card_desc",
+      "value": "在桌面查看熱門動態"
+    },
+    {
+      "name": "article_service_card_more",
+      "value": "查看更多"
+    },
+    {
+      "name": "article_service_card_empty",
+      "value": "開啟應用重新整理時間軸，前三條熱門動態會顯示在這裡"
+    },
+    {
+      "name": "article_service_card_recent",
+      "value": "最近閱讀"
+    },
     {
       "name": "promotion_hide_week",
       "value": "7 天內不再顯示"
@@ -102,7 +248,7 @@
     },
     {
       "name": "xxauth_snooze",
-      "value": "7 天內不再提醒"
+      "value": "3 天內不再提醒"
     },
     {
       "name": "xxauth_experience",
@@ -922,7 +1068,7 @@
     },
     {
       "name": "profile_version",
-      "value": "Harmony X 3.0.0 · HarmonyOS 6.1（API 23-26）· Stage 模型"
+      "value": "Harmony X 3.1.0 · HarmonyOS 6.1（API 23-26）· Stage 模型"
     },
     {
       "name": "profile_following",
@@ -1634,7 +1780,7 @@
     },
     {
       "name": "settings_timeline_columns_desc",
-      "value": "寬屏時使用瀑布流顯示更多貼文；窄屏始終保持單列。"
+      "value": "寬螢幕時使用瀑布流顯示更多貼文；手機可選擇雙欄，自動模式維持單欄。"
     },
     {
       "name": "settings_timeline_columns_label",
@@ -1843,6 +1989,54 @@
     {
       "name": "settings_theme_huawei_red",
       "value": "華為紅"
+    },
+    {
+      "name": "settings_theme_cinnabar",
+      "value": "朱砂"
+    },
+    {
+      "name": "settings_theme_vermilion",
+      "value": "丹繯"
+    },
+    {
+      "name": "settings_theme_amber",
+      "value": "琥珀"
+    },
+    {
+      "name": "settings_theme_autumn_bamboo",
+      "value": "秋香"
+    },
+    {
+      "name": "settings_theme_bamboo_green",
+      "value": "竹青"
+    },
+    {
+      "name": "settings_theme_azurite",
+      "value": "石青"
+    },
+    {
+      "name": "settings_theme_cloisonne",
+      "value": "景泰藍"
+    },
+    {
+      "name": "settings_theme_indigo",
+      "value": "花青"
+    },
+    {
+      "name": "settings_theme_begonia",
+      "value": "紫棠"
+    },
+    {
+      "name": "settings_theme_rouge",
+      "value": "胭脂"
+    },
+    {
+      "name": "settings_theme_sandalwood",
+      "value": "檀色"
+    },
+    {
+      "name": "settings_theme_mountain",
+      "value": "蒼山黛"
     },
     {
       "name": "settings_push",
@@ -4358,7 +4552,7 @@
     },
     {
       "name": "onboarding_profile_detail",
-      "value": "檢視自己的貼文、喜歡和個人資料。"
+      "value": "查看帳號資料與登入狀態，管理或切換帳號。"
     },
     {
       "name": "onboarding_media_title",
@@ -6290,7 +6484,7 @@
     },
     {
       "name": "storage_directory_failed",
-      "value": "未能授權下載目錄。請重試；不支援目錄選擇的裝置可在下載任務中使用系統另存為。"
+      "value": "無法儲存下載設定，請重試。"
     },
     {
       "name": "storage_path_note",
@@ -6310,11 +6504,11 @@
     },
     {
       "name": "storage_save_to_folder",
-      "value": "預設儲存到下載目錄"
+      "value": "儲存到檔案"
     },
     {
       "name": "storage_save_target_note",
-      "value": "啟用後，圖片與影片儲存到下載目錄；關閉時儲存到相簿。"
+      "value": "開啟後，每個檔案都透過系統選擇器確認儲存位置；關閉後圖片與影片儲存到相簿。"
     },
     {
       "name": "storage_download_files",
@@ -6330,7 +6524,7 @@
     },
     {
       "name": "storage_save_to_downloads",
-      "value": "儲存到下載目錄"
+      "value": "另存檔案"
     },
     {
       "name": "storage_network_title",
@@ -6375,10 +6569,6 @@
     {
       "name": "storage_stats_failed",
       "value": "部分儲存資料未能讀取，已保留可用統計。請重新整理重試。"
-    },
-    {
-      "name": "storage_permission_reason",
-      "value": "用於在您選擇的下載目錄中持續儲存圖片、影片和檔案。"
     },
     {
       "name": "storage_cancel",
@@ -9573,6 +9763,14 @@
       "value": "漸變模糊"
     },
     {
+      "name": "sidebar_material_system",
+      "value": "系統側欄模糊"
+    },
+    {
+      "name": "sidebar_material_system_desc",
+      "value": "使用系統預設側欄效果，模糊強度由系統控制。"
+    },
+    {
       "name": "sidebar_swipe",
       "value": "側邊欄滑動手勢"
     },
@@ -9930,7 +10128,7 @@
     },
     {
       "name": "logo_universe_desc",
-      "value": "每一次相遇，都讓 HarmonyX 更完整。"
+      "value": "每一次相遇，都讓 Harmony X 更完整。"
     },
     {
       "name": "logo_universe_hint",
@@ -9982,7 +10180,7 @@
     },
     {
       "name": "logo_part_of_you",
-      "value": "HarmonyX，也有你的一部分。"
+      "value": "Harmony X，也有你的一部分。"
     },
     {
       "name": "logo_touch_hint",
@@ -10138,7 +10336,7 @@
     },
     {
       "name": "settings_category_home_interaction_desc",
-      "value": "懸浮按鈕、自動重新整理、最新貼文與空間膠囊"
+      "value": "浮動按鈕、重新整理、空間膠囊與貼文選單操作"
     },
     {
       "name": "settings_category_layout",
@@ -10154,7 +10352,7 @@
     },
     {
       "name": "settings_category_photos_desc",
-      "value": "開啟圖片時預設全螢幕"
+      "value": "全螢幕檢視、圖片長按與更多選單操作"
     },
     {
       "name": "settings_category_playback",
@@ -10162,7 +10360,7 @@
     },
     {
       "name": "settings_category_playback_desc",
-      "value": "自動播放、預設靜音、子母畫面與背景播放"
+      "value": "自動播放、獨立靜音、自動前進與背景播放"
     },
     {
       "name": "settings_category_video_controls",
@@ -10170,7 +10368,7 @@
     },
     {
       "name": "settings_category_video_controls_desc",
-      "value": "畫面填滿、長按倍速、點按暫停與字幕背景"
+      "value": "影片版面、播放控制、字幕、手勢與選單操作"
     },
     {
       "name": "settings_category_viewer",
@@ -10222,11 +10420,235 @@
     },
     {"name":"settings_classic_bottom_bar","value":"經典底部導覽列"},
     {"name":"settings_classic_bottom_bar_desc","value":"使用貼底滿寬的圖示與文字導覽列，也可配合自動隱藏。關閉後恢復懸浮樣式，選擇立即生效並自動儲存。"},
+    {"name":"settings_root_liquid_tab_indicator","value":"液態指示器"},
+    {"name":"settings_root_liquid_tab_indicator_desc","value":"在懸浮導覽列上顯示可拖曳並彈性回彈的膠囊，大小隨 Tab 文字開關變化。"},
     {"name":"settings_root_tab_labels","value":"顯示 Tab 文字"},
     {"name":"settings_root_tab_labels_desc","value":"懸浮與經典底部導覽列同時生效；關閉後僅顯示圖示和未讀角標。"},
     {
       "name": "chat_post_preview",
       "value": "共享貼文"
-    }
+    },
+    {"name": "account_overview_signed_out", "value": "未登入"},
+    {"name": "account_overview_no_bio", "value": "尚無簽名"},
+    {"name": "account_overview_handle", "value": "使用者名稱"},
+    {"name": "account_overview_location", "value": "所在地"},
+    {"name": "account_overview_website", "value": "網站"},
+    {"name": "account_overview_manage", "value": "帳號管理與切換"},
+    {"name": "profile_editor_choose_banner", "value": "更換背景圖"},
+    {"name": "profile_editor_choose_avatar", "value": "更換頭像"},
+    {"name": "profile_editor_birthdate", "value": "出生日期"},
+    {"name": "profile_editor_birthdate_empty", "value": "新增出生日期"},
+    {"name": "profile_editor_birthdate_manage", "value": "編輯出生日期與可見範圍"},
+    {"name": "profile_editor_birthdate_privacy", "value": "月和日：%s\n年：%s"},
+    {"name": "profile_editor_account_changed", "value": "目前登入帳號已變更，請返回後重新開啟編輯頁面。"},
+    {"name": "profile_editor_unsaved_title", "value": "放棄未儲存的修改？"},
+    {"name": "profile_editor_unsaved_message", "value": "離開後，尚未儲存的資料及圖片修改將不會保留。"},
+    {"name": "profile_editor_keep_editing", "value": "繼續編輯"},
+    {"name": "profile_editor_discard", "value": "放棄修改"},
+    {"name": "profile_editor_partial", "value": "部分修改已儲存，其餘修改仍保留在此頁面。請重試儲存。"},
+    {"name": "profile_editor_confirm_failed", "value": "修改已提交，暫時無法讀取最新資料。可重試儲存以重新整理，不會重複上傳圖片。"},
+    {"name": "settings_page_transition", "value": "頁面轉場"},
+    {"name": "settings_page_transition_desc", "value": "選擇頁面進入和返回時的動畫。立即生效，下次開啟仍會保留。"},
+    {"name": "settings_page_transition_classic", "value": "原有動畫"},
+    {"name": "settings_page_transition_classic_desc", "value": "保留目前的系統導覽轉場效果。"},
+    {"name": "settings_page_transition_official", "value": "官方風格"},
+    {"name": "settings_page_transition_official_desc", "value": "中心縮放與淡入淡出，進入和返回使用配套動效。"},
+    {"name":"settings_anti_peep","value":"防窺保護"},
+    {"name":"settings_anti_peep_desc","value":"偵測到他人窺視螢幕時，使用系統遮罩覆蓋應用程式視窗。"},
+    {"name":"settings_anti_peep_enable","value":"啟用防窺保護"},
+    {"name":"settings_anti_peep_setup","value":"設定系統防窺保護"},
+    {"name":"settings_anti_peep_recheck","value":"重新偵測"},
+    {"name":"settings_anti_peep_note","value":"請先設定人臉辨識，並在系統「私隱與安全 > 防窺保護」中允許此應用程式。應用程式僅使用系統窺視狀態，不取得人臉影像。"},
+    {"name":"settings_anti_peep_disabled","value":"未啟用"},
+    {"name":"settings_anti_peep_unsupported","value":"目前裝置不支援系統防窺保護。"},
+    {"name":"settings_anti_peep_permission","value":"等待應用程式防窺授權。授權設定完成後，返回應用程式或點按重新偵測即可啟用。"},
+    {"name":"settings_anti_peep_system_off","value":"請在系統防窺保護中開啟此應用程式的開關。"},
+    {"name":"settings_anti_peep_face","value":"請先在系統設定中啟用人臉辨識。"},
+    {"name":"settings_anti_peep_ready","value":"已啟用，正在監測窺視狀態。"},
+    {"name":"settings_anti_peep_protected","value":"偵測到窺視，已觸發系統保護遮罩。"},
+    {"name":"settings_anti_peep_error","value":"暫時無法啟用保護，請重新偵測。"},
+    {"name":"settings_anti_peep_checking","value":"正在偵測或啟用保護…"},
+    {"name":"settings_anti_peep_save_failed","value":"儲存失敗，請重試。"},
+    {"name":"huawei_account_title","value":"華為帳號與雲端同步"},
+    {"name":"huawei_account_name","value":"華為帳號"},
+    {"name":"huawei_login","value":"華為帳號登入"},
+    {"name":"huawei_logout","value":"登出"},
+    {"name":"huawei_signed_in","value":"已登入華為帳號"},
+    {"name":"huawei_logging_in","value":"正在登入…"},
+    {"name":"huawei_signed_out_description","value":"登入後，讓偏好設定跟隨你"},
+    {"name":"huawei_cloud_sync","value":"雲端同步"},
+    {"name":"huawei_sync_description","value":"登入後可開啟雲端同步，在你的裝置間同步應用程式外觀、閱讀與播放偏好及本機內容規則。"},
+    {"name":"huawei_local_data_note","value":"X 登入憑證、私人訊息、草稿及快取保留在本機。部分外觀設定重新啟動後生效。"},
+    {"name":"huawei_logout_title","value":"登出華為帳號？"},
+    {"name":"huawei_logout_description","value":"登出後暫停本應用程式的雲端同步，保留本機設定及雲端已有資料。X 帳號可繼續使用。"},
+    {"name":"huawei_sync_disabled","value":"尚未開啟，設定儲存在本機"},
+    {"name":"huawei_sync_unavailable","value":"目前無法使用雲端空間，請檢查系統雲端服務及本應用程式的同步開關。"},
+    {"name":"huawei_sync_downloading","value":"正在讀取並合併雲端設定…"},
+    {"name":"huawei_sync_uploading","value":"正在上傳設定…"},
+    {"name":"huawei_sync_success","value":"已同步"},
+    {"name":"huawei_sync_pending","value":"本機已儲存，等待同步"},
+    {"name":"huawei_sync_failed","value":"同步未完成，資料仍儲存在本機。請檢查系統雲端設定後重試。"},
+    {"name":"huawei_network_error","value":"網路無法使用，連線恢復後請重試"},
+    {"name":"huawei_storage_full","value":"雲端或本機儲存空間不足，請清理後重試"},
+    {"name":"huawei_login_error","value":"登入未完成，請檢查帳號服務設定或稍後重試"},
+    {"name":"huawei_authorization_error","value":"未能取得暱稱與頭像授權，請檢查帳號權限設定後重試"},
+    {"name":"huawei_save_error","value":"設定未能儲存，請重試"},
+    {"name":"huawei_select_group","value":"請至少選擇一項同步內容"},
+    {"name":"huawei_account_changed","value":"華為帳號已更換。開啟同步會將本機所選設定合併到目前帳號，請確認後再開啟。"},
+    {"name":"huawei_last_sync","value":"上次成功同步："},
+    {"name":"huawei_syncing","value":"正在同步…"},
+    {"name":"huawei_sync_now","value":"立即同步"},
+    {"name":"huawei_group_appearance","value":"外觀與導覽"},
+    {"name":"huawei_group_appearance_description","value":"主題、字級、標題列、分頁列及彈窗材質"},
+    {"name":"huawei_group_media","value":"閱讀與播放"},
+    {"name":"huawei_group_media_description","value":"圖片與影片品質、自動播放及靜音等偏好"},
+    {"name":"huawei_group_filters","value":"本機內容規則"},
+    {"name":"huawei_group_filters_description","value":"關鍵字、使用者篩選及內容顯示偏好"},
+    {"name":"post_photo_save_background","value":"儲存到背景圖庫"},
+    {"name":"chat_background_saving_photo","value":"正在儲存背景圖片…"},
+    {"name":"chat_background_saved_photo","value":"已儲存，可在「頁面背景」或私訊的「聊天背景」中選擇"},
+    {"name":"chat_background_save_photo_failed","value":"儲存背景圖片失敗，請重試"},
+    {"name":"chat_background_saved_photos","value":"從貼文儲存的圖片"},
+    {"name":"page_background_title","value":"頁面背景"},
+    {"name":"page_background_description","value":"底色、圖片與可混搭的圖案"},
+    {"name":"page_background_switch_title","value":"啟用頁面背景"},
+    {"name":"page_background_switch_desc","value":"關閉後立即使用主題背景，目前樣式會保留。"},
+    {"name":"page_background_base","value":"背景底層"},
+    {"name":"page_background_pattern","value":"疊加圖案"},
+    {"name":"page_background_pattern_none","value":"無圖案"},
+    {"name":"page_background_content_opacity","value":"內容底板不透明度"},
+    {"name":"page_background_reset","value":"恢復預設"},
+    {"name":"page_background_color_placeholder","value":"自訂底色 #RRGGBB"},
+    {"name":"page_background_preview","value":"頁面背景預覽"},
+    {"name":"page_background_preview_text","value":"讓喜歡的顏色與圖案，陪伴每一次瀏覽。"},
+    {"name":"page_background_preview_hint","value":"預覽包含文字與內容底板，方便調整閱讀效果。"},
+    {"name":"page_background_note","value":"套用於一般頁面。聊天背景獨立設定，圖片與影片檢視器保留沉浸背景。點選套用後生效。"},
+    {"name":"page_background_layout_preset","value":"整套圖案"},
+    {"name":"page_background_layout_icons","value":"圖示鋪排"},
+    {"name":"page_background_density","value":"圖示密度"},
+    {"name":"page_background_set_add","value":"選取整套圖示"},
+    {"name":"page_background_set_remove","value":"取消整套圖示"},
+    {"name":"page_background_mix_hint","value":"可跨套系多選圖示，混合排列；也可以只選一個圖示重複鋪排。"},
+    {"name":"page_background_selected","value":"已選 %d 個圖示"},
+    {"name":"page_background_icons_clear","value":"清空圖示"},
+    {"name":"page_background_paper","value":"紙張質感"},
+    {"name":"page_background_paper_none","value":"無質感"},
+    {"name":"page_background_kraft","value":"牛皮紙"},
+    {"name":"page_background_parchment","value":"羊皮紙"},
+    {"name":"page_background_texture_strength","value":"紙張紋理強度"},
+    {"name":"page_background_presets_mix","value":"可多選整套圖案，疊加混搭。"},
+    {"name":"page_background_applied","value":"頁面背景已套用"},
+    {"name":"page_background_apply_failed","value":"無法儲存頁面背景，請重試"},
+    {"name":"page_background_transparent_posts","value":"貼文卡片透明"},
+    {"name":"page_background_transparent_posts_desc","value":"隱藏貼文與引用卡片底板，直接顯示頁面背景。"},
+    {"name":"page_background_transparent_inbox","value":"私訊列表透明"},
+    {"name":"page_background_transparent_inbox_desc","value":"隱藏私訊對話列表的底板，保留文字、頭像和未讀標記。"},
+    {"name":"page_background_post_opacity","value":"貼文底板不透明度"},
+    {"name":"page_background_inbox_opacity","value":"私訊列表底板不透明度"},
+    {"name":"page_background_scheme_import","value":"匯入搭配方案"},
+    {"name":"page_background_scheme_share","value":"分享搭配方案"},
+    {"name":"page_background_scheme_title","value":"頁面背景搭配方案"},
+    {"name":"page_background_scheme_imported","value":"方案已匯入，預覽滿意後點套用"},
+    {"name":"page_background_scheme_import_failed","value":"匯入失敗，請選擇有效的 HarmonyX 背景方案（不超過 48 MB）"},
+    {"name":"page_background_scheme_share_failed","value":"分享失敗，請重試；背景圖片需小於 32 MB"},
+    {"name":"page_background_set_signature_icons","value":"備用圖示"},
+    {"name":"page_background_set_garden_defense","value":"植物大戰殭屍"},
+    {"name":"page_background_motif_signature_icons_frog_face","value":"青蛙笑臉"},
+    {"name":"page_background_motif_signature_icons_frog_lily","value":"荷葉青蛙"},
+    {"name":"page_background_motif_signature_icons_milk_frog","value":"牛奶蛙"},
+    {"name":"page_background_motif_signature_icons_milk_frog_wave","value":"招手牛奶蛙"},
+    {"name":"page_background_motif_signature_icons_bird","value":"飛鳥"},
+    {"name":"page_background_motif_signature_icons_bird_wings","value":"展翅小鳥"},
+    {"name":"page_background_motif_signature_icons_ribbon_x","value":"緞帶 X"},
+    {"name":"page_background_motif_signature_icons_blossom_x","value":"花枝 X"},
+    {"name":"page_background_motif_signature_icons_brush_x","value":"筆觸 X"},
+    {"name":"page_background_motif_signature_icons_prism_x","value":"稜鏡 X"},
+    {"name":"page_background_motif_signature_icons_zombie_x","value":"殭屍 X"},
+    {"name":"page_background_motif_signature_icons_lily_blossom","value":"荷葉小花"},
+    {"name":"page_background_motif_garden_defense_peashooter","value":"豌豆射手"},
+    {"name":"page_background_motif_garden_defense_sunflower","value":"向日葵"},
+    {"name":"page_background_motif_garden_defense_wallnut","value":"堅果牆"},
+    {"name":"page_background_motif_garden_defense_cherry_bomb","value":"櫻桃炸彈"},
+    {"name":"page_background_motif_garden_defense_snow_pea","value":"寒冰射手"},
+    {"name":"page_background_motif_garden_defense_potato_mine","value":"馬鈴薯地雷"},
+    {"name":"page_background_motif_garden_defense_chomper","value":"大嘴花"},
+    {"name":"page_background_motif_garden_defense_squash","value":"窩瓜"},
+    {"name":"page_background_motif_garden_defense_zombie","value":"殭屍"},
+    {"name":"page_background_motif_garden_defense_conehead","value":"路障殭屍"},
+    {"name":"page_background_motif_garden_defense_buckethead","value":"鐵桶殭屍"},
+    {"name":"page_background_motif_garden_defense_lawnmower","value":"割草機"},
+    {"name":"page_background_set_ai_assistants","value":"AI 智慧助理"},
+    {"name":"page_background_motif_ai_assistants_gpt","value":"GPT"},
+    {"name":"page_background_motif_ai_assistants_claude","value":"Claude"},
+    {"name":"page_background_motif_ai_assistants_gemini","value":"Gemini"},
+    {"name":"page_background_motif_ai_assistants_deepseek","value":"DeepSeek"},
+    {"name":"page_background_motif_ai_assistants_grok","value":"Grok"},
+    {"name":"page_background_motif_ai_assistants_qwen","value":"Qwen"},
+    {"name":"page_background_motif_ai_assistants_kimi","value":"Kimi"},
+    {"name":"page_background_motif_ai_assistants_doubao","value":"豆包"},
+    {"name":"page_background_motif_ai_assistants_copilot","value":"Copilot"},
+    {"name":"page_background_motif_ai_assistants_perplexity","value":"Perplexity"},
+    {"name":"page_background_motif_ai_assistants_mistral","value":"Mistral"},
+    {"name":"page_background_motif_ai_assistants_robot","value":"AI 机器人"},
+    {"name":"page_background_set_mobile_brands_systems","value":"手機品牌與系統"},
+    {"name":"page_background_motif_mobile_brands_systems_apple","value":"蘋果"},
+    {"name":"page_background_motif_mobile_brands_systems_huawei","value":"華為"},
+    {"name":"page_background_motif_mobile_brands_systems_xiaomi","value":"小米"},
+    {"name":"page_background_motif_mobile_brands_systems_samsung","value":"三星"},
+    {"name":"page_background_motif_mobile_brands_systems_oppo","value":"OPPO"},
+    {"name":"page_background_motif_mobile_brands_systems_vivo","value":"vivo"},
+    {"name":"page_background_motif_mobile_brands_systems_honor","value":"榮耀"},
+    {"name":"page_background_motif_mobile_brands_systems_oneplus","value":"一加"},
+    {"name":"page_background_motif_mobile_brands_systems_meizu","value":"魅族"},
+    {"name":"page_background_motif_mobile_brands_systems_harmonyos","value":"鴻蒙 HarmonyOS"},
+    {"name":"page_background_motif_mobile_brands_systems_android","value":"Android"},
+    {"name":"page_background_motif_mobile_brands_systems_ios","value":"iOS"},
+    {"name":"page_background_motif_mobile_brands_systems_hyperos","value":"HyperOS"},
+    {"name":"page_background_motif_mobile_brands_systems_coloros","value":"ColorOS"},
+    {"name":"page_background_motif_mobile_brands_systems_originos","value":"OriginOS"},
+    {"name":"page_background_motif_mobile_brands_systems_oneui","value":"One UI"},
+    {"name":"motion_title","value":"動畫與觸感"},
+    {"name":"motion_intro","value":"調整互動動效與觸感回饋，修改後自動儲存。點擊預覽即可體驗目前效果。"},
+    {"name":"motion_preview","value":"點擊體驗動畫與觸感"},
+    {"name":"motion_reduce","value":"降低動畫效果"},
+    {"name":"motion_reduce_desc","value":"關閉裝飾性縮放、位移和 Symbol 動效，略過頁面轉場。保留動畫參數，關閉後恢復。"},
+    {"name":"motion_duration","value":"動畫持續時間"},
+    {"name":"motion_duration_desc","value":"應用動效的基準時長，按鈕與頁面動畫按比例調整。原生 Symbol 動效保留系統節奏。"},
+    {"name":"motion_amplitude","value":"動畫運動幅度"},
+    {"name":"motion_amplitude_desc","value":"調整裝飾性縮放與旋轉，0% 時關閉這類效果。手勢跟隨、圖片縮放等操作保持完整範圍。"},
+    {"name":"motion_damping","value":"動畫彈性阻尼"},
+    {"name":"motion_damping_desc","value":"數值越低，回彈越明顯；數值越高，回位越平穩。"},
+    {"name":"motion_symbol","value":"Symbol 圖示動效"},
+    {"name":"motion_symbol_desc","value":"切換標籤、點擊操作按鈕時播放一次原生圖示動效。開啟降低動畫效果後暫停。"},
+    {"name":"motion_haptics","value":"觸感回饋"},
+    {"name":"motion_haptics_desc","value":"為導覽、按鈕、開關和操作提供輕觸回饋，遵循系統觸感開關。"},
+    {"name":"motion_intensity","value":"觸感回饋強度"},
+    {"name":"motion_intensity_desc","value":"支援調節的裝置使用對應強度的系統預設效果，其他馬達使用短促的系統觸摸振動。"},
+    {"name":"motion_presets","value":"預設動畫方案"},
+    {"name":"motion_preset_quick","value":"輕快"},
+    {"name":"motion_preset_quick_desc","value":"175 ms · 60% 幅度 · 平穩回位。操作回饋短促俐落。"},
+    {"name":"motion_preset_standard","value":"標準"},
+    {"name":"motion_preset_standard_desc","value":"300 ms · 100% 幅度 · 均衡彈性。適合日常使用。"},
+    {"name":"motion_preset_spring","value":"柔彈"},
+    {"name":"motion_preset_spring_desc","value":"450 ms · 120% 幅度 · 較低阻尼。回彈更柔和、明顯。"},
+    {"name":"motion_preset_reduced","value":"低動態"},
+    {"name":"motion_preset_reduced_desc","value":"略過頁面轉場和裝飾動效，保留之前的動畫參數。"},
+    {"name":"motion_preset_custom","value":"目前方案：自訂。選擇預設方案可恢復該方案的動畫參數。"},
+    {"name":"chat_auto_download","value":"聊天自動下載"},
+    {"name":"storage_chat_retention","value":"聊天媒體保留時間"},
+    {"name":"storage_chat_retention_desc","value":"管理聊天下載快取的保留時間，不刪除聊天記錄或已手動儲存的檔案。"},
+    {"name":"settings_theme_mix","value":"混搭配色"},
+    {"name":"settings_theme_mix_desc","value":"開關、導覽與發佈按鈕採用呼應的多色組合，支援淺色與深色外觀。"},
+    {"name":"settings_theme_mix_confetti","value":"繽紛"},
+    {"name":"settings_theme_mix_coast","value":"海鹽珊瑚"},
+    {"name":"settings_theme_mix_sunset","value":"落日鳶尾"},
+    {"name":"settings_theme_mix_forest","value":"森林琥珀"},
+    {"name":"settings_theme_mix_berry","value":"莓果薄荷"},
+    {"name":"settings_theme_mix_morandi","value":"莫蘭迪"},
+    {"name":"settings_theme_solid","value":"單色配色"},
+    {"name":"settings_theme_mix_candy","value":"糖果繽紛"},
+    {"name":"settings_theme_mix_sky","value":"晴空檸檬"},
+    {"name":"settings_theme_mix_peach","value":"蜜桃薄荷"},
+    {"name":"settings_theme_mix_lilac","value":"香芋奶黃"}
   ]
 }

@@ -12,6 +12,7 @@ import { emptyPromotionTweet, promotionTweet, XXAuthPromotionAsset } from '../ut
 @Component
 export struct PromotionPostCard {
   @Prop @Watch('onPostChanged') post: XXAuthPromotionPost = new XXAuthPromotionPost();
+  @Prop narrowColumn: boolean = false;
   @State private tweet: Tweet = emptyPromotionTweet();
   onOpen: () => void = (): void => { };
   onHideSession: () => void = (): void => { };
@@ -73,6 +74,7 @@ export struct PromotionPostCard {
   build(): void {
     TweetCard({
       tweet: this.tweet,
+      narrowColumn: this.narrowColumn,
       // The row has no real post behind it, so the interaction row is omitted
       // and every tap leads to the recommended app instead.
       showActions: false,

@@ -77,7 +77,7 @@ Harmony X 并非仅替换外观，而是面向 HarmonyOS API 26 的 OpenTwit 改
 
 | 项目 | 当前配置 |
 |:--|:--|
-| 应用 | `Harmony X` · `com.haohaoai0.harmonx` · 版本 `3.0.0`（`versionCode` 22） |
+| 应用 | `Harmony X` · `com.haohaoai0.harmonx` · 版本 `3.1.0`（`versionCode` 23） |
 | 模块 | `entry` · Stage 模型 · `modelVersion` 5.0.0 |
 | SDK 配置 | 未显式设置编译 SDK（使用本机 DevEco SDK）· 兼容 SDK `6.1.0 (API 23)` · 目标 SDK `26.0.0` |
 | 设备 | `phone`、`tablet`、`2in1` · 全屏 `EntryAbility` |

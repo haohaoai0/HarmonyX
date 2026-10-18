@@ -1,3 +1,8 @@
+import { pageTextColor } from '../utils/ThemeColors';
+import { appPageBackground } from '../components/PageBackgroundLayer';
+import { pageCanvasColor, pageReadingSurfaceColor } from '../utils/ThemeColors';
+import { STORAGE_KEY_PAGE_TRANSITION_MODE, DEFAULT_PAGE_TRANSITION_MODE } from '../services/PageTransitionSettingsStore';
+import { pageSystemTransition, PageTransitionMotion } from '../utils/PageTransition';
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
 import common from '@ohos.app.ability.common';
 import { deviceInfo } from '@kit.BasicServicesKit';
@@ -32,6 +37,9 @@ export function ListsBuilder(): void { Lists(); }
 
 @Component
 export struct Lists {
+  @StorageProp('harmonyx.page_background') private pageBackgroundValue: string = '';
+  @State private pageMotion: PageTransitionMotion = new PageTransitionMotion();
+  @StorageProp(STORAGE_KEY_PAGE_TRANSITION_MODE) private pageTransitionMode: string = DEFAULT_PAGE_TRANSITION_MODE;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @Consume('pageStack') pageStack: NavPathStack;
   @StorageProp('harmonyx.status_bar_height') statusBarHeight: number = 0;
@@ -175,14 +183,14 @@ export struct Lists {
       Search({ value: this.query, placeholder: this.text($r('app.string.list_search_placeholder')) })
         .keyboardAppearance(KeyboardAppearance.IMMERSIVE)
         .layoutWeight(1).height($r('app.float.list_search_height'))
-        .fontColor($r('app.color.text_primary')).searchButton(this.text($r('app.string.list_search_action')))
+        .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)).searchButton(this.text($r('app.string.list_search_action')))
         .onChange((value: string): void => {
           this.query = value;
           if (value.trim().length === 0 && this.searching()) { this.search(''); }
         }).onSubmit((value: string): void => this.search(value))
       if (this.ownDirectory()) {
         Button({ type: ButtonType.Circle }) {
-          SymbolGlyph($r('sys.symbol.ellipsis_circle')).fontSize(24).fontColor([$r('app.color.text_primary')])
+          SymbolGlyph($r('sys.symbol.ellipsis_circle')).fontSize(24).fontColor([pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)])
         }.width(44).height(44).backgroundColor(Color.Transparent)
           .accessibilityText($r('app.string.list_more')).bindMenu(this.MoreMenu)
       }
@@ -196,10 +204,10 @@ export struct Lists {
         Column({ space: 6 }) {
           Row({ space: 5 }) {
             Text(row.name).fontFamily(this.appFontFamily).fontSize($r('sys.float.Subtitle_M')).fontWeight(FontWeight.Bold)
-              .fontColor($r('app.color.text_primary')).maxLines(1)
+              .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)).maxLines(1)
               .textOverflow({ overflow: TextOverflow.Ellipsis }).layoutWeight(1)
             if (row.isPrivate) {
-              SymbolGlyph($r('sys.symbol.lock')).fontSize(14).fontColor([$r('app.color.text_secondary')])
+              SymbolGlyph($r('sys.symbol.lock')).fontSize(14).fontColor([pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)])
                 .accessibilityText($r('app.string.list_private'))
             }
           }.width('100%')
@@ -207,7 +215,7 @@ export struct Lists {
             ProxyAvatar({verifiedType: row.ownerVerifiedType ?? '', avatarShape: row.ownerAvatarShape ?? '',  url: row.ownerAvatarUrl, avatarSize: 20, radius: 10,
               fallbackText: row.ownerName.substring(0, 1) })
             Text(row.ownerName.length > 0 ? row.ownerName : '@' + row.ownerUsername).fontFamily(this.appFontFamily)
-              .fontSize($r('sys.float.Body_M')).fontColor($r('app.color.text_secondary')).maxLines(1)
+              .fontSize($r('sys.float.Body_M')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).maxLines(1)
               .textOverflow({ overflow: TextOverflow.Ellipsis })
           }
         }.layoutWeight(1).alignItems(HorizontalAlign.Start)
@@ -218,7 +226,7 @@ export struct Lists {
             LoadingProgress().width(22).height(22).color(this.accentColor)
           } else {
             SymbolGlyph(row.pinned ? $r('sys.symbol.pin_fill') : $r('sys.symbol.pin'))
-              .fontSize(24).fontColor([row.pinned ? $r('app.color.text_primary') : $r('app.color.text_secondary')])
+              .fontSize(24).fontColor([row.pinned ? pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent) : pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)])
           }
         }.width(44).height(44).backgroundColor(Color.Transparent)
           .accessibilityText(row.pinned ? $r('app.string.list_unpin') : $r('app.string.list_pin'))
@@ -232,7 +240,7 @@ export struct Lists {
     if (this.ownDirectory() && !this.searching()) {
       ListItem() {
         Text($r('app.string.list_yours')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Title_S')).fontWeight(FontWeight.Bold)
-          .fontColor($r('app.color.text_primary')).width('100%').padding({ left: 16, right: 16, top: 20, bottom: 20 })
+          .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)).width('100%').padding({ left: 16, right: 16, top: 20, bottom: 20 })
       }
     }
     if (this.loading && this.visibleRows().length === 0) {
@@ -243,10 +251,10 @@ export struct Lists {
           Text(this.memberships ? $r('app.string.list_memberships_empty_title') : this.query.length > 0 ?
             $r('app.string.list_search_empty_title') : $r('app.string.list_empty_title')).fontFamily(this.appFontFamily)
             .fontSize($r('app.float.list_empty_title_size')).fontWeight(FontWeight.Bold)
-            .fontColor($r('app.color.text_primary')).width('100%')
+            .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)).width('100%')
           Text(this.memberships ? $r('app.string.list_memberships_empty_body') : this.query.length > 0 ?
             $r('app.string.list_search_empty_body') : $r('app.string.list_empty_body')).fontFamily(this.appFontFamily)
-            .fontSize($r('sys.float.Body_L')).fontColor($r('app.color.text_secondary')).width('100%')
+            .fontSize($r('sys.float.Body_L')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).width('100%')
           if (this.ownDirectory() && this.query.length === 0) {
             Button($r('app.string.list_create_title')).backgroundColor(this.accentColor)
               .fontColor($r('app.color.text_on_accent')).margin({ top: 8 }).onClick((): void => this.openCreate())
@@ -259,7 +267,7 @@ export struct Lists {
     if (this.status.length > 0) {
       ListItem() {
         Column({ space: 12 }) {
-          Text(this.status).fontFamily(this.appFontFamily).fontColor($r('app.color.text_secondary')).fontSize($r('sys.float.Body_M'))
+          Text(this.status).fontFamily(this.appFontFamily).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).fontSize($r('sys.float.Body_M'))
           Button($r('app.string.common_retry')).fontColor(this.accentColor).backgroundColor(Color.Transparent)
             .onClick((): void => { this.load(true); })
         }.width('100%').padding(24)
@@ -275,6 +283,8 @@ export struct Lists {
 
   build(): void {
     HdsNavDestination() {
+      Stack({ alignContent: Alignment.TopStart }) {
+        appPageBackground()
       Stack({ alignContent: Alignment.BottomEnd }) {
         Column() {
           if (!this.memberships) { this.SearchBar() }
@@ -297,7 +307,13 @@ export struct Lists {
             onCompose: (): void => this.openCreate() })
         }
       }.width('100%').height('100%')
-    }.titleMode(HdsNavDestinationTitleMode.MINI).hideBackButton(false)
+    
+      }.width('100%').height('100%')
+    }
+    .scale({ x: this.pageMotion.scale, y: this.pageMotion.scale })
+    .opacity(this.pageMotion.opacity)
+    .onReady((context: NavDestinationContext): void => { this.pageMotion.attach(context); })
+    .systemTransition(pageSystemTransition(this.pageTransitionMode)).titleMode(HdsNavDestinationTitleMode.MINI).hideBackButton(false)
       .onShown((): void => { if (this.loaded) { this.load(true); } })
       .onBackPressed((): boolean => { ResponsiveLayout.closeContentDestination(this.pageStack); return true; })
       .bindToScrollable([this.scroller])
@@ -307,7 +323,7 @@ export struct Lists {
           subTitle: this.memberships && this.username.length > 0 ? '@' + this.username : '' } },
         style: destinationTitleBarStyle(ScrollEffectType.IMMERSIVE_GRADIENT_BLUR,
           this.themeDisplayMode, this.themeDarkSurface, this.titleBarStyleMode) })
-      .backgroundColor(pageSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
+      .backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue))
       .systemMaterial(deviceInfo.apiAvailable('26.0.0') ? new uiMaterial.ImmersiveMaterial({
         style: uiMaterial.ImmersiveStyle.REGULAR, applyShadow: true, colorInvert: true }) : undefined);
   }

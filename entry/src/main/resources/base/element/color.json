@@ -1,5 +1,61 @@
 {
   "color": [
+    {"name":"hdr_touch_light_center","value":"#52FFFFFF"},
+    {"name":"hdr_touch_light_edge","value":"#14FFFFFF"},
+    {"name":"hdr_touch_light_border","value":"#A6FFFFFF"},
+    {
+      "name": "article_card_bg_start",
+      "value": "#F6F7F9"
+    },
+    {
+      "name": "article_card_bg_end",
+      "value": "#F6F7F9"
+    },
+    {
+      "name": "article_card_ring",
+      "value": "#66FFFFFF"
+    },
+    {
+      "name": "article_card_primary",
+      "value": "#171D27"
+    },
+    {
+      "name": "article_card_secondary",
+      "value": "#697585"
+    },
+    {
+      "name": "article_card_rank",
+      "value": "#2563EB"
+    },
+    {
+      "name": "article_card_surface",
+      "value": "#E9EDF4"
+    },
+    {
+      "name": "article_card_separator",
+      "value": "#DEE3EB"
+    },
+    {
+      "name": "article_card_on_media",
+      "value": "#FFFFFF"
+    },
+    {
+      "name": "article_card_on_media_secondary",
+      "value": "#E4EAF3"
+    },
+    {
+      "name": "article_card_scrim_clear",
+      "value": "#12000000"
+    },
+    {
+      "name": "article_card_scrim_middle",
+      "value": "#66000000"
+    },
+    {
+      "name": "article_card_scrim_end",
+      "value": "#E6000000"
+    },
+    {"name": "photo_viewer_author_scrim", "value": "#B3000000"},
     {
       "name": "notification_recommendation",
       "value": "#A56DE2"
@@ -722,6 +778,119 @@
     {
       "name": "logo_glow_white",
       "value": "#50D3E8FF"
-    }
+    },
+    {"name": "account_overview_hero_base", "value": "#E5EFFA"},
+    {"name": "account_overview_hero_shade", "value": "#00000000"},
+    {"name": "account_overview_hero_scrim", "value": "#00000000"},
+    {"name": "account_overview_identity_text", "value": "#FF0F1419"},
+    {"name": "account_overview_identity_secondary", "value": "#FF536471"},
+    {"name": "account_overview_status_bg", "value": "#E6F7F9FA"},
+    {"name": "profile_editor_image_shade", "value": "#55000000"}
+  ,
+    {"name": "photo_save_background", "value": "#202020"},
+    {"name":"page_background_blue","value":"#E6EFFA"},
+    {"name":"page_background_green","value":"#E5F0E8"},
+    {"name":"page_background_sand","value":"#F5EDD9"},
+    {"name":"page_background_rose","value":"#F5E6E9"},
+    {"name":"page_background_lilac","value":"#EDE7F5"},
+    {"name":"page_background_slate","value":"#E5E9EE"},
+    {"name":"page_background_kraft","value":"#D4B482"},
+    {"name":"page_background_parchment","value":"#F1E5C5"},
+    {"name":"mix_confetti_primary","value":"#2864C8"},
+    {"name":"mix_confetti_action","value":"#FF9978"},
+    {"name":"mix_confetti_home","value":"#2E7DDA"},
+    {"name":"mix_confetti_explore","value":"#E34E61"},
+    {"name":"mix_confetti_notifications","value":"#B98000"},
+    {"name":"mix_confetti_messages","value":"#239C69"},
+    {"name":"mix_confetti_profile","value":"#7E57C2"},
+    {"name":"mix_coast_primary","value":"#16717D"},
+    {"name":"mix_coast_action","value":"#B54F45"},
+    {"name":"mix_coast_home","value":"#16717D"},
+    {"name":"mix_coast_explore","value":"#286CA2"},
+    {"name":"mix_coast_notifications","value":"#AB514A"},
+    {"name":"mix_coast_messages","value":"#287C6C"},
+    {"name":"mix_coast_profile","value":"#82629F"},
+    {"name":"mix_sunset_primary","value":"#7352AD"},
+    {"name":"mix_sunset_action","value":"#B34D32"},
+    {"name":"mix_sunset_home","value":"#7352AD"},
+    {"name":"mix_sunset_explore","value":"#B04B67"},
+    {"name":"mix_sunset_notifications","value":"#956000"},
+    {"name":"mix_sunset_messages","value":"#A14F37"},
+    {"name":"mix_sunset_profile","value":"#805D96"},
+    {"name":"mix_forest_primary","value":"#376A50"},
+    {"name":"mix_forest_action","value":"#966122"},
+    {"name":"mix_forest_home","value":"#376A50"},
+    {"name":"mix_forest_explore","value":"#3C7081"},
+    {"name":"mix_forest_notifications","value":"#966122"},
+    {"name":"mix_forest_messages","value":"#58703B"},
+    {"name":"mix_forest_profile","value":"#97594D"},
+    {"name":"mix_berry_primary","value":"#A13E68"},
+    {"name":"mix_berry_action","value":"#256E61"},
+    {"name":"mix_berry_home","value":"#A13E68"},
+    {"name":"mix_berry_explore","value":"#6D55A3"},
+    {"name":"mix_berry_notifications","value":"#A45932"},
+    {"name":"mix_berry_messages","value":"#256E61"},
+    {"name":"mix_berry_profile","value":"#87639B"},
+    {"name":"mix_morandi_primary","value":"#596C86"},
+    {"name":"mix_morandi_action","value":"#90604D"},
+    {"name":"mix_morandi_home","value":"#596C86"},
+    {"name":"mix_morandi_explore","value":"#796984"},
+    {"name":"mix_morandi_notifications","value":"#8B6841"},
+    {"name":"mix_morandi_messages","value":"#587269"},
+    {"name":"mix_morandi_profile","value":"#916470"},
+    {"name":"mix_preview_on_action","value":"#FFFFFF"},
+    {"name":"mix_confetti_on_action","value":"#183354"},
+    {"name":"mix_confetti_control","value":"#58A4FF"},
+    {"name":"mix_confetti_surface","value":"#F0F6FF"},
+    {"name":"mix_confetti_ink","value":"#183354"},
+    {"name":"mix_confetti_on_control","value":"#183354"},
+    {"name":"mix_candy_primary","value":"#A73760"},
+    {"name":"mix_candy_action","value":"#FFB38A"},
+    {"name":"mix_candy_home","value":"#C94F7C"},
+    {"name":"mix_candy_explore","value":"#8A62C9"},
+    {"name":"mix_candy_notifications","value":"#B78200"},
+    {"name":"mix_candy_messages","value":"#239B77"},
+    {"name":"mix_candy_profile","value":"#347BC0"},
+    {"name":"mix_candy_on_action","value":"#3B264A"},
+    {"name":"mix_candy_control","value":"#FF8FB1"},
+    {"name":"mix_candy_surface","value":"#FFF1F6"},
+    {"name":"mix_candy_ink","value":"#3B264A"},
+    {"name":"mix_candy_on_control","value":"#3B264A"},
+    {"name":"mix_sky_primary","value":"#2465AC"},
+    {"name":"mix_sky_action","value":"#FFE17A"},
+    {"name":"mix_sky_home","value":"#2879BC"},
+    {"name":"mix_sky_explore","value":"#B1820A"},
+    {"name":"mix_sky_notifications","value":"#D66E55"},
+    {"name":"mix_sky_messages","value":"#238F75"},
+    {"name":"mix_sky_profile","value":"#786ED6"},
+    {"name":"mix_sky_on_action","value":"#203B55"},
+    {"name":"mix_sky_control","value":"#76BEFF"},
+    {"name":"mix_sky_surface","value":"#EFF8FF"},
+    {"name":"mix_sky_ink","value":"#203B55"},
+    {"name":"mix_sky_on_control","value":"#203B55"},
+    {"name":"mix_peach_primary","value":"#A34450"},
+    {"name":"mix_peach_action","value":"#82DFBD"},
+    {"name":"mix_peach_home","value":"#D2616E"},
+    {"name":"mix_peach_explore","value":"#2F9283"},
+    {"name":"mix_peach_notifications","value":"#B9811F"},
+    {"name":"mix_peach_messages","value":"#3E82C2"},
+    {"name":"mix_peach_profile","value":"#8C64C7"},
+    {"name":"mix_peach_on_action","value":"#49313D"},
+    {"name":"mix_peach_control","value":"#FF9A9F"},
+    {"name":"mix_peach_surface","value":"#FFF4F0"},
+    {"name":"mix_peach_ink","value":"#49313D"},
+    {"name":"mix_peach_on_control","value":"#49313D"},
+    {"name":"mix_lilac_primary","value":"#7050A6"},
+    {"name":"mix_lilac_action","value":"#FFE18A"},
+    {"name":"mix_lilac_home","value":"#8A62C4"},
+    {"name":"mix_lilac_explore","value":"#3183B3"},
+    {"name":"mix_lilac_notifications","value":"#B7831D"},
+    {"name":"mix_lilac_messages","value":"#339478"},
+    {"name":"mix_lilac_profile","value":"#C15C8F"},
+    {"name":"mix_lilac_on_action","value":"#382B52"},
+    {"name":"mix_lilac_control","value":"#BDA2F3"},
+    {"name":"mix_lilac_surface","value":"#F6F1FF"},
+    {"name":"mix_lilac_ink","value":"#382B52"},
+    {"name":"mix_lilac_on_control","value":"#382B52"}
   ]
 }

@@ -1,3 +1,4 @@
+import { hdsEffect } from '@kit.UIDesignKit';
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
 import { STORAGE_KEY_SYSTEM_EMOJI_ENABLED } from '../services/AppearanceStore';
 import type { AppNotification, TweetAuthor } from '../models/Tweet';
@@ -92,6 +93,11 @@ export struct NotificationSummary {
       }.layoutWeight(1).alignItems(HorizontalAlign.Start)
     }.width('100%').alignItems(VerticalAlign.Top).padding($r('app.float.notification_row_padding'))
       .border({ width: { bottom: 0.5 }, color: $r('app.color.divider') })
+      .visualEffect(new hdsEffect.HdsEffectBuilder()
+        .pointLight({
+          illuminatedType: hdsEffect.PointLightIlluminatedType.BORDER_CONTENT
+        })
+        .buildEffect())
       .onClick((): void => this.onOpen())
   }
 }

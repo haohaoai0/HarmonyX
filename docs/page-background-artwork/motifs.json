@@ -1,0 +1,574 @@
+[
+  {
+    "id": "signature_icons_frog_face",
+    "setId": "signature_icons",
+    "atlas": "docs/page-background-artwork/alternate-atlas.png",
+    "crop": {
+      "left": 0,
+      "top": 0,
+      "width": 362,
+      "height": 362
+    }
+  },
+  {
+    "id": "signature_icons_frog_lily",
+    "setId": "signature_icons",
+    "atlas": "docs/page-background-artwork/alternate-atlas.png",
+    "crop": {
+      "left": 362,
+      "top": 0,
+      "width": 362,
+      "height": 362
+    }
+  },
+  {
+    "id": "signature_icons_milk_frog",
+    "setId": "signature_icons",
+    "atlas": "docs/page-background-artwork/alternate-atlas.png",
+    "crop": {
+      "left": 724,
+      "top": 0,
+      "width": 362,
+      "height": 362
+    }
+  },
+  {
+    "id": "signature_icons_milk_frog_wave",
+    "setId": "signature_icons",
+    "atlas": "docs/page-background-artwork/alternate-atlas.png",
+    "crop": {
+      "left": 1086,
+      "top": 0,
+      "width": 362,
+      "height": 362
+    }
+  },
+  {
+    "id": "signature_icons_bird",
+    "setId": "signature_icons",
+    "atlas": "docs/page-background-artwork/alternate-atlas.png",
+    "crop": {
+      "left": 0,
+      "top": 362,
+      "width": 362,
+      "height": 362
+    }
+  },
+  {
+    "id": "signature_icons_bird_wings",
+    "setId": "signature_icons",
+    "atlas": "docs/page-background-artwork/alternate-atlas.png",
+    "crop": {
+      "left": 362,
+      "top": 362,
+      "width": 362,
+      "height": 362
+    }
+  },
+  {
+    "id": "signature_icons_ribbon_x",
+    "setId": "signature_icons",
+    "atlas": "docs/page-background-artwork/alternate-atlas.png",
+    "crop": {
+      "left": 724,
+      "top": 362,
+      "width": 362,
+      "height": 348
+    }
+  },
+  {
+    "id": "signature_icons_blossom_x",
+    "setId": "signature_icons",
+    "atlas": "docs/page-background-artwork/alternate-atlas.png",
+    "crop": {
+      "left": 1086,
+      "top": 362,
+      "width": 362,
+      "height": 362
+    }
+  },
+  {
+    "id": "signature_icons_brush_x",
+    "setId": "signature_icons",
+    "atlas": "docs/page-background-artwork/alternate-atlas.png",
+    "crop": {
+      "left": 0,
+      "top": 724,
+      "width": 362,
+      "height": 362
+    }
+  },
+  {
+    "id": "signature_icons_prism_x",
+    "setId": "signature_icons",
+    "atlas": "docs/page-background-artwork/alternate-atlas.png",
+    "crop": {
+      "left": 362,
+      "top": 724,
+      "width": 362,
+      "height": 362
+    }
+  },
+  {
+    "id": "signature_icons_zombie_x",
+    "setId": "signature_icons",
+    "atlas": "docs/page-background-artwork/alternate-atlas.png",
+    "crop": {
+      "left": 724,
+      "top": 710,
+      "width": 362,
+      "height": 376
+    }
+  },
+  {
+    "id": "signature_icons_lily_blossom",
+    "setId": "signature_icons",
+    "atlas": "docs/page-background-artwork/alternate-atlas.png",
+    "crop": {
+      "left": 1086,
+      "top": 724,
+      "width": 362,
+      "height": 362
+    }
+  },
+  {
+    "id": "garden_defense_peashooter",
+    "setId": "garden_defense",
+    "atlas": "docs/page-background-artwork/pvz-atlas.png",
+    "crop": {
+      "left": 0,
+      "top": 0,
+      "width": 362,
+      "height": 362
+    }
+  },
+  {
+    "id": "garden_defense_sunflower",
+    "setId": "garden_defense",
+    "atlas": "docs/page-background-artwork/pvz-atlas.png",
+    "crop": {
+      "left": 362,
+      "top": 0,
+      "width": 362,
+      "height": 362
+    }
+  },
+  {
+    "id": "garden_defense_wallnut",
+    "setId": "garden_defense",
+    "atlas": "docs/page-background-artwork/pvz-atlas.png",
+    "crop": {
+      "left": 724,
+      "top": 0,
+      "width": 362,
+      "height": 386
+    }
+  },
+  {
+    "id": "garden_defense_cherry_bomb",
+    "setId": "garden_defense",
+    "atlas": "docs/page-background-artwork/pvz-atlas.png",
+    "crop": {
+      "left": 1086,
+      "top": 0,
+      "width": 362,
+      "height": 362
+    }
+  },
+  {
+    "id": "garden_defense_snow_pea",
+    "setId": "garden_defense",
+    "atlas": "docs/page-background-artwork/pvz-atlas.png",
+    "crop": {
+      "left": 0,
+      "top": 362,
+      "width": 362,
+      "height": 362
+    }
+  },
+  {
+    "id": "garden_defense_potato_mine",
+    "setId": "garden_defense",
+    "atlas": "docs/page-background-artwork/pvz-atlas.png",
+    "crop": {
+      "left": 362,
+      "top": 362,
+      "width": 362,
+      "height": 338
+    }
+  },
+  {
+    "id": "garden_defense_chomper",
+    "setId": "garden_defense",
+    "atlas": "docs/page-background-artwork/pvz-atlas.png",
+    "crop": {
+      "left": 724,
+      "top": 386,
+      "width": 362,
+      "height": 338
+    }
+  },
+  {
+    "id": "garden_defense_squash",
+    "setId": "garden_defense",
+    "atlas": "docs/page-background-artwork/pvz-atlas.png",
+    "crop": {
+      "left": 1086,
+      "top": 362,
+      "width": 362,
+      "height": 362
+    }
+  },
+  {
+    "id": "garden_defense_zombie",
+    "setId": "garden_defense",
+    "atlas": "docs/page-background-artwork/pvz-atlas.png",
+    "crop": {
+      "left": 0,
+      "top": 724,
+      "width": 362,
+      "height": 362
+    }
+  },
+  {
+    "id": "garden_defense_conehead",
+    "setId": "garden_defense",
+    "atlas": "docs/page-background-artwork/pvz-atlas.png",
+    "crop": {
+      "left": 362,
+      "top": 700,
+      "width": 362,
+      "height": 386
+    }
+  },
+  {
+    "id": "garden_defense_buckethead",
+    "setId": "garden_defense",
+    "atlas": "docs/page-background-artwork/pvz-atlas.png",
+    "crop": {
+      "left": 724,
+      "top": 724,
+      "width": 362,
+      "height": 362
+    }
+  },
+  {
+    "id": "garden_defense_lawnmower",
+    "setId": "garden_defense",
+    "atlas": "docs/page-background-artwork/pvz-atlas.png",
+    "crop": {
+      "left": 1086,
+      "top": 724,
+      "width": 362,
+      "height": 362
+    }
+  },
+  {
+    "id": "ai_assistants_gpt",
+    "setId": "ai_assistants",
+    "atlas": "docs/page-background-artwork/ai-atlas.png",
+    "crop": {
+      "left": 0,
+      "top": 0,
+      "width": 362,
+      "height": 362
+    }
+  },
+  {
+    "id": "ai_assistants_claude",
+    "setId": "ai_assistants",
+    "atlas": "docs/page-background-artwork/ai-atlas.png",
+    "crop": {
+      "left": 362,
+      "top": 0,
+      "width": 362,
+      "height": 362
+    }
+  },
+  {
+    "id": "ai_assistants_gemini",
+    "setId": "ai_assistants",
+    "atlas": "docs/page-background-artwork/ai-atlas.png",
+    "crop": {
+      "left": 724,
+      "top": 0,
+      "width": 362,
+      "height": 362
+    }
+  },
+  {
+    "id": "ai_assistants_deepseek",
+    "setId": "ai_assistants",
+    "atlas": "docs/page-background-artwork/ai-atlas.png",
+    "crop": {
+      "left": 1086,
+      "top": 0,
+      "width": 362,
+      "height": 362
+    }
+  },
+  {
+    "id": "ai_assistants_grok",
+    "setId": "ai_assistants",
+    "atlas": "docs/page-background-artwork/ai-atlas.png",
+    "crop": {
+      "left": 0,
+      "top": 362,
+      "width": 362,
+      "height": 362
+    }
+  },
+  {
+    "id": "ai_assistants_qwen",
+    "setId": "ai_assistants",
+    "atlas": "docs/page-background-artwork/ai-atlas.png",
+    "crop": {
+      "left": 362,
+      "top": 362,
+      "width": 362,
+      "height": 362
+    }
+  },
+  {
+    "id": "ai_assistants_kimi",
+    "setId": "ai_assistants",
+    "atlas": "docs/page-background-artwork/ai-atlas.png",
+    "crop": {
+      "left": 724,
+      "top": 362,
+      "width": 362,
+      "height": 362
+    }
+  },
+  {
+    "id": "ai_assistants_doubao",
+    "setId": "ai_assistants",
+    "atlas": "docs/page-background-artwork/ai-atlas.png",
+    "crop": {
+      "left": 1086,
+      "top": 362,
+      "width": 362,
+      "height": 362
+    }
+  },
+  {
+    "id": "ai_assistants_copilot",
+    "setId": "ai_assistants",
+    "atlas": "docs/page-background-artwork/ai-atlas.png",
+    "crop": {
+      "left": 0,
+      "top": 724,
+      "width": 362,
+      "height": 362
+    }
+  },
+  {
+    "id": "ai_assistants_perplexity",
+    "setId": "ai_assistants",
+    "atlas": "docs/page-background-artwork/ai-atlas.png",
+    "crop": {
+      "left": 362,
+      "top": 724,
+      "width": 362,
+      "height": 362
+    }
+  },
+  {
+    "id": "ai_assistants_mistral",
+    "setId": "ai_assistants",
+    "atlas": "docs/page-background-artwork/ai-atlas.png",
+    "crop": {
+      "left": 724,
+      "top": 724,
+      "width": 362,
+      "height": 362
+    }
+  },
+  {
+    "id": "ai_assistants_robot",
+    "setId": "ai_assistants",
+    "atlas": "docs/page-background-artwork/ai-atlas.png",
+    "crop": {
+      "left": 1086,
+      "top": 724,
+      "width": 362,
+      "height": 362
+    }
+  },
+  {
+    "id": "mobile_brands_systems_apple",
+    "setId": "mobile_brands_systems",
+    "atlas": "docs/page-background-artwork/mobile-atlas.png",
+    "crop": {
+      "left": 0,
+      "top": 0,
+      "width": 314,
+      "height": 335
+    }
+  },
+  {
+    "id": "mobile_brands_systems_huawei",
+    "setId": "mobile_brands_systems",
+    "atlas": "docs/page-background-artwork/mobile-atlas.png",
+    "crop": {
+      "left": 314,
+      "top": 0,
+      "width": 313,
+      "height": 335
+    }
+  },
+  {
+    "id": "mobile_brands_systems_xiaomi",
+    "setId": "mobile_brands_systems",
+    "atlas": "docs/page-background-artwork/mobile-atlas.png",
+    "crop": {
+      "left": 627,
+      "top": 0,
+      "width": 298,
+      "height": 335
+    }
+  },
+  {
+    "id": "mobile_brands_systems_samsung",
+    "setId": "mobile_brands_systems",
+    "atlas": "docs/page-background-artwork/mobile-atlas.png",
+    "crop": {
+      "left": 925,
+      "top": 0,
+      "width": 329,
+      "height": 335
+    }
+  },
+  {
+    "id": "mobile_brands_systems_oppo",
+    "setId": "mobile_brands_systems",
+    "atlas": "docs/page-background-artwork/mobile-atlas.png",
+    "crop": {
+      "left": 0,
+      "top": 335,
+      "width": 314,
+      "height": 292
+    }
+  },
+  {
+    "id": "mobile_brands_systems_vivo",
+    "setId": "mobile_brands_systems",
+    "atlas": "docs/page-background-artwork/mobile-atlas.png",
+    "crop": {
+      "left": 314,
+      "top": 335,
+      "width": 313,
+      "height": 292
+    }
+  },
+  {
+    "id": "mobile_brands_systems_honor",
+    "setId": "mobile_brands_systems",
+    "atlas": "docs/page-background-artwork/mobile-atlas.png",
+    "crop": {
+      "left": 627,
+      "top": 335,
+      "width": 314,
+      "height": 292
+    }
+  },
+  {
+    "id": "mobile_brands_systems_oneplus",
+    "setId": "mobile_brands_systems",
+    "atlas": "docs/page-background-artwork/mobile-atlas.png",
+    "crop": {
+      "left": 941,
+      "top": 335,
+      "width": 313,
+      "height": 292
+    }
+  },
+  {
+    "id": "mobile_brands_systems_meizu",
+    "setId": "mobile_brands_systems",
+    "atlas": "docs/page-background-artwork/mobile-atlas.png",
+    "crop": {
+      "left": 0,
+      "top": 627,
+      "width": 314,
+      "height": 314
+    }
+  },
+  {
+    "id": "mobile_brands_systems_harmonyos",
+    "setId": "mobile_brands_systems",
+    "atlas": "docs/page-background-artwork/mobile-atlas.png",
+    "crop": {
+      "left": 314,
+      "top": 627,
+      "width": 313,
+      "height": 314
+    }
+  },
+  {
+    "id": "mobile_brands_systems_android",
+    "setId": "mobile_brands_systems",
+    "atlas": "docs/page-background-artwork/mobile-atlas.png",
+    "crop": {
+      "left": 627,
+      "top": 627,
+      "width": 314,
+      "height": 314
+    }
+  },
+  {
+    "id": "mobile_brands_systems_ios",
+    "setId": "mobile_brands_systems",
+    "atlas": "docs/page-background-artwork/mobile-atlas.png",
+    "crop": {
+      "left": 941,
+      "top": 627,
+      "width": 313,
+      "height": 314
+    }
+  },
+  {
+    "id": "mobile_brands_systems_hyperos",
+    "setId": "mobile_brands_systems",
+    "atlas": "docs/page-background-artwork/mobile-atlas.png",
+    "crop": {
+      "left": 0,
+      "top": 941,
+      "width": 314,
+      "height": 313
+    }
+  },
+  {
+    "id": "mobile_brands_systems_coloros",
+    "setId": "mobile_brands_systems",
+    "atlas": "docs/page-background-artwork/mobile-atlas.png",
+    "crop": {
+      "left": 314,
+      "top": 941,
+      "width": 313,
+      "height": 313
+    }
+  },
+  {
+    "id": "mobile_brands_systems_originos",
+    "setId": "mobile_brands_systems",
+    "atlas": "docs/page-background-artwork/mobile-atlas.png",
+    "crop": {
+      "left": 627,
+      "top": 941,
+      "width": 314,
+      "height": 313
+    }
+  },
+  {
+    "id": "mobile_brands_systems_oneui",
+    "setId": "mobile_brands_systems",
+    "atlas": "docs/page-background-artwork/mobile-atlas.png",
+    "crop": {
+      "left": 941,
+      "top": 941,
+      "width": 313,
+      "height": 313
+    }
+  }
+]

@@ -4,6 +4,37 @@ User-facing changes in Harmony X. Unreleased entries describe the next version; 
 
 中文版见 [CHANGELOG.md](CHANGELOG.md)。
 
+## 3.1.0 — Unreleased (2026-10-18)
+
+This update adds Home-screen cards, native profile editing, traditional colour themes, and a page-transition choice. It also improves photo saving, video gestures, and timeline reading. The build number is 23.
+
+### New features
+
+- **Home-screen cards**: Choose 2×2, 2×4, or 4×4 cards showing For You, Following, Trends, or Notifications. Cards follow the active account and display cached content. Tap a post to open its details, or use the gear to change the source and refresh the card.
+- **Native profile editing**: Update your name, bio, location, website, avatar, and banner. Saving reloads the account profile and updates its display throughout the app. If part of a save fails, unfinished edits remain available for retry.
+- **Twelve traditional colour themes**: Add cinnabar, vermilion, amber, autumn bamboo, bamboo green, azurite, cloisonne, indigo, begonia, rouge, sandalwood, and mountain palettes, with separate light and dark colours. Existing accent choices remain available.
+- **Page-transition choice**: Choose the existing animation or the official style in settings. Changes apply immediately and survive restart; the existing animation remains the default. Photo and video viewers retain their own media-opening and closing transitions.
+- **Double-tap video seeking**: Double-tap the right half to seek forward or the left half to seek backward. The default interval is 10 seconds, adjustable from 1 to 60 seconds, with an independent switch that leaves hold-to-speed preferences unchanged.
+- **Photo author bar**: The photo viewer now shows author information, a profile shortcut, and follow controls, sharing relationship state with other pages.
+- **Alternate icon**: Add a Zombie X icon option.
+
+### Improvements and fixes
+
+- **Me account overview**: Improve the avatar, banner, and account summary, and show known profile details immediately when opening the full profile. Refreshing the overview no longer fetches both post timelines.
+- **Compact timeline cards**: Refine covers, text excerpts, and spacing in narrow columns. Galleries retain the full photo sequence, while videos and GIFs continue to follow the existing autoplay preference.
+- **Photo saving and long-press menu**: Saving the current photo uses the system secure Save button, preparing its gallery destination after authorization and before the download finishes. Holding a photo opens the more menu, including recognition actions. With Save to files enabled, the system Save As picker confirms a destination for each file.
+- **Reduced file-access permissions**: Remove persistent file-access permission and the long-term folder-authorization entry. Existing file-save preferences are retained; canceled or failed saves leave download tasks available for retry.
+- **Independent mute choices and playback handoff**: Home previews and opened videos remember separate mute choices. Temporary silence, preloading, and player handoff no longer overwrite those preferences. Related overlays follow video-control visibility.
+- **Initial Home rendering and recommendations**: Show real posts before injecting promotional content or opening the startup sheet. Empty and unrequested timelines no longer use promotions as placeholders. Keep multi-column item counts synchronized to address feeds remaining blank after loading.
+- **Material defaults**: Sidebar material starts disabled and sheet material starts enabled on first use. Existing independent choices are retained.
+- **Storage cleanup**: Recalculate clearable cache before confirmation, retaining completion and failure feedback.
+- **Consistent version information**: Both X-new and Harmony-X now use version 3.1.0 (`versionCode` 23), with matching version descriptions in all 21 languages and project documentation. Each keeps its own app name, bundle name, and icons.
+
+### Notes
+
+- This version is unreleased; packages are not being uploaded yet.
+- Automated tests and builds do not establish complete device acceptance. Card cold starts, actual profile submissions, video gestures, and tablet and foldable transitions still need full device verification. The previous release's limits for comment submission, playback advance, and server-confirmed account operations still apply.
+
 ## 3.0.0 — 2026-10-16
 
 This release adds a Bilibili-style video layout with comment danmaku, shared-post previews in chats, and an interactive Logo page. It also reorganizes settings and improves navigation, pull-to-refresh feedback, and floating-button preferences.

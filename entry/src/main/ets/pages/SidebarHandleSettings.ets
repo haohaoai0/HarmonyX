@@ -1,3 +1,8 @@
+import { pageTextColor } from '../utils/ThemeColors';
+import { appPageBackground } from '../components/PageBackgroundLayer';
+import { pageCanvasColor, pageReadingSurfaceColor } from '../utils/ThemeColors';
+import { STORAGE_KEY_PAGE_TRANSITION_MODE, DEFAULT_PAGE_TRANSITION_MODE } from '../services/PageTransitionSettingsStore';
+import { pageSystemTransition, PageTransitionMotion } from '../utils/PageTransition';
 import { common } from '@kit.AbilityKit';
 import { picker } from '@kit.CoreFileKit';
 import { HdsNavDestination, HdsNavDestinationTitleMode, ScrollEffectType } from '@kit.UIDesignKit';
@@ -14,6 +19,9 @@ export function SidebarHandleSettingsBuilder(): void { SidebarHandleSettings(); 
 
 @Component
 struct SidebarHandleSettings {
+  @StorageProp('harmonyx.page_background') private pageBackgroundValue: string = '';
+  @State private pageMotion: PageTransitionMotion = new PageTransitionMotion();
+  @StorageProp(STORAGE_KEY_PAGE_TRANSITION_MODE) private pageTransitionMode: string = DEFAULT_PAGE_TRANSITION_MODE;
   @Consume('pageStack') pageStack: NavPathStack;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @StorageProp(STORAGE_KEY_SIDEBAR_HANDLE_STYLE) private selected: string = SIDEBAR_HANDLE_DEFAULT;
@@ -77,7 +85,7 @@ struct SidebarHandleSettings {
       }.width('100%').padding({ left: 72, right: 24, top: 24, bottom: 24 }).alignItems(HorizontalAlign.Start)
       SidebarExpandHandle({ style: this.selected, imagePath: this.imagePath })
     }.width('100%').height(200).borderRadius(20).clip(true)
-      .backgroundColor(cardSurfaceColor(this.displayMode, this.darkSurface)).id('sidebar-handle-preview')
+      .backgroundColor(pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue)).id('sidebar-handle-preview')
   }
 
   @Builder
@@ -91,10 +99,10 @@ struct SidebarHandleSettings {
               .position({ x: '76%', y: 10 })
           }
         }.width('100%').height(100).borderRadius(14).clip(true)
-          .backgroundColor(cardSurfaceColor(this.displayMode, this.darkSurface))
+          .backgroundColor(pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue))
         Text(title).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M'))
           .fontWeight(this.selected === id ? FontWeight.Bold : FontWeight.Regular)
-          .fontColor(this.selected === id ? this.accent : $r('app.color.text_primary')).maxLines(1)
+          .fontColor(this.selected === id ? this.accent : pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)).maxLines(1)
       }.width('100%')
     }.width('100%').padding(10).borderRadius(18).backgroundColor(Color.Transparent)
       .border({ width: this.selected === id ? 2 : 1, color: this.selected === id ? this.accent : $r('app.color.divider') })
@@ -105,11 +113,13 @@ struct SidebarHandleSettings {
 
   build(): void {
     HdsNavDestination() {
+      Stack({ alignContent: Alignment.TopStart }) {
+        appPageBackground()
       Scroll(this.scroller) {
         Column({ space: 18 }) {
           this.Preview()
           Text($r('app.string.sidebar_handle_style_desc')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M'))
-            .fontColor($r('app.color.text_secondary')).width('100%')
+            .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).width('100%')
           GridRow({ columns: 2, gutter: { x: 12, y: 12 } }) {
             ForEach(sidebarHandlePresets(), (preset: SidebarHandlePreset): void => {
               GridCol() { this.Tile(preset.id, preset.title) }
@@ -122,26 +132,32 @@ struct SidebarHandleSettings {
             Row({ space: 12 }) {
               SymbolGlyph($r('sys.symbol.picture')).fontSize(24).fontColor([this.accent])
               Text($r('app.string.sidebar_handle_import')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L'))
-                .fontColor($r('app.color.text_primary')).layoutWeight(1).textAlign(TextAlign.Start)
+                .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue))).layoutWeight(1).textAlign(TextAlign.Start)
               if (this.picking) { LoadingProgress().width(24).height(24) }
-              else { SymbolGlyph($r('sys.symbol.chevron_right')).fontSize(18).fontColor([$r('app.color.text_secondary')]) }
+              else { SymbolGlyph($r('sys.symbol.chevron_right')).fontSize(18).fontColor([pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue))]) }
             }.width('100%')
           }.width('100%').height(60).padding({ left: 16, right: 16 }).borderRadius(16)
-            .backgroundColor(cardSurfaceColor(this.displayMode, this.darkSurface)).enabled(!this.picking)
+            .backgroundColor(pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue)).enabled(!this.picking)
             .id('sidebar-handle-import').onClick((): void => { this.importImage(); })
           Text($r('app.string.sidebar_handle_image_spec')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_S'))
-            .fontColor($r('app.color.text_secondary')).width('100%')
+            .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).width('100%')
         }.width('100%').padding({ left: 20, right: 20,
           top: this.desktopLayout && ResponsiveLayout.isLarge(this.breakpoint) ? 12 : this.topInset + 74,
           bottom: this.bottomInset + 28 })
       }.width('100%').height('100%').scrollBar(BarState.Off)
       .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: true })
-    }.titleMode(HdsNavDestinationTitleMode.MINI).hideBackButton(false).bindToScrollable([this.scroller])
+    
+      }.width('100%').height('100%')
+    }
+    .scale({ x: this.pageMotion.scale, y: this.pageMotion.scale })
+    .opacity(this.pageMotion.opacity)
+    .onReady((context: NavDestinationContext): void => { this.pageMotion.attach(context); })
+    .systemTransition(pageSystemTransition(this.pageTransitionMode)).titleMode(HdsNavDestinationTitleMode.MINI).hideBackButton(false).bindToScrollable([this.scroller])
       .titleBar({ avoidLayoutSafeArea: true,
         enableComponentSafeArea: this.desktopLayout && ResponsiveLayout.isLarge(this.breakpoint),
         content: { title: { mainTitle: $r('app.string.sidebar_handle_style') } },
         style: destinationTitleBarStyle(ScrollEffectType.GRADIENT_BLUR, this.displayMode, this.darkSurface, this.titleBarStyle) })
-      .backgroundColor(pageSurfaceColor(this.displayMode, this.darkSurface))
+      .backgroundColor(pageCanvasColor(this.displayMode, this.darkSurface, this.pageBackgroundValue))
       .onBackPressed((): boolean => { ResponsiveLayout.closeContentDestination(this.pageStack); return true; })
   }
 }

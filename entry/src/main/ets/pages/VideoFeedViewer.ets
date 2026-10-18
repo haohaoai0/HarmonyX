@@ -1,9 +1,15 @@
+import { motionDuration, motionCurve, motionDistance, motionScale } from '../utils/AppMotion';
+import { menuActionVisible, menuActionsForGroup, MenuActionOption } from '../models/MenuActionCatalog';
+import { STORAGE_KEY_HIDDEN_MENU_ACTIONS } from '../services/MenuSettingsStore';
+import { STORAGE_KEY_VIDEO_CAPTIONS_ENABLED, STORAGE_KEY_VIDEO_AUTO_ADVANCE } from '../services/MediaSettingsStore';
+import { STORAGE_KEY_PAGE_TRANSITION_MODE, DEFAULT_PAGE_TRANSITION_MODE } from '../services/PageTransitionSettingsStore';
+import { pageSystemTransition } from '../utils/PageTransition';
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
 import { STORAGE_KEY_SYSTEM_EMOJI_ENABLED } from '../services/AppearanceStore';
 import { PostAdLabel } from '../components/PostAdLabel';
 import { verificationBadgeColor } from '../utils/UserIdentity';
 import { ProxyAvatar } from '../components/ProxyAvatar';
-import { DEFAULT_SHEET_MATERIAL_LEVEL, STORAGE_KEY_SHEET_MATERIAL_ENABLED, STORAGE_KEY_SHEET_MATERIAL_LEVEL } from '../services/SheetMaterialSettingsStore';
+import { DEFAULT_SHEET_MATERIAL_ENABLED, DEFAULT_SHEET_MATERIAL_LEVEL, STORAGE_KEY_SHEET_MATERIAL_ENABLED, STORAGE_KEY_SHEET_MATERIAL_LEVEL } from '../services/SheetMaterialSettingsStore';
 import { sheetMaterialOptions, sheetUsesCenteredPresentation } from '../utils/SheetMaterial';
 // Vertical video-post surface. It is intentionally thin: playback, quality,
 // cover generation, and fullscreen controls stay inside PostMedia.
@@ -141,8 +147,9 @@ export function VideoFeedViewerBuilder(): void {
 
 @Component
 export struct VideoFeedViewer {
+  @StorageProp(STORAGE_KEY_PAGE_TRANSITION_MODE) private pageTransitionMode: string = DEFAULT_PAGE_TRANSITION_MODE;
   @State private motion: MediaViewerMotionState = new MediaViewerMotionState();
-  @State private initialVideoReady: boolean = false;
+  @State private initialVideoSurfaceReady: boolean = false;
   private motionSurfaceId: string = createMediaSourcePrefix() + 'video-viewer';
   private routeLoaded: boolean = false;
   @StorageProp('reduceMotionEnabled') private reduceMotion: boolean = false;
@@ -151,7 +158,7 @@ export struct VideoFeedViewer {
   @StorageProp('harmonyx.breakpoint') @Watch('onWindowSizeChanged') private sheetWindowBreakpoint: string = 'sm';
   @StorageProp(STORAGE_KEY_DESKTOP_VIDEO_LAYOUT) @Watch('onWindowSizeChanged')
   private desktopVideoLayout: number = DESKTOP_VIDEO_LAYOUT_SPLIT;
-  @StorageProp(STORAGE_KEY_SHEET_MATERIAL_ENABLED) private sheetMaterialEnabled: boolean = false;
+  @StorageProp(STORAGE_KEY_SHEET_MATERIAL_ENABLED) private sheetMaterialEnabled: boolean = DEFAULT_SHEET_MATERIAL_ENABLED;
   @StorageProp(STORAGE_KEY_SHEET_MATERIAL_LEVEL) private sheetMaterialLevel: number = DEFAULT_SHEET_MATERIAL_LEVEL;
   @Consume('pageStack') pageStack: NavPathStack;
   @StorageProp('harmonyx.status_bar_height') @Watch('onWindowSizeChanged') statusBarHeight: number =
@@ -171,6 +178,7 @@ export struct VideoFeedViewer {
   @StorageProp(STORAGE_KEY_MEDIA_VIEWER_BLACK_BACKGROUND) mediaViewerBlackBackground: boolean = false;
   @StorageLink(STORAGE_KEY_VIDEO_FEED_CONTROLS_ALWAYS_VISIBLE)
   videoFeedControlsAlwaysVisible: boolean = false;
+  @StorageProp(STORAGE_KEY_HIDDEN_MENU_ACTIONS) private hiddenMenuActions: string = '';
   @StorageLink(STORAGE_KEY_VIDEO_FEED_LAYOUT) videoFeedLayout: number = VIDEO_FEED_LAYOUT_CLASSIC;
   @StorageLink(STORAGE_KEY_VIDEO_FEED_TAP_PAUSE) private videoFeedTapPause: boolean = false;
   @StorageLink('harmonyx.grip_hand_enabled') @Watch('onGripHandEnabledChanged')
@@ -209,12 +217,12 @@ export struct VideoFeedViewer {
   @State private commentPreviewHeight: number = 0;
   @State private commentPreviewProgress: number = 0;
   private postSheetOpening: boolean = false;
-  @State private captionsEnabled: boolean = false;
+  @StorageLink(STORAGE_KEY_VIDEO_CAPTIONS_ENABLED) private captionsEnabled: boolean = false;
   // Set while the reader holds the playing video: the rate capsule sits just
   // below the back/more row, exactly where the press started.
   @State private holdSpeedActive: boolean = false;
   @State private holdSpeedRate: number = 2;
-  @State private autoAdvance: boolean = true;
+  @StorageLink(STORAGE_KEY_VIDEO_AUTO_ADVANCE) private autoAdvance: boolean = true;
   @State private qualityExpanded: boolean = false;
   @State private liked: boolean = false;
   @State private likeCount: number = 0;
@@ -301,7 +309,7 @@ export struct VideoFeedViewer {
     const param: VideoFeedRouteParam = params[params.length - 1];
     this.routeLoaded = true;
     this.motion.prepare(param.source);
-    this.initialVideoReady = param.source === undefined;
+    this.initialVideoSurfaceReady = param.source === undefined;
     const next: VideoFeedItem[] = [];
     const requestedId: string = param.tweets[param.index]?.id ?? '';
     for (let i: number = 0; i < param.tweets.length; i++) {
@@ -542,7 +550,7 @@ export struct VideoFeedViewer {
       this.sheetDimension($r('app.float.media_viewer_post_sheet_gap')));
     const progress: number = this.showPostSheet && !centered ? 1 : 0;
     if (animated) {
-      this.getUIContext().animateTo({ curve: curves.springMotion(0.35, 1) }, (): void => {
+      this.getUIContext().animateTo({ duration: motionDuration(280), curve: motionCurve() }, (): void => {
         this.commentPreviewHeight = height;
         this.commentPreviewProgress = progress;
       });
@@ -793,7 +801,7 @@ export struct VideoFeedViewer {
       return;
     }
     this.holdSpeedRate = rate;
-    this.getUIContext().animateTo({ duration: active ? 170 : 140, curve: Curve.EaseOut }, (): void => {
+    this.getUIContext().animateTo({ duration: motionDuration(active ? 170 : 140), curve: Curve.EaseOut }, (): void => {
       this.holdSpeedActive = active;
     });
   }
@@ -1061,9 +1069,17 @@ export struct VideoFeedViewer {
     }, 0);
   }
 
+  private menuVisible(id: string): boolean {
+    return menuActionVisible(this.hiddenMenuActions, id);
+  }
+
+  private setCaptionsEnabled(enabled: boolean): void {
+    if (mediaSettingsStore.saveVideoCaptionsEnabled(getContext(this) as common.UIAbilityContext, enabled)) { hapticTick(); }
+    else { promptAction.showToast({ message: $r('app.string.settings_interaction_save_failed') }); }
+  }
+
   private toggleCaptions(): void {
-    this.captionsEnabled = !this.captionsEnabled;
-    hapticTick();
+    this.setCaptionsEnabled(!this.captionsEnabled);
   }
 
   private setCaptionOpacity(opacity: number): void {
@@ -1078,8 +1094,8 @@ export struct VideoFeedViewer {
   }
 
   private toggleAutoAdvance(): void {
-    this.autoAdvance = !this.autoAdvance;
-    hapticTick();
+    if (mediaSettingsStore.saveVideoAutoAdvance(getContext(this) as common.UIAbilityContext, !this.autoAdvance)) { hapticTick(); }
+    else { promptAction.showToast({ message: $r('app.string.settings_interaction_save_failed') }); }
   }
 
   private toggleQualityOptions(): void {
@@ -1188,8 +1204,8 @@ export struct VideoFeedViewer {
       return;
     }
     this.getUIContext().animateTo({
-      duration: VIDEO_FEED_RAIL_SWITCH_DURATION_MS,
-      curve: curves.springMotion(0.6, 0.9)
+      duration: motionDuration(VIDEO_FEED_RAIL_SWITCH_DURATION_MS),
+      curve: motionCurve()
     }, (): void => {
       this.railShiftX = shift;
       this.captionLeadingInset = leading;
@@ -1585,27 +1601,40 @@ export struct VideoFeedViewer {
   private MoreSheet(): void {
     Scroll() {
       Column() {
+        if (menuActionsForGroup('video_menu').filter((option: MenuActionOption): boolean => option.id !== 'video.share')
+          .every((option: MenuActionOption): boolean => !this.menuVisible(option.id))) {
+          Text($r('app.string.settings_menu_empty')).fontFamily(this.appFontFamily)
+            .fontColor($r('app.color.text_secondary')).padding(20)
+        }
         ForEach([this.moreSheetRevision() + '-lead'], (revision: string) => {
           Column() {
-            this.MoreMenuRow($r('sys.symbol.face_sading'), $r('app.string.video_feed_not_interested'), '',
-              (): void => {
-                void this.dismissCurrent();
-              })
-            this.MoreMenuRow($r('sys.symbol.display'), $r('app.string.video_feed_cast'),
-              this.castingMediaId.length > 0 ? this.text($r('app.string.video_cast_active')) : '',
-              (): void => this.requestVideoCast())
-            this.MoreMenuRow($r('sys.symbol.AI_subtitles'), $r('app.string.video_feed_subtitles'),
-              this.text(this.captionsEnabled ? $r('app.string.video_feed_subtitles_on') :
-                $r('app.string.video_feed_subtitles_off')), (): void => {
-                this.toggleCaptions();
-              })
+            if (this.menuVisible('video.not_interested')) {
+              this.MoreMenuRow($r('sys.symbol.face_sading'), $r('app.string.video_feed_not_interested'), '',
+                (): void => {
+                  void this.dismissCurrent();
+                })
+            }
+            if (this.menuVisible('video.cast')) {
+              this.MoreMenuRow($r('sys.symbol.display'), $r('app.string.video_feed_cast'),
+                this.castingMediaId.length > 0 ? this.text($r('app.string.video_cast_active')) : '',
+                (): void => this.requestVideoCast())
+            }
+            if (this.menuVisible('video.captions')) {
+              this.MoreMenuRow($r('sys.symbol.AI_subtitles'), $r('app.string.video_feed_subtitles'),
+                this.text(this.captionsEnabled ? $r('app.string.video_feed_subtitles_on') :
+                  $r('app.string.video_feed_subtitles_off')), (): void => {
+                  this.toggleCaptions();
+                })
+            }
           }
           .width('100%')
         }, (revision: string): string => revision)
-        this.CaptionOpacityRow()
+        if (this.menuVisible('video.caption_opacity')) {
+          this.CaptionOpacityRow()
+        }
         ForEach([this.moreSheetRevision() + '-tail'], (revision: string) => {
           Column() {
-            if (!this.compactWindow()) {
+            if (!this.compactWindow() && this.menuVisible('video.layout')) {
               this.MoreSectionHeader($r('sys.symbol.rectangle_split_2x1'), $r('app.string.video_feed_layout'))
               this.LayoutChoiceRow(VIDEO_FEED_LAYOUT_CLASSIC, $r('app.string.video_feed_layout_classic'))
               if (this.layoutSwitchAvailable()) {
@@ -1613,14 +1642,19 @@ export struct VideoFeedViewer {
               }
               this.LayoutChoiceRow(VIDEO_FEED_LAYOUT_BILIBILI, $r('app.string.video_feed_layout_bilibili'))
             }
-            this.MoreMenuRow($r('sys.symbol.play_fill'), $r('app.string.video_feed_tap_action'),
-              this.text(this.videoFeedTapPause ? $r('app.string.video_feed_tap_pause') : $r('app.string.video_feed_tap_controls')),
-              (): void => this.toggleVideoFeedTapPause())
-            this.MoreMenuRow($r('sys.symbol.display'), $r('app.string.settings_video_immersive_fill'),
-              this.text(this.videoImmersiveFill ? $r('app.string.video_feed_subtitles_on') :
-                $r('app.string.video_feed_subtitles_off')), (): void => {
-                this.toggleVideoImmersiveFill();
-              })
+            if (this.menuVisible('video.tap')) {
+              this.MoreMenuRow($r('sys.symbol.play_fill'), $r('app.string.video_feed_tap_action'),
+                this.text(this.videoFeedTapPause ? $r('app.string.video_feed_tap_pause') : $r('app.string.video_feed_tap_controls')),
+                (): void => this.toggleVideoFeedTapPause())
+            }
+            if (this.menuVisible('video.fill')) {
+              this.MoreMenuRow($r('sys.symbol.display'), $r('app.string.settings_video_immersive_fill'),
+                this.text(this.videoImmersiveFill ? $r('app.string.video_feed_subtitles_on') :
+                  $r('app.string.video_feed_subtitles_off')), (): void => {
+                  this.toggleVideoImmersiveFill();
+                })
+            }
+            if (this.menuVisible('video.controls')) {
               Row({ space: 14 }) {
                 SymbolGlyph($r('sys.symbol.slider_horizontal_2_square'))
                   .fontSize(28)
@@ -1643,33 +1677,44 @@ export struct VideoFeedViewer {
               }
               .width('100%')
               .padding({ left: 20, right: 20, top: 12, bottom: 12 })
-            this.MoreMenuRow($r('sys.symbol.AI_hd_rectangle'), $r('app.string.video_feed_quality'),
-              this.videoQualityLabel(), (): void => {
-                this.toggleQualityOptions();
-              })
-            if (this.qualityExpanded) {
+            }
+            if (this.menuVisible('video.quality')) {
+              this.MoreMenuRow($r('sys.symbol.AI_hd_rectangle'), $r('app.string.video_feed_quality'),
+                this.videoQualityLabel(), (): void => {
+                  this.toggleQualityOptions();
+                })
+            }
+            if (this.qualityExpanded && this.menuVisible('video.quality')) {
               this.QualityChoiceRow(VIDEO_QUALITY_DATA_SAVER, $r('app.string.settings_quality_auto'))
               this.QualityChoiceRow(VIDEO_QUALITY_HIGH, $r('app.string.settings_quality_hd'))
               this.QualityChoiceRow(VIDEO_QUALITY_SD, $r('app.string.settings_quality_sd'))
               this.QualityChoiceRow(VIDEO_QUALITY_LD, $r('app.string.settings_quality_ld'))
             }
-            this.MoreMenuRow($r('sys.symbol.repeat_play'), $r('app.string.video_feed_auto_advance'),
-              this.text(this.autoAdvance ? $r('app.string.video_feed_auto_advance_on') :
-                $r('app.string.video_feed_auto_advance_off')), (): void => {
-                this.toggleAutoAdvance();
-              })
-            this.MoreMenuRow($r('sys.symbol.rectangle_text_rectangle_portrait'),
-              $r('app.string.video_feed_go_to_post'), '', (): void => {
-                this.openCurrentPost();
-              })
-            this.MoreMenuRow($r('sys.symbol.plus'), $r('app.string.video_feed_add_offline'), '',
-              (): void => {
-                this.downloadCurrentVideo();
-              })
-            this.MoreMenuRow($r('sys.symbol.flag'), $r('app.string.video_feed_report_post'), '',
-              (): void => {
-                this.reportCurrentPost();
-              })
+            if (this.menuVisible('video.advance')) {
+              this.MoreMenuRow($r('sys.symbol.repeat_play'), $r('app.string.video_feed_auto_advance'),
+                this.text(this.autoAdvance ? $r('app.string.video_feed_auto_advance_on') :
+                  $r('app.string.video_feed_auto_advance_off')), (): void => {
+                  this.toggleAutoAdvance();
+                })
+            }
+            if (this.menuVisible('video.post')) {
+              this.MoreMenuRow($r('sys.symbol.rectangle_text_rectangle_portrait'),
+                $r('app.string.video_feed_go_to_post'), '', (): void => {
+                  this.openCurrentPost();
+                })
+            }
+            if (this.menuVisible('video.download')) {
+              this.MoreMenuRow($r('sys.symbol.plus'), $r('app.string.video_feed_add_offline'), '',
+                (): void => {
+                  this.downloadCurrentVideo();
+                })
+            }
+            if (this.menuVisible('video.report')) {
+              this.MoreMenuRow($r('sys.symbol.flag'), $r('app.string.video_feed_report_post'), '',
+                (): void => {
+                  this.reportCurrentPost();
+                })
+            }
           }
           .width('100%')
           .padding({ top: 6, bottom: this.navigationIndicatorHeight + 12 })
@@ -1732,7 +1777,7 @@ export struct VideoFeedViewer {
   private StandardFeedVideo(item: VideoFeedItem): void {
     PostMedia({
       onViewerSurfaceReady: (): void => {
-        if (this.feedItem(item).index === this.current && !this.closing) { this.initialVideoReady = true; }
+        if (this.feedItem(item).index === this.current && !this.closing) { this.initialVideoSurfaceReady = true; }
       },
       attachments: this.feedItem(item).attachments,
       sourceTweet: this.feedItem(item).tweet,
@@ -1791,7 +1836,7 @@ export struct VideoFeedViewer {
       forceUnmuted: true,
       playerBarBottomOffset: 0,
       onCaptionChanged: (shown: boolean): void => {
-        this.captionsEnabled = shown;
+        this.setCaptionsEnabled(shown);
       },
       onPlaybackCompleted: (): void => {
         this.onVideoCompleted(this.feedItem(item).index);
@@ -1916,7 +1961,9 @@ export struct VideoFeedViewer {
       } else if (!this.isWideLandscape()) {
         Stack({ alignContent: Alignment.Top }) {
           Column() {
-            this.TopControls()
+            if (this.isVideoChromeVisible(this.feedItem(item).index)) {
+              this.TopControls()
+            }
           }
           .opacity(this.isVideoChromeVisible(this.feedItem(item).index) ? 1 - this.commentPreviewProgress : 0)
           .width('100%')
@@ -1928,10 +1975,12 @@ export struct VideoFeedViewer {
         if (!this.useSideComments()) {
           Stack({ alignContent: Alignment.Bottom }) {
             Column() {
-              if (this.usesShortVideoLayout()) {
-                this.ShortVideoCaption(this.feedItem(item).tweet, this.compactWindow() ? 8 : 16)
-              } else {
-                this.PostOverlay(this.feedItem(item).tweet, 16)
+              if (this.isVideoChromeVisible(this.feedItem(item).index)) {
+                if (this.usesShortVideoLayout()) {
+                  this.ShortVideoCaption(this.feedItem(item).tweet, this.compactWindow() ? 8 : 16)
+                } else {
+                  this.PostOverlay(this.feedItem(item).tweet, 16)
+                }
               }
             }
             .opacity(this.isVideoChromeVisible(this.feedItem(item).index) ? 1 - this.commentPreviewProgress : 0)
@@ -1945,7 +1994,7 @@ export struct VideoFeedViewer {
           .height('100%')
           .padding({ bottom: this.feedControlStripHeight() })
           .hitTestBehavior(HitTestMode.Transparent)
-          if (this.usesShortVideoLayout()) {
+          if (this.usesShortVideoLayout() && this.isVideoChromeVisible(this.feedItem(item).index)) {
             Stack({ alignContent: Alignment.BottomStart }) {
               if (this.compactWindow()) {
                 Scroll() { this.ShortVideoRail(this.feedItem(item).tweet) }
@@ -1995,9 +2044,9 @@ export struct VideoFeedViewer {
       .width('100%')
       .justifyContent(FlexAlign.Center)
       .padding({ left: 14, right: 14, top: this.statusBarHeight + TOP_CONTROLS_HEIGHT + 6 })
-      .transition(TransitionEffect.OPACITY.animation({ duration: 170, curve: Curve.EaseOut })
-        .combine(TransitionEffect.scale({ x: 0.9, y: 0.9 }))
-        .combine(TransitionEffect.translate({ y: -8 })))
+      .transition(TransitionEffect.OPACITY.animation({ duration: motionDuration(170), curve: Curve.EaseOut })
+        .combine(TransitionEffect.scale({ x: motionScale(0.9), y: motionScale(0.9) }))
+        .combine(TransitionEffect.translate({ y: motionDistance(-8) })))
     }
   }
 
@@ -2731,7 +2780,7 @@ export struct VideoFeedViewer {
       MediaViewerMotion({ motion: this.motion, surfaceId: this.motionSurfaceId,
         presentation: this.motion.presentation,
         targetId: 'video-viewer-frame-' + (this.currentVideo()?.id ?? ''),
-        contentReady: this.items.length > 0 && this.initialVideoReady,
+        contentReady: this.items.length > 0 && this.initialVideoSurfaceReady,
         mediaWidth: this.currentVideo()?.width ?? 0, mediaHeight: this.currentVideo()?.height ?? 0,
         targetContainsMedia: false }) {
       Row({ space: 0 }) {
@@ -2819,7 +2868,7 @@ export struct VideoFeedViewer {
       }
     }
     .mode(NavDestinationMode.DIALOG)
-    .systemTransition(this.motion.enabled() ? NavigationSystemTransitionType.NONE : NavigationSystemTransitionType.DEFAULT)
+    .systemTransition(pageSystemTransition(this.pageTransitionMode, this.motion.enabled() ? NavigationSystemTransitionType.NONE : NavigationSystemTransitionType.DEFAULT))
     .onReady((): void => this.readRoute())
     .titleMode(HdsNavDestinationTitleMode.MINI)
     .hideTitleBar(true)

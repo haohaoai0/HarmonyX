@@ -12,7 +12,8 @@ function fixture() {
     compilerOptions: { target: ts.ScriptTarget.ES2020, module: ts.ModuleKind.CommonJS }
   }).outputText;
   const context = { filesDir: '/app/files', account: 'one' };
-  const control = { failSave: false, failDecode: false, copied: '', released: 0, serial: 0 };
+  const control = { failSave: false, failDecode: false, failDownload: false, copied: '', released: 0, serial: 0,
+    downloaded: [], beforeDownload: null };
   const fileIo = {
     OpenMode: { READ_ONLY: 0 }, accessSync: path => files.has(path), mkdirSync: path => files.add(path),
     open: async () => ({ fd: 42 }), close: async fd => closed.push(fd),
@@ -36,11 +37,37 @@ function fixture() {
   const dependencies = {
     '@kit.AbilityKit': {}, '@kit.CoreFileKit': { fileIo }, '@kit.ImageKit': { image },
     '@ohos.util': { default: { generateRandomUUID: () => '00000000-0000-0000-0000-' + String(++control.serial).padStart(12, '0') } },
-    './XChatActions': { xChatActions: actions }
+    './XChatActions': { xChatActions: actions },
+    './XPrivateStore': { xPrivateStore: { load: ctx => ({ cacheIdentity: () => ctx.account }) } },
+    './ProxyDownloadService': { proxyDownloadService: { downloadWithRetry: async (url, destination) => {
+      control.downloaded.push(url); control.copied = destination;
+      if (control.beforeDownload) await control.beforeDownload();
+      files.add(destination);
+      return !control.failDownload;
+    } } }
   };
+  const library = { exports: {} };
+  const librarySource = ts.transpileModule(fs.readFileSync('entry/src/main/ets/services/BackgroundImageStore.ets', 'utf8'), {
+    compilerOptions: { target: ts.ScriptTarget.ES2020, module: ts.ModuleKind.CommonJS }
+  }).outputText;
+  new Function('require', 'module', 'exports', librarySource)(id => dependencies[id], library, library.exports);
+  dependencies['./BackgroundImageStore'] = library.exports;
   const mod = { exports: {} };
   new Function('require', 'module', 'exports', '$r', source)(id => dependencies[id], mod, mod.exports, name => name);
-  return { ...mod.exports, context, files, saved, removed, closed, control };
+  dependencies['./ChatBackgroundStore'] = mod.exports;
+  dependencies['../models/PageBackgroundMotifs'] = { validPageMotif: () => false };
+  const pageValues = new Map();
+  dependencies['@kit.ArkData'] = { preferences: { getPreferencesSync: () => ({
+    getSync: (key, fallback) => pageValues.get(key) ?? fallback,
+    putSync: (key, value) => pageValues.set(key, value), flushSync: () => {}
+  }) } };
+  const page = { exports: {} };
+  const pageSource = ts.transpileModule(fs.readFileSync('entry/src/main/ets/services/PageBackgroundStore.ets', 'utf8'), {
+    compilerOptions: { target: ts.ScriptTarget.ES2020, module: ts.ModuleKind.CommonJS }
+  }).outputText;
+  new Function('require', 'module', 'exports', 'AppStorage', pageSource)(id => dependencies[id], page, page.exports,
+    { setOrCreate: () => {} });
+  return { ...mod.exports, ...library.exports, ...page.exports, context, files, saved, removed, closed, control };
 }
 
 test('background preferences survive reload and remain isolated by account and conversation', () => {
@@ -113,6 +140,97 @@ test('a failed decode cleans up the copied photo and closes all handles', async 
   assert.ok(!f.files.has(f.control.copied));
   assert.deepEqual(f.removed, [f.control.copied]);
   assert.deepEqual(f.closed, [42]); assert.equal(f.control.released, 1);
+});
+
+test('post photos persist in the account library in newest-first order without applying a wallpaper', async () => {
+  const f = fixture();
+  await f.backgroundImageStore.savePhoto(f.context, 'https://image/one');
+  await f.backgroundImageStore.savePhoto(f.context, 'https://image/two');
+  const photos = f.backgroundImageStore.photos(f.context);
+  assert.deepEqual(photos.map(photo => photo.sourceUrl), ['https://image/two', 'https://image/one']);
+  assert.ok(photos.every(photo => photo.path.startsWith('/app/files/background_images/') && f.files.has(photo.path)));
+  assert.equal(f.chatBackgroundStore.load(f.context, 'chat-a').presetId, 'default');
+  assert.equal(f.control.released, 2);
+  f.context.account = 'two';
+  assert.deepEqual(f.backgroundImageStore.photos(f.context), []);
+  f.context.account = 'one';
+  assert.deepEqual(f.backgroundImageStore.photos(f.context), photos);
+  await f.backgroundImageStore.savePhoto(f.context, 'https://image/one');
+  assert.equal(f.control.downloaded.length, 2, 'saving the same source reuses the durable copy');
+});
+
+test('page and chat backgrounds share exactly one file and neither replacement deletes it', async () => {
+  const f = fixture();
+  await f.backgroundImageStore.savePhoto(f.context, 'https://image/one');
+  const state = new f.ChatBackgroundState(); state.presetId = 'photo';
+  state.path = f.backgroundImageStore.photos(f.context)[0].path;
+  f.chatBackgroundStore.save(f.context, 'chat-a', state);
+  f.chatBackgroundStore.save(f.context, 'chat-b', state);
+  const page = new f.PageBackgroundState(); page.mode = 'photo'; page.path = state.path;
+  f.pageBackgroundStore.save(f.context, page);
+  assert.equal(f.pageBackgroundStore.load(f.context).path, f.chatBackgroundStore.load(f.context, 'chat-b').path);
+  assert.equal([...f.files].filter(path => path.endsWith('.img')).length, 1, 'applying in both places creates no copy');
+  f.chatBackgroundStore.save(f.context, 'chat-a', new f.ChatBackgroundState());
+  f.pageBackgroundStore.save(f.context, new f.PageBackgroundState());
+  f.pageBackgroundStore.removePhoto(f.context, state.path);
+  f.chatBackgroundStore.removePhoto(f.context, state.path);
+  assert.ok(f.files.has(state.path));
+  assert.equal(f.chatBackgroundStore.load(f.context, 'chat-b').path, state.path);
+  assert.equal(f.backgroundImageStore.photos(f.context)[0].path, state.path);
+});
+
+test('previously saved chat-only library files appear and can be used as page backgrounds without copying', () => {
+  const f = fixture(), path = '/app/files/chat_backgrounds_saved/aa.img';
+  f.files.add(path);
+  f.saved.set('one:background_photos', JSON.stringify([{ path, sourceUrl: 'https://image/old' }]));
+  const photo = f.backgroundImageStore.photos(f.context)[0];
+  assert.equal(photo.path, path);
+  const page = new f.PageBackgroundState(); page.mode = 'photo'; page.path = photo.path;
+  f.pageBackgroundStore.save(f.context, page);
+  assert.equal(f.pageBackgroundStore.load(f.context).path, path);
+  assert.equal(f.control.serial, 0); assert.deepEqual(f.closed, []);
+});
+
+test('failed downloads, invalid images and preference-write failures leave no gallery entries or files', async () => {
+  for (const failure of ['failDownload', 'failDecode', 'failSave']) {
+    const f = fixture(); f.control[failure] = true;
+    await assert.rejects(f.backgroundImageStore.savePhoto(f.context, 'https://image/bad'));
+    assert.deepEqual(f.backgroundImageStore.photos(f.context), [], failure);
+    assert.ok(!f.files.has(f.control.copied), failure);
+    assert.equal(f.control.released, failure === 'failDownload' ? 0 : 1);
+  }
+});
+
+test('an account change during a download discards the photo instead of saving to the new account', async () => {
+  const f = fixture();
+  f.control.beforeDownload = async () => { f.context.account = 'two'; };
+  await assert.rejects(f.backgroundImageStore.savePhoto(f.context, 'https://image/one'));
+  assert.equal(f.saved.size, 0);
+  assert.ok(!f.files.has(f.control.copied));
+});
+
+test('simultaneous saves of the same post photo keep one file and registry entry', async () => {
+  const f = fixture();
+  await Promise.all([f.backgroundImageStore.savePhoto(f.context, 'https://image/one'),
+    f.backgroundImageStore.savePhoto(f.context, 'https://image/one')]);
+  const photos = f.backgroundImageStore.photos(f.context);
+  assert.equal(photos.length, 1);
+  assert.equal([...f.files].filter(path => path.endsWith('.img')).length, 1);
+  assert.ok(f.files.has(photos[0].path));
+});
+
+test('missing, corrupt and out-of-sandbox library entries are ignored and local images use a durable copy', async () => {
+  const f = fixture();
+  for (const raw of ['null', '{}', '{bad', '[null, 1, "x", {"path":"/app/private.db","sourceUrl":"https://image"}]']) {
+    f.saved.set('one:background_photos', raw);
+    assert.deepEqual(f.backgroundImageStore.photos(f.context), []);
+  }
+  await f.backgroundImageStore.savePhoto(f.context, 'file://local/image');
+  const photo = f.backgroundImageStore.photos(f.context)[0];
+  assert.equal(photo.sourceUrl, 'file://local/image');
+  assert.deepEqual(f.closed, [42]);
+  f.files.delete(photo.path);
+  assert.deepEqual(f.backgroundImageStore.photos(f.context), []);
 });
 
 test('all 17 original patterns are selectable, persist by stable ID and have both theme assets', () => {

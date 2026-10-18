@@ -14,7 +14,7 @@ function evaluate(source, dependencies = {}, extraNames = [], extraValues = []) 
 }
 
 const motion = evaluate(fs.readFileSync('entry/src/main/ets/utils/MediaViewerMotion.ets', 'utf8'), {
-  '@kit.ArkUI': { curves: { responsiveSpringMotion: () => 0 } }
+  './AppMotion': { motionDuration: value => value, motionCurve: () => 0, motionReduced: () => false }
 });
 
 function source(overrides = {}) {

@@ -57,15 +57,80 @@ class DownloadImageBatch {
 export class MediaDownloadService {
   private savingTasks: Set<string> = new Set<string>();
 
-  download(context: common.UIAbilityContext, url: string, mediaId: string,
-    isVideo: boolean, callback: MediaDownloadCallback): void {
+  // Only call directly from a successful native SaveButton click. Create and
+  // open the Gallery destination before downloading: the temporary grant is
+  // consumed immediately, while writing to the open file has no time limit.
+  async downloadPhotoWithSaveButton(context: common.UIAbilityContext, url: string,
+    mediaId: string, callback: MediaDownloadCallback): Promise<void> {
     if (downloadLocationStore.useDownloads(context)) {
-      downloadLocationStore.prepare(context).then((ready: boolean): void => {
-        if (ready) { this.startDownload(context, url, mediaId, isVideo, callback); }
-        else { callback(MEDIA_DOWNLOAD_CANCELED); }
-      }).catch((): void => { callback(MEDIA_DOWNLOAD_FAILED); });
+      this.download(context, url, mediaId, false, callback);
       return;
     }
+    if (url.length === 0) { callback(MEDIA_DOWNLOAD_FAILED); return; }
+    let destination: fileIo.File | null = null;
+    let task: DownloadTask | null = null;
+    let result: number = MEDIA_DOWNLOAD_FAILED;
+    try {
+      const helper: photoAccessHelper.PhotoAccessHelper = photoAccessHelper.getPhotoAccessHelper(context);
+      const uri: string = await helper.createAsset(photoAccessHelper.PhotoType.IMAGE,
+        this.photoExtension(url));
+      destination = await fileIo.open(uri, fileIo.OpenMode.WRITE_ONLY);
+      let sourcePath: string = url;
+      if (!url.startsWith('file://')) {
+        task = await this.photoDownloadForSave(context, url, mediaId);
+        if (task === null) { throw new Error('photo_download_failed'); }
+        sourcePath = task.filePath;
+      }
+      const source: fileIo.File = await fileIo.open(sourcePath, fileIo.OpenMode.READ_ONLY);
+      try {
+        await fileIo.copyFile(source.fd, destination.fd);
+      } finally {
+        fileIo.closeSync(source.fd);
+      }
+      // Close before completing the task so Gallery sees a committed image.
+      fileIo.closeSync(destination.fd);
+      destination = null;
+      if (task !== null) { downloadManager.saveCompleted(task.id, context); }
+      result = MEDIA_DOWNLOAD_SUCCESS;
+    } catch (error) {
+      if (task !== null) { downloadManager.leaveReadyToSave(task.id, context); }
+      const failure: BusinessError = error as BusinessError;
+      hilog.warn(DOMAIN, TAG, 'Photo save failed code=%{public}d', failure.code ?? 0);
+    } finally {
+      if (destination !== null) { fileIo.closeSync(destination.fd); }
+      if (task !== null) { this.savingTasks.delete(task.id); }
+    }
+    callback(result);
+  }
+
+  private photoDownloadForSave(context: common.UIAbilityContext, url: string,
+    mediaId: string): Promise<DownloadTask | null> {
+    return new Promise<DownloadTask | null>((resolve: (task: DownloadTask | null) => void): void => {
+      const taskId: string = downloadManager.enqueue(context, url, mediaId, false,
+        (id: string, ready: boolean): void => {
+          const task: DownloadTask | null = ready ? downloadManager.getTask(id, context) : null;
+          if (task === null || task.status !== DownloadTaskStatus.READY_TO_SAVE || this.savingTasks.has(id)) {
+            resolve(null);
+            return;
+          }
+          this.savingTasks.add(id);
+          resolve(task);
+        });
+      if (taskId.length === 0) { resolve(null); }
+    });
+  }
+
+  private photoExtension(url: string): string {
+    const lower: string = url.toLowerCase();
+    if (lower.indexOf('format=png') >= 0 || lower.indexOf('.png') >= 0) { return 'png'; }
+    if (lower.indexOf('format=webp') >= 0 || lower.indexOf('.webp') >= 0) { return 'webp'; }
+    if (lower.indexOf('format=gif') >= 0 || lower.indexOf('.gif') >= 0) { return 'gif'; }
+    if (lower.endsWith('.heic') || lower.endsWith('.heif')) { return 'heic'; }
+    return 'jpg';
+  }
+
+  download(context: common.UIAbilityContext, url: string, mediaId: string,
+    isVideo: boolean, callback: MediaDownloadCallback): void {
     this.startDownload(context, url, mediaId, isVideo, callback);
   }
 
@@ -98,16 +163,6 @@ export class MediaDownloadService {
   downloadAnimatedGif(context: common.UIAbilityContext, url: string, mediaId: string,
     durationMs: number, sourceWidth: number, sourceHeight: number,
     callback: MediaDownloadCallback): void {
-    if (downloadLocationStore.useDownloads(context)) {
-      downloadLocationStore.prepare(context).then((ready: boolean): void => {
-        if (ready) {
-          this.startAnimatedGifDownload(context, url, mediaId, durationMs, sourceWidth, sourceHeight, callback);
-        } else {
-          callback(MEDIA_DOWNLOAD_CANCELED);
-        }
-      }).catch((): void => { callback(MEDIA_DOWNLOAD_FAILED); });
-      return;
-    }
     this.startAnimatedGifDownload(context, url, mediaId, durationMs, sourceWidth, sourceHeight, callback);
   }
 
@@ -196,9 +251,8 @@ export class MediaDownloadService {
       return;
     }
     this.savingTasks.add(taskId);
-    const operation: Promise<number> = forceDownloads ? downloadLocationStore.prepare(context)
-      .then((ready: boolean): Promise<number> | number => ready ?
-        downloadLocationStore.save(context, task.filePath, task.title + '.' + task.extension) : MEDIA_DOWNLOAD_CANCELED) :
+    const operation: Promise<number> = forceDownloads ?
+      downloadLocationStore.save(context, task.filePath, task.title + '.' + task.extension) :
       this.copyToDestination(context, task.filePath, task.title, task.extension, task.isVideo);
     operation
       .then((result: number): void => {
@@ -218,17 +272,10 @@ export class MediaDownloadService {
       });
   }
 
-  // Each image gets its own pausable download task. One system dialog is shown
-  // after the selected batch has finished, preserving the existing flow.
+  // Each image gets its own pausable task. Gallery exports use one dialog;
+  // file exports ask the system picker for each destination.
   downloadImages(context: common.UIAbilityContext, urls: string[], mediaId: string,
     callback: MediaDownloadCallback): void {
-    if (downloadLocationStore.useDownloads(context)) {
-      downloadLocationStore.prepare(context).then((ready: boolean): void => {
-        if (ready) { this.startImageDownloads(context, urls, mediaId, callback); }
-        else { callback(MEDIA_DOWNLOAD_CANCELED); }
-      }).catch((): void => { callback(MEDIA_DOWNLOAD_FAILED); });
-      return;
-    }
     this.startImageDownloads(context, urls, mediaId, callback);
   }
 

@@ -1,3 +1,9 @@
+import { pageTextColor } from '../utils/ThemeColors';
+import { pageBackgroundActive } from '../services/PageBackgroundStore';
+import { appPageBackground } from '../components/PageBackgroundLayer';
+import { pageCanvasColor, pageReadingSurfaceColor } from '../utils/ThemeColors';
+import { STORAGE_KEY_PAGE_TRANSITION_MODE, DEFAULT_PAGE_TRANSITION_MODE } from '../services/PageTransitionSettingsStore';
+import { pageSystemTransition, PageTransitionMotion } from '../utils/PageTransition';
 // Community profile, media and about tabs backed by X community operations.
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
 import common from '@ohos.app.ability.common';
@@ -14,10 +20,11 @@ import { FloatingComposeButton } from '../components/FloatingComposeButton';
 import { shareCommunity } from '../utils/SharePost';
 import { pasteboard } from '@kit.BasicServicesKit';
 import { sheetMaterialOptions } from '../utils/SheetMaterial';
-import { DEFAULT_SHEET_MATERIAL_LEVEL, STORAGE_KEY_SHEET_MATERIAL_ENABLED, STORAGE_KEY_SHEET_MATERIAL_LEVEL } from '../services/SheetMaterialSettingsStore';
+import { DEFAULT_SHEET_MATERIAL_ENABLED, DEFAULT_SHEET_MATERIAL_LEVEL, STORAGE_KEY_SHEET_MATERIAL_ENABLED, STORAGE_KEY_SHEET_MATERIAL_LEVEL } from '../services/SheetMaterialSettingsStore';
 import type { ProfileWebRouteParam } from './ProfileWeb';
 import type { UserDetailRouteParam } from './UserDetail';
 import { ProxyMediaImage } from '../components/ProxyMediaImage';
+import { AnchoredCover } from '../components/AnchoredCover';
 import { ConversationTweetCard as TweetCard } from '../components/ConversationTweetCard';
 import type { ReplyComposerRouteParam } from '../components/ReplyComposer';
 import type { CommunityPage, CommunityRow, CommunityRule } from '../models/Community';
@@ -44,6 +51,9 @@ export function CommunityTimelineBuilder(): void {
 
 @Component
 export struct CommunityTimeline {
+  @StorageProp('harmonyx.page_background') private pageBackgroundValue: string = '';
+  @State private pageMotion: PageTransitionMotion = new PageTransitionMotion();
+  @StorageProp(STORAGE_KEY_PAGE_TRANSITION_MODE) private pageTransitionMode: string = DEFAULT_PAGE_TRANSITION_MODE;
   @StorageProp('harmonyx.compact_window') private sheetCompactWindow: boolean = false;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @StorageProp('harmonyx.breakpoint') private sheetWindowBreakpoint: string = 'sm';
@@ -59,7 +69,7 @@ export struct CommunityTimeline {
   @StorageLink('harmonyx.posts_changed') @Watch('onPostsChanged') postsChanged: number = 0;
   @StorageLink('harmonyx.community_membership_changed')
   @Watch('onMembershipChanged') membershipChanged: number = 0;
-  @StorageProp(STORAGE_KEY_SHEET_MATERIAL_ENABLED) sheetMaterialEnabled: boolean = false;
+  @StorageProp(STORAGE_KEY_SHEET_MATERIAL_ENABLED) sheetMaterialEnabled: boolean = DEFAULT_SHEET_MATERIAL_ENABLED;
   @StorageProp(STORAGE_KEY_SHEET_MATERIAL_LEVEL) sheetMaterialLevel: number = DEFAULT_SHEET_MATERIAL_LEVEL;
   @State private selectedTab: number = 0;
   @State private tabPosition: number = 0;
@@ -100,6 +110,7 @@ export struct CommunityTimeline {
   @State private communityMemberCount: number = 0;
   @State private communityModeratorCount: number = 0;
   @State private communityBannerUrl: string = '';
+  @State private coverPullOffset: number = 0;
   @State private communityRuleCount: number = 0;
   @State private communityRules: CommunityRule[] = [];
   @State private communityJoined: boolean = false;
@@ -215,7 +226,7 @@ export struct CommunityTimeline {
   }
 
   private pageMaterial(): uiMaterial.Material | undefined {
-    if (!deviceInfo.apiAvailable('26.0.0')) {
+    if (pageBackgroundActive(this.pageBackgroundValue) || !deviceInfo.apiAvailable('26.0.0')) {
       return undefined;
     }
     return new uiMaterial.ImmersiveMaterial({
@@ -550,7 +561,7 @@ export struct CommunityTimeline {
       HdsButton({ barWidth: 40, barHeight: 52, lightColor: this.accentColor,
         useImmersiveMaterial: true, materialLevel: 2, forceHdsStyle: true,
         enableShadow: true, enablePressLight: true, onButtonClick: action }) {
-        SymbolGlyph(symbol).fontSize(23).fontColor([$r('app.color.text_primary')])
+        SymbolGlyph(symbol).fontSize(23).fontColor([pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)])
       }
     }.width(40).height(40).accessibilityText(this.text(label))
   }
@@ -560,7 +571,7 @@ export struct CommunityTimeline {
       this.IconButton($r('sys.symbol.arrow_left'), $r('app.string.common_back'),
         (): void => { ResponsiveLayout.closeContentDestination(this.pageStack); })
       Text(this.title).fontFamily(this.appFontFamily).fontSize($r('sys.float.Subtitle_L')).fontWeight(FontWeight.Bold)
-        .fontColor($r('app.color.text_primary')).maxLines(1).textOverflow({ overflow: TextOverflow.Ellipsis })
+        .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)).maxLines(1).textOverflow({ overflow: TextOverflow.Ellipsis })
         .layoutWeight(1).opacity(this.titleCollapsed() ? 1 : 0)
       this.IconButton($r('sys.symbol.magnifyingglass'), $r('app.string.community_search_posts'),
         (): void => { this.selectTab(0); this.openHashtagSearch(); })
@@ -569,7 +580,7 @@ export struct CommunityTimeline {
           useImmersiveMaterial: true, materialLevel: 2, forceHdsStyle: true,
           enableShadow: true, enablePressLight: true,
           onButtonClick: (): void => { this.moreMenuOpen = true; } }) {
-          SymbolGlyph($r('sys.symbol.ellipsis_circle')).fontSize(25).fontColor([$r('app.color.text_primary')])
+          SymbolGlyph($r('sys.symbol.ellipsis_circle')).fontSize(25).fontColor([pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)])
         }
       }.width(40).height(40).accessibilityText(this.text($r('app.string.common_more')))
         .bindMenu(this.moreMenuOpen, this.moreMenuItems(), {
@@ -606,6 +617,7 @@ export struct CommunityTimeline {
   }
   @Builder
   private ProfileBanner(): void {
+    AnchoredCover({ coverHeight: this.statusBarHeight + 168, pullOffset: this.coverPullOffset }) {
     Stack() {
       if (this.communityBannerUrl.length > 0) {
         ProxyMediaImage({ url: this.communityBannerUrl, displayHeight: this.statusBarHeight + 168,
@@ -614,12 +626,13 @@ export struct CommunityTimeline {
         Column().width('100%').height('100%').backgroundColor(this.accentColor)
         SymbolGlyph($r('sys.symbol.person_2_fill')).fontSize(64).fontColor([Color.White])
       }
-    }.width('100%').height(this.statusBarHeight + 168).clip(true).hitTestBehavior(HitTestMode.None)
+    }.width('100%').height('100%').clip(true).hitTestBehavior(HitTestMode.None)
+    }
   }
   @Builder
   private RoundAction(symbol: Resource, label: Resource, action: () => void): void {
     Button({ type: ButtonType.Circle }) {
-      SymbolGlyph(symbol).fontSize(21).fontColor([$r('app.color.text_primary')])
+      SymbolGlyph(symbol).fontSize(21).fontColor([pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)])
     }.width(36).height(36).backgroundColor(Color.Transparent)
       .border({ width: 1, color: $r('app.color.divider') }).accessibilityText(this.text(label)).onClick(action)
   }
@@ -629,9 +642,9 @@ export struct CommunityTimeline {
       Column().height(112).width('100%')
       Column({ space: 12 }) {
         Text(this.title).fontFamily(this.appFontFamily).fontSize($r('sys.float.Title_L')).fontWeight(FontWeight.Bold)
-          .fontColor($r('app.color.text_primary')).width('100%')
+          .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)).width('100%')
         if (this.communityTopic.length > 0) {
-          Text(this.communityTopic).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_S')).fontColor($r('app.color.text_primary'))
+          Text(this.communityTopic).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_S')).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
             .border({ width: 1, color: $r('app.color.divider') }).borderRadius(16)
             .padding({ left: 12, right: 12, top: 4, bottom: 4 })
         }
@@ -648,7 +661,7 @@ export struct CommunityTimeline {
             }
           }
           Text(formatCount(this.communityMemberCount) + ' ' + this.text($r('app.string.communities_members'))).fontFamily(this.appFontFamily)
-            .fontSize($r('sys.float.Body_S')).fontWeight(FontWeight.Medium).fontColor($r('app.color.text_primary'))
+            .fontSize($r('sys.float.Body_S')).fontWeight(FontWeight.Medium).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
             .maxLines(1).minFontSize(11).maxFontSize(14).layoutWeight(1)
           this.RoundAction(this.favorite ? $r('sys.symbol.star_fill') : $r('sys.symbol.star'),
             this.favorite ? $r('app.string.community_favorite_remove') : $r('app.string.community_favorite_add'),
@@ -657,13 +670,13 @@ export struct CommunityTimeline {
           Button(this.membershipBusy ? $r('app.string.post_sending') : this.communityJoined ?
             $r('app.string.communities_joined') : $r('app.string.community_join_short'))
             .fontSize($r('sys.float.Body_M')).fontWeight(FontWeight.Bold)
-            .fontColor(this.communityJoined ? $r('app.color.text_primary') : $r('app.color.text_on_accent'))
+            .fontColor(this.communityJoined ? pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, this.communityJoined ? fieldSurfaceColor(this.themeDisplayMode, this.themeDarkSurface) : this.accentColor) : $r('app.color.text_on_accent'))
             .backgroundColor(this.communityJoined ? fieldSurfaceColor(this.themeDisplayMode, this.themeDarkSurface) : this.accentColor)
             .padding({ left: 14, right: 14 }).height(36).enabled(!this.membershipBusy)
             .onClick((): void => { this.changeMembership(); })
         }.width('100%')
         if (this.communityDescription.length > 0) {
-          Text(this.communityDescription).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontColor($r('app.color.text_primary'))
+          Text(this.communityDescription).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
             .maxLines(this.descriptionExpanded ? 100 : 3).textOverflow({ overflow: TextOverflow.Ellipsis }).width('100%')
             .onClick((): void => { this.descriptionExpanded = !this.descriptionExpanded; })
           if (!this.descriptionExpanded && this.communityDescription.length > 130) {
@@ -675,7 +688,7 @@ export struct CommunityTimeline {
           Text(this.membershipStatus).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_S')).fontColor($r('app.color.danger')).width('100%')
         }
       }.width('100%').alignItems(HorizontalAlign.Start).padding({ left: 16, right: 16, top: 18, bottom: 18 })
-        .backgroundColor(pageSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
+        .backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue))
     }.width('100%')
   }
   @Builder
@@ -688,15 +701,15 @@ export struct CommunityTimeline {
   @Builder
   private InfoRow(symbol: Resource, value: string): void {
     Row({ space: 18 }) {
-      SymbolGlyph(symbol).fontSize(23).fontColor([$r('app.color.text_secondary')]).width(28)
-      Text(value).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontColor($r('app.color.text_primary')).layoutWeight(1)
+      SymbolGlyph(symbol).fontSize(23).fontColor([pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)]).width(28)
+      Text(value).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)).layoutWeight(1)
     }.width('100%').padding({ left: 20, right: 20, top: 18, bottom: 18 })
   }
   @Builder
   private About(): void {
     ListItem() {
       Text($r('app.string.community_info_title')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Subtitle_L')).fontWeight(FontWeight.Bold)
-        .fontColor($r('app.color.text_primary')).width('100%').padding(16)
+        .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)).width('100%').padding(16)
     }
     ListItem() { this.InfoRow($r('sys.symbol.person_2_fill'), this.text($r('app.string.community_info_members_post'))) }
     ListItem() { this.InfoRow($r('sys.symbol.globe_badge_message'), this.text(this.needsJoinRequest() ?
@@ -704,10 +717,10 @@ export struct CommunityTimeline {
     if (this.creationLabel().length > 0 || this.communityCreator !== undefined) {
       ListItem() {
         Row({ space: 18 }) {
-          SymbolGlyph($r('sys.symbol.calendar')).fontSize(23).fontColor([$r('app.color.text_secondary')]).width(28)
+          SymbolGlyph($r('sys.symbol.calendar')).fontSize(23).fontColor([pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)]).width(28)
           Column({ space: 4 }) {
             Text(this.text($r('app.string.community_created_at')) + ' ' + this.creationLabel()).fontFamily(this.appFontFamily)
-              .fontSize($r('sys.float.Body_L')).fontColor($r('app.color.text_primary'))
+              .fontSize($r('sys.float.Body_L')).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
             if (this.communityCreator !== undefined) {
               Text('@' + this.communityCreator.username).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontColor(this.accentColor)
                 .onClick((): void => { if (this.communityCreator !== undefined) { this.openUser(this.communityCreator); } })
@@ -718,10 +731,10 @@ export struct CommunityTimeline {
     }
     ListItem() {
       Text($r('app.string.community_rules_title')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Subtitle_L')).fontWeight(FontWeight.Bold)
-        .fontColor($r('app.color.text_primary')).width('100%').padding(16)
+        .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)).width('100%').padding(16)
     }
     if (this.communityRules.length === 0) {
-      ListItem() { Text($r('app.string.community_rules_empty')).fontFamily(this.appFontFamily).fontColor($r('app.color.text_secondary')).padding(20) }
+      ListItem() { Text($r('app.string.community_rules_empty')).fontFamily(this.appFontFamily).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).padding(20) }
     }
     ForEach(this.communityRules, (rule: CommunityRule, index: number) => {
       ListItem() {
@@ -730,8 +743,8 @@ export struct CommunityTimeline {
             .fontColor($r('app.color.bg_page')).backgroundColor($r('app.color.text_primary'))
             .width(36).height(36).borderRadius(18).textAlign(TextAlign.Center)
           Column({ space: 4 }) {
-            Text(rule.name).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontWeight(FontWeight.Medium).fontColor($r('app.color.text_primary'))
-            if (rule.description.length > 0) { Text(rule.description).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor($r('app.color.text_secondary')) }
+            Text(rule.name).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontWeight(FontWeight.Medium).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
+            if (rule.description.length > 0) { Text(rule.description).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)) }
           }.alignItems(HorizontalAlign.Start).layoutWeight(1)
         }.width('100%').padding({ left: 16, right: 16, top: 14, bottom: 14 })
       }
@@ -742,8 +755,8 @@ export struct CommunityTimeline {
         ListItem() {
           Row({ space: 12 }) {
             ProxyAvatar({verifiedType: member.verifiedType ?? '', avatarShape: member.avatarShape ?? '',  url: member.avatarUrl ?? '', avatarSize: 40, radius: 20, fallbackText: member.name.substring(0, 1) })
-            Text(member.name).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontColor($r('app.color.text_primary'))
-            Text('@' + member.username).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor($r('app.color.text_secondary'))
+            Text(member.name).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
+            Text('@' + member.username).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
           }.width('100%').padding(16).onClick((): void => this.openUser(member))
         }
       }, (member: TweetAuthor): string => member.id)
@@ -769,7 +782,7 @@ export struct CommunityTimeline {
       ListItem() {
         Column({ space: 16 }) {
           Text(this.selectedTab === tab && this.status.length > 0 ? this.status : this.text(this.emptyLabel(tab))).fontFamily(this.appFontFamily)
-            .fontSize($r('sys.float.Body_L')).fontColor($r('app.color.text_secondary')).textAlign(TextAlign.Center).width('100%')
+            .fontSize($r('sys.float.Body_L')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).textAlign(TextAlign.Center).width('100%')
           if (this.selectedTab === tab && this.requestFailed) {
             Button($r('app.string.common_retry')).backgroundColor(this.accentColor).fontColor($r('app.color.text_on_accent'))
               .onClick((): void => { this.load(true); })
@@ -817,8 +830,8 @@ export struct CommunityTimeline {
   @Builder
   private SortOption(icon: Resource, label: Resource, selected: boolean, value: string, action: () => void): void {
     Row({ space: 16 }) {
-      SymbolGlyph(icon).fontSize(24).fontColor([$r('app.color.text_primary')]).width(28)
-      Text(label).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontWeight(FontWeight.Medium).fontColor($r('app.color.text_primary')).layoutWeight(1)
+      SymbolGlyph(icon).fontSize(24).fontColor([pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)]).width(28)
+      Text(label).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontWeight(FontWeight.Medium).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)).layoutWeight(1)
       Radio({ value: value, group: 'community-timeline-options' }).checked(selected)
         .radioStyle({ checkedBackgroundColor: $r('app.color.text_primary') }).width(24).height(24)
         .accessibilityText(label).onChange((checked: boolean): void => { if (checked) { action(); } })
@@ -849,8 +862,8 @@ export struct CommunityTimeline {
   @Builder
   private ShareAction(icon: Resource, label: Resource, action: () => void): void {
     Row({ space: 20 }) {
-      SymbolGlyph(icon).fontSize(25).fontColor([$r('app.color.text_primary')])
-      Text(label).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontWeight(FontWeight.Medium).fontColor($r('app.color.text_primary'))
+      SymbolGlyph(icon).fontSize(25).fontColor([pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)])
+      Text(label).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontWeight(FontWeight.Medium).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
     }.width('100%').padding({ left: 24, right: 24, top: 20, bottom: 20 }).onClick(action)
   }
   @Builder
@@ -872,6 +885,8 @@ export struct CommunityTimeline {
   }
   build(): void {
     HdsNavDestination() {
+      Stack({ alignContent: Alignment.TopStart }) {
+        appPageBackground()
       Stack({ alignContent: Alignment.Top }) {
         this.ProfileBanner()
         Column({ space: 0 }) {
@@ -891,6 +906,7 @@ export struct CommunityTimeline {
             const height: number = Number(area.height);
             if (Math.abs(this.viewportHeight - height) > 0.5) { this.viewportHeight = height; }
           })
+          .onOffsetChange((offset: number): void => { this.coverPullOffset = offset; })
         }.width('100%').height('100%')
         if (this.communityJoined && this.selectedTab < 2) {
           FloatingComposeButton({ bottomInset: this.navigationIndicatorHeight, bottomBarHeight: 0,
@@ -898,9 +914,17 @@ export struct CommunityTimeline {
             onCompose: (): void => this.openComposer() })
         }
       }.width('100%').height('100%')
-    }.hideTitleBar(true).hideBackButton(true)
+        .ignoreLayoutSafeArea([LayoutSafeAreaType.SYSTEM], [LayoutSafeAreaEdge.TOP])
+    
+      }.width('100%').height('100%')
+    }
+    .scale({ x: this.pageMotion.scale, y: this.pageMotion.scale })
+    .opacity(this.pageMotion.opacity)
+    .onReady((context: NavDestinationContext): void => { this.pageMotion.attach(context); })
+    .systemTransition(pageSystemTransition(this.pageTransitionMode)).hideTitleBar(true).hideBackButton(true)
+      .ignoreLayoutSafeArea([LayoutSafeAreaType.SYSTEM], [LayoutSafeAreaEdge.TOP])
       .onBackPressed((): boolean => { ResponsiveLayout.closeContentDestination(this.pageStack); return true; })
-      .backgroundColor(pageSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
+      .backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue))
       .bindSheet($$this.actionSheetOpen, this.ActionSheet(), sheetMaterialOptions({ height: SheetSize.FIT_CONTENT, showClose: true,
         backgroundColor: pageSurfaceColor(this.themeDisplayMode, this.themeDarkSurface) }, this.sheetMaterialEnabled, this.sheetMaterialLevel, this.sheetWindowBreakpoint, this.sheetCompactWindow))
   }

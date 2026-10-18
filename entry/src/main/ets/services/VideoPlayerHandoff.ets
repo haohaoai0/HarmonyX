@@ -77,7 +77,11 @@ export class VideoPlayerHandoffStore {
   register(mediaId: string, player: mediaKit.AVPlayer, take: VideoPlayerTakeCallback,
     expire: VideoPlayerExpireCallback, returnTarget: VideoPlayerReturnTarget | null = null): void {
     this.offers.set(mediaId, new VideoPlayerHandoffOffer(mediaId, player, take, expire));
-    if (returnTarget !== null) { this.returnTargets.set(mediaId + '|' + returnTarget.sourceId, returnTarget); }
+    if (returnTarget !== null) { this.registerReturnTarget(mediaId, returnTarget); }
+  }
+
+  registerReturnTarget(mediaId: string, target: VideoPlayerReturnTarget): void {
+    this.returnTargets.set(mediaId + '|' + target.sourceId, target);
   }
 
   returnToSource(mediaId: string, sourceId: string): boolean {

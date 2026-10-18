@@ -20,14 +20,16 @@ const source = fs.readFileSync('entry/src/main/ets/pages/Index.ets', 'utf8').rep
 const tree = ts.createSourceFile('Index.ts', source, ts.ScriptTarget.Latest, true);
 const cls = tree.statements.find(node => ts.isClassDeclaration(node) && node.name.text === 'Index');
 const names = ['openRootContent', 'openSettings', 'openHelpCenter', 'openAccounts',
-  'showDrawerFeature', 'openOwnUserList', 'goMe', 'goNotifications'];
+  'showDrawerFeature', 'openOwnUserList', 'openOwnProfile', 'goNotifications'];
 const body = names.map(name => cls.members.find(node => node.name?.getText(tree) === name).getText(tree)).join('\n');
 const js = ts.transpileModule(`class Root { ${body} }`, {
   compilerOptions: { target: ts.ScriptTarget.ES2020 }
 }).outputText;
 const Root = new Function('RootContentNavigation', 'ResponsiveLayout', 'ME_TAB_INDEX',
-  'NOTIFICATIONS_TAB_INDEX', 'promptAction', js + '; return Root;')(
-  navigation.RootContentNavigation, responsive, 4, 2, { showToast() {} });
+  'NOTIFICATIONS_TAB_INDEX', 'promptAction', 'accountStore', 'getContext', 'authStore', '$r', js + '; return Root;')(
+  navigation.RootContentNavigation, responsive, 4, 2, { showToast() {} },
+  { active: context => context.cachedAccount ?? null }, root => root,
+  { getUserId: () => '', getUsername: () => '' }, value => value);
 
 function fixture(wide = true, desktop = false) {
   const pages = [];
@@ -35,6 +37,8 @@ function fixture(wide = true, desktop = false) {
   const root = new Root();
   Object.assign(root, {
     profile: { id: 'viewer' }, isWideScreen: () => wide, isDesktopLayout: () => desktop,
+    hasAnySession: () => true, xPrivate: { viewerId: () => 'viewer' },
+    handleText: '@viewer', text: value => value, goLogin: () => { root.loginOpened = true; },
     isLargeScreen: () => wide || desktop, openContentDestination() {}, showSideDrawer: true,
     updateNavigationMode() {}, isBottomBarPageEnabled: () => true,
     selectRootTabPage: index => { root.selectedTab = index; },
@@ -112,16 +116,52 @@ test('following and followers match both the viewer and the list mode', () => {
   assert.equal(f.pages.length, 2);
 });
 
-test('drawer profile and notifications leave covering destinations before selecting the root tab', () => {
+test('drawer profile opens UserDetail while notifications select their root tab', () => {
   const f = fixture();
   f.root.showDrawerFeature('lists');
-  f.root.goMe();
-  assert.equal(f.pages.length, 0);
-  assert.equal(f.root.selectedTab, 4);
+  f.root.openOwnProfile();
+  assert.equal(f.pages.length, 1);
+  assert.equal(f.pages[0].name, 'UserDetail');
+  assert.equal(f.pages[0].param.author.id, 'viewer');
+  assert.equal(f.pages[0].param.profile, f.root.profile);
+  assert.equal(f.root.selectedTab, undefined);
   f.root.showDrawerFeature('bookmarks');
   f.root.showDrawerFeature('notifications');
   assert.equal(f.pages.length, 0);
   assert.equal(f.root.selectedTab, 2);
+});
+
+for (const [wide, desktop] of [[false, false], [true, false], [true, true]]) {
+  test(`own profile reuses its destination without changing tabs (${wide}, ${desktop})`, () => {
+    const f = fixture(wide, desktop);
+    f.root.openOwnProfile();
+    const loads = f.loads();
+    f.root.openOwnProfile();
+    assert.equal(f.loads(), loads);
+    assert.equal(f.pages.length, 1);
+    assert.equal(f.pages[0].name, 'UserDetail');
+    assert.equal(f.root.showSideDrawer, false);
+    assert.equal(f.root.selectedTab, undefined);
+  });
+}
+
+test('own profile can open from the saved account before the live profile finishes loading', () => {
+  const f = fixture();
+  f.root.profile = null;
+  f.root.cachedAccount = { userId: 'saved', username: 'saved_user', displayName: 'Saved user', avatarUrl: 'avatar' };
+  f.root.openOwnProfile();
+  assert.equal(f.pages[0].param.author.id, 'saved');
+  assert.equal(f.pages[0].param.author.username, 'saved_user');
+  assert.deepEqual(f.pages[0].param.posts, []);
+});
+
+test('signed-out profile entry opens login without changing tabs or opening a mock profile', () => {
+  const f = fixture();
+  f.root.hasAnySession = () => false;
+  f.root.openOwnProfile();
+  assert.equal(f.root.loginOpened, true);
+  assert.equal(f.root.selectedTab, undefined);
+  assert.equal(f.pages.length, 0);
 });
 
 test('hidden notifications have one destination; web entries remain sheets and desktop studio is reused', () => {

@@ -1,0 +1,287 @@
+{
+  "string": [
+    {
+      "name": "module_desc",
+      "value": "本地卡密管理与领取记录"
+    },
+    {
+      "name": "EntryAbility_desc",
+      "value": "管理导入的卡密、领取人与捐赠记录"
+    },
+    {
+      "name": "EntryAbility_label",
+      "value": "卡密仓库"
+    },
+    {
+      "name": "app_title",
+      "value": "卡密仓库"
+    },
+    {
+      "name": "app_tagline",
+      "value": "领取记录与捐赠明细，全部保存在本机"
+    },
+    {
+      "name": "action_import",
+      "value": "导入 TXT"
+    },
+    {
+      "name": "action_add",
+      "value": "新增"
+    },
+    {
+      "name": "action_close",
+      "value": "关闭"
+    },
+    {
+      "name": "action_save",
+      "value": "保存修改"
+    },
+    {
+      "name": "action_cancel",
+      "value": "取消"
+    },
+    {
+      "name": "action_delete",
+      "value": "删除卡密"
+    },
+    {
+      "name": "action_copy",
+      "value": "复制卡号"
+    },
+    {
+      "name": "action_edit",
+      "value": "编辑记录"
+    },
+    {
+      "name": "tab_cards",
+      "value": "卡密记录"
+    },
+    {
+      "name": "tab_recipients",
+      "value": "受赠人"
+    },
+    {
+      "name": "summary_total",
+      "value": "卡密总数"
+    },
+    {
+      "name": "summary_donation",
+      "value": "累计捐赠"
+    },
+    {
+      "name": "summary_recipients",
+      "value": "已领取人"
+    },
+    {
+      "name": "search_placeholder",
+      "value": "搜索卡号、领取人或备注"
+    },
+    {
+      "name": "filter_all",
+      "value": "全部"
+    },
+    {
+      "name": "filter_unassigned",
+      "value": "待分配"
+    },
+    {
+      "name": "filter_assigned",
+      "value": "已分配"
+    },
+    {
+      "name": "filter_used",
+      "value": "已使用"
+    },
+    {
+      "name": "filter_revoked",
+      "value": "已作废"
+    },
+    {
+      "name": "status_unassigned",
+      "value": "待分配"
+    },
+    {
+      "name": "status_assigned",
+      "value": "已分配"
+    },
+    {
+      "name": "status_used",
+      "value": "已使用"
+    },
+    {
+      "name": "status_revoked",
+      "value": "已作废"
+    },
+    {
+      "name": "recipient_unassigned",
+      "value": "尚未选择领取人"
+    },
+    {
+      "name": "donation_none",
+      "value": "未记录捐赠"
+    },
+    {
+      "name": "card_recipient_label",
+      "value": "领取人"
+    },
+    {
+      "name": "card_donation_label",
+      "value": "捐赠"
+    },
+    {
+      "name": "card_note_label",
+      "value": "备注"
+    },
+    {
+      "name": "recipient_card_count",
+      "value": "张卡密"
+    },
+    {
+      "name": "recipient_used_count",
+      "value": "已使用"
+    },
+    {
+      "name": "recipient_donation",
+      "value": "累计捐赠"
+    },
+    {
+      "name": "empty_title",
+      "value": "还没有卡密"
+    },
+    {
+      "name": "empty_desc",
+      "value": "导入 TXT 文件，或点右上角“新增”录入第一张卡密。"
+    },
+    {
+      "name": "empty_recipient_title",
+      "value": "还没有受赠人"
+    },
+    {
+      "name": "empty_recipient_desc",
+      "value": "为卡密选择领取人后，这里会自动汇总领取数量与捐赠金额。"
+    },
+    {
+      "name": "import_hint",
+      "value": "支持每行一个卡号；也支持 Tab 或逗号分隔：卡号、领取人、捐赠金额、状态、备注。"
+    },
+    {
+      "name": "import_done",
+      "value": "导入完成"
+    },
+    {
+      "name": "import_added",
+      "value": "新增"
+    },
+    {
+      "name": "import_existing",
+      "value": "已存在"
+    },
+    {
+      "name": "import_invalid",
+      "value": "无法识别"
+    },
+    {
+      "name": "import_failed",
+      "value": "读取或导入文件失败"
+    },
+    {
+      "name": "editor_new_title",
+      "value": "新增卡密"
+    },
+    {
+      "name": "editor_edit_title",
+      "value": "编辑卡密记录"
+    },
+    {
+      "name": "card_key_label",
+      "value": "卡密"
+    },
+    {
+      "name": "card_key_placeholder",
+      "value": "输入或粘贴卡密"
+    },
+    {
+      "name": "recipient_placeholder",
+      "value": "选择或输入领取人"
+    },
+    {
+      "name": "donation_placeholder",
+      "value": "0.00"
+    },
+    {
+      "name": "note_placeholder",
+      "value": "可选，例如：活动赠送、售后补偿"
+    },
+    {
+      "name": "status_label",
+      "value": "使用状态"
+    },
+    {
+      "name": "recipient_label",
+      "value": "领取人"
+    },
+    {
+      "name": "donation_label",
+      "value": "捐赠金额（元）"
+    },
+    {
+      "name": "note_label",
+      "value": "备注"
+    },
+    {
+      "name": "recipient_suggestions",
+      "value": "最近领取人"
+    },
+    {
+      "name": "card_key_required",
+      "value": "请输入卡密"
+    },
+    {
+      "name": "card_key_invalid",
+      "value": "卡密格式不正确，至少 6 位字母或数字"
+    },
+    {
+      "name": "card_key_exists",
+      "value": "这张卡密已经存在"
+    },
+    {
+      "name": "save_failed",
+      "value": "保存失败，请稍后重试"
+    },
+    {
+      "name": "copy_success",
+      "value": "卡密已复制"
+    },
+    {
+      "name": "delete_confirm_title",
+      "value": "删除这张卡密？"
+    },
+    {
+      "name": "delete_confirm_message",
+      "value": "领取人与捐赠记录也会一并删除，删除后无法恢复。"
+    },
+    {
+      "name": "delete_success",
+      "value": "已删除"
+    },
+    {
+      "name": "load_failed",
+      "value": "读取本地数据失败"
+    },
+    {
+      "name": "filter_recipient",
+      "value": "正在查看"
+    },
+    {
+      "name": "clear_filter",
+      "value": "查看全部"
+    },
+    {
+      "name": "records_count",
+      "value": "条记录"
+    }
+  ]
+}
+    }
+  ]
+}

@@ -1,3 +1,7 @@
+import { DEFAULT_COMPONENT_HDR_RATIO, STORAGE_KEY_COMPONENT_HDR_RATIO } from '../services/ComponentHdrSettingsStore';
+import { ComponentHdrHighlight } from '../utils/ComponentHdrHighlight';
+import { pageTextColor } from '../utils/ThemeColors';
+import { postCardSurfaceColor } from '../utils/ThemeColors';
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
 import { STORAGE_KEY_SYSTEM_EMOJI_ENABLED } from '../services/AppearanceStore';
 import { PostAdLabel } from './PostAdLabel';
@@ -7,7 +11,8 @@ import { userAvatarRadius, userVerifiedType, userAvatarShape, verificationBadgeC
 import type { MediaAttachment, Tweet, TweetPoll } from '../models/Tweet';
 import { formatCount } from '../models/Tweet';
 import { hdsEffect } from '@kit.UIDesignKit';
-import { curves } from '@kit.ArkUI';
+import { motionDuration, motionScale, motionDistance, motionCurve } from '../utils/AppMotion';
+import { STORAGE_KEY_REDUCE_MOTION } from '../services/MotionSettingsStore';
 import { common } from '@kit.AbilityKit';
 import promptAction from '@ohos.promptAction';
 import { PostMedia } from './PostMedia';
@@ -32,7 +37,7 @@ import { EmojiCopyMenu } from '../utils/EmojiCopyMenu';
 import { openExternalLink, requestSearch } from '../utils/PostEntities';
 import { hapticTick } from '../utils/Haptics';
 import { sharePost } from '../utils/SharePost';
-import { LIST_ITEM_PRESS_CURVE, LIST_ITEM_PRESS_SCALE } from '../utils/SharedElementMotion';
+import { LIST_ITEM_PRESS_SCALE } from '../utils/SharedElementMotion';
 import { XPrivateResult, xPrivateClient } from '../services/XPrivateClient';
 import { fieldSurfaceColor } from '../utils/ThemeColors';
 import { STORAGE_KEY_PRESS_EFFECT_ENABLED } from '../services/PressEffectSettingsStore';
@@ -61,6 +66,8 @@ const LONG_TEXT_MAX_LINES_EXPANDED: number = 400;
 
 @Component
 export struct TweetCard {
+  @StorageProp(STORAGE_KEY_COMPONENT_HDR_RATIO) private componentHdrRatio: number = DEFAULT_COMPONENT_HDR_RATIO;
+  @StorageProp('harmonyx.page_background') private pageBackgroundValue: string = '';
   @StorageProp(STORAGE_KEY_POST_MODERATION_REVISION) @Watch('loadModeration') private moderationRevision: number = 0;
   @State private readerHidden: boolean = false;
   @StorageProp(STORAGE_KEY_ACCOUNTS_CHANGED) @Watch('loadModeration') private accountRevision: number = 0;
@@ -100,6 +107,7 @@ export struct TweetCard {
   @Prop showActions: boolean = true;
   @Prop transparentBackground: boolean = false;
   @Prop compactAuthorHeader: boolean = false;
+  @Prop narrowColumn: boolean = false;
   @Prop showReplyContext: boolean = false;
   @Prop videoFeedEnabled: boolean = false;
   // Only cards in the root home timeline use its autoplay-audio preference.
@@ -124,6 +132,7 @@ export struct TweetCard {
   @State likePending: boolean = false;
   @State repostPending: boolean = false;
   @State bookmarkPending: boolean = false;
+  @StorageProp(STORAGE_KEY_REDUCE_MOTION) private reduceMotion: boolean = false;
   @State private likeScale: number = 1;
   @State private repostRotation: number = 0;
   @State private bookmarkScale: number = 1;
@@ -389,29 +398,21 @@ export struct TweetCard {
   }
 
   private playLikeMotion(next: boolean): void {
-    this.likeScale = next ? 0.78 : 1.12;
-    this.getUIContext().animateTo({
-      duration: 320,
-      curve: curves.springMotion(0.42, 0.82)
-    }, (): void => {
-      this.likeScale = next ? 1.18 : 0.92;
+    this.likeScale = motionScale(next ? 0.72 : 1.12);
+    this.getUIContext().animateTo({ duration: motionDuration(320), curve: motionCurve() }, (): void => {
+      this.likeScale = 1;
     });
-    setTimeout((): void => {
-      this.getUIContext().animateTo({ duration: 140, curve: Curve.EaseOut }, (): void => {
-        this.likeScale = 1;
-      });
-    }, 180);
   }
 
   private playRepostMotion(next: boolean): void {
-    this.getUIContext().animateTo({ duration: 280, curve: Curve.EaseOut }, (): void => {
-      this.repostRotation = next ? 180 : 0;
+    this.getUIContext().animateTo({ duration: motionDuration(280), curve: motionCurve() }, (): void => {
+      this.repostRotation = next ? motionDistance(180) : 0;
     });
   }
 
   private playBookmarkMotion(next: boolean): void {
-    this.bookmarkScale = next ? 0.78 : 1.08;
-    this.getUIContext().animateTo({ duration: 260, curve: curves.springMotion(0.45, 0.82) }, (): void => {
+    this.bookmarkScale = motionScale(next ? 0.74 : 1.08);
+    this.getUIContext().animateTo({ duration: motionDuration(260), curve: motionCurve() }, (): void => {
       this.bookmarkScale = 1;
     });
   }
@@ -502,13 +503,13 @@ export struct TweetCard {
       return;
     }
     if (event.type === TouchType.Down) {
-      this.getUIContext().animateTo({ curve: LIST_ITEM_PRESS_CURVE }, (): void => {
-        this.pressScale = LIST_ITEM_PRESS_SCALE;
+      this.getUIContext().animateTo({ duration: motionDuration(180), curve: motionCurve() }, (): void => {
+        this.pressScale = motionScale(LIST_ITEM_PRESS_SCALE);
       });
       return;
     }
     if (event.type === TouchType.Up || event.type === TouchType.Cancel) {
-      this.getUIContext().animateTo({ curve: LIST_ITEM_PRESS_CURVE }, (): void => {
+      this.getUIContext().animateTo({ duration: motionDuration(180), curve: motionCurve() }, (): void => {
         this.pressScale = 1;
       });
     }
@@ -518,6 +519,7 @@ export struct TweetCard {
   private PostAttachments(): void {
     if (this.tweet.attachments !== undefined && this.tweet.attachments.length > 0 && this.tweet.presentation?.visibility?.hidden !== true) {
       PostMedia({
+        controlsUsePageBackground: !this.transparentBackground, controlSurface: this.readingSurface(),
         sourceTweet: this.tweet,
         attachments: this.tweet.attachments,
         videoFeedEnabled: this.videoFeedEnabled,
@@ -564,12 +566,12 @@ export struct TweetCard {
           Row({ space: 4 }) {
             SymbolGlyph($r('sys.symbol.ellipsis_bubble'))
               .fontSize(17)
-              .fontColor([$r('app.color.text_secondary')])
+              .fontColor([this.readingText($r('app.color.text_secondary'))])
             if (this.tweet.metrics.replyCount > 0) {
               Text(formatCount(this.tweet.metrics.replyCount)).fontFamily(this.appFontFamily)
                 .fontSize($r('sys.float.Caption_L'))
                 .fontWeight(FontWeight.Medium)
-                .fontColor($r('app.color.text_secondary'))
+                .fontColor(this.readingText($r('app.color.text_secondary')))
             }
           }
           .accessibilityText(this.metricLabel($r('app.string.action_reply'), this.tweet.metrics.replyCount))
@@ -577,12 +579,13 @@ export struct TweetCard {
           Row({ space: 4 }) {
             SymbolGlyph($r('sys.symbol.repeat'))
               .fontSize(18)
-              .fontColor([this.reposted ? $r('app.color.repost') : $r('app.color.text_secondary')])
+              .fontColor([this.reposted ? this.readingText($r('app.color.repost')) : this.readingText($r('app.color.text_secondary'))])
+              .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.reposted, this.componentHdrRatio))
             if (this.displayedRepostCount() > 0) {
               Text(formatCount(this.displayedRepostCount())).fontFamily(this.appFontFamily)
                 .fontSize($r('sys.float.Caption_L'))
                 .fontWeight(FontWeight.Medium)
-                .fontColor(this.reposted ? $r('app.color.repost') : $r('app.color.text_secondary'))
+                .fontColor(this.reposted ? this.readingText($r('app.color.repost')) : this.readingText($r('app.color.text_secondary')))
             }
           }
           .accessibilityText(this.metricLabel($r('app.string.action_repost'), this.displayedRepostCount()))
@@ -590,12 +593,13 @@ export struct TweetCard {
           Row({ space: 4 }) {
             SymbolGlyph(this.liked ? $r('sys.symbol.heart_fill') : $r('sys.symbol.heart'))
               .fontSize(18)
-              .fontColor([this.liked ? $r('app.color.like') : $r('app.color.text_secondary')])
+              .fontColor([this.liked ? this.readingText($r('app.color.like')) : this.readingText($r('app.color.text_secondary'))])
+              .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.liked, this.componentHdrRatio))
             if (this.displayedLikeCount() > 0) {
               Text(formatCount(this.displayedLikeCount())).fontFamily(this.appFontFamily)
                 .fontSize($r('sys.float.Caption_L'))
                 .fontWeight(FontWeight.Medium)
-                .fontColor(this.liked ? $r('app.color.like') : $r('app.color.text_secondary'))
+                .fontColor(this.liked ? this.readingText($r('app.color.like')) : this.readingText($r('app.color.text_secondary')))
             }
           }
           .accessibilityText(this.metricLabel($r('app.string.action_like'), this.displayedLikeCount()))
@@ -603,12 +607,12 @@ export struct TweetCard {
           Row({ space: 4 }) {
             SymbolGlyph($r('sys.symbol.eye'))
               .fontSize(18)
-              .fontColor([$r('app.color.text_secondary')])
+              .fontColor([this.readingText($r('app.color.text_secondary'))])
             if (this.displayedViewCount() > 0) {
               Text(formatCount(this.displayedViewCount())).fontFamily(this.appFontFamily)
                 .fontSize($r('sys.float.Caption_L'))
                 .fontWeight(FontWeight.Medium)
-                .fontColor($r('app.color.text_secondary'))
+                .fontColor(this.readingText($r('app.color.text_secondary')))
             }
           }
           .accessibilityText(this.metricLabel($r('app.string.post_detail_views'), this.displayedViewCount()))
@@ -625,11 +629,11 @@ export struct TweetCard {
         Row({ space: 4 }) {
           SymbolGlyph($r('sys.symbol.ellipsis_bubble'))
             .fontSize(17)
-            .fontColor([$r('app.color.text_secondary')])
+            .fontColor([this.readingText($r('app.color.text_secondary'))])
           Text(formatCount(this.tweet.metrics.replyCount)).fontFamily(this.appFontFamily)
             .fontSize($r('sys.float.Caption_L'))
             .fontWeight(FontWeight.Medium)
-            .fontColor($r('app.color.text_secondary'))
+            .fontColor(this.readingText($r('app.color.text_secondary')))
         }
         .onClick(() => {
           if (!canPostAction(this.tweet, 'reply')) { return; }
@@ -641,13 +645,14 @@ export struct TweetCard {
           SymbolGlyph($r('sys.symbol.repeat'))
             .fontSize(18)
             .fontWeight(FontWeight.Medium)
-            .fontColor([this.reposted ? $r('app.color.repost') : $r('app.color.text_secondary')])
-            .rotate({ angle: this.repostRotation })
+            .fontColor([this.reposted ? this.readingText($r('app.color.repost')) : this.readingText($r('app.color.text_secondary'))])
+            .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.reposted, this.componentHdrRatio))
+            .rotate({ angle: this.reduceMotion ? 0 : this.repostRotation })
           Text(formatCount(Math.max(0, this.tweet.metrics.repostCount +
             (this.reposted === this.tweet.reposted ? 0 : (this.reposted ? 1 : -1))))).fontFamily(this.appFontFamily)
             .fontSize($r('sys.float.Caption_L'))
             .fontWeight(FontWeight.Medium)
-            .fontColor(this.reposted ? $r('app.color.repost') : $r('app.color.text_secondary'))
+            .fontColor(this.reposted ? this.readingText($r('app.color.repost')) : this.readingText($r('app.color.text_secondary')))
         }
         .onClick(async () => {
           if (!canPostAction(this.tweet, 'repost')) { return; }
@@ -669,12 +674,13 @@ export struct TweetCard {
         Row({ space: 4 }) {
           SymbolGlyph(this.liked ? $r('sys.symbol.heart_fill') : $r('sys.symbol.heart'))
             .fontSize(18)
-            .fontColor([this.liked ? $r('app.color.like') : $r('app.color.text_secondary')])
-            .scale({ x: this.likeScale, y: this.likeScale })
+            .fontColor([this.liked ? this.readingText($r('app.color.like')) : this.readingText($r('app.color.text_secondary'))])
+            .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.liked, this.componentHdrRatio))
+            .scale({ x: this.reduceMotion ? 1 : this.likeScale, y: this.reduceMotion ? 1 : this.likeScale })
           Text(formatCount(this.displayedLikeCount())).fontFamily(this.appFontFamily)
             .fontSize($r('sys.float.Caption_L'))
             .fontWeight(FontWeight.Medium)
-            .fontColor(this.liked ? $r('app.color.like') : $r('app.color.text_secondary'))
+            .fontColor(this.liked ? this.readingText($r('app.color.like')) : this.readingText($r('app.color.text_secondary')))
         }
         .onClick((): void => { void this.toggleLike(); })
         .accessibilityText(this.resourceText($r('app.string.action_like')))
@@ -682,20 +688,21 @@ export struct TweetCard {
         Row({ space: 4 }) {
           SymbolGlyph($r('sys.symbol.eye'))
             .fontSize(18)
-            .fontColor([$r('app.color.text_secondary')])
+            .fontColor([this.readingText($r('app.color.text_secondary'))])
           if (this.displayedViewCount() > 0) {
             Text(formatCount(this.displayedViewCount())).fontFamily(this.appFontFamily)
               .fontSize($r('sys.float.Caption_L'))
               .fontWeight(FontWeight.Medium)
-              .fontColor($r('app.color.text_secondary'))
+              .fontColor(this.readingText($r('app.color.text_secondary')))
           }
         }
 
         Row({ space: 4 }) {
           SymbolGlyph(this.bookmarked ? $r('sys.symbol.bookmark_fill') : $r('sys.symbol.bookmark'))
             .fontSize(18)
-            .fontColor([this.bookmarked ? this.accentColor : $r('app.color.text_secondary')])
-            .scale({ x: this.bookmarkScale, y: this.bookmarkScale })
+            .fontColor([this.bookmarked ? this.readingText(this.accentColor) : this.readingText($r('app.color.text_secondary'))])
+            .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.bookmarked, this.componentHdrRatio))
+            .scale({ x: this.reduceMotion ? 1 : this.bookmarkScale, y: this.reduceMotion ? 1 : this.bookmarkScale })
         }
         .opacity(this.bookmarkPending ? 0.5 : 1)
         .onClick((): void => {
@@ -706,7 +713,7 @@ export struct TweetCard {
         Row({ space: 4 }) {
           SymbolGlyph($r('sys.symbol.share'))
             .fontSize(18)
-            .fontColor([$r('app.color.text_secondary')])
+            .fontColor([this.readingText($r('app.color.text_secondary'))])
         }
         .onClick((): void => {
           const context: common.UIAbilityContext =
@@ -725,8 +732,8 @@ export struct TweetCard {
             } else {
               SymbolGlyph($r('sys.symbol.translate'))
                 .fontSize(18)
-                .fontColor([this.translatedText.length > 0 ? this.accentColor :
-                  $r('app.color.text_secondary')])
+                .fontColor([this.translatedText.length > 0 ? this.readingText(this.accentColor) :
+                  this.readingText($r('app.color.text_secondary'))])
             }
           }
           .width(32)
@@ -757,7 +764,7 @@ export struct TweetCard {
   @Builder
   private ConversationLines(): void {
     Column({ space: 0 }) {
-      if (this.connectAbove || this.connectBelow) {
+      if (!this.narrowColumn && (this.connectAbove || this.connectBelow)) {
         Rect()
           .width($r('app.float.reply_connector_width'))
           .height(this.avatarTop)
@@ -775,26 +782,167 @@ export struct TweetCard {
     .accessibilityLevel('no')
   }
 
+  private columnDimension(resource: Resource): number {
+    const context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
+    return this.getUIContext().px2vp(context.resourceManager.getNumber(resource.id));
+  }
+
+  private narrowCoverAttachments(): MediaAttachment[] {
+    return (this.tweet.attachments ?? []).slice(0, 1);
+  }
+
+  private narrowHasMedia(): boolean {
+    return this.narrowCoverAttachments().length > 0 && this.tweet.presentation?.visibility?.hidden !== true;
+  }
+
+  private narrowPreviewLines(): number {
+    return this.narrowHasMedia() ? 2 : 6;
+  }
+
+  @Builder
+  private NarrowTimelineCard(): void {
+    Column({ space: 0 }) {
+      if (this.narrowHasMedia()) {
+        PostMedia({
+          controlsUsePageBackground: !this.transparentBackground, controlSurface: this.readingSurface(),
+          sourceTweet: this.tweet,
+          attachments: this.narrowCoverAttachments(),
+          photoViewerAttachments: this.tweet.attachments ?? [],
+          videoFeedEnabled: this.videoFeedEnabled,
+          homeTimelineVideo: this.homeTimelineVideo,
+          naturalVideoSize: true,
+          limitNaturalHeight: true,
+          // Use the same autoplay and visibility policy as the ordinary feed.
+          hideInlineControls: true,
+          showDownloadButton: false,
+          onVideoOpen: (media: MediaAttachment): void => this.onVideoOpen(this.tweet, media)
+        }).width('100%')
+      }
+      Column({ space: 6 }) {
+        // Distinct branches remount EmojiSpans when an asynchronous translation
+        // arrives; a helper value passed to its builder retains the initial text.
+        if (this.tweet.presentation?.visibility?.hidden !== true) {
+          if (this.translationReplaceOriginal && this.translatedText.length > 0) {
+          Text() {
+            EmojiSpans(this.getUIContext(), this.translatedText, $r('app.float.timeline_column_body_font'), this.systemEmojiEnabled)
+          }.width('100%').fontSize($r('app.float.timeline_column_body_font'))
+            .fontFamily(this.appFontFamily === DEFAULT_APP_FONT_FAMILY ? this.contentFontFamily : this.appFontFamily)
+            .fontWeight(FontWeight.Medium).fontColor(this.readingText($r('app.color.text_primary')))
+            .maxLines(this.narrowPreviewLines()).textOverflow({ overflow: TextOverflow.Ellipsis })
+            .accessibilityText(this.translatedText)
+            .onClick((): void => this.onOpen(this.tweet, this.sharedElementId))
+          } else if (this.tweet.text.length > 0) {
+          Text() {
+            EmojiSpans(this.getUIContext(), this.tweet.text, $r('app.float.timeline_column_body_font'), this.systemEmojiEnabled)
+          }.width('100%').fontSize($r('app.float.timeline_column_body_font'))
+            .fontFamily(this.appFontFamily === DEFAULT_APP_FONT_FAMILY ? this.contentFontFamily : this.appFontFamily)
+            .fontWeight(FontWeight.Medium).fontColor(this.readingText($r('app.color.text_primary')))
+            .maxLines(this.narrowPreviewLines()).textOverflow({ overflow: TextOverflow.Ellipsis })
+            .accessibilityText(this.tweet.text)
+            .onClick((): void => this.onOpen(this.tweet, this.sharedElementId))
+          }
+          if (!this.translationReplaceOriginal && this.translatedText.length > 0) {
+          Text() {
+            EmojiSpans(this.getUIContext(), this.translatedText, $r('app.float.timeline_column_body_font'), this.systemEmojiEnabled)
+          }.width('100%').fontSize($r('app.float.timeline_column_body_font'))
+            .fontFamily(this.appFontFamily === DEFAULT_APP_FONT_FAMILY ? this.contentFontFamily : this.appFontFamily)
+            .fontWeight(FontWeight.Medium).fontColor(this.readingText($r('app.color.text_primary')))
+            .maxLines(this.narrowPreviewLines()).textOverflow({ overflow: TextOverflow.Ellipsis })
+            .accessibilityText(this.translatedText)
+            .onClick((): void => this.onOpen(this.tweet, this.sharedElementId))
+          }
+        }
+        if (!this.narrowHasMedia() && (this.interactivePoll() !== undefined || this.tweet.card !== undefined ||
+          this.tweet.article !== undefined || this.tweet.presentation !== undefined)) {
+          PostInteractiveContent({ postId: this.tweet.id, poll: this.interactivePoll(), card: this.tweet.card,
+            article: this.tweet.article, presentation: this.tweet.presentation,
+            accentColor: this.accentColor, showPollMedia: true })
+        }
+        if (!this.narrowHasMedia() && this.tweet.quotedTweet !== undefined && this.tweet.presentation?.visibility?.hidden !== true) {
+          QuotedPostCard({ quoted: this.tweet.quotedTweet, narrowColumn: true, accentColor: this.accentColor,
+            sharedElementId: this.quotedSharedElementId(),
+            onOpen: (quoted: Tweet): void => this.onOpen(quoted, this.quotedSharedElementId()) })
+        }
+        Row({ space: 4 }) {
+          Row({ space: 4 }) {
+            SpaceAwareAvatar({ verifiedType: this.tweet.author.verifiedType ?? '',
+              avatarShape: this.tweet.author.avatarShape ?? '', userId: this.tweet.author.id,
+              url: this.avatarUrl(), avatarSize: this.columnDimension($r('app.float.timeline_column_avatar')),
+              radius: this.columnDimension($r('app.float.timeline_column_avatar')) / 2,
+              followed: this.tweet.author.following === true,
+              tintBackground: true,
+              onTintResolved: (palette: AvatarTintPalette | null): void => { this.avatarPalette = palette; },
+              fallbackText: this.tweet.author.name.substring(0, 1).toUpperCase(), fallbackColor: this.tweet.author.avatarColor,
+              onProfile: (): void => this.onAuthorTapped(this.tweet) })
+            Text() { EmojiSpans(this.getUIContext(), this.tweet.author.name, $r('app.float.timeline_column_author_font'), this.systemEmojiEnabled) }
+              .fontFamily(this.appFontFamily).fontSize($r('app.float.timeline_column_author_font'))
+              .fontColor(this.readingText($r('app.color.text_secondary'))).maxLines(1)
+              .textOverflow({ overflow: TextOverflow.Ellipsis }).layoutWeight(1)
+          }.layoutWeight(1).alignItems(VerticalAlign.Center)
+            .onClick((): void => this.onAuthorTapped(this.tweet)).monopolizeEvents(true)
+          PostAdLabel({ foreground: this.readingText($r('app.color.text_secondary')), presentation: this.tweet.presentation })
+          if (this.showActions && !this.promotion) {
+            Row({ space: 3 }) {
+              SymbolGlyph(this.liked ? $r('sys.symbol.heart_fill') : $r('sys.symbol.heart'))
+                .fontSize($r('app.float.timeline_column_action_icon'))
+                .fontColor([this.liked ? this.readingText($r('app.color.like')) : this.readingText($r('app.color.text_secondary'))])
+                .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.liked, this.componentHdrRatio))
+                .scale({ x: this.reduceMotion ? 1 : this.likeScale, y: this.reduceMotion ? 1 : this.likeScale })
+              Text(formatCount(this.displayedLikeCount())).fontFamily(this.appFontFamily)
+                .fontSize($r('app.float.timeline_column_meta_font'))
+                .fontColor(this.liked ? this.readingText($r('app.color.like')) : this.readingText($r('app.color.text_secondary'))).maxLines(1)
+            }.height($r('app.float.timeline_column_action_target')).flexShrink(0)
+              .id('narrow-post-like-' + this.tweet.id).monopolizeEvents(true)
+              .accessibilityText(this.metricLabel($r('app.string.action_like'), this.displayedLikeCount()))
+              .onClick((): void => { void this.toggleLike(); })
+          } else if (this.promotion) {
+            Button({ type: ButtonType.Circle }) {
+              SymbolGlyph($r('sys.symbol.xmark')).fontSize($r('app.float.timeline_column_action_icon'))
+                .fontColor([this.readingText($r('app.color.text_secondary'))])
+            }.width($r('app.float.timeline_column_action_target')).height($r('app.float.timeline_column_action_target'))
+              .backgroundColor(Color.Transparent).accessibilityText($r('app.string.xxauth_close'))
+              .bindMenu([
+                { value: $r('app.string.promotion_hide_once'), action: (): void => this.onPromotionHideSession() },
+                { value: $r('app.string.promotion_hide_week'), action: (): void => this.onPromotionHideWeek() }
+              ])
+          }
+        }.width('100%').alignItems(VerticalAlign.Center).id('narrow-post-author-' + this.tweet.id)
+      }.width('100%').alignItems(HorizontalAlign.Start).padding($r('app.float.timeline_column_inset'))
+    }.width('100%').id('narrow-post-card-' + this.tweet.id)
+  }
+
+  private readingText(color: ResourceColor): ResourceColor {
+    return pageTextColor(color, this.transparentBackground ? '' : this.pageBackgroundValue, this.readingSurface());
+  }
+
+  private readingSurface(): ResourceColor {
+    return postCardSurfaceColor(this.transparentBackground ? Color.Transparent :
+      this.narrowColumn && !this.avatarTintEnabled ? fieldSurfaceColor(this.themeDisplayMode, this.themeDarkSurface) :
+      avatarTintSurface(this.avatarPalette, this.avatarUrl(), this.avatarTintEnabled,
+      this.themeDisplayMode, this.themeDarkSurface, this.avatarThemeDark), this.pageBackgroundValue);
+  }
+
   build(): void {
     if (!this.readerHidden) {
     Column() {
+      if (this.narrowColumn) { this.NarrowTimelineCard() } else {
       CommunitySource({ communityId: this.tweet.communityId ?? '', communityName: this.tweet.communityName ?? '', inset: 56 })
       if (this.tweet.pinned) {
         Row({ space: 6 }) {
-          SymbolGlyph($r('sys.symbol.pin_fill')).fontSize(13).fontColor([$r('app.color.text_secondary')])
+          SymbolGlyph($r('sys.symbol.pin_fill')).fontSize(13).fontColor([this.readingText($r('app.color.text_secondary'))])
           Text($r('app.string.community_pinned_post')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_S'))
-            .fontColor($r('app.color.text_secondary'))
+            .fontColor(this.readingText($r('app.color.text_secondary')))
         }.width('100%').padding({ start: LengthMetrics.vp(56), top: LengthMetrics.vp(6) })
       }
       if (this.tweet.isRepost) {
         Row({ space: 8 }) {
           SymbolGlyph($r('sys.symbol.repeat'))
             .fontSize(14)
-            .fontColor([$r('app.color.text_secondary')])
+            .fontColor([this.readingText($r('app.color.text_secondary'))])
           Text(this.repostLabel()).fontFamily(this.appFontFamily)
             .fontSize($r('sys.float.Body_S'))
             .fontWeight(FontWeight.Medium)
-            .fontColor($r('app.color.text_secondary'))
+            .fontColor(this.readingText($r('app.color.text_secondary')))
             .maxLines(1)
             .textOverflow({ overflow: TextOverflow.Ellipsis })
         }
@@ -816,7 +964,7 @@ export struct TweetCard {
                 Text() { EmojiSpans(this.getUIContext(), this.tweet.author.name, $r('sys.float.Body_L'), this.systemEmojiEnabled) }.fontFamily(this.appFontFamily)
                   .fontSize($r('sys.float.Body_L'))
                   .fontWeight(FontWeight.Medium)
-                  .fontColor($r('app.color.text_primary'))
+                  .fontColor(this.readingText($r('app.color.text_primary')))
                   .maxLines(1)
                   .textOverflow({ overflow: TextOverflow.Ellipsis })
                   .flexShrink(1)
@@ -829,13 +977,13 @@ export struct TweetCard {
                 }
                 if (this.compactAuthorHeader) {
                   Text(this.authorTimeLabel()).fontFamily(this.appFontFamily)
-                    .fontSize($r('sys.float.Body_M')).fontColor($r('app.color.text_secondary'))
+                    .fontSize($r('sys.float.Body_M')).fontColor(this.readingText($r('app.color.text_secondary')))
                     .maxLines(1).textOverflow({ overflow: TextOverflow.Ellipsis }).flexShrink(1)
                 }
               }
               .layoutWeight(1)
               .onClick((): void => this.onAuthorTapped(this.tweet))
-              PostAdLabel({ presentation: this.tweet.presentation })
+              PostAdLabel({ foreground: this.readingText($r('app.color.text_secondary')), presentation: this.tweet.presentation })
               // A promotion row reuses this card for identical layout, so the
               // affordances that need a real post are replaced by the dismissal
               // choices the promotion supports.
@@ -843,7 +991,7 @@ export struct TweetCard {
                 Button({ type: ButtonType.Normal, stateEffect: true }) {
                   SymbolGlyph($r('sys.symbol.xmark'))
                     .fontSize(16)
-                    .fontColor([$r('app.color.text_secondary')])
+                    .fontColor([this.readingText($r('app.color.text_secondary'))])
                     .accessibilityLevel('no')
                 }
                 .width(32)
@@ -857,14 +1005,14 @@ export struct TweetCard {
                   { value: $r('app.string.promotion_hide_week'), action: (): void => this.onPromotionHideWeek() }
                 ])
               } else {
-                PostOverflowButton({ tweet: this.tweet })
+                PostOverflowButton({ foreground: this.readingText($r('app.color.text_secondary')), tweet: this.tweet })
               }
               if (this.translationEnabled && !this.showActions && !this.promotion) {
                 Stack() {
                   SymbolGlyph($r('sys.symbol.ellipsis_circle'))
                     .fontSize(20)
-                    .fontColor([this.translatedText.length > 0 ? this.accentColor :
-                      $r('app.color.text_secondary')])
+                    .fontColor([this.translatedText.length > 0 ? pageTextColor(this.accentColor, this.transparentBackground ? '' : this.pageBackgroundValue, fieldSurfaceColor(this.themeDisplayMode, this.themeDarkSurface)) :
+                      pageTextColor($r('app.color.text_secondary'), this.transparentBackground ? '' : this.pageBackgroundValue, fieldSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))])
                 }
                 .width(32)
                 .height(32)
@@ -878,7 +1026,7 @@ export struct TweetCard {
             if (!this.compactAuthorHeader) {
             Text(this.authorTimeLabel()).fontFamily(this.appFontFamily)
               .fontSize($r('sys.float.Body_M'))
-              .fontColor($r('app.color.text_secondary'))
+              .fontColor(this.readingText($r('app.color.text_secondary')))
               .textOverflow({ overflow: TextOverflow.Ellipsis })
               .maxLines(1)
               .width('100%')
@@ -890,8 +1038,8 @@ export struct TweetCard {
 
           if (this.showReplyContext && (this.tweet.replyToUsername ?? '').length > 0) {
             Text() {
-              Span($r('app.string.compose_replying_to')).fontColor($r('app.color.text_secondary'))
-              Span(this.tweet.replyToUsername ?? '').fontColor(this.accentColor)
+              Span($r('app.string.compose_replying_to')).fontColor(this.readingText($r('app.color.text_secondary')))
+              Span(this.tweet.replyToUsername ?? '').fontColor(this.readingText(this.accentColor))
                 .onClick((): void => this.onMentionTapped(this.tweet.replyToUsername ?? ''))
             }.fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M'))
               .maxLines(1).textOverflow({ overflow: TextOverflow.Ellipsis })
@@ -906,7 +1054,7 @@ export struct TweetCard {
               .fontSize($r('sys.float.Body_L'))
               .fontFamily(this.appFontFamily === DEFAULT_APP_FONT_FAMILY ? this.contentFontFamily : this.appFontFamily)
               .fontWeight(FontWeight.Medium)
-              .fontColor($r('app.color.text_primary'))
+              .fontColor(this.readingText($r('app.color.text_primary')))
               .width('100%')
               .maxLines(this.textExpanded || !this.textIsLong() ? LONG_TEXT_MAX_LINES_EXPANDED :
                 LONG_TEXT_MAX_LINES)
@@ -942,7 +1090,7 @@ export struct TweetCard {
               .fontSize($r('sys.float.Body_L'))
               .fontFamily(this.appFontFamily === DEFAULT_APP_FONT_FAMILY ? this.contentFontFamily : this.appFontFamily)
               .fontWeight(FontWeight.Medium)
-              .fontColor($r('app.color.text_primary'))
+              .fontColor(this.readingText($r('app.color.text_primary')))
               .width('100%')
               .maxLines(this.textExpanded || !this.textIsLong() ? LONG_TEXT_MAX_LINES_EXPANDED :
                 LONG_TEXT_MAX_LINES)
@@ -962,7 +1110,7 @@ export struct TweetCard {
               $r('app.string.post_show_more')).fontFamily(this.appFontFamily)
               .fontSize($r('sys.float.Body_M'))
               .fontWeight(FontWeight.Medium)
-              .fontColor($r('app.color.text_accent'))
+              .fontColor(this.readingText($r('app.color.text_accent')))
               .margin({ top: 4 })
               .onClick((): void => {
                 this.textExpanded = !this.textExpanded;
@@ -977,7 +1125,7 @@ export struct TweetCard {
                 .color(this.accentColor)
               Text($r('app.string.post_translating')).fontFamily(this.appFontFamily)
                 .fontSize($r('sys.float.Body_S'))
-                .fontColor($r('app.color.text_secondary'))
+                .fontColor(this.readingText($r('app.color.text_secondary')))
             }
             .margin({ top: 6 })
           }
@@ -986,7 +1134,7 @@ export struct TweetCard {
             Text() { EmojiSpans(this.getUIContext(), this.translatedText, $r('sys.float.Body_L'), this.systemEmojiEnabled) }.fontFamily(this.appFontFamily)
               .fontSize($r('sys.float.Body_L'))
               .fontWeight(FontWeight.Medium)
-              .fontColor($r('app.color.text_primary'))
+              .fontColor(this.readingText($r('app.color.text_primary')))
               .width('100%')
               .padding({ start: LengthMetrics.vp(10) })
               .borderWidth({ start: LengthMetrics.vp(2) })
@@ -1012,11 +1160,15 @@ export struct TweetCard {
       })
       this.PostAttachments()
       this.PostFooter()
+      }
     }
     .width('100%')
-    .backgroundColor(this.transparentBackground ? Color.Transparent :
+    .borderRadius(this.narrowColumn ? $r('app.float.timeline_column_radius') : 0)
+    .clip(this.narrowColumn)
+    .backgroundColor(postCardSurfaceColor(this.transparentBackground ? Color.Transparent :
+      this.narrowColumn && !this.avatarTintEnabled ? fieldSurfaceColor(this.themeDisplayMode, this.themeDarkSurface) :
       avatarTintSurface(this.avatarPalette, this.avatarUrl(), this.avatarTintEnabled,
-      this.themeDisplayMode, this.themeDarkSurface, this.avatarThemeDark))
+      this.themeDisplayMode, this.themeDarkSurface, this.avatarThemeDark), this.pageBackgroundValue))
     .onAreaChange((_oldValue: Area, newValue: Area): void => {
       const width: number = Number(newValue.width);
       if (width > 0 && Math.abs(width - this.cardWidth) > 1) {
@@ -1028,8 +1180,8 @@ export struct TweetCard {
       }
     })
     .overlay(this.ConversationLines(), { align: Alignment.TopStart, offset: { x: isAppRtl(this.appLocale) ? -33 : 33, y: 0 } })
-    .border({ width: { bottom: this.connectBelow ? 0 : 1 }, color: $r('app.color.divider') })
-    .scale({ x: this.pressScale, y: this.pressScale })
+    .border({ width: { bottom: this.narrowColumn || this.connectBelow ? 0 : 1 }, color: $r('app.color.divider') })
+    .scale({ x: this.reduceMotion ? 1 : this.pressScale, y: this.reduceMotion ? 1 : this.pressScale })
     .visualEffect(new hdsEffect.HdsEffectBuilder()
       .pointLight({
         illuminatedType: hdsEffect.PointLightIlluminatedType.BORDER_CONTENT

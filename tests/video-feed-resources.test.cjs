@@ -133,7 +133,7 @@ test('removing a dismissed post reindexes surviving items and releases its dupli
 });
 
 const Player = methods('entry/src/main/ets/components/PostMedia.ets', 'SurfaceVideoPlayer',
-  ['aboutToDisappear', 'destroyPlayer', 'closeCacheLease', 'closeDataSourceLease'], {
+  ['aboutToDisappear', 'destroyPlayer', 'closeCacheLease', 'closeDataSourceLease', 'canControlPlayer'], {
     videoPipGate: { isHeld: () => false }, videoPipPlaybackKeeper: { unregister() {} },
     videoPlaybackCoordinator: { release() {} }, videoPlayerPreparation: { cancel() {} },
     videoMediaSession: { release() {} }, videoPlayerHandoff: { isRequested: () => false, unregister() {}, unregisterReturnTarget() {} },
@@ -148,6 +148,7 @@ function nativeView(overrides = {}) {
     dataSourceLease: { close() { closed.push('stream'); } }, resettingDataSourceLease: null,
     disarmHoldSpeed() {}, finishHoldSeek() {}, releaseKeepAwake() {}, clearPreloadTimer() {}, clearFullscreenPinchHint() {},
     clearFullscreenGestureHint() {}, clearHideTimer() {}, clearLoadTimeout() {}, clearSourceRetryTimer() {},
+    clearDoubleTapSeekHint() {},
     syncBackgroundPlayback() {}, releasePip() {}, clearProgressWatchdog() {}, ...overrides });
   return { view, closed, native, finishRelease: () => finishRelease() };
 }

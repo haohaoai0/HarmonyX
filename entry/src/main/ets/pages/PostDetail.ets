@@ -1,10 +1,17 @@
+import { DEFAULT_COMPONENT_HDR_RATIO, STORAGE_KEY_COMPONENT_HDR_RATIO } from '../services/ComponentHdrSettingsStore';
+import { ComponentHdrHighlight } from '../utils/ComponentHdrHighlight';
+import { pageTextColor } from '../utils/ThemeColors';
+import { appPageBackground } from '../components/PageBackgroundLayer';
+import { pageCanvasColor, pageReadingSurfaceColor, postCardSurfaceColor, postCardUsesCustomSurface } from '../utils/ThemeColors';
+import { STORAGE_KEY_PAGE_TRANSITION_MODE, DEFAULT_PAGE_TRANSITION_MODE } from '../services/PageTransitionSettingsStore';
+import { pageSystemTransition, PageTransitionMotion } from '../utils/PageTransition';
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
 import { STORAGE_KEY_SYSTEM_EMOJI_ENABLED } from '../services/AppearanceStore';
 import { PostAdLabel } from '../components/PostAdLabel';
 import { isAdPost, refreshedPostPresentation } from '../utils/PostDisclosure';
 import { STORAGE_KEY_FILTER_HIDE_ADS } from '../services/ContentFilterStore';
 import { userAvatarRadius, userVerifiedType, userAvatarShape, verificationBadgeColor } from '../utils/UserIdentity';
-import { DEFAULT_SHEET_MATERIAL_LEVEL, STORAGE_KEY_SHEET_MATERIAL_ENABLED, STORAGE_KEY_SHEET_MATERIAL_LEVEL } from '../services/SheetMaterialSettingsStore';
+import { DEFAULT_SHEET_MATERIAL_ENABLED, DEFAULT_SHEET_MATERIAL_LEVEL, STORAGE_KEY_SHEET_MATERIAL_ENABLED, STORAGE_KEY_SHEET_MATERIAL_LEVEL } from '../services/SheetMaterialSettingsStore';
 import { sheetContentBackground, sheetMaterialOptions } from '../utils/SheetMaterial';
 import { STORAGE_KEY_MEDIA_COMMENT_BACKGROUND } from '../services/MediaSettingsStore';
 // Post detail destination. It lives inside the root HdsNavigation stack to
@@ -84,6 +91,8 @@ import { EmojiSpans } from '../components/EmojiSpans';
 import { EmojiCopyMenu } from '../utils/EmojiCopyMenu';
 import { openExternalLink, requestSearch } from '../utils/PostEntities';
 import { hapticTick } from '../utils/Haptics';
+import { symbolMotionEnabled } from '../utils/AppMotion';
+import { STORAGE_KEY_REDUCE_MOTION, STORAGE_KEY_SYMBOL_EFFECTS, STORAGE_KEY_MOTION_AMPLITUDE } from '../services/MotionSettingsStore';
 import { GripHandManager } from '../utils/GripHandManager';
 import { cardSurfaceColor, fieldSurfaceColor, pageSurfaceColor } from '../utils/ThemeColors';
 import { formatPostDetailTime, STORAGE_KEY_POST_TIME_NOW } from '../utils/PostTime';
@@ -129,13 +138,24 @@ export function PostDetailBuilder(): void {
 
 @Component
 export struct PostDetail {
+  @StorageProp(STORAGE_KEY_COMPONENT_HDR_RATIO) private componentHdrRatio: number = DEFAULT_COMPONENT_HDR_RATIO;
+  @StorageProp('harmonyx.page_background') private pageBackgroundValue: string = '';
+  @State private pageMotion: PageTransitionMotion = new PageTransitionMotion();
+  @StorageProp(STORAGE_KEY_REDUCE_MOTION) private reduceMotion: boolean = false;
+  @StorageProp(STORAGE_KEY_SYMBOL_EFFECTS) private symbolEffects: boolean = true;
+  @StorageProp(STORAGE_KEY_MOTION_AMPLITUDE) private motionAmplitude: number = 1;
+  @State private likeSymbolTrigger: number = -1;
+  @State private repostSymbolTrigger: number = -1;
+  @State private bookmarkSymbolTrigger: number = -1;
+
+  @StorageProp(STORAGE_KEY_PAGE_TRANSITION_MODE) private pageTransitionMode: string = DEFAULT_PAGE_TRANSITION_MODE;
   @StorageProp('harmonyx.compact_window') private sheetCompactWindow: boolean = false;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @StorageProp(STORAGE_KEY_SYSTEM_EMOJI_ENABLED) private systemEmojiEnabled: boolean = false;
   @StorageLink(STORAGE_KEY_FILTER_HIDE_ADS) private filterHideAds: boolean = true;
   @StorageProp('harmonyx.breakpoint') private sheetWindowBreakpoint: string = 'sm';
   @StorageProp(STORAGE_KEY_DESKTOP_LAYOUT) desktopLayoutEnabled: boolean = false;
-  @StorageProp(STORAGE_KEY_SHEET_MATERIAL_ENABLED) private sheetMaterialEnabled: boolean = false;
+  @StorageProp(STORAGE_KEY_SHEET_MATERIAL_ENABLED) private sheetMaterialEnabled: boolean = DEFAULT_SHEET_MATERIAL_ENABLED;
   @StorageProp(STORAGE_KEY_SHEET_MATERIAL_LEVEL) private sheetMaterialLevel: number = DEFAULT_SHEET_MATERIAL_LEVEL;
   @Prop embedded: boolean = false;
   @StorageProp(STORAGE_KEY_MEDIA_COMMENT_BACKGROUND) private mediaCommentBackground: boolean = true;
@@ -286,7 +306,7 @@ export struct PostDetail {
   }
 
   private cardMaterial(): uiMaterial.Material | undefined {
-    if (this.transparentEmbeddedBackground() || !deviceInfo.apiAvailable('26.0.0')) {
+    if (!this.usesCardMaterial()) {
       return undefined;
     }
     return new uiMaterial.ImmersiveMaterial({
@@ -294,6 +314,11 @@ export struct PostDetail {
       applyShadow: true,
       colorInvert: true
     });
+  }
+
+  private usesCardMaterial(): boolean {
+    return !this.transparentEmbeddedBackground() && !postCardUsesCustomSurface(this.pageBackgroundValue) &&
+      deviceInfo.apiAvailable('26.0.0');
   }
 
   private inputMaterial(): uiMaterial.Material | undefined {
@@ -1123,7 +1148,7 @@ export struct PostDetail {
           this.text($r('app.string.post_detail_reply_to_comment'))).fontFamily(this.appFontFamily)
           .width('100%')
           .fontSize($r('sys.float.Body_S'))
-          .fontColor($r('app.color.text_secondary'))
+          .fontColor(pageTextColor($r('app.color.text_secondary'), this.embedded ? '' : this.pageBackgroundValue, postCardSurfaceColor($r('app.color.bg_card'), this.pageBackgroundValue)))
           .padding({ left: 10, top: 4 })
       }
       TweetCard({
@@ -1568,6 +1593,7 @@ export struct PostDetail {
     const completion: Promise<boolean> = postLikeStore.setLike(post, nextLiked,
       (): Promise<boolean> => this.writeLike(post, nextLiked));
     this.syncLikeState();
+    if (symbolMotionEnabled()) { this.likeSymbolTrigger++; }
     hapticTick();
     try {
       await completion;
@@ -1628,6 +1654,7 @@ export struct PostDetail {
     }
     const nextReposted: boolean = !this.reposted;
     this.applyRepostState(post, nextReposted);
+    if (symbolMotionEnabled()) { this.repostSymbolTrigger++; }
     hapticTick();
     if (!this.isXPostId(post.id)) {
       return;
@@ -1674,6 +1701,7 @@ export struct PostDetail {
     const next: boolean = !this.bookmarked;
     this.bookmarked = next;
     current.bookmarked = next;
+    if (symbolMotionEnabled()) { this.bookmarkSymbolTrigger++; }
     hapticTick();
     this.bookmarkPending = true;
     const result: XPrivateResult = await xPrivateClient.bookmark(current.id, next);
@@ -1833,7 +1861,8 @@ export struct PostDetail {
     Row({ space: 12 }) {
       Text(label).fontFamily(this.appFontFamily)
         .fontSize($r('sys.float.Body_L'))
-        .fontColor($r('app.color.text_primary'))
+        .fontColor(pageTextColor($r('app.color.text_primary'), this.embedded ? '' : this.pageBackgroundValue, this.replySortMode === mode ?
+      fieldSurfaceColor(this.themeDisplayMode, this.themeDarkSurface) : Color.Transparent))
         .layoutWeight(1)
       if (this.replySortMode === mode) {
         SymbolGlyph($r('sys.symbol.checkmark_circle_fill'))
@@ -1842,7 +1871,8 @@ export struct PostDetail {
       } else {
         SymbolGlyph($r('sys.symbol.circle'))
           .fontSize(24)
-          .fontColor([$r('app.color.text_secondary')])
+          .fontColor([pageTextColor($r('app.color.text_secondary'), this.embedded ? '' : this.pageBackgroundValue, this.replySortMode === mode ?
+      fieldSurfaceColor(this.themeDisplayMode, this.themeDarkSurface) : Color.Transparent)])
       }
     }
     .width('100%')
@@ -1881,10 +1911,10 @@ export struct PostDetail {
         Text(this.replySortLabel()).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Subtitle_L'))
           .fontWeight(FontWeight.Medium)
-          .fontColor($r('app.color.text_primary'))
+          .fontColor(pageTextColor($r('app.color.text_primary'), this.embedded ? '' : this.pageBackgroundValue, postCardSurfaceColor($r('app.color.bg_card'), this.pageBackgroundValue)))
         SymbolGlyph($r('sys.symbol.chevron_down'))
           .fontSize(16)
-          .fontColor([$r('app.color.text_secondary')])
+          .fontColor([pageTextColor($r('app.color.text_secondary'), this.embedded ? '' : this.pageBackgroundValue, postCardSurfaceColor($r('app.color.bg_card'), this.pageBackgroundValue))])
       }
       .height(44)
       .padding({ left: 4, right: 10 })
@@ -1900,10 +1930,10 @@ export struct PostDetail {
         Text($r('app.string.post_detail_view_quotes')).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Body_L'))
           .fontWeight(FontWeight.Medium)
-          .fontColor($r('app.color.text_primary'))
+          .fontColor(pageTextColor($r('app.color.text_primary'), this.embedded ? '' : this.pageBackgroundValue, postCardSurfaceColor($r('app.color.bg_card'), this.pageBackgroundValue)))
         SymbolGlyph($r('sys.symbol.chevron_right'))
           .fontSize(16)
-          .fontColor([$r('app.color.text_secondary')])
+          .fontColor([pageTextColor($r('app.color.text_secondary'), this.embedded ? '' : this.pageBackgroundValue, postCardSurfaceColor($r('app.color.bg_card'), this.pageBackgroundValue))])
       }
       .height(44)
       .padding({ left: 10, right: 4 })
@@ -1940,10 +1970,10 @@ export struct PostDetail {
       Text(formatCount(value)).fontFamily(this.appFontFamily)
         .fontSize($r('sys.float.Subtitle_L'))
         .fontWeight(FontWeight.Bold)
-        .fontColor($r('app.color.text_primary'))
+        .fontColor(pageTextColor($r('app.color.text_primary'), this.embedded ? '' : this.pageBackgroundValue, postCardSurfaceColor($r('app.color.bg_card'), this.pageBackgroundValue)))
       Text(label).fontFamily(this.appFontFamily)
         .fontSize($r('sys.float.Body_S'))
-        .fontColor($r('app.color.text_secondary'))
+        .fontColor(pageTextColor($r('app.color.text_secondary'), this.embedded ? '' : this.pageBackgroundValue, postCardSurfaceColor($r('app.color.bg_card'), this.pageBackgroundValue)))
     }
     .layoutWeight(1)
     .alignItems(HorizontalAlign.Center)
@@ -1989,7 +2019,7 @@ export struct PostDetail {
 
   private embeddedSectionBackground(): ResourceColor {
     return this.embedded && this.mediaCommentBackground ?
-      cardSurfaceColor(this.themeDisplayMode, this.themeDarkSurface) : Color.Transparent;
+      postCardSurfaceColor(cardSurfaceColor(this.themeDisplayMode, this.themeDarkSurface), this.pageBackgroundValue) : Color.Transparent;
   }
 
   private postActionRadius(): number {
@@ -2003,6 +2033,11 @@ export struct PostDetail {
     }
   }
 
+  private postActionColor(color: ResourceColor): ResourceColor {
+    return pageTextColor(color, this.embedded ? '' : this.pageBackgroundValue,
+      postCardSurfaceColor(cardSurfaceColor(this.themeDisplayMode, this.themeDarkSurface), this.pageBackgroundValue));
+  }
+
   @Builder
   private PostActions(): void {
     if (this.tweet !== null) {
@@ -2011,10 +2046,10 @@ export struct PostDetail {
           Row({ space: 5 }) {
             SymbolGlyph($r('sys.symbol.ellipsis_bubble'))
               .fontSize($r('app.float.post_detail_action_icon'))
-              .fontColor([$r('app.color.text_secondary')])
+              .fontColor([this.postActionColor($r('app.color.text_secondary'))])
             Text(formatCount(this.tweet.metrics.replyCount)).fontFamily(this.appFontFamily)
               .fontSize($r('app.float.post_detail_action_text'))
-              .fontColor($r('app.color.text_secondary'))
+              .fontColor(this.postActionColor($r('app.color.text_secondary')))
           }
           .justifyContent(FlexAlign.Center)
         }
@@ -2028,13 +2063,16 @@ export struct PostDetail {
         Button({ type: ButtonType.Normal, stateEffect: true }) {
           Row({ space: 5 }) {
             SymbolGlyph($r('sys.symbol.repeat'))
+              .symbolEffect(!this.reduceMotion && this.symbolEffects && this.motionAmplitude > 0 ?
+                new BounceSymbolEffect(EffectScope.WHOLE) : new SymbolEffect(), this.repostSymbolTrigger)
               .fontSize($r('app.float.post_detail_action_icon'))
-              .fontColor([this.reposted ? $r('app.color.repost') : $r('app.color.text_secondary')])
+              .fontColor([this.reposted ? this.postActionColor($r('app.color.repost')) : this.postActionColor($r('app.color.text_secondary'))])
+              .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.reposted, this.componentHdrRatio))
               .scale({ x: this.reposted ? 1.08 : 1, y: this.reposted ? 1.08 : 1 })
               .animation({ duration: 150, curve: Curve.EaseOut })
             Text(formatCount(this.tweet.metrics.repostCount)).fontFamily(this.appFontFamily)
               .fontSize($r('app.float.post_detail_action_text'))
-              .fontColor(this.reposted ? $r('app.color.repost') : $r('app.color.text_secondary'))
+              .fontColor(this.reposted ? this.postActionColor($r('app.color.repost')) : this.postActionColor($r('app.color.text_secondary')))
               .animation({ duration: 150, curve: Curve.EaseOut })
           }
           .justifyContent(FlexAlign.Center)
@@ -2049,13 +2087,16 @@ export struct PostDetail {
         Button({ type: ButtonType.Normal, stateEffect: true }) {
           Row({ space: 5 }) {
             SymbolGlyph(this.liked ? $r('sys.symbol.heart_fill') : $r('sys.symbol.heart'))
+              .symbolEffect(!this.reduceMotion && this.symbolEffects && this.motionAmplitude > 0 ?
+                new BounceSymbolEffect(EffectScope.WHOLE) : new SymbolEffect(), this.likeSymbolTrigger)
               .fontSize($r('app.float.post_detail_action_icon'))
-              .fontColor([this.liked ? $r('app.color.like') : $r('app.color.text_secondary')])
+              .fontColor([this.liked ? this.postActionColor($r('app.color.like')) : this.postActionColor($r('app.color.text_secondary'))])
+              .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.liked, this.componentHdrRatio))
               .scale({ x: this.liked ? 1.08 : 1, y: this.liked ? 1.08 : 1 })
               .animation({ duration: 150, curve: Curve.EaseOut })
             Text(formatCount(this.likeCount)).fontFamily(this.appFontFamily)
               .fontSize($r('app.float.post_detail_action_text'))
-              .fontColor(this.liked ? $r('app.color.like') : $r('app.color.text_secondary'))
+              .fontColor(this.liked ? this.postActionColor($r('app.color.like')) : this.postActionColor($r('app.color.text_secondary')))
               .animation({ duration: 150, curve: Curve.EaseOut })
           }
           .justifyContent(FlexAlign.Center)
@@ -2070,8 +2111,11 @@ export struct PostDetail {
         Button({ type: ButtonType.Normal, stateEffect: true }) {
           Row({ space: 5 }) {
             SymbolGlyph(this.bookmarked ? $r('sys.symbol.bookmark_fill') : $r('sys.symbol.bookmark'))
+              .symbolEffect(!this.reduceMotion && this.symbolEffects && this.motionAmplitude > 0 ?
+                new BounceSymbolEffect(EffectScope.WHOLE) : new SymbolEffect(), this.bookmarkSymbolTrigger)
               .fontSize($r('app.float.post_detail_action_icon'))
-              .fontColor([this.bookmarked ? this.accentColor : $r('app.color.text_secondary')])
+              .fontColor([this.bookmarked ? this.postActionColor(this.accentColor) : this.postActionColor($r('app.color.text_secondary'))])
+              .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.bookmarked, this.componentHdrRatio))
               .scale({ x: this.bookmarked ? 1.08 : 1, y: this.bookmarked ? 1.08 : 1 })
               .animation({ duration: 150, curve: Curve.EaseOut })
           }
@@ -2090,7 +2134,7 @@ export struct PostDetail {
           Row({ space: 5 }) {
             SymbolGlyph($r('sys.symbol.share'))
               .fontSize($r('app.float.post_detail_action_icon'))
-              .fontColor([$r('app.color.text_secondary')])
+              .fontColor([this.postActionColor($r('app.color.text_secondary'))])
             }
             .justifyContent(FlexAlign.Center)
           }
@@ -2105,8 +2149,8 @@ export struct PostDetail {
       }
       .width('100%')
       .padding({ left: 4, right: 4, top: 2, bottom: 2 })
-      .backgroundColor(this.transparentEmbeddedBackground() || deviceInfo.apiAvailable('26.0.0') ? Color.Transparent :
-        cardSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
+      .backgroundColor(this.transparentEmbeddedBackground() || this.usesCardMaterial() ? Color.Transparent :
+        postCardSurfaceColor(cardSurfaceColor(this.themeDisplayMode, this.themeDarkSurface), this.pageBackgroundValue))
       .systemMaterial(this.cardMaterial())
       .borderRadius(this.postActionRadius())
       .clip(true)
@@ -2135,10 +2179,10 @@ export struct PostDetail {
             Text($r('app.string.EntryAbility_label')).fontFamily(this.appFontFamily)
               .fontSize($r('sys.float.Body_L'))
               .fontWeight(FontWeight.Bold)
-              .fontColor($r('app.color.text_primary'))
+              .fontColor(pageTextColor($r('app.color.text_primary'), this.embedded ? '' : this.pageBackgroundValue, Color.Transparent))
             Text('@' + this.tweet.author.username).fontFamily(this.appFontFamily)
               .fontSize($r('sys.float.Body_M'))
-              .fontColor($r('app.color.text_secondary'))
+              .fontColor(pageTextColor($r('app.color.text_secondary'), this.embedded ? '' : this.pageBackgroundValue, Color.Transparent))
           }
           .layoutWeight(1)
           .alignItems(HorizontalAlign.Start)
@@ -2147,19 +2191,19 @@ export struct PostDetail {
           .width('100%')
           .fontSize($r('sys.float.Subtitle_L'))
           .fontFamily(this.appFontFamily === DEFAULT_APP_FONT_FAMILY ? this.contentFontFamily : this.appFontFamily)
-          .fontColor($r('app.color.text_primary'))
+          .fontColor(pageTextColor($r('app.color.text_primary'), this.embedded ? '' : this.pageBackgroundValue, Color.Transparent))
           .maxLines(6)
           .textOverflow({ overflow: TextOverflow.Ellipsis })
         Text(this.postShareUrl(this.tweet)).fontFamily(this.appFontFamily)
           .width('100%')
           .fontSize($r('sys.float.Body_S'))
-          .fontColor($r('app.color.text_accent'))
+          .fontColor(pageTextColor($r('app.color.text_accent'), this.embedded ? '' : this.pageBackgroundValue, Color.Transparent))
           .maxLines(1)
           .textOverflow({ overflow: TextOverflow.Ellipsis })
       }
       .width(320)
       .padding(20)
-      .backgroundColor(pageSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
+      .backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue))
       .border({ width: 1, color: $r('app.color.divider') })
       .borderRadius(20)
     }
@@ -2309,7 +2353,9 @@ export struct PostDetail {
               Text() { EmojiSpans(this.getUIContext(), this.tweet.author.name, $r('sys.float.Subtitle_L'), this.systemEmojiEnabled) }.fontFamily(this.appFontFamily)
                 .fontSize($r('sys.float.Subtitle_L'))
                 .fontWeight(FontWeight.Bold)
-                .fontColor($r('app.color.text_primary'))
+                .fontColor(pageTextColor($r('app.color.text_primary'), this.embedded ? '' : this.pageBackgroundValue, postCardSurfaceColor(this.transparentEmbeddedBackground() ? Color.Transparent :
+        avatarTintSurface(this.avatarPalette, this.tweet.author.avatarUrl ?? '',
+        this.avatarTintEnabled, this.themeDisplayMode, this.themeDarkSurface, this.avatarThemeDark), this.pageBackgroundValue)))
                 .maxLines(1)
                 .textOverflow({ overflow: TextOverflow.Ellipsis })
                 .flexShrink(1)
@@ -2325,19 +2371,21 @@ export struct PostDetail {
             .width('100%')
             Text('@' + this.tweet.author.username).fontFamily(this.appFontFamily)
               .fontSize($r('sys.float.Body_M'))
-              .fontColor($r('app.color.text_secondary'))
+              .fontColor(pageTextColor($r('app.color.text_secondary'), this.embedded ? '' : this.pageBackgroundValue, postCardSurfaceColor(this.transparentEmbeddedBackground() ? Color.Transparent :
+        avatarTintSurface(this.avatarPalette, this.tweet.author.avatarUrl ?? '',
+        this.avatarTintEnabled, this.themeDisplayMode, this.themeDarkSurface, this.avatarThemeDark), this.pageBackgroundValue)))
               .onClick((): void => this.openAuthor())
           }
           .layoutWeight(1)
           .alignItems(HorizontalAlign.Start)
-          PostAdLabel({ presentation: this.tweet.presentation })
+          PostAdLabel({ foreground: this.postActionColor($r('app.color.text_secondary')), presentation: this.tweet.presentation })
           if (!this.isOwnPost()) {
-            if (this.tweet !== null) { PostOverflowButton({ tweet: this.tweet }) }
+            if (this.tweet !== null) { PostOverflowButton({ foreground: this.postActionColor($r('app.color.text_secondary')), tweet: this.tweet }) }
           } else if (this.hasPostMenu()) {
             Stack() {
               SymbolGlyph($r('sys.symbol.ellipsis_circle'))
                 .fontSize(22)
-                .fontColor([$r('app.color.text_primary')])
+                .fontColor([pageTextColor($r('app.color.text_primary'), this.embedded ? '' : this.pageBackgroundValue, fieldSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))])
             }
             .width(36)
             .height(36)
@@ -2362,7 +2410,9 @@ export struct PostDetail {
           Text() { EmojiSpans(this.getUIContext(), this.heroTranslatedText, $r('sys.float.Title_S'), this.systemEmojiEnabled) }
             .fontSize($r('sys.float.Title_S'))
             .fontFamily(this.appFontFamily === DEFAULT_APP_FONT_FAMILY ? this.contentFontFamily : this.appFontFamily)
-            .fontColor($r('app.color.text_primary'))
+            .fontColor(pageTextColor($r('app.color.text_primary'), this.embedded ? '' : this.pageBackgroundValue, postCardSurfaceColor(this.transparentEmbeddedBackground() ? Color.Transparent :
+        avatarTintSurface(this.avatarPalette, this.tweet.author.avatarUrl ?? '',
+        this.avatarTintEnabled, this.themeDisplayMode, this.themeDarkSurface, this.avatarThemeDark), this.pageBackgroundValue)))
             .width('100%')
             .copyOption(CopyOptions.LocalDevice)
             .accessibilityText(this.heroTranslatedText)
@@ -2391,7 +2441,9 @@ export struct PostDetail {
           }
             .fontSize($r('sys.float.Title_S'))
             .fontFamily(this.appFontFamily === DEFAULT_APP_FONT_FAMILY ? this.contentFontFamily : this.appFontFamily)
-            .fontColor($r('app.color.text_primary'))
+            .fontColor(pageTextColor($r('app.color.text_primary'), this.embedded ? '' : this.pageBackgroundValue, postCardSurfaceColor(this.transparentEmbeddedBackground() ? Color.Transparent :
+        avatarTintSurface(this.avatarPalette, this.tweet.author.avatarUrl ?? '',
+        this.avatarTintEnabled, this.themeDisplayMode, this.themeDarkSurface, this.avatarThemeDark), this.pageBackgroundValue)))
             .width('100%')
             .copyOption(CopyOptions.LocalDevice)
             .accessibilityText(this.tweet.text)
@@ -2405,7 +2457,9 @@ export struct PostDetail {
               .color(this.accentColor)
             Text($r('app.string.post_translating')).fontFamily(this.appFontFamily)
               .fontSize($r('sys.float.Body_S'))
-              .fontColor($r('app.color.text_secondary'))
+              .fontColor(pageTextColor($r('app.color.text_secondary'), this.embedded ? '' : this.pageBackgroundValue, postCardSurfaceColor(this.transparentEmbeddedBackground() ? Color.Transparent :
+        avatarTintSurface(this.avatarPalette, this.tweet.author.avatarUrl ?? '',
+        this.avatarTintEnabled, this.themeDisplayMode, this.themeDarkSurface, this.avatarThemeDark), this.pageBackgroundValue)))
           }
         }
         if (this.heroTranslatedText.length > 0 && !this.translationReplaceOriginal && this.tweet.presentation?.visibility?.hidden !== true) {
@@ -2413,7 +2467,9 @@ export struct PostDetail {
             .fontSize($r('sys.float.Body_L'))
             .fontFamily(this.appFontFamily === DEFAULT_APP_FONT_FAMILY ? this.contentFontFamily : this.appFontFamily)
             .fontWeight(FontWeight.Medium)
-            .fontColor($r('app.color.text_primary'))
+            .fontColor(pageTextColor($r('app.color.text_primary'), this.embedded ? '' : this.pageBackgroundValue, postCardSurfaceColor(this.transparentEmbeddedBackground() ? Color.Transparent :
+        avatarTintSurface(this.avatarPalette, this.tweet.author.avatarUrl ?? '',
+        this.avatarTintEnabled, this.themeDisplayMode, this.themeDarkSurface, this.avatarThemeDark), this.pageBackgroundValue)))
             .width('100%')
             .padding({ left: 10 })
             .border({ width: { left: 2 }, color: this.accentColor })
@@ -2422,6 +2478,10 @@ export struct PostDetail {
           // The focal video keeps playing in a picture-in-picture window when
           // the reader scrolls down to the replies.
           PostMedia({
+            controlsUsePageBackground: !this.embedded,
+            controlSurface: postCardSurfaceColor(this.transparentEmbeddedBackground() ? Color.Transparent :
+              avatarTintSurface(this.avatarPalette, this.tweet.author.avatarUrl ?? '', this.avatarTintEnabled,
+                this.themeDisplayMode, this.themeDarkSurface, this.avatarThemeDark), this.pageBackgroundValue),
             sourceTweet: this.tweet,
             attachments: this.tweet.attachments,
             pipEnabled: true,
@@ -2447,19 +2507,23 @@ export struct PostDetail {
           Span(this.postTimePrefix())
           Span(formatCount(postViewCounts.countFor(this.tweet.id, this.tweet.metrics.viewCount, this.viewCountRevision)))
             .fontWeight(FontWeight.Bold)
-            .fontColor($r('app.color.text_primary'))
+            .fontColor(pageTextColor($r('app.color.text_primary'), this.embedded ? '' : this.pageBackgroundValue, postCardSurfaceColor(this.transparentEmbeddedBackground() ? Color.Transparent :
+        avatarTintSurface(this.avatarPalette, this.tweet.author.avatarUrl ?? '',
+        this.avatarTintEnabled, this.themeDisplayMode, this.themeDarkSurface, this.avatarThemeDark), this.pageBackgroundValue)))
           Span(' ' + this.text($r('app.string.post_detail_views')))
         }.fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Body_M'))
-          .fontColor($r('app.color.text_secondary'))
+          .fontColor(pageTextColor($r('app.color.text_secondary'), this.embedded ? '' : this.pageBackgroundValue, postCardSurfaceColor(this.transparentEmbeddedBackground() ? Color.Transparent :
+        avatarTintSurface(this.avatarPalette, this.tweet.author.avatarUrl ?? '',
+        this.avatarTintEnabled, this.themeDisplayMode, this.themeDarkSurface, this.avatarThemeDark), this.pageBackgroundValue)))
           .width('100%')
           .copyOption(CopyOptions.LocalDevice)
       }
       .width('100%')
       .padding({ left: 4, right: 4, top: 6, bottom: this.embedded ? 14 : 4 })
-      .backgroundColor(this.transparentEmbeddedBackground() ? Color.Transparent :
+      .backgroundColor(postCardSurfaceColor(this.transparentEmbeddedBackground() ? Color.Transparent :
         avatarTintSurface(this.avatarPalette, this.tweet.author.avatarUrl ?? '',
-        this.avatarTintEnabled, this.themeDisplayMode, this.themeDarkSurface, this.avatarThemeDark))
+        this.avatarTintEnabled, this.themeDisplayMode, this.themeDarkSurface, this.avatarThemeDark), this.pageBackgroundValue))
       .borderRadius(this.embeddedSectionRadius())
       .clip(this.embedded)
       .scale({ x: this.gestureSharing ? 0.82 : 1, y: this.gestureSharing ? 0.82 : 1 })
@@ -2494,7 +2558,7 @@ export struct PostDetail {
           .width('100%')
           .height(20)
           .fontSize($r('sys.float.Body_S'))
-          .fontColor($r('app.color.text_secondary'))
+          .fontColor(pageTextColor($r('app.color.text_secondary'), this.embedded ? '' : this.pageBackgroundValue, this.embeddedSectionBackground()))
           .padding({ left: 4, right: 4, top: 4 })
 
         if (this.replies.length > 0) {
@@ -2502,7 +2566,7 @@ export struct PostDetail {
             .width('100%')
             .fontSize($r('sys.float.Subtitle_L'))
             .fontWeight(FontWeight.Bold)
-            .fontColor($r('app.color.text_primary'))
+            .fontColor(pageTextColor($r('app.color.text_primary'), this.embedded ? '' : this.pageBackgroundValue, this.embeddedSectionBackground()))
             .padding({ left: 4, right: 4, top: 8 })
         }
         Column({ space: 0 }) {
@@ -2542,11 +2606,11 @@ export struct PostDetail {
           Text($r('app.string.post_detail_discover_more')).fontFamily(this.appFontFamily)
             .fontSize($r('sys.float.Subtitle_L'))
             .fontWeight(FontWeight.Bold)
-            .fontColor($r('app.color.text_primary'))
+            .fontColor(pageTextColor($r('app.color.text_primary'), this.embedded ? '' : this.pageBackgroundValue, this.embeddedSectionBackground()))
             .width('100%')
           Text($r('app.string.post_detail_discover_more_desc')).fontFamily(this.appFontFamily)
             .fontSize($r('sys.float.Body_S'))
-            .fontColor($r('app.color.text_secondary'))
+            .fontColor(pageTextColor($r('app.color.text_secondary'), this.embedded ? '' : this.pageBackgroundValue, this.embeddedSectionBackground()))
             .width('100%')
         }
         .width('100%')
@@ -2580,7 +2644,7 @@ export struct PostDetail {
         if (this.threadLoadMoreFailed) {
           Text($r('app.string.post_detail_unavailable')).fontFamily(this.appFontFamily)
             .fontSize($r('sys.float.Body_S'))
-            .fontColor($r('app.color.text_secondary'))
+            .fontColor(pageTextColor($r('app.color.text_secondary'), this.embedded ? '' : this.pageBackgroundValue, postCardSurfaceColor($r('app.color.bg_card'), this.pageBackgroundValue)))
         }
         Button(this.threadLoadMoreFailed ? $r('app.string.common_retry') : $r('app.string.timeline_load_more'))
           .fontSize($r('sys.float.Body_M'))
@@ -2782,6 +2846,8 @@ export struct PostDetail {
       }, this.sheetMaterialEnabled, this.sheetMaterialLevel, this.sheetWindowBreakpoint, this.sheetCompactWindow))
     } else {
     HdsNavDestination() {
+      Stack({ alignContent: Alignment.TopStart }) {
+        appPageBackground()
       // The whole content area is the shared element: the tapped row follows
       // this container while it grows from the row's rect to the full page, so
       // the post page is revealed through a window that starts as the row
@@ -2793,7 +2859,7 @@ export struct PostDetail {
       .width('100%')
       .height('100%')
       .clip(true)
-      .backgroundColor(pageSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
+      .backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue))
       .geometryTransition(this.sharedElementId)
       // The near-opaque transition sits on the shared element itself, so the
       // page above stays free to use the platform's own page transition.
@@ -2810,15 +2876,20 @@ export struct PostDetail {
           this.replySortSheetVisible = false;
         }
       }, this.sheetMaterialEnabled, this.sheetMaterialLevel, this.sheetWindowBreakpoint, this.sheetCompactWindow))
+    
+      }.width('100%').height('100%')
     }
+    .scale({ x: this.pageMotion.scale, y: this.pageMotion.scale })
+    .opacity(this.pageMotion.opacity)
     // Two ways in, one page. A reply row expands into this page, so that entry
     // keeps the platform's page transition switched off and lets the shared
     // element do all the moving. Every other entry point - the timelines, the
     // alert rows, a deep link - uses the platform's own page transition, as
     // every other child page in the app does.
-    .systemTransition(this.sharedElementId.length > 0 ?
-      NavigationSystemTransitionType.NONE : NavigationSystemTransitionType.DEFAULT)
+    .systemTransition(pageSystemTransition(this.pageTransitionMode, this.sharedElementId.length > 0 ?
+      NavigationSystemTransitionType.NONE : NavigationSystemTransitionType.DEFAULT))
     .onReady((context: NavDestinationContext): void => {
+      this.pageMotion.attach(context);
       const param: PostDetailRouteParam = context.pathInfo?.param as PostDetailRouteParam;
       if (param !== undefined && param !== null) {
         this.applyRouteParam(param);
@@ -2899,7 +2970,7 @@ export struct PostDetail {
     // Transparent while the row expands, so the list is not blanked out by a
     // freshly mounted page before the expansion has covered it.
     .backgroundColor(this.sharedElementId.length > 0 ? Color.Transparent :
-      pageSurfaceColor(this.themeDisplayMode, this.themeDarkSurface));
+      pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue));
     }
   }
 }

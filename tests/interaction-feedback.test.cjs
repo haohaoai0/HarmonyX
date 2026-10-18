@@ -42,6 +42,24 @@ test('an explicitly disabled fullscreen preference survives the new default', ()
   assert.equal(new api.InteractionSettingsStore().load({}).photoFullscreen, false);
 });
 
+test('exit confirmation defaults on, persists when disabled, and keeps published state on save failure', () => {
+  const f = settingsFixture(), store = f.api.interactionSettingsStore;
+  const defaults = store.load({});
+  assert.equal(defaults.confirmAppExit, true);
+  store.publish(defaults);
+  assert.equal(f.storage.get(f.api.STORAGE_KEY_CONFIRM_APP_EXIT), true);
+  assert.equal(store.saveConfirmAppExit({}, false), true);
+  assert.equal(f.storage.get(f.api.STORAGE_KEY_CONFIRM_APP_EXIT), false);
+  const reopened = new f.api.InteractionSettingsStore();
+  assert.equal(reopened.load({}).confirmAppExit, false);
+  f.storage.clear();
+  reopened.publish(reopened.load({}));
+  assert.equal(f.storage.get(f.api.STORAGE_KEY_CONFIRM_APP_EXIT), false);
+  f.fail();
+  assert.equal(store.saveConfirmAppExit({}, true), false);
+  assert.equal(f.storage.get(f.api.STORAGE_KEY_CONFIRM_APP_EXIT), false);
+});
+
 test('independent interaction preferences survive a new store instance', () => {
   const { api, storage } = settingsFixture(), store = api.interactionSettingsStore;
   store.savePhotoFullscreen({}, true); store.saveHomeFloatingAction({}, 'refresh');
@@ -187,7 +205,7 @@ test('fullscreen photo viewport remains stable when controls are toggled on a sh
 test('taps animate floating controls and each active zoom hides them without shrinking the image', () => {
   const code = compile(`class Harness { ${methods('pages/PhotoViewer', 'PhotoViewer',
     ['photoViewportTop', 'photoViewportHeight', 'setControlsVisible', 'onPhotoTap', 'onPhotoZoomStart'])} }`);
-  const Viewer = new Function('Curve', `${code}; return Harness;`)({ EaseOut: 0 });
+  const Viewer = new Function('Curve', 'motionDuration', `${code}; return Harness;`)({ EaseOut: 0 }, value => value);
   const animations = [];
   const viewer = Object.assign(new Viewer(), { current: 1, controlsVisible: false,
     showPostSheet: false, closing: false, viewerHeight: 720, windowHeight: 780,

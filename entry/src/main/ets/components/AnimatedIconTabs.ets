@@ -1,8 +1,12 @@
+import { motionDuration, motionCurve } from '../utils/AppMotion';
+import { hapticTick } from '../utils/Haptics';
+import { DEFAULT_COMPONENT_HDR_RATIO, STORAGE_KEY_COMPONENT_HDR_RATIO } from '../services/ComponentHdrSettingsStore';
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
 import { LengthMetrics, UIContext } from '@kit.ArkUI';
 import { resourceManager } from '@kit.LocalizationKit';
 import { ProfileTabMotion } from '../utils/ProfileTabMotion';
 import { SystemMaterialUtil } from '../utils/SystemMaterial';
+import { ComponentHdrHighlight } from '../utils/ComponentHdrHighlight';
 
 export interface IconTabItem {
   key: string;
@@ -26,6 +30,7 @@ const TAB_MIN_GAP_VP: number = 4;
 // label. Pagers supply fractional progress, other surfaces animate selection.
 @Component
 export struct AnimatedIconTabs {
+  @StorageProp(STORAGE_KEY_COMPONENT_HDR_RATIO) private componentHdrRatio: number = DEFAULT_COMPONENT_HDR_RATIO;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @Prop items: IconTabItem[] = [];
   @Prop @Watch('selectionChanged') selected: number = 0;
@@ -62,7 +67,7 @@ export struct AnimatedIconTabs {
 
   private selectionChanged(): void {
     if (this.tabPosition < 0) {
-      this.getUIContext().animateTo({ duration: 280, curve: Curve.EaseOut }, (): void => {
+      this.getUIContext().animateTo({ duration: motionDuration(280), curve: motionCurve() }, (): void => {
         this.animatedPosition = this.selected;
       });
     }
@@ -205,7 +210,7 @@ export struct AnimatedIconTabs {
       const target: number = area.width >= this.viewportWidth || area.start < current ? area.start :
         area.start + area.width > current + this.viewportWidth ? area.start + area.width - this.viewportWidth : current;
       if (Math.abs(target - current) > 0.5) {
-        this.scroller.scrollTo({ xOffset: Math.max(0, target), yOffset: 0, animation: { duration: 280 } });
+        this.scroller.scrollTo({ xOffset: Math.max(0, target), yOffset: 0, animation: { duration: motionDuration(280) } });
       }
       return;
     }
@@ -214,7 +219,7 @@ export struct AnimatedIconTabs {
     const right: number = left + this.slotWidthAt(this.selected, this.selected);
     const current: number = this.scroller.currentOffset().xOffset;
     const target: number = left < current ? left : right > current + this.viewportWidth ? right - this.viewportWidth : current;
-    this.scroller.scrollTo({ xOffset: Math.max(0, target), yOffset: 0, animation: { duration: 280 } });
+    this.scroller.scrollTo({ xOffset: Math.max(0, target), yOffset: 0, animation: { duration: motionDuration(280) } });
   }
 
   private measureButton(index: number, area: Area): void {
@@ -249,6 +254,7 @@ export struct AnimatedIconTabs {
       }
     }.width(LayoutPolicy.fixAtIdealSize).height(this.buttonHeight()).justifyContent(FlexAlign.Center)
       .padding({ left: this.buttonGap, right: this.buttonGap })
+      .compositingFilter(ComponentHdrHighlight.filter(this.getUIContext(), active && this.fraction(index) > 0, this.componentHdrRatio))
       .opacity(active ? this.fraction(index) : 1 - this.fraction(index))
   }
 
@@ -276,7 +282,7 @@ export struct AnimatedIconTabs {
       .borderRadius(this.buttonHeight() / 2).clip(true)
       .id('harmonyx-capsule-tab-' + this.items[index].key)
       .accessibilityGroup(true).accessibilityText(this.label(index)).accessibilitySelected(this.selected === index)
-      .onClick((): void => this.onSelect(index))
+      .onClick((): void => { hapticTick(); this.onSelect(index); })
       .onAreaChange((_old: Area, area: Area): void => this.measureButton(index, area))
   }
 
@@ -306,6 +312,7 @@ export struct AnimatedIconTabs {
           }
         }.width(this.slotWidthAt(index, this.motionPosition())).height(this.barHeight - 3)
           .justifyContent(FlexAlign.Center)
+          .compositingFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.fraction(index) > 0, this.componentHdrRatio))
           .scale({ x: Math.max(0.001, this.fraction(index)), y: 1 }).opacity(this.fraction(index))
       }.width(this.slotWidthAt(index, this.motionPosition())).height(this.barHeight - 3).clip(false)
         .translate({ x: this.slotStartAt(index, this.motionPosition()) })
@@ -334,6 +341,7 @@ export struct AnimatedIconTabs {
           }
         }.width(this.expanded()).height(this.barHeight - 3).justifyContent(FlexAlign.Center)
           .translate({ x: (this.base() - this.expanded()) / 2 })
+          .compositingFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.fraction(index) > 0, this.componentHdrRatio))
           .scale({ x: Math.max(0.001, this.fraction(index)), y: 1 }).opacity(this.fraction(index))
       }.width(this.base()).height(this.barHeight - 3).clip(false)
         .translate({ x: this.motionCenter(index) - this.base() / 2 })
@@ -349,7 +357,7 @@ export struct AnimatedIconTabs {
         .padding(0).backgroundColor(Color.Transparent)
         .translate({ x: this.slotStartAt(index, this.motionPosition()) })
         .accessibilityText(this.label(index)).accessibilitySelected(this.selected === index)
-        .onClick((): void => this.onSelect(index))
+        .onClick((): void => { hapticTick(); this.onSelect(index); })
     } else {
       // Fixed layout width; transform the transparent hit area to match the
       // expanding slot, so the complete label remains clickable during motion.
@@ -359,7 +367,7 @@ export struct AnimatedIconTabs {
           y: 1, centerX: 0 })
         .translate({ x: this.slotStartAt(index, this.motionPosition()) })
         .accessibilityText(this.label(index)).accessibilitySelected(this.selected === index)
-        .onClick((): void => this.onSelect(index))
+        .onClick((): void => { hapticTick(); this.onSelect(index); })
     }
   }
 

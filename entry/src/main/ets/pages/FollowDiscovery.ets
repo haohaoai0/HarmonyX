@@ -1,3 +1,8 @@
+import { pageTextColor } from '../utils/ThemeColors';
+import { appPageBackground } from '../components/PageBackgroundLayer';
+import { pageCanvasColor, pageReadingSurfaceColor } from '../utils/ThemeColors';
+import { STORAGE_KEY_PAGE_TRANSITION_MODE, DEFAULT_PAGE_TRANSITION_MODE } from '../services/PageTransitionSettingsStore';
+import { pageSystemTransition, PageTransitionMotion } from '../utils/PageTransition';
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
 import { AnimatedIconTabs } from '../components/AnimatedIconTabs';
 import { ProfileTabMotion } from '../utils/ProfileTabMotion';
@@ -30,6 +35,9 @@ export function FollowDiscoveryBuilder(): void { FollowDiscovery(); }
 
 @Component
 export struct FollowDiscovery {
+  @StorageProp('harmonyx.page_background') private pageBackgroundValue: string = '';
+  @State private pageMotion: PageTransitionMotion = new PageTransitionMotion();
+  @StorageProp(STORAGE_KEY_PAGE_TRANSITION_MODE) private pageTransitionMode: string = DEFAULT_PAGE_TRANSITION_MODE;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @Consume('pageStack') pageStack: NavPathStack;
   @StorageProp('harmonyx.status_bar_height') statusBarHeight: number = 0;
@@ -228,11 +236,11 @@ export struct FollowDiscovery {
   private FindFriends(): void {
     Column({ space: 12 }) {
       Text($r('app.string.follow_find_friends')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Title_L')).fontWeight(FontWeight.Bold)
-        .fontColor($r('app.color.text_primary')).width('100%')
+        .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)).width('100%')
       Text($r('app.string.follow_contacts_description')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L'))
-        .fontColor($r('app.color.text_secondary')).width('100%')
+        .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).width('100%')
       Text($r('app.string.follow_contacts_sdk_unavailable')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M'))
-        .fontColor($r('app.color.text_secondary')).width('100%')
+        .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).width('100%')
       Button($r('app.string.follow_contacts_open_x')).fontSize($r('sys.float.Body_L')).fontWeight(FontWeight.Bold)
         .fontColor($r('app.color.text_on_inverse')).backgroundColor($r('app.color.text_primary'))
         .height(44).width('100%').margin({ top: 4 })
@@ -253,7 +261,7 @@ export struct FollowDiscovery {
             .fontSize($r('sys.float.Body_L')).fontWeight(FontWeight.Bold)
             .height($r('app.float.follow_category_height')).padding({ left: 18, right: 18 })
             .backgroundColor(index === this.selectedCategory ? this.accentColor : Color.Transparent)
-            .fontColor(index === this.selectedCategory ? $r('app.color.text_on_accent') : $r('app.color.text_primary'))
+            .fontColor(index === this.selectedCategory ? $r('app.color.text_on_accent') : pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, index === this.selectedCategory ? this.accentColor : Color.Transparent))
             .border({ width: 1, color: index === this.selectedCategory ? Color.Transparent : $r('app.color.divider') })
             .onClick((): void => {
               if (this.selectedCategory === index) { return; }
@@ -280,7 +288,7 @@ export struct FollowDiscovery {
     Column({ space: 12 }) {
       Row({ space: 12 }) {
         Text(pack.title).fontFamily(this.appFontFamily).fontSize($r('sys.float.Subtitle_L')).fontWeight(FontWeight.Bold)
-          .fontColor($r('app.color.text_primary')).layoutWeight(1)
+          .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)).layoutWeight(1)
         Button(pack.followed ? this.text($r('app.string.follow_pack_followed')) :
           this.text($r('app.string.profile_detail_follow')) + ' ' + pack.memberCount)
           .height($r('app.float.follow_button_height')).padding({ left: 22, right: 22 })
@@ -290,7 +298,7 @@ export struct FollowDiscovery {
           .onClick((): void => { this.followPack(pack); })
       }.width('100%').padding({ left: 16, right: 16 })
       if (pack.description.length > 0) {
-        Text(pack.description).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontColor($r('app.color.text_secondary'))
+        Text(pack.description).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
           .width('100%').padding({ left: 16, right: 16 })
       }
       Scroll() {
@@ -301,14 +309,14 @@ export struct FollowDiscovery {
                 fallbackText: row.name.substring(0, 1), fallbackColor: row.avatarColor })
               Row({ space: 3 }) {
                 Text(row.name).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontWeight(FontWeight.Bold)
-                  .fontColor($r('app.color.text_primary')).maxLines(1)
+                  .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)).maxLines(1)
                   .textOverflow({ overflow: TextOverflow.Ellipsis }).constraintSize({ maxWidth: 86 })
                 if (row.verified) {
                   SymbolGlyph($r('sys.symbol.checkmark_circle_fill')).fontSize(12)
                     .fontColor([verificationBadgeColor(row.verifiedType ?? '', this.accentColor)])
                 }
               }.justifyContent(FlexAlign.Center).width('100%')
-              Text('@' + row.username).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor($r('app.color.text_secondary'))
+              Text('@' + row.username).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
                 .maxLines(1).textOverflow({ overflow: TextOverflow.Ellipsis }).width('100%').textAlign(TextAlign.Center)
             }.width($r('app.float.follow_pack_member_width')).padding({ top: 8, bottom: 8 })
               .onClick((): void => { this.openUser(row); })
@@ -331,7 +339,7 @@ export struct FollowDiscovery {
     } else if (index !== 1 && this.rows.length > 0) {
       ListItem() {
         Text($r('app.string.follow_for_you')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Subtitle_L')).fontWeight(FontWeight.Bold)
-          .fontColor($r('app.color.text_primary')).width('100%').padding(16)
+          .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)).width('100%').padding(16)
       }
       ForEach(this.rows, (row: UserRow) => {
         ListItem() {
@@ -343,7 +351,7 @@ export struct FollowDiscovery {
     if (this.contentStatus(index).length > 0 && index !== 1) {
       ListItem() {
         Column({ space: 12 }) {
-          Text(this.contentStatus(index)).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor($r('app.color.text_secondary'))
+          Text(this.contentStatus(index)).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
             .textAlign(TextAlign.Center)
           Button($r('app.string.profile_retry')).backgroundColor(Color.Transparent).fontColor(this.accentColor)
             .onClick((): void => { this.load(true); })
@@ -370,6 +378,8 @@ export struct FollowDiscovery {
 
   build(): void {
     HdsNavDestination() {
+      Stack({ alignContent: Alignment.TopStart }) {
+        appPageBackground()
       Column() {
         this.TabsBar()
         Refresh({ refreshing: $$this.refreshing }) {
@@ -385,7 +395,13 @@ export struct FollowDiscovery {
           .onAnimationEnd((index: number): void => { this.tabPosition = index; })
         }.width('100%').layoutWeight(1).onRefreshing((): void => { this.load(true); })
       }.width('100%').height('100%').padding({ top: this.statusBarHeight + 60 })
+    
+      }.width('100%').height('100%')
     }
+    .scale({ x: this.pageMotion.scale, y: this.pageMotion.scale })
+    .opacity(this.pageMotion.opacity)
+    .onReady((context: NavDestinationContext): void => { this.pageMotion.attach(context); })
+    .systemTransition(pageSystemTransition(this.pageTransitionMode))
     .titleMode(HdsNavDestinationTitleMode.MINI).hideBackButton(false)
     .onBackPressed((): boolean => { ResponsiveLayout.closeContentDestination(this.pageStack); return true; })
     .bindToScrollable(this.pageScrollers)
@@ -393,7 +409,7 @@ export struct FollowDiscovery {
       content: { title: { mainTitle: this.text($r('app.string.follow_discovery_title')) } },
       style: destinationTitleBarStyle(ScrollEffectType.IMMERSIVE_GRADIENT_BLUR,
         this.themeDisplayMode, this.themeDarkSurface, this.titleBarStyleMode) })
-    .backgroundColor(pageSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
+    .backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue))
     .systemMaterial(deviceInfo.apiAvailable('26.0.0') ? new uiMaterial.ImmersiveMaterial({
       style: uiMaterial.ImmersiveStyle.REGULAR, applyShadow: true, colorInvert: true }) : undefined);
   }

@@ -1,3 +1,8 @@
+import { pageTextColor } from '../utils/ThemeColors';
+import { appPageBackground } from '../components/PageBackgroundLayer';
+import { pageCanvasColor, pageReadingSurfaceColor } from '../utils/ThemeColors';
+import { STORAGE_KEY_PAGE_TRANSITION_MODE, DEFAULT_PAGE_TRANSITION_MODE } from '../services/PageTransitionSettingsStore';
+import { pageSystemTransition, PageTransitionMotion } from '../utils/PageTransition';
 import { bundleManager, common } from '@kit.AbilityKit';
 import { requestXXAuthPopup } from '../services/XXAuthPopupStore';
 import { SupporterActivationCard } from '../components/SupporterActivationCard';
@@ -22,6 +27,9 @@ export function AboutBuilder(): void {
 
 @Component
 struct About {
+  @StorageProp('harmonyx.page_background') private pageBackgroundValue: string = '';
+  @State private pageMotion: PageTransitionMotion = new PageTransitionMotion();
+  @StorageProp(STORAGE_KEY_PAGE_TRANSITION_MODE) private pageTransitionMode: string = DEFAULT_PAGE_TRANSITION_MODE;
   @Consume('pageStack') pageStack: NavPathStack;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @StorageProp(STORAGE_KEY_APP_LOCALE) private appLocale: string = effectiveAppLocale();
@@ -82,11 +90,11 @@ struct About {
       Text($r('app.string.app_name')).fontFamily(this.appFontFamily)
         .fontSize($r('sys.float.Title_L'))
         .fontWeight(FontWeight.Bold)
-        .fontColor($r('app.color.text_primary'))
+        .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
         .textAlign(TextAlign.Center)
       Text($r('app.string.about_tagline')).fontFamily(this.appFontFamily)
         .fontSize($r('sys.float.Body_L'))
-        .fontColor($r('app.color.text_secondary'))
+        .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
         .textAlign(TextAlign.Center)
       if (this.versionName.length > 0) {
         Text(this.versionName).fontFamily(this.appFontFamily)
@@ -96,7 +104,7 @@ struct About {
       }
       Text($r('app.string.logo_universe_hint')).fontFamily(this.appFontFamily)
         .fontSize($r('sys.float.Body_S'))
-        .fontColor($r('app.color.text_secondary'))
+        .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
         .textAlign(TextAlign.Center)
         .onClick((): void => { this.pageStack.pushPath({ name: 'LogoUniverse' }); })
     }
@@ -114,7 +122,7 @@ struct About {
         .accessibilityLevel('no')
       Text(description).fontFamily(this.appFontFamily)
         .fontSize($r('sys.float.Body_L'))
-        .fontColor($r('app.color.text_secondary'))
+        .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue)))
         .layoutWeight(1)
     }
     .width('100%')
@@ -127,7 +135,7 @@ struct About {
       Text($r('app.string.about_intro')).fontFamily(this.appFontFamily)
         .fontSize($r('sys.float.Title_S'))
         .fontWeight(FontWeight.Medium)
-        .fontColor($r('app.color.text_primary'))
+        .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue)))
         .width('100%')
       this.Feature($r('sys.symbol.text_alignleft'), $r('app.string.about_feature_read'))
       this.Feature($r('sys.symbol.play_circle'), $r('app.string.about_feature_media'))
@@ -136,7 +144,7 @@ struct About {
     .width('100%')
     .padding($r('app.float.about_card_inset'))
     .alignItems(HorizontalAlign.Start)
-    .backgroundColor(cardSurfaceColor(this.displayMode, this.darkSurface))
+    .backgroundColor(pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue))
     .borderRadius($r('app.float.about_card_radius'))
   }
 
@@ -145,18 +153,18 @@ struct About {
     Row({ space: $r('app.float.about_row_gap') }) {
       Text(label).fontFamily(this.appFontFamily)
         .fontSize($r('sys.float.Body_L'))
-        .fontColor($r('app.color.text_secondary'))
+        .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue)))
         .layoutWeight(1)
       if (value.length > 0) {
         Text(value).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Body_L'))
-          .fontColor($r('app.color.text_primary'))
+          .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue)))
           .textAlign(TextAlign.End)
           .layoutWeight(1)
       } else {
         Text($r('app.string.about_unavailable')).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Body_M'))
-          .fontColor($r('app.color.text_secondary'))
+          .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue)))
           .textAlign(TextAlign.End)
           .layoutWeight(1)
       }
@@ -198,12 +206,12 @@ struct About {
     Row({ space: $r('app.float.about_account_gap') }) {
       SymbolGlyph($r('sys.symbol.person'))
         .fontSize($r('app.float.about_symbol_size'))
-        .fontColor([$r('app.color.text_primary')])
+        .fontColor([pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue))])
         .accessibilityLevel('no')
       Text($r('app.string.about_official_accounts')).fontFamily(this.appFontFamily)
         .fontSize($r('sys.float.Body_L'))
         .fontWeight(FontWeight.Medium)
-        .fontColor($r('app.color.text_primary'))
+        .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue)))
         .layoutWeight(1)
       this.AccountButton($r('app.media.about_bilibili'), $r('app.string.about_account_bilibili'),
         AUTHOR_BILIBILI_URL, 'about-account-bilibili', true)
@@ -214,7 +222,7 @@ struct About {
     }
     .width('100%')
     .padding($r('app.float.about_card_inset'))
-    .backgroundColor(cardSurfaceColor(this.displayMode, this.darkSurface))
+    .backgroundColor(pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue))
     .borderRadius($r('app.float.about_card_radius'))
     .id('about-author-accounts')
   }
@@ -230,16 +238,16 @@ struct About {
         Column({ space: $r('app.float.about_small_gap') }) {
           Text(title).fontFamily(this.appFontFamily)
             .fontSize($r('sys.float.Subtitle_L'))
-            .fontColor($r('app.color.text_primary'))
+            .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue)))
           Text(detail).fontFamily(this.appFontFamily)
             .fontSize($r('sys.float.Body_M'))
-            .fontColor($r('app.color.text_secondary'))
+            .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue)))
         }
         .alignItems(HorizontalAlign.Start)
         .layoutWeight(1)
         SymbolGlyph($r('sys.symbol.chevron_right'))
           .fontSize($r('app.float.about_chevron_size'))
-          .fontColor([$r('app.color.text_secondary')])
+          .fontColor([pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue))])
           .scale({ x: isAppRtl(this.appLocale) ? -1 : 1 })
           .accessibilityLevel('no')
       }
@@ -255,6 +263,8 @@ struct About {
 
   build(): void {
     HdsNavDestination() {
+      Stack({ alignContent: Alignment.TopStart }) {
+        appPageBackground()
       Scroll(this.scroller) {
         Column({ space: $r('app.float.about_section_gap') }) {
           this.Hero()
@@ -266,7 +276,7 @@ struct About {
           }
           .width('100%')
           .padding($r('app.float.about_card_inset'))
-          .backgroundColor(cardSurfaceColor(this.displayMode, this.darkSurface))
+          .backgroundColor(pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue))
           .borderRadius($r('app.float.about_card_radius'))
           .id('about-version-info')
 
@@ -303,7 +313,7 @@ struct About {
               })
           }
           .width('100%')
-          .backgroundColor(cardSurfaceColor(this.displayMode, this.darkSurface))
+          .backgroundColor(pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue))
           .borderRadius($r('app.float.about_card_radius'))
           .clip(true)
 
@@ -325,7 +335,13 @@ struct About {
       .scrollBar(BarState.Off)
       .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: true })
       .align(Alignment.Top)
+    
+      }.width('100%').height('100%')
     }
+    .scale({ x: this.pageMotion.scale, y: this.pageMotion.scale })
+    .opacity(this.pageMotion.opacity)
+    .onReady((context: NavDestinationContext): void => { this.pageMotion.attach(context); })
+    .systemTransition(pageSystemTransition(this.pageTransitionMode))
     .titleMode(HdsNavDestinationTitleMode.MINI)
     .hideBackButton(false)
     .onBackPressed((): boolean => {
@@ -337,6 +353,6 @@ struct About {
       content: { title: { mainTitle: $r('app.string.about_title') } },
       style: destinationTitleBarStyle(ScrollEffectType.GRADIENT_BLUR, this.displayMode,
         this.darkSurface, this.titleBarStyleMode) })
-    .backgroundColor(pageSurfaceColor(this.displayMode, this.darkSurface))
+    .backgroundColor(pageCanvasColor(this.displayMode, this.darkSurface, this.pageBackgroundValue))
   }
 }

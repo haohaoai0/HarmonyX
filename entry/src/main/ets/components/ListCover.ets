@@ -5,6 +5,7 @@ export struct ListCover {
   @Prop listId: string = '';
   @Prop bannerUrl: string = '';
   @Prop wide: boolean = false;
+  @Prop fillParent: boolean = false;
   private color(): ResourceColor {
     const colors: ResourceColor[] = [$r('app.color.list_cover_blue'), $r('app.color.list_cover_cyan'),
       $r('app.color.list_cover_teal'), $r('app.color.list_cover_purple')];
@@ -17,9 +18,10 @@ export struct ListCover {
       SymbolGlyph($r('sys.symbol.list_bullet_square'))
         .fontSize(this.wide ? 72 : 30).fontColor([$r('app.color.list_cover_symbol')])
       if (this.bannerUrl.length > 0) {
-        ProxyMediaImage({ url: this.bannerUrl, displayHeight: this.wide ? 150 : 60 })
+        ProxyMediaImage({ url: this.bannerUrl, displayHeight: this.wide ? 150 : 60, fillParent: this.fillParent })
       }
-    }.width(this.wide ? '100%' : 60).height(this.wide ? $r('app.float.list_banner_height') : 60)
+    }.width(this.wide ? '100%' : 60)
+      .height(this.fillParent ? '100%' : this.wide ? $r('app.float.list_banner_height') : 60)
       .backgroundColor(this.color()).borderRadius(this.wide ? 0 : 14).clip(true)
   }
 }

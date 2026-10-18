@@ -1,3 +1,9 @@
+import { pageBackgroundActive } from '../services/PageBackgroundStore';
+import { pageTextColor } from '../utils/ThemeColors';
+import { appPageBackground } from '../components/PageBackgroundLayer';
+import { pageCanvasColor, pageReadingSurfaceColor } from '../utils/ThemeColors';
+import { STORAGE_KEY_PAGE_TRANSITION_MODE, DEFAULT_PAGE_TRANSITION_MODE } from '../services/PageTransitionSettingsStore';
+import { pageSystemTransition, PageTransitionMotion } from '../utils/PageTransition';
 // Diagnostics: the recent private-interface calls plus the same self-check the
 // settings page offers, in one place and with a copyable report.
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
@@ -19,6 +25,9 @@ export function DiagnosticsBuilder(): void {
 
 @Component
 export struct Diagnostics {
+  @StorageProp('harmonyx.page_background') private pageBackgroundValue: string = '';
+  @State private pageMotion: PageTransitionMotion = new PageTransitionMotion();
+  @StorageProp(STORAGE_KEY_PAGE_TRANSITION_MODE) private pageTransitionMode: string = DEFAULT_PAGE_TRANSITION_MODE;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @Consume('pageStack') pageStack: NavPathStack;
   @StorageProp('harmonyx.status_bar_height') statusBarHeight: number =
@@ -84,18 +93,18 @@ export struct Diagnostics {
     Row({ space: 10 }) {
       Text(this.clock(entry.time)).fontFamily(this.appFontFamily)
         .fontSize($r('sys.float.Body_S'))
-        .fontColor($r('app.color.text_secondary'))
+        .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
         .width(64)
       Column({ space: 2 }) {
         Text(entry.operation).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Body_M'))
-          .fontColor($r('app.color.text_primary'))
+          .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
           .maxLines(1)
           .textOverflow({ overflow: TextOverflow.Ellipsis })
         if (entry.note.length > 0) {
           Text(entry.note).fontFamily(this.appFontFamily)
             .fontSize($r('sys.float.Body_S'))
-            .fontColor($r('app.color.text_secondary'))
+            .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
             .maxLines(2)
             .textOverflow({ overflow: TextOverflow.Ellipsis })
         }
@@ -104,7 +113,7 @@ export struct Diagnostics {
       .alignItems(HorizontalAlign.Start)
       Text('HTTP ' + entry.status).fontFamily(this.appFontFamily)
         .fontSize($r('sys.float.Body_S'))
-        .fontColor(entry.ok ? $r('app.color.text_accent') : $r('app.color.danger'))
+        .fontColor(entry.ok ? pageTextColor($r('app.color.text_accent'), this.pageBackgroundValue, Color.Transparent) : $r('app.color.danger'))
     }
     .width('100%')
     .padding({ left: 16, right: 16, top: 10, bottom: 10 })
@@ -113,6 +122,8 @@ export struct Diagnostics {
 
   build(): void {
     HdsNavDestination() {
+      Stack({ alignContent: Alignment.TopStart }) {
+        appPageBackground()
       List() {
         ListItem() {
           Row({ space: 12 }) {
@@ -128,7 +139,7 @@ export struct Diagnostics {
               })
             Button($r('app.string.diagnostics_clear'), { stateEffect: true })
               .fontSize($r('sys.float.Body_M'))
-              .fontColor($r('app.color.text_primary'))
+              .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, fieldSurfaceColor(this.themeDisplayMode, this.themeDarkSurface)))
               .backgroundColor(fieldSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
               .borderRadius(18)
               .onClick((): void => {
@@ -143,7 +154,7 @@ export struct Diagnostics {
           ListItem() {
             Text(this.probeResult).fontFamily(this.appFontFamily)
               .fontSize($r('sys.float.Body_S'))
-              .fontColor($r('app.color.text_primary'))
+              .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, fieldSurfaceColor(this.themeDisplayMode, this.themeDarkSurface)))
               .width('100%')
               .padding(12)
               .borderRadius(12)
@@ -156,7 +167,7 @@ export struct Diagnostics {
           ListItem() {
             Text($r('app.string.diagnostics_empty')).fontFamily(this.appFontFamily)
               .fontSize($r('sys.float.Body_L'))
-              .fontColor($r('app.color.text_secondary'))
+              .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
               .width('100%')
               .textAlign(TextAlign.Center)
               .padding({ top: 40 })
@@ -176,7 +187,13 @@ export struct Diagnostics {
       .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: true })
       .contentStartOffset(this.statusBarHeight + 60)
       .contentEndOffset(this.navigationIndicatorHeight + 24)
+    
+      }.width('100%').height('100%')
     }
+    .scale({ x: this.pageMotion.scale, y: this.pageMotion.scale })
+    .opacity(this.pageMotion.opacity)
+    .onReady((context: NavDestinationContext): void => { this.pageMotion.attach(context); })
+    .systemTransition(pageSystemTransition(this.pageTransitionMode))
     .titleMode(HdsNavDestinationTitleMode.MINI)
     .hideBackButton(false)
     .onBackPressed((): boolean => {
@@ -189,7 +206,7 @@ export struct Diagnostics {
       style: destinationTitleBarStyle(ScrollEffectType.IMMERSIVE_GRADIENT_BLUR,
         this.themeDisplayMode, this.themeDarkSurface, this.titleBarStyleMode)
     })
-    .backgroundColor(pageSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
-    .systemMaterial(this.pageMaterial());
+    .backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue))
+    .systemMaterial(pageBackgroundActive(this.pageBackgroundValue) ? undefined : this.pageMaterial());
   }
 }

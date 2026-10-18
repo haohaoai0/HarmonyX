@@ -7,6 +7,7 @@ export struct ConversationTweetCard {
   @Prop @Watch('onTweetChanged') tweet: Tweet;
   @Prop sharedElementId: string = '';
   @Prop showActions: boolean = true;
+  @Prop narrowColumn: boolean = false;
   @Prop videoFeedEnabled: boolean = false;
   @Prop homeTimelineVideo: boolean = false;
   @Prop recordRecommendationSeen: boolean = false;
@@ -63,6 +64,7 @@ export struct ConversationTweetCard {
   @Builder
   private Post(post: Tweet, above: boolean, below: boolean): void {
     TweetCard({
+      narrowColumn: this.narrowColumn,
       tweet: post, sharedElementId: this.sourceId(post), showActions: this.showActions,
       videoFeedEnabled: this.videoFeedEnabled, homeTimelineVideo: this.homeTimelineVideo,
       recordRecommendationSeen: this.recordRecommendationSeen,

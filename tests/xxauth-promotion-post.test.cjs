@@ -151,6 +151,9 @@ test('the data source injects the post after the first post and keeps cursor ind
   const slots = injector.slots(posts.length, [post], 1, 'home:for-you');
   const at = slots[0].index;
   assert.equal(source.totalCount(), 6);
+  // WaterFlow's content section must include the injected row, while the
+  // header and footer remain outside that section.
+  assert.equal(source.contentCount(), 4);
   assert.equal(source.postCount(), 3);
   const expectedKeys = ['header', 'post:p1', 'post:p2', 'post:p3', 'footer'];
   expectedKeys.splice(at + 1, 0, 'promo:' + post.fingerprint + ':' + at);
@@ -179,10 +182,12 @@ test('the data source injects the post after the first post and keeps cursor ind
   assert.notEqual(source.getData(at + 1), first);
   source.replace(posts, [], 'for-you', 1);
   assert.equal(source.totalCount(), 5);
+  assert.equal(source.contentCount(), 3);
   assert.deepEqual([0, 1, 2, 3, 4].map(i => source.getData(i).key),
     ['header', 'post:p1', 'post:p2', 'post:p3', 'footer']);
   source.replace([], [], '', 0);
   assert.equal(source.postCount(), 0);
+  assert.equal(source.contentCount(), 0);
   assert.deepEqual([0, 1].map(i => source.getData(i).key), ['header', 'footer']);
 });
 
@@ -204,6 +209,106 @@ test('an empty timeline still shows the post as its only row and reloads listene
   assert.ok(events.includes('reload'));
   source.unregisterDataChangeListener({ onDataReloaded: () => { }, onDataAdded: () => { },
     onDataDeleted: () => { }, onDataChanged: () => { }, onDatasetChange: () => { } });
+});
+
+function homeRenderingFixture() {
+  const filename = 'entry/src/main/ets/pages/Index.ets';
+  const source = fs.readFileSync(filename, 'utf8').replace('struct Index {', 'class Index {');
+  const tree = ts.createSourceFile('index.ts', source, ts.ScriptTarget.Latest, true);
+  const component = tree.statements.find(node => ts.isClassDeclaration(node) && node.name.text === 'Index');
+  const names = ['onTimelineChanged', 'replaceHomePageData', 'onContentFilterChanged',
+    'onPostModerationChanged', 'onPromotionPostChanged', 'onHomeFeedRendered',
+    'promotionsForTab', 'promotionCountForTab', 'tabKey', 'popupHostBlocked'];
+  const methods = names.map(name => component.members.find(node =>
+    ts.isMethodDeclaration(node) && node.name.getText(tree) === name).getText(tree));
+  const compiled = ts.transpileModule('class Home {' + methods.join('\n') + '}', {
+    compilerOptions: { target: ts.ScriptTarget.ES2020 }
+  }).outputText;
+  const Home = new Function('HomeViewportFrameCallback', compiled + '; return Home;')(
+    class { constructor(action) { this.onIdle = action; } });
+  const frames = [], sections = [0, 0], sources = [new TimelinePageDataSource(), new TimelinePageDataSource()];
+  const plan = policy.plan([info(BODY)], {});
+  let selected = 0;
+  const home = Object.assign(new Home(), {
+    timeline: [], following: [], homeFeedPresented: false, homePresentationPending: false,
+    homePresentationRevision: 0, homePageAlive: true, showSideDrawer: true,
+    showOnboardingGuide: false, showLoginSheet: false, showMidAutumnGreeting: false,
+    showChatUnlock: false, showLinkPreview: false, contentDestinationOpen: false,
+    photoOverlayOpen: false, showSpacePreview: false, showPauseTopics: false, showFollowingOrder: false,
+    isLargeScreen: () => true, homeTabIndex: () => selected,
+    homeTabItems: () => [{key: 'for-you'}, {key: 'following'}], promotionPlan: () => plan,
+    homePageDataSource: index => sources[index],
+    filteredTimeline(index = selected) { return index === 0 ? this.timeline : this.following; },
+    pageSections(_group, key, count) { sections[key === 'for-you' ? 0 : 1] = count; },
+    syncHomeWaterFlowSections() { sources.forEach((row, index) => { sections[index] = row.contentCount(); }); },
+    syncAllWaterFlowSections() { this.syncHomeWaterFlowSections(); },
+    getUIContext: () => ({postFrameCallback: frame => frames.push(frame)})
+  });
+  sources.forEach((row, index) => {
+    const check = () => assert.equal(sections[index] + 2, row.totalCount(),
+      'WaterFlow section count must match every LazyForEach notification');
+    row.registerDataChangeListener({onDataReloaded: check, onDataChanged: check});
+  });
+  return {home, sources, sections, frames, select: index => { selected = index; }};
+}
+
+test('cold start paints ordinary posts before promotion injection and startup popup eligibility', () => {
+  const h = homeRenderingFixture();
+  h.home.onPromotionPostChanged();
+  assert.equal(h.sources[0].contentCount(), 0);
+  assert.equal(h.home.popupHostBlocked(), true);
+  h.home.timeline = Array.from({length: 20}, (_, i) => ({id: 'post-' + i}));
+  h.home.onTimelineChanged();
+  assert.equal(h.sources[0].contentCount(), 20);
+  h.home.onHomeFeedRendered(1, 3); // Offscreen page cannot unlock startup UI.
+  h.home.onHomeFeedRendered(0, 0); // Header alone is not a rendered post.
+  assert.equal(h.frames.length, 0);
+  h.home.onHomeFeedRendered(0, 3);
+  assert.equal(h.home.popupHostBlocked(), true);
+  assert.equal(h.sources[0].contentCount(), 20);
+  h.frames.shift().onIdle();
+  assert.equal(h.sources[0].contentCount(), 21);
+  assert.equal(h.sources[0].postCount(), 20);
+  assert.equal(h.home.popupHostBlocked(), false);
+});
+
+test('pagination, filtering and promotion removal keep mounted WaterFlow counts synchronized', () => {
+  const h = homeRenderingFixture(); h.home.homeFeedPresented = true;
+  h.home.timeline = Array.from({length: 20}, (_, i) => ({id: 'post-' + i}));
+  h.home.onTimelineChanged();
+  h.home.timeline.push({id: 'page-two'}); h.home.onTimelineChanged();
+  assert.equal(h.sections[0], 22);
+  h.home.timeline = h.home.timeline.slice(0, 2); h.home.onContentFilterChanged();
+  assert.equal(h.sections[0], 3);
+  h.home.promotionPlan().posts = []; h.home.onPromotionPostChanged();
+  assert.equal(h.sections[0], 2);
+  h.home.timeline = []; h.home.onPostModerationChanged();
+  assert.equal(h.sections[0], 0);
+});
+
+test('Following stays empty until real posts arrive, then promotions join the same response update', () => {
+  const h = homeRenderingFixture(); h.home.homeFeedPresented = true;
+  h.home.timeline = [{id: 'for-you'}]; h.home.onPromotionPostChanged();
+  assert.equal(h.sources[1].contentCount(), 0, 'do not prefill the unrequested Following page');
+  h.select(1); h.home.onTimelineChanged();
+  assert.equal(h.sources[1].contentCount(), 0, 'loading is not an advertising slot');
+  h.home.following = [{id: 'following-1'}, {id: 'following-2'}];
+  h.home.onTimelineChanged();
+  assert.equal(h.sources[1].contentCount(), 3);
+  assert.equal(h.sources[1].postCount(), 2);
+  h.home.following = []; h.home.onTimelineChanged(); h.home.onPromotionPostChanged();
+  assert.equal(h.sources[1].contentCount(), 0, 'an empty response never leaves a lone promotion');
+});
+
+test('a stale startup frame cannot inject into a new account or a page already closed', () => {
+  for (const action of [h => { h.home.homePresentationRevision++; },
+    h => { h.home.homePageAlive = false; }, h => h.select(1)]) {
+    const h = homeRenderingFixture(); h.home.timeline = [{id: 'post'}];
+    h.home.onTimelineChanged(); h.home.onHomeFeedRendered(0, 1); action(h);
+    h.frames.shift().onIdle();
+    assert.equal(h.home.homeFeedPresented, false);
+    assert.equal(h.sources[0].contentCount(), 1);
+  }
 });
 
 test('the remote budget, not the pool size, decides how many rows a timeline carries', () => {

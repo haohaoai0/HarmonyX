@@ -12,7 +12,7 @@ const component = tree.statements.find(node => ts.isClassDeclaration(node) && no
 const names = ['shouldStartMuted', 'startMuted', 'hideVideoChrome', 'usesFeedMutePreference',
   'usesHomeMutePreference', 'usesViewerMutePreference', 'preferredMuted',
   'onHomeVideoMutedChanged', 'onViewerVideoMutedChanged', 'onFeedMutePreferenceChanged',
-  'toggleMutedFromUser', 'saveFeedMuteChoice', 'setMuted',
+  'toggleMutedFromUser', 'onInlineAudioTap', 'saveFeedMuteChoice', 'setMuted',
   'claimExclusivePlayback', 'canControlPlayer', 'applyPlayerVolume', 'isCoveredByVideoFeed',
   'onPlaybackEnabledChanged', 'onControlsVisibilityChanged', 'holdControls',
   'play', 'setGestureVolume', 'clampGestureValue', 'enterFullscreen', 'exitFullscreen', 'adoptPlayerHandoff'];
@@ -57,7 +57,7 @@ function fixture(initialMuted = true, storageFails = false, initialViewerMuted =
     'videoPlaybackPositionStore',
     `${body}; return MuteHarness;`)
     (settings, coordinator, { isRequested: () => false, isReturning: () => false }, { warn() {}, info() {} },
-      0, '', 12000, { release() {} }, { remember() {} });
+      0, '', 12000, { release() {}, sendCastCommand() {} }, { remember() {} });
 
   function view(id, options = {}) {
     const volumes = [], nativePlayer = { state: 'playing', setVolume: value => volumes.push(value),
@@ -133,9 +133,119 @@ test('unmuting a post keeps its audio ownership while other cells wait for activ
   assert.equal(paused.muted, false);
   assert.equal(f.coordinator.isOwnedByOther('first'), false);
   other.play();
-  assert.equal(other.muted, false, 'the following post inherits sound when activated');
-  assert.equal(first.playing, false);
+  assert.equal(other.muted, true, 'autoplay cannot take audio from the selected post');
+  assert.equal(first.playing, true, 'the selected Home preview keeps playing');
+  assert.equal(first.muted, false);
   assert.equal(first.homeVideoMuted, false, 'ownership changes cannot rewrite the preference');
+});
+
+test('the card speaker selects one audible preview and native playing events cannot steal it', () => {
+  const f = fixture();
+  const first = f.view('first'), other = f.view('other');
+  first.component.onInlineAudioTap();
+  other.component.play();
+  first.component.claimExclusivePlayback(); // The selected player's native playing event.
+  other.component.onInlineAudioTap();
+  assert.equal(first.component.muted, true);
+  assert.equal(first.volumes.at(-1), 0);
+  assert.equal(other.component.muted, false);
+  assert.equal(other.volumes.at(-1), 1);
+  assert.equal(first.component.playing, true);
+  assert.equal(other.component.playing, true);
+  other.component.claimExclusivePlayback();
+  const newcomer = f.view('newcomer', { muted: false, homeVideoMuted: false });
+  newcomer.component.play();
+  newcomer.component.claimExclusivePlayback();
+  first.component.play();
+  assert.equal(other.component.muted, false, 'The second explicit selection survives later activations');
+  assert.equal(newcomer.component.muted, true);
+  assert.equal(newcomer.volumes.at(-1), 0);
+  assert.equal(first.component.muted, true);
+  assert.equal(f.coordinator.isOwnedByOther('other'), false);
+  assert.deepEqual(f.writes, [false], 'Switching the audible card does not persist temporary silence');
+});
+
+test('tapping the selected card speaker silences all previews without stopping their pictures', () => {
+  const f = fixture();
+  const first = f.view('first').component, other = f.view('other').component;
+  first.onInlineAudioTap();
+  first.onInlineAudioTap();
+  assert.equal(first.muted, true);
+  assert.equal(other.muted, true);
+  assert.equal(first.playing, true);
+  assert.equal(other.playing, true);
+  assert.equal(f.coordinator.isOwnedByOther('unclaimed'), false);
+  const next = f.view('next', { homeVideoMuted: first.homeVideoMuted }).component;
+  next.play();
+  assert.equal(next.muted, true);
+  assert.deepEqual(f.writes, [false, true]);
+});
+
+test('the speaker starts a paused selected video and releases the choice when it leaves the screen', () => {
+  const f = fixture(false);
+  const first = f.view('first', { playing: false, wantsPlay: false, playerState: 'paused' });
+  let starts = 0;
+  first.component.player.play = () => { starts++; return Promise.resolve(); };
+  first.component.onInlineAudioTap();
+  assert.equal(starts, 1);
+  assert.equal(first.component.wantsPlay, true);
+  assert.equal(first.component.muted, false);
+  first.component.pause(); // Visibility/disposal uses the same ownership release.
+  const next = f.view('next').component;
+  next.play();
+  assert.equal(next.muted, false);
+  assert.equal(f.coordinator.isOwnedByOther('next'), false);
+});
+
+test('three visible Home videos keep playing while only the latest activated one owns sound', () => {
+  for (const muted of [true, false]) {
+    const f = fixture(muted);
+    const views = ['left-top', 'right-top', 'left-bottom'].map(id => f.view(id).component);
+    for (const view of views) {
+      view.play();
+      view.claimExclusivePlayback(); // The native playing event confirms audio ownership.
+    }
+    for (let i = 0; i < views.length; i++) {
+      assert.equal(views[i].playing, true, views[i].media.id);
+      assert.equal(views[i].wantsPlay, true);
+      assert.equal(views[i].muted, muted || i < views.length - 1);
+      assert.equal(views[i].homeVideoMuted, muted, 'temporary silence cannot change the saved Home preference');
+    }
+    assert.deepEqual(f.writes, []);
+  }
+});
+
+test('losing audio ownership still pauses opened, fullscreen, PiP, cast and covered Home players', () => {
+  for (const options of [
+    { homeTimelineVideo: false, mediaViewerLayout: true },
+    { fullscreen: true }, { pipActive: true }, { casting: true },
+    { videoFeedActive: true }, { homeTimelineVideo: false }
+  ]) {
+    const f = fixture(false, false, false);
+    const previous = f.view('previous', { ...options, muted: false, playbackVolume: 1 }).component;
+    previous.claimExclusivePlayback();
+    const next = f.view('next', { homeTimelineVideo: false, mediaViewerLayout: true }).component;
+    next.claimExclusivePlayback();
+    assert.equal(previous.playing, false, JSON.stringify(options));
+    assert.equal(previous.wantsPlay, false);
+    assert.equal(next.playing, true);
+  }
+});
+
+test('preview activation cannot interrupt an opened player even after its speaker is tapped', () => {
+  const f = fixture(false, false, false);
+  const viewer = f.view('viewer', { homeTimelineVideo: false, mediaViewerLayout: true }).component;
+  viewer.play();
+  viewer.claimExclusivePlayback();
+  const home = f.view('home').component;
+  home.play();
+  home.claimExclusivePlayback();
+  assert.equal(home.muted, true);
+  home.onInlineAudioTap();
+  assert.equal(home.muted, true);
+  assert.equal(viewer.muted, false);
+  assert.equal(viewer.playing, true);
+  assert.equal(f.coordinator.isOwnedByOther('viewer'), false);
 });
 
 test('viewer preload stays silent and inherits only the viewer choice when activated', () => {
@@ -240,9 +350,11 @@ test('viewer mute choices survive relaunch independently from home choices', () 
   viewer.toggleMutedFromUser();
   assert.equal(f.settings.loadViewerVideoMuted({}), false);
   assert.equal(f.settings.loadHomeVideoMuted({}), true);
+  viewer.pause();
   const home = f.view('home-persist').component;
   home.toggleMutedFromUser();
   viewer.play();
+  viewer.claimExclusivePlayback();
   viewer.toggleMutedFromUser();
   assert.equal(f.newSettings().loadViewerVideoMuted({}), true);
   assert.equal(f.newSettings().loadHomeVideoMuted({}), false);

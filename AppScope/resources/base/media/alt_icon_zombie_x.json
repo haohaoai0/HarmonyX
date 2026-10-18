@@ -1,0 +1,6 @@
+{
+  "layered-image": {
+    "background": "$media:zombie_x_background",
+    "foreground": "$media:zombie_x_foreground"
+  }
+}

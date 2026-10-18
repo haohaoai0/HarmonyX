@@ -20,7 +20,7 @@ const playerMethods = methodsFrom('entry/src/main/ets/components/PostMedia.ets',
   'videoSourceWidth', 'videoSourceHeight', 'videoFrameControlsInset', 'videoFrameHeight',
   'videoFrameWidth', 'hasFeedControlStrip', 'videoLayerHeight', 'playerContainerHeight',
   'videoFrameAlignment', 'fillsSmallFeedGap', 'feedPlayerBarHeight',
-  'showsProgressBelowVideo', 'applyVideoScaleType', 'canControlPlayer', 'controlsShouldStayVisible',
+  'hideInlineVideoControls', 'showsProgressBelowVideo', 'applyVideoScaleType', 'canControlPlayer', 'controlsShouldStayVisible',
   'onControlsVisibilityChanged', 'toggleControls', 'scheduleHide', 'holdControls'
 ]);
 const playerCode = ts.transpileModule(`class Harness { ${playerMethods} }`, {

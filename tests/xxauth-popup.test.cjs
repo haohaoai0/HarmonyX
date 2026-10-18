@@ -165,16 +165,23 @@ function storeFixture() {
   return {store:new XXAuthPopupStore(), restart:()=>new XXAuthPopupStore()};
 }
 
-test('device IDs and seven-day snooze survive restart and apply across changed recommendations', () => {
+test('device IDs and three-day snooze survive restart and apply across changed recommendations', () => {
   const {store,restart} = storeFixture();
   const panel = policy.startup([announcement()],[],[],{})[0];
   assert.equal(store.deviceId({}),'installation-uuid');
   assert.equal(restart().deviceId({}),'installation-uuid');
   store.snooze({}, 1000);
-  assert.equal(restart().shouldShow({}, panel, 1000+7*86400000-1),false);
+  assert.equal(restart().shouldShow({}, panel, 1000+3*86400000-1),false);
   panel.id = 'new-recommendation';
   assert.equal(restart().shouldShow({}, panel, 1000+86400000),false);
-  assert.equal(restart().shouldShow({}, panel, 1000+7*86400000),true);
+  assert.equal(restart().shouldShow({}, panel, 1000+3*86400000),true);
+});
+
+test('promotion posts keep their independent seven-day hide window', () => {
+  const {store,restart} = storeFixture();
+  assert.equal(store.hidePromotion({}, 1000, 'plan-a'), true);
+  assert.equal(restart().promotionHiddenUntil({}, 'plan-a'), 1000+7*86400000);
+  assert.equal(restart().promotionHiddenUntil({}, 'plan-b'), 0);
 });
 
 test('read receipts persist per content revision; remind and forced policies remain eligible', () => {

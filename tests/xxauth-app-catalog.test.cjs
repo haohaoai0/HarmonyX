@@ -98,7 +98,7 @@ test('media and snooze prompts never fall back to a different app',()=>{
   assert.equal(catalog.snoozePrompt([app('beta',{enabled:'关'})],'beta'),null);
 });
 
-test('switching apps scopes the persisted seven-day snooze to the selected app',()=>{
+test('switching apps scopes the persisted three-day snooze to the selected app',()=>{
   const values=new Map();
   let fail=false;
   const pref={getSync:(key,fallback)=>values.has(key)?values.get(key):fallback,

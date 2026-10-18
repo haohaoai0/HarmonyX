@@ -1,3 +1,9 @@
+import { TouchHdrLight } from './TouchHdrLight';
+import { motionDuration, motionScale, motionCurve, symbolMotionEnabled } from '../utils/AppMotion';
+import { STORAGE_KEY_REDUCE_MOTION, STORAGE_KEY_SYMBOL_EFFECTS, STORAGE_KEY_MOTION_AMPLITUDE } from '../services/MotionSettingsStore';
+import { hapticTick } from '../utils/Haptics';
+import { DEFAULT_COMPONENT_HDR_RATIO, STORAGE_KEY_COMPONENT_HDR_RATIO } from '../services/ComponentHdrSettingsStore';
+import { ComponentHdrHighlight } from '../utils/ComponentHdrHighlight';
 import { ConfigurationConstant } from '@kit.AbilityKit';
 import { uiMaterial } from '@kit.ArkUI';
 import { HdsTabs, HdsTabsController, hdsEffect, hdsMaterial } from '@kit.UIDesignKit';
@@ -11,6 +17,12 @@ import { SystemMaterialUtil } from '../utils/SystemMaterial';
  */
 @Component
 export struct HdsButton {
+  @StorageProp(STORAGE_KEY_REDUCE_MOTION) private motionReducedValue: boolean = false;
+  @StorageProp(STORAGE_KEY_SYMBOL_EFFECTS) private symbolEffectsValue: boolean = true;
+  @StorageProp(STORAGE_KEY_MOTION_AMPLITUDE) private motionAmplitudeValue: number = 1;
+  @State private pressScale: number = 1;
+  @State private symbolTrigger: number = -1;
+  @StorageProp(STORAGE_KEY_COMPONENT_HDR_RATIO) private componentHdrRatio: number = DEFAULT_COMPONENT_HDR_RATIO;
   @Prop barWidth: number = 52;
   @Prop barHeight: number = 58;
   @Prop iconResource: Resource | undefined = undefined;
@@ -20,12 +32,14 @@ export struct HdsButton {
   @Prop surfaceColor: ResourceColor = Color.Transparent;
   @Prop enableSurfaceBlur: boolean = false;
   @Prop enableShadow: boolean = true;
-  @Prop enablePressLight: boolean = false;
+  @Prop @Watch('onPressLightAvailabilityChanged') enablePressLight: boolean = false;
+  @Prop enableHdrHighlight: boolean = true;
   @Prop barPosition: BarPosition = BarPosition.End;
   @Prop barOverlap: boolean = true;
   @Prop forceHdsStyle: boolean = false;
   @Prop materialLevel: number = 2;
   @Prop useImmersiveMaterial: boolean = false;
+  @Prop adaptiveForeground: boolean = false;
   @Prop immersiveTint: ResourceColor | undefined = undefined;
   @Prop panLightActive: boolean = false;
 
@@ -45,7 +59,9 @@ export struct HdsButton {
     if (this.iconResource !== undefined) {
       SymbolGlyph(this.iconResource)
         .fontSize(this.iconSize)
-        .fontColor(this.iconColor);
+        .fontColor(this.iconColor)
+        .symbolEffect(this.symbolEffectsValue && !this.motionReducedValue && this.motionAmplitudeValue > 0 ?
+          new BounceSymbolEffect(EffectScope.WHOLE) : new SymbolEffect(), this.symbolTrigger);
     }
   }
 
@@ -65,13 +81,29 @@ export struct HdsButton {
       materialColor: this.immersiveTint,
       interactive: false,
       applyShadow: this.enableShadow,
-      colorInvert: false,
+      colorInvert: this.adaptiveForeground,
       lightEffect: null
     });
   }
 
   private getCornerRadius(): number {
     return Math.min(this.barWidth, this.barHeight - 12) / 2;
+  }
+
+  aboutToDisappear(): void {
+    this.isPressLightActive = false;
+    this.isPanLightActive = false;
+  }
+
+  private onPressLightAvailabilityChanged(): void {
+    if (!this.enablePressLight) {
+      this.isPressLightActive = false;
+      this.isPanLightActive = false;
+    }
+  }
+
+  private pressLightActive(): boolean {
+    return this.enablePressLight && (this.isPressLightActive || this.isPanLightActive || this.panLightActive);
   }
 
   build(): void {
@@ -131,7 +163,12 @@ export struct HdsButton {
       .hitTestBehavior(HitTestMode.None);
 
       Stack({ alignContent: Alignment.Center }) {
-        this.buttonContent();
+        Stack({ alignContent: Alignment.Center }) {
+          this.buttonContent();
+        }
+        .width(this.barWidth)
+        .height(this.barHeight - 12)
+        .compositingFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.enableHdrHighlight, this.componentHdrRatio));
       }
       .width(this.barWidth)
       .height(this.barHeight - 12)
@@ -140,6 +177,9 @@ export struct HdsButton {
       .clip(true)
       .hitTestBehavior(HitTestMode.Default)
       .systemMaterial(this.shouldUseImmersiveMaterial() ? this.immersiveMaterial() : undefined);
+
+      TouchHdrLight({ active: this.pressLightActive(), cornerRadius: this.getCornerRadius() })
+        .width(this.barWidth).height(this.barHeight - 12);
     }
     .width(this.barWidth)
     .height(this.barHeight - 12)
@@ -149,16 +189,18 @@ export struct HdsButton {
       ShadowStyle.OUTER_FLOATING_SM : undefined)
     .visualEffect(new hdsEffect.HdsEffectBuilder()
       .pointLight({
-          sourceType: this.enablePressLight && (this.isPressLightActive || this.isPanLightActive ||
-            this.panLightActive) ?
+          sourceType: this.pressLightActive() ?
           hdsEffect.PointLightSourceType.BRIGHT : hdsEffect.PointLightSourceType.NONE,
         illuminatedType: hdsEffect.PointLightIlluminatedType.BORDER_CONTENT
       })
       .buildEffect())
-    .animation({ duration: 150, curve: Curve.EaseOut })
+    .animation({ duration: motionDuration(150), curve: Curve.EaseOut })
+    .scale({ x: this.motionReducedValue ? 1 : this.pressScale, y: this.motionReducedValue ? 1 : this.pressScale })
     .onTouch((event: TouchEvent): void => {
-      if (!this.enablePressLight) {
-        return;
+      if (event.type === TouchType.Down || event.type === TouchType.Up || event.type === TouchType.Cancel) {
+        this.getUIContext().animateTo({ duration: motionDuration(130), curve: motionCurve() }, (): void => {
+          this.pressScale = event.type === TouchType.Down ? motionScale(0.94) : 1;
+        });
       }
       if (event.type === TouchType.Down) {
         this.isPressLightActive = true;
@@ -172,6 +214,7 @@ export struct HdsButton {
           // Pan recognition can cancel the touch sequence. Keep a dedicated
           // drag state so the point light remains active until pan end.
           this.isPanLightActive = true;
+          hapticTick();
           if (this.onButtonPanStart !== undefined) {
             this.onButtonPanStart();
           }
@@ -196,6 +239,8 @@ export struct HdsButton {
     )
     .onClick((): void => {
       if (this.onButtonClick !== undefined) {
+        hapticTick();
+        if (symbolMotionEnabled()) { this.symbolTrigger++; }
         this.onButtonClick();
       }
     });

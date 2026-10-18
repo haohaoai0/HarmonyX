@@ -1,3 +1,9 @@
+import { pageBackgroundActive } from '../services/PageBackgroundStore';
+import { pageTextColor } from '../utils/ThemeColors';
+import { appPageBackground } from '../components/PageBackgroundLayer';
+import { pageCanvasColor, pageReadingSurfaceColor } from '../utils/ThemeColors';
+import { STORAGE_KEY_PAGE_TRANSITION_MODE, DEFAULT_PAGE_TRANSITION_MODE } from '../services/PageTransitionSettingsStore';
+import { pageSystemTransition, PageTransitionMotion } from '../utils/PageTransition';
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
 import { common } from '@kit.AbilityKit';
 import { deviceInfo } from '@kit.BasicServicesKit';
@@ -22,6 +28,9 @@ export function NativeAccountBuilder(): void { NativeAccountPage(); }
 
 @Component
 struct NativeAccountPage {
+  @StorageProp('harmonyx.page_background') private pageBackgroundValue: string = '';
+  @State private pageMotion: PageTransitionMotion = new PageTransitionMotion();
+  @StorageProp(STORAGE_KEY_PAGE_TRANSITION_MODE) private pageTransitionMode: string = DEFAULT_PAGE_TRANSITION_MODE;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @Consume('pageStack') pageStack: NavPathStack;
   @StorageProp('harmonyx.navigation_indicator_height') bottomInset: number = 0;
@@ -323,20 +332,20 @@ struct NativeAccountPage {
     Column({ space: 10 }) {
       if (field.kind === 'toggle') {
         Row({ space: 16 }) {
-          Text(field.title).fontFamily(this.appFontFamily).fontSize($r('sys.float.Subtitle_L')).fontColor($r('app.color.text_primary')).layoutWeight(1)
+          Text(field.title).fontFamily(this.appFontFamily).fontSize($r('sys.float.Subtitle_L')).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)).layoutWeight(1)
           if (field.available) {
             Toggle({ type: ToggleType.Switch, isOn: field.value === 'true' }).selectedColor(this.accentColor)
               .enabled(!this.saving).onChange((value: boolean): void => { field.value = String(value); this.dirty = true; })
-          } else { Text($r('app.string.xsettings_unavailable')).fontFamily(this.appFontFamily).fontColor($r('app.color.text_secondary')) }
+          } else { Text($r('app.string.xsettings_unavailable')).fontFamily(this.appFontFamily).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)) }
         }.width('100%')
       } else {
-        Text(field.title).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor($r('app.color.text_secondary'))
-        if (!field.available) { Text($r('app.string.xsettings_unavailable')).fontFamily(this.appFontFamily).fontColor($r('app.color.text_secondary')) }
+        Text(field.title).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
+        if (!field.available) { Text($r('app.string.xsettings_unavailable')).fontFamily(this.appFontFamily).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)) }
         else if (field.kind === 'readonly') {
           Text(field.choices.length > 0 ? this.choiceLabel(field) : field.id === 'is_identity_verified' ?
             field.value === 'true' ? $r('app.string.xnative_verified') : $r('app.string.xnative_unverified') :
             field.value === 'true' ? $r('app.string.xnative_enabled') : field.value === 'false' ? $r('app.string.xnative_disabled') : field.value).fontFamily(this.appFontFamily)
-            .fontColor($r('app.color.text_primary')).copyOption(CopyOptions.InApp)
+            .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)).copyOption(CopyOptions.InApp)
         }
         else if (field.kind === 'choice') {
           Button(this.choiceLabel(field)).bindMenu(this.ChoiceMenu(field)).enabled(!this.saving)
@@ -344,7 +353,7 @@ struct NativeAccountPage {
         } else {
           TextInput({ text: field.value }).fontFamily(this.appFontFamily)
             .type(field.kind === 'password' ? InputType.Password : field.kind === 'number' ? InputType.Number : InputType.Normal)
-            .fontSize($r('sys.float.Body_L')).fontColor($r('app.color.text_primary')).enabled(!this.saving)
+            .fontSize($r('sys.float.Body_L')).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)).enabled(!this.saving)
             .onChange((value: string): void => { field.value = value; this.dirty = true; })
         }
       }
@@ -357,19 +366,19 @@ struct NativeAccountPage {
       Column({ space: 18 }) {
         Text(nativeAccountFlow.content(this.flow.tasks[0])?.header?.text ??
           nativeAccountFlow.content(this.flow.tasks[0])?.primary_text?.text ?? '').fontFamily(this.appFontFamily)
-          .fontSize($r('sys.float.Title_S')).fontWeight(FontWeight.Bold).fontColor($r('app.color.text_primary'))
+          .fontSize($r('sys.float.Title_S')).fontWeight(FontWeight.Bold).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
         Text(nativeAccountFlow.content(this.flow.tasks[0])?.secondary_text?.text ??
-          nativeAccountFlow.content(this.flow.tasks[0])?.detail_text?.text ?? '').fontFamily(this.appFontFamily).fontColor($r('app.color.text_secondary'))
+          nativeAccountFlow.content(this.flow.tasks[0])?.detail_text?.text ?? '').fontFamily(this.appFontFamily).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
         if (nativeAccountFlow.kind(this.flow.tasks[0]).indexOf('enter_') === 0 ||
           nativeAccountFlow.kind(this.flow.tasks[0]).indexOf('verification') > 0) {
           TextInput({ text: this.flowValue, placeholder: nativeAccountFlow.content(this.flow.tasks[0])?.hint_text ?? '' }).fontFamily(this.appFontFamily)
             .type(this.flow.tasks[0].enter_password !== undefined ? InputType.Password : InputType.Normal)
-            .fontColor($r('app.color.text_primary')).enabled(!this.saving)
+            .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)).enabled(!this.saving)
             .onChange((value: string): void => { this.flowValue = value; })
         }
         ForEach(this.flowFields, (field: NativeAccountField) => { this.Field(field) }, (field: NativeAccountField): string => field.id)
         if (this.flow.tasks[0].show_code !== undefined) {
-          Text(this.flow.tasks[0].show_code?.code ?? '').fontFamily(this.appFontFamily).fontSize($r('sys.float.Title_M')).fontColor($r('app.color.text_primary')).copyOption(CopyOptions.InApp)
+          Text(this.flow.tasks[0].show_code?.code ?? '').fontFamily(this.appFontFamily).fontSize($r('sys.float.Title_M')).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)).copyOption(CopyOptions.InApp)
         }
         if (this.flow.tasks[0].choice_selection !== undefined) {
           ForEach(this.flow.tasks[0].choice_selection?.choices ?? [], (choice: NativeFlowChoice) => {
@@ -385,7 +394,7 @@ struct NativeAccountPage {
             .enabled(!this.saving).onClick((): void => this.submitFlow(nativeAccountFlow.content(this.flow.tasks[0])?.next_link?.link_id ??
               nativeAccountFlow.content(this.flow.tasks[0])?.primary_button?.link_id ?? nativeAccountFlow.content(this.flow.tasks[0])?.primary_action_link?.link_id ?? ''))
         } else {
-          Text($r('app.string.xnative_external_required')).fontFamily(this.appFontFamily).fontColor($r('app.color.text_secondary'))
+          Text($r('app.string.xnative_external_required')).fontFamily(this.appFontFamily).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
           Button($r('app.string.xnative_external_verification')).onClick((): void => this.externalChallenge())
         }
         Button($r('app.string.xsettings_cancel')).backgroundColor(Color.Transparent).fontColor(this.accentColor)
@@ -405,7 +414,7 @@ struct NativeAccountPage {
       if (this.snapshot.data['twoFactorAuthEnabled'] === true) {
         Button($r('app.string.xnative_show_backup')).onClick((): void => this.showBackup(false))
         if (this.backupCode.length > 0) {
-          Text(this.backupCode).fontFamily(this.appFontFamily).fontSize($r('sys.float.Title_M')).fontColor($r('app.color.text_primary')).copyOption(CopyOptions.InApp)
+          Text(this.backupCode).fontFamily(this.appFontFamily).fontSize($r('sys.float.Title_M')).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)).copyOption(CopyOptions.InApp)
           Button($r('app.string.xnative_generate_backup')).onClick((): void => this.showBackup(true))
         }
       }
@@ -456,13 +465,15 @@ struct NativeAccountPage {
 
   build(): void {
     HdsNavDestination() {
+      Stack({ alignContent: Alignment.TopStart }) {
+        appPageBackground()
       Scroll(this.scroller) {
         Column({ space: 8 }) {
-          Text(this.accountLabel).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor($r('app.color.text_secondary')).width('100%').padding({ left: 20, right: 20, top: 12 })
+          Text(this.accountLabel).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).width('100%').padding({ left: 20, right: 20, top: 12 })
           if (this.loading || this.saving) { LoadingProgress().color(this.accentColor).width(24).height(24).margin(12) }
-          if (this.snapshot.notice !== '') { Text(this.snapshot.notice).fontFamily(this.appFontFamily).fontColor($r('app.color.text_secondary')).padding(20) }
+          if (this.snapshot.notice !== '') { Text(this.snapshot.notice).fontFamily(this.appFontFamily).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).padding(20) }
           if (this.failure.length > 0) {
-            Text(this.failure).fontFamily(this.appFontFamily).fontColor($r('app.color.text_secondary')).padding(20)
+            Text(this.failure).fontFamily(this.appFontFamily).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).padding(20)
             if (this.authRequired) {
               TextInput({ text: this.verifyPassword, placeholder: $r('app.string.xnative_current_password') }).fontFamily(this.appFontFamily).type(InputType.Password)
               .enabled(!this.saving).onChange((value: string): void => { this.verifyPassword = value; }).margin({ left: 20, right: 20 })
@@ -481,9 +492,9 @@ struct NativeAccountPage {
               ForEach(this.snapshot.rows, (row: NativeAccountRow) => {
                 Row({ space: 16 }) {
                   Column({ space: 7 }) {
-                    Text(row.title).fontFamily(this.appFontFamily).fontSize($r('sys.float.Subtitle_L')).fontColor($r('app.color.text_primary'))
-                    if (row.verified !== undefined) { Text(row.verified ? $r('app.string.xnative_verified') : $r('app.string.xnative_unverified')).fontFamily(this.appFontFamily).fontColor($r('app.color.text_secondary')) }
-                    if (row.detail.length > 0) { Text(row.detail).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor($r('app.color.text_secondary')) }
+                    Text(row.title).fontFamily(this.appFontFamily).fontSize($r('sys.float.Subtitle_L')).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
+                    if (row.verified !== undefined) { Text(row.verified ? $r('app.string.xnative_verified') : $r('app.string.xnative_unverified')).fontFamily(this.appFontFamily).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)) }
+                    if (row.detail.length > 0) { Text(row.detail).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)) }
                   }.layoutWeight(1).alignItems(HorizontalAlign.Start)
                   if (row.action.length > 0 && row.action !== 'data_section') {
                     Button(this.actionLabel(row.action))
@@ -502,7 +513,7 @@ struct NativeAccountPage {
                 }.width('100%').padding({ left: 20, right: 20, top: 16, bottom: 16 })
               }, (row: NativeAccountRow): string => row.id)
               if (!this.loading && this.failure.length === 0 && this.snapshot.rows.length === 0 && this.fields.length === 0) {
-                Text($r('app.string.xsettings_empty')).fontFamily(this.appFontFamily).fontColor($r('app.color.text_secondary')).padding(20)
+                Text($r('app.string.xsettings_empty')).fontFamily(this.appFontFamily).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).padding(20)
               }
               if (this.failure.length === 0) { Column({ space: 14 }) { this.Actions() }.padding(20).enabled(!this.saving && !this.loading) }
             } else {
@@ -511,7 +522,13 @@ struct NativeAccountPage {
           }
         }.width('100%').alignItems(HorizontalAlign.Start).padding({ top: this.statusBarHeight + 74, bottom: this.bottomInset + 24 })
       }.width('100%').height('100%').align(Alignment.TopStart).scrollBar(BarState.Off)
+    
+      }.width('100%').height('100%')
     }
+    .scale({ x: this.pageMotion.scale, y: this.pageMotion.scale })
+    .opacity(this.pageMotion.opacity)
+    .onReady((context: NavDestinationContext): void => { this.pageMotion.attach(context); })
+    .systemTransition(pageSystemTransition(this.pageTransitionMode))
     .onShown((): void => { this.visible = true; this.load(); })
     .onHidden((): void => { this.visible = false; this.revision++; this.clearSecrets(); this.flow = new NativeFlowState(); this.flowFields = []; })
     .titleMode(HdsNavDestinationTitleMode.MINI).hideBackButton(false)
@@ -519,6 +536,6 @@ struct NativeAccountPage {
     .bindToScrollable([this.scroller])
     .titleBar({ avoidLayoutSafeArea: true, content: { title: { mainTitle: this.title } },
       style: destinationTitleBarStyle(ScrollEffectType.GRADIENT_BLUR, this.displayMode, this.darkSurface, this.titleBarStyleMode) })
-    .backgroundColor(pageSurfaceColor(this.displayMode, this.darkSurface)).systemMaterial(this.material());
+    .backgroundColor(pageCanvasColor(this.displayMode, this.darkSurface, this.pageBackgroundValue)).systemMaterial(pageBackgroundActive(this.pageBackgroundValue) ? undefined : this.material());
   }
 }

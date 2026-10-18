@@ -1,3 +1,8 @@
+import { pageTextColor } from '../utils/ThemeColors';
+import { appPageBackground } from '../components/PageBackgroundLayer';
+import { pageCanvasColor, pageReadingSurfaceColor } from '../utils/ThemeColors';
+import { STORAGE_KEY_PAGE_TRANSITION_MODE, DEFAULT_PAGE_TRANSITION_MODE } from '../services/PageTransitionSettingsStore';
+import { pageSystemTransition, PageTransitionMotion } from '../utils/PageTransition';
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
 import { userAvatarRadius, verificationBadgeColor, userVerifiedType, userAvatarShape } from '../utils/UserIdentity';
 import { common } from '@kit.AbilityKit';
@@ -17,6 +22,9 @@ export function SpaceMembersBuilder(): void { SpaceMembers(); }
 
 @Component
 struct SpaceMembers {
+  @StorageProp('harmonyx.page_background') private pageBackgroundValue: string = '';
+  @State private pageMotion: PageTransitionMotion = new PageTransitionMotion();
+  @StorageProp(STORAGE_KEY_PAGE_TRANSITION_MODE) private pageTransitionMode: string = DEFAULT_PAGE_TRANSITION_MODE;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @Consume('pageStack') pageStack: NavPathStack;
   @StorageProp('harmonyx.status_bar_height') statusBarHeight: number = 0;
@@ -54,7 +62,7 @@ struct SpaceMembers {
   @Builder
   private Filter(title: Resource, role: string): void {
     Button(title).fontSize($r('sys.float.Body_M')).fontWeight(FontWeight.Medium)
-      .fontColor(this.filter === role ? $r('app.color.space_card_text') : $r('app.color.text_primary'))
+      .fontColor(this.filter === role ? $r('app.color.space_card_text') : pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, this.filter === role ? $r('app.color.space_button') : $r('app.color.space_soft')))
       .backgroundColor(this.filter === role ? $r('app.color.space_button') : $r('app.color.space_soft'))
       .height($r('app.float.space_filter_height')).accessibilitySelected(this.filter === role)
       .onClick((): void => { this.filter = role; this.scroller.scrollTo({ xOffset: 0, yOffset: 0 }); })
@@ -62,11 +70,11 @@ struct SpaceMembers {
   @Builder
   private Group(role: string, title: Resource): void {
     ListItem() {
-      Text(title).fontFamily(this.appFontFamily).fontSize($r('sys.float.Title_S')).fontWeight(FontWeight.Bold).fontColor($r('app.color.text_primary'))
+      Text(title).fontFamily(this.appFontFamily).fontSize($r('sys.float.Title_S')).fontWeight(FontWeight.Bold).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
         .width('100%').padding({ top: 22, bottom: 8 })
     }
     if (this.people(role).length === 0) {
-      ListItem() { Text($r('app.string.spaces_no_members')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor($r('app.color.text_secondary')) }
+      ListItem() { Text($r('app.string.spaces_no_members')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)) }
     }
     ForEach(this.people(role), (person: SpaceParticipant): void => {
       ListItem() {
@@ -76,16 +84,16 @@ struct SpaceMembers {
           Column({ space: 4 }) {
             Row({ space: 5 }) {
               Text(person.name || person.username).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontWeight(FontWeight.Bold)
-                .fontColor($r('app.color.text_primary')).maxLines(1).textOverflow({ overflow: TextOverflow.Ellipsis }).layoutWeight(1)
+                .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)).maxLines(1).textOverflow({ overflow: TextOverflow.Ellipsis }).layoutWeight(1)
               if (person.verified) {
-                SymbolGlyph($r('sys.symbol.checkmark_circle_fill')).fontSize(16).fontColor([verificationBadgeColor(person.verifiedType, $r('app.color.text_accent'))])
+                SymbolGlyph($r('sys.symbol.checkmark_circle_fill')).fontSize(16).fontColor([verificationBadgeColor(person.verifiedType, pageTextColor($r('app.color.text_accent'), this.pageBackgroundValue, Color.Transparent))])
               }
               if (person.protected) {
-                SymbolGlyph($r('sys.symbol.lock_fill')).fontSize(16).fontColor([$r('app.color.text_primary')])
+                SymbolGlyph($r('sys.symbol.lock_fill')).fontSize(16).fontColor([pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)])
               }
             }.width('100%')
             Text(person.username.length > 0 ? '@' + person.username : spaceRole(person)).fontFamily(this.appFontFamily)
-              .fontSize($r('sys.float.Body_M')).fontColor($r('app.color.text_secondary'))
+              .fontSize($r('sys.float.Body_M')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
           }.layoutWeight(1).alignItems(HorizontalAlign.Start)
         }.width('100%').padding({ top: 10, bottom: 10 }).onClick((): void => {
           this.pageStack.pushPath({ name: 'UserDetail', param: spaceUserParam(person) });
@@ -95,6 +103,8 @@ struct SpaceMembers {
   }
   build(): void {
     HdsNavDestination() {
+      Stack({ alignContent: Alignment.TopStart }) {
+        appPageBackground()
       Column({ space: 8 }) {
         Scroll() {
           Row({ space: 8 }) {
@@ -125,12 +135,18 @@ struct SpaceMembers {
             .padding({ left: 16, right: 16 }).scrollBar(BarState.Off).contentEndOffset(this.navigationIndicatorHeight + 24)
         }.layoutWeight(1).width('100%').onRefreshing((): void => { this.load(); })
       }.width('100%').height('100%').padding({ top: this.statusBarHeight + 60 })
-    }.titleMode(HdsNavDestinationTitleMode.MINI).hideBackButton(false)
+    
+      }.width('100%').height('100%')
+    }
+    .scale({ x: this.pageMotion.scale, y: this.pageMotion.scale })
+    .opacity(this.pageMotion.opacity)
+    .onReady((context: NavDestinationContext): void => { this.pageMotion.attach(context); })
+    .systemTransition(pageSystemTransition(this.pageTransitionMode)).titleMode(HdsNavDestinationTitleMode.MINI).hideBackButton(false)
       .bindToScrollable([this.scroller])
       .titleBar({ avoidLayoutSafeArea: true, content: { title: { mainTitle: $r('app.string.spaces_members') } },
         style: destinationTitleBarStyle(ScrollEffectType.IMMERSIVE_GRADIENT_BLUR,
           this.themeDisplayMode, this.themeDarkSurface, this.titleBarStyleMode) })
-      .backgroundColor(pageSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
+      .backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue))
       .systemMaterial(deviceInfo.apiAvailable('26.0.0') ? new uiMaterial.ImmersiveMaterial({
         style: uiMaterial.ImmersiveStyle.REGULAR, applyShadow: true, colorInvert: true }) : undefined)
   }

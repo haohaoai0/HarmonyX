@@ -27,6 +27,7 @@ export const APP_ICON_FROG_WHITE: string = 'frog_white';
 export const APP_ICON_FROG_BLACK: string = 'frog_black';
 export const APP_ICON_MILK_FROG_WHITE: string = 'milk_frog_white';
 export const APP_ICON_MILK_FROG_BLACK: string = 'milk_frog_black';
+export const APP_ICON_ZOMBIE_X: string = 'zombie_x';
 export const APP_ICON_MID_AUTUMN: string = 'mid_autumn';
 
 // 中秋限时图标的开放时间：2026 年 9 月 25 日 0 点到 9 月 29 日 0 点，
@@ -54,6 +55,7 @@ export const APP_ICON_NAMES: string[] = [
   APP_ICON_FROG_BLACK,
   APP_ICON_MILK_FROG_WHITE,
   APP_ICON_MILK_FROG_BLACK,
+  APP_ICON_ZOMBIE_X,
   APP_ICON_MID_AUTUMN
 ];
 

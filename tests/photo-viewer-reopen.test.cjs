@@ -192,6 +192,13 @@ test('a new viewer visit clears closing state and uses fresh photo component key
   assert.equal(instance.resetting, false); assert.equal(instance.controlsVisible, false);
   assert.equal(instance.backdropOpacity, 1); assert.equal(instance.postPhotoScale, 1);
   assert.equal(instance.postPhotoOffsetY, 0);
+  // Reuse the original fullscreen choice on every visit, including reopening.
+  for (const fullscreen of [true, false, true, false]) {
+    instance.photoFullscreen = fullscreen;
+    instance.controlsVisible = fullscreen;
+    instance.readRoute({ urls: ['a'], items: [{ previewUrl: 'a' }], index: 0, alt: '', transitionPrefix: '' });
+    assert.equal(instance.controlsVisible, !fullscreen);
+  }
   const surface = viewer.members.find(node => ts.isMethodDeclaration(node) && node.name.getText(tree) === 'ViewerSurface').getText(tree);
   assert.ok(surface.includes('this.viewerSession.toString()'));
 });

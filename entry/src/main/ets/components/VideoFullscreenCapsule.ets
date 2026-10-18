@@ -1,4 +1,5 @@
 import { MaterialButton } from './MaterialButton';
+import { motionDuration } from '../utils/AppMotion';
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
 
 const FULLSCREEN_CAPSULE_VISIBLE_MS: number = 3000;
@@ -37,7 +38,7 @@ export struct VideoFullscreenCapsule {
 
   private setVisible(visible: boolean): void {
     if (this.visible === visible) { return; }
-    this.getUIContext().animateTo({ duration: this.reduceMotion ? 0 : 180, curve: Curve.EaseOut }, (): void => {
+    this.getUIContext().animateTo({ duration: this.reduceMotion ? 0 : motionDuration(180), curve: Curve.EaseOut }, (): void => {
       this.visible = visible;
     });
   }

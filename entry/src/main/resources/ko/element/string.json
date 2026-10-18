@@ -1,5 +1,151 @@
 {
   "string": [
+    {"name":"settings_confirm_app_exit","value":"종료 전 확인"},
+    {"name":"settings_confirm_app_exit_desc","value":"메인 화면에서 뒤로 가기를 누르면 종료 여부를 묻습니다. 끄면 바로 종료합니다."},
+    {"name":"app_exit_title","value":"앱 종료"},
+    {"name":"app_exit_message","value":"앱을 종료하시겠어요?"},
+    {"name":"app_exit_action","value":"종료"},
+    {"name":"settings_component_hdr_max","value":"현재 화면의 최대 밝기 배율"},
+    {"name":"settings_component_hdr_max_unavailable","value":"일시적으로 확인할 수 없음"},
+    {"name":"settings_component_hdr_max_desc","value":"현재 화면에 대해 시스템이 보고하는 값입니다. 밝기나 화면이 변경되면 자동으로 갱신됩니다."},
+    {"name":"settings_component_hdr_ratio","value":"UI HDR 밝기 배율"},
+    {"name":"settings_component_hdr_desc","value":"버튼, 아이콘 및 선택 항목의 강조 밝기를 조절합니다. 기본값은 1.25이며 1로 설정하면 밝기 향상이 꺼집니다. 실제 밝기는 기기에 따라 다릅니다. 변경 사항은 자동으로 저장되고 적용됩니다."},
+    {"name":"settings_component_hdr_invalid","value":"1 이상의 유효한 숫자를 입력하세요."},
+    {"name":"settings_component_hdr_reset","value":"1.25로 초기화"},
+    {"name":"settings_video_hdr_enhancement","value":"HDR 동영상 향상"},
+    {"name":"settings_video_hdr_enhancement_desc","value":"일반 동영상의 명암과 색상을 개선합니다. 지원하지 않는 기기에서는 자동으로 일반 재생을 사용합니다."},
+    {"name": "settings_menu_post", "value": "게시물 메뉴 작업"},
+    {"name": "settings_menu_photo", "value": "사진 메뉴 작업"},
+    {"name": "settings_menu_video", "value": "동영상 메뉴 작업"},
+    {"name": "settings_menu_item_desc", "value": "관련 메뉴에 표시할 작업을 선택합니다. 현재 콘텐츠에서 지원할 때만 표시되며 기본값으로 복원할 수 있습니다."},
+    {"name": "settings_menu_show_action", "value": "관련 메뉴에 표시"},
+    {"name": "settings_menu_empty", "value": "메뉴 작업이 숨겨져 있습니다. 설정의 해당 분류에서 복원하세요."},
+    {"name": "settings_viewer_video_mute", "value": "동영상 뷰어 기본 음소거"},
+    {"name": "settings_viewer_video_mute_desc", "value": "홈 미리보기와 별도로 열린 동영상을 음소거합니다."},
+    {"name": "settings_video_auto_advance_desc", "value": "재생이 끝나면 다음 동영상으로 자동 전환합니다."},
+    {"name": "settings_video_captions_desc", "value": "동영상 뷰어에서 시스템 AI 자막을 기본으로 켭니다."},
+    {"name": "settings_video_feed_layout_desc", "value": "휴대폰 세로 화면의 동영상 레이아웃을 선택합니다. 대화면과 가로 창은 해당 레이아웃을 유지합니다."},
+    {"name": "settings_chat_desc", "value": "Message requests, call permissions, PIN and chat auto-download"},
+    {
+      "name": "settings_video_double_tap_seek",
+      "value": "두 번 눌러 앞으로/뒤로 이동"
+    },
+    {
+      "name": "settings_video_double_tap_seek_desc",
+      "value": "동영상 오른쪽을 두 번 누르면 앞으로, 왼쪽을 두 번 누르면 뒤로 이동합니다"
+    },
+    {
+      "name": "settings_video_double_tap_seek_seconds",
+      "value": "이동 간격"
+    },
+    {
+      "name": "settings_video_double_tap_seek_seconds_value",
+      "value": "%d초"
+    },
+    {
+      "name": "video_double_tap_forward",
+      "value": "%d초 앞으로"
+    },
+    {
+      "name": "video_double_tap_rewind",
+      "value": "%d초 뒤로"
+    },
+    {
+      "name": "settings_app_icon_zombie_x",
+      "value": "좀비 X"
+    },
+    {
+      "name": "card_source_for_you",
+      "value": "추천"
+    },
+    {
+      "name": "card_source_for_you_desc",
+      "value": "평소 보던 추천 타임라인입니다."
+    },
+    {
+      "name": "card_source_following",
+      "value": "팔로잉"
+    },
+    {
+      "name": "card_source_following_desc",
+      "value": "팔로우한 계정의 최신 게시물입니다."
+    },
+    {
+      "name": "card_source_trends",
+      "value": "트렌드"
+    },
+    {
+      "name": "card_source_trends_desc",
+      "value": "지금 X에서 인기 있는 트렌드입니다."
+    },
+    {
+      "name": "card_source_notifications",
+      "value": "알림"
+    },
+    {
+      "name": "card_source_notifications_desc",
+      "value": "최신 멘션과 활동입니다."
+    },
+    {
+      "name": "card_empty_for_you",
+      "value": "앱에서 추천을 새로 고치면 카드가 채워집니다"
+    },
+    {
+      "name": "card_empty_following",
+      "value": "앱에서 팔로잉을 새로 고치면 카드가 채워집니다"
+    },
+    {
+      "name": "card_empty_trends",
+      "value": "탐색 페이지에서 트렌드를 새로 고치세요"
+    },
+    {
+      "name": "card_empty_notifications",
+      "value": "알림 페이지를 열어 카드를 새로 고치세요"
+    },
+    {
+      "name": "card_settings_title",
+      "value": "카드 데이터 소스"
+    },
+    {
+      "name": "card_settings_intro",
+      "value": "홈 화면 카드에 표시할 내용을 선택하세요."
+    },
+    {
+      "name": "card_settings_refreshing",
+      "value": "카드 업데이트 중…"
+    },
+    {
+      "name": "card_settings_updated",
+      "value": "카드가 업데이트되었습니다"
+    },
+    {
+      "name": "card_settings_update_failed",
+      "value": "새로 고치지 못했습니다. 저장된 게시물을 표시합니다"
+    },
+    {
+      "name": "card_settings_refresh",
+      "value": "카드 새로 고침"
+    },
+    {
+      "name": "card_settings_note",
+      "value": "카드는 현재 계정을 따릅니다. 카드 오른쪽 위의 톱니바퀴를 눌러 여기로 돌아올 수 있습니다."
+    },
+    {
+      "name": "article_service_card_desc",
+      "value": "홈 화면에서 인기 게시물 보기"
+    },
+    {
+      "name": "article_service_card_more",
+      "value": "더 보기"
+    },
+    {
+      "name": "article_service_card_empty",
+      "value": "앱에서 타임라인을 새로 고치면 인기 게시물 3개가 여기에 표시됩니다"
+    },
+    {
+      "name": "article_service_card_recent",
+      "value": "최근 읽은 글"
+    },
     {
       "name": "promotion_hide_week",
       "value": "Hide for 7 days"
@@ -102,7 +248,7 @@
     },
     {
       "name": "xxauth_snooze",
-      "value": "Remind me in 7 days"
+      "value": "Remind me in 3 days"
     },
     {
       "name": "xxauth_experience",
@@ -922,7 +1068,7 @@
     },
     {
       "name": "profile_version",
-      "value": "Harmony X 3.0.0 · HarmonyOS 6.1(API 23-26) · Stage 모델"
+      "value": "Harmony X 3.1.0 · HarmonyOS 6.1(API 23-26) · Stage 모델"
     },
     {
       "name": "profile_following",
@@ -1634,7 +1780,7 @@
     },
     {
       "name": "settings_timeline_columns_desc",
-      "value": "넓은 화면에서는 여러 열로 더 많은 게시물을 보여줘요. 좁은 화면은 한 열을 유지해요."
+      "value": "넓은 화면에서는 여러 열로 더 많은 게시물을 보여줘요. 휴대폰에서도 두 열을 선택할 수 있으며 자동 모드는 한 열을 유지해요."
     },
     {
       "name": "settings_timeline_columns_label",
@@ -1843,6 +1989,54 @@
     {
       "name": "settings_theme_huawei_red",
       "value": "Huawei 빨강"
+    },
+    {
+      "name": "settings_theme_cinnabar",
+      "value": "주사"
+    },
+    {
+      "name": "settings_theme_vermilion",
+      "value": "단색"
+    },
+    {
+      "name": "settings_theme_amber",
+      "value": "호박색"
+    },
+    {
+      "name": "settings_theme_autumn_bamboo",
+      "value": "추향색"
+    },
+    {
+      "name": "settings_theme_bamboo_green",
+      "value": "죽청"
+    },
+    {
+      "name": "settings_theme_azurite",
+      "value": "석청"
+    },
+    {
+      "name": "settings_theme_cloisonne",
+      "value": "경태람"
+    },
+    {
+      "name": "settings_theme_indigo",
+      "value": "화청"
+    },
+    {
+      "name": "settings_theme_begonia",
+      "value": "자당"
+    },
+    {
+      "name": "settings_theme_rouge",
+      "value": "연지색"
+    },
+    {
+      "name": "settings_theme_sandalwood",
+      "value": "단향색"
+    },
+    {
+      "name": "settings_theme_mountain",
+      "value": "청대"
     },
     {
       "name": "settings_push",
@@ -4358,7 +4552,7 @@
     },
     {
       "name": "onboarding_profile_detail",
-      "value": "내 게시물, 마음에 들어요 및 프로필 정보를 확인하세요."
+      "value": "프로필과 로그인 상태를 확인하고 계정을 관리하거나 전환하세요."
     },
     {
       "name": "onboarding_media_title",
@@ -6290,7 +6484,7 @@
     },
     {
       "name": "storage_directory_failed",
-      "value": "폴더 권한을 받지 못했어요. 다시 시도하거나 지원하지 않는 기기에서는 다운로드 작업의 다른 이름으로 저장을 사용하세요."
+      "value": "다운로드 설정을 저장하지 못했습니다. 다시 시도하세요."
     },
     {
       "name": "storage_path_note",
@@ -6310,11 +6504,11 @@
     },
     {
       "name": "storage_save_to_folder",
-      "value": "기본적으로 다운로드 폴더에 저장"
+      "value": "파일로 저장"
     },
     {
       "name": "storage_save_target_note",
-      "value": "켜면 사진과 동영상을 다운로드 폴더에, 끄면 갤러리에 저장해요."
+      "value": "켜면 파일마다 시스템 선택기에서 저장 위치를 확인합니다. 끄면 사진과 동영상이 갤러리에 저장됩니다."
     },
     {
       "name": "storage_download_files",
@@ -6330,7 +6524,7 @@
     },
     {
       "name": "storage_save_to_downloads",
-      "value": "다운로드 폴더에 저장"
+      "value": "다른 이름으로 저장"
     },
     {
       "name": "storage_network_title",
@@ -6375,10 +6569,6 @@
     {
       "name": "storage_stats_failed",
       "value": "일부 저장 공간 정보를 읽지 못했어요. 확인된 통계를 표시했으니 새로고침해 다시 시도하세요."
-    },
-    {
-      "name": "storage_permission_reason",
-      "value": "선택한 다운로드 폴더에 사진, 동영상 및 파일을 계속 저장하는 데 필요해요."
     },
     {
       "name": "storage_cancel",
@@ -9573,6 +9763,14 @@
       "value": "Gradient blur"
     },
     {
+      "name": "sidebar_material_system",
+      "value": "시스템 사이드바 흐림"
+    },
+    {
+      "name": "sidebar_material_system_desc",
+      "value": "시스템 기본 사이드바 효과를 사용합니다. 흐림 강도는 시스템이 제어합니다."
+    },
+    {
       "name": "sidebar_swipe",
       "value": "Sidebar swipe gestures"
     },
@@ -9930,7 +10128,7 @@
     },
     {
       "name": "logo_universe_desc",
-      "value": "모든 만남이 HarmonyX를 완성합니다."
+      "value": "모든 만남이 Harmony X를 완성합니다."
     },
     {
       "name": "logo_universe_hint",
@@ -9982,7 +10180,7 @@
     },
     {
       "name": "logo_part_of_you",
-      "value": "당신도 HarmonyX의 일부입니다."
+      "value": "당신도 Harmony X의 일부입니다."
     },
     {
       "name": "logo_touch_hint",
@@ -10138,7 +10336,7 @@
     },
     {
       "name": "settings_category_home_interaction_desc",
-      "value": "Floating action, auto-refresh, latest posts and Spaces capsule"
+      "value": "플로팅 버튼, 새로고침, 스페이스 캡슐 및 게시물 메뉴"
     },
     {
       "name": "settings_category_layout",
@@ -10154,7 +10352,7 @@
     },
     {
       "name": "settings_category_photos_desc",
-      "value": "Open photos in fullscreen by default"
+      "value": "전체 화면 보기 및 사진 메뉴 작업"
     },
     {
       "name": "settings_category_playback",
@@ -10162,7 +10360,7 @@
     },
     {
       "name": "settings_category_playback_desc",
-      "value": "Autoplay, mute, picture in picture and background playback"
+      "value": "자동 재생, 별도 음소거, 자동 전환 및 백그라운드 재생"
     },
     {
       "name": "settings_category_video_controls",
@@ -10170,7 +10368,7 @@
     },
     {
       "name": "settings_category_video_controls_desc",
-      "value": "Picture fill, hold for speed, tap to pause and subtitle background"
+      "value": "동영상 레이아웃, 재생 제어, 자막, 제스처 및 메뉴"
     },
     {
       "name": "settings_category_viewer",
@@ -10222,11 +10420,235 @@
     },
     {"name":"settings_classic_bottom_bar","value":"클래식 하단 탐색"},
     {"name":"settings_classic_bottom_bar_desc","value":"아이콘과 텍스트가 있는 전체 너비 막대를 하단에 표시하며 자동 숨기기도 사용할 수 있습니다. 끄면 플로팅 스타일로 돌아갑니다. 변경 사항은 즉시 적용되고 저장됩니다."},
+    {"name":"settings_root_liquid_tab_indicator","value":"리퀴드 표시기"},
+    {"name":"settings_root_liquid_tab_indicator_desc","value":"플로팅 탐색 막대에 드래그할 수 있고 탄력 있게 되돌아오는 캡슐을 표시합니다. 크기는 탭 라벨 설정에 맞춰 바뀝니다."},
     {"name":"settings_root_tab_labels","value":"탭 라벨 표시"},
     {"name":"settings_root_tab_labels_desc","value":"플로팅 및 클래식 하단 탐색 모두에 적용됩니다. 끄면 아이콘과 읽지 않은 배지만 표시됩니다."},
     {
       "name": "chat_post_preview",
       "value": "공유된 게시물"
-    }
+    },
+    {"name": "account_overview_signed_out", "value": "로그아웃됨"},
+    {"name": "account_overview_no_bio", "value": "자기소개가 없습니다"},
+    {"name": "account_overview_handle", "value": "사용자 이름"},
+    {"name": "account_overview_location", "value": "위치"},
+    {"name": "account_overview_website", "value": "웹사이트"},
+    {"name": "account_overview_manage", "value": "계정 관리 및 전환"},
+    {"name": "profile_editor_choose_banner", "value": "Change header photo"},
+    {"name": "profile_editor_choose_avatar", "value": "Change profile photo"},
+    {"name": "profile_editor_birthdate", "value": "Birth date"},
+    {"name": "profile_editor_birthdate_empty", "value": "Add birth date"},
+    {"name": "profile_editor_birthdate_manage", "value": "Edit birth date and visibility"},
+    {"name": "profile_editor_birthdate_privacy", "value": "Month and day: %s\nYear: %s"},
+    {"name": "profile_editor_account_changed", "value": "The signed-in account changed. Go back and reopen the editor."},
+    {"name": "profile_editor_unsaved_title", "value": "Discard unsaved changes?"},
+    {"name": "profile_editor_unsaved_message", "value": "Unsaved profile and photo changes will be lost when you leave."},
+    {"name": "profile_editor_keep_editing", "value": "Keep editing"},
+    {"name": "profile_editor_discard", "value": "Discard changes"},
+    {"name": "profile_editor_partial", "value": "Some changes were saved. Your remaining edits are still here. Try saving again."},
+    {"name": "profile_editor_confirm_failed", "value": "Changes were submitted, but the updated profile could not be loaded. Save again to refresh without uploading the photos again."},
+    {"name": "settings_page_transition", "value": "페이지 전환"},
+    {"name": "settings_page_transition_desc", "value": "페이지를 열거나 돌아갈 때의 애니메이션을 선택합니다. 즉시 적용되고 저장됩니다."},
+    {"name": "settings_page_transition_classic", "value": "기존 애니메이션"},
+    {"name": "settings_page_transition_classic_desc", "value": "현재 시스템 탐색 전환 효과를 유지합니다."},
+    {"name": "settings_page_transition_official", "value": "공식 스타일"},
+    {"name": "settings_page_transition_official_desc", "value": "중앙 확대·축소와 페이드를 사용하며 진입과 종료 효과가 짝을 이룹니다。"},
+    {"name":"settings_anti_peep","value":"시선 보호"},
+    {"name":"settings_anti_peep_desc","value":"다른 사람의 시선이 감지되면 시스템 마스크로 앱 창을 가립니다."},
+    {"name":"settings_anti_peep_enable","value":"시선 보호 사용"},
+    {"name":"settings_anti_peep_setup","value":"시스템 보호 설정"},
+    {"name":"settings_anti_peep_recheck","value":"다시 확인"},
+    {"name":"settings_anti_peep_note","value":"얼굴 인식을 설정하고 시스템의 개인정보 및 보안 > 시선 보호에서 이 앱을 허용하세요. 앱은 시스템 상태만 사용하며 얼굴 이미지에 접근하지 않습니다."},
+    {"name":"settings_anti_peep_disabled","value":"꺼짐"},
+    {"name":"settings_anti_peep_unsupported","value":"이 기기는 시스템 시선 보호를 지원하지 않습니다."},
+    {"name":"settings_anti_peep_permission","value":"앱 승인을 기다리는 중입니다. 설정 후 앱으로 돌아오거나 다시 확인하면 활성화됩니다."},
+    {"name":"settings_anti_peep_system_off","value":"시스템 시선 보호에서 이 앱을 켜세요."},
+    {"name":"settings_anti_peep_face","value":"먼저 시스템 설정에서 얼굴 인식을 켜세요."},
+    {"name":"settings_anti_peep_ready","value":"활성화됨. 시선을 감지하는 중입니다."},
+    {"name":"settings_anti_peep_protected","value":"다른 사람의 시선이 감지되어 시스템 보호 마스크가 실행되었습니다."},
+    {"name":"settings_anti_peep_error","value":"현재 보호를 사용할 수 없습니다. 다시 확인하세요."},
+    {"name":"settings_anti_peep_checking","value":"보호 확인 또는 활성화 중…"},
+    {"name":"settings_anti_peep_save_failed","value":"저장하지 못했습니다. 다시 시도하세요."},
+    {"name":"huawei_account_title","value":"HUAWEI ID and cloud sync"},
+    {"name":"huawei_account_name","value":"HUAWEI ID"},
+    {"name":"huawei_login","value":"Sign in with HUAWEI ID"},
+    {"name":"huawei_logout","value":"Sign out"},
+    {"name":"huawei_signed_in","value":"Signed in with HUAWEI ID"},
+    {"name":"huawei_logging_in","value":"Signing in…"},
+    {"name":"huawei_signed_out_description","value":"Sign in to bring your preferences with you"},
+    {"name":"huawei_cloud_sync","value":"Cloud sync"},
+    {"name":"huawei_sync_description","value":"Sign in to enable sync for appearance, reading, playback preferences and local content rules across your devices."},
+    {"name":"huawei_local_data_note","value":"X credentials, messages, drafts and caches stay on this device. Some appearance changes take effect after restarting."},
+    {"name":"huawei_logout_title","value":"Sign out of HUAWEI ID?"},
+    {"name":"huawei_logout_description","value":"Cloud sync will pause. Local settings and existing cloud data will be kept. Your X account remains available."},
+    {"name":"huawei_sync_disabled","value":"Off. Settings are saved on this device."},
+    {"name":"huawei_sync_unavailable","value":"Cloud storage is unavailable. Check the system cloud service and this app’s sync switch."},
+    {"name":"huawei_sync_downloading","value":"Reading and merging cloud settings…"},
+    {"name":"huawei_sync_uploading","value":"Uploading settings…"},
+    {"name":"huawei_sync_success","value":"Synced"},
+    {"name":"huawei_sync_pending","value":"Saved locally, waiting to sync"},
+    {"name":"huawei_sync_failed","value":"Sync did not finish. Your local data is safe. Check system cloud settings and try again."},
+    {"name":"huawei_network_error","value":"Network unavailable. Try again when connected."},
+    {"name":"huawei_storage_full","value":"Cloud or device storage is full. Free some space and try again."},
+    {"name":"huawei_login_error","value":"Sign-in did not finish. Check account service configuration or try again later."},
+    {"name":"huawei_authorization_error","value":"Nickname and avatar authorization failed. Check account permissions and try again."},
+    {"name":"huawei_save_error","value":"Could not save settings. Try again."},
+    {"name":"huawei_select_group","value":"Select at least one group to sync."},
+    {"name":"huawei_account_changed","value":"HUAWEI ID has changed. Enabling sync will merge the selected local settings into the current account."},
+    {"name":"huawei_last_sync","value":"Last successful sync:"},
+    {"name":"huawei_syncing","value":"Syncing…"},
+    {"name":"huawei_sync_now","value":"Sync now"},
+    {"name":"huawei_group_appearance","value":"Appearance and navigation"},
+    {"name":"huawei_group_appearance_description","value":"Theme, text size, title bar, tabs and sheet material"},
+    {"name":"huawei_group_media","value":"Reading and playback"},
+    {"name":"huawei_group_media_description","value":"Image and video quality, autoplay and mute preferences"},
+    {"name":"huawei_group_filters","value":"Local content rules"},
+    {"name":"huawei_group_filters_description","value":"Keyword and user filters, and content preferences"},
+    {"name":"post_photo_save_background","value":"배경 라이브러리에 저장"},
+    {"name":"chat_background_saving_photo","value":"배경 이미지 저장 중…"},
+    {"name":"chat_background_saved_photo","value":"저장했습니다. 페이지 배경 또는 채팅 배경에서 선택할 수 있습니다."},
+    {"name":"chat_background_save_photo_failed","value":"배경 이미지를 저장하지 못했습니다. 다시 시도하세요."},
+    {"name":"chat_background_saved_photos","value":"게시물에서 저장한 이미지"},
+    {"name":"page_background_title","value":"페이지 배경"},
+    {"name":"page_background_description","value":"Colors, photos and mixable patterns"},
+    {"name":"page_background_switch_title","value":"페이지 배경 사용"},
+    {"name":"page_background_switch_desc","value":"끄면 테마 배경이 즉시 적용됩니다. 현재 스타일은 유지됩니다."},
+    {"name":"page_background_base","value":"배경"},
+    {"name":"page_background_pattern","value":"패턴 오버레이"},
+    {"name":"page_background_pattern_none","value":"패턴 없음"},
+    {"name":"page_background_content_opacity","value":"콘텐츠 바탕 불투명도"},
+    {"name":"page_background_reset","value":"기본값 복원"},
+    {"name":"page_background_color_placeholder","value":"Custom color #RRGGBB"},
+    {"name":"page_background_preview","value":"배경 미리보기"},
+    {"name":"page_background_preview_text","value":"Bring your favorite colors and patterns to every visit."},
+    {"name":"page_background_preview_hint","value":"Text and content surfaces show how readable your background will be."},
+    {"name":"page_background_note","value":"Applies to regular pages. Chats have separate backgrounds; media viewers keep their immersive backgrounds. Tap Apply to save."},
+    {"name":"page_background_layout_preset","value":"전체 패턴"},
+    {"name":"page_background_layout_icons","value":"개별 아이콘"},
+    {"name":"page_background_density","value":"아이콘 밀도"},
+    {"name":"page_background_set_add","value":"전체 세트 선택"},
+    {"name":"page_background_set_remove","value":"전체 세트 선택 해제"},
+    {"name":"page_background_mix_hint","value":"Select motifs across sets to mix them, or repeat a single motif."},
+    {"name":"page_background_selected","value":"%d motifs selected"},
+    {"name":"page_background_icons_clear","value":"아이콘 지우기"},
+    {"name":"page_background_paper","value":"종이 질감"},
+    {"name":"page_background_paper_none","value":"없음"},
+    {"name":"page_background_kraft","value":"크라프트지"},
+    {"name":"page_background_parchment","value":"양피지"},
+    {"name":"page_background_texture_strength","value":"질감 강도"},
+    {"name":"page_background_presets_mix","value":"Select multiple full patterns to combine them."},
+    {"name":"page_background_applied","value":"페이지 배경이 적용되었습니다"},
+    {"name":"page_background_apply_failed","value":"배경을 저장하지 못했습니다. 다시 시도하세요."},
+    {"name":"page_background_transparent_posts","value":"Transparent post cards"},
+    {"name":"page_background_transparent_posts_desc","value":"Hide the surface behind posts and quoted posts to reveal the page background."},
+    {"name":"page_background_transparent_inbox","value":"Transparent message list"},
+    {"name":"page_background_transparent_inbox_desc","value":"Hide conversation row surfaces while keeping text, avatars and unread indicators."},
+    {"name":"page_background_post_opacity","value":"Post surface opacity"},
+    {"name":"page_background_inbox_opacity","value":"Message list surface opacity"},
+    {"name":"page_background_scheme_import","value":"Import scheme"},
+    {"name":"page_background_scheme_share","value":"Share scheme"},
+    {"name":"page_background_scheme_title","value":"Page background scheme"},
+    {"name":"page_background_scheme_imported","value":"Scheme imported. Preview it, then tap Apply."},
+    {"name":"page_background_scheme_import_failed","value":"Unable to import. Choose a valid HarmonyX background scheme (up to 48 MB)."},
+    {"name":"page_background_scheme_share_failed","value":"Unable to share. Please try again; background photos must be under 32 MB."},
+    {"name":"page_background_set_signature_icons","value":"대체 아이콘"},
+    {"name":"page_background_set_garden_defense","value":"플랜츠 vs. 좀비"},
+    {"name":"page_background_motif_signature_icons_frog_face","value":"Frog face"},
+    {"name":"page_background_motif_signature_icons_frog_lily","value":"Frog on a lily pad"},
+    {"name":"page_background_motif_signature_icons_milk_frog","value":"Milk frog"},
+    {"name":"page_background_motif_signature_icons_milk_frog_wave","value":"Waving milk frog"},
+    {"name":"page_background_motif_signature_icons_bird","value":"Flying bird"},
+    {"name":"page_background_motif_signature_icons_bird_wings","value":"Bird with open wings"},
+    {"name":"page_background_motif_signature_icons_ribbon_x","value":"Ribbon X"},
+    {"name":"page_background_motif_signature_icons_blossom_x","value":"Blossom X"},
+    {"name":"page_background_motif_signature_icons_brush_x","value":"Brush X"},
+    {"name":"page_background_motif_signature_icons_prism_x","value":"Prism X"},
+    {"name":"page_background_motif_signature_icons_zombie_x","value":"Zombie X"},
+    {"name":"page_background_motif_signature_icons_lily_blossom","value":"Lily blossom"},
+    {"name":"page_background_motif_garden_defense_peashooter","value":"Peashooter"},
+    {"name":"page_background_motif_garden_defense_sunflower","value":"Sunflower"},
+    {"name":"page_background_motif_garden_defense_wallnut","value":"Wall-nut"},
+    {"name":"page_background_motif_garden_defense_cherry_bomb","value":"Cherry Bomb"},
+    {"name":"page_background_motif_garden_defense_snow_pea","value":"Snow Pea"},
+    {"name":"page_background_motif_garden_defense_potato_mine","value":"Potato Mine"},
+    {"name":"page_background_motif_garden_defense_chomper","value":"Chomper"},
+    {"name":"page_background_motif_garden_defense_squash","value":"Squash"},
+    {"name":"page_background_motif_garden_defense_zombie","value":"Zombie"},
+    {"name":"page_background_motif_garden_defense_conehead","value":"Conehead Zombie"},
+    {"name":"page_background_motif_garden_defense_buckethead","value":"Buckethead Zombie"},
+    {"name":"page_background_motif_garden_defense_lawnmower","value":"Lawn mower"},
+    {"name":"page_background_set_ai_assistants","value":"AI 어시스턴트"},
+    {"name":"page_background_motif_ai_assistants_gpt","value":"GPT"},
+    {"name":"page_background_motif_ai_assistants_claude","value":"Claude"},
+    {"name":"page_background_motif_ai_assistants_gemini","value":"Gemini"},
+    {"name":"page_background_motif_ai_assistants_deepseek","value":"DeepSeek"},
+    {"name":"page_background_motif_ai_assistants_grok","value":"Grok"},
+    {"name":"page_background_motif_ai_assistants_qwen","value":"Qwen"},
+    {"name":"page_background_motif_ai_assistants_kimi","value":"Kimi"},
+    {"name":"page_background_motif_ai_assistants_doubao","value":"Doubao"},
+    {"name":"page_background_motif_ai_assistants_copilot","value":"Copilot"},
+    {"name":"page_background_motif_ai_assistants_perplexity","value":"Perplexity"},
+    {"name":"page_background_motif_ai_assistants_mistral","value":"Mistral"},
+    {"name":"page_background_motif_ai_assistants_robot","value":"AI robot"},
+    {"name":"page_background_set_mobile_brands_systems","value":"스마트폰 브랜드 및 OS"},
+    {"name":"page_background_motif_mobile_brands_systems_apple","value":"Apple"},
+    {"name":"page_background_motif_mobile_brands_systems_huawei","value":"Huawei"},
+    {"name":"page_background_motif_mobile_brands_systems_xiaomi","value":"Xiaomi"},
+    {"name":"page_background_motif_mobile_brands_systems_samsung","value":"Samsung"},
+    {"name":"page_background_motif_mobile_brands_systems_oppo","value":"OPPO"},
+    {"name":"page_background_motif_mobile_brands_systems_vivo","value":"vivo"},
+    {"name":"page_background_motif_mobile_brands_systems_honor","value":"HONOR"},
+    {"name":"page_background_motif_mobile_brands_systems_oneplus","value":"OnePlus"},
+    {"name":"page_background_motif_mobile_brands_systems_meizu","value":"Meizu"},
+    {"name":"page_background_motif_mobile_brands_systems_harmonyos","value":"HarmonyOS"},
+    {"name":"page_background_motif_mobile_brands_systems_android","value":"Android"},
+    {"name":"page_background_motif_mobile_brands_systems_ios","value":"iOS"},
+    {"name":"page_background_motif_mobile_brands_systems_hyperos","value":"HyperOS"},
+    {"name":"page_background_motif_mobile_brands_systems_coloros","value":"ColorOS"},
+    {"name":"page_background_motif_mobile_brands_systems_originos","value":"OriginOS"},
+    {"name":"page_background_motif_mobile_brands_systems_oneui","value":"One UI"},
+    {"name":"motion_title","value":"Animation & haptics"},
+    {"name":"motion_intro","value":"Tune interaction animations and touch feedback. Changes are saved automatically. Tap the preview to try them."},
+    {"name":"motion_preview","value":"Tap to preview animation and haptics"},
+    {"name":"motion_reduce","value":"Reduce motion"},
+    {"name":"motion_reduce_desc","value":"Turn off decorative scaling, movement and Symbol effects, and skip page transitions. Your animation preferences are kept."},
+    {"name":"motion_duration","value":"Animation duration"},
+    {"name":"motion_duration_desc","value":"Reference duration for app animations. Button and page animations scale proportionally. System Symbol effects keep their native timing."},
+    {"name":"motion_amplitude","value":"Movement amplitude"},
+    {"name":"motion_amplitude_desc","value":"Adjust decorative scaling and rotation. At 0%, these effects stop. Gesture tracking and zoom keep their full range."},
+    {"name":"motion_damping","value":"Spring damping"},
+    {"name":"motion_damping_desc","value":"Lower values bounce more; higher values settle more gently."},
+    {"name":"motion_symbol","value":"Animated Symbols"},
+    {"name":"motion_symbol_desc","value":"Play a native Symbol effect once when selecting a tab or using an action button. Effects pause with Reduce motion."},
+    {"name":"motion_haptics","value":"Touch feedback"},
+    {"name":"motion_haptics_desc","value":"Use light feedback for navigation, buttons, switches and actions. Follows the system haptics setting."},
+    {"name":"motion_intensity","value":"Haptic intensity"},
+    {"name":"motion_intensity_desc","value":"Adjust preset effects on supported devices. Other motors use a short system touch vibration."},
+    {"name":"motion_presets","value":"Animation presets"},
+    {"name":"motion_preset_quick","value":"Quick"},
+    {"name":"motion_preset_quick_desc","value":"175 ms · 60% movement · firm settling. Short, crisp feedback."},
+    {"name":"motion_preset_standard","value":"Standard"},
+    {"name":"motion_preset_standard_desc","value":"300 ms · 100% movement · balanced spring. Recommended for everyday use."},
+    {"name":"motion_preset_spring","value":"Bouncy"},
+    {"name":"motion_preset_spring_desc","value":"450 ms · 120% movement · lower damping. Softer, more visible rebound."},
+    {"name":"motion_preset_reduced","value":"Low motion"},
+    {"name":"motion_preset_reduced_desc","value":"Skip page transitions and decorative effects. Keep your previous tuning."},
+    {"name":"motion_preset_custom","value":"Current preset: Custom. Choose a preset to restore its animation values."},
+    {"name":"chat_auto_download","value":"Chat auto-download"},
+    {"name":"storage_chat_retention","value":"Keep chat media"},
+    {"name":"storage_chat_retention_desc","value":"Set how long downloaded chat media stays cached. Chat history and manually saved files are kept."},
+    {"name":"settings_theme_mix","value":"혼합 색상"},
+    {"name":"settings_theme_mix_desc","value":"밝은 모드와 어두운 모드에서 스위치, 탐색, 게시 버튼에 조화로운 색상을 적용합니다."},
+    {"name":"settings_theme_mix_confetti","value":"컬러풀"},
+    {"name":"settings_theme_mix_coast","value":"씨솔트 코랄"},
+    {"name":"settings_theme_mix_sunset","value":"선셋 아이리스"},
+    {"name":"settings_theme_mix_forest","value":"포레스트 앰버"},
+    {"name":"settings_theme_mix_berry","value":"베리 민트"},
+    {"name":"settings_theme_mix_morandi","value":"모란디"},
+    {"name":"settings_theme_solid","value":"단색"},
+    {"name":"settings_theme_mix_candy","value":"캔디 컬러"},
+    {"name":"settings_theme_mix_sky","value":"스카이 레몬"},
+    {"name":"settings_theme_mix_peach","value":"피치 민트"},
+    {"name":"settings_theme_mix_lilac","value":"라일락 커스터드"}
   ]
 }

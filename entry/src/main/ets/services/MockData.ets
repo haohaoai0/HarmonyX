@@ -16,7 +16,7 @@ export class MockData {
       },
       {
         id: '2',
-        author: { id: 'u2', name: 'Harmony X', username: 'croakx', avatarColor: '#7856FF', verified: false },
+        author: { id: 'u2', name: 'Harmony X', username: 'harmonyx', avatarColor: '#7856FF', verified: false },
         text: 'X/Twitter ported to HarmonyOS NEXT: tabs, compose, search, notifications, DMs. Sign in with X to see live posts.',
         createdAt: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
         metrics: { replyCount: 42, repostCount: 156, likeCount: 980, viewCount: 45200 },
@@ -182,7 +182,7 @@ export class MockData {
       {
         id: 'n3', kind: 'follow', text: 'Harmony X started following you', time: '1d',
         timestampMs: 0, targetPostId: '', postText: '', authorId: '',
-        authorName: 'Harmony X', authorUsername: 'croakx', authorAvatarUrl: '',
+        authorName: 'Harmony X', authorUsername: 'harmonyx', authorAvatarUrl: '',
         imageUrl: '', imageIsVideo: false, unread: false, deepLink: ''
       }
     ];

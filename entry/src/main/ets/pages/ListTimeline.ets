@@ -1,3 +1,9 @@
+import { pageTextColor } from '../utils/ThemeColors';
+import { pageBackgroundActive } from '../services/PageBackgroundStore';
+import { appPageBackground } from '../components/PageBackgroundLayer';
+import { pageCanvasColor, pageReadingSurfaceColor } from '../utils/ThemeColors';
+import { STORAGE_KEY_PAGE_TRANSITION_MODE, DEFAULT_PAGE_TRANSITION_MODE } from '../services/PageTransitionSettingsStore';
+import { pageSystemTransition, PageTransitionMotion } from '../utils/PageTransition';
 // Posts of one list. Same shape as the bookmarks destination: a paged tweet
 // timeline served by the private session.
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
@@ -10,6 +16,7 @@ import promptAction from '@ohos.promptAction';
 import { ConversationTweetCard as TweetCard } from '../components/ConversationTweetCard';
 import { ProxyAvatar } from '../components/ProxyAvatar';
 import { ListCover } from '../components/ListCover';
+import { AnchoredCover } from '../components/AnchoredCover';
 import { FloatingComposeButton } from '../components/FloatingComposeButton';
 import type { Tweet, TweetAuthor, ListRow } from '../models/Tweet';
 import { formatCount } from '../models/Tweet';
@@ -48,6 +55,9 @@ export function ListTimelineBuilder(): void {
 
 @Component
 export struct ListTimeline {
+  @StorageProp('harmonyx.page_background') private pageBackgroundValue: string = '';
+  @State private pageMotion: PageTransitionMotion = new PageTransitionMotion();
+  @StorageProp(STORAGE_KEY_PAGE_TRANSITION_MODE) private pageTransitionMode: string = DEFAULT_PAGE_TRANSITION_MODE;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @Consume('pageStack') pageStack: NavPathStack;
   @StorageProp('harmonyx.status_bar_height') statusBarHeight: number =
@@ -71,6 +81,8 @@ export struct ListTimeline {
   @State private loading: boolean = true;
   @State private loadingMore: boolean = false;
   @State private refreshing: boolean = false;
+  @State private coverPullOffset: number = 0;
+  @State private coverScrollOffset: number = 0;
   @State private readAloudFabMode: string = 'read';
   private listId: string = '';
   @State private title: string = '';
@@ -202,7 +214,7 @@ export struct ListTimeline {
   }
 
   private pageMaterial(): uiMaterial.Material | undefined {
-    if (!deviceInfo.apiAvailable('26.0.0')) {
+    if (pageBackgroundActive(this.pageBackgroundValue) || !deviceInfo.apiAvailable('26.0.0')) {
       return undefined;
     }
     return new uiMaterial.ImmersiveMaterial({
@@ -374,24 +386,24 @@ export struct ListTimeline {
   @Builder
   private Header(): void {
     Column({ space: 16 }) {
-      ListCover({ listId: this.listId, bannerUrl: this.row === null ? '' : this.row.bannerUrl, wide: true })
+      Column().width('100%').height(this.coverHeight())
       Row({ space: 6 }) {
         Text(this.title).fontFamily(this.appFontFamily).fontSize($r('sys.float.Title_L')).fontWeight(FontWeight.Bold)
-          .fontColor($r('app.color.text_primary')).maxLines(3).textAlign(TextAlign.Center)
+          .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)).maxLines(3).textAlign(TextAlign.Center)
         if (this.row !== null && this.row.isPrivate) {
-          SymbolGlyph($r('sys.symbol.lock')).fontSize(20).fontColor([$r('app.color.text_secondary')])
+          SymbolGlyph($r('sys.symbol.lock')).fontSize(20).fontColor([pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)])
         }
       }.padding({ left: 20, right: 20 })
       if (this.row !== null) {
         Row({ space: 6 }) {
           ProxyAvatar({verifiedType: this.row.ownerVerifiedType ?? '', avatarShape: this.row.ownerAvatarShape ?? '',  url: this.row.ownerAvatarUrl, avatarSize: 24, radius: 12,
             fallbackText: this.row.ownerName.substring(0, 1) })
-          Text(this.row.ownerName).fontFamily(this.appFontFamily).fontWeight(FontWeight.Bold).fontColor($r('app.color.text_primary'))
-          Text('@' + this.row.ownerUsername).fontFamily(this.appFontFamily).fontColor($r('app.color.text_secondary'))
+          Text(this.row.ownerName).fontFamily(this.appFontFamily).fontWeight(FontWeight.Bold).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
+          Text('@' + this.row.ownerUsername).fontFamily(this.appFontFamily).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
             .maxLines(1).textOverflow({ overflow: TextOverflow.Ellipsis }).constraintSize({ maxWidth: '55%' })
         }.padding({ left: 20, right: 20 })
         if (this.row.description.length > 0) {
-          Text(this.row.description).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontColor($r('app.color.text_primary'))
+          Text(this.row.description).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
             .padding({ left: 24, right: 24 }).textAlign(TextAlign.Center)
         }
         Button(this.owned() ? $r('app.string.list_edit') : this.row.following ?
@@ -400,7 +412,7 @@ export struct ListTimeline {
           .enabled(!this.actionPending).onClick((): void => { if (this.owned()) { this.editList(); } else { this.followList(); } })
         Text(formatCount(this.row.memberCount) + ' ' + this.text($r('app.string.list_members_label')) + ' · ' +
           formatCount(this.row.subscriberCount) + ' ' + this.text($r('app.string.list_followers_label'))).fontFamily(this.appFontFamily)
-          .fontSize($r('sys.float.Body_M')).fontColor($r('app.color.text_secondary'))
+          .fontSize($r('sys.float.Body_M')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
           .onClick((): void => this.openMembers())
       } else if (this.detailStatus.length > 0) {
         Button($r('app.string.common_retry')).backgroundColor(Color.Transparent).fontColor(this.accentColor)
@@ -420,11 +432,11 @@ export struct ListTimeline {
         Text($r('app.string.list_members_action')).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Body_L'))
           .fontWeight(FontWeight.Medium)
-          .fontColor($r('app.color.text_primary'))
+          .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
         Blank()
         SymbolGlyph($r('sys.symbol.chevron_right'))
           .fontSize(16)
-          .fontColor([$r('app.color.text_secondary')])
+          .fontColor([pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)])
       }
       .width('100%')
       .padding({ left: 16, right: 16, top: 12, bottom: 12 })
@@ -446,11 +458,11 @@ export struct ListTimeline {
           Text(this.status.length > 0 ? this.status : this.text($r('app.string.list_waiting_posts'))).fontFamily(this.appFontFamily)
             .fontSize(this.status.length > 0 ? $r('sys.float.Body_L') : $r('app.float.list_empty_title_size'))
             .fontWeight(this.status.length > 0 ? FontWeight.Regular : FontWeight.Bold)
-            .fontColor($r('app.color.text_primary'))
+            .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
             .width('100%')
           if (this.status.length === 0) {
             Text($r('app.string.list_waiting_posts_body')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L'))
-              .fontColor($r('app.color.text_secondary')).width('100%')
+              .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).width('100%')
           }
           if (this.status.length > 0) {
             Button($r('app.string.common_retry'), { stateEffect: true })
@@ -505,7 +517,7 @@ export struct ListTimeline {
             }
             Text($r('app.string.lists_load_more')).fontFamily(this.appFontFamily)
               .fontSize($r('sys.float.Body_M'))
-              .fontColor($r('app.color.text_accent'))
+              .fontColor(pageTextColor($r('app.color.text_accent'), this.pageBackgroundValue, Color.Transparent))
               .margin({ left: 8 })
           }
           .width('100%')
@@ -519,9 +531,23 @@ export struct ListTimeline {
     }
   }
 
+  private coverHeight(): number {
+    const heightPx: number = getContext(this).resourceManager.getNumber($r('app.float.list_banner_height').id);
+    return this.statusBarHeight + 60 + this.getUIContext().px2vp(heightPx);
+  }
+
   build(): void {
     HdsNavDestination() {
+      Stack({ alignContent: Alignment.TopStart }) {
+        appPageBackground()
       Stack({ alignContent: Alignment.BottomEnd }) {
+        Column() {
+          AnchoredCover({ coverHeight: this.coverHeight(), pullOffset: this.coverPullOffset,
+            scrollOffset: this.coverScrollOffset }) {
+            ListCover({ listId: this.listId, bannerUrl: this.row?.bannerUrl ?? '', wide: true, fillParent: true })
+          }
+        }.width('100%').height(this.coverHeight()).align(Alignment.Top)
+          .position({ x: 0, y: 0 })
         Refresh({ refreshing: $$this.refreshing }) {
           List({ scroller: this.scroller }) {
             this.Content()
@@ -535,6 +561,7 @@ export struct ListTimeline {
             this.load(false);
           })
           .onDidScroll((_scrollOffset: number): void => {
+            this.coverScrollOffset = Math.max(0, this.scroller.currentOffset().yOffset);
             this.updateReadAloudFabMode(_scrollOffset);
           })
         }
@@ -543,6 +570,8 @@ export struct ListTimeline {
         .onRefreshing((): void => {
           this.refreshTimeline();
         })
+        .onOffsetChange((offset: number): void => { this.coverPullOffset = offset; })
+        .ignoreLayoutSafeArea([LayoutSafeAreaType.SYSTEM], [LayoutSafeAreaEdge.TOP])
 
         if (this.readAloudEntryEnabled && this.visiblePosts().length > 0) {
           // The same material button as the feed: it lights the cards it floats
@@ -562,8 +591,16 @@ export struct ListTimeline {
       }
     .width('100%')
     .height('100%')
+    .ignoreLayoutSafeArea([LayoutSafeAreaType.SYSTEM], [LayoutSafeAreaEdge.TOP])
+    
+      }.width('100%').height('100%')
     }
+    .scale({ x: this.pageMotion.scale, y: this.pageMotion.scale })
+    .opacity(this.pageMotion.opacity)
+    .onReady((context: NavDestinationContext): void => { this.pageMotion.attach(context); })
+    .systemTransition(pageSystemTransition(this.pageTransitionMode))
     .titleMode(HdsNavDestinationTitleMode.MINI)
+    .ignoreLayoutSafeArea([LayoutSafeAreaType.SYSTEM], [LayoutSafeAreaEdge.TOP])
     .hideBackButton(false)
     .onShown((): void => {
       if (listStateStore.isRemoved(xPrivateClient.viewerId(), this.listId)) { this.pageStack.pop(); return; }
@@ -584,7 +621,7 @@ export struct ListTimeline {
       },
       style: this.coverTitleBarStyle()
     })
-    .backgroundColor(pageSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
-    .systemMaterial(this.pageMaterial());
+    .backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue))
+    .systemMaterial(pageBackgroundActive(this.pageBackgroundValue) ? undefined : this.pageMaterial());
   }
 }

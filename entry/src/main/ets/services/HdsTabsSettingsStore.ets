@@ -4,6 +4,7 @@ import { preferences } from '@kit.ArkData';
 export const STORAGE_KEY_HOME_TAB_MATERIAL_LEVEL: string = 'harmonyx.home_tab_material_level';
 export const STORAGE_KEY_CLASSIC_BOTTOM_BAR: string = 'harmonyx.classic_bottom_bar';
 export const STORAGE_KEY_ROOT_TAB_LABELS_VISIBLE: string = 'harmonyx.root_tab_labels_visible';
+export const STORAGE_KEY_ROOT_LIQUID_TAB_INDICATOR_ENABLED: string = 'harmonyx.root_liquid_tab_indicator_enabled';
 export const HDS_TAB_MATERIAL_EXQUISITE: number = 0;
 export const HDS_TAB_MATERIAL_GENTLE: number = 1;
 export const HDS_TAB_MATERIAL_SMOOTH: number = 2;
@@ -15,6 +16,26 @@ export class HdsTabsSettingsStore {
   private static readonly HOME_TAB_MATERIAL_LEVEL_KEY: string = 'home_tab_material_level';
   private static readonly CLASSIC_BOTTOM_BAR_KEY: string = 'classic_bottom_bar';
   private static readonly ROOT_TAB_LABELS_VISIBLE_KEY: string = 'root_tab_labels_visible';
+  private static readonly ROOT_LIQUID_TAB_INDICATOR_ENABLED_KEY: string = 'root_liquid_tab_indicator_enabled';
+
+  loadRootLiquidTabIndicatorEnabled(context: common.Context): boolean {
+    try {
+      const store: preferences.Preferences = preferences.getPreferencesSync(context,
+        { name: HdsTabsSettingsStore.STORE_NAME });
+      return store.getSync(HdsTabsSettingsStore.ROOT_LIQUID_TAB_INDICATOR_ENABLED_KEY, true) as boolean;
+    } catch (error) { return true; }
+  }
+
+  saveRootLiquidTabIndicatorEnabled(context: common.Context, enabled: boolean): boolean {
+    try {
+      const store: preferences.Preferences = preferences.getPreferencesSync(context,
+        { name: HdsTabsSettingsStore.STORE_NAME });
+      store.putSync(HdsTabsSettingsStore.ROOT_LIQUID_TAB_INDICATOR_ENABLED_KEY, enabled);
+      store.flushSync();
+      AppStorage.setOrCreate<boolean>(STORAGE_KEY_ROOT_LIQUID_TAB_INDICATOR_ENABLED, enabled);
+      return true;
+    } catch (error) { return false; }
+  }
 
   loadRootTabLabelsVisible(context: common.Context): boolean {
     try {

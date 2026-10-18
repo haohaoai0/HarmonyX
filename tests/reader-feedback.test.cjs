@@ -83,10 +83,13 @@ test('feedback uses the opaque form parameters and accepts only X API origins or
 test('a viewer page explicitly plays after auto-advance even with inline autoplay disabled', () => {
   let options, next = 0;
   const Feed = harness('pages/VideoFeedViewer', 'VideoFeedViewer', ['StandardFeedVideo', 'onVideoCompleted'], {
-    PostMedia: opts => { options = opts; return { width() {} }; }, Builder: () => {}, VIDEO_FEED_CONTROLS_HEIGHT: 0
+    PostMedia: opts => { options = opts; return { width() {} }; }, Builder: () => {}, VIDEO_FEED_CONTROLS_HEIGHT: 0,
+    VIDEO_FEED_LAYOUT_BILIBILI: 2
   });
   const feed = Object.assign(new Feed(), { feedItem: item => item, shouldRetainVideoPlayer: () => false,
-    useSideComments: () => false, preloadMediaIdForItem: () => '', videoViewportHeightForLayout: () => 700,
+    useSideComments: () => false, usesPhoneFeedLayout: () => false, compactWindow: () => false,
+    motion: { enabled: () => false, interactive: false },
+    preloadMediaIdForItem: () => '', videoViewportHeightForLayout: () => 700,
     isWideLandscape: () => false, current: 0, items: [{}, {}], pageShown: true, postSheetActive: false,
     autoAdvance: true, pager: { showNext: () => { next++; feed.current++; } }, videoAutoplay: false });
   const seed = { index: 0, tweet: { id: '10' }, attachments: [{ id: 'v10' }] };
@@ -98,7 +101,8 @@ test('a viewer page explicitly plays after auto-advance even with inline autopla
 });
 
 test('Home double tap sends the saved choice and ignores other tabs and a single tap', () => {
-  const Home = harness('pages/Index', 'Index', ['onRootTabBarClick'], { HOME_TAB_INDEX: 0, HOME_TAB_DOUBLE_TAP_INTERVAL_MS: 400 });
+  const Home = harness('pages/Index', 'Index', ['onRootTabBarClick'], { HOME_TAB_INDEX: 0, HOME_TAB_DOUBLE_TAP_INTERVAL_MS: 400,
+    hapticTick() {} });
   const requests = [], home = Object.assign(new Home(), { bottomBarPageAt: n => n, lastHomeTabClickAt: 0,
     homeDoubleTapLatest: false, onRefresh: jump => requests.push(jump) });
   home.onRootTabBarClick(0); assert.deepEqual(requests, []);
@@ -114,7 +118,7 @@ test('tapping a playing inline video opens the viewer, while its controls, GIFs 
     mediaViewerLayout: false, fullscreen: false, retainViewerPlayback: false, videoAutoplay: true,
     isAnimatedGif: () => false, hideVideoChrome: () => false, onFullscreenIntent: sec => { events.push(['viewer', sec]); return true; },
     onLinkCardOpen: () => events.push('card'), toggleControls: () => events.push('controls'), togglePlay: () => events.push('play'),
-    onViewerCommentDismiss: () => events.push('dismiss') });
+    onViewerCommentDismiss: () => events.push('dismiss'), onViewerVideoTap() {} });
   player.onVideoSurfaceTap(); assert.deepEqual(events, [['viewer', 21]]);
   player.mediaViewerLayout = true; player.onVideoSurfaceTap(); assert.equal(events.at(-1), 'controls');
   player.retainViewerPlayback = true; player.onVideoSurfaceTap(); assert.equal(events.at(-1), 'dismiss');

@@ -1,4 +1,5 @@
-import { curves, UIContext } from '@kit.ArkUI';
+import { UIContext } from '@kit.ArkUI';
+import { motionDuration, motionCurve, motionReduced } from './AppMotion';
 
 // The card and the destination are measured in window coordinates, as in the
 // familyActivity reference. No cached onAreaChange origin crosses a sheet/rail.
@@ -186,7 +187,8 @@ export class MediaViewerMotionState {
   stage(viewport: MediaViewerRect, target: MediaViewerRect): boolean {
     if (!this.waiting() || this.source === undefined) { return false; }
     this.viewport = viewport;
-    this.applySource(this.source, target);
+    if (motionReduced()) { this.applyExpanded(); }
+    else { this.applySource(this.source, target); }
     this.visible = true;
     this.phase = 'staged';
     return true;
@@ -196,8 +198,8 @@ export class MediaViewerMotionState {
     if (this.phase !== 'staged') { return; }
     this.phase = 'opening';
     const revision: number = ++this.revision;
-    ui.animateTo({ duration: reduceMotion ? 0 : 360,
-      curve: curves.responsiveSpringMotion(0.38, 0.9), onFinish: (): void => {
+    ui.animateTo({ duration: reduceMotion ? 0 : motionDuration(360),
+      curve: motionCurve(), onFinish: (): void => {
         if (revision !== this.revision || this.phase !== 'opening') { return; }
         this.phase = 'open';
         this.interactive = true;
@@ -219,8 +221,8 @@ export class MediaViewerMotionState {
       source.y < viewport.y + viewport.height;
     if (wasWaiting) { finish(); return; }
     this.clipping = true;
-    ui.animateTo({ duration: reduceMotion ? 0 : (canReturn ? 360 : 180),
-      curve: curves.responsiveSpringMotion(0.38, 0.9), onFinish: (): void => {
+    ui.animateTo({ duration: reduceMotion ? 0 : motionDuration(canReturn ? 360 : 180),
+      curve: motionCurve(), onFinish: (): void => {
         if (revision !== this.revision || this.phase !== 'closing') { return; }
         this.phase = 'closed';
         finish();

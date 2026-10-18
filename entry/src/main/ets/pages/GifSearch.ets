@@ -1,3 +1,8 @@
+import { pageTextColor } from '../utils/ThemeColors';
+import { appPageBackground } from '../components/PageBackgroundLayer';
+import { pageCanvasColor, pageReadingSurfaceColor } from '../utils/ThemeColors';
+import { STORAGE_KEY_PAGE_TRANSITION_MODE, DEFAULT_PAGE_TRANSITION_MODE } from '../services/PageTransitionSettingsStore';
+import { pageSystemTransition, PageTransitionMotion } from '../utils/PageTransition';
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
 import common from '@ohos.app.ability.common';
 import promptAction from '@ohos.promptAction';
@@ -35,6 +40,9 @@ export function GifSearchBuilder(): void {
 
 @Component
 export struct GifSearchPage {
+  @StorageProp('harmonyx.page_background') private pageBackgroundValue: string = '';
+  @State private pageMotion: PageTransitionMotion = new PageTransitionMotion();
+  @StorageProp(STORAGE_KEY_PAGE_TRANSITION_MODE) private pageTransitionMode: string = DEFAULT_PAGE_TRANSITION_MODE;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @Consume('pageStack') pageStack: NavPathStack;
   @StorageProp('harmonyx.status_bar_height') statusBarHeight: number =
@@ -215,7 +223,7 @@ export struct GifSearchPage {
         $r('app.string.gif_search_results')).fontFamily(this.appFontFamily)
         .fontSize($r('sys.float.Title_S'))
         .fontWeight(FontWeight.Bold)
-        .fontColor($r('app.color.text_primary'))
+        .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
         .width('100%')
     }
     .width('100%')
@@ -260,7 +268,7 @@ export struct GifSearchPage {
         .width('100%')
         .height(height)
         .backgroundColor(fieldSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
-        .fontColor($r('app.color.text_primary'))
+        .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, fieldSurfaceColor(this.themeDisplayMode, this.themeDarkSurface)))
         .placeholderColor($r('app.color.text_secondary'))
         .borderRadius(height / 2)
         .focusOnTouch(true)
@@ -348,7 +356,7 @@ export struct GifSearchPage {
       .width('100%')
       .height('100%')
       .contentStartOffset(this.statusBarHeight + 104)
-      .backgroundColor(pageSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
+      .backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue))
       .cachedCount(8)
       .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: true })
       .scrollBar(BarState.Off)
@@ -359,12 +367,12 @@ export struct GifSearchPage {
         } else if (this.loadFailed) {
           Text($r('app.string.gif_search_load_failed')).fontFamily(this.appFontFamily)
             .fontSize($r('sys.float.Body_M'))
-            .fontColor($r('app.color.text_secondary'))
+            .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
             .textAlign(TextAlign.Center)
         } else {
           Text($r('app.string.gif_search_empty')).fontFamily(this.appFontFamily)
             .fontSize($r('sys.float.Body_M'))
-            .fontColor($r('app.color.text_secondary'))
+            .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
             .textAlign(TextAlign.Center)
         }
       }
@@ -373,7 +381,7 @@ export struct GifSearchPage {
       .height('100%')
       .justifyContent(FlexAlign.Center)
       .padding({ left: 28, right: 28, top: this.statusBarHeight + 104, bottom: 36 })
-      .backgroundColor(pageSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
+      .backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue))
       .onClick((): void => {
         if (this.loadFailed) {
           this.loadResults(this.query.trim().length === 0);
@@ -391,8 +399,16 @@ export struct GifSearchPage {
 
   build(): void {
     HdsNavDestination() {
+      Stack({ alignContent: Alignment.TopStart }) {
+        appPageBackground()
       this.ResultGrid();
+    
+      }.width('100%').height('100%')
     }
+    .scale({ x: this.pageMotion.scale, y: this.pageMotion.scale })
+    .opacity(this.pageMotion.opacity)
+    .onReady((context: NavDestinationContext): void => { this.pageMotion.attach(context); })
+    .systemTransition(pageSystemTransition(this.pageTransitionMode))
     .titleMode(HdsNavDestinationTitleMode.MINI)
     .hideBackButton(false)
     .titleBar({
@@ -413,6 +429,6 @@ export struct GifSearchPage {
       this.closePage();
       return true;
     })
-    .backgroundColor(pageSurfaceColor(this.themeDisplayMode, this.themeDarkSurface));
+    .backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue));
   }
 }

@@ -23,12 +23,29 @@ export const STORAGE_KEY_VIDEO_AUTO_BITRATE_CAP: string = 'harmonyx.video_auto_b
 export const STORAGE_KEY_VIDEO_AUTO_PIP: string = 'harmonyx.video_auto_pip';
 export const STORAGE_KEY_VIDEO_IMMERSIVE_FILL: string = 'harmonyx.video_immersive_fill';
 export const STORAGE_KEY_VIDEO_FEED_CONTROLS_ALWAYS_VISIBLE: string = 'harmonyx.video_feed_controls_always_visible';
+export const STORAGE_KEY_VIDEO_CAPTIONS_ENABLED: string = 'harmonyx.video_captions_enabled';
+export const STORAGE_KEY_VIDEO_AUTO_ADVANCE: string = 'harmonyx.video_auto_advance';
 export const STORAGE_KEY_VIDEO_FEED_TAP_PAUSE: string = 'harmonyx.video_feed_tap_pause';
 // Pressing and holding a playing video temporarily raises its playback rate and
 // shows a glass capsule, in the style of the short-video feeds. Turning this off
 // keeps the original hold-to-seek gesture (left half rewinds, right half
 // forwards).
 export const STORAGE_KEY_VIDEO_HOLD_SPEED: string = 'harmonyx.video_hold_speed';
+export const STORAGE_KEY_VIDEO_HDR_ENHANCEMENT: string = 'harmonyx.video_hdr_enhancement';
+export const DEFAULT_VIDEO_HDR_ENHANCEMENT: boolean = true;
+export const STORAGE_KEY_VIDEO_DOUBLE_TAP_SEEK: string = 'harmonyx.video_double_tap_seek';
+export const STORAGE_KEY_VIDEO_DOUBLE_TAP_SEEK_SECONDS: string = 'harmonyx.video_double_tap_seek_seconds';
+export const DEFAULT_VIDEO_DOUBLE_TAP_SEEK_ENABLED: boolean = true;
+export const DEFAULT_VIDEO_DOUBLE_TAP_SEEK_SECONDS: number = 10;
+export const MIN_VIDEO_DOUBLE_TAP_SEEK_SECONDS: number = 1;
+export const MAX_VIDEO_DOUBLE_TAP_SEEK_SECONDS: number = 60;
+
+export function normalizeVideoDoubleTapSeekSeconds(value: number): number {
+  if (!Number.isFinite(value)) { return DEFAULT_VIDEO_DOUBLE_TAP_SEEK_SECONDS; }
+  return Math.max(MIN_VIDEO_DOUBLE_TAP_SEEK_SECONDS,
+    Math.min(MAX_VIDEO_DOUBLE_TAP_SEEK_SECONDS, Math.round(value)));
+}
+
 export const STORAGE_KEY_VIDEO_FEED_LAYOUT: string = 'harmonyx.video_feed_layout';
 export const STORAGE_KEY_VIDEO_CONTROL_STYLE: string = 'harmonyx.video_control_style';
 // What a fullscreen video does when the reader leaves the app or locks the
@@ -122,6 +139,8 @@ export class MediaSettingsStore {
   private static readonly VIDEO_FEED_CONTROLS_ALWAYS_VISIBLE_KEY: string = 'video_feed_controls_always_visible';
   private static readonly VIDEO_FEED_TAP_PAUSE_KEY: string = 'video_feed_tap_pause';
   private static readonly VIDEO_HOLD_SPEED_KEY: string = 'video_hold_speed';
+  private static readonly VIDEO_DOUBLE_TAP_SEEK_KEY: string = 'video_double_tap_seek';
+  private static readonly VIDEO_DOUBLE_TAP_SEEK_SECONDS_KEY: string = 'video_double_tap_seek_seconds';
   private static readonly VIDEO_FEED_LAYOUT_KEY: string = 'video_feed_layout';
   private static readonly VIDEO_CONTROL_STYLE_KEY: string = 'video_control_style';
   private static readonly VIDEO_BACKGROUND_MODE_KEY: string = 'video_background_mode';
@@ -304,6 +323,40 @@ export class MediaSettingsStore {
     AppStorage.setOrCreate<boolean>(STORAGE_KEY_VIEWER_VIDEO_MUTED, enabled);
   }
 
+  loadVideoCaptionsEnabled(context: common.Context): boolean {
+    try {
+      const store: preferences.Preferences = preferences.getPreferencesSync(context, { name: MediaSettingsStore.STORE_NAME });
+      return store.getSync('video_captions_enabled', false) as boolean;
+    } catch (error) { return false; }
+  }
+
+  saveVideoCaptionsEnabled(context: common.Context, enabled: boolean): boolean {
+    try {
+      const store: preferences.Preferences = preferences.getPreferencesSync(context, { name: MediaSettingsStore.STORE_NAME });
+      store.putSync('video_captions_enabled', enabled);
+      store.flushSync();
+      AppStorage.setOrCreate<boolean>(STORAGE_KEY_VIDEO_CAPTIONS_ENABLED, enabled);
+      return true;
+    } catch (error) { return false; }
+  }
+
+  loadVideoAutoAdvance(context: common.Context): boolean {
+    try {
+      const store: preferences.Preferences = preferences.getPreferencesSync(context, { name: MediaSettingsStore.STORE_NAME });
+      return store.getSync('video_auto_advance', true) as boolean;
+    } catch (error) { return true; }
+  }
+
+  saveVideoAutoAdvance(context: common.Context, enabled: boolean): boolean {
+    try {
+      const store: preferences.Preferences = preferences.getPreferencesSync(context, { name: MediaSettingsStore.STORE_NAME });
+      store.putSync('video_auto_advance', enabled);
+      store.flushSync();
+      AppStorage.setOrCreate<boolean>(STORAGE_KEY_VIDEO_AUTO_ADVANCE, enabled);
+      return true;
+    } catch (error) { return false; }
+  }
+
   loadVideoAutoPip(context: common.Context): boolean {
     try {
       const options: preferences.Options = { name: MediaSettingsStore.STORE_NAME };
@@ -398,6 +451,59 @@ export class MediaSettingsStore {
       store.putSync(MediaSettingsStore.VIDEO_FEED_TAP_PAUSE_KEY, enabled);
       store.flushSync();
       AppStorage.setOrCreate<boolean>(STORAGE_KEY_VIDEO_FEED_TAP_PAUSE, enabled);
+      return true;
+    } catch (error) { return false; }
+  }
+
+  loadVideoHdrEnhancement(context: common.Context): boolean {
+    try {
+      const store: preferences.Preferences = preferences.getPreferencesSync(context, { name: MediaSettingsStore.STORE_NAME });
+      return store.getSync('video_hdr_enhancement', DEFAULT_VIDEO_HDR_ENHANCEMENT) as boolean;
+    } catch (error) { return DEFAULT_VIDEO_HDR_ENHANCEMENT; }
+  }
+
+  saveVideoHdrEnhancement(context: common.Context, enabled: boolean): boolean {
+    try {
+      const store: preferences.Preferences = preferences.getPreferencesSync(context, { name: MediaSettingsStore.STORE_NAME });
+      store.putSync('video_hdr_enhancement', enabled);
+      store.flushSync();
+      AppStorage.setOrCreate<boolean>(STORAGE_KEY_VIDEO_HDR_ENHANCEMENT, enabled);
+      return true;
+    } catch (error) { return false; }
+  }
+
+  loadVideoDoubleTapSeek(context: common.Context): boolean {
+    try {
+      const store: preferences.Preferences = preferences.getPreferencesSync(context, { name: MediaSettingsStore.STORE_NAME });
+      return store.getSync(MediaSettingsStore.VIDEO_DOUBLE_TAP_SEEK_KEY, DEFAULT_VIDEO_DOUBLE_TAP_SEEK_ENABLED) as boolean;
+    } catch (error) { return DEFAULT_VIDEO_DOUBLE_TAP_SEEK_ENABLED; }
+  }
+
+  saveVideoDoubleTapSeek(context: common.Context, enabled: boolean): boolean {
+    try {
+      const store: preferences.Preferences = preferences.getPreferencesSync(context, { name: MediaSettingsStore.STORE_NAME });
+      store.putSync(MediaSettingsStore.VIDEO_DOUBLE_TAP_SEEK_KEY, enabled);
+      store.flushSync();
+      AppStorage.setOrCreate<boolean>(STORAGE_KEY_VIDEO_DOUBLE_TAP_SEEK, enabled);
+      return true;
+    } catch (error) { return false; }
+  }
+
+  loadVideoDoubleTapSeekSeconds(context: common.Context): number {
+    try {
+      const store: preferences.Preferences = preferences.getPreferencesSync(context, { name: MediaSettingsStore.STORE_NAME });
+      return normalizeVideoDoubleTapSeekSeconds(store.getSync(MediaSettingsStore.VIDEO_DOUBLE_TAP_SEEK_SECONDS_KEY,
+        DEFAULT_VIDEO_DOUBLE_TAP_SEEK_SECONDS) as number);
+    } catch (error) { return DEFAULT_VIDEO_DOUBLE_TAP_SEEK_SECONDS; }
+  }
+
+  saveVideoDoubleTapSeekSeconds(context: common.Context, seconds: number): boolean {
+    const value: number = normalizeVideoDoubleTapSeekSeconds(seconds);
+    try {
+      const store: preferences.Preferences = preferences.getPreferencesSync(context, { name: MediaSettingsStore.STORE_NAME });
+      store.putSync(MediaSettingsStore.VIDEO_DOUBLE_TAP_SEEK_SECONDS_KEY, value);
+      store.flushSync();
+      AppStorage.setOrCreate<number>(STORAGE_KEY_VIDEO_DOUBLE_TAP_SEEK_SECONDS, value);
       return true;
     } catch (error) { return false; }
   }

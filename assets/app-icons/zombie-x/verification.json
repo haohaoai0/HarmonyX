@@ -1,0 +1,78 @@
+{
+  "generator": "Built-in image_gen",
+  "sourceDimensions": [
+    1254,
+    1254
+  ],
+  "sourceSha256": "D5911C0EBFC9498821DB9BEB8C629E8DC49C513B609AEDCB07D0D385912F1929",
+  "resourceChecks": [
+    {
+      "file": "foreground.png",
+      "width": 1024,
+      "height": 1024,
+      "alphaRange": [
+        0,
+        255
+      ],
+      "fullyTransparentPixels": 610386,
+      "visibleBoundsAtAlpha17": [
+        116,
+        91,
+        977,
+        959
+      ],
+      "cornersAlpha": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "file": "background.png",
+      "width": 1024,
+      "height": 1024,
+      "alphaRange": [
+        255,
+        255
+      ],
+      "fullyTransparentPixels": 0,
+      "visibleBoundsAtAlpha17": [
+        0,
+        0,
+        1023,
+        1023
+      ],
+      "cornersAlpha": [
+        255,
+        255,
+        255,
+        255
+      ]
+    },
+    {
+      "file": "preview.png",
+      "width": 1024,
+      "height": 1024,
+      "alphaRange": [
+        255,
+        255
+      ],
+      "fullyTransparentPixels": 0,
+      "visibleBoundsAtAlpha17": [
+        0,
+        0,
+        1023,
+        1023
+      ],
+      "cornersAlpha": [
+        255,
+        255,
+        255,
+        255
+      ]
+    }
+  ],
+  "appRegistered": true,
+  "deviceAppearanceVerified": false
+}

@@ -14,6 +14,10 @@
     "pages": "$profile:main_pages",
     "metadata": [
       {
+        "name": "client_id",
+        "value": "6917619309138960961"
+      },
+      {
         "name": "ohos.arkui.UIMaterial.state",
         "value": "enable"
       }
@@ -102,6 +106,23 @@
     ],
     "extensionAbilities": [
       {
+        // Desktop article card. The form extension reads the account-scoped
+        // preview cache maintained by the main app; taps route back into the
+        // native PostArticle page.
+        "name": "ArticleFormAbility",
+        "srcEntry": "./ets/articleform/ArticleFormAbility.ets",
+        "label": "$string:app_name",
+        "description": "$string:article_service_card_desc",
+        "type": "form",
+        "exported": false,
+        "metadata": [
+          {
+            "name": "ohos.extension.form",
+            "resource": "$profile:article_form_config"
+          }
+        ]
+      },
+      {
         // Links open in the app; photos/videos enter the existing attachment editors.
         "name": "ShareReceiverAbility",
         "srcEntry": "./ets/share/ShareReceiverAbility.ets",
@@ -145,26 +166,28 @@
     ],
     "requestPermissions": [
       {
-        "name": "ohos.permission.APPROXIMATELY_LOCATION",
-        "reason": "$string:compose_location_permission_reason",
-        "usedScene": { "abilities": ["EntryAbility"], "when": "inuse" }
+        "name": "ohos.permission.HDR_BRIGHTNESS"
       },
-      {
-        "name": "ohos.permission.LOCATION",
-        "reason": "$string:compose_location_permission_reason",
-        "usedScene": { "abilities": ["EntryAbility"], "when": "inuse" }
-      },
-      {
-        "name": "ohos.permission.FILE_ACCESS_PERSIST",
-        "reason": "$string:storage_permission_reason",
-        "usedScene": { "abilities": ["EntryAbility"], "when": "inuse" }
-      },
+      // {
+      //   "name": "ohos.permission.APPROXIMATELY_LOCATION",
+      //   "reason": "$string:compose_location_permission_reason",
+      //   "usedScene": { "abilities": ["EntryAbility"], "when": "inuse" }
+      // },
+      // {
+      //   "name": "ohos.permission.LOCATION",
+      //   "reason": "$string:compose_location_permission_reason",
+      //   "usedScene": { "abilities": ["EntryAbility"], "when": "inuse" }
+      // },
       {
         "name": "ohos.permission.INTERNET"
       },
       {
         "name": "ohos.permission.PRIVACY_WINDOW"
       },
+      /*{
+        // Restricted ACL permission: the approved signing profile must include it.
+        "name": "ohos.permission.DLP_GET_HIDE_STATUS"
+      },*/
       {
         "name": "ohos.permission.DETECT_GESTURE"
       },

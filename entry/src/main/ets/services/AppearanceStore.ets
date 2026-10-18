@@ -2,6 +2,7 @@
 // through ApplicationContext so resource-qualified dark colors update too.
 import { common, ConfigurationConstant } from '@kit.AbilityKit';
 import { preferences } from '@kit.ArkData';
+import { canonicalAccentTheme, isKnownAccentTheme } from '../utils/AccentPalette';
 
 export const DISPLAY_MODE_SYSTEM: string = 'system';
 export const DISPLAY_MODE_LIGHT: string = 'light';
@@ -65,9 +66,10 @@ export const STORAGE_KEY_REPLY_CAPSULE_MATERIAL_LEVEL: string = 'harmonyx.reply_
 export const DEFAULT_REPLY_CAPSULE_MATERIAL_LEVEL: number = TITLE_BAR_GLASS_ULTRA_THIN;
 export const STORAGE_KEY_REPLY_CAPSULE_BUTTON_MATERIAL_ENABLED: string =
   'harmonyx.reply_capsule_button_material_enabled';
-export const DEFAULT_REPLY_CAPSULE_BUTTON_MATERIAL_ENABLED: boolean = true;
+export const DEFAULT_REPLY_CAPSULE_BUTTON_MATERIAL_ENABLED: boolean = false;
 export const STORAGE_KEY_COMPOSE_BUTTON_ENABLED: string = 'harmonyx.compose_button_enabled';
 export const STORAGE_KEY_DARK_SURFACE: string = 'harmonyx.dark_surface';
+export const STORAGE_KEY_SYSTEM_DARK: string = 'harmonyx.is_dark';
 export const STORAGE_KEY_AVATAR_TINT_ENABLED: string = 'harmonyx.avatar_tint_enabled';
 export const STORAGE_KEY_SYSTEM_EMOJI_ENABLED: string = 'harmonyx.system_emoji_enabled';
 
@@ -192,8 +194,8 @@ export class AppearanceStore {
       const mode: string = this.isValidMode(savedMode) ? savedMode : DISPLAY_MODE_SYSTEM;
       // Earlier builds used X blue and icon blue as implicit defaults. Migrate
       // only those defaults while preserving any explicit color selection.
-    const accentColor: string = savedAccent === ICON_BLUE ? DEFAULT_ACCENT_COLOR :
-      (savedAccent.length === 7 ? savedAccent : DEFAULT_ACCENT_COLOR);
+      const accentColor: string = this.validAccentTheme(canonicalAccentTheme(
+        savedAccent === ICON_BLUE ? DEFAULT_ACCENT_COLOR : savedAccent));
       const fontMode: string = savedFontMode === FONT_MODE_APP ? FONT_MODE_APP : FONT_MODE_SYSTEM;
       return new AppearanceSettings(mode, accentColor, fontMode, this.clampFontScale(savedFontScale),
         savedAutoHideTitleBar === true, savedAutoHideTabBar === true, savedAutoHideFab === true,
@@ -311,6 +313,10 @@ export class AppearanceStore {
 
   private isValidMode(mode: string): boolean {
     return mode === DISPLAY_MODE_SYSTEM || mode === DISPLAY_MODE_LIGHT || mode === DISPLAY_MODE_DARK;
+  }
+
+  private validAccentTheme(theme: string): string {
+    return isKnownAccentTheme(theme) ? theme : DEFAULT_ACCENT_COLOR;
   }
 
   private validContentFontFamily(family: string): boolean {

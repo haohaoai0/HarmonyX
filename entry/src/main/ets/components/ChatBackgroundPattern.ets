@@ -6,10 +6,16 @@ export struct ChatBackgroundPattern {
   @Prop strength: number = 1;
   @Prop blurRadius: number = 0;
   @Prop aspect: number = 1440 / 2960;
+  @Prop ink: number = -1;
   @State private viewportWidth: number = 360;
   @State private viewportHeight: number = 640;
 
   private tileWidth(): number { return this.viewportHeight * this.aspect; }
+
+  private filter(): ColorFilter {
+    return this.ink < 0 ? new ColorFilter([1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0]) :
+      new ColorFilter([0, 0, 0, this.ink, 0, 0, 0, 0, this.ink, 0, 0, 0, 0, this.ink, 0, 0, 0, 0, 1, 0]);
+  }
 
   private indices(): number[] {
     const result: number[] = [];
@@ -24,7 +30,7 @@ export struct ChatBackgroundPattern {
         ForEach(this.indices(), (index: number) => {
           Image(this.pattern).width(this.tileWidth()).height(this.viewportHeight)
             .sourceSize({ width: this.tileWidth() * 2, height: this.viewportHeight * 2 })
-            .autoResize(false).objectFit(ImageFit.Cover).draggable(false)
+            .autoResize(false).objectFit(ImageFit.Cover).draggable(false).colorFilter(this.filter())
         }, (index: number): string => index.toString())
       }.width(this.indices().length * this.tileWidth()).height(this.viewportHeight)
         .opacity(0.5 * this.strength)

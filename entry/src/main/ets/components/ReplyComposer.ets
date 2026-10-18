@@ -1,3 +1,7 @@
+import { DEFAULT_COMPONENT_HDR_RATIO, STORAGE_KEY_COMPONENT_HDR_RATIO } from '../services/ComponentHdrSettingsStore';
+import { ComponentHdrHighlight } from '../utils/ComponentHdrHighlight';
+import { STORAGE_KEY_PAGE_TRANSITION_MODE, DEFAULT_PAGE_TRANSITION_MODE } from '../services/PageTransitionSettingsStore';
+import { pageSystemTransition, PageTransitionMotion } from '../utils/PageTransition';
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
 import { userAvatarRadius, verificationBadgeColor } from '../utils/UserIdentity';
 // Reusable reply capsule and its full-screen editor destination.  Keeping both
@@ -733,6 +737,9 @@ export struct ReplyComposerCapsule {
 
 @Component
 export struct ReplyComposerPage {
+  @StorageProp(STORAGE_KEY_COMPONENT_HDR_RATIO) private componentHdrRatio: number = DEFAULT_COMPONENT_HDR_RATIO;
+  @State private pageMotion: PageTransitionMotion = new PageTransitionMotion();
+  @StorageProp(STORAGE_KEY_PAGE_TRANSITION_MODE) private pageTransitionMode: string = DEFAULT_PAGE_TRANSITION_MODE;
   @StorageProp('harmonyx.compact_window') private compactWindow: boolean = false;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @StorageProp(STORAGE_KEY_DESKTOP_LAYOUT) desktopLayoutEnabled: boolean = false;
@@ -1906,6 +1913,7 @@ export struct ReplyComposerPage {
         .fontWeight(FontWeight.Bold)
         .fontColor($r('app.color.text_on_accent'))
         .backgroundColor(this.accentColor)
+        .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.canPublish() && !this.publishing, this.componentHdrRatio))
         .borderRadius(24)
         .enabled(this.canPublish() && !this.publishing)
         .onClick((): void => {
@@ -2026,7 +2034,8 @@ export struct ReplyComposerPage {
         .borderRadius(12)
       SymbolGlyph($r('sys.symbol.video_fill'))
         .fontSize(34)
-        .fontColor([this.accentColor]);
+        .fontColor([this.accentColor])
+        .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), !this.publishing, this.componentHdrRatio));
       Text($r('app.string.compose_video_label')).fontFamily(this.appFontFamily)
         .fontSize($r('sys.float.Caption_L'))
         .maxFontScale(1)
@@ -2057,7 +2066,8 @@ export struct ReplyComposerPage {
     Button({ type: ButtonType.Circle, stateEffect: true }) {
       SymbolGlyph(symbol)
         .fontSize(25)
-        .fontColor([this.accentColor]);
+        .fontColor([this.accentColor])
+        .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), !this.publishing, this.componentHdrRatio));
     }
     .width(48)
     .height(48)
@@ -2072,7 +2082,8 @@ export struct ReplyComposerPage {
     Button({ type: ButtonType.Circle, stateEffect: true }) {
       SymbolGlyph($r('sys.symbol.picture'))
         .fontSize(25)
-        .fontColor([this.accentColor]);
+        .fontColor([this.accentColor])
+        .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), !this.publishing, this.componentHdrRatio));
     }
     .width(48)
     .height(48)
@@ -2087,7 +2098,8 @@ export struct ReplyComposerPage {
     Button({ type: ButtonType.Circle, stateEffect: true }) {
       SymbolGlyph($r('sys.symbol.gif'))
         .fontSize(25)
-        .fontColor([this.accentColor]);
+        .fontColor([this.accentColor])
+        .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), !this.publishing, this.componentHdrRatio));
     }
     .width(48)
     .height(48)
@@ -2102,7 +2114,8 @@ export struct ReplyComposerPage {
     Button({ type: ButtonType.Circle, stateEffect: true }) {
       SymbolGlyph($r('sys.symbol.camera'))
         .fontSize(25)
-        .fontColor([this.accentColor]);
+        .fontColor([this.accentColor])
+        .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), !this.publishing, this.componentHdrRatio));
     }
     .width(48)
     .height(48)
@@ -2117,7 +2130,8 @@ export struct ReplyComposerPage {
     Button({ type: ButtonType.Circle, stateEffect: true }) {
       SymbolGlyph($r('sys.symbol.video'))
         .fontSize(25)
-        .fontColor([this.accentColor]);
+        .fontColor([this.accentColor])
+        .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), !this.publishing, this.componentHdrRatio));
     }
     .width(48)
     .height(48)
@@ -2386,6 +2400,10 @@ export struct ReplyComposerPage {
         }.width('100%').height('100%')
       } else { this.ContentBuilder(); }
     }
+    .scale({ x: this.pageMotion.scale, y: this.pageMotion.scale })
+    .opacity(this.pageMotion.opacity)
+    .onReady((context: NavDestinationContext): void => { this.pageMotion.attach(context); })
+    .systemTransition(pageSystemTransition(this.pageTransitionMode))
     .mode(this.desktop() ? NavDestinationMode.DIALOG : NavDestinationMode.STANDARD)
     .titleMode(HdsNavDestinationTitleMode.MINI)
     .hideTitleBar(this.desktop())

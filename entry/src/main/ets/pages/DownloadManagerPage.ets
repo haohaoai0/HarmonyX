@@ -1,3 +1,8 @@
+import { pageTextColor } from '../utils/ThemeColors';
+import { appPageBackground } from '../components/PageBackgroundLayer';
+import { pageCanvasColor, pageReadingSurfaceColor } from '../utils/ThemeColors';
+import { STORAGE_KEY_PAGE_TRANSITION_MODE, DEFAULT_PAGE_TRANSITION_MODE } from '../services/PageTransitionSettingsStore';
+import { pageSystemTransition, PageTransitionMotion } from '../utils/PageTransition';
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
 import { common } from '@kit.AbilityKit';
 import {
@@ -31,6 +36,9 @@ export function DownloadManagerBuilder(): void {
 
 @Component
 export struct DownloadManagerPage {
+  @StorageProp('harmonyx.page_background') private pageBackgroundValue: string = '';
+  @State private pageMotion: PageTransitionMotion = new PageTransitionMotion();
+  @StorageProp(STORAGE_KEY_PAGE_TRANSITION_MODE) private pageTransitionMode: string = DEFAULT_PAGE_TRANSITION_MODE;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @Consume('pageStack') pageStack: NavPathStack;
   @StorageProp('harmonyx.display_mode') private displayMode: string = '';
@@ -187,18 +195,18 @@ export struct DownloadManagerPage {
           Text(task.title + '.' + task.extension).fontFamily(this.appFontFamily)
             .fontSize($r('sys.float.Subtitle_L'))
             .fontWeight(FontWeight.Medium)
-            .fontColor($r('app.color.text_primary'))
+            .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue)))
             .maxLines(1)
             .textOverflow({ overflow: TextOverflow.Ellipsis })
           Text(this.statusText(task)).fontFamily(this.appFontFamily)
             .fontSize($r('sys.float.Body_M'))
-            .fontColor($r('app.color.text_secondary'))
+            .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue)))
         }
         .layoutWeight(1)
         .alignItems(HorizontalAlign.Start)
         Text(this.progressPercent(task).toString() + '%').fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Body_M'))
-          .fontColor($r('app.color.text_secondary'))
+          .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue)))
       }
       .width('100%')
 
@@ -209,18 +217,18 @@ export struct DownloadManagerPage {
       Row({ space: 10 }) {
         Text(this.formatTaskSize(task)).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Caption_M'))
-          .fontColor($r('app.color.text_secondary'))
+          .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue)))
           .layoutWeight(1)
         if (this.hasAction(task)) {
           Button(this.actionText(task))
             .backgroundColor(secondaryButtonSurfaceColor(this.displayMode, this.darkSurface))
-            .fontColor($r('app.color.text_primary'))
+            .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, secondaryButtonSurfaceColor(this.displayMode, this.darkSurface)))
             .enabled(this.savingTaskId.length === 0)
             .onClick((): void => this.operate(task))
         }
         Button($r('app.string.download_delete'))
           .backgroundColor(secondaryButtonSurfaceColor(this.displayMode, this.darkSurface))
-          .fontColor($r('app.color.text_primary'))
+          .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, secondaryButtonSurfaceColor(this.displayMode, this.darkSurface)))
           .enabled(this.savingTaskId.length === 0)
           .onClick((): void => this.deleteTask(task))
       }
@@ -228,35 +236,37 @@ export struct DownloadManagerPage {
       if (task.status === DownloadTaskStatus.READY_TO_SAVE && !this.saveToFolder) {
         Button($r('app.string.storage_save_to_downloads')).width('100%')
           .backgroundColor(secondaryButtonSurfaceColor(this.displayMode, this.darkSurface))
-          .fontColor($r('app.color.text_primary')).enabled(this.savingTaskId.length === 0)
+          .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, secondaryButtonSurfaceColor(this.displayMode, this.darkSurface))).enabled(this.savingTaskId.length === 0)
           .onClick((): void => this.operate(task, true))
       }
     }
     .width('100%')
     .padding(16)
     .borderRadius(16)
-    .backgroundColor(cardSurfaceColor(this.displayMode, this.darkSurface))
+    .backgroundColor(pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue))
     .border({ width: 1, color: $r('app.color.divider') })
   }
 
   build(): void {
     HdsNavDestination() {
+      Stack({ alignContent: Alignment.TopStart }) {
+        appPageBackground()
       Scroll(this.scroller) {
         Column({ space: 16 }) {
           Column({ space: 10 }) {
             Text($r('app.string.download_background_note')).fontFamily(this.appFontFamily)
               .fontSize($r('sys.float.Body_M'))
-              .fontColor($r('app.color.text_secondary'))
+              .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue)))
               .width('100%')
             Text($r('app.string.download_background_limit')).fontFamily(this.appFontFamily)
               .fontSize($r('sys.float.Caption_M'))
-              .fontColor($r('app.color.text_secondary'))
+              .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue)))
               .width('100%')
           }
           .width('100%')
           .padding(16)
           .borderRadius(16)
-          .backgroundColor(cardSurfaceColor(this.displayMode, this.darkSurface))
+          .backgroundColor(pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue))
 
           Column({ space: 12 }) {
             Row({ space: 10 }) {
@@ -264,40 +274,40 @@ export struct DownloadManagerPage {
                 Text($r('app.string.download_cache_title')).fontFamily(this.appFontFamily)
                   .fontSize($r('sys.float.Subtitle_L'))
                   .fontWeight(FontWeight.Medium)
-                  .fontColor($r('app.color.text_primary'))
+                  .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue)))
                 Text($r('app.string.download_cache_desc')).fontFamily(this.appFontFamily)
                   .fontSize($r('sys.float.Body_M'))
-                  .fontColor($r('app.color.text_secondary'))
+                  .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue)))
               }
               .layoutWeight(1)
               .alignItems(HorizontalAlign.Start)
               Text(this.formatCacheSize()).fontFamily(this.appFontFamily)
                 .fontSize($r('sys.float.Body_M'))
-                .fontColor($r('app.color.text_secondary'))
+                .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue)))
             }
             .width('100%')
             Button($r('app.string.download_cache_clear'))
               .width('100%')
               .backgroundColor(secondaryButtonSurfaceColor(this.displayMode, this.darkSurface))
-              .fontColor($r('app.color.text_primary'))
+              .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, secondaryButtonSurfaceColor(this.displayMode, this.darkSurface)))
               .enabled(!this.clearingCache)
               .onClick((): void => this.clearVideoCache())
             Button($r('app.string.storage_title')).width('100%')
               .backgroundColor(secondaryButtonSurfaceColor(this.displayMode, this.darkSurface))
-              .fontColor($r('app.color.text_primary'))
+              .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, secondaryButtonSurfaceColor(this.displayMode, this.darkSurface)))
               .onClick((): void => { this.pageStack.pushPath({ name: 'DataStorage', param: '' }); })
           }
           .width('100%')
           .padding(16)
           .borderRadius(16)
-          .backgroundColor(cardSurfaceColor(this.displayMode, this.darkSurface))
+          .backgroundColor(pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue))
           .border({ width: 1, color: $r('app.color.divider') })
 
           Row() {
             Text($r('app.string.download_tasks_title')).fontFamily(this.appFontFamily)
               .fontSize($r('sys.float.Title_S'))
               .fontWeight(FontWeight.Bold)
-              .fontColor($r('app.color.text_primary'))
+              .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
           }
           .width('100%')
 
@@ -305,10 +315,10 @@ export struct DownloadManagerPage {
             Column({ space: 10 }) {
               SymbolGlyph($r('sys.symbol.download'))
                 .fontSize(34)
-                .fontColor([$r('app.color.text_secondary')])
+                .fontColor([pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)])
               Text($r('app.string.download_tasks_empty')).fontFamily(this.appFontFamily)
                 .fontSize($r('sys.float.Body_L'))
-                .fontColor($r('app.color.text_secondary'))
+                .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
             }
             .width('100%')
             .padding({ top: 28, bottom: 28 })
@@ -326,7 +336,13 @@ export struct DownloadManagerPage {
       .height('100%')
       .scrollBar(BarState.Off)
       .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: true })
+    
+      }.width('100%').height('100%')
     }
+    .scale({ x: this.pageMotion.scale, y: this.pageMotion.scale })
+    .opacity(this.pageMotion.opacity)
+    .onReady((context: NavDestinationContext): void => { this.pageMotion.attach(context); })
+    .systemTransition(pageSystemTransition(this.pageTransitionMode))
     .titleMode(HdsNavDestinationTitleMode.MINI)
     .hideBackButton(false)
     .onShown((): void => {
@@ -343,6 +359,6 @@ export struct DownloadManagerPage {
       style: destinationTitleBarStyle(ScrollEffectType.GRADIENT_BLUR, this.displayMode,
         this.darkSurface, this.titleBarStyleMode)
     })
-    .backgroundColor(pageSurfaceColor(this.displayMode, this.darkSurface))
+    .backgroundColor(pageCanvasColor(this.displayMode, this.darkSurface, this.pageBackgroundValue))
   }
 }

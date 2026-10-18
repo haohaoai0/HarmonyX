@@ -1,3 +1,5 @@
+import { STORAGE_KEY_PAGE_TRANSITION_MODE, DEFAULT_PAGE_TRANSITION_MODE } from '../services/PageTransitionSettingsStore';
+import { pageSystemTransition } from '../utils/PageTransition';
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
 import { SurfaceVideoPlayer } from '../components/PostMedia';
 import { MediaAttachment } from '../models/Tweet';
@@ -14,6 +16,7 @@ export function ChatVideoViewerBuilder(): void { ChatVideoViewer(); }
 
 @Component
 export struct ChatVideoViewer {
+  @StorageProp(STORAGE_KEY_PAGE_TRANSITION_MODE) private pageTransitionMode: string = DEFAULT_PAGE_TRANSITION_MODE;
   @State private motion: MediaViewerMotionState = new MediaViewerMotionState();
   @State private initialVideoReady: boolean = false;
   private motionSurfaceId: string = createMediaSourcePrefix() + 'chat-video';
@@ -90,7 +93,7 @@ export struct ChatVideoViewer {
       }
     }
     .mode(NavDestinationMode.DIALOG)
-    .systemTransition(this.motion.enabled() ? NavigationSystemTransitionType.NONE : NavigationSystemTransitionType.DEFAULT)
+    .systemTransition(pageSystemTransition(this.pageTransitionMode, this.motion.enabled() ? NavigationSystemTransitionType.NONE : NavigationSystemTransitionType.DEFAULT))
     .hideTitleBar(true).hideBackButton(true)
     .onReady((context: NavDestinationContext): void => {
       const param: ChatVideoViewerRouteParam = context.pathInfo.param as ChatVideoViewerRouteParam;

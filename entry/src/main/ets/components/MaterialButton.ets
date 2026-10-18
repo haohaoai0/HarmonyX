@@ -1,7 +1,12 @@
+import { DEFAULT_COMPONENT_HDR_RATIO, STORAGE_KEY_COMPONENT_HDR_RATIO } from '../services/ComponentHdrSettingsStore';
+import { ComponentHdrHighlight } from '../utils/ComponentHdrHighlight';
+import { motionDuration, motionScale, motionCurve } from '../utils/AppMotion';
+import { hapticTick } from '../utils/Haptics';
 import { SystemMaterialUtil } from '../utils/SystemMaterial';
 
 @Component
 export struct MaterialButton {
+  @StorageProp(STORAGE_KEY_COMPONENT_HDR_RATIO) private componentHdrRatio: number = DEFAULT_COMPONENT_HDR_RATIO;
   @Prop buttonWidth: Length | undefined = 42;
   @Prop buttonHeight: Length = 42;
   @Prop buttonRadius: Length = 21;
@@ -14,12 +19,13 @@ export struct MaterialButton {
   @Prop materialTint: ResourceColor | undefined = undefined;
   @Prop adaptiveForeground: boolean = false;
   @Prop buttonEnabled: boolean = true;
+  @Prop enableHdrHighlight: boolean = true;
   @Prop buttonOpacity: number = 1;
   @Prop accessibilityLabel: string = '';
   @Prop buttonMonopolizeEvents: boolean = false;
   @Prop buttonBorderWidth: number = 0;
   @Prop buttonBorderColor: ResourceColor = Color.Transparent;
-  @Prop buttonPressFeedback: boolean = false;
+  @Prop buttonPressFeedback: boolean = true;
   @StorageProp('reduceMotionEnabled') private reduceMotion: boolean = false;
   @State private pressed: boolean = false;
 
@@ -45,7 +51,7 @@ export struct MaterialButton {
     const pressed: boolean = event.type === TouchType.Down ? true :
       (event.type === TouchType.Up || event.type === TouchType.Cancel ? false : this.pressed);
     if (pressed === this.pressed) { return; }
-    this.getUIContext().animateTo({ duration: this.reduceMotion ? 0 : 130, curve: Curve.EaseOut }, (): void => {
+    this.getUIContext().animateTo({ duration: motionDuration(130), curve: motionCurve() }, (): void => {
       this.pressed = pressed;
     });
   }
@@ -72,12 +78,23 @@ export struct MaterialButton {
     }
   }
 
+  @Builder
+  private ForegroundContent(): void {
+    Stack({ alignContent: Alignment.Center }) {
+      this.buttonContent();
+    }
+    .width(this.buttonWidth === undefined ? undefined : '100%')
+    .height('100%')
+    .compositingFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.enableHdrHighlight && this.buttonEnabled, this.componentHdrRatio))
+    .hitTestBehavior(HitTestMode.None)
+  }
+
   build(): void {
     Stack({ alignContent: Alignment.Center }) {
       if (this.adaptiveForeground && this.materialEnabled && SystemMaterialUtil.isApi26OrAbove()) {
         // Automatic foreground inversion only reaches descendants of the material node.
         Toggle({ type: ToggleType.Button, isOn: false }) {
-          this.buttonContent();
+          this.ForegroundContent();
         }
         .width(this.buttonWidth === undefined ? undefined : '100%')
         .height('100%')
@@ -90,12 +107,7 @@ export struct MaterialButton {
         .systemMaterial(this.material())
       } else {
         this.MaterialLayer();
-        Stack({ alignContent: Alignment.Center }) {
-          this.buttonContent();
-        }
-        .width(this.buttonWidth === undefined ? undefined : '100%')
-        .height('100%')
-        .hitTestBehavior(HitTestMode.None)
+        this.ForegroundContent();
       }
     }
     .width(this.buttonWidth)
@@ -104,11 +116,12 @@ export struct MaterialButton {
     .border({ width: this.buttonBorderWidth, color: this.buttonBorderColor })
     .clip(true)
     .onClick((): void => {
+      hapticTick();
       this.onButtonClick();
     })
     .enabled(this.buttonEnabled)
-    .scale({ x: this.buttonPressFeedback && this.pressed ? 0.96 : 1,
-      y: this.buttonPressFeedback && this.pressed ? 0.96 : 1 })
+    .scale({ x: this.buttonPressFeedback && this.pressed && !this.reduceMotion ? motionScale(0.96) : 1,
+      y: this.buttonPressFeedback && this.pressed && !this.reduceMotion ? motionScale(0.96) : 1 })
     .opacity(this.buttonOpacity * (this.buttonPressFeedback && this.pressed ? 0.82 : 1))
     .onTouch((event: TouchEvent): void => this.onButtonTouch(event))
     .accessibilityText(this.accessibilityLabel)

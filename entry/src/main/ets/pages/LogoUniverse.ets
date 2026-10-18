@@ -1,3 +1,7 @@
+import { appPageBackground } from '../components/PageBackgroundLayer';
+import { pageCanvasColor, pageReadingSurfaceColor } from '../utils/ThemeColors';
+import { STORAGE_KEY_PAGE_TRANSITION_MODE, DEFAULT_PAGE_TRANSITION_MODE } from '../services/PageTransitionSettingsStore';
+import { pageSystemTransition, PageTransitionMotion } from '../utils/PageTransition';
 import { common } from '@kit.AbilityKit';
 import { image } from '@kit.ImageKit';
 import { FrameCallback } from '@kit.ArkUI';
@@ -5,7 +9,7 @@ import { accountStore, XAccount, STORAGE_KEY_ACCOUNTS_CHANGED } from '../service
 import { proxyImageResolver } from '../services/ProxyImageResolver';
 import { logoParticipation, writeLogoKeepsake, saveLogoKeepsake, shareLogoKeepsake } from '../services/LogoKeepsake';
 import { sheetMaterialOptions } from '../utils/SheetMaterial';
-import { STORAGE_KEY_SHEET_MATERIAL_ENABLED, STORAGE_KEY_SHEET_MATERIAL_LEVEL } from '../services/SheetMaterialSettingsStore';
+import { DEFAULT_SHEET_MATERIAL_ENABLED, STORAGE_KEY_SHEET_MATERIAL_ENABLED, STORAGE_KEY_SHEET_MATERIAL_LEVEL } from '../services/SheetMaterialSettingsStore';
 import { HdsNavDestination } from '@kit.UIDesignKit';
 import { LogoConstellation } from '../components/LogoConstellation';
 import { MaterialButton } from '../components/MaterialButton';
@@ -24,6 +28,9 @@ export function LogoUniverseBuilder(): void { LogoUniverse(); }
 
 @Component
 struct LogoUniverse {
+  @StorageProp('harmonyx.page_background') private pageBackgroundValue: string = '';
+  @State private pageMotion: PageTransitionMotion = new PageTransitionMotion();
+  @StorageProp(STORAGE_KEY_PAGE_TRANSITION_MODE) private pageTransitionMode: string = DEFAULT_PAGE_TRANSITION_MODE;
   @StorageProp('harmonyx.compact_window') private compactWindow: boolean = false;
   @StorageProp('harmonyx.breakpoint') private sheetWindowBreakpoint: string = 'sm';
   @Consume('pageStack') pageStack: NavPathStack;
@@ -33,7 +40,7 @@ struct LogoUniverse {
   @State private visible: boolean = true;
   @State private paused: boolean = false;
   @StorageProp(STORAGE_KEY_ACCOUNTS_CHANGED) @Watch('readAccount') private accountsRevision: number = 0;
-  @StorageProp(STORAGE_KEY_SHEET_MATERIAL_ENABLED) private sheetMaterial: boolean = false;
+  @StorageProp(STORAGE_KEY_SHEET_MATERIAL_ENABLED) private sheetMaterial: boolean = DEFAULT_SHEET_MATERIAL_ENABLED;
   @StorageProp(STORAGE_KEY_SHEET_MATERIAL_LEVEL) private sheetLevel: number = 1;
   @State private personalAvatar: image.PixelMap | null = null;
   @State private personalName: string = '';
@@ -196,6 +203,8 @@ struct LogoUniverse {
 
   build(): void {
     HdsNavDestination() {
+      Stack({ alignContent: Alignment.TopStart }) {
+        appPageBackground()
       Stack({ alignContent: Alignment.Top }) {
         Stack({ alignContent: Alignment.Top }) {
           Column() {
@@ -273,7 +282,13 @@ struct LogoUniverse {
         .hitTestBehavior(HitTestMode.Transparent)
       }
       .width('100%').height('100%').backgroundColor($r('app.color.media_viewer_black_background'))
+    
+      }.width('100%').height('100%')
     }
+    .scale({ x: this.pageMotion.scale, y: this.pageMotion.scale })
+    .opacity(this.pageMotion.opacity)
+    .onReady((context: NavDestinationContext): void => { this.pageMotion.attach(context); })
+    .systemTransition(pageSystemTransition(this.pageTransitionMode))
     .hideTitleBar(true)
     .bindSheet($$this.showPreview, this.PreviewSheet(), sheetMaterialOptions({ height: SheetSize.LARGE,
       showClose: true, dragBar: true, backgroundColor: $r('app.color.bg_page') }, this.sheetMaterial, this.sheetLevel,

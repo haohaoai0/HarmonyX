@@ -1,3 +1,4 @@
+import { TouchHdrLight } from './TouchHdrLight';
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
 import { buildPointLightEffect, POINT_LIGHT_PRESS_INTENSITY } from '../utils/PointLight';
 
@@ -36,10 +37,17 @@ export struct ChatPinPad {
     if (!this.busy && this.pin.length < 4) { this.pin += value; }
   }
   @Builder
+  private HdrKeyLight(key: string): void {
+    TouchHdrLight({ active: !this.busy && this.lightKey === key && this.lightIntensity > 0,
+      cornerRadius: 29 })
+  }
+
+  @Builder
   private Key(value: string): void {
     Button(value).fontSize(28).fontWeight(FontWeight.Bold).fontColor($r('app.color.text_primary'))
       .backgroundColor(Color.Transparent).layoutWeight(1).height(58).enabled(!this.busy)
       .visualEffect(this.keyLightEffect(value))
+        .overlay(this.HdrKeyLight(value))
       .animation({ duration: 300, curve: Curve.Smooth })
       .onTouch((event: TouchEvent): void => { this.updatePointLight(value, event); })
       .onClick((): void => this.digit(value))
@@ -80,6 +88,7 @@ export struct ChatPinPad {
             SymbolGlyph($r('sys.symbol.chevron_left')).fontSize(26).fontColor([$r('app.color.text_primary')])
           }.layoutWeight(1).height(58).backgroundColor(Color.Transparent).enabled(!this.busy)
             .visualEffect(this.keyLightEffect('backspace'))
+        .overlay(this.HdrKeyLight('backspace'))
             .animation({ duration: 300, curve: Curve.Smooth })
             .onTouch((event: TouchEvent): void => { this.updatePointLight('backspace', event); })
             .onClick((): void => { this.pin = this.pin.substring(0, Math.max(0, this.pin.length - 1)); })
@@ -89,6 +98,7 @@ export struct ChatPinPad {
         .fontSize($r('sys.float.Body_L')).fontColor($r('app.color.text_on_accent'))
         .backgroundColor(this.accentColor).enabled(this.pin.length === 4 && !this.busy)
         .visualEffect(this.keyLightEffect('continue'))
+        .overlay(this.HdrKeyLight('continue'))
         .animation({ duration: 300, curve: Curve.Smooth })
         .onTouch((event: TouchEvent): void => { this.updatePointLight('continue', event); })
         .onClick((): void => { const pin: string = this.pin; this.pin = ''; this.onSubmit(pin); })

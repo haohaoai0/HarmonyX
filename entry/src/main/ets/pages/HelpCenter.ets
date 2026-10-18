@@ -1,3 +1,9 @@
+import { pageBackgroundActive } from '../services/PageBackgroundStore';
+import { pageTextColor } from '../utils/ThemeColors';
+import { appPageBackground } from '../components/PageBackgroundLayer';
+import { pageCanvasColor, pageReadingSurfaceColor } from '../utils/ThemeColors';
+import { STORAGE_KEY_PAGE_TRANSITION_MODE, DEFAULT_PAGE_TRANSITION_MODE } from '../services/PageTransitionSettingsStore';
+import { pageSystemTransition, PageTransitionMotion } from '../utils/PageTransition';
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
 import { SupporterActivationCard } from '../components/SupporterActivationCard';
 import promptAction from '@ohos.promptAction';
@@ -24,6 +30,7 @@ export function HelpCenterBuilder(): void {
 
 @Component
 struct SupportQrCard {
+  @StorageProp('harmonyx.page_background') private pageBackgroundValue: string = '';
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @Prop title: Resource = $r('app.string.help_support_wechat');
   @Prop image: Resource = $r('app.media.support_wechat');
@@ -36,7 +43,7 @@ struct SupportQrCard {
       Text(this.title).fontFamily(this.appFontFamily)
         .fontSize($r('sys.float.Subtitle_L'))
         .fontWeight(FontWeight.Medium)
-        .fontColor($r('app.color.text_primary'))
+        .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, pageReadingSurfaceColor(cardSurfaceColor(this.themeDisplayMode, this.themeDarkSurface), this.pageBackgroundValue)))
         .width('100%')
       Image(this.image)
         .width('100%')
@@ -47,13 +54,16 @@ struct SupportQrCard {
     }
     .width('100%')
     .padding(16)
-    .backgroundColor(cardSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
+    .backgroundColor(pageReadingSurfaceColor(cardSurfaceColor(this.themeDisplayMode, this.themeDarkSurface), this.pageBackgroundValue))
     .borderRadius(20)
   }
 }
 
 @Component
 struct HelpCenter {
+  @StorageProp('harmonyx.page_background') private pageBackgroundValue: string = '';
+  @State private pageMotion: PageTransitionMotion = new PageTransitionMotion();
+  @StorageProp(STORAGE_KEY_PAGE_TRANSITION_MODE) private pageTransitionMode: string = DEFAULT_PAGE_TRANSITION_MODE;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @Consume('pageStack') pageStack: NavPathStack;
   @StorageProp('harmonyx.status_bar_height') statusBarHeight: number =
@@ -122,6 +132,8 @@ struct HelpCenter {
 
   build(): void {
     HdsNavDestination() {
+      Stack({ alignContent: Alignment.TopStart }) {
+        appPageBackground()
       Scroll(this.scroller) {
         Column({ space: 20 }) {
           Column({ space: 8 }) {
@@ -131,11 +143,11 @@ struct HelpCenter {
             Text($r('app.string.side_help')).fontFamily(this.appFontFamily)
               .fontSize($r('sys.float.Title_M'))
               .fontWeight(FontWeight.Bold)
-              .fontColor($r('app.color.text_primary'))
+              .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
             Text($r('app.string.help_intro')).fontFamily(this.appFontFamily)
               .fontSize($r('sys.float.Body_L'))
               .lineHeight(22)
-              .fontColor($r('app.color.text_secondary'))
+              .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
               .width('100%')
           }
           .width('100%')
@@ -150,11 +162,11 @@ struct HelpCenter {
                 Text($r('app.string.help_feedback_title')).fontFamily(this.appFontFamily)
                   .fontSize($r('sys.float.Title_S'))
                   .fontWeight(FontWeight.Bold)
-                  .fontColor($r('app.color.text_primary'))
+                  .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, pageReadingSurfaceColor(cardSurfaceColor(this.themeDisplayMode, this.themeDarkSurface), this.pageBackgroundValue)))
                 Text($r('app.string.help_feedback_desc')).fontFamily(this.appFontFamily)
                   .fontSize($r('sys.float.Body_M'))
                   .lineHeight(21)
-                  .fontColor($r('app.color.text_secondary'))
+                  .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, pageReadingSurfaceColor(cardSurfaceColor(this.themeDisplayMode, this.themeDarkSurface), this.pageBackgroundValue)))
               }
               .layoutWeight(1)
               .alignItems(HorizontalAlign.Start)
@@ -175,11 +187,11 @@ struct HelpCenter {
                 Text($r('app.string.help_group_title')).fontFamily(this.appFontFamily)
                   .fontSize($r('sys.float.Subtitle_L'))
                   .fontWeight(FontWeight.Medium)
-                  .fontColor($r('app.color.text_primary'))
+                  .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, pageReadingSurfaceColor(cardSurfaceColor(this.themeDisplayMode, this.themeDarkSurface), this.pageBackgroundValue)))
                 Text($r('app.string.help_group_desc')).fontFamily(this.appFontFamily)
                   .fontSize($r('sys.float.Body_M'))
                   .lineHeight(21)
-                  .fontColor($r('app.color.text_secondary'))
+                  .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, pageReadingSurfaceColor(cardSurfaceColor(this.themeDisplayMode, this.themeDarkSurface), this.pageBackgroundValue)))
               }
               .layoutWeight(1)
               .alignItems(HorizontalAlign.Start)
@@ -187,7 +199,7 @@ struct HelpCenter {
             Button($r('app.string.help_group_action'), { stateEffect: true })
               .width('100%')
               .backgroundColor(fieldSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
-              .fontColor($r('app.color.text_accent'))
+              .fontColor(pageTextColor($r('app.color.text_accent'), this.pageBackgroundValue, fieldSurfaceColor(this.themeDisplayMode, this.themeDarkSurface)))
               .border({ width: 1, color: this.accentColor })
               .onClick((): void => {
                 this.openQqGroup();
@@ -201,11 +213,11 @@ struct HelpCenter {
                 Text($r('app.string.help_tg_group_title')).fontFamily(this.appFontFamily)
                   .fontSize($r('sys.float.Subtitle_L'))
                   .fontWeight(FontWeight.Medium)
-                  .fontColor($r('app.color.text_primary'))
+                  .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, pageReadingSurfaceColor(cardSurfaceColor(this.themeDisplayMode, this.themeDarkSurface), this.pageBackgroundValue)))
                 Text($r('app.string.help_tg_group_desc')).fontFamily(this.appFontFamily)
                   .fontSize($r('sys.float.Body_M'))
                   .lineHeight(21)
-                  .fontColor($r('app.color.text_secondary'))
+                  .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, pageReadingSurfaceColor(cardSurfaceColor(this.themeDisplayMode, this.themeDarkSurface), this.pageBackgroundValue)))
               }
               .layoutWeight(1)
               .alignItems(HorizontalAlign.Start)
@@ -213,7 +225,7 @@ struct HelpCenter {
             Button($r('app.string.help_tg_group_action'), { stateEffect: true })
               .width('100%')
               .backgroundColor(fieldSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
-              .fontColor($r('app.color.text_accent'))
+              .fontColor(pageTextColor($r('app.color.text_accent'), this.pageBackgroundValue, fieldSurfaceColor(this.themeDisplayMode, this.themeDarkSurface)))
               .border({ width: 1, color: this.accentColor })
               .onClick((): void => {
                 this.openTelegramGroup();
@@ -221,7 +233,7 @@ struct HelpCenter {
           }
           .width('100%')
           .padding(18)
-          .backgroundColor(cardSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
+          .backgroundColor(pageReadingSurfaceColor(cardSurfaceColor(this.themeDisplayMode, this.themeDarkSurface), this.pageBackgroundValue))
           .borderRadius(20)
 
           Divider().color($r('app.color.divider'))
@@ -234,16 +246,16 @@ struct HelpCenter {
               Text($r('app.string.help_support_title')).fontFamily(this.appFontFamily)
                 .fontSize($r('sys.float.Title_S'))
                 .fontWeight(FontWeight.Bold)
-                .fontColor($r('app.color.text_primary'))
+                .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
             }
             Text($r('app.string.help_support_desc')).fontFamily(this.appFontFamily)
               .fontSize($r('sys.float.Body_L'))
               .lineHeight(22)
-              .fontColor($r('app.color.text_secondary'))
+              .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
               .width('100%')
             Text($r('app.string.help_support_scan')).fontFamily(this.appFontFamily)
               .fontSize($r('sys.float.Body_M'))
-              .fontColor($r('app.color.text_secondary'))
+              .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
               .width('100%')
           }
           .width('100%')
@@ -268,7 +280,13 @@ struct HelpCenter {
       .height('100%')
       .scrollBar(BarState.Off)
       .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: true })
+    
+      }.width('100%').height('100%')
     }
+    .scale({ x: this.pageMotion.scale, y: this.pageMotion.scale })
+    .opacity(this.pageMotion.opacity)
+    .onReady((context: NavDestinationContext): void => { this.pageMotion.attach(context); })
+    .systemTransition(pageSystemTransition(this.pageTransitionMode))
     .titleMode(HdsNavDestinationTitleMode.MINI)
     .hideBackButton(false)
     .onBackPressed((): boolean => {
@@ -282,7 +300,7 @@ struct HelpCenter {
       style: destinationTitleBarStyle(ScrollEffectType.GRADIENT_BLUR, this.themeDisplayMode,
         this.themeDarkSurface, this.titleBarStyleMode)
     })
-    .backgroundColor(pageSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
-    .systemMaterial(this.pageMaterial());
+    .backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue))
+    .systemMaterial(pageBackgroundActive(this.pageBackgroundValue) ? undefined : this.pageMaterial());
   }
 }

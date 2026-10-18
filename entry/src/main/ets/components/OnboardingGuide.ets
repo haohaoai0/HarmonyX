@@ -13,7 +13,7 @@ import { mediaSettingsStore, STORAGE_KEY_HOME_VIDEO_MUTED, STORAGE_KEY_VIDEO_AUT
 import { notificationSettingsStore, STORAGE_KEY_NOTIFICATION_ALERTS } from '../services/NotificationSettingsStore';
 import { ResponsiveLayout } from '../utils/ResponsiveLayout';
 import { SystemMaterialUtil } from '../utils/SystemMaterial';
-import { STORAGE_KEY_SHEET_MATERIAL_ENABLED } from '../services/SheetMaterialSettingsStore';
+import { DEFAULT_SHEET_MATERIAL_ENABLED, STORAGE_KEY_SHEET_MATERIAL_ENABLED } from '../services/SheetMaterialSettingsStore';
 import { sheetMaterialActive } from '../utils/SheetMaterial';
 import { fieldSurfaceColor, pageSurfaceColor } from '../utils/ThemeColors';
 
@@ -23,7 +23,7 @@ const X_LOGIN_URL: string = 'https://x.com/i/flow/login';
 @Component
 export struct OnboardingGuide {
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
-  @StorageProp(STORAGE_KEY_SHEET_MATERIAL_ENABLED) private sheetMaterialEnabled: boolean = false;
+  @StorageProp(STORAGE_KEY_SHEET_MATERIAL_ENABLED) private sheetMaterialEnabled: boolean = DEFAULT_SHEET_MATERIAL_ENABLED;
   @Link visible: boolean;
   onCompleted: () => void = (): void => {};
   loginOnly: boolean = false;

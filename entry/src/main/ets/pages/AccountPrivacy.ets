@@ -1,3 +1,9 @@
+import { pageBackgroundActive } from '../services/PageBackgroundStore';
+import { pageTextColor } from '../utils/ThemeColors';
+import { appPageBackground } from '../components/PageBackgroundLayer';
+import { pageCanvasColor, pageReadingSurfaceColor } from '../utils/ThemeColors';
+import { STORAGE_KEY_PAGE_TRANSITION_MODE, DEFAULT_PAGE_TRANSITION_MODE } from '../services/PageTransitionSettingsStore';
+import { pageSystemTransition, PageTransitionMotion } from '../utils/PageTransition';
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
 import { common } from '@kit.AbilityKit';
 import { deviceInfo } from '@kit.BasicServicesKit';
@@ -27,6 +33,9 @@ export function AccountPrivacyBuilder(): void { AccountPrivacyPage(); }
 
 @Component
 struct AccountPrivacyPage {
+  @StorageProp('harmonyx.page_background') private pageBackgroundValue: string = '';
+  @State private pageMotion: PageTransitionMotion = new PageTransitionMotion();
+  @StorageProp(STORAGE_KEY_PAGE_TRANSITION_MODE) private pageTransitionMode: string = DEFAULT_PAGE_TRANSITION_MODE;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @StorageProp('harmonyx.desktop_layout') private desktopLayoutEnabled: boolean = false;
   @StorageProp('harmonyx.breakpoint') private breakpoint: string = 'sm';
@@ -275,14 +284,14 @@ struct AccountPrivacyPage {
         Text(item.title).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Subtitle_L'))
           .fontWeight(FontWeight.Medium)
-          .fontColor(item.id === 'deactivate' || item.action === 'clear' ? $r('app.color.danger') : $r('app.color.text_primary'))
+          .fontColor(item.id === 'deactivate' || item.action === 'clear' ? $r('app.color.danger') : pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
         if (this.text(item.detail).length > 0) {
-          Text(item.detail).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor($r('app.color.text_secondary'))
+          Text(item.detail).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
         }
       }.layoutWeight(1).alignItems(HorizontalAlign.Start)
       if (item.action === 'toggle') {
         if (accountPrivacyService.booleanValue(this.snapshot, item.field) === undefined) {
-          Text($r('app.string.xsettings_unavailable')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_S')).fontColor($r('app.color.text_secondary'))
+          Text($r('app.string.xsettings_unavailable')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_S')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
         } else {
           Toggle({ type: ToggleType.Switch, isOn: accountPrivacyService.booleanValue(this.snapshot, item.field) === true })
             .selectedColor(this.accentColor)
@@ -295,7 +304,7 @@ struct AccountPrivacyPage {
           .fontSize($r('sys.float.Body_M')).fontColor(this.accentColor).backgroundColor(Color.Transparent)
           .enabled(this.itemEnabled(item)).bindMenu(this.ChoiceMenu(item))
       } else {
-        SymbolGlyph($r('sys.symbol.chevron_right')).fontSize(16).fontColor([$r('app.color.text_secondary')])
+        SymbolGlyph($r('sys.symbol.chevron_right')).fontSize(16).fontColor([pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)])
       }
     }
     .width('100%').padding({ left: 20, right: 20, top: 17, bottom: 17 })
@@ -309,9 +318,9 @@ struct AccountPrivacyPage {
       Row({ space: 12 }) {
         Column({ space: 5 }) {
           Text(session.name ?? session.device_name ?? this.text($r('app.string.xsettings_unknown_device'))).fontFamily(this.appFontFamily)
-            .fontSize($r('sys.float.Subtitle_L')).fontColor($r('app.color.text_primary'))
+            .fontSize($r('sys.float.Subtitle_L')).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
           Text([session.summary ?? session.device_summary ?? '', session.location ?? ''].filter((part: string): boolean => part.length > 0).join(' · ')).fontFamily(this.appFontFamily)
-            .fontSize($r('sys.float.Body_M')).fontColor($r('app.color.text_secondary'))
+            .fontSize($r('sys.float.Body_M')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
           if (session.is_current_session === true) {
             Text($r('app.string.xsettings_current_session')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_S')).fontColor(this.accentColor)
           }
@@ -329,7 +338,7 @@ struct AccountPrivacyPage {
       }.width('100%').padding({ left: 20, right: 20, top: 16, bottom: 16 })
     }, (session: XLoginSession): string => accountPrivacyService.sessionToken(session))
     if (!this.loading && this.failure.length === 0 && this.snapshot.sessions.length === 0) {
-      Text($r('app.string.xsettings_empty')).fontFamily(this.appFontFamily).fontColor($r('app.color.text_secondary')).padding(20)
+      Text($r('app.string.xsettings_empty')).fontFamily(this.appFontFamily).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).padding(20)
     }
   }
 
@@ -338,9 +347,9 @@ struct AccountPrivacyPage {
     ForEach(this.snapshot.applications, (application: XConnectedApplication) => {
       Column({ space: 8 }) {
         Text(application.name ?? application.app_name ?? this.text($r('app.string.xsettings_unknown_app'))).fontFamily(this.appFontFamily)
-          .fontSize($r('sys.float.Subtitle_L')).fontWeight(FontWeight.Medium).fontColor($r('app.color.text_primary'))
-        Text(application.description ?? '').fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor($r('app.color.text_secondary'))
-        Text(application.permissions ?? '').fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor($r('app.color.text_secondary'))
+          .fontSize($r('sys.float.Subtitle_L')).fontWeight(FontWeight.Medium).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
+        Text(application.description ?? '').fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
+        Text(application.permissions ?? '').fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
         Button($r('app.string.xsettings_revoke'), { stateEffect: true })
           .fontSize($r('sys.float.Body_M')).fontColor(this.accentColor).backgroundColor(Color.Transparent)
           .enabled(!this.loading && !this.saving && ((application.token ?? '').length > 0 || (application.token_hash ?? '').length > 0))
@@ -352,7 +361,7 @@ struct AccountPrivacyPage {
       }.width('100%').alignItems(HorizontalAlign.Start).padding({ left: 20, right: 20, top: 16, bottom: 16 })
     }, (application: XConnectedApplication): string => application.token ?? application.token_hash ?? application.app_id ?? '')
     if (!this.loading && this.failure.length === 0 && this.snapshot.applications.length === 0) {
-      Text($r('app.string.xsettings_empty')).fontFamily(this.appFontFamily).fontColor($r('app.color.text_secondary')).padding(20)
+      Text($r('app.string.xsettings_empty')).fontFamily(this.appFontFamily).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).padding(20)
     }
   }
 
@@ -363,17 +372,19 @@ struct AccountPrivacyPage {
 
   build(): void {
     HdsNavDestination() {
+      Stack({ alignContent: Alignment.TopStart }) {
+        appPageBackground()
       Scroll(this.scroller) {
         Column() {
           if (this.accountLabel.length > 0) {
             Text(this.accountLabel).fontFamily(this.appFontFamily).fontSize($r('sys.float.Subtitle_L')).fontWeight(FontWeight.Bold)
-              .fontColor($r('app.color.text_primary')).width('100%').padding({ left: 20, right: 20, top: 12, bottom: 8 })
+              .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)).width('100%').padding({ left: 20, right: 20, top: 12, bottom: 8 })
           }
-          Text($r('app.string.xsettings_remote_note')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor($r('app.color.text_secondary'))
+          Text($r('app.string.xsettings_remote_note')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
             .width('100%').padding({ left: 20, right: 20, bottom: 16 })
           if (this.loading || this.saving) { LoadingProgress().color(this.accentColor).width(24).height(24).margin(12) }
           if (this.failure.length > 0) {
-            Text(this.failure).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor($r('app.color.text_secondary')).padding(20)
+            Text(this.failure).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).padding(20)
             Button($r('app.string.common_retry'), { stateEffect: true }).enabled(!this.loading && !this.saving)
               .onClick((): void => { this.refresh(); })
             if (!xPrivateClient.isSignedIn()) {
@@ -396,7 +407,13 @@ struct AccountPrivacyPage {
       .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: true })
         .clipContent(ContentClipMode.SAFE_AREA)
         .clip(false)
+    
+      }.width('100%').height('100%')
     }
+    .scale({ x: this.pageMotion.scale, y: this.pageMotion.scale })
+    .opacity(this.pageMotion.opacity)
+    .onReady((context: NavDestinationContext): void => { this.pageMotion.attach(context); })
+    .systemTransition(pageSystemTransition(this.pageTransitionMode))
     .onShown((): void => { this.visible = true; this.refresh(); })
     .onHidden((): void => { this.visible = false; this.requestId++; })
     .titleMode(HdsNavDestinationTitleMode.MINI).hideBackButton(false)
@@ -406,6 +423,6 @@ struct AccountPrivacyPage {
       enableComponentSafeArea: this.desktopLayoutEnabled && ResponsiveLayout.isLarge(this.breakpoint),
       content: { title: { mainTitle: accountManagementSection(this.section).title } },
       style: destinationTitleBarStyle(ScrollEffectType.GRADIENT_BLUR, this.displayMode, this.darkSurface, this.titleBarStyleMode) })
-    .backgroundColor(pageSurfaceColor(this.displayMode, this.darkSurface)).systemMaterial(this.material());
+    .backgroundColor(pageCanvasColor(this.displayMode, this.darkSurface, this.pageBackgroundValue)).systemMaterial(pageBackgroundActive(this.pageBackgroundValue) ? undefined : this.material());
   }
 }

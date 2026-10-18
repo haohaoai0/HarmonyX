@@ -1,3 +1,8 @@
+import { pageTextColor } from '../utils/ThemeColors';
+import { appPageBackground } from '../components/PageBackgroundLayer';
+import { pageCanvasColor, pageReadingSurfaceColor } from '../utils/ThemeColors';
+import { STORAGE_KEY_PAGE_TRANSITION_MODE, DEFAULT_PAGE_TRANSITION_MODE } from '../services/PageTransitionSettingsStore';
+import { pageSystemTransition, PageTransitionMotion } from '../utils/PageTransition';
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
 import { common } from '@kit.AbilityKit';
 import { promptAction } from '@kit.ArkUI';
@@ -16,6 +21,9 @@ export function TimelineManagerBuilder(): void {
 
 @Component
 struct TimelineManager {
+  @StorageProp('harmonyx.page_background') private pageBackgroundValue: string = '';
+  @State private pageMotion: PageTransitionMotion = new PageTransitionMotion();
+  @StorageProp(STORAGE_KEY_PAGE_TRANSITION_MODE) private pageTransitionMode: string = DEFAULT_PAGE_TRANSITION_MODE;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @StorageProp(STORAGE_KEY_DESKTOP_LAYOUT) desktopLayoutEnabled: boolean = false;
   @StorageProp('harmonyx.breakpoint') breakpoint: string = 'sm';
@@ -78,11 +86,11 @@ struct TimelineManager {
       Button({ type: ButtonType.Normal }) {
         Row({ space: 14 }) {
           Stack() {
-            SymbolGlyph(topic.icon).fontSize($r('app.float.timeline_symbol_size')).fontColor([$r('app.color.text_primary')])
+            SymbolGlyph(topic.icon).fontSize($r('app.float.timeline_symbol_size')).fontColor([pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, fieldSurfaceColor(this.displayMode, this.darkSurface))])
           }
           .width($r('app.float.timeline_topic_icon_size')).height($r('app.float.timeline_topic_icon_size'))
           .borderRadius(12).backgroundColor(fieldSurfaceColor(this.displayMode, this.darkSurface))
-          Text(topic.title).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontColor($r('app.color.text_primary'))
+          Text(topic.title).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
             .layoutWeight(1).textAlign(TextAlign.Start).maxLines(2)
         }
         .width('100%')
@@ -92,7 +100,7 @@ struct TimelineManager {
       Button({ type: ButtonType.Circle }) {
         SymbolGlyph(pinned ? $r('sys.symbol.minus_circle_fill') : $r('sys.symbol.plus_circle_fill'))
           .fontSize($r('app.float.timeline_symbol_size'))
-          .fontColor([pinned ? $r('app.color.text_secondary') : $r('app.color.timeline_pin_accent')])
+          .fontColor([pinned ? pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent) : $r('app.color.timeline_pin_accent')])
       }
       .width(44).height(44).padding(8).backgroundColor(Color.Transparent)
       .id('timeline-pin-' + topic.id)
@@ -111,18 +119,18 @@ struct TimelineManager {
           Search({ value: this.search, placeholder: this.text($r('app.string.timeline_search')) })
             .keyboardAppearance(KeyboardAppearance.IMMERSIVE)
             .height($r('app.float.timeline_search_height')).backgroundColor(fieldSurfaceColor(this.displayMode, this.darkSurface))
-            .fontColor($r('app.color.text_primary')).id('timeline-search')
+            .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, fieldSurfaceColor(this.displayMode, this.darkSurface))).id('timeline-search')
             .onChange((value: string): void => { this.search = value; })
             .margin({ left: 8, right: 8, top: 8, bottom: 8 })
         }
         ListItem() {
           Text($r('app.string.timeline_pinned')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontWeight(FontWeight.Bold)
-            .fontColor($r('app.color.text_primary')).padding({ left: 16, top: 12, bottom: 12 })
+            .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)).padding({ left: 16, top: 12, bottom: 12 })
         }
         if (this.pinnedTopics().length === 0) {
           ListItem() {
             Text(this.search.trim().length > 0 ? $r('app.string.timeline_no_results') : $r('app.string.timeline_pinned_empty')).fontFamily(this.appFontFamily)
-              .fontSize($r('sys.float.Body_L')).fontColor($r('app.color.text_secondary'))
+              .fontSize($r('sys.float.Body_L')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
               .padding({ left: 16, right: 16, top: 10, bottom: 20 })
           }
         } else {
@@ -134,8 +142,8 @@ struct TimelineManager {
           Button({ type: ButtonType.Normal }) {
             Row() {
               Text($r('app.string.timeline_follow')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontWeight(FontWeight.Bold)
-                .fontColor($r('app.color.text_primary')).layoutWeight(1).textAlign(TextAlign.Start)
-              SymbolGlyph($r('sys.symbol.chevron_down')).fontSize(16).fontColor([$r('app.color.text_primary')])
+                .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)).layoutWeight(1).textAlign(TextAlign.Start)
+              SymbolGlyph($r('sys.symbol.chevron_down')).fontSize(16).fontColor([pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)])
                 .rotate({ angle: this.expanded ? 0 : -90 })
             }
             .width('100%').padding({ left: 16, right: 26, top: 16, bottom: 8 })
@@ -150,7 +158,7 @@ struct TimelineManager {
           if (this.availableTopics().length === 0) {
             ListItem() {
               Text($r('app.string.timeline_no_results')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M'))
-                .fontColor($r('app.color.text_secondary')).padding(16)
+                .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).padding(16)
             }
           }
         }
@@ -161,24 +169,32 @@ struct TimelineManager {
 
   build(): void {
     HdsNavDestination() {
+      Stack({ alignContent: Alignment.TopStart }) {
+        appPageBackground()
       if (this.desktop()) {
         Stack({ alignContent: Alignment.Center }) {
         Column() {
           Row() {
             Text($r('app.string.timeline_title')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Title_M')).fontWeight(FontWeight.Bold)
-              .fontColor($r('app.color.text_primary')).layoutWeight(1)
+              .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)).layoutWeight(1)
             Button({ type: ButtonType.Circle }) {
-              SymbolGlyph($r('sys.symbol.xmark')).fontSize(22).fontColor([$r('app.color.text_primary')])
+              SymbolGlyph($r('sys.symbol.xmark')).fontSize(22).fontColor([pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)])
             }.width(40).height(40).backgroundColor(Color.Transparent).onClick((): void => { this.pageStack.pop(); })
           }.width('100%').padding(12)
           Column() { this.TimelineList() }.width('100%').layoutWeight(1)
         }.width('100%').constraintSize({ maxWidth: $r('app.float.desktop_modal_width') })
           .height(Math.min(760, this.desktopWindowHeight - 48))
-          .backgroundColor(pageSurfaceColor(this.displayMode, this.darkSurface))
+          .backgroundColor(pageCanvasColor(this.displayMode, this.darkSurface, this.pageBackgroundValue))
           .borderRadius($r('app.float.desktop_card_radius')).clip(true)
         }.width('100%').height('100%')
       } else { this.TimelineList() }
+    
+      }.width('100%').height('100%')
     }
+    .scale({ x: this.pageMotion.scale, y: this.pageMotion.scale })
+    .opacity(this.pageMotion.opacity)
+    .onReady((context: NavDestinationContext): void => { this.pageMotion.attach(context); })
+    .systemTransition(pageSystemTransition(this.pageTransitionMode))
     .mode(this.desktop() ? NavDestinationMode.DIALOG : NavDestinationMode.STANDARD)
     .hideTitleBar(this.desktop()).titleMode(HdsNavDestinationTitleMode.MINI).hideBackButton(false)
     .onBackPressed((): boolean => { ResponsiveLayout.closeContentDestination(this.pageStack); return true; })
@@ -189,6 +205,6 @@ struct TimelineManager {
       style: destinationTitleBarStyle(ScrollEffectType.IMMERSIVE_GRADIENT_BLUR,
         this.displayMode, this.darkSurface, this.titleBarStyleMode)
     })
-    .backgroundColor(this.desktop() ? '#88000000' : pageSurfaceColor(this.displayMode, this.darkSurface));
+    .backgroundColor(this.desktop() ? '#88000000' : pageCanvasColor(this.displayMode, this.darkSurface, this.pageBackgroundValue));
   }
 }

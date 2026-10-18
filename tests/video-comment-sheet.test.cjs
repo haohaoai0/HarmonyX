@@ -88,8 +88,8 @@ function realMethods(filename, componentName, names) {
 
 const playerBody = realMethods('entry/src/main/ets/components/PostMedia.ets', 'SurfaceVideoPlayer',
   ['onVisibleChange', 'togglePlay', 'setMuted', 'canControlPlayer', 'applyPlayerVolume', 'finishHoldSeek']);
-const Player = new Function('PLAYER_PLAY_RATIO', 'PLAYER_HIDE_RATIO', 'hilog', 'DOMAIN', 'TAG', 'videoPlayerHandoff',
-  `${playerBody}; return Harness;`)(0.35, 0.1, { warn() {} }, 0, '', { isReturning: () => false });
+const Player = new Function('PLAYER_PLAY_RATIO', 'PLAYER_HIDE_RATIO', 'hilog', 'DOMAIN', 'TAG', 'videoPlayerHandoff', 'videoPlaybackCoordinator',
+  `${playerBody}; return Harness;`)(0.35, 0.1, { warn() {} }, 0, '', { isReturning: () => false }, { release: () => {} });
 function player() {
   return Object.assign(new Player(), { mediaViewerLayout: true, retainViewerPlayback: true,
     playbackEnabled: true, playing: true, wantsPlay: true, muted: false, pipActive: false,
@@ -200,7 +200,7 @@ test('photo resizing restores a centered image and narrow windows retain bottom-
 });
 
 const zoomBody = realMethods('entry/src/main/ets/pages/PhotoViewer.ets', 'ZoomablePhoto', ['onClosingChanged']);
-const Zoom = new Function('Curve', `${zoomBody}; return Harness;`)({ EaseOut: 'ease-out' });
+const Zoom = new Function('Curve', 'motionDuration', `${zoomBody}; return Harness;`)({ EaseOut: 'ease-out' }, value => value);
 test('centered comments do not reset the child photo zoom while bottom comments still reset it', () => {
   assert.match(fs.readFileSync('entry/src/main/ets/pages/PhotoViewer.ets', 'utf8'),
     /closing:\s*this\.photoNeedsReset\(\)/);
@@ -219,8 +219,8 @@ test('centered comments do not reset the child photo zoom while bottom comments 
 
 const previewBody = realMethods('entry/src/main/ets/pages/VideoFeedViewer.ets', 'VideoFeedViewer',
   ['updateCommentPreview', 'onWindowSizeChanged', 'closePostSheet']);
-const Preview = new Function('sheetUsesCenteredPresentation', 'curves', '$r',
-  `${previewBody}; return Harness;`)(centeredSheet, springs, value => value);
+const Preview = new Function('sheetUsesCenteredPresentation', 'curves', '$r', 'motionDuration', 'motionCurve',
+  `${previewBody}; return Harness;`)(centeredSheet, springs, value => value, value => value, () => 'spring');
 test('centered video comments never shrink or lift the player, including resize and dismissal', () => {
   const component = Object.assign(new Preview(), { sheetWindowBreakpoint: 'sm', windowHeight: 800,
     applyRailHand() {},

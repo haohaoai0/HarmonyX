@@ -1,6 +1,17 @@
+import { componentHdrSettingsStore } from '../services/ComponentHdrSettingsStore';
+import { menuSettingsStore } from '../services/MenuSettingsStore';
+import { videoHdrCapability } from '../services/VideoHdrEnhancement';
+import { STORAGE_KEY_VIDEO_HDR_ENHANCEMENT } from '../services/MediaSettingsStore';
+import { STORAGE_KEY_VIDEO_CAPTIONS_ENABLED, STORAGE_KEY_VIDEO_AUTO_ADVANCE } from '../services/MediaSettingsStore';
+import { pageBackgroundStore } from '../services/PageBackgroundStore';
+import { huaweiAccountService } from '../services/HuaweiAccountService';
+import { huaweiCloudSyncService } from '../services/HuaweiCloudSyncService';
+import { antiPeepProtection } from '../services/AntiPeepProtection';
+import { pageTransitionSettingsStore, STORAGE_KEY_PAGE_TRANSITION_MODE } from '../services/PageTransitionSettingsStore';
 import UIAbility from '@ohos.app.ability.UIAbility';
 import { videoKeepAwake } from '../services/VideoKeepAwake';
 import { interactionSettingsStore } from '../services/InteractionSettingsStore';
+import { motionSettingsStore } from '../services/MotionSettingsStore';
 import AbilityConstant from '@ohos.app.ability.AbilityConstant';
 import hilog from '@ohos.hilog';
 import window from '@ohos.window';
@@ -31,8 +42,10 @@ import {
   STORAGE_KEY_TITLE_BAR_STYLE_MODE,
   STORAGE_KEY_TITLE_BAR_GLASS_MATERIAL_LEVEL,
   STORAGE_KEY_REPLY_CAPSULE_MATERIAL_LEVEL,
-  STORAGE_KEY_REPLY_CAPSULE_BUTTON_MATERIAL_ENABLED
+  STORAGE_KEY_REPLY_CAPSULE_BUTTON_MATERIAL_ENABLED,
+  STORAGE_KEY_SYSTEM_DARK
 } from '../services/AppearanceStore';
+import { accentUsesDarkMode, resolveAccentColor } from '../utils/AccentPalette';
 import { APP_LANGUAGE_SYSTEM, LanguageStore } from '../services/LanguageStore';
 import { GripHandManager } from '../utils/GripHandManager';
 import { layoutSettingsStore, STORAGE_KEY_DESKTOP_LAYOUT, STORAGE_KEY_DESKTOP_ASIDE,
@@ -62,6 +75,8 @@ import {
   STORAGE_KEY_VIDEO_FEED_LAYOUT,
   STORAGE_KEY_VIDEO_FEED_TAP_PAUSE,
   STORAGE_KEY_VIDEO_HOLD_SPEED,
+  STORAGE_KEY_VIDEO_DOUBLE_TAP_SEEK,
+  STORAGE_KEY_VIDEO_DOUBLE_TAP_SEEK_SECONDS,
   STORAGE_KEY_VIDEO_IMMERSIVE_FILL,
   STORAGE_KEY_VIDEO_QUALITY,
   STORAGE_KEY_VIDEO_AUTO_BITRATE_CAP,
@@ -86,6 +101,7 @@ import {
 import {
   hdsTabsSettingsStore,
   STORAGE_KEY_CLASSIC_BOTTOM_BAR,
+  STORAGE_KEY_ROOT_LIQUID_TAB_INDICATOR_ENABLED,
   STORAGE_KEY_HOME_TAB_MATERIAL_LEVEL,
   STORAGE_KEY_ROOT_TAB_LABELS_VISIBLE
 } from '../services/HdsTabsSettingsStore';
@@ -116,10 +132,12 @@ import { spacePreferencesStore } from '../services/SpacePreferencesStore';
 import { xPrivateClient } from '../services/XPrivateClient';
 import { externalShareStore, STORAGE_KEY_EXTERNAL_SHARE } from '../services/ExternalShareStore';
 import promptAction from '@ohos.promptAction';
-import { Configuration } from '@kit.AbilityKit';
+import { Configuration, ConfigurationConstant } from '@kit.AbilityKit';
 import { i18n } from '@kit.LocalizationKit';
 import { publishAppLocale } from '../utils/AppLocale';
 import { appFontStore } from '../services/AppFontStore';
+import { ArticleCardLaunch, STORAGE_KEY_ARTICLE_CARD_REQUEST } from '../utils/ArticleCardRoute';
+import { ArticleCardPublisher } from '../services/ArticleCardPublisher';
 
 const DOMAIN = 0xFF00;
 const TAG = 'HarmonyX-EntryAbility';
@@ -149,16 +167,28 @@ export default class EntryAbility extends UIAbility {
 
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
     hilog.info(DOMAIN, TAG, '%{public}s', 'Ability onCreate');
+    try { huaweiCloudSyncService.initialize(this.context); }
+    catch (error) { hilog.warn(DOMAIN, TAG, '%{public}s', 'Cloud preferences are temporarily unavailable'); }
+    huaweiAccountService.initialize(this.context).catch((): void => {});
+    antiPeepProtection.initialize(this.context);
     AppStorage.setOrCreate<number>(STORAGE_KEY_POST_TIME_NOW, Date.now());
     downloadManager.initialize(this.context);
     const appearance = this.appearanceStore.load(this.context);
     appFontStore.initialize(this.context);
+    pageBackgroundStore.initialize(this.context);
     sheetMaterialSettingsStore.initialize(this.context);
+    componentHdrSettingsStore.initialize(this.context);
     spacePreferencesStore.beginSession(this.context);
     this.appearanceSettings = appearance;
     const language: string = this.languageStore.load(this.context);
+    const systemDark: boolean =
+      this.context.config.colorMode === ConfigurationConstant.ColorMode.COLOR_MODE_DARK;
+    const accentDark: boolean = accentUsesDarkMode(appearance.mode, systemDark);
     AppStorage.setOrCreate<string>('harmonyx.display_mode', appearance.mode);
-    AppStorage.setOrCreate<string>('harmonyx.accent_color', appearance.accentColor);
+    AppStorage.setOrCreate<string>('harmonyx.accent_theme', appearance.accentColor);
+    AppStorage.setOrCreate<boolean>(STORAGE_KEY_SYSTEM_DARK, accentDark);
+    AppStorage.setOrCreate<string>('harmonyx.accent_color',
+      resolveAccentColor(appearance.accentColor, accentDark));
     AppStorage.setOrCreate<string>('harmonyx.font_mode', appearance.fontMode);
     AppStorage.setOrCreate<number>('harmonyx.font_scale', appearance.fontScale);
     AppStorage.setOrCreate<string>(STORAGE_KEY_CONTENT_FONT_FAMILY, appearance.contentFontFamily);
@@ -206,6 +236,10 @@ export default class EntryAbility extends UIAbility {
     AppStorage.setOrCreate<string>(STORAGE_KEY_LINK_PREVIEW_URL, '');
     const videoAutoplay: boolean = mediaSettingsStore.loadVideoAutoplay(this.context);
     interactionSettingsStore.publish(interactionSettingsStore.load(this.context));
+    motionSettingsStore.publish(motionSettingsStore.load(this.context));
+    menuSettingsStore.publish(menuSettingsStore.load(this.context));
+    AppStorage.setOrCreate<boolean>(STORAGE_KEY_VIDEO_CAPTIONS_ENABLED, mediaSettingsStore.loadVideoCaptionsEnabled(this.context));
+    AppStorage.setOrCreate<boolean>(STORAGE_KEY_VIDEO_AUTO_ADVANCE, mediaSettingsStore.loadVideoAutoAdvance(this.context));
     AppStorage.setOrCreate<boolean>(STORAGE_KEY_VIDEO_AUTOPLAY, videoAutoplay);
     const showSensitiveMedia: boolean = mediaSettingsStore.loadShowSensitiveMedia(this.context);
     AppStorage.setOrCreate<boolean>(STORAGE_KEY_SHOW_SENSITIVE_MEDIA, showSensitiveMedia);
@@ -232,7 +266,10 @@ export default class EntryAbility extends UIAbility {
       mediaSettingsStore.loadVideoFeedControlsAlwaysVisible(this.context);
     AppStorage.setOrCreate<boolean>(STORAGE_KEY_VIDEO_FEED_CONTROLS_ALWAYS_VISIBLE,
       videoFeedControlsAlwaysVisible);
+    AppStorage.setOrCreate<boolean>(STORAGE_KEY_VIDEO_HDR_ENHANCEMENT, mediaSettingsStore.loadVideoHdrEnhancement(this.context));
     const videoHoldSpeed: boolean = mediaSettingsStore.loadVideoHoldSpeed(this.context);
+    AppStorage.setOrCreate<boolean>(STORAGE_KEY_VIDEO_DOUBLE_TAP_SEEK, mediaSettingsStore.loadVideoDoubleTapSeek(this.context));
+    AppStorage.setOrCreate<number>(STORAGE_KEY_VIDEO_DOUBLE_TAP_SEEK_SECONDS, mediaSettingsStore.loadVideoDoubleTapSeekSeconds(this.context));
     AppStorage.setOrCreate<boolean>(STORAGE_KEY_VIDEO_HOLD_SPEED, videoHoldSpeed);
     AppStorage.setOrCreate<number>(STORAGE_KEY_VIDEO_FEED_LAYOUT, mediaSettingsStore.loadVideoFeedLayout(this.context));
     AppStorage.setOrCreate<boolean>(STORAGE_KEY_VIDEO_FEED_TAP_PAUSE, mediaSettingsStore.loadVideoFeedTapPause(this.context));
@@ -262,8 +299,11 @@ export default class EntryAbility extends UIAbility {
     AppStorage.setOrCreate<boolean>(STORAGE_KEY_CLASSIC_BOTTOM_BAR, classicBottomBar);
     const rootTabLabelsVisible: boolean = hdsTabsSettingsStore.loadRootTabLabelsVisible(this.context);
     AppStorage.setOrCreate<boolean>(STORAGE_KEY_ROOT_TAB_LABELS_VISIBLE, rootTabLabelsVisible);
+    AppStorage.setOrCreate<boolean>(STORAGE_KEY_ROOT_LIQUID_TAB_INDICATOR_ENABLED,
+      hdsTabsSettingsStore.loadRootLiquidTabIndicatorEnabled(this.context));
     const readAloudEntryEnabled: boolean = readAloudSettingsStore.loadEntryEnabled(this.context);
     AppStorage.setOrCreate<boolean>(STORAGE_KEY_READ_ALOUD_ENTRY_ENABLED, readAloudEntryEnabled);
+    AppStorage.setOrCreate<string>(STORAGE_KEY_PAGE_TRANSITION_MODE, pageTransitionSettingsStore.load(this.context));
     const pressEffectEnabled: boolean = this.pressEffectSettingsStore.loadEnabled(this.context);
     AppStorage.setOrCreate<boolean>(STORAGE_KEY_PRESS_EFFECT_ENABLED, pressEffectEnabled);
     // Tweet cards link their translation affordance to AppStorage. Restore it
@@ -292,6 +332,7 @@ export default class EntryAbility extends UIAbility {
       this.readNotificationLaunch(want);
       this.readExternalLink(want);
       this.readExternalShare(want);
+      this.readArticleCardLaunch(want);
     }
   }
 
@@ -329,6 +370,7 @@ export default class EntryAbility extends UIAbility {
     this.readNotificationLaunch(want);
     this.readExternalLink(want);
     this.readExternalShare(want);
+    this.readArticleCardLaunch(want);
     if (this.callbackUri.length > 0 && this.windowStage !== null) {
       this.openOAuthCallback(this.callbackUri);
     }
@@ -336,6 +378,9 @@ export default class EntryAbility extends UIAbility {
 
   onDestroy(): void {
     hilog.info(DOMAIN, TAG, '%{public}s', 'Ability onDestroy');
+    huaweiCloudSyncService.dispose();
+    huaweiAccountService.dispose();
+    antiPeepProtection.detachWindow();
     this.releaseWindowListeners();
     this.windowStage = null;
     if (this.appIconScheduleRefreshTimerId >= 0) {
@@ -347,6 +392,7 @@ export default class EntryAbility extends UIAbility {
 
   onWindowStageCreate(windowStage: window.WindowStage): void {
     hilog.info(DOMAIN, TAG, '%{public}s', 'Ability onWindowStageCreate');
+    antiPeepProtection.detachWindow();
     this.releaseWindowListeners();
     this.windowStage = windowStage;
     // The read-aloud panel is rendered by SpeechKit, so it needs the stage
@@ -366,6 +412,7 @@ export default class EntryAbility extends UIAbility {
 
   onWindowStageRestore(windowStage: window.WindowStage): void {
     hilog.info(DOMAIN, TAG, '%{public}s', 'Ability onWindowStageRestore');
+    antiPeepProtection.detachWindow();
     this.releaseWindowListeners();
     this.windowStage = windowStage;
     try {
@@ -442,6 +489,28 @@ export default class EntryAbility extends UIAbility {
     AppStorage.setOrCreate<string>(STORAGE_KEY_EXTERNAL_LINK, uri);
   }
 
+  // A home-screen article card routes back here with only plain strings. Build
+  // the small route payload now; the root page consumes and clears it once.
+  private readArticleCardLaunch(want: Want): void {
+    const kind: string = this.stringParam(want, 'harmonyxCard');
+    if (kind !== 'post' && kind !== 'home' && kind !== 'settings' && kind !== 'trend' &&
+      kind !== 'notification') {
+      return;
+    }
+    const launch: ArticleCardLaunch = new ArticleCardLaunch();
+    launch.kind = kind;
+    launch.postId = this.stringParam(want, 'postId');
+    launch.query = this.stringParam(want, 'query');
+    launch.title = this.stringParam(want, 'title');
+    launch.label = this.stringParam(want, 'label');
+    AppStorage.setOrCreate<string>(STORAGE_KEY_ARTICLE_CARD_REQUEST, JSON.stringify(launch));
+  }
+
+  private stringParam(want: Want, key: string): string {
+    const value: Object | undefined = want.parameters?.[key];
+    return typeof value === 'string' ? value : '';
+  }
+
   private restoreContinuation(want: Want, launchParam: AbilityConstant.LaunchParam): boolean {
     if (launchParam.launchReason !== AbilityConstant.LaunchReason.CONTINUATION) {
       return false;
@@ -477,6 +546,7 @@ export default class EntryAbility extends UIAbility {
         hilog.error(DOMAIN, TAG, 'Failed to load callback: %{public}s', JSON.stringify(err));
         return;
       }
+      antiPeepProtection.attachWindow(this.windowStage?.getMainWindowSync().getWindowProperties().id ?? 0);
       this.restoreApplicationLanguage();
     });
   }
@@ -489,6 +559,7 @@ export default class EntryAbility extends UIAbility {
         return;
       }
       this.observeWindowAvoidAreas(windowStage);
+      antiPeepProtection.attachWindow(windowStage.getMainWindowSync().getWindowProperties().id);
       this.restoreApplicationLanguage();
       hilog.info(DOMAIN, TAG, '%{public}s', 'Content loaded successfully');
     });
@@ -511,6 +582,14 @@ export default class EntryAbility extends UIAbility {
 
   onConfigurationUpdate(configuration: Configuration): void {
     if ((configuration.language ?? '').length > 0) { publishAppLocale(); }
+    const systemDark: boolean =
+      configuration.colorMode === ConfigurationConstant.ColorMode.COLOR_MODE_DARK;
+    const displayMode: string = AppStorage.get<string>('harmonyx.display_mode') ?? DISPLAY_MODE_SYSTEM;
+    const accentTheme: string = AppStorage.get<string>('harmonyx.accent_theme') ?? DEFAULT_ACCENT_COLOR;
+    const accentDark: boolean = accentUsesDarkMode(displayMode, systemDark);
+    AppStorage.setOrCreate<boolean>(STORAGE_KEY_SYSTEM_DARK, accentDark);
+    AppStorage.setOrCreate<string>('harmonyx.accent_color', resolveAccentColor(accentTheme, accentDark));
+    pageBackgroundStore.refreshAppearance();
   }
 
   private observeWindowAvoidAreas(windowStage: window.WindowStage): void {
@@ -518,6 +597,7 @@ export default class EntryAbility extends UIAbility {
     try {
       const mainWindow: window.Window = windowStage.getMainWindowSync();
       this.observedWindow = mainWindow;
+      videoHdrCapability.observe(mainWindow);
       const uiContext: UIContext = mainWindow.getUIContext();
       const systemAvoidArea: window.AvoidArea = mainWindow.getWindowAvoidArea(window.AvoidAreaType.TYPE_SYSTEM);
       const navigationAvoidArea: window.AvoidArea =
@@ -563,11 +643,13 @@ export default class EntryAbility extends UIAbility {
 
   onWindowStageDestroy(): void {
     hilog.info(DOMAIN, TAG, '%{public}s', 'Ability onWindowStageDestroy');
+    antiPeepProtection.detachWindow();
     this.releaseWindowListeners();
     this.windowStage = null;
   }
 
   private releaseWindowListeners(): void {
+    videoHdrCapability.stop();
     const observed: window.Window | null = this.observedWindow;
     this.observedWindow = null;
     if (observed !== null) {
@@ -584,11 +666,15 @@ export default class EntryAbility extends UIAbility {
 
   onForeground(): void {
     hilog.info(DOMAIN, TAG, '%{public}s', 'Ability onForeground');
+    huaweiAccountService.revalidate().then((): void => { huaweiCloudSyncService.onForeground(); });
+    antiPeepProtection.setForeground(true);
+    videoHdrCapability.refresh();
     downloadManager.onForeground(this.context);
     AppStorage.setOrCreate<boolean>('harmonyx.app_foreground', true);
     videoKeepAwake.setForeground(true, this.context);
     AppStorage.setOrCreate<number>('harmonyx.foreground_tick', Date.now());
     AppStorage.setOrCreate<number>(STORAGE_KEY_POST_TIME_NOW, Date.now());
+    ArticleCardPublisher.publish(this.context);
     this.refreshScheduledAppIcon();
     if (this.appIconScheduleRefreshTimerId >= 0) {
       clearInterval(this.appIconScheduleRefreshTimerId);
@@ -601,6 +687,8 @@ export default class EntryAbility extends UIAbility {
 
   onBackground(): void {
     hilog.info(DOMAIN, TAG, '%{public}s', 'Ability onBackground');
+    huaweiCloudSyncService.onBackground();
+    antiPeepProtection.setForeground(false);
     downloadManager.onBackground(this.context);
     if (this.appIconScheduleRefreshTimerId >= 0) {
       clearInterval(this.appIconScheduleRefreshTimerId);

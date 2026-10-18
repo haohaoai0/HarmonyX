@@ -1,3 +1,5 @@
+import { menuActionVisible, menuActionsForGroup, MenuActionOption } from '../models/MenuActionCatalog';
+import { STORAGE_KEY_HIDDEN_MENU_ACTIONS } from '../services/MenuSettingsStore';
 import { common } from '@kit.AbilityKit';
 import { promptAction } from '@kit.ArkUI';
 import type { Tweet, TweetFeedbackAction, ListRow } from '../models/Tweet';
@@ -7,7 +9,7 @@ import { XUserParser } from '../services/XUserParser';
 import { followStateStore } from '../services/FollowStateStore';
 import { postModerationStore } from '../services/PostModerationStore';
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
-import { STORAGE_KEY_SHEET_MATERIAL_ENABLED, STORAGE_KEY_SHEET_MATERIAL_LEVEL } from '../services/SheetMaterialSettingsStore';
+import { DEFAULT_SHEET_MATERIAL_ENABLED, STORAGE_KEY_SHEET_MATERIAL_ENABLED, STORAGE_KEY_SHEET_MATERIAL_LEVEL } from '../services/SheetMaterialSettingsStore';
 import { sheetMaterialOptions } from '../utils/SheetMaterial';
 import { pageSurfaceColor } from '../utils/ThemeColors';
 import { openExternalLink } from '../utils/PostEntities';
@@ -17,6 +19,8 @@ import type { ProfileWebRouteParam } from '../pages/ProfileWeb';
 
 @Component
 export struct PostOverflowButton {
+  @StorageProp(STORAGE_KEY_HIDDEN_MENU_ACTIONS) private hiddenMenuActions: string = '';
+  @Prop foreground: ResourceColor = $r('app.color.text_secondary');
   @StorageProp('harmonyx.compact_window') private compactWindow: boolean = false;
   @Prop tweet: Tweet;
   @Consume('pageStack') pageStack: NavPathStack;
@@ -25,7 +29,7 @@ export struct PostOverflowButton {
   @StorageProp('harmonyx.dark_surface') private themeDarkSurface: string = '';
   @StorageProp('harmonyx.breakpoint') private breakpoint: string = 'sm';
   @StorageProp('harmonyx.navigation_indicator_height') private bottomInset: number = 0;
-  @StorageProp(STORAGE_KEY_SHEET_MATERIAL_ENABLED) private materialEnabled: boolean = false;
+  @StorageProp(STORAGE_KEY_SHEET_MATERIAL_ENABLED) private materialEnabled: boolean = DEFAULT_SHEET_MATERIAL_ENABLED;
   @StorageProp(STORAGE_KEY_SHEET_MATERIAL_LEVEL) private materialLevel: number = 0;
   @State private showing: boolean = false;
   @State private pending: boolean = false;
@@ -40,6 +44,10 @@ export struct PostOverflowButton {
   private dimension(resource: Resource): number {
     return this.getUIContext().px2vp(this.context().resourceManager.getNumber(resource.id));
   }
+  private menuVisible(id: string): boolean {
+    return menuActionVisible(this.hiddenMenuActions, id);
+  }
+
   private own(): boolean { return xPrivateClient.viewerId() === this.tweet.author.id; }
   private toast(resource: Resource, status: number = 0): void {
     promptAction.showToast({ message: this.text(resource) + (status > 0 ? ' · HTTP ' + status.toString() : '') });
@@ -204,31 +212,53 @@ export struct PostOverflowButton {
           }, (list: ListRow): string => list.id)
         } else {
           if (!this.own()) {
-            this.Action($r('sys.symbol.face_sading'), $r('app.string.video_feed_not_interested'), (): void => { void this.notInterested(); })
-            this.Action($r('sys.symbol.person_badge_plus'), this.following ? $r('app.string.post_menu_unfollow') :
-              $r('app.string.profile_detail_follow'), (): void => { void this.accountAction('follow'); }, true)
-            this.Action($r('sys.symbol.list_bullet'), $r('app.string.post_menu_lists'), (): void => { void this.loadLists(); })
-            this.Action($r('sys.symbol.speaker_slash'), $r('app.string.post_menu_mute'), (): void => { void this.accountAction('mute'); }, true)
-            this.Action($r('sys.symbol.nosign'), $r('app.string.post_menu_block'), (): void => { void this.accountAction('block'); }, true)
+            if (this.menuVisible('post.not_interested')) {
+              this.Action($r('sys.symbol.face_sading'), $r('app.string.video_feed_not_interested'), (): void => { void this.notInterested(); })
+            }
+            if (this.menuVisible('post.follow')) {
+              this.Action($r('sys.symbol.person_badge_plus'), this.following ? $r('app.string.post_menu_unfollow') :
+                $r('app.string.profile_detail_follow'), (): void => { void this.accountAction('follow'); }, true)
+            }
+            if (this.menuVisible('post.lists')) {
+              this.Action($r('sys.symbol.list_bullet'), $r('app.string.post_menu_lists'), (): void => { void this.loadLists(); })
+            }
+            if (this.menuVisible('post.mute')) {
+              this.Action($r('sys.symbol.speaker_slash'), $r('app.string.post_menu_mute'), (): void => { void this.accountAction('mute'); }, true)
+            }
+            if (this.menuVisible('post.block')) {
+              this.Action($r('sys.symbol.nosign'), $r('app.string.post_menu_block'), (): void => { void this.accountAction('block'); }, true)
+            }
           }
-          Divider().color($r('app.color.divider'))
-          this.Action($r('sys.symbol.flag'), $r('app.string.video_feed_report_post'), (): void => {
-            this.showing = false;
-            openExternalLink(this.context(), postShareUrl(this.tweet));
-            this.toast($r('app.string.video_feed_report_handoff'));
-          })
-          this.Action($r('sys.symbol.text_bubble_left_2'), $r('app.string.post_menu_request_note'), (): void => {
-            this.openWeb('', $r('app.string.post_menu_request_note'));
-            this.toast($r('app.string.post_menu_note_handoff'));
-          })
-          this.Action($r('sys.symbol.repeat'), $r('app.string.post_interactions_title'), (): void => {
-            this.showing = false;
-            const param: PostInteractionsRouteParam = { tweet: this.tweet };
-            this.pageStack.pushPath({ name: 'PostInteractions', param: param });
-          })
-          this.Action($r('sys.symbol.eye_slash'), $r('app.string.post_menu_hidden_replies'), (): void => {
-            this.openWeb('/hidden', $r('app.string.post_menu_hidden_replies'));
-          })
+          if (menuActionsForGroup('post_menu').filter((option: MenuActionOption): boolean =>
+            !this.own() || ['post.report', 'post.note', 'post.interactions', 'post.hidden_replies'].indexOf(option.id) >= 0)
+            .every((option: MenuActionOption): boolean => !this.menuVisible(option.id))) {
+            Text($r('app.string.settings_menu_empty')).fontFamily(this.appFontFamily).fontColor($r('app.color.text_secondary')).padding(20)
+          }
+          if (this.menuVisible('post.report')) {
+            this.Action($r('sys.symbol.flag'), $r('app.string.video_feed_report_post'), (): void => {
+              this.showing = false;
+              openExternalLink(this.context(), postShareUrl(this.tweet));
+              this.toast($r('app.string.video_feed_report_handoff'));
+            })
+          }
+          if (this.menuVisible('post.note')) {
+            this.Action($r('sys.symbol.text_bubble_left_2'), $r('app.string.post_menu_request_note'), (): void => {
+              this.openWeb('', $r('app.string.post_menu_request_note'));
+              this.toast($r('app.string.post_menu_note_handoff'));
+            })
+          }
+          if (this.menuVisible('post.interactions')) {
+            this.Action($r('sys.symbol.repeat'), $r('app.string.post_interactions_title'), (): void => {
+              this.showing = false;
+              const param: PostInteractionsRouteParam = { tweet: this.tweet };
+              this.pageStack.pushPath({ name: 'PostInteractions', param: param });
+            })
+          }
+          if (this.menuVisible('post.hidden_replies')) {
+            this.Action($r('sys.symbol.eye_slash'), $r('app.string.post_menu_hidden_replies'), (): void => {
+              this.openWeb('/hidden', $r('app.string.post_menu_hidden_replies'));
+            })
+          }
         }
       }.width('100%').padding({ top: $r('app.float.post_menu_top_padding'),
         bottom: this.bottomInset + this.dimension($r('app.float.post_menu_vertical_padding')) })
@@ -238,7 +268,7 @@ export struct PostOverflowButton {
   build(): void {
     Button({ type: ButtonType.Circle }) {
       SymbolGlyph($r('sys.symbol.line_3_horizontal'))
-        .fontSize($r('app.float.post_menu_button_icon')).fontColor([$r('app.color.text_secondary')])
+        .fontSize($r('app.float.post_menu_button_icon')).fontColor([this.foreground])
     }.width($r('app.float.post_menu_button_size')).height($r('app.float.post_menu_button_size')).backgroundColor(Color.Transparent)
       .id('post-overflow-' + this.tweet.id)
       .accessibilityText($r('app.string.post_menu_more')).monopolizeEvents(true)

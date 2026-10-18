@@ -1,3 +1,8 @@
+import { pageTextColor } from '../utils/ThemeColors';
+import { appPageBackground } from '../components/PageBackgroundLayer';
+import { pageCanvasColor, pageReadingSurfaceColor } from '../utils/ThemeColors';
+import { STORAGE_KEY_PAGE_TRANSITION_MODE, DEFAULT_PAGE_TRANSITION_MODE } from '../services/PageTransitionSettingsStore';
+import { pageSystemTransition, PageTransitionMotion } from '../utils/PageTransition';
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
 import { common } from '@kit.AbilityKit';
 import {
@@ -25,6 +30,9 @@ export function CommunitySearchBuilder(): void { CommunitySearch(); }
 
 @Component
 export struct CommunitySearch {
+  @StorageProp('harmonyx.page_background') private pageBackgroundValue: string = '';
+  @State private pageMotion: PageTransitionMotion = new PageTransitionMotion();
+  @StorageProp(STORAGE_KEY_PAGE_TRANSITION_MODE) private pageTransitionMode: string = DEFAULT_PAGE_TRANSITION_MODE;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @Consume('pageStack') pageStack: NavPathStack;
   @StorageProp('harmonyx.status_bar_height') statusBarHeight: number = 0;
@@ -202,7 +210,7 @@ export struct CommunitySearch {
         Search({ value: this.input, placeholder: $r('app.string.community_search_placeholder') })
           .layoutWeight(1).height(40).keyboardAppearance(KeyboardAppearance.IMMERSIVE)
           .backgroundColor(fieldSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
-          .fontColor($r('app.color.text_primary'))
+          .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, fieldSurfaceColor(this.themeDisplayMode, this.themeDarkSurface)))
           .placeholderColor($r('app.color.text_secondary'))
           .borderRadius(20)
           .searchButton($r('app.string.search_action'))
@@ -235,7 +243,8 @@ export struct CommunitySearch {
               .onClick((): void => this.selectTopic(topic))
             } else {
               Text(topic.name).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontWeight(FontWeight.Medium)
-                .fontColor(this.topicId === topic.id ? $r('app.color.text_on_accent') : $r('app.color.text_primary'))
+                .fontColor(this.topicId === topic.id ? $r('app.color.text_on_accent') : pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, this.topicId === topic.id ? this.accentColor :
+                  fieldSurfaceColor(this.themeDisplayMode, this.themeDarkSurface)))
                 .backgroundColor(this.topicId === topic.id ? this.accentColor :
                   fieldSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
                 .border({ width: 1, color: this.topicId === topic.id ? this.accentColor : $r('app.color.divider') })
@@ -249,6 +258,8 @@ export struct CommunitySearch {
   }
   build(): void {
     HdsNavDestination() {
+      Stack({ alignContent: Alignment.TopStart }) {
+        appPageBackground()
       List({ scroller: this.scroller }) {
         if (this.loading) {
           ListItem() { LoadingProgress().width(28).height(28).color(this.accentColor).margin({ top: 40 }) }
@@ -280,7 +291,13 @@ export struct CommunitySearch {
       .contentEndOffset(this.navigationIndicatorHeight + 24)
       .clip(false)
       .onReachEnd((): void => { this.load(false); })
-    }.titleMode(HdsNavDestinationTitleMode.MINI).hideBackButton(false)
+    
+      }.width('100%').height('100%')
+    }
+    .scale({ x: this.pageMotion.scale, y: this.pageMotion.scale })
+    .opacity(this.pageMotion.opacity)
+    .onReady((context: NavDestinationContext): void => { this.pageMotion.attach(context); })
+    .systemTransition(pageSystemTransition(this.pageTransitionMode)).titleMode(HdsNavDestinationTitleMode.MINI).hideBackButton(false)
       .onBackPressed((): boolean => { ResponsiveLayout.closeContentDestination(this.pageStack); return true; })
       .bindToScrollable([this.scroller])
       .titleBar({ avoidLayoutSafeArea: true,
@@ -294,7 +311,7 @@ export struct CommunitySearch {
           divider: { showType: DividerShowType.OFF }
         },
         style: this.titleBarStyle() })
-      .backgroundColor(pageSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
+      .backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue))
       .systemMaterial(deviceInfo.apiAvailable('26.0.0') ? new uiMaterial.ImmersiveMaterial({
         style: uiMaterial.ImmersiveStyle.REGULAR, applyShadow: true, colorInvert: true }) : undefined)
   }

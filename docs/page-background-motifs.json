@@ -1,0 +1,1250 @@
+[
+  {
+    "id": "petrel_adventure_0",
+    "set": "petrel_adventure",
+    "resource": "page_motif_petrel_adventure_0",
+    "box": {
+      "component": 66,
+      "x": 312,
+      "y": 350,
+      "w": 79,
+      "h": 77,
+      "score": 2
+    }
+  },
+  {
+    "id": "petrel_adventure_1",
+    "set": "petrel_adventure",
+    "resource": "page_motif_petrel_adventure_1",
+    "box": {
+      "component": 230,
+      "x": 92,
+      "y": 1241,
+      "w": 78,
+      "h": 80,
+      "score": 2
+    }
+  },
+  {
+    "id": "petrel_adventure_2",
+    "set": "petrel_adventure",
+    "resource": "page_motif_petrel_adventure_2",
+    "box": {
+      "component": 31,
+      "x": 209,
+      "y": 146,
+      "w": 79,
+      "h": 81,
+      "score": 4
+    }
+  },
+  {
+    "id": "petrel_adventure_3",
+    "set": "petrel_adventure",
+    "resource": "page_motif_petrel_adventure_3",
+    "box": {
+      "component": 116,
+      "x": 327,
+      "y": 610,
+      "w": 79,
+      "h": 81,
+      "score": 4
+    }
+  },
+  {
+    "id": "petrel_adventure_4",
+    "set": "petrel_adventure",
+    "resource": "page_motif_petrel_adventure_4",
+    "box": {
+      "component": 203,
+      "x": 446,
+      "y": 1061,
+      "w": 78,
+      "h": 74,
+      "score": 4
+    }
+  },
+  {
+    "id": "petrel_adventure_5",
+    "set": "petrel_adventure",
+    "resource": "page_motif_petrel_adventure_5",
+    "box": {
+      "component": 190,
+      "x": 464,
+      "y": 983,
+      "w": 82,
+      "h": 80,
+      "score": 6
+    }
+  },
+  {
+    "id": "petrel_beach_0",
+    "set": "petrel_beach",
+    "resource": "page_motif_petrel_beach_0",
+    "box": {
+      "component": 74,
+      "x": 120,
+      "y": 418,
+      "w": 75,
+      "h": 78,
+      "score": 3
+    }
+  },
+  {
+    "id": "petrel_beach_1",
+    "set": "petrel_beach",
+    "resource": "page_motif_petrel_beach_1",
+    "box": {
+      "component": 86,
+      "x": 73,
+      "y": 493,
+      "w": 77,
+      "h": 80,
+      "score": 3
+    }
+  },
+  {
+    "id": "petrel_beach_2",
+    "set": "petrel_beach",
+    "resource": "page_motif_petrel_beach_2",
+    "box": {
+      "component": 107,
+      "x": 570,
+      "y": 632,
+      "w": 87,
+      "h": 79,
+      "score": 10
+    }
+  },
+  {
+    "id": "petrel_beach_3",
+    "set": "petrel_beach",
+    "resource": "page_motif_petrel_beach_3",
+    "box": {
+      "component": 114,
+      "x": 421,
+      "y": 686,
+      "w": 89,
+      "h": 79,
+      "score": 12
+    }
+  },
+  {
+    "id": "petrel_beach_4",
+    "set": "petrel_beach",
+    "resource": "page_motif_petrel_beach_4",
+    "box": {
+      "component": 68,
+      "x": 545,
+      "y": 395,
+      "w": 89,
+      "h": 81,
+      "score": 14
+    }
+  },
+  {
+    "id": "petrel_beach_5",
+    "set": "petrel_beach",
+    "resource": "page_motif_petrel_beach_5",
+    "box": {
+      "component": 131,
+      "x": 403,
+      "y": 762,
+      "w": 69,
+      "h": 84,
+      "score": 15
+    }
+  },
+  {
+    "id": "petrel_carnival_0",
+    "set": "petrel_carnival",
+    "resource": "page_motif_petrel_carnival_0",
+    "box": {
+      "component": 3,
+      "x": 637,
+      "y": 31,
+      "w": 41,
+      "h": 53,
+      "score": 62
+    }
+  },
+  {
+    "id": "petrel_cats_0",
+    "set": "petrel_cats",
+    "resource": "page_motif_petrel_cats_0",
+    "box": {
+      "component": 154,
+      "x": 434,
+      "y": 1327,
+      "w": 80,
+      "h": 68,
+      "score": 12
+    }
+  },
+  {
+    "id": "petrel_cats_1",
+    "set": "petrel_cats",
+    "resource": "page_motif_petrel_cats_1",
+    "box": {
+      "component": 57,
+      "x": 245,
+      "y": 426,
+      "w": 64,
+      "h": 76,
+      "score": 16
+    }
+  },
+  {
+    "id": "petrel_cats_2",
+    "set": "petrel_cats",
+    "resource": "page_motif_petrel_cats_2",
+    "box": {
+      "component": 48,
+      "x": 79,
+      "y": 350,
+      "w": 88,
+      "h": 68,
+      "score": 20
+    }
+  },
+  {
+    "id": "petrel_cats_3",
+    "set": "petrel_cats",
+    "resource": "page_motif_petrel_cats_3",
+    "box": {
+      "component": 92,
+      "x": 429,
+      "y": 774,
+      "w": 58,
+      "h": 78,
+      "score": 20
+    }
+  },
+  {
+    "id": "petrel_cats_4",
+    "set": "petrel_cats",
+    "resource": "page_motif_petrel_cats_4",
+    "box": {
+      "component": 27,
+      "x": 554,
+      "y": 193,
+      "w": 93,
+      "h": 86,
+      "score": 23
+    }
+  },
+  {
+    "id": "petrel_cats_5",
+    "set": "petrel_cats",
+    "resource": "page_motif_petrel_cats_5",
+    "box": {
+      "component": 152,
+      "x": 290,
+      "y": 1317,
+      "w": 86,
+      "h": 93,
+      "score": 23
+    }
+  },
+  {
+    "id": "petrel_crystal_0",
+    "set": "petrel_crystal",
+    "resource": "page_motif_petrel_crystal_0",
+    "box": {
+      "component": 40,
+      "x": 533,
+      "y": 152,
+      "w": 76,
+      "h": 75,
+      "score": 5
+    }
+  },
+  {
+    "id": "petrel_crystal_1",
+    "set": "petrel_crystal",
+    "resource": "page_motif_petrel_crystal_1",
+    "box": {
+      "component": 69,
+      "x": 140,
+      "y": 296,
+      "w": 78,
+      "h": 84,
+      "score": 6
+    }
+  },
+  {
+    "id": "petrel_crystal_2",
+    "set": "petrel_crystal",
+    "resource": "page_motif_petrel_crystal_2",
+    "box": {
+      "component": 154,
+      "x": 36,
+      "y": 607,
+      "w": 75,
+      "h": 75,
+      "score": 6
+    }
+  },
+  {
+    "id": "petrel_crystal_3",
+    "set": "petrel_crystal",
+    "resource": "page_motif_petrel_crystal_3",
+    "box": {
+      "component": 20,
+      "x": 150,
+      "y": 38,
+      "w": 82,
+      "h": 74,
+      "score": 8
+    }
+  },
+  {
+    "id": "petrel_crystal_4",
+    "set": "petrel_crystal",
+    "resource": "page_motif_petrel_crystal_4",
+    "box": {
+      "component": 97,
+      "x": 92,
+      "y": 400,
+      "w": 75,
+      "h": 83,
+      "score": 8
+    }
+  },
+  {
+    "id": "petrel_crystal_5",
+    "set": "petrel_crystal",
+    "resource": "page_motif_petrel_crystal_5",
+    "box": {
+      "component": 318,
+      "x": 35,
+      "y": 1207,
+      "w": 84,
+      "h": 76,
+      "score": 8
+    }
+  },
+  {
+    "id": "petrel_dream_0",
+    "set": "petrel_dream",
+    "resource": "page_motif_petrel_dream_0",
+    "box": {
+      "component": 48,
+      "x": 242,
+      "y": 249,
+      "w": 79,
+      "h": 77,
+      "score": 2
+    }
+  },
+  {
+    "id": "petrel_dream_1",
+    "set": "petrel_dream",
+    "resource": "page_motif_petrel_dream_1",
+    "box": {
+      "component": 109,
+      "x": 316,
+      "y": 564,
+      "w": 79,
+      "h": 79,
+      "score": 2
+    }
+  },
+  {
+    "id": "petrel_dream_2",
+    "set": "petrel_dream",
+    "resource": "page_motif_petrel_dream_2",
+    "box": {
+      "component": 14,
+      "x": 542,
+      "y": 12,
+      "w": 75,
+      "h": 80,
+      "score": 5
+    }
+  },
+  {
+    "id": "petrel_dream_3",
+    "set": "petrel_dream",
+    "resource": "page_motif_petrel_dream_3",
+    "box": {
+      "component": 151,
+      "x": 160,
+      "y": 837,
+      "w": 70,
+      "h": 80,
+      "score": 10
+    }
+  },
+  {
+    "id": "petrel_dream_4",
+    "set": "petrel_dream",
+    "resource": "page_motif_petrel_dream_4",
+    "box": {
+      "component": 168,
+      "x": 503,
+      "y": 915,
+      "w": 73,
+      "h": 73,
+      "score": 10
+    }
+  },
+  {
+    "id": "petrel_dream_5",
+    "set": "petrel_dream",
+    "resource": "page_motif_petrel_dream_5",
+    "box": {
+      "component": 60,
+      "x": 434,
+      "y": 311,
+      "w": 73,
+      "h": 84,
+      "score": 11
+    }
+  },
+  {
+    "id": "petrel_games_0",
+    "set": "petrel_games",
+    "resource": "page_motif_petrel_games_0",
+    "box": {
+      "component": 78,
+      "x": 620,
+      "y": 371,
+      "w": 76,
+      "h": 79,
+      "score": 3
+    }
+  },
+  {
+    "id": "petrel_games_1",
+    "set": "petrel_games",
+    "resource": "page_motif_petrel_games_1",
+    "box": {
+      "component": 176,
+      "x": 203,
+      "y": 938,
+      "w": 76,
+      "h": 81,
+      "score": 5
+    }
+  },
+  {
+    "id": "petrel_games_2",
+    "set": "petrel_games",
+    "resource": "page_motif_petrel_games_2",
+    "box": {
+      "component": 120,
+      "x": 76,
+      "y": 599,
+      "w": 75,
+      "h": 81,
+      "score": 6
+    }
+  },
+  {
+    "id": "petrel_games_3",
+    "set": "petrel_games",
+    "resource": "page_motif_petrel_games_3",
+    "box": {
+      "component": 175,
+      "x": 286,
+      "y": 937,
+      "w": 79,
+      "h": 71,
+      "score": 8
+    }
+  },
+  {
+    "id": "petrel_games_4",
+    "set": "petrel_games",
+    "resource": "page_motif_petrel_games_4",
+    "box": {
+      "component": 178,
+      "x": 407,
+      "y": 944,
+      "w": 85,
+      "h": 77,
+      "score": 8
+    }
+  },
+  {
+    "id": "petrel_games_5",
+    "set": "petrel_games",
+    "resource": "page_motif_petrel_games_5",
+    "box": {
+      "component": 167,
+      "x": 481,
+      "y": 874,
+      "w": 73,
+      "h": 74,
+      "score": 9
+    }
+  },
+  {
+    "id": "petrel_gifts_0",
+    "set": "petrel_gifts",
+    "resource": "page_motif_petrel_gifts_0",
+    "box": {
+      "component": 109,
+      "x": 222,
+      "y": 721,
+      "w": 73,
+      "h": 77,
+      "score": 6
+    }
+  },
+  {
+    "id": "petrel_gifts_1",
+    "set": "petrel_gifts",
+    "resource": "page_motif_petrel_gifts_1",
+    "box": {
+      "component": 158,
+      "x": 535,
+      "y": 1037,
+      "w": 78,
+      "h": 70,
+      "score": 8
+    }
+  },
+  {
+    "id": "petrel_gifts_2",
+    "set": "petrel_gifts",
+    "resource": "page_motif_petrel_gifts_2",
+    "box": {
+      "component": 177,
+      "x": 240,
+      "y": 1200,
+      "w": 71,
+      "h": 80,
+      "score": 9
+    }
+  },
+  {
+    "id": "petrel_gifts_3",
+    "set": "petrel_gifts",
+    "resource": "page_motif_petrel_gifts_3",
+    "box": {
+      "component": 189,
+      "x": 465,
+      "y": 1274,
+      "w": 83,
+      "h": 73,
+      "score": 10
+    }
+  },
+  {
+    "id": "petrel_gifts_4",
+    "set": "petrel_gifts",
+    "resource": "page_motif_petrel_gifts_4",
+    "box": {
+      "component": 20,
+      "x": 93,
+      "y": 98,
+      "w": 66,
+      "h": 78,
+      "score": 12
+    }
+  },
+  {
+    "id": "petrel_gifts_5",
+    "set": "petrel_gifts",
+    "resource": "page_motif_petrel_gifts_5",
+    "box": {
+      "component": 173,
+      "x": 119,
+      "y": 1173,
+      "w": 84,
+      "h": 72,
+      "score": 12
+    }
+  },
+  {
+    "id": "petrel_holiday_0",
+    "set": "petrel_holiday",
+    "resource": "page_motif_petrel_holiday_0",
+    "box": {
+      "component": 89,
+      "x": 588,
+      "y": 502,
+      "w": 75,
+      "h": 74,
+      "score": 7
+    }
+  },
+  {
+    "id": "petrel_holiday_1",
+    "set": "petrel_holiday",
+    "resource": "page_motif_petrel_holiday_1",
+    "box": {
+      "component": 64,
+      "x": 381,
+      "y": 340,
+      "w": 78,
+      "h": 70,
+      "score": 8
+    }
+  },
+  {
+    "id": "petrel_holiday_2",
+    "set": "petrel_holiday",
+    "resource": "page_motif_petrel_holiday_2",
+    "box": {
+      "component": 37,
+      "x": 283,
+      "y": 171,
+      "w": 77,
+      "h": 70,
+      "score": 9
+    }
+  },
+  {
+    "id": "petrel_holiday_3",
+    "set": "petrel_holiday",
+    "resource": "page_motif_petrel_holiday_3",
+    "box": {
+      "component": 222,
+      "x": 369,
+      "y": 1381,
+      "w": 87,
+      "h": 78,
+      "score": 9
+    }
+  },
+  {
+    "id": "petrel_holiday_4",
+    "set": "petrel_holiday",
+    "resource": "page_motif_petrel_holiday_4",
+    "box": {
+      "component": 47,
+      "x": 301,
+      "y": 243,
+      "w": 83,
+      "h": 73,
+      "score": 10
+    }
+  },
+  {
+    "id": "petrel_holiday_5",
+    "set": "petrel_holiday",
+    "resource": "page_motif_petrel_holiday_5",
+    "box": {
+      "component": 197,
+      "x": 110,
+      "y": 1241,
+      "w": 74,
+      "h": 85,
+      "score": 11
+    }
+  },
+  {
+    "id": "petrel_home_0",
+    "set": "petrel_home",
+    "resource": "page_motif_petrel_home_0",
+    "box": {
+      "component": 76,
+      "x": 149,
+      "y": 969,
+      "w": 85,
+      "h": 90,
+      "score": 19
+    }
+  },
+  {
+    "id": "petrel_home_1",
+    "set": "petrel_home",
+    "resource": "page_motif_petrel_home_1",
+    "box": {
+      "component": 81,
+      "x": 238,
+      "y": 1039,
+      "w": 71,
+      "h": 64,
+      "score": 21
+    }
+  },
+  {
+    "id": "petrel_home_2",
+    "set": "petrel_home",
+    "resource": "page_motif_petrel_home_2",
+    "box": {
+      "component": 63,
+      "x": 111,
+      "y": 830,
+      "w": 85,
+      "h": 99,
+      "score": 28
+    }
+  },
+  {
+    "id": "petrel_home_3",
+    "set": "petrel_home",
+    "resource": "page_motif_petrel_home_3",
+    "box": {
+      "component": 25,
+      "x": 468,
+      "y": 419,
+      "w": 101,
+      "h": 84,
+      "score": 29
+    }
+  },
+  {
+    "id": "petrel_home_4",
+    "set": "petrel_home",
+    "resource": "page_motif_petrel_home_4",
+    "box": {
+      "component": 28,
+      "x": 363,
+      "y": 434,
+      "w": 52,
+      "h": 82,
+      "score": 30
+    }
+  },
+  {
+    "id": "petrel_home_5",
+    "set": "petrel_home",
+    "resource": "page_motif_petrel_home_5",
+    "box": {
+      "component": 26,
+      "x": 538,
+      "y": 423,
+      "w": 90,
+      "h": 103,
+      "score": 37
+    }
+  },
+  {
+    "id": "petrel_nature_0",
+    "set": "petrel_nature",
+    "resource": "page_motif_petrel_nature_0",
+    "box": {
+      "component": 45,
+      "x": 30,
+      "y": 661,
+      "w": 60,
+      "h": 86,
+      "score": 26
+    }
+  },
+  {
+    "id": "petrel_nature_1",
+    "set": "petrel_nature",
+    "resource": "page_motif_petrel_nature_1",
+    "box": {
+      "component": 84,
+      "x": 629,
+      "y": 1047,
+      "w": 46,
+      "h": 49,
+      "score": 61
+    }
+  },
+  {
+    "id": "petrel_nature_2",
+    "set": "petrel_nature",
+    "resource": "page_motif_petrel_nature_2",
+    "box": {
+      "component": 28,
+      "x": 646,
+      "y": 424,
+      "w": 38,
+      "h": 49,
+      "score": 69
+    }
+  },
+  {
+    "id": "petrel_nature_3",
+    "set": "petrel_nature",
+    "resource": "page_motif_petrel_nature_3",
+    "box": {
+      "component": 70,
+      "x": 378,
+      "y": 874,
+      "w": 40,
+      "h": 42,
+      "score": 74
+    }
+  },
+  {
+    "id": "petrel_nature_4",
+    "set": "petrel_nature",
+    "resource": "page_motif_petrel_nature_4",
+    "box": {
+      "component": 20,
+      "x": 348,
+      "y": 263,
+      "w": 41,
+      "h": 40,
+      "score": 75
+    }
+  },
+  {
+    "id": "petrel_pets_0",
+    "set": "petrel_pets",
+    "resource": "page_motif_petrel_pets_0",
+    "box": {
+      "component": 13,
+      "x": 97,
+      "y": 27,
+      "w": 80,
+      "h": 74,
+      "score": 6
+    }
+  },
+  {
+    "id": "petrel_pets_1",
+    "set": "petrel_pets",
+    "resource": "page_motif_petrel_pets_1",
+    "box": {
+      "component": 82,
+      "x": 225,
+      "y": 423,
+      "w": 75,
+      "h": 75,
+      "score": 6
+    }
+  },
+  {
+    "id": "petrel_pets_2",
+    "set": "petrel_pets",
+    "resource": "page_motif_petrel_pets_2",
+    "box": {
+      "component": 99,
+      "x": 336,
+      "y": 539,
+      "w": 72,
+      "h": 80,
+      "score": 8
+    }
+  },
+  {
+    "id": "petrel_pets_3",
+    "set": "petrel_pets",
+    "resource": "page_motif_petrel_pets_3",
+    "box": {
+      "component": 91,
+      "x": 17,
+      "y": 486,
+      "w": 68,
+      "h": 78,
+      "score": 10
+    }
+  },
+  {
+    "id": "petrel_pets_4",
+    "set": "petrel_pets",
+    "resource": "page_motif_petrel_pets_4",
+    "box": {
+      "component": 23,
+      "x": 313,
+      "y": 92,
+      "w": 73,
+      "h": 85,
+      "score": 12
+    }
+  },
+  {
+    "id": "petrel_pets_5",
+    "set": "petrel_pets",
+    "resource": "page_motif_petrel_pets_5",
+    "box": {
+      "component": 156,
+      "x": 347,
+      "y": 865,
+      "w": 82,
+      "h": 86,
+      "score": 12
+    }
+  },
+  {
+    "id": "petrel_science_0",
+    "set": "petrel_science",
+    "resource": "page_motif_petrel_science_0",
+    "box": {
+      "component": 85,
+      "x": 204,
+      "y": 642,
+      "w": 86,
+      "h": 71,
+      "score": 15
+    }
+  },
+  {
+    "id": "petrel_science_1",
+    "set": "petrel_science",
+    "resource": "page_motif_petrel_science_1",
+    "box": {
+      "component": 164,
+      "x": 406,
+      "y": 1293,
+      "w": 70,
+      "h": 85,
+      "score": 15
+    }
+  },
+  {
+    "id": "petrel_science_2",
+    "set": "petrel_science",
+    "resource": "page_motif_petrel_science_2",
+    "box": {
+      "component": 80,
+      "x": 284,
+      "y": 614,
+      "w": 75,
+      "h": 60,
+      "score": 21
+    }
+  },
+  {
+    "id": "petrel_science_3",
+    "set": "petrel_science",
+    "resource": "page_motif_petrel_science_3",
+    "box": {
+      "component": 25,
+      "x": 333,
+      "y": 139,
+      "w": 63,
+      "h": 71,
+      "score": 22
+    }
+  },
+  {
+    "id": "petrel_science_4",
+    "set": "petrel_science",
+    "resource": "page_motif_petrel_science_4",
+    "box": {
+      "component": 95,
+      "x": 350,
+      "y": 709,
+      "w": 97,
+      "h": 59,
+      "score": 38
+    }
+  },
+  {
+    "id": "petrel_science_5",
+    "set": "petrel_science",
+    "resource": "page_motif_petrel_science_5",
+    "box": {
+      "component": 160,
+      "x": 39,
+      "y": 1276,
+      "w": 96,
+      "h": 58,
+      "score": 38
+    }
+  },
+  {
+    "id": "petrel_snow_0",
+    "set": "petrel_snow",
+    "resource": "page_motif_petrel_snow_0",
+    "box": {
+      "component": 197,
+      "x": 238,
+      "y": 1155,
+      "w": 83,
+      "h": 77,
+      "score": 6
+    }
+  },
+  {
+    "id": "petrel_snow_1",
+    "set": "petrel_snow",
+    "resource": "page_motif_petrel_snow_1",
+    "box": {
+      "component": 88,
+      "x": 121,
+      "y": 529,
+      "w": 76,
+      "h": 85,
+      "score": 9
+    }
+  },
+  {
+    "id": "petrel_snow_2",
+    "set": "petrel_snow",
+    "resource": "page_motif_petrel_snow_2",
+    "box": {
+      "component": 226,
+      "x": 396,
+      "y": 1391,
+      "w": 75,
+      "h": 71,
+      "score": 10
+    }
+  },
+  {
+    "id": "petrel_snow_3",
+    "set": "petrel_snow",
+    "resource": "page_motif_petrel_snow_3",
+    "box": {
+      "component": 27,
+      "x": 345,
+      "y": 131,
+      "w": 82,
+      "h": 87,
+      "score": 13
+    }
+  },
+  {
+    "id": "petrel_snow_4",
+    "set": "petrel_snow",
+    "resource": "page_motif_petrel_snow_4",
+    "box": {
+      "component": 177,
+      "x": 207,
+      "y": 1054,
+      "w": 85,
+      "h": 85,
+      "score": 14
+    }
+  },
+  {
+    "id": "petrel_snow_5",
+    "set": "petrel_snow",
+    "resource": "page_motif_petrel_snow_5",
+    "box": {
+      "component": 148,
+      "x": 290,
+      "y": 859,
+      "w": 81,
+      "h": 92,
+      "score": 17
+    }
+  },
+  {
+    "id": "petrel_space_0",
+    "set": "petrel_space",
+    "resource": "page_motif_petrel_space_0",
+    "box": {
+      "component": 159,
+      "x": 463,
+      "y": 752,
+      "w": 68,
+      "h": 81,
+      "score": 13
+    }
+  },
+  {
+    "id": "petrel_space_1",
+    "set": "petrel_space",
+    "resource": "page_motif_petrel_space_1",
+    "box": {
+      "component": 224,
+      "x": 326,
+      "y": 1019,
+      "w": 90,
+      "h": 81,
+      "score": 15
+    }
+  },
+  {
+    "id": "petrel_space_2",
+    "set": "petrel_space",
+    "resource": "page_motif_petrel_space_2",
+    "box": {
+      "component": 234,
+      "x": 567,
+      "y": 1063,
+      "w": 70,
+      "h": 87,
+      "score": 17
+    }
+  },
+  {
+    "id": "petrel_space_3",
+    "set": "petrel_space",
+    "resource": "page_motif_petrel_space_3",
+    "box": {
+      "component": 35,
+      "x": 596,
+      "y": 142,
+      "w": 62,
+      "h": 82,
+      "score": 20
+    }
+  },
+  {
+    "id": "petrel_space_4",
+    "set": "petrel_space",
+    "resource": "page_motif_petrel_space_4",
+    "box": {
+      "component": 263,
+      "x": 47,
+      "y": 1178,
+      "w": 88,
+      "h": 92,
+      "score": 24
+    }
+  },
+  {
+    "id": "petrel_space_5",
+    "set": "petrel_space",
+    "resource": "page_motif_petrel_space_5",
+    "box": {
+      "component": 265,
+      "x": 402,
+      "y": 1186,
+      "w": 72,
+      "h": 60,
+      "score": 24
+    }
+  },
+  {
+    "id": "petrel_warm_0",
+    "set": "petrel_warm",
+    "resource": "page_motif_petrel_warm_0",
+    "box": {
+      "component": 134,
+      "x": 328,
+      "y": 573,
+      "w": 79,
+      "h": 79,
+      "score": 2
+    }
+  },
+  {
+    "id": "petrel_warm_1",
+    "set": "petrel_warm",
+    "resource": "page_motif_petrel_warm_1",
+    "box": {
+      "component": 53,
+      "x": 387,
+      "y": 234,
+      "w": 81,
+      "h": 76,
+      "score": 5
+    }
+  },
+  {
+    "id": "petrel_warm_2",
+    "set": "petrel_warm",
+    "resource": "page_motif_petrel_warm_2",
+    "box": {
+      "component": 266,
+      "x": 264,
+      "y": 1204,
+      "w": 73,
+      "h": 80,
+      "score": 7
+    }
+  },
+  {
+    "id": "petrel_warm_3",
+    "set": "petrel_warm",
+    "resource": "page_motif_petrel_warm_3",
+    "box": {
+      "component": 295,
+      "x": 317,
+      "y": 1322,
+      "w": 75,
+      "h": 84,
+      "score": 9
+    }
+  },
+  {
+    "id": "petrel_warm_4",
+    "set": "petrel_warm",
+    "resource": "page_motif_petrel_warm_4",
+    "box": {
+      "component": 105,
+      "x": 198,
+      "y": 466,
+      "w": 83,
+      "h": 85,
+      "score": 12
+    }
+  },
+  {
+    "id": "petrel_warm_5",
+    "set": "petrel_warm",
+    "resource": "page_motif_petrel_warm_5",
+    "box": {
+      "component": 181,
+      "x": 82,
+      "y": 805,
+      "w": 88,
+      "h": 75,
+      "score": 13
+    }
+  },
+  {
+    "id": "petrel_zoo_0",
+    "set": "petrel_zoo",
+    "resource": "page_motif_petrel_zoo_0",
+    "box": {
+      "component": 76,
+      "x": 292,
+      "y": 441,
+      "w": 75,
+      "h": 79,
+      "score": 4
+    }
+  },
+  {
+    "id": "petrel_zoo_1",
+    "set": "petrel_zoo",
+    "resource": "page_motif_petrel_zoo_1",
+    "box": {
+      "component": 97,
+      "x": 316,
+      "y": 594,
+      "w": 77,
+      "h": 75,
+      "score": 4
+    }
+  },
+  {
+    "id": "petrel_zoo_2",
+    "set": "petrel_zoo",
+    "resource": "page_motif_petrel_zoo_2",
+    "box": {
+      "component": 172,
+      "x": 190,
+      "y": 1037,
+      "w": 77,
+      "h": 75,
+      "score": 4
+    }
+  },
+  {
+    "id": "petrel_zoo_3",
+    "set": "petrel_zoo",
+    "resource": "page_motif_petrel_zoo_3",
+    "box": {
+      "component": 95,
+      "x": 630,
+      "y": 583,
+      "w": 80,
+      "h": 71,
+      "score": 9
+    }
+  },
+  {
+    "id": "petrel_zoo_4",
+    "set": "petrel_zoo",
+    "resource": "page_motif_petrel_zoo_4",
+    "box": {
+      "component": 209,
+      "x": 159,
+      "y": 1199,
+      "w": 81,
+      "h": 72,
+      "score": 9
+    }
+  },
+  {
+    "id": "petrel_zoo_5",
+    "set": "petrel_zoo",
+    "resource": "page_motif_petrel_zoo_5",
+    "box": {
+      "component": 84,
+      "x": 148,
+      "y": 496,
+      "w": 73,
+      "h": 73,
+      "score": 10
+    }
+  }
+]

@@ -1,3 +1,8 @@
+import { pageTextColor } from '../utils/ThemeColors';
+import { appPageBackground } from '../components/PageBackgroundLayer';
+import { pageCanvasColor, pageReadingSurfaceColor } from '../utils/ThemeColors';
+import { STORAGE_KEY_PAGE_TRANSITION_MODE, DEFAULT_PAGE_TRANSITION_MODE } from '../services/PageTransitionSettingsStore';
+import { pageSystemTransition, PageTransitionMotion } from '../utils/PageTransition';
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
 import common from '@ohos.app.ability.common';
 import { deviceInfo } from '@kit.BasicServicesKit';
@@ -20,6 +25,9 @@ export function ListMembersBuilder(): void { ListMembers(); }
 
 @Component
 export struct ListMembers {
+  @StorageProp('harmonyx.page_background') private pageBackgroundValue: string = '';
+  @State private pageMotion: PageTransitionMotion = new PageTransitionMotion();
+  @StorageProp(STORAGE_KEY_PAGE_TRANSITION_MODE) private pageTransitionMode: string = DEFAULT_PAGE_TRANSITION_MODE;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @Consume('pageStack') pageStack: NavPathStack;
   @StorageProp('harmonyx.status_bar_height') statusBarHeight: number = 0;
@@ -194,10 +202,10 @@ export struct ListMembers {
         .onChange((value: string): void => this.search(value))
       Row({ space: 12 }) {
         Button($r('app.string.list_members_title')).layoutWeight(1)
-          .backgroundColor(Color.Transparent).fontColor(this.suggestions ? $r('app.color.text_secondary') : this.accentColor)
+          .backgroundColor(Color.Transparent).fontColor(this.suggestions ? pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent) : this.accentColor)
           .onClick((): void => this.selectMode(false))
         Button($r('app.string.list_add_members')).layoutWeight(1)
-          .backgroundColor(Color.Transparent).fontColor(this.suggestions ? this.accentColor : $r('app.color.text_secondary'))
+          .backgroundColor(Color.Transparent).fontColor(this.suggestions ? this.accentColor : pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
           .onClick((): void => this.selectMode(true))
       }.width('100%')
     }
@@ -226,14 +234,14 @@ export struct ListMembers {
       if (this.rows.length === 0 && this.status.length === 0) {
         ListItem() {
           Text(this.query.length > 0 ? $r('app.string.list_people_empty') : $r('app.string.list_members_empty')).fontFamily(this.appFontFamily)
-            .fontSize($r('sys.float.Body_L')).fontColor($r('app.color.text_secondary')).width('100%').padding(28)
+            .fontSize($r('sys.float.Body_L')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).width('100%').padding(28)
         }
       }
     }
     if (this.status.length > 0) {
       ListItem() {
         Column({ space: 12 }) {
-          Text(this.status).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor($r('app.color.text_secondary'))
+          Text(this.status).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
           Button($r('app.string.common_retry')).backgroundColor(Color.Transparent).fontColor(this.accentColor)
             .onClick((): void => { if (this.initialized) { this.load(true); } else { this.initialize(); } })
         }.width('100%').padding(24)
@@ -248,6 +256,8 @@ export struct ListMembers {
   }
   build(): void {
     HdsNavDestination() {
+      Stack({ alignContent: Alignment.TopStart }) {
+        appPageBackground()
       Column() {
         this.Toolbar()
         Refresh({ refreshing: $$this.refreshing }) {
@@ -279,7 +289,13 @@ export struct ListMembers {
           }.width('100%').padding({ left: 20, right: 20, top: 12, bottom: this.navigationIndicatorHeight + 12 })
         }
       }.width('100%').height('100%').padding({ top: this.statusBarHeight + 60 })
-    }.titleMode(HdsNavDestinationTitleMode.MINI).hideBackButton(false)
+    
+      }.width('100%').height('100%')
+    }
+    .scale({ x: this.pageMotion.scale, y: this.pageMotion.scale })
+    .opacity(this.pageMotion.opacity)
+    .onReady((context: NavDestinationContext): void => { this.pageMotion.attach(context); })
+    .systemTransition(pageSystemTransition(this.pageTransitionMode)).titleMode(HdsNavDestinationTitleMode.MINI).hideBackButton(false)
       .onShown((): void => {
         const updated: ListRow | undefined = listStateStore.get(xPrivateClient.viewerId(), this.listId);
         if (updated !== undefined) { this.listRow = updated; this.listTitle = updated.name; }
@@ -292,7 +308,7 @@ export struct ListMembers {
         subTitle: this.creating ? $r('app.string.list_create_step_two') : this.listTitle } },
         style: destinationTitleBarStyle(ScrollEffectType.IMMERSIVE_GRADIENT_BLUR,
           this.themeDisplayMode, this.themeDarkSurface, this.titleBarStyleMode) })
-      .backgroundColor(pageSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
+      .backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue))
       .systemMaterial(deviceInfo.apiAvailable('26.0.0') ? new uiMaterial.ImmersiveMaterial({
         style: uiMaterial.ImmersiveStyle.REGULAR, applyShadow: true, colorInvert: true }) : undefined);
   }

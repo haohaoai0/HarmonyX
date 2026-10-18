@@ -40,3 +40,10 @@ recorded in [chat-background-assets.json](chat-background-assets.json).
 Pattern artwork is supplied by Telegram's wallpaper service, separately from
 Petrelgram's Apache-2.0 application code; this file does not relicense it.
 See [Telegram's wallpaper specification](https://core.telegram.org/api/wallpapers).
+
+Page backgrounds additionally reuse the full patterns and crop 96 individual
+motifs from these same artworks. Crops preserve the original drawing and remove
+neighboring artwork at the crop boundary. Corresponding dark assets use white
+ink. Crop bounds and source collection identifiers are recorded in
+[page-background-motifs.json](page-background-motifs.json). These derivatives do
+not change the artwork's attribution or licensing status described above.

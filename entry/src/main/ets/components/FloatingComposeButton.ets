@@ -1,8 +1,12 @@
+import { mixedAccentRoleColor } from '../utils/AccentPalette';
+import { motionDuration, motionCurve, motionScale } from '../utils/AppMotion';
+import { DEFAULT_COMPONENT_HDR_RATIO, STORAGE_KEY_COMPONENT_HDR_RATIO } from '../services/ComponentHdrSettingsStore';
 import { common } from '@kit.AbilityKit';
 import { ColorMetrics, curves, display } from '@kit.ArkUI';
 import { HdsButton } from './HdsButton';
 import { GripHandManager } from '../utils/GripHandManager';
 import { SystemMaterialUtil } from '../utils/SystemMaterial';
+import { ComponentHdrHighlight } from '../utils/ComponentHdrHighlight';
 
 const FAB_SIZE: number = 56;
 const FAB_SIDE_MARGIN: number = 16;
@@ -24,7 +28,9 @@ const GRIP_SUBSCRIBER_KEY: string = 'floating-compose-button';
  */
 @Component
 export struct FloatingComposeButton {
+  @StorageProp(STORAGE_KEY_COMPONENT_HDR_RATIO) private componentHdrRatio: number = DEFAULT_COMPONENT_HDR_RATIO;
   @Prop @Watch('onBottomClearanceChanged') bottomInset: number = 0;
+  @StorageProp('harmonyx.accent_theme') private accentTheme: string = '';
   @StorageLink('harmonyx.accent_color') accentColor: string = '#007DFF';
   @StorageLink('harmonyx.grip_hand_enabled') @Watch('onGripHandEnabledChanged')
   gripHandEnabled: boolean = true;
@@ -159,7 +165,7 @@ export struct FloatingComposeButton {
     const safeY: number = this.clampY(targetY);
     this.hasPositioned = true;
     if (animated) {
-      this.getUIContext().animateTo({ duration: 400, curve: curves.springMotion(0.6, 0.9) }, (): void => {
+      this.getUIContext().animateTo({ duration: motionDuration(400), curve: motionCurve() }, (): void => {
         this.buttonX = safeX;
         this.buttonY = safeY;
       });
@@ -196,7 +202,12 @@ export struct FloatingComposeButton {
     return this.actionColor();
   }
 
-  private actionColor(): ResourceColor { return this.composeColor ?? this.accentColor; }
+  private actionForegroundColor(): ResourceColor {
+    return this.composeColor === undefined ?
+      mixedAccentRoleColor(this.accentTheme, 'on_action', $r('app.color.text_on_accent')) : $r('app.color.text_on_accent');
+  }
+
+  private actionColor(): ResourceColor { return this.composeColor ?? mixedAccentRoleColor(this.accentTheme, 'action', this.accentColor); }
 
   private surfaceBorderWidth(): number {
     if (SystemMaterialUtil.isApi26OrAbove()) {
@@ -206,12 +217,10 @@ export struct FloatingComposeButton {
   }
 
   private materialTint(): string {
-    if (this.composeColor !== undefined) {
-      try {
-        const color: ColorMetrics = ColorMetrics.resourceColor(this.composeColor);
-        return ColorMetrics.rgba(color.red, color.green, color.blue, 0.8).color;
-      } catch (error) { }
-    }
+    try {
+      const color: ColorMetrics = ColorMetrics.resourceColor(this.actionColor());
+      return ColorMetrics.rgba(color.red, color.green, color.blue, 0.8).color;
+    } catch (error) { }
     // Keep the glyph opaque; only the material tint has 20% transparency.
     if (this.accentColor.length === 7 && this.accentColor.substring(0, 1) === '#') {
       return '#CC' + this.accentColor.substring(1);
@@ -245,7 +254,8 @@ export struct FloatingComposeButton {
         .borderRadius(FAB_SIZE / 2);
       SymbolGlyph(this.composeSymbol)
         .fontSize(24)
-        .fontColor([$r('app.color.text_on_accent')]);
+        .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), true, this.componentHdrRatio))
+        .fontColor([this.actionForegroundColor()]);
     }
     .width(FAB_SIZE)
     .height(FAB_SIZE);
@@ -262,7 +272,8 @@ export struct FloatingComposeButton {
         .borderRadius(FAB_SIZE / 2);
       SymbolGlyph($r('sys.symbol.chevron_up'))
         .fontSize(26)
-        .fontColor([$r('app.color.text_on_accent')]);
+        .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), true, this.componentHdrRatio))
+        .fontColor([this.actionForegroundColor()]);
     }
     .width(FAB_SIZE)
     .height(FAB_SIZE);
@@ -281,11 +292,13 @@ export struct FloatingComposeButton {
         LoadingProgress()
           .width(24)
           .height(24)
-          .color($r('app.color.text_on_accent'))
+          .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), true, this.componentHdrRatio))
+          .color(this.actionForegroundColor())
       } else {
         SymbolGlyph($r('sys.symbol.arrow_clockwise'))
           .fontSize(26)
-          .fontColor([$r('app.color.text_on_accent')]);
+          .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), true, this.componentHdrRatio))
+          .fontColor([this.actionForegroundColor()]);
       }
     }
     .width(FAB_SIZE)
@@ -303,7 +316,8 @@ export struct FloatingComposeButton {
         .borderRadius(FAB_SIZE / 2);
       SymbolGlyph($r('sys.symbol.text_speaker_wave_rectangle'))
         .fontSize(26)
-        .fontColor([$r('app.color.text_on_accent')]);
+        .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), true, this.componentHdrRatio))
+        .fontColor([this.actionForegroundColor()]);
     }
     .width(FAB_SIZE)
     .height(FAB_SIZE);
@@ -322,6 +336,8 @@ export struct FloatingComposeButton {
         forceHdsStyle: true,
         enableShadow: true,
         enablePressLight: true,
+        // The glyphs already own their HDR filter; keep the material host neutral.
+        enableHdrHighlight: false,
         onButtonClick: (): void => {
           if (this.hidden) { return; }
           if (this.displayedMode === 'top') {
@@ -393,11 +409,11 @@ export struct FloatingComposeButton {
       .height(FAB_SIZE)
       .position({ x: this.buttonX, y: this.buttonY })
       .scale({
-        x: this.isDragging ? 1.08 : 1,
-        y: this.isDragging ? 1.08 : 1
+        x: this.isDragging ? motionScale(1.08) : 1,
+        y: this.isDragging ? motionScale(1.08) : 1
       })
       .accessibilityText(this.accessibilityLabel)
-      .animation({ duration: 240, curve: Curve.EaseOut });
+      .animation({ duration: motionDuration(240), curve: Curve.EaseOut });
     } else {
       Stack() {
         this.FloatingActionButton();
@@ -406,11 +422,11 @@ export struct FloatingComposeButton {
       .height(FAB_SIZE)
       .position({ x: this.buttonX, y: this.buttonY })
       .scale({
-        x: this.isDragging ? 1.08 : 1,
-        y: this.isDragging ? 1.08 : 1
+        x: this.isDragging ? motionScale(1.08) : 1,
+        y: this.isDragging ? motionScale(1.08) : 1
       })
       .accessibilityText(this.accessibilityLabel)
-      .animation({ duration: 240, curve: Curve.EaseOut });
+      .animation({ duration: motionDuration(240), curve: Curve.EaseOut });
     }
     }
     }

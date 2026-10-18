@@ -1,3 +1,8 @@
+import { pageTextColor } from '../utils/ThemeColors';
+import { appPageBackground } from '../components/PageBackgroundLayer';
+import { pageCanvasColor, pageReadingSurfaceColor } from '../utils/ThemeColors';
+import { STORAGE_KEY_PAGE_TRANSITION_MODE, DEFAULT_PAGE_TRANSITION_MODE } from '../services/PageTransitionSettingsStore';
+import { pageSystemTransition, PageTransitionMotion } from '../utils/PageTransition';
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
 import common from '@ohos.app.ability.common';
 import { photoAccessHelper } from '@kit.MediaLibraryKit';
@@ -20,6 +25,9 @@ export function ListEditorBuilder(): void { ListEditor(); }
 
 @Component
 export struct ListEditor {
+  @StorageProp('harmonyx.page_background') private pageBackgroundValue: string = '';
+  @State private pageMotion: PageTransitionMotion = new PageTransitionMotion();
+  @StorageProp(STORAGE_KEY_PAGE_TRANSITION_MODE) private pageTransitionMode: string = DEFAULT_PAGE_TRANSITION_MODE;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @Consume('pageStack') pageStack: NavPathStack;
   @StorageProp('harmonyx.status_bar_height') statusBarHeight: number = 0;
@@ -207,31 +215,31 @@ export struct ListEditor {
           .enabled(!this.busy).onClick((): void => { this.bannerUri = ''; this.removeBanner = this.hasCustomBanner; })
       }
       Column({ space: 8 }) {
-        Text($r('app.string.list_name')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontColor($r('app.color.text_secondary'))
+        Text($r('app.string.list_name')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
         TextInput({ text: this.name, placeholder: this.text($r('app.string.list_name_placeholder')) }).fontFamily(this.appFontFamily)
           .keyboardAppearance(KeyboardAppearance.IMMERSIVE)
-          .maxLength(25).fontColor($r('app.color.text_primary'))
+          .maxLength(25).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, fieldSurfaceColor(this.themeDisplayMode, this.themeDarkSurface)))
           .backgroundColor(fieldSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
           .enabled(!this.busy).onChange((value: string): void => { this.name = value; })
-        Text(this.name.length + '/25').fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_S')).fontColor($r('app.color.text_secondary'))
+        Text(this.name.length + '/25').fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_S')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
           .width('100%').textAlign(TextAlign.End)
       }.alignItems(HorizontalAlign.Start).width('100%')
       Column({ space: 8 }) {
-        Text($r('app.string.list_description')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontColor($r('app.color.text_secondary'))
+        Text($r('app.string.list_description')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
         TextArea({ text: this.description, placeholder: this.text($r('app.string.list_description_placeholder')) }).fontFamily(this.appFontFamily)
           .keyboardAppearance(KeyboardAppearance.IMMERSIVE)
-          .maxLength(100).height(100).fontColor($r('app.color.text_primary'))
+          .maxLength(100).height(100).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, fieldSurfaceColor(this.themeDisplayMode, this.themeDarkSurface)))
           .backgroundColor(fieldSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
           .enabled(!this.busy).onChange((value: string): void => { this.description = value; })
-        Text(this.description.length + '/100').fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_S')).fontColor($r('app.color.text_secondary'))
+        Text(this.description.length + '/100').fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_S')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
           .width('100%').textAlign(TextAlign.End)
       }.alignItems(HorizontalAlign.Start).width('100%')
       Row({ space: 16 }) {
         Column({ space: 6 }) {
           Text($r('app.string.list_private')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontWeight(FontWeight.Bold)
-            .fontColor($r('app.color.text_primary'))
+            .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
           Text($r('app.string.list_private_description')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M'))
-            .fontColor($r('app.color.text_secondary'))
+            .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
         }.layoutWeight(1).alignItems(HorizontalAlign.Start)
         Toggle({ type: ToggleType.Switch, isOn: this.isPrivate }).selectedColor(this.accentColor)
           .enabled(!this.busy).onChange((value: boolean): void => { this.isPrivate = value; })
@@ -243,7 +251,7 @@ export struct ListEditor {
           .fontColor($r('app.color.like')).enabled(!this.busy).onClick((): void => { this.deleteList(); })
       }
       if (this.status.length > 0) {
-        Text(this.status).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor($r('app.color.text_secondary')).width('100%')
+        Text(this.status).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).width('100%')
         if (this.bannerFailed) {
           Button($r('app.string.list_continue_without_cover')).backgroundColor(Color.Transparent)
             .fontColor(this.accentColor).onClick((): void => this.finish())
@@ -253,6 +261,8 @@ export struct ListEditor {
   }
   build(): void {
     HdsNavDestination() {
+      Stack({ alignContent: Alignment.TopStart }) {
+        appPageBackground()
       Column() {
         Scroll(this.scroller) { this.Form() }.width('100%').layoutWeight(1).scrollBar(BarState.Off)
         Row() {
@@ -264,14 +274,20 @@ export struct ListEditor {
           if (this.busy) { LoadingProgress().width(24).height(24).color(this.accentColor).margin({ left: 12 }) }
         }.width('100%').padding({ left: 20, right: 20, top: 12, bottom: this.navigationIndicatorHeight + 16 })
       }.width('100%').height('100%').padding({ top: this.statusBarHeight + 60 })
-    }.titleMode(HdsNavDestinationTitleMode.MINI).hideBackButton(false)
+    
+      }.width('100%').height('100%')
+    }
+    .scale({ x: this.pageMotion.scale, y: this.pageMotion.scale })
+    .opacity(this.pageMotion.opacity)
+    .onReady((context: NavDestinationContext): void => { this.pageMotion.attach(context); })
+    .systemTransition(pageSystemTransition(this.pageTransitionMode)).titleMode(HdsNavDestinationTitleMode.MINI).hideBackButton(false)
       .onBackPressed((): boolean => { if (!this.busy) { this.pageStack.pop(); } return true; })
       .titleBar({ avoidLayoutSafeArea: true,
         content: { title: { mainTitle: this.editing ? $r('app.string.list_edit') : $r('app.string.list_create_title'),
           subTitle: this.editing ? '' : $r('app.string.list_create_step_one') } },
         style: destinationTitleBarStyle(ScrollEffectType.IMMERSIVE_GRADIENT_BLUR,
           this.themeDisplayMode, this.themeDarkSurface, this.titleBarStyleMode) })
-      .backgroundColor(pageSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
+      .backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue))
       .systemMaterial(deviceInfo.apiAvailable('26.0.0') ? new uiMaterial.ImmersiveMaterial({
         style: uiMaterial.ImmersiveStyle.REGULAR, applyShadow: true, colorInvert: true }) : undefined);
   }

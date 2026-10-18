@@ -1,3 +1,8 @@
+import { pageTextColor } from '../utils/ThemeColors';
+import { appPageBackground } from '../components/PageBackgroundLayer';
+import { pageCanvasColor, pageReadingSurfaceColor } from '../utils/ThemeColors';
+import { STORAGE_KEY_PAGE_TRANSITION_MODE, DEFAULT_PAGE_TRANSITION_MODE } from '../services/PageTransitionSettingsStore';
+import { pageSystemTransition, PageTransitionMotion } from '../utils/PageTransition';
 import { common } from '@kit.AbilityKit';
 import { SymbolGlyphModifier } from '@kit.ArkUI';
 import { pasteboard } from '@kit.BasicServicesKit';
@@ -31,6 +36,9 @@ export function DmGroupBuilder(): void { DmGroupPage(); }
 
 @Component
 struct DmGroupPage {
+  @StorageProp('harmonyx.page_background') private pageBackgroundValue: string = '';
+  @State private pageMotion: PageTransitionMotion = new PageTransitionMotion();
+  @StorageProp(STORAGE_KEY_PAGE_TRANSITION_MODE) private pageTransitionMode: string = DEFAULT_PAGE_TRANSITION_MODE;
   @Consume('pageStack') pageStack: NavPathStack;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @StorageProp('harmonyx.status_bar_height') statusBarHeight: number = 0;
@@ -267,20 +275,20 @@ struct DmGroupPage {
   @Builder
   private RowContent(symbol: Resource, title: Resource, value: ResourceStr = ''): void {
     Row({ space: 12 }) {
-      SymbolGlyph(symbol).fontSize(22).fontColor([$r('app.color.text_primary')])
-      Text(title).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontColor($r('app.color.text_primary')).layoutWeight(1)
-      if (value !== '') { Text(value).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor($r('app.color.text_secondary')) }
-      SymbolGlyph($r('sys.symbol.chevron_right')).fontSize(16).fontColor([$r('app.color.text_secondary')])
+      SymbolGlyph(symbol).fontSize(22).fontColor([pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)])
+      Text(title).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)).layoutWeight(1)
+      if (value !== '') { Text(value).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)) }
+      SymbolGlyph($r('sys.symbol.chevron_right')).fontSize(16).fontColor([pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)])
     }.width('100%').constraintSize({ minHeight: 64 }).padding({ left: 16, right: 16, top: 12, bottom: 12 })
   }
   @Builder
   private Hint(value: Resource): void {
-    Text(value).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor($r('app.color.text_secondary')).width('100%').padding({ left: 16, right: 16, top: 8, bottom: 16 })
+    Text(value).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).width('100%').padding({ left: 16, right: 16, top: 8, bottom: 16 })
   }
   @Builder
   private Shortcut(symbol: Resource, label: Resource, kind: string, enabled: boolean = true): void {
     Column({ space: 8 }) {
-      Button({ type: ButtonType.Circle }) { SymbolGlyph(symbol).fontSize(24).fontColor([$r('app.color.text_primary')]) }
+      Button({ type: ButtonType.Circle }) { SymbolGlyph(symbol).fontSize(24).fontColor([pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, secondaryButtonSurfaceColor(this.displayMode, this.darkSurface))]) }
         .width(56).height(56).backgroundColor(secondaryButtonSurfaceColor(this.displayMode, this.darkSurface)).enabled(enabled && !this.busy)
         .accessibilityText(label).onClick((): void => {
           if (kind === 'add') { this.open('add'); }
@@ -289,16 +297,16 @@ struct DmGroupPage {
             xChatActions.setInboxHidden(this.context(), this.group.id, this.route.latestSequenceId, true); this.pageStack.pop();
           }
         })
-      Text(label).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor($r('app.color.text_primary'))
+      Text(label).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
     }.layoutWeight(1)
   }
   @Builder
   private Member(member: XChatGroupMember): void {
     Row({ space: 12 }) {
       ProxyAvatar({ url: member.avatarUrl, avatarSize: 44, radius: 22, fallbackText: member.name.substring(0, 1), verifiedType: member.verifiedType, avatarShape: member.avatarShape })
-      Text(member.nickname.length > 0 ? member.nickname : member.name).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontColor($r('app.color.text_primary'))
+      Text(member.nickname.length > 0 ? member.nickname : member.name).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
         .maxLines(1).textOverflow({ overflow: TextOverflow.Ellipsis }).layoutWeight(1)
-      if (member.admin) { Text($r('app.string.chat_group_admin')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_S')).fontColor($r('app.color.text_secondary')) }
+      if (member.admin) { Text($r('app.string.chat_group_admin')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_S')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)) }
       Button({ type: ButtonType.Circle }) { ChatMoreSymbol() }.width(40).height(40).backgroundColor(Color.Transparent)
         .enabled(!this.busy).bindMenu(this.MemberMenu(member)).accessibilityText($r('app.string.chat_more'))
     }.width('100%').padding({ left: 16, right: 8, top: 12, bottom: 12 })
@@ -309,13 +317,13 @@ struct DmGroupPage {
       ProxyAvatar({ url: this.group.avatarUrl.length > 0 ? this.group.avatarUrl : this.route?.avatarUrl ?? '', avatarSize: 88, radius: 28,
         fallbackText: this.group.name.substring(0, 1) })
       if (this.loaded && this.group.avatarRemoteUrl.length > 0 && this.group.avatarUrl.length === 0) {
-        Text($r('app.string.chat_group_avatar_failed')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_S')).fontColor($r('app.color.text_secondary'))
+        Text($r('app.string.chat_group_avatar_failed')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_S')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
           .onClick((): void => { this.load(); })
       }
-      Text(this.group.name.length > 0 ? this.group.name : this.route?.title ?? '').fontFamily(this.appFontFamily).fontSize($r('sys.float.Title_S')).fontWeight(FontWeight.Bold).fontColor($r('app.color.text_primary'))
+      Text(this.group.name.length > 0 ? this.group.name : this.route?.title ?? '').fontFamily(this.appFontFamily).fontSize($r('sys.float.Title_S')).fontWeight(FontWeight.Bold).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
       Text(this.text($r('app.string.chat_group_members_count')).replace('%d', String(this.group.memberIds.length))).fontFamily(this.appFontFamily)
-        .fontSize($r('sys.float.Body_M')).fontColor($r('app.color.text_secondary'))
-      if (this.group.description.length > 0) { Text(this.group.description).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontColor($r('app.color.text_secondary')) }
+        .fontSize($r('sys.float.Body_M')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
+      if (this.group.description.length > 0) { Text(this.group.description).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)) }
       Row() {
         this.Shortcut($r('sys.symbol.person_badge_plus'), $r('app.string.chat_group_add'), 'add', this.allowed('addMember'))
         this.Shortcut($r('sys.symbol.video'), $r('app.string.chat_video'), 'call', this.allowed('startCall'))
@@ -324,7 +332,7 @@ struct DmGroupPage {
           Button({ type: ButtonType.Circle }) { ChatMoreSymbol() }.width(56).height(56)
             .backgroundColor(secondaryButtonSurfaceColor(this.displayMode, this.darkSurface)).enabled(!this.busy).bindMenu(this.MoreMenu())
             .accessibilityText($r('app.string.chat_more'))
-          Text($r('app.string.chat_more')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor($r('app.color.text_primary'))
+          Text($r('app.string.chat_more')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
         }.layoutWeight(1)
       }.width('100%').margin({ top: 12, bottom: 8 })
       Column() {
@@ -344,7 +352,7 @@ struct DmGroupPage {
         Column() { this.RowContent($r('sys.symbol.picture'), $r('app.string.chat_background')) }.onClick((): void => this.openBackground())
       }.width('100%').borderRadius(16).backgroundColor(secondaryButtonSurfaceColor(this.displayMode, this.darkSurface))
       Text(this.text($r('app.string.chat_group_members_count')).replace('%d', String(this.group.memberIds.length))).fontFamily(this.appFontFamily)
-        .fontSize($r('sys.float.Body_M')).fontColor($r('app.color.text_secondary')).width('100%').padding({ left: 16, top: 8 })
+        .fontSize($r('sys.float.Body_M')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).width('100%').padding({ left: 16, top: 8 })
       Column() {
         Column() { this.RowContent($r('sys.symbol.plus'), $r('app.string.chat_group_add_members')) }.enabled(this.allowed('addMember')).onClick((): void => this.open('add'))
         ForEach(this.group.members, (member: XChatGroupMember) => {
@@ -361,12 +369,12 @@ struct DmGroupPage {
         ProxyAvatar({ url: this.avatarUri.length > 0 ? this.avatarUri : this.group.avatarUrl, avatarSize: 88, radius: 28, fallbackText: this.name.substring(0, 1) })
         Text($r('app.string.chat_group_avatar_edit')).fontFamily(this.appFontFamily).fontColor(this.accentColor).fontSize($r('sys.float.Body_M'))
       }.onClick((): void => { this.pickAvatar(); }).margin({ bottom: 12 })
-      Text($r('app.string.chat_group_title')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor($r('app.color.text_secondary')).width('100%')
+      Text($r('app.string.chat_group_title')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).width('100%')
       TextInput({ text: this.name, placeholder: $r('app.string.chat_group_empty_name') }).fontFamily(this.appFontFamily)
         .keyboardAppearance(KeyboardAppearance.IMMERSIVE).maxLength(100).height(52).fontSize($r('sys.float.Body_L'))
         .backgroundColor(fieldSurfaceColor(this.displayMode, this.darkSurface)).borderRadius(24).systemMaterial(chatInputMaterial(this.inputMaterialLevel))
         .onChange((value: string): void => { this.name = value; })
-      Text($r('app.string.chat_group_description')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor($r('app.color.text_secondary')).width('100%').margin({ top: 12 })
+      Text($r('app.string.chat_group_description')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).width('100%').margin({ top: 12 })
       TextArea({ text: this.description }).fontFamily(this.appFontFamily).keyboardAppearance(KeyboardAppearance.IMMERSIVE).maxLength(1000)
         .height(144).fontSize($r('sys.float.Body_L')).backgroundColor(fieldSurfaceColor(this.displayMode, this.darkSurface)).borderRadius(24)
         .onChange((value: string): void => { this.description = value; })
@@ -383,21 +391,21 @@ struct DmGroupPage {
   @Builder
   private PermissionRow(title: Resource, key: string, adminOnly: boolean): void {
     Row({ space: 12 }) {
-      Text(title).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontColor($r('app.color.text_primary')).layoutWeight(1)
-      Text(adminOnly ? $r('app.string.chat_group_admin_only') : $r('app.string.chat_everyone')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor($r('app.color.text_secondary'))
-      SymbolGlyph($r('sys.symbol.chevron_down')).fontSize(16).fontColor([$r('app.color.text_secondary')])
+      Text(title).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)).layoutWeight(1)
+      Text(adminOnly ? $r('app.string.chat_group_admin_only') : $r('app.string.chat_everyone')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
+      SymbolGlyph($r('sys.symbol.chevron_down')).fontSize(16).fontColor([pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)])
     }.width('100%').constraintSize({ minHeight: 60 }).padding(16).enabled(this.group.isAdmin && !this.busy).bindMenu(this.PermissionMenu(key))
   }
   @Builder
   private Permissions(): void {
     Column({ space: 16 }) {
-      Text($r('app.string.chat_group_admins')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontColor($r('app.color.text_secondary')).width('100%')
+      Text($r('app.string.chat_group_admins')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).width('100%')
       Column() {
         ForEach(this.group.members.filter((member: XChatGroupMember): boolean => member.admin), (member: XChatGroupMember) => { this.Member(member) }, (member: XChatGroupMember): string => member.id)
         if (this.group.isAdmin) { Column() { this.RowContent($r('sys.symbol.plus'), $r('app.string.chat_group_select_admin')) }.onClick((): void => this.open('admins')) }
       }.width('100%').borderRadius(16).backgroundColor(secondaryButtonSurfaceColor(this.displayMode, this.darkSurface))
       Row() {
-        Text($r('app.string.chat_group_all_send')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontColor($r('app.color.text_primary')).layoutWeight(1)
+        Text($r('app.string.chat_group_all_send')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, secondaryButtonSurfaceColor(this.displayMode, this.darkSurface))).layoutWeight(1)
         Toggle({ type: ToggleType.Switch, isOn: !this.group.permissions.sendMessage }).selectedColor(this.accentColor).enabled(this.group.isAdmin && !this.busy)
           .onChange((value: boolean): void => { if (value === this.group.permissions.sendMessage) { this.run(async (): Promise<void> => { await xChatGroupService.setPermission(this.context(), this.group, 'sendMessage', !value); }); } })
       }.width('100%').padding(16).borderRadius(16).backgroundColor(secondaryButtonSurfaceColor(this.displayMode, this.darkSurface))
@@ -419,7 +427,7 @@ struct DmGroupPage {
   private Invite(): void {
     Column({ space: 16 }) {
       Row() {
-        Text($r('app.string.chat_group_invite')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontColor($r('app.color.text_primary')).layoutWeight(1)
+        Text($r('app.string.chat_group_invite')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, secondaryButtonSurfaceColor(this.displayMode, this.darkSurface))).layoutWeight(1)
         Toggle({ type: ToggleType.Switch, isOn: this.group.inviteEnabled }).selectedColor(this.accentColor).enabled(this.group.isAdmin && !this.busy)
           .onChange((value: boolean): void => { if (value !== this.group.inviteEnabled) { this.run(async (): Promise<void> => { await xChatGroupService.setInvite(this.context(), this.group, value); }); } })
       }.width('100%').padding(16).borderRadius(16).backgroundColor(secondaryButtonSurfaceColor(this.displayMode, this.darkSurface))
@@ -441,21 +449,21 @@ struct DmGroupPage {
         Row({ space: 12 }) {
           ProxyAvatar({ url: person.avatarUrl, avatarSize: 44, radius: 22, fallbackText: person.name.substring(0, 1), verifiedType: person.verifiedType, avatarShape: person.avatarShape })
           Column({ space: 4 }) {
-            Text(person.name).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontColor($r('app.color.text_primary')).maxLines(1)
-            Text('@' + person.username).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor($r('app.color.text_secondary')).maxLines(1)
+            Text(person.name).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)).maxLines(1)
+            Text('@' + person.username).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).maxLines(1)
           }.layoutWeight(1).alignItems(HorizontalAlign.Start)
           Toggle({ type: ToggleType.Checkbox, isOn: this.selected.indexOf(person.id) >= 0 }).selectedColor(this.accentColor).hitTestBehavior(HitTestMode.None)
         }.width('100%').padding({ top: 12, bottom: 12 }).enabled(!this.busy).onClick((): void => {
           this.selected = this.selected.indexOf(person.id) >= 0 ? this.selected.filter((id: string): boolean => id !== person.id) : this.selected.concat([person.id]);
         })
       }, (person: ChatPerson): string => person.id)
-      if (this.people.length === 0) { Text($r('app.string.chat_no_results')).fontFamily(this.appFontFamily).fontColor($r('app.color.text_secondary')).padding(24) }
+      if (this.people.length === 0) { Text($r('app.string.chat_no_results')).fontFamily(this.appFontFamily).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).padding(24) }
     }.width('100%').padding(16)
   }
   @Builder
   private TtlChoice(label: Resource, ttl: number): void {
     Row() {
-      Text(label).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontColor($r('app.color.text_primary')).layoutWeight(1)
+      Text(label).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)).layoutWeight(1)
       if (this.group.ttlMsec === ttl) { SymbolGlyph($r('sys.symbol.checkmark')).fontSize(20).fontColor([this.accentColor]) }
     }.width('100%').height(60).padding(16).enabled(this.allowed('editMessageTtl')).onClick((): void => {
       this.run(async (): Promise<void> => { await xChatGroupService.setTtl(this.context(), this.group, ttl); });
@@ -463,6 +471,8 @@ struct DmGroupPage {
   }
   build(): void {
     HdsNavDestination() {
+      Stack({ alignContent: Alignment.TopStart }) {
+        appPageBackground()
       Scroll(this.scroller) {
         Column() {
           if (this.loading || this.busy) { LoadingProgress().width(24).height(24).color(this.accentColor).margin(12) }
@@ -499,10 +509,16 @@ struct DmGroupPage {
           } else { this.Information() }
         }.width('100%').padding({ top: this.statusBarHeight + 64, bottom: this.bottomInset + 24 })
       }.width('100%').height('100%').scrollBar(BarState.Off).edgeEffect(EdgeEffect.Spring, { alwaysEnabled: true }).align(Alignment.Top)
-    }.titleMode(HdsNavDestinationTitleMode.MINI).hideBackButton(false).bindToScrollable([this.scroller])
+    
+      }.width('100%').height('100%')
+    }
+    .scale({ x: this.pageMotion.scale, y: this.pageMotion.scale })
+    .opacity(this.pageMotion.opacity)
+    .onReady((context: NavDestinationContext): void => { this.pageMotion.attach(context); })
+    .systemTransition(pageSystemTransition(this.pageTransitionMode)).titleMode(HdsNavDestinationTitleMode.MINI).hideBackButton(false).bindToScrollable([this.scroller])
       .titleBar({ avoidLayoutSafeArea: true, content: { title: { mainTitle: this.title() }, menu: { value: this.menu() } },
         style: destinationTitleBarStyle(ScrollEffectType.GRADIENT_BLUR, this.displayMode, this.darkSurface, this.titleBarStyleMode) })
-      .backgroundColor(pageSurfaceColor(this.displayMode, this.darkSurface)).systemMaterial(chatPageMaterial())
+      .backgroundColor(pageCanvasColor(this.displayMode, this.darkSurface, this.pageBackgroundValue)).systemMaterial(chatPageMaterial())
       .onShown((): void => { if (this.section.length === 0 || this.section === 'permissions') { this.load(); } })
       .onBackPressed((): boolean => { ResponsiveLayout.closeContentDestination(this.pageStack); return true; })
   }
