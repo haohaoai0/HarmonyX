@@ -22,6 +22,7 @@ import { pageSurfaceColor, secondaryButtonSurfaceColor } from '../utils/ThemeCol
 import { accountStore, XAccount } from '../services/AccountStore';
 import { XPrivateStore, XSession } from '../services/XPrivateStore';
 import { xPrivateClient } from '../services/XPrivateClient';
+import { materialModifier } from '../utils/SystemMaterial';
 
 const X_MESSAGES_URL: string = 'https://x.com/';
 const DISPLAY_MODE_LIGHT: string = 'light';
@@ -379,6 +380,6 @@ export struct ProfileWebPage {
         this.themeDisplayMode, this.themeDarkSurface, this.titleBarStyleMode)
     })
     .backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue))
-    .systemMaterial(pageBackgroundActive(this.pageBackgroundValue) ? undefined : this.pageMaterial());
+    .attributeModifier(materialModifier(pageBackgroundActive(this.pageBackgroundValue) ? undefined : this.pageMaterial()));
   }
 }

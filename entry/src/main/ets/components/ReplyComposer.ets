@@ -1,3 +1,4 @@
+import { submitInputKey, backInputKey } from '../utils/InputSupport';
 import { DEFAULT_COMPONENT_HDR_ENABLED, DEFAULT_COMPONENT_HDR_RATIO, STORAGE_KEY_COMPONENT_HDR_ENABLED,
   STORAGE_KEY_COMPONENT_HDR_RATIO } from '../services/ComponentHdrSettingsStore';
 import { ComponentHdrHighlight } from '../utils/ComponentHdrHighlight';
@@ -40,7 +41,8 @@ import { ComposerTools } from './ComposerTools';
 import { ComposerPollEditor } from './ComposerPollEditor';
 import { chatEmojiStore } from '../services/ChatEmojiStore';
 import { ExternalSharePayload, ExternalShareFile } from '../services/ExternalShareStore';
-import { accountStore } from '../services/AccountStore';
+import { accountStore, XAccount, STORAGE_KEY_ACCOUNTS_CHANGED } from '../services/AccountStore';
+import { ProxyAvatar } from './ProxyAvatar';
 import { continuationStore } from '../services/ContinuationState';
 import { XBookmarkParser } from '../services/XBookmarkParser';
 import { buildXPostIntentUrl } from '../services/XComposeIntent';
@@ -53,9 +55,13 @@ import { STORAGE_KEY_DESKTOP_LAYOUT } from '../services/LayoutSettingsStore';
 import { ResponsiveLayout } from '../utils/ResponsiveLayout';
 import { destinationTitleBarStyle } from '../utils/DestinationTitleBar';
 import { SystemMaterialUtil } from '../utils/SystemMaterial';
+import { replyCapsuleControlMaterial } from '../utils/ReplyCapsuleMaterial';
+import { ReplyCapsuleLayout } from './ReplyCapsuleLayout';
 import { pageSurfaceColor } from '../utils/ThemeColors';
 import type { ImageEditResult, ImageEditRouteParam } from '../pages/ImageEdit';
 import type { PhotoViewerRouteParam } from '../pages/PhotoViewer';
+import { materialModifier } from '../utils/SystemMaterial';
+import { motionCurve, motionDuration } from '../utils/AppMotion';
 import {
   DEFAULT_TITLE_BAR_GLASS_MATERIAL_LEVEL,
   STORAGE_KEY_TITLE_BAR_GLASS_MATERIAL_LEVEL,
@@ -114,41 +120,6 @@ interface ComposerMediaItem {
 }
 
 @Builder
-export function ReplyComposerCapsuleBuilder(
-  context: ReplyComposerContext,
-  onExpand: (text: string, imageUri: string, gifUri: string) => void,
-  onSend: (text: string) => Promise<boolean>,
-  onExpandedChange: (expanded: boolean) => void,
-  dismissRequest: number
-): void {
-  if (deviceInfo.apiAvailable('26.0.0')) {
-    ReplyComposerCapsuleContent(context, onExpand, onSend, onExpandedChange, dismissRequest, true);
-  } else {
-    ReplyComposerCapsuleContent(context, onExpand, onSend, onExpandedChange, dismissRequest, false);
-  }
-}
-
-@Builder
-function ReplyComposerCapsuleContent(
-  context: ReplyComposerContext,
-  onExpand: (text: string, imageUri: string, gifUri: string) => void,
-  onSend: (text: string) => Promise<boolean>,
-  onExpandedChange: (expanded: boolean) => void,
-  dismissRequest: number,
-  materialEnabled: boolean
-): void {
-  ReplyComposerCapsule({
-    context: context,
-    accentColor: context.accentColor,
-    materialEnabled: materialEnabled,
-    onExpand: onExpand,
-    onSend: onSend,
-    onExpandedChange: onExpandedChange,
-    dismissRequest: dismissRequest
-  });
-}
-
-@Builder
 export function ReplyComposerBuilder(): void {
   ReplyComposerPage();
 }
@@ -158,16 +129,24 @@ export struct ReplyComposerCapsule {
   @StorageProp('harmonyx.compact_window') private compactWindow: boolean = false;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @Consume('pageStack') private pageStack: NavPathStack;
-  @Prop context: ReplyComposerContext;
+  @Prop @Watch('onAvatarContextChanged') context: ReplyComposerContext;
+  @StorageProp(STORAGE_KEY_ACCOUNTS_CHANGED) @Watch('onViewerAccountChanged')
+  private accountsChanged: number = 0;
   @Prop accentColor: string = '#007DFF';
   @Prop materialEnabled: boolean = false;
+  @Prop splitStyle: boolean = false;
+  @Prop actionWidth: number = 232;
+  @BuilderParam postActions: () => void = this.EmptyPostActions;
+
+  @Builder
+  private EmptyPostActions(): void {}
   onExpand: (text: string, imageUri: string, gifUri: string) => void = () => {
   };
   onSend: (text: string) => Promise<boolean> = async (_text: string): Promise<boolean> => false;
   onExpandedChange: (expanded: boolean) => void = (_expanded: boolean): void => {
   };
   @Prop @Watch('onDismissRequestChanged')
-  private dismissRequest: number = 0;
+  dismissRequest: number = 0;
   @State private draft: string = '';
   @State private imageUri: string = '';
   @State private gifUri: string = '';
@@ -186,6 +165,7 @@ export struct ReplyComposerCapsule {
   private api: XApiClient = new XApiClient();
   private inputController: TextAreaController = new TextAreaController();
   private capsuleMounted: boolean = false;
+  private avatarRequestGeneration: number = 0;
   private focusRecoveryScheduled: boolean = false;
   private keyboardHeightChangeListener: (height: number) => void = (height: number): void => {
     if (this.capsuleMounted) {
@@ -201,6 +181,16 @@ export struct ReplyComposerCapsule {
     if (this.expanded === expanded) {
       return;
     }
+    if (this.splitStyle) {
+      this.getUIContext().animateTo({
+        duration: motionDuration(360),
+        curve: motionCurve()
+      }, (): void => {
+        this.expanded = expanded;
+        this.onExpandedChange(expanded);
+      });
+      return;
+    }
     this.getUIContext().animateTo({ duration: 280, curve: Curve.EaseOut }, (): void => {
       this.expanded = expanded;
       this.onExpandedChange(expanded);
@@ -209,9 +199,7 @@ export struct ReplyComposerCapsule {
 
   aboutToAppear(): void {
     this.capsuleMounted = true;
-    this.resolvedAvatarUrl = this.context.avatarUrl;
-    this.resolvedAvatarName = this.context.avatarName;
-    this.resolvedVerifiedType = this.context.verifiedType ?? ''; this.resolvedAvatarShape = this.context.avatarShape ?? '';
+    this.onAvatarContextChanged();
     this.loadCurrentUserAvatar();
     const hostContext: common.Context | undefined = this.getUIContext().getHostContext();
     if (hostContext !== undefined) {
@@ -235,6 +223,7 @@ export struct ReplyComposerCapsule {
 
   aboutToDisappear(): void {
     this.capsuleMounted = false;
+    this.avatarRequestGeneration += 1;
     this.onExpandedChange(false);
     const hostContext: common.Context | undefined = this.getUIContext().getHostContext();
     if (hostContext !== undefined) {
@@ -245,20 +234,65 @@ export struct ReplyComposerCapsule {
     }
   }
 
+  private seedCachedAvatar(): void {
+    const hostContext: common.Context | undefined = this.getUIContext().getHostContext();
+    const account: XAccount | null = hostContext === undefined ? null : accountStore.active(hostContext);
+    this.resolvedAvatarUrl = account?.avatarUrl ?? '';
+    this.resolvedAvatarName = account?.displayName || account?.username || '';
+    this.resolvedVerifiedType = account?.verifiedType ?? '';
+    this.resolvedAvatarShape = account?.avatarShape ?? '';
+  }
+
+  private onAvatarContextChanged(): void {
+    this.seedCachedAvatar();
+    if (this.context.avatarUrl.length > 0) {
+      this.resolvedAvatarUrl = this.context.avatarUrl;
+      this.resolvedVerifiedType = this.context.verifiedType ?? '';
+      this.resolvedAvatarShape = this.context.avatarShape ?? '';
+    }
+    if (this.context.avatarName.length > 0) {
+      this.resolvedAvatarName = this.context.avatarName;
+    }
+  }
+
+  private onViewerAccountChanged(): void {
+    this.seedCachedAvatar();
+    if (this.capsuleMounted) {
+      this.loadCurrentUserAvatar();
+    }
+  }
+
+  private avatarInitial(): string {
+    return this.resolvedAvatarName.length > 0 ? this.resolvedAvatarName.substring(0, 1).toUpperCase() : 'X';
+  }
+
   private async loadCurrentUserAvatar(): Promise<void> {
     const abilityContext: common.UIAbilityContext =
       this.getUIContext().getHostContext() as common.UIAbilityContext;
-    await authStore.load(abilityContext);
-    const profile: UserProfile | null = await this.resolveViewer(abilityContext);
-    if (profile === null) {
-      return;
-    }
-    if (profile.avatarUrl !== undefined && profile.avatarUrl.length > 0) {
-      this.resolvedAvatarUrl = profile.avatarUrl;
-      this.resolvedVerifiedType = profile.verifiedType ?? ''; this.resolvedAvatarShape = profile.avatarShape ?? '';
-    }
-    if (profile.name.length > 0) {
-      this.resolvedAvatarName = profile.name;
+    const accountId: string = accountStore.activeId(abilityContext);
+    this.avatarRequestGeneration += 1;
+    const generation: number = this.avatarRequestGeneration;
+    try {
+      await authStore.load(abilityContext);
+      if (!this.capsuleMounted || generation !== this.avatarRequestGeneration ||
+        accountId !== accountStore.activeId(abilityContext)) {
+        return;
+      }
+      const profile: UserProfile | null = await this.resolveViewer(abilityContext);
+      if (profile === null || !this.capsuleMounted || generation !== this.avatarRequestGeneration ||
+        accountId !== accountStore.activeId(abilityContext)) {
+        return;
+      }
+      if (profile.avatarUrl !== undefined && profile.avatarUrl.length > 0) {
+        this.resolvedAvatarUrl = profile.avatarUrl;
+        this.resolvedVerifiedType = profile.verifiedType ?? '';
+        this.resolvedAvatarShape = profile.avatarShape ?? '';
+      }
+      if (profile.name.length > 0) {
+        this.resolvedAvatarName = profile.name;
+      }
+    } catch (error) {
+      // Cached identity stays visible when the profile request is unavailable.
     }
   }
 
@@ -320,24 +354,9 @@ export struct ReplyComposerCapsule {
 
   @Builder
   private Avatar(): void {
-    if (this.resolvedAvatarUrl.length > 0) {
-      Image(this.resolvedAvatarUrl)
-        .width(40)
-        .height(40)
-        .objectFit(ImageFit.Cover)
-        .borderRadius(userAvatarRadius(40, 20, this.resolvedVerifiedType, this.resolvedAvatarShape))
-        .clip(true)
-    } else {
-      Text(this.resolvedAvatarName.substring(0, 1).toUpperCase()).fontFamily(this.appFontFamily)
-        .width(40)
-        .height(40)
-        .fontSize(16)
-        .fontWeight(FontWeight.Bold)
-        .fontColor($r('sys.color.font_on_primary'))
-        .backgroundColor(this.context.avatarColor)
-        .borderRadius(userAvatarRadius(40, 20, this.resolvedVerifiedType, this.resolvedAvatarShape))
-        .textAlign(TextAlign.Center)
-    }
+    ProxyAvatar({ url: this.resolvedAvatarUrl, avatarSize: 40, radius: 20,
+      verifiedType: this.resolvedVerifiedType, avatarShape: this.resolvedAvatarShape,
+      fallbackText: this.avatarInitial(), fallbackColor: this.context.avatarColor })
   }
 
   @Builder
@@ -347,11 +366,13 @@ export struct ReplyComposerCapsule {
     }
     .width(42)
     .height(42)
+    .flexShrink(0)
+    .id('reply-capsule-avatar')
     .padding(1)
     .backgroundColor(Color.Transparent)
     .borderRadius(userAvatarRadius(42, 21, this.resolvedVerifiedType, this.resolvedAvatarShape))
     .clip(true)
-    .systemMaterial(this.controlMaterial())
+    .attributeModifier(materialModifier(this.controlMaterial()))
   }
 
   @Builder
@@ -367,7 +388,7 @@ export struct ReplyComposerCapsule {
     .borderRadius(21)
     .clip(true)
     .onClick(onClick)
-    .systemMaterial(this.controlMaterial())
+    .attributeModifier(materialModifier(this.controlMaterial()))
   }
 
   private innerMaterialEnabled(): boolean {
@@ -375,36 +396,13 @@ export struct ReplyComposerCapsule {
   }
 
   private controlMaterial(): uiMaterial.Material | undefined {
-    if (!deviceInfo.apiAvailable('26.0.0')) {
-      return undefined;
-    }
-    if (!this.innerMaterialEnabled()) {
-      return uiMaterial.Material.empty;
-    }
-    return new uiMaterial.ImmersiveMaterial({
-      style: uiMaterial.ImmersiveStyle.THIN,
-      interactive: true,
-      applyShadow: false,
-      colorInvert: true,
-      lightEffect: { color: this.accentColor }
-    });
+    return replyCapsuleControlMaterial(this.innerMaterialEnabled(), this.accentColor);
   }
 
   private removeImageMaterial(): uiMaterial.Material | undefined {
-    if (!deviceInfo.apiAvailable('26.0.0')) {
-      return undefined;
-    }
-    if (!this.innerMaterialEnabled()) {
-      return uiMaterial.Material.empty;
-    }
-    return new uiMaterial.ImmersiveMaterial({
-      style: uiMaterial.ImmersiveStyle.THIN,
-      materialColor: this.removeImageTint(),
-      interactive: true,
-      applyShadow: false,
-      colorInvert: false,
-      lightEffect: { color: $r('app.color.danger') }
-    });
+    if (!this.innerMaterialEnabled()) { return undefined; }
+    return SystemMaterialUtil.immersiveMaterial(1, true, false, false,
+      $r('app.color.danger'), this.removeImageTint());
   }
 
   private removeImageTint(): string {
@@ -412,19 +410,7 @@ export struct ReplyComposerCapsule {
   }
 
   private inputMaterial(): uiMaterial.Material | undefined {
-    if (!deviceInfo.apiAvailable('26.0.0')) {
-      return undefined;
-    }
-    if (!this.innerMaterialEnabled()) {
-      return uiMaterial.Material.empty;
-    }
-    return new uiMaterial.ImmersiveMaterial({
-      style: SystemMaterialUtil.resolveImmersiveStyle(this.titleBarGlassMaterialLevel),
-      interactive: true,
-      applyShadow: false,
-      colorInvert: true,
-      lightEffect: { color: this.accentColor }
-    });
+    return replyCapsuleControlMaterial(this.innerMaterialEnabled(), this.accentColor, this.titleBarGlassMaterialLevel);
   }
 
   private requestKeyboard(): void {
@@ -456,19 +442,6 @@ export struct ReplyComposerCapsule {
     }, 80);
   }
 
-  private capsuleMaterial(): uiMaterial.Material | undefined {
-    if (!this.materialEnabled || !deviceInfo.apiAvailable('26.0.0')) {
-      return undefined;
-    }
-    return new uiMaterial.ImmersiveMaterial({
-      style: SystemMaterialUtil.resolveImmersiveStyle(this.replyCapsuleMaterialLevel),
-      interactive: true,
-      applyShadow: false,
-      colorInvert: true,
-      lightEffect: {}
-    });
-  }
-
   private replyButtonTint(): string {
     if (this.accentColor.length === 7 && this.accentColor.substring(0, 1) === '#') {
       return '#66' + this.accentColor.substring(1);
@@ -477,20 +450,9 @@ export struct ReplyComposerCapsule {
   }
 
   private replyButtonMaterial(): uiMaterial.Material | undefined {
-    if (!deviceInfo.apiAvailable('26.0.0')) {
-      return undefined;
-    }
-    if (!this.innerMaterialEnabled()) {
-      return uiMaterial.Material.empty;
-    }
-    return new uiMaterial.ImmersiveMaterial({
-      style: uiMaterial.ImmersiveStyle.THIN,
-      materialColor: this.replyButtonTint(),
-      interactive: true,
-      applyShadow: false,
-      colorInvert: false,
-      lightEffect: { color: this.accentColor }
-    });
+    if (!this.innerMaterialEnabled()) { return undefined; }
+    return SystemMaterialUtil.immersiveMaterial(1, true, false, false,
+      this.accentColor, this.replyButtonTint());
   }
 
   private async sendReply(): Promise<void> {
@@ -539,7 +501,7 @@ export struct ReplyComposerCapsule {
 
   private capsuleHeight(): number {
     if (!this.expanded) {
-      return 64;
+      return this.splitStyle ? this.compactDimension($r('app.float.root_tab_bar_height')) : 64;
     }
     return this.compactWindow ? this.compactDimension($r('app.float.compact_reply_capsule_height')) :
       (this.imageUri.length > 0 ? 288 : 164);
@@ -594,7 +556,7 @@ export struct ReplyComposerCapsule {
         .onClick((): void => {
           this.imageUri = '';
         })
-        .systemMaterial(this.removeImageMaterial());
+        .attributeModifier(materialModifier(this.removeImageMaterial()));
       }
       .width(this.capsulePreviewSize())
       .height(this.capsulePreviewSize());
@@ -634,6 +596,7 @@ export struct ReplyComposerCapsule {
           .fontColor($r('sys.color.font_primary'))
           .placeholderColor($r('sys.color.font_secondary'))
           .align(this.expanded && this.imageUri.length === 0 ? Alignment.TopStart : Alignment.Center)
+          .onKeyPreIme((event: KeyEvent): boolean => submitInputKey(event, (): void => { void this.sendReply(); }))
           .id(this.inputFocusId())
           .focusable(true)
           .onChange((value: string): void => {
@@ -648,7 +611,7 @@ export struct ReplyComposerCapsule {
             this.setExpanded(true);
             this.recoverInputFocus();
           })
-          .systemMaterial(this.inputMaterial());
+          .attributeModifier(materialModifier(this.inputMaterial()));
         if (this.expanded) {
           this.ToolButton($r('sys.symbol.arrow_up_left_and_arrow_down_right'), (): void => {
             this.onExpand(this.draft, this.imageUri, this.gifUri);
@@ -699,7 +662,7 @@ export struct ReplyComposerCapsule {
           .onClick((): void => {
             this.sendReply();
           })
-          .systemMaterial(this.replyButtonMaterial());
+          .attributeModifier(materialModifier(this.replyButtonMaterial()));
         }
         .width('100%')
         .height(56)
@@ -708,32 +671,38 @@ export struct ReplyComposerCapsule {
     }
     .width('100%')
     .height(this.capsuleHeight())
-    .backgroundColor(this.materialEnabled ? Color.Transparent : $r('app.color.bg_field'))
-    .border({ width: this.materialEnabled ? 0 : 1, color: $r('app.color.divider') })
-    .borderRadius(32)
-    .clip(true)
-    .systemMaterial(this.capsuleMaterial())
+    .transition(TransitionEffect.OPACITY.combine(TransitionEffect.translate({ y: 8 }))
+      .animation({ duration: 220, curve: Curve.EaseOut, delay: 70 }))
+  }
+
+  @Builder
+  private SplitReplyEntry(): void {
+    Button({ type: ButtonType.Capsule, stateEffect: true }) {
+      Row({ space: 6 }) {
+        SymbolGlyph($r('sys.symbol.square_and_pencil'))
+          .fontSize($r('app.float.reply_capsule_split_icon_size')).fontWeight(FontWeight.Medium)
+          .fontColor([$r('sys.color.icon_primary')]).flexShrink(0)
+        Text(this.draft.length > 0 ? this.draft : $r('app.string.reply_capsule_write_reply'))
+          .fontFamily(this.appFontFamily).fontSize(16).fontColor($r('sys.color.font_primary'))
+          .maxLines(1).textOverflow({ overflow: TextOverflow.Ellipsis }).layoutWeight(1)
+      }.width('100%').padding({ left: 10, right: 10 })
+    }.width('100%').height($r('app.float.root_tab_bar_height')).padding(0).backgroundColor(Color.Transparent)
+      .id('reply-capsule-write-reply')
+      .accessibilityText($r('app.string.reply_capsule_write_reply'))
+      .transition(TransitionEffect.OPACITY.animation({ duration: 130, curve: Curve.EaseOut }))
+      .onClick((): void => { this.setExpanded(true); this.recoverInputFocus(); })
   }
 
   build(): void {
-    Navigation() {
-      Column()
-        .width('100%')
-        .height('100%')
-        .hitTestBehavior(HitTestMode.None)
-    }
-    .title({
-      builder: (): void => {
-        this.CapsuleSurfaceContent();
+    ReplyCapsuleLayout({ split: this.splitStyle, expanded: this.expanded,
+      actionWidth: this.actionWidth, capsuleHeight: this.capsuleHeight(), materialEnabled: this.materialEnabled,
+      materialLevel: this.replyCapsuleMaterialLevel,
+      transitionId: 'reply-capsule-long-take-' + this.context.replyToId,
+      capsuleContent: (): void => {
+        if (this.splitStyle && !this.expanded) { this.SplitReplyEntry(); }
+        else { this.CapsuleSurfaceContent(); }
       },
-      height: this.capsuleHeight()
-    }, { barStyle: BarStyle.STACK })
-    .titleMode(NavigationTitleMode.Full)
-    .mode(NavigationMode.Stack)
-    .hideToolBar(true)
-    .backgroundColor(Color.Transparent)
-    .width('100%')
-    .height(this.capsuleHeight())
+      postActions: (): void => { this.postActions(); } })
   }
 }
 
@@ -1474,15 +1443,17 @@ export struct ReplyComposerPage {
         .onClick((): void => {
           this.takeVideo();
         });
-      createCollaborationServiceMenuItems(
-        [CollaborationServiceFilter.TAKE_PHOTO],
-        4,
-        [
-          CollaborationDeviceFilterType.PHONE,
-          CollaborationDeviceFilterType.TABLET,
-          CollaborationDeviceFilterType.PC_2IN1
-        ]
-      );
+      if (deviceInfo.apiAvailable('6.1.0(23)')) {
+        createCollaborationServiceMenuItems(
+          [CollaborationServiceFilter.TAKE_PHOTO],
+          4,
+          [
+            CollaborationDeviceFilterType.PHONE,
+            CollaborationDeviceFilterType.TABLET,
+            CollaborationDeviceFilterType.PC_2IN1
+          ]
+        );
+      }
     }
   }
 
@@ -1497,15 +1468,17 @@ export struct ReplyComposerPage {
         .onClick((): void => {
           this.selectImage();
         });
-      createCollaborationServiceMenuItems(
-        [CollaborationServiceFilter.IMAGE_PICKER],
-        4,
-        [
-          CollaborationDeviceFilterType.PHONE,
-          CollaborationDeviceFilterType.TABLET,
-          CollaborationDeviceFilterType.PC_2IN1
-        ]
-      );
+      if (deviceInfo.apiAvailable('6.1.0(23)')) {
+        createCollaborationServiceMenuItems(
+          [CollaborationServiceFilter.IMAGE_PICKER],
+          4,
+          [
+            CollaborationDeviceFilterType.PHONE,
+            CollaborationDeviceFilterType.TABLET,
+            CollaborationDeviceFilterType.PC_2IN1
+          ]
+        );
+      }
     }
   }
 
@@ -1530,15 +1503,17 @@ export struct ReplyComposerPage {
         .onClick((): void => {
           this.selectVideo();
         });
-      createCollaborationServiceMenuItems(
-        [CollaborationServiceFilter.VIDEO_PICKER],
-        1,
-        [
-          CollaborationDeviceFilterType.PHONE,
-          CollaborationDeviceFilterType.TABLET,
-          CollaborationDeviceFilterType.PC_2IN1
-        ]
-      );
+      if (deviceInfo.apiAvailable('6.1.0(23)')) {
+        createCollaborationServiceMenuItems(
+          [CollaborationServiceFilter.VIDEO_PICKER],
+          1,
+          [
+            CollaborationDeviceFilterType.PHONE,
+            CollaborationDeviceFilterType.TABLET,
+            CollaborationDeviceFilterType.PC_2IN1
+          ]
+        );
+      }
     }
   }
 
@@ -2240,11 +2215,13 @@ export struct ReplyComposerPage {
   private ContentBuilder(): void {
     Stack() {
       Column() {
-        CollaborationServiceStateDialog({
-          onState: (stateCode: number, bufferType: string, buffer: ArrayBuffer): void => {
-            this.handleRemoteMedia(stateCode, bufferType, buffer);
-          }
-        })
+        if (deviceInfo.apiAvailable('6.1.0(23)')) {
+          CollaborationServiceStateDialog({
+            onState: (stateCode: number, bufferType: string, buffer: ArrayBuffer): void => {
+              this.handleRemoteMedia(stateCode, bufferType, buffer);
+            }
+          })
+        }
         Stack({ alignContent: Alignment.Bottom }) {
           Scroll(this.composerScroller) {
             Stack({ alignContent: Alignment.TopStart }) {
@@ -2303,6 +2280,7 @@ export struct ReplyComposerPage {
                         $r('app.string.compose_poll_question') : $r('app.string.compose_placeholder'),
                       text: this.draft, controller: this.editorController
                     }).fontFamily(this.appFontFamily)
+                      .onKeyPreIme((event: KeyEvent): boolean => submitInputKey(event, (): void => { void this.publish(); }))
                       .id('composer-main-input')
                       .keyboardAppearance(KeyboardAppearance.IMMERSIVE)
                       .enabled(!this.publishing)
@@ -2427,6 +2405,9 @@ export struct ReplyComposerPage {
       style: destinationTitleBarStyle(ScrollEffectType.IMMERSIVE_GRADIENT_BLUR,
         this.themeDisplayMode, this.themeDarkSurface, TITLE_BAR_STYLE_BLUR)
     })
+    .onKeyEvent((event: KeyEvent): boolean => backInputKey(event, (): void => {
+      if (!this.publishing) { ResponsiveLayout.closeContentDestination(this.pageStack); }
+    }))
     .bindToScrollable([this.composerScroller])
     .onBackPressed((): boolean => {
       if (!this.publishing) {

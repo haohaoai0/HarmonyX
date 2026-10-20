@@ -28,6 +28,7 @@ export class GripHandManager {
   private preferredHand: string = 'right';
   private loadTask: Promise<void> | null = null;
   private gripHandEnabled: boolean = true;
+  private componentFlags: Map<string, boolean> = new Map<string, boolean>();
   private subscribed: boolean = false;
   private subscribers: GripHandSubscriber[] = [];
   private motionHandler: ((status: motion.HoldingHandStatus) => void) | null = null;
@@ -59,6 +60,11 @@ export class GripHandManager {
       this.preferredHand = storedPreference === 'left' ? 'left' : 'right';
       const storedEnabled: preferences.ValueType = await store.get(GRIP_HAND_ENABLED_KEY, true);
       this.gripHandEnabled = storedEnabled as boolean;
+      for (const component of ['floating', 'video', 'reply', 'hdstabs']) {
+        const enabled: boolean = await store.get('component_' + component, true) as boolean;
+        this.componentFlags.set(component, enabled);
+        AppStorage.setOrCreate<boolean>('harmonyx.grip_' + component + '_enabled', enabled);
+      }
     } catch (error) {
       this.lastHand = 'right';
       this.preferredHand = 'right';
@@ -95,6 +101,25 @@ export class GripHandManager {
       await store.put(GRIP_HAND_ENABLED_KEY, enabled);
       await store.flush();
     } catch (error) {
+    }
+  }
+
+  public isComponentEnabled(component: string): boolean {
+    return this.componentFlags.get(component) !== false;
+  }
+
+  public async saveComponentEnabled(context: common.Context, component: string, enabled: boolean): Promise<void> {
+    const previous: boolean = this.isComponentEnabled(component);
+    this.componentFlags.set(component, enabled);
+    AppStorage.setOrCreate<boolean>('harmonyx.grip_' + component + '_enabled', enabled);
+    try {
+      const store: preferences.Preferences = await preferences.getPreferences(context, PREFERENCE_NAME);
+      await store.put('component_' + component, enabled);
+      await store.flush();
+    } catch (error) {
+      this.componentFlags.set(component, previous);
+      AppStorage.setOrCreate<boolean>('harmonyx.grip_' + component + '_enabled', previous);
+      throw new Error('Failed to save grip component preference');
     }
   }
 

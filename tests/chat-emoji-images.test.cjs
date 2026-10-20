@@ -108,6 +108,19 @@ test('switching to system emoji returns native Unicode spans without loading gra
 
 test('ArkUI detached copy callback preserves Unicode without requiring a class receiver', () => {
   let copied;
+  let failCopy = false;
+  let failToast = false;
+  const events = [];
+  const controller = { closeSelectionMenu: () => events.push('close') };
+  const uiContext = {
+    getHostContext: () => context,
+    getPromptAction: () => ({ showToast: options => {
+      if (failToast) throw Error('Toast unavailable');
+      assert.equal(options.message, 'app.string.photo_copied');
+      assert.equal(options.duration, 1500);
+      events.push('toast');
+    } })
+  };
   const output = ts.transpileModule(fs.readFileSync('entry/src/main/ets/utils/EmojiCopyMenu.ets', 'utf8'), {
     compilerOptions: { target: ts.ScriptTarget.ES2020, module: ts.ModuleKind.CommonJS }
   }).outputText;
@@ -116,26 +129,44 @@ test('ArkUI detached copy callback preserves Unicode without requiring a class r
     '@kit.AbilityKit': {},
     '@kit.BasicServicesKit': { pasteboard: {
       createPlainTextData: text => text,
-      getSystemPasteboard: () => ({ setDataSync: text => { copied = text; } })
+      getSystemPasteboard: () => ({ setDataSync: text => {
+        if (failCopy) throw Error('Pasteboard unavailable');
+        copied = text;
+        events.push('copy');
+      } })
     } },
     '@ohos.hilog': { default: { warn() {} } },
     '../services/ChatEmojiImages': { chatEmojiImages: store }
   };
-  new Function('require', 'module', 'exports', 'TextMenuItemId', output)(id => dependencies[id],
-    module, module.exports, { COPY: 'copy' });
-  const menu = new module.exports.EmojiCopyMenu(context, 'ab👁️‍🗨 cd🏽');
+  new Function('require', 'module', 'exports', 'TextMenuItemId', '$r', output)(id => dependencies[id],
+    module, module.exports, { COPY: 'copy' }, name => name);
+  const menu = new module.exports.EmojiCopyMenu(uiContext, controller, 'ab👁️‍🗨 cd🏽');
   const callback = menu.onMenuItemClick;
   const item = { id: { equals: id => id === 'copy' } };
   assert.equal(callback(item, { start: 2, end: 3 }), true);
   assert.equal(copied, '👁️‍🗨');
+  assert.deepEqual(events.splice(0), ['copy', 'close', 'toast']);
   assert.equal(callback(item, { start: 99, end: 100 }), false);
+  assert.deepEqual(events, []);
   assert.equal(callback(item, { start: 0, end: 99 }), true);
   assert.equal(copied, 'ab👁️‍🗨 cd🏽');
   assert.equal(callback(item, undefined), false);
   assert.equal(callback(undefined, { start: 0, end: 1 }), false);
-  const native = new module.exports.EmojiCopyMenu(context, 'ab👁️‍🗨 cd🏽', true).onMenuItemClick;
+  const native = new module.exports.EmojiCopyMenu(uiContext, controller, 'ab👁️‍🗨 cd🏽', true).onMenuItemClick;
   assert.equal(native(item, { start: 2, end: 8 }), true);
   assert.equal(copied, '👁️‍🗨');
   assert.equal(native(item, { start: 8, end: 2 }), true);
   assert.equal(copied, '👁️‍🗨');
+  events.length = 0;
+  const selectAll = { id: { equals: () => false } };
+  assert.equal(callback(selectAll, { start: 0, end: 1 }), false);
+  assert.deepEqual(events, []);
+  failCopy = true;
+  assert.equal(callback(item, { start: 0, end: 1 }), false);
+  assert.deepEqual(events, []);
+  failCopy = false;
+  failToast = true;
+  assert.equal(callback(item, { start: 2, end: 3 }), true);
+  assert.equal(copied, '👁️‍🗨');
+  assert.deepEqual(events, ['copy', 'close']);
 });

@@ -1,4 +1,11 @@
+import { scrollFrame, scrollStarted, scrollStopped, stopScrollOnTouch } from '../utils/ScrollInteraction';
+import { STORAGE_KEY_FOR_YOU_ONLY_SENSITIVE } from '../services/ContentFilterStore';
+import { SceneModeSettingsContent } from '../components/SceneModeSettingsContent';
+import { ReplyQualitySettingsContent } from '../components/ReplyQualitySettingsContent';
+import { EyeReadingSettingsContent } from '../components/EyeReadingSettingsContent';
+import { DesktopLayout } from '../utils/DesktopLayout';
 import { ComponentHdrSettingsContent } from '../components/ComponentHdrSettingsContent';
+import { AppearancePreview } from '../components/AppearancePreview';
 import { MotionSettingsContent } from '../components/MotionSettingsContent';
 import type { DmSettingsRouteParam } from './DmSettings';
 import { xChatActions } from '../services/XChatActions';
@@ -6,6 +13,8 @@ import { hapticTick } from '../utils/Haptics';
 import { menuActionVisible, menuActionsForGroup, MenuActionOption } from '../models/MenuActionCatalog';
 import { STORAGE_KEY_HIDDEN_MENU_ACTIONS, menuSettingsStore } from '../services/MenuSettingsStore';
 import { STORAGE_KEY_VIDEO_HDR_ENHANCEMENT, DEFAULT_VIDEO_HDR_ENHANCEMENT } from '../services/MediaSettingsStore';
+import { STORAGE_KEY_COMPACT_VIDEO_LAYOUT, COMPACT_VIDEO_LAYOUT_RAIL,
+  COMPACT_VIDEO_LAYOUT_BOTTOM } from '../services/MediaSettingsStore';
 import { STORAGE_KEY_VIEWER_VIDEO_MUTED, STORAGE_KEY_VIDEO_FEED_LAYOUT, VIDEO_FEED_LAYOUT_CLASSIC, VIDEO_FEED_LAYOUT_DOUYIN, VIDEO_FEED_LAYOUT_BILIBILI, STORAGE_KEY_VIDEO_FEED_CONTROLS_ALWAYS_VISIBLE, STORAGE_KEY_VIDEO_CAPTIONS_ENABLED, STORAGE_KEY_VIDEO_AUTO_ADVANCE } from '../services/MediaSettingsStore';
 import { pageBackgroundActive } from '../services/PageBackgroundStore';
 import { pageTextColor } from '../utils/ThemeColors';
@@ -32,6 +41,7 @@ import { STORAGE_KEY_HOME_SPACE_CAPSULE_ENABLED, STORAGE_KEY_HOME_SPACE_CAPSULE_
   spacePreferencesStore } from '../services/SpacePreferencesStore';
 import { HOME_FLOATING_COMPOSE, HOME_FLOATING_REFRESH, HOME_FLOATING_TOP, HOME_FLOATING_HIDDEN,
   STORAGE_KEY_HOME_FLOATING_ACTION, STORAGE_KEY_PHOTO_FULLSCREEN, STORAGE_KEY_REFRESH_ON_FOREGROUND,
+  STORAGE_KEY_FLOATING_COMPOSE_MATERIAL_TINT,
   STORAGE_KEY_REFRESH_ON_HOME_TAB, STORAGE_KEY_HOME_DOUBLE_TAP_LATEST, STORAGE_KEY_HOME_PULL_REFRESH_LATEST,
   STORAGE_KEY_CONFIRM_APP_EXIT, interactionSettingsStore } from '../services/InteractionSettingsStore';
 import { deviceInfo } from '@kit.BasicServicesKit';
@@ -73,6 +83,7 @@ import {
   STORAGE_KEY_AUTO_HIDE_FAB,
   STORAGE_KEY_HOME_HEADER_COLLAPSE,
   STORAGE_KEY_TITLE_BAR_LOGO,
+  STORAGE_KEY_TITLE_BAR_LOGO_AUTO_CONTRAST,
   STORAGE_KEY_COMPACT_SWITCH_STYLE,
   COMPACT_SWITCH_TABS,
   COMPACT_SWITCH_BUTTONS,
@@ -88,6 +99,8 @@ import {
   STORAGE_KEY_TITLE_BAR_GLASS_MATERIAL_LEVEL,
   STORAGE_KEY_REPLY_CAPSULE_MATERIAL_LEVEL,
   STORAGE_KEY_REPLY_CAPSULE_BUTTON_MATERIAL_ENABLED,
+  STORAGE_KEY_REPLY_CAPSULE_SPLIT_ENABLED,
+  DEFAULT_REPLY_CAPSULE_SPLIT_ENABLED,
   DEFAULT_TITLE_BAR_GLASS_MATERIAL_LEVEL,
   DEFAULT_REPLY_CAPSULE_MATERIAL_LEVEL,
   DEFAULT_REPLY_CAPSULE_BUTTON_MATERIAL_ENABLED,
@@ -204,6 +217,7 @@ import {
   VIDEO_QUALITY_LD
 } from '../services/MediaSettingsStore';
 import { notificationDeliveryService } from '../services/NotificationDeliveryService';
+import { materialModifier } from '../utils/SystemMaterial';
 import {
   notificationSettingsStore,
   STORAGE_KEY_NOTIFICATION_DND_SILENT,
@@ -227,9 +241,12 @@ import {
   HDS_TAB_MATERIAL_SMOOTH,
   hdsTabsSettingsStore,
   STORAGE_KEY_CLASSIC_BOTTOM_BAR,
+  STORAGE_KEY_SPLIT_BOTTOM_BAR,
+  STORAGE_KEY_NATIVE_BOTTOM_BAR, STORAGE_KEY_NATIVE_TAB_MATERIAL_LEVEL, DEFAULT_NATIVE_TAB_MATERIAL_LEVEL,
   STORAGE_KEY_ROOT_LIQUID_TAB_INDICATOR_ENABLED,
   STORAGE_KEY_HOME_TAB_MATERIAL_LEVEL,
-  STORAGE_KEY_ROOT_TAB_LABELS_VISIBLE
+  STORAGE_KEY_ROOT_TAB_LABELS_VISIBLE,
+  STORAGE_KEY_ROOT_TAB_GRADIENT_MASK_ENABLED
 } from '../services/HdsTabsSettingsStore';
 import {
   readAloudSettingsStore,
@@ -243,7 +260,7 @@ import {
   STORAGE_KEY_FILTER_HIDE_REPOSTS,
   STORAGE_KEY_FILTER_KEYWORDS,
   STORAGE_KEY_FILTER_MUTED_USERS,
-  STORAGE_KEY_FILTER_ONLY_MEDIA
+  STORAGE_KEY_FILTER_ONLY_MEDIA, STORAGE_KEY_FILTER_LANGUAGES, postLanguageCode
 } from '../services/ContentFilterStore';
 import {
   AppIconApplyResult,
@@ -457,7 +474,7 @@ export struct SettingsHome {
           .width('100%').height(44)
           .margin({ top: this.embedded ? 12 : this.statusBarHeight + 76, bottom: 4 })
           .backgroundColor(fieldSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
-          .systemMaterial(this.inputMaterial())
+          .attributeModifier(materialModifier(this.inputMaterial()))
           .onChange((value: string): void => { this.searchQuery = value; })
         if (this.searchQuery.trim().length === 0) {
           ForEach(SETTINGS_GROUPS, (group: SettingsGroup) => {
@@ -488,7 +505,12 @@ export struct SettingsHome {
         }
       }.width('100%').padding({ left: $r('app.float.settings_page_horizontal_padding'),
         right: $r('app.float.settings_page_horizontal_padding'), bottom: this.navigationIndicatorHeight + 28 })
-    }.width('100%').height('100%').align(Alignment.TopStart).scrollBar(BarState.Off)
+    }
+    .onScrollStop((): void => scrollStopped(this.scroller))
+    .onScrollStart((): void => scrollStarted(this.scroller))
+    .onScrollFrameBegin((offset: number, state: ScrollState): OnScrollFrameBeginHandlerResult =>
+      scrollFrame(this.scroller, offset, state))
+    .onTouchIntercept((event: TouchEvent): HitTestMode => stopScrollOnTouch(event, this.scroller)).width('100%').height('100%').align(Alignment.TopStart).scrollBar(BarState.Off)
       .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: true })
       .clipContent(ContentClipMode.SAFE_AREA).clip(false)
   }
@@ -536,7 +558,7 @@ export struct SettingsHome {
         this.themeDarkSurface, this.titleBarStyleMode)
     })
     .backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue))
-    .systemMaterial(pageBackgroundActive(this.pageBackgroundValue) ? undefined : this.pageMaterial());
+    .attributeModifier(materialModifier(pageBackgroundActive(this.pageBackgroundValue) ? undefined : this.pageMaterial()));
   }
   }
 }
@@ -582,11 +604,16 @@ export struct SettingsSection {
   @StorageLink(STORAGE_KEY_AUTO_HIDE_TAB_BAR) autoHideTabBar: boolean = false;
   @StorageLink(STORAGE_KEY_BOTTOM_BAR_PAGES) bottomBarPagesMask: number = DEFAULT_BOTTOM_BAR_PAGES_MASK;
   @StorageLink(STORAGE_KEY_CLASSIC_BOTTOM_BAR) classicBottomBar: boolean = false;
+  @StorageLink(STORAGE_KEY_SPLIT_BOTTOM_BAR) splitBottomBar: boolean = false;
+  @StorageLink(STORAGE_KEY_NATIVE_BOTTOM_BAR) nativeBottomBar: boolean = false;
+  @StorageLink(STORAGE_KEY_NATIVE_TAB_MATERIAL_LEVEL) nativeTabMaterialLevel: number = DEFAULT_NATIVE_TAB_MATERIAL_LEVEL;
   @StorageLink(STORAGE_KEY_ROOT_TAB_LABELS_VISIBLE) rootTabLabelsVisible: boolean = true;
   @StorageLink(STORAGE_KEY_ROOT_LIQUID_TAB_INDICATOR_ENABLED) rootLiquidTabIndicatorEnabled: boolean = true;
+  @StorageLink(STORAGE_KEY_ROOT_TAB_GRADIENT_MASK_ENABLED) rootTabGradientMaskEnabled: boolean = true;
   @StorageLink(STORAGE_KEY_AUTO_HIDE_FAB) autoHideFab: boolean = true;
   @StorageLink(STORAGE_KEY_HOME_HEADER_COLLAPSE) homeHeaderCollapseEnabled: boolean = false;
   @StorageLink(STORAGE_KEY_TITLE_BAR_LOGO) titleBarLogoEnabled: boolean = true;
+  @StorageLink(STORAGE_KEY_TITLE_BAR_LOGO_AUTO_CONTRAST) titleBarLogoAutoContrast: boolean = true;
   @StorageLink(STORAGE_KEY_COMPACT_SWITCH_STYLE) compactSwitchStyle: string = COMPACT_SWITCH_TABS;
   @StorageLink(STORAGE_KEY_TITLE_BAR_STYLE_MODE) titleBarStyleMode: number = TITLE_BAR_STYLE_IMMERSIVE;
   @StorageLink(STORAGE_KEY_TITLE_BAR_GLASS_MATERIAL_LEVEL)
@@ -595,8 +622,11 @@ export struct SettingsSection {
   replyCapsuleMaterialLevel: number = DEFAULT_REPLY_CAPSULE_MATERIAL_LEVEL;
   @StorageLink(STORAGE_KEY_REPLY_CAPSULE_BUTTON_MATERIAL_ENABLED)
   replyCapsuleButtonMaterialEnabled: boolean = DEFAULT_REPLY_CAPSULE_BUTTON_MATERIAL_ENABLED;
+  @StorageLink(STORAGE_KEY_REPLY_CAPSULE_SPLIT_ENABLED)
+  replyCapsuleSplitEnabled: boolean = DEFAULT_REPLY_CAPSULE_SPLIT_ENABLED;
   @StorageLink(STORAGE_KEY_COMPOSE_BUTTON_ENABLED) composeButtonEnabled: boolean = true;
   @StorageProp(STORAGE_KEY_HOME_FLOATING_ACTION) homeFloatingAction: string = HOME_FLOATING_COMPOSE;
+  @StorageProp(STORAGE_KEY_FLOATING_COMPOSE_MATERIAL_TINT) floatingComposeMaterialTint: boolean = true;
   @StorageProp(STORAGE_KEY_PHOTO_FULLSCREEN) photoFullscreen: boolean = true;
   @StorageProp(STORAGE_KEY_REFRESH_ON_FOREGROUND) refreshOnForeground: boolean = false;
   @StorageProp(STORAGE_KEY_REFRESH_ON_HOME_TAB) refreshOnHomeTab: boolean = false;
@@ -608,6 +638,10 @@ export struct SettingsSection {
   @StorageLink(STORAGE_KEY_AVATAR_TINT_ENABLED) avatarTintEnabled: boolean = false;
   @StorageLink(STORAGE_KEY_DARK_SURFACE) darkSurface: string = DARK_SURFACE_BLACK;
   @StorageLink(STORAGE_KEY_PRESS_EFFECT_ENABLED) pressEffectEnabled: boolean = false;
+  @StorageProp('harmonyx.grip_hdstabs_enabled') private gripHdsTabsEnabled: boolean = true;
+  @StorageProp('harmonyx.grip_floating_enabled') private gripFloatingEnabled: boolean = true;
+  @StorageProp('harmonyx.grip_video_enabled') private gripVideoEnabled: boolean = true;
+  @StorageProp('harmonyx.grip_reply_enabled') private gripReplyEnabled: boolean = true;
   @StorageLink('harmonyx.grip_hand_enabled') gripHandEnabled: boolean = true;
   @StorageLink('harmonyx.grip_preferred_hand') gripPreferredHand: string = 'right';
   @StorageLink('harmonyx.link_in_app') linkInApp: boolean = false;
@@ -617,6 +651,7 @@ export struct SettingsSection {
   @StorageProp(STORAGE_KEY_HIDDEN_MENU_ACTIONS) private hiddenMenuActions: string = '';
   @StorageProp(STORAGE_KEY_VIEWER_VIDEO_MUTED) private viewerVideoMuted: boolean = true;
   @StorageProp(STORAGE_KEY_VIDEO_FEED_LAYOUT) private videoFeedLayout: number = VIDEO_FEED_LAYOUT_CLASSIC;
+  @StorageProp(STORAGE_KEY_COMPACT_VIDEO_LAYOUT) private compactVideoLayout: number = COMPACT_VIDEO_LAYOUT_RAIL;
   @StorageProp(STORAGE_KEY_VIDEO_FEED_CONTROLS_ALWAYS_VISIBLE) private videoFeedControlsAlwaysVisible: boolean = false;
   @StorageProp(STORAGE_KEY_VIDEO_CAPTIONS_ENABLED) private videoCaptionsEnabled: boolean = false;
   @StorageProp(STORAGE_KEY_VIDEO_AUTO_ADVANCE) private videoAutoAdvance: boolean = true;
@@ -644,6 +679,11 @@ export struct SettingsSection {
   @StorageLink(STORAGE_KEY_TIMELINE_COLUMNS) timelineColumnsMode: number = TIMELINE_COLUMNS_AUTO;
   @StorageLink(STORAGE_KEY_HOME_TAB_MATERIAL_LEVEL) homeTabMaterialLevel: number = DEFAULT_HOME_TAB_MATERIAL_LEVEL;
   @StorageLink(STORAGE_KEY_READ_ALOUD_ENTRY_ENABLED) readAloudEntryEnabled: boolean = false;
+  @StorageLink(STORAGE_KEY_FILTER_LANGUAGES) private filterLanguages: string = '';
+  @StorageLink(STORAGE_KEY_FOR_YOU_ONLY_SENSITIVE) private onlySensitiveForYou: boolean = false;
+  @State private onlySensitiveAgeConfirmed: boolean = false;
+  @State private onlySensitiveAgeDialogPending: boolean = false;
+  @State private onlySensitiveSwitchRevision: number = 0;
   @StorageLink(STORAGE_KEY_FILTER_ONLY_MEDIA) filterOnlyMedia: boolean = false;
   @StorageLink(STORAGE_KEY_FILTER_HIDE_REPOSTS) filterHideReposts: boolean = false;
   @StorageLink(STORAGE_KEY_FILTER_HIDE_REPLIES) filterHideReplies: boolean = false;
@@ -874,6 +914,12 @@ export struct SettingsSection {
     const context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
     this.gripHandManager.saveGripHandEnabled(context, value);
     this.gripHandEnabled = value;
+  }
+
+  private async setGripComponent(component: string, value: boolean): Promise<void> {
+    const context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
+    try { await this.gripHandManager.saveComponentEnabled(context, component, value); }
+    catch (error) { promptAction.showToast({ message: this.text($r('app.string.settings_filter_save_failed')) }); }
   }
 
   private setGripPreferredHand(index: number): void {
@@ -1135,18 +1181,67 @@ export struct SettingsSection {
     }
   }
 
+  private filterLanguageOptions(): AppLanguageOption[] {
+    return supportedAppLanguages().filter((option: AppLanguageOption): boolean => option.tag !== 'zh-Hant');
+  }
+
+  private toggleMutedLanguage(tag: string): void {
+    const code: string = postLanguageCode(tag);
+    const previous: string = this.filterLanguages;
+    const codes: string[] = previous.length > 0 ? previous.split(',') : [];
+    this.filterLanguages = (codes.indexOf(code) >= 0 ? codes.filter((item: string): boolean => item !== code) : [...codes, code]).join(',');
+    const context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
+    const settings: ContentFilterSettings = new ContentFilterSettings(this.filterOnlyMedia, this.filterHideReposts,
+      this.filterHideReplies, this.filterKeywords, this.filterMutedUsers, this.filterHideAds, this.filterLanguages, this.onlySensitiveForYou);
+    if (!contentFilterStore.save(context, settings)) {
+      this.filterLanguages = previous;
+      promptAction.showToast({ message: this.text($r('app.string.settings_filter_save_failed')) });
+    }
+  }
+
+  @Builder
+  private MutedLanguages(): void {
+    Column({ space: 10 }) {
+      Text($r('app.string.settings_filter_languages')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Title_S'))
+        .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)).width('100%')
+      Text($r('app.string.settings_filter_languages_desc')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M'))
+        .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).width('100%')
+      Flex({ wrap: FlexWrap.Wrap }) {
+        ForEach(this.filterLanguageOptions(), (option: AppLanguageOption) => {
+          Button({ type: ButtonType.Normal }) {
+            Row({ space: 6 }) {
+              if (this.filterLanguages.split(',').indexOf(postLanguageCode(option.tag)) >= 0) {
+                SymbolGlyph($r('sys.symbol.checkmark')).fontSize(14)
+                  .fontColor([pageTextColor(this.accentColor, this.pageBackgroundValue, fieldSurfaceColor(this.displayMode, this.darkSurface))])
+              }
+              Text(option.name).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M'))
+                .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, fieldSurfaceColor(this.displayMode, this.darkSurface)))
+            }.padding({ left: 12, right: 12, top: 10, bottom: 10 })
+          }.borderRadius(18).backgroundColor(fieldSurfaceColor(this.displayMode, this.darkSurface))
+            .border({ width: 1, color: this.filterLanguages.split(',').indexOf(postLanguageCode(option.tag)) >= 0 ? this.accentColor : $r('app.color.divider') })
+            .margin({ right: 8, bottom: 8 }).id('filter-language-' + postLanguageCode(option.tag))
+            .accessibilitySelected(this.filterLanguages.split(',').indexOf(postLanguageCode(option.tag)) >= 0)
+            .onClick((): void => this.toggleMutedLanguage(option.tag))
+        }, (option: AppLanguageOption): string => option.tag)
+      }.width('100%')
+    }.width('100%').padding({ left: 20, right: 20, top: 16, bottom: 16 }).id('settings-muted-languages')
+  }
+
   private loadContentFilters(): void {
     const context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
     const settings: ContentFilterSettings = contentFilterStore.load(context);
+    this.onlySensitiveForYou = settings.onlySensitiveForYou;
+    this.onlySensitiveAgeConfirmed = settings.onlySensitiveAgeConfirmed;
     this.filterOnlyMedia = settings.onlyMedia;
     this.filterHideReposts = settings.hideReposts;
     this.filterHideReplies = settings.hideReplies;
     this.filterHideAds = settings.hideAds;
     this.filterKeywords = settings.keywordsText;
     this.filterMutedUsers = settings.mutedUsersText;
+    this.filterLanguages = settings.mutedLanguagesText;
   }
 
-  private saveContentFilters(): void {
+  private saveContentFilters(): boolean {
     const context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
     const settings: ContentFilterSettings = new ContentFilterSettings(
       this.filterOnlyMedia,
@@ -1154,14 +1249,17 @@ export struct SettingsSection {
       this.filterHideReplies,
       this.filterKeywords,
       this.filterMutedUsers,
-      this.filterHideAds
+      this.filterHideAds, this.filterLanguages, this.onlySensitiveForYou,
+      this.onlySensitiveAgeConfirmed
     );
     if (!contentFilterStore.save(context, settings)) {
       promptAction.showToast({
         message: this.text($r('app.string.settings_filter_save_failed')),
         duration: 1800
       });
+      return false;
     }
+    return true;
   }
 
   private setFilterOnlyMedia(value: boolean): void {
@@ -1182,6 +1280,47 @@ export struct SettingsSection {
   private setFilterHideAds(value: boolean): void {
     this.filterHideAds = value;
     this.saveContentFilters();
+  }
+
+  private async setOnlySensitiveForYou(value: boolean): Promise<void> {
+    if (!value) {
+      this.onlySensitiveForYou = false;
+      this.onlySensitiveAgeConfirmed = false;
+      this.saveContentFilters();
+      return;
+    }
+    if (this.onlySensitiveForYou || this.onlySensitiveAgeDialogPending) {
+      return;
+    }
+    this.onlySensitiveAgeDialogPending = true;
+    try {
+      const response: promptAction.ShowDialogSuccessResponse = await this.getUIContext().getPromptAction().showDialog({
+        title: this.text($r('app.string.settings_for_you_only_sensitive_age_title')),
+        message: this.text($r('app.string.settings_for_you_only_sensitive_age_message')),
+        buttons: [
+          { text: this.text($r('app.string.settings_for_you_only_sensitive_age_under')), color: $r('app.color.text_secondary') },
+          { text: this.text($r('app.string.settings_for_you_only_sensitive_age_adult')), color: this.accentColor }
+        ]
+      });
+      if (response.index !== 1) {
+        this.onlySensitiveForYou = false;
+        this.onlySensitiveAgeConfirmed = false;
+        this.saveContentFilters();
+        return;
+      }
+      this.onlySensitiveForYou = true;
+      this.onlySensitiveAgeConfirmed = true;
+      if (!this.saveContentFilters()) {
+        this.onlySensitiveForYou = false;
+        this.onlySensitiveAgeConfirmed = false;
+      }
+    } catch (error) {
+      this.onlySensitiveForYou = false;
+      this.onlySensitiveAgeConfirmed = false;
+    } finally {
+      this.onlySensitiveAgeDialogPending = false;
+      this.onlySensitiveSwitchRevision++;
+    }
   }
 
   private setFilterKeywords(value: string): void {
@@ -1275,6 +1414,30 @@ export struct SettingsSection {
     }
   }
 
+  private navigationStyleIndex(): number {
+    return this.classicBottomBar ? 2 : (this.splitBottomBar ? (this.nativeBottomBar ? 3 : 1) : 0);
+  }
+
+  private navigationStyleLabel(): Resource {
+    if (this.classicBottomBar) { return $r('app.string.settings_classic_bottom_bar'); }
+    if (this.splitBottomBar && this.nativeBottomBar) { return $r('app.string.settings_native_bottom_bar'); }
+    return this.splitBottomBar ? $r('app.string.settings_split_bottom_bar') : $r('app.string.settings_hds_bottom_bar');
+  }
+
+  private setNavigationStyle(index: number): void {
+    const context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
+    if (!hdsTabsSettingsStore.saveNavigationStyle(context, index)) {
+      promptAction.showToast({ message: this.text($r('app.string.settings_interaction_save_failed')) });
+    }
+  }
+
+  private setNativeTabMaterialLevel(level: number): void {
+    const context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
+    if (!hdsTabsSettingsStore.saveNativeTabMaterialLevel(context, level)) {
+      promptAction.showToast({ message: this.text($r('app.string.settings_interaction_save_failed')) });
+    }
+  }
+
   private setClassicBottomBar(enabled: boolean): void {
     const previous: boolean = this.classicBottomBar;
     this.classicBottomBar = enabled;
@@ -1301,6 +1464,16 @@ export struct SettingsSection {
     const context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
     if (!hdsTabsSettingsStore.saveRootLiquidTabIndicatorEnabled(context, enabled)) {
       this.rootLiquidTabIndicatorEnabled = previous;
+      promptAction.showToast({ message: this.text($r('app.string.settings_interaction_save_failed')) });
+    }
+  }
+
+  private setRootTabGradientMaskEnabled(enabled: boolean): void {
+    const previous: boolean = this.rootTabGradientMaskEnabled;
+    this.rootTabGradientMaskEnabled = enabled;
+    const context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
+    if (!hdsTabsSettingsStore.saveRootTabGradientMaskEnabled(context, enabled)) {
+      this.rootTabGradientMaskEnabled = previous;
       promptAction.showToast({ message: this.text($r('app.string.settings_interaction_save_failed')) });
     }
   }
@@ -1669,7 +1842,8 @@ export struct SettingsSection {
       this.darkSurface, this.composeButtonEnabled, this.titleBarStyleMode,
       this.titleBarGlassMaterialLevel, this.homeHeaderCollapseEnabled, this.contentFontFamily,
       this.replyCapsuleMaterialLevel, this.avatarTintEnabled, this.titleBarLogoEnabled, this.systemEmojiEnabled,
-      this.compactSwitchStyle, this.replyCapsuleButtonMaterialEnabled);
+      this.compactSwitchStyle, this.replyCapsuleButtonMaterialEnabled, this.replyCapsuleSplitEnabled,
+      this.titleBarLogoAutoContrast);
     this.appearanceStore.save(context, settings);
   }
 
@@ -1768,6 +1942,11 @@ export struct SettingsSection {
 
   private setReplyCapsuleMaterialLevel(value: number): void {
     this.replyCapsuleMaterialLevel = value;
+    this.saveAppearance();
+  }
+
+  private setReplyCapsuleSplitEnabled(value: boolean): void {
+    this.replyCapsuleSplitEnabled = value;
     this.saveAppearance();
   }
 
@@ -2458,7 +2637,9 @@ export struct SettingsSection {
         .selectedColor(mixedAccentRoleColor(this.accentTheme, 'control', this.accentColor))
         .enabled(enabled)
         .accessibilityText(title)
-        .onChange((value: boolean): void => { if (value !== isOn) { hapticTick(); onChange(value); } })
+        // Builder arguments retain their initial primitive value. Comparing
+        // against isOn here drops the event when switching back to that value.
+        .onChange((value: boolean): void => { hapticTick(); onChange(value); })
     }
     .width('100%')
     .padding({ top: 12, bottom: 12 })
@@ -2597,6 +2778,27 @@ export struct SettingsSection {
     }.width('100%').padding({ top: 12, bottom: 12 })
   }
 
+  @Builder
+  private CompactVideoLayoutContent(): void {
+    Column({ space: 8 }) {
+      Text($r('app.string.compact_video_layout')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L'))
+        .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
+      Text($r('app.string.settings_compact_video_layout_desc')).fontFamily(this.appFontFamily)
+        .fontSize($r('sys.float.Body_M'))
+        .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
+        .width('100%')
+      Select([{ value: $r('app.string.compact_video_layout_rail') },
+        { value: $r('app.string.compact_video_layout_bottom') }])
+        .selected(this.compactVideoLayout)
+        .value(this.compactVideoLayout === COMPACT_VIDEO_LAYOUT_BOTTOM ?
+          $r('app.string.compact_video_layout_bottom') : $r('app.string.compact_video_layout_rail'))
+        .onSelect((index: number): void => {
+          this.interactionSaved(mediaSettingsStore.saveCompactVideoLayout(getContext(this) as common.UIAbilityContext, index));
+        })
+    }.width('100%').alignItems(HorizontalAlign.Start).padding({ top: 12, bottom: 12 })
+      .id('settings-compact-video-layout')
+  }
+
   private floatingActionIndex(): number {
     if (this.homeFloatingAction === HOME_FLOATING_REFRESH) { return 1; }
     if (this.homeFloatingAction === HOME_FLOATING_TOP) { return 2; }
@@ -2639,6 +2841,10 @@ export struct SettingsSection {
               getContext(this) as common.UIAbilityContext, actions[index] ?? HOME_FLOATING_COMPOSE));
           })
       }.width('100%')
+      this.AutoHideSwitchRow($r('app.string.settings_floating_compose_material_tint'),
+        $r('app.string.settings_floating_compose_material_tint_desc'), this.floatingComposeMaterialTint,
+        (value: boolean): void => { this.interactionSaved(interactionSettingsStore.saveFloatingComposeMaterialTint(
+          getContext(this) as common.UIAbilityContext, value)); })
       this.AutoHideSwitchRow($r('app.string.settings_refresh_on_foreground'),
         $r('app.string.settings_refresh_on_foreground_desc'), this.refreshOnForeground,
         (value: boolean): void => { this.interactionSaved(interactionSettingsStore.saveRefreshOnForeground(
@@ -2672,6 +2878,14 @@ export struct SettingsSection {
       this.AutoHideSwitchRow($r('app.string.settings_title_bar_logo'),
         $r('app.string.settings_title_bar_logo_desc'), this.titleBarLogoEnabled,
         (value: boolean): void => { this.titleBarLogoEnabled = value; this.saveAppearance(); })
+      if (this.titleBarLogoEnabled) {
+        this.AutoHideSwitchRow($r('app.string.settings_title_bar_logo_auto_contrast'),
+          $r('app.string.settings_title_bar_logo_auto_contrast_desc'), this.titleBarLogoAutoContrast,
+          (value: boolean): void => {
+            this.titleBarLogoAutoContrast = value;
+            this.saveAppearance();
+          })
+      }
       if (!this.titleBarLogoEnabled) {
         Row({ space: 12 }) {
           Column({ space: 4 }) {
@@ -3044,6 +3258,14 @@ export struct SettingsSection {
         this.AccentOption('#00BA7C', $r('app.string.settings_theme_green'))
         this.AccentOption('#345483', $r('app.string.settings_theme_cat_blue'))
         this.AccentOption('#D8333A', $r('app.string.settings_theme_huawei_red'))
+         this.AccentOption('icon_blue', $r('app.string.settings_theme_icon_blue'))
+         this.AccentOption('icon_red', $r('app.string.settings_theme_icon_red'))
+         this.AccentOption('icon_orange', $r('app.string.settings_theme_icon_orange'))
+         this.AccentOption('icon_yellow', $r('app.string.settings_theme_icon_yellow'))
+         this.AccentOption('icon_green', $r('app.string.settings_theme_icon_green'))
+         this.AccentOption('icon_pink', $r('app.string.settings_theme_icon_pink'))
+         this.AccentOption('icon_cyan', $r('app.string.settings_theme_icon_cyan'))
+         this.AccentOption('icon_navy', $r('app.string.settings_theme_icon_navy'))
       }
       .width('100%')
 
@@ -3303,13 +3525,16 @@ export struct SettingsSection {
         ])
           .selected(this.homeTabMaterialIndex())
           .value(this.homeTabMaterialLabel())
-          .enabled(!this.classicBottomBar)
+          .enabled(!this.classicBottomBar && !this.nativeBottomBar)
           .selectedOptionFontColor(this.accentColor)
           .selectedOptionBgColor(fieldSurfaceColor(this.displayMode, this.darkSurface))
           .onSelect((index: number): void => this.selectHomeTabMaterial(index))
       }
       .width('100%')
       .alignItems(VerticalAlign.Center)
+      this.AutoHideSwitchRow($r('app.string.settings_hds_tabs_gradient_mask'),
+        $r('app.string.settings_hds_tabs_gradient_mask_desc'), this.rootTabGradientMaskEnabled,
+        (value: boolean): void => this.setRootTabGradientMaskEnabled(value), !this.classicBottomBar && !this.splitBottomBar)
     }
     .width('100%')
   }
@@ -3423,9 +3648,44 @@ export struct SettingsSection {
   @Builder
   private NavigationContent(): void {
     Column({ space: 18 }) {
-      this.AutoHideSwitchRow($r('app.string.settings_classic_bottom_bar'),
-        $r('app.string.settings_classic_bottom_bar_desc'), this.classicBottomBar,
-        (value: boolean): void => this.setClassicBottomBar(value))
+      Column({ space: 8 }) {
+        Text($r('app.string.settings_navigation_style')).fontFamily(this.appFontFamily)
+          .fontSize($r('sys.float.Subtitle_L'))
+          .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
+        Select([
+          { value: $r('app.string.settings_hds_bottom_bar') },
+          { value: $r('app.string.settings_split_bottom_bar') },
+          { value: $r('app.string.settings_classic_bottom_bar') },
+          { value: $r('app.string.settings_native_bottom_bar') }
+        ])
+          .id('root-navigation-style')
+          .selected(this.navigationStyleIndex()).value(this.navigationStyleLabel())
+          .selectedOptionFontColor(this.accentColor)
+          .onSelect((index: number): void => this.setNavigationStyle(index))
+        Text(this.nativeBottomBar ? $r('app.string.settings_native_bottom_bar_desc') :
+          $r('app.string.settings_split_bottom_bar_desc')).fontFamily(this.appFontFamily)
+          .fontSize($r('sys.float.Body_M'))
+          .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
+      }.width('100%').alignItems(HorizontalAlign.Start)
+      if (this.nativeBottomBar && this.splitBottomBar && !this.classicBottomBar) {
+        Row({ space: 12 }) {
+          Text($r('app.string.settings_native_navigation_material')).fontFamily(this.appFontFamily)
+            .fontSize($r('sys.float.Subtitle_L'))
+            .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
+            .layoutWeight(1)
+          Select([
+            { value: $r('app.string.settings_title_bar_glass_level_ultra_thin') },
+            { value: $r('app.string.settings_title_bar_glass_level_thin') },
+            { value: $r('app.string.settings_title_bar_glass_level_regular') },
+            { value: $r('app.string.settings_title_bar_glass_level_thick') },
+            { value: $r('app.string.settings_title_bar_glass_level_ultra_thick') }
+          ])
+            .id('root-native-navigation-material')
+            .selected(this.nativeTabMaterialLevel)
+            .selectedOptionFontColor(this.accentColor)
+            .onSelect((index: number): void => this.setNativeTabMaterialLevel(index))
+        }.width('100%').alignItems(VerticalAlign.Center)
+      }
       this.AutoHideSwitchRow($r('app.string.settings_root_tab_labels'),
         $r('app.string.settings_root_tab_labels_desc'), this.rootTabLabelsVisible,
         (value: boolean): void => this.setRootTabLabelsVisible(value))
@@ -3446,6 +3706,10 @@ export struct SettingsSection {
   @Builder
   private ReplyMaterialSection(): void {
     Column({ space: 18 }) {
+      this.AutoHideSwitchRow($r('app.string.settings_reply_capsule_split'),
+        $r('app.string.settings_reply_capsule_split_desc'), this.replyCapsuleSplitEnabled,
+        (value: boolean): void => this.setReplyCapsuleSplitEnabled(value))
+      Divider().color($r('app.color.divider'))
       Row({ space: 12 }) {
         Column({ space: 4 }) {
           Text($r('app.string.settings_reply_capsule_material_level_label')).fontFamily(this.appFontFamily)
@@ -3592,6 +3856,7 @@ export struct SettingsSection {
     Column() {
       Column() {
         this.VideoFeedLayoutContent()
+        this.CompactVideoLayoutContent()
         this.AutoHideSwitchRow($r('app.string.video_feed_controls_always_visible'),
           $r('app.string.video_feed_controls_always_visible_desc'), this.videoFeedControlsAlwaysVisible,
           (value: boolean): void => { this.interactionSaved(mediaSettingsStore.saveVideoFeedControlsAlwaysVisible(
@@ -3787,6 +4052,16 @@ export struct SettingsSection {
     .width('100%')
     .padding({ top: 16, bottom: 16, left: 20, right: 20 })
     if (this.gripHandEnabled) {
+      Column() {
+        this.SettingsSwitchRow($r('app.string.settings_grip_hdstabs'), $r('app.string.settings_grip_hdstabs_desc'),
+          this.gripHdsTabsEnabled, (value: boolean): void => { this.setGripComponent('hdstabs', value); })
+        this.SettingsSwitchRow($r('app.string.settings_grip_floating'), $r('app.string.settings_grip_component_desc'),
+          this.gripFloatingEnabled, (value: boolean): void => { this.setGripComponent('floating', value); })
+        this.SettingsSwitchRow($r('app.string.settings_grip_video'), $r('app.string.settings_grip_component_desc'),
+          this.gripVideoEnabled, (value: boolean): void => { this.setGripComponent('video', value); })
+        this.SettingsSwitchRow($r('app.string.settings_grip_reply'), $r('app.string.settings_grip_component_desc'),
+          this.gripReplyEnabled, (value: boolean): void => { this.setGripComponent('reply', value); })
+      }.width('100%').padding({ left: 20, right: 20 })
     Row({ space: 14 }) {
       Column({ space: 4 }) {
         Text($r('app.string.settings_grip_hand_preference')).fontFamily(this.appFontFamily)
@@ -4578,6 +4853,14 @@ export struct SettingsSection {
         this.AutoHideSwitchRow($r('app.string.settings_filter_hide_ads'),
           $r('app.string.settings_filter_hide_ads_desc'), this.filterHideAds,
           (value: boolean): void => this.setFilterHideAds(value))
+        Column() {
+          this.AutoHideSwitchRow($r('app.string.settings_for_you_only_sensitive'),
+            $r('app.string.settings_for_you_only_sensitive_desc'), this.onlySensitiveForYou,
+            (value: boolean): void => { void this.setOnlySensitiveForYou(value); },
+            !this.onlySensitiveAgeDialogPending)
+        }
+        .width('100%')
+        .id('settings-sensitive-only-switch-' + this.onlySensitiveSwitchRevision)
         this.AutoHideSwitchRow($r('app.string.settings_filter_only_media'),
           $r('app.string.settings_filter_only_media_desc'), this.filterOnlyMedia,
           (value: boolean): void => this.setFilterOnlyMedia(value))
@@ -4590,6 +4873,8 @@ export struct SettingsSection {
       }
       .width('100%')
       .padding({ left: 20, right: 20 })
+      this.MutedLanguages()
+      ReplyQualitySettingsContent()
       this.FilterTextArea($r('app.string.settings_filter_keywords'),
         $r('app.string.settings_filter_keywords_desc'),
         $r('app.string.settings_filter_keywords_placeholder'), this.filterKeywords,
@@ -4608,6 +4893,10 @@ export struct SettingsSection {
         appPageBackground()
       Scroll(this.scroller) {
         Column({ space: 0 }) {
+          if (this.section === 'materials' || this.section === 'theme' || this.section === 'titlebar' ||
+            this.section === 'tabmaterial' || this.section === 'sheetmaterial' || this.section === 'sidebarmaterial' || this.section === 'replymaterial') {
+            AppearancePreview({ kind: this.section })
+          }
           if (this.section.length === 0) {
             Blank()
           } else if (this.children().length > 0) {
@@ -4618,6 +4907,10 @@ export struct SettingsSection {
             this.DisplayContent()
           } else if (this.section === 'uihdr') {
             ComponentHdrSettingsContent()
+          } else if (this.section === 'scene_modes') {
+            SceneModeSettingsContent()
+          } else if (this.section === 'eye_reading') {
+            EyeReadingSettingsContent()
           } else if (this.section === 'motion') {
             MotionSettingsContent()
           } else if (this.section === 'transitions') {
@@ -4676,9 +4969,14 @@ export struct SettingsSection {
           }
         }
         .width('100%')
-        .padding({ top: this.desktopLayoutEnabled && ResponsiveLayout.isLarge(this.breakpoint) ? 12 : this.statusBarHeight + 74,
+        .padding({ top: DesktopLayout.active(this.desktopLayoutEnabled, this.breakpoint) ? 12 : this.statusBarHeight + 74,
           bottom: this.navigationIndicatorHeight + 28 })
       }
+      .onScrollStop((): void => scrollStopped(this.scroller))
+      .onScrollStart((): void => scrollStarted(this.scroller))
+      .onScrollFrameBegin((offset: number, state: ScrollState): OnScrollFrameBeginHandlerResult =>
+        scrollFrame(this.scroller, offset, state))
+      .onTouchIntercept((event: TouchEvent): HitTestMode => stopScrollOnTouch(event, this.scroller))
       .width('100%')
       .height('100%')
       .align(Alignment.TopStart)
@@ -4707,11 +5005,11 @@ export struct SettingsSection {
     .titleBar({
       avoidLayoutSafeArea: true,
       content: { title: { mainTitle: this.section.length > 0 ? this.title() : '' } },
-      enableComponentSafeArea: this.desktopLayoutEnabled && ResponsiveLayout.isLarge(this.breakpoint),
+      enableComponentSafeArea: DesktopLayout.active(this.desktopLayoutEnabled, this.breakpoint),
       style: destinationTitleBarStyle(ScrollEffectType.GRADIENT_BLUR, this.displayMode, this.darkSurface,
         this.titleBarStyleMode)
     })
     .backgroundColor(pageCanvasColor(this.displayMode, this.darkSurface, this.pageBackgroundValue))
-    .systemMaterial(pageBackgroundActive(this.pageBackgroundValue) ? undefined : this.pageMaterial());
+    .attributeModifier(materialModifier(pageBackgroundActive(this.pageBackgroundValue) ? undefined : this.pageMaterial()));
   }
 }

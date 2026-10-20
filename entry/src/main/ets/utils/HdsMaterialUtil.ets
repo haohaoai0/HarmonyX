@@ -6,7 +6,10 @@ import { deviceInfo } from '@kit.BasicServicesKit';
  */
 export class HdsMaterialUtil {
   public static isHdsMaterialAvailable(): boolean {
-    return deviceInfo.sdkApiVersion >= 23;
+    if (deviceInfo.apiAvailable('6.1.0(23)')) {
+      return true;
+    }
+    return false;
   }
 
   public static resolveLegacyHdsMaterialLevel(level: number): number {

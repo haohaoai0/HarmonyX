@@ -45,7 +45,10 @@ export const CLOUD_SETTING_FIELDS: CloudSettingField[] = [
   new CloudSettingField('harmonyx_appearance', 'title_bar_style_mode', 'harmonyx.title_bar_style_mode', 1, 0, 0, 3),
   new CloudSettingField('harmonyx_appearance', 'title_bar_glass_material_level', 'harmonyx.title_bar_glass_material_level', 1, 0, 0, 4),
   new CloudSettingField('harmonyx_appearance', 'title_bar_logo', 'harmonyx.title_bar_logo', 1, true),
+  new CloudSettingField('harmonyx_appearance', 'title_bar_logo_auto_contrast', 'harmonyx.title_bar_logo_auto_contrast', 1, true),
+  new CloudSettingField('harmonyx_appearance', 'reply_capsule_split_enabled', 'harmonyx.reply_capsule_split_enabled', 1, false),
   new CloudSettingField('harmonyx_hds_tabs', 'classic_bottom_bar', 'harmonyx.classic_bottom_bar', 1, false),
+  new CloudSettingField('harmonyx_hds_tabs', 'split_bottom_bar', 'harmonyx.split_bottom_bar', 1, false),
   new CloudSettingField('harmonyx_hds_tabs', 'root_tab_labels_visible', 'harmonyx.root_tab_labels_visible', 1, true),
   new CloudSettingField('harmonyx_sheet_material', 'enabled', 'harmonyx.sheet_material_enabled', 1, true),
   new CloudSettingField('harmonyx_sheet_material', 'level', 'harmonyx.sheet_material_level', 1, 2, 0, 4),
@@ -54,17 +57,24 @@ export const CLOUD_SETTING_FIELDS: CloudSettingField[] = [
   new CloudSettingField('harmonyx_media', 'viewer_video_muted', 'harmonyx.viewer_video_muted', 2, true),
   new CloudSettingField('harmonyx_media', 'image_quality', 'harmonyx.image_quality', 2, 2, 0, 2),
   new CloudSettingField('harmonyx_media', 'video_quality', 'harmonyx.video_quality', 2, 0, 0, 3),
+  new CloudSettingField('harmonyx_media', 'compact_video_layout', 'harmonyx.compact_video_layout', 2, 0, 0, 1),
   new CloudSettingField('harmonyx_media', 'video_feed_tap_pause', 'harmonyx.video_feed_tap_pause', 2, true),
   new CloudSettingField('harmonyx_media', 'video_double_tap_seek', 'harmonyx.video_double_tap_seek', 2, true),
   new CloudSettingField('harmonyx_media', 'video_double_tap_seek_seconds', 'harmonyx.video_double_tap_seek_seconds', 2, 10, 1, 60),
   new CloudSettingField('harmonyx_media', 'media_viewer_black_background', 'harmonyx.media_viewer_black_background', 2, false),
   new CloudSettingField('harmonyx_media', 'media_comment_background', 'harmonyx.media_comment_background', 2, true),
+  new CloudSettingField('harmonyx_fab_preferences', 'component_hdstabs', 'harmonyx.grip_hdstabs_enabled', 4, true),
+  new CloudSettingField('harmonyx_fab_preferences', 'component_floating', 'harmonyx.grip_floating_enabled', 4, true),
+  new CloudSettingField('harmonyx_fab_preferences', 'component_video', 'harmonyx.grip_video_enabled', 4, true),
+  new CloudSettingField('harmonyx_fab_preferences', 'component_reply', 'harmonyx.grip_reply_enabled', 4, true),
+  new CloudSettingField('harmonyx_content_filter', 'for_you_only_sensitive', 'harmonyx.for_you_only_sensitive', 4, false),
   new CloudSettingField('harmonyx_content_filter', 'only_media', 'harmonyx.filter_only_media', 4, false),
   new CloudSettingField('harmonyx_content_filter', 'hide_reposts', 'harmonyx.filter_hide_reposts', 4, false),
   new CloudSettingField('harmonyx_content_filter', 'hide_replies', 'harmonyx.filter_hide_replies', 4, false),
   new CloudSettingField('harmonyx_content_filter', 'hide_ads', 'harmonyx.filter_hide_ads', 4, true),
   new CloudSettingField('harmonyx_content_filter', 'keywords', 'harmonyx.filter_keywords', 4, ''),
-  new CloudSettingField('harmonyx_content_filter', 'muted_users', 'harmonyx.filter_muted_users', 4, '')
+  new CloudSettingField('harmonyx_content_filter', 'muted_users', 'harmonyx.filter_muted_users', 4, ''),
+  new CloudSettingField('harmonyx_content_filter', 'languages', 'harmonyx.filter_languages', 4, '')
 ];
 
 export class CloudSettingRecord {

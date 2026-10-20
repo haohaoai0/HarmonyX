@@ -1,5 +1,42 @@
 {
   "string": [
+    {
+      "name": "supporter_config_error",
+      "value": "Cloud account binding could not be confirmed. Please contact the author."
+    },
+    {
+      "name": "supporter_restore_hint",
+      "value": "Switching back to an account restores its saved status. On a new device, after reinstalling, or in another app version, sign in to the same X account and enter your original code to restore access."
+    },
+    {"name": "eye_reading_title", "value": "Eye-controlled reading"},
+    {"name": "eye_reading_intro", "value": "Look up or down and hold to scroll threads, offline copies and articles."},
+    {"name": "eye_reading_enable", "value": "Enable eye-controlled reading"},
+    {"name": "eye_reading_supported", "value": "Face tracking is supported. The camera starts only when you tap Start eye control on a reading page."},
+    {"name": "eye_reading_unsupported", "value": "This device does not support the required face tracking. Continue reading with touch or a keyboard."},
+    {"name": "eye_reading_dwell", "value": "Gaze dwell time"},
+    {"name": "eye_reading_threshold", "value": "Direction threshold"},
+    {"name": "eye_reading_threshold_desc", "value": "A higher threshold requires a larger eye movement and helps reduce accidental scrolling."},
+    {"name": "eye_reading_help", "value": "Keep your head still and look at the screen center to calibrate. Look up or down and hold to scroll about half a screen. Return to center after each turn. Touch, wheel and keyboard input take priority."},
+    {"name": "eye_reading_privacy", "value": "The front camera is used only after you start. Direction data is processed locally; images are never saved or uploaded. Leaving the page or switching to the background stops it. Start it again manually when needed."},
+    {"name": "eye_reading_save_failed", "value": "Could not save settings. Please try again."},
+    {"name": "eye_reading_start", "value": "Start eye control"},
+    {"name": "eye_reading_stop", "value": "Stop eye control"},
+    {"name": "eye_reading_recalibrate", "value": "Recalibrate"},
+    {"name": "eye_reading_starting", "value": "Starting the front camera…"},
+    {"name": "eye_reading_permission", "value": "Camera permission is required. Allow camera access in system app permissions, then try again."},
+    {"name": "eye_reading_failed", "value": "Camera unavailable. Close other camera apps, then try again."},
+    {"name": "eye_reading_calibrating", "value": "Look at the screen center and keep your head and gaze steady to calibrate."},
+    {"name": "eye_reading_center", "value": "Return your gaze to center before the next turn."},
+    {"name": "eye_reading_ready", "value": "Ready: look up or down and hold."},
+    {"name": "eye_reading_up", "value": "Keep looking up to scroll upward."},
+    {"name": "eye_reading_down", "value": "Keep looking down to scroll downward."},
+    {"name": "eye_reading_lost", "value": "Open your eyes and face the screen in good light. Recalibrate if it remains unresponsive."},
+    {"name": "eye_reading_paused", "value": "Manual input takes priority. Eye control is temporarily paused."},
+    {"name": "eye_reading_camera_reason", "value": "Uses the front camera to recognize eye direction locally when you start eye-controlled reading."},
+    {"name": "compact_video_layout", "value": "Cover screen video layout"},
+    {"name": "settings_compact_video_layout_desc", "value": "For compact square screens such as Pura X. Choose side actions or a bottom row. Unfolding restores your usual video layout."},
+    {"name": "compact_video_layout_rail", "value": "Side actions"},
+    {"name": "compact_video_layout_bottom", "value": "Bottom row"},
     {"name":"settings_component_hdr_enabled","value":"Component HDR effect"},
     {"name":"settings_component_hdr_enabled_desc","value":"Off by default. Turn it on to use 1.25x brightening, then adjust the multiplier below."},
     {"name":"settings_confirm_app_exit","value":"Confirm before exiting"},
@@ -1775,6 +1812,14 @@
     {
       "name": "settings_hds_tabs_material_adaptive",
       "value": "Adaptive"
+    },
+    {
+      "name": "settings_hds_tabs_gradient_mask",
+      "value": "Bottom tab gradient mask"
+    },
+    {
+      "name": "settings_hds_tabs_gradient_mask_desc",
+      "value": "Controls the fade gradient below the floating HdsTabs bar. Enabled by default."
     },
     {
       "name": "settings_timeline_columns_title",
@@ -9253,6 +9298,14 @@
       "value": "Turn off to place timeline tabs or the search field between your avatar and the right button."
     },
     {
+      "name": "settings_title_bar_logo_auto_contrast",
+      "value": "Adaptive logo color"
+    },
+    {
+      "name": "settings_title_bar_logo_auto_contrast_desc",
+      "value": "Automatically switches the X or pattern foreground between light and dark to stay readable. Only the single-color foreground is shown, without an icon background."
+    },
+    {
       "name": "notifications_all",
       "value": "All"
     },
@@ -10705,6 +10758,359 @@
     {"name":"page_background_motif_popular_apps_global_firefox","value":"Firefox"},
     {"name":"page_background_motif_popular_apps_global_edge","value":"Edge"},
     {"name":"page_background_motif_popular_apps_global_gmail","value":"Gmail"},
-    {"name":"page_background_motif_popular_apps_global_google_maps","value":"Google Maps"}
+    {"name":"page_background_motif_popular_apps_global_google_maps","value":"Google Maps"},
+    {"name":"scene_title","value":"Scene modes"},
+    {"name":"scene_intro","value":"Apply a set of playback, quality, motion and background preferences. Restore returns to your settings from before the first mode was enabled."},
+    {"name":"scene_reading","value":"Clear reading"},
+    {"name":"scene_reading_desc","value":"Autoplay off · high quality images · low quality video · reduced motion · plain background"},
+    {"name":"scene_saver","value":"Power and data saver"},
+    {"name":"scene_saver_desc","value":"Autoplay off · small images · low quality video · reduced motion · plain background"},
+    {"name":"scene_media","value":"Media browsing"},
+    {"name":"scene_media_desc","value":"Autoplay on · original images · high quality video · motion on · your saved background"},
+    {"name":"scene_restore","value":"Restore original settings"},
+    {"name":"scene_restore_desc","value":"Keep your preferences from before scene mode. Switching between modes does not replace this backup."},
+    {"name":"scene_failed","value":"Some settings could not be saved. Your original settings are retained; retry or restore."},
+    {"name":"offline_title","value":"Offline & later"},
+    {"name":"offline_online","value":"Online bookmarks"},
+    {"name":"offline_intro","value":"New bookmarks save text and available articles automatically. Enable images before saving to include photos. Local copies stay separate from online bookmarks and ordinary cache cleanup."},
+    {"name":"offline_images","value":"Include photos in future saves"},
+    {"name":"offline_save","value":"Save offline"},
+    {"name":"offline_saving","value":"Saving…"},
+    {"name":"offline_saved","value":"Saved for offline reading"},
+    {"name":"offline_partial_saved","value":"Saved available content. Some article text or photos are missing; retry when online."},
+    {"name":"offline_save_failed","value":"Could not save locally. Please retry."},
+    {"name":"offline_partial","value":"Incomplete copy"},
+    {"name":"offline_unread","value":"Unread"},
+    {"name":"offline_unread_only","value":"Unread only"},
+    {"name":"offline_search","value":"Search titles, tags or notes"},
+    {"name":"offline_empty","value":"No matching offline items. Save a bookmark or use Save offline on a post."},
+    {"name":"offline_edit","value":"Tags & note"},
+    {"name":"offline_tags","value":"Tags"},
+    {"name":"offline_tags_hint","value":"Tags, separated by commas"},
+    {"name":"offline_note","value":"Private note"},
+    {"name":"offline_done","value":"Save"},
+    {"name":"offline_delete","value":"Delete local copy"},
+    {"name":"reader_title","value":"Thread reader"},
+    {"name":"reader_author_only","value":"Author only"},
+    {"name":"reader_translate","value":"Translate passages"},
+    {"name":"reader_font","value":"Text size"},
+    {"name":"reader_missing","value":"This offline item is missing or unavailable. Save it again while online."},
+    {"name":"reader_partial","value":"Only the available article content is shown. Continue loading or retry while online to get the complete text."},
+    {"name":"reader_load_failed","value":"Could not load more replies. Your current reading content is kept."},
+    {"name":"reader_translation_setup","value":"Enable translation and choose a target language in Settings first."},
+    {"name":"reader_translation_failed","value":"Some passages could not be translated. You can hide translations and retry."},
+    {"name":"reader_offline_note","value":"Saved local content. Translation requires a network connection."},
+    {"name":"reader_scope","value":"Replies loaded so far. Use Continue loading to include more of the discussion."},
+    {
+      "name": "input_help_title",
+      "value": "Mouse, keyboard and touchpad"
+    },
+    {
+      "name": "input_help_desc",
+      "value": "Keyboard shortcuts and pointer gestures"
+    },
+    {
+      "name": "input_main_title",
+      "value": "Main page shortcuts"
+    },
+    {
+      "name": "input_main_scope",
+      "value": "Available on the five main tabs when no destination, drawer or dialog is open. Ctrl+N starts a new conversation on Messages and creates a post elsewhere."
+    },
+    {
+      "name": "input_compose",
+      "value": "New post / new conversation"
+    },
+    {
+      "name": "input_refresh",
+      "value": "Refresh the current tab"
+    },
+    {
+      "name": "input_keyboard_title",
+      "value": "Keyboard controls"
+    },
+    {
+      "name": "input_focus",
+      "value": "Move focus forward / backward. Native controls also support arrow-key focus navigation."
+    },
+    {
+      "name": "input_activate",
+      "value": "Activate the focused button."
+    },
+    {
+      "name": "input_submit",
+      "value": "Submit from the post, reply or message input. Plain Enter keeps the input’s existing behavior."
+    },
+    {
+      "name": "input_back",
+      "value": "Back in Help, the composer, chats and media viewers. Close the current panel first."
+    },
+    {
+      "name": "input_photo",
+      "value": "Previous / next photo in the photo viewer, while the image is not zoomed and no panel is open."
+    },
+    {
+      "name": "input_video",
+      "value": "Previous / next video in the video viewer, while no panel is open."
+    },
+    {
+      "name": "input_playback",
+      "value": "With the video picture focused: Space or Enter plays / pauses; Left / Right seeks backward / forward 10 seconds."
+    },
+    {
+      "name": "input_pointer_title",
+      "value": "Mouse and touchpad"
+    },
+    {
+      "name": "input_pointer",
+      "value": "Left-click or tap to activate. Right-click a photo, video or chat message to open its action menu. Buttons show hover feedback. Drag the scrollbar or slider to scroll or seek."
+    },
+    {
+      "name": "input_trackpad",
+      "value": "Scroll lists with two fingers; swipe horizontally through photos; pinch to zoom photos and pan the enlarged image. A two-finger tap opens the same menu as a right-click on supported touchpads."
+    },
+    {
+      "name": "input_previous",
+      "value": "Previous photo"
+    },
+    {
+      "name": "input_next",
+      "value": "Next photo"
+    },
+    {
+      "name": "input_key_home",
+      "value": "Ctrl + 1"
+    },
+    {
+      "name": "input_key_explore",
+      "value": "Ctrl + 2"
+    },
+    {
+      "name": "input_key_notifications",
+      "value": "Ctrl + 3"
+    },
+    {
+      "name": "input_key_messages",
+      "value": "Ctrl + 4"
+    },
+    {
+      "name": "input_key_profile",
+      "value": "Ctrl + 5"
+    },
+    {
+      "name": "input_key_search",
+      "value": "Ctrl + K"
+    },
+    {
+      "name": "input_key_compose",
+      "value": "Ctrl + N"
+    },
+    {
+      "name": "input_key_refresh",
+      "value": "Ctrl + R"
+    },
+    {
+      "name": "input_key_settings",
+      "value": "Ctrl + ,"
+    },
+    {
+      "name": "input_key_help",
+      "value": "F1"
+    },
+    {
+      "name": "input_key_focus",
+      "value": "Tab / Shift + Tab"
+    },
+    {
+      "name": "input_key_activate",
+      "value": "Enter / Space"
+    },
+    {
+      "name": "input_key_submit",
+      "value": "Ctrl + Enter"
+    },
+    {
+      "name": "input_key_back",
+      "value": "Esc / Alt + ←"
+    },
+    {
+      "name": "input_key_photo",
+      "value": "← / →"
+    },
+    {
+      "name": "input_key_video",
+      "value": "↑ / ↓ / Page Up / Page Down"
+    },
+    {
+      "name": "input_key_playback",
+      "value": "Space / Enter / ← / →"
+    },
+    {"name":"settings_filter_languages","value":"Blocked post languages"},
+    {"name":"settings_filter_languages_desc","value":"Select languages to hide. Unidentified languages and media-only posts stay visible."},
+    {"name":"appearance_preview_title","value":"Live preview"},
+    {"name":"appearance_preview_hint","value":"Updates as you change settings. Tap the sheet sample to expand it."},
+    {"name":"post_edited","value":"Edited"},
+    {"name":"post_metric_bookmarks","value":"bookmarks"},
+    {"name":"post_metric_quotes","value":"quotes"},
+    {"name":"settings_reply_quality","value":"Fold low-quality replies"},
+    {"name":"settings_reply_quality_desc","value":"Fold repeated promotions and bulk solicitation. Local rules may make mistakes; expand a reply to review it."},
+    {"name":"reply_quality_folded","value":"Possibly low-quality reply"},
+    {"name":"reply_quality_reasons","value":"View reasons"},
+    {"name":"reply_quality_allow","value":"Always show this author"},
+    {"name":"reply_quality_whitelist","value":"Reply allowlist"},
+    {"name":"reply_quality_whitelist_desc","value":"Your replies, the post author, followed accounts and allowed authors stay visible. The allowlist belongs to the current account."},
+    {"name":"reply_quality_empty","value":"No allowed authors yet"},
+    {"name":"reply_quality_reason_duplicate","value":"Several authors repeat the same promotional template"},
+    {"name":"reply_quality_reason_author_repeat","value":"The author repeatedly posts the same content"},
+    {"name":"reply_quality_reason_links","value":"Contains multiple external links"},
+    {"name":"reply_quality_reason_promotion","value":"Contains promotional or profit-bait content"},
+    {"name":"reply_quality_reason_contact","value":"Contains contact details for solicitation"},
+    {
+      "name": "settings_floating_compose_material_tint",
+      "value": "Floating compose button material tint"
+    },
+    {
+      "name": "settings_floating_compose_material_tint_desc",
+      "value": "Overlay the theme color on the material. Turning this off only removes the color overlay."
+    },
+    {
+      "name": "chat_decoration",
+      "value": "Chat decorations"
+    },
+    {
+      "name": "chat_decoration_subtitle",
+      "value": "Avatar frames and chat bubbles, downloaded only when you choose them."
+    },
+    {
+      "name": "chat_decoration_frame",
+      "value": "Avatar frames"
+    },
+    {
+      "name": "chat_decoration_bubble",
+      "value": "Chat bubbles"
+    },
+    {
+      "name": "chat_decoration_free",
+      "value": "Free"
+    },
+    {
+      "name": "chat_decoration_download_preview",
+      "value": "Download to preview"
+    },
+    {
+      "name": "chat_decoration_download",
+      "value": "Download"
+    },
+    {
+      "name": "chat_decoration_downloading",
+      "value": "Downloading..."
+    },
+    {
+      "name": "chat_decoration_use",
+      "value": "Use"
+    },
+    {
+      "name": "chat_decoration_in_use",
+      "value": "In use"
+    },
+    {
+      "name": "chat_decoration_remove",
+      "value": "Stop using"
+    },
+    {
+      "name": "chat_decoration_installed",
+      "value": "Downloaded"
+    },
+    {
+      "name": "chat_decoration_applied",
+      "value": "Decoration applied"
+    },
+    {
+      "name": "chat_decoration_download_failed",
+      "value": "Download failed. Try again later."
+    },
+    {
+      "name": "chat_decoration_reset",
+      "value": "Restore defaults"
+    },
+    {
+      "name": "chat_decoration_reset_done",
+      "value": "Defaults restored"
+    },
+    {
+      "name": "chat_decoration_note",
+      "value": "Decorations stay on this device. Other people see styles supported by their client."
+    },
+    {
+      "name": "chat_decoration_loading",
+      "value": "Loading decorations..."
+    },
+    {
+      "name": "chat_decoration_unavailable",
+      "value": "Decorations are unavailable. Check your connection and retry."
+    },
+    {
+      "name": "chat_decoration_sample_text",
+      "value": "Have a lovely day."
+    },
+    {"name": "sign_out_confirm_title", "value": "Sign out?"},
+    {"name": "sign_out_confirm_message", "value": "You will need to sign in again to use this account."},
+    {"name": "settings_for_you_only_sensitive", "value": "Sensitive content only in For You"},
+    {"name": "settings_for_you_only_sensitive_desc", "value": "Show only posts marked sensitive by X, including quoted content. Following and Lists are unaffected. Sensitive media stays covered."},
+    {"name": "settings_grip_floating", "value": "Floating action button"},
+    {"name": "settings_grip_video", "value": "Video action rail"},
+    {"name": "settings_grip_reply", "value": "Post reply capsule"},
+    {"name": "settings_grip_component_desc", "value": "Move this component with your holding hand. When off, use your preferred hand."},
+    {"name": "settings_grip_hdstabs", "value": "HdsTabs bottom tab bar"},
+    {"name": "settings_grip_hdstabs_desc", "value": "Use native handedness adaptation. When off, the tab bar does not follow your holding hand."},
+    {"name":"gif_action_save_video","value":"Save as high-quality video (MP4)"},
+    {"name":"storage_save_remembered_note","value":"Choose a download folder once to save future files there automatically. Turn off to save to Gallery."},
+    {"name":"storage_save_to_remembered","value":"Save to download folder"},
+    {"name": "storage_permission_reason", "value": "Keep access to the files and folders you select."},
+    {"name": "timeline_sources_lists", "value": "Lists"},
+    {"name": "timeline_sources_communities", "value": "Communities"},
+    {"name": "timeline_edit", "value": "Edit"},
+    {"name": "timeline_done", "value": "Done"},
+    {"name": "timeline_move_up", "value": "Move up"},
+    {"name": "timeline_move_down", "value": "Move down"},
+    {"name": "timeline_remove_source", "value": "Remove %s"},
+    {"name": "timeline_add_to_home", "value": "Add to Home timelines"},
+    {"name": "timeline_remove_from_home", "value": "Remove from Home timelines"},
+    {"name": "timeline_sources_failed", "value": "Some lists or communities failed to load. Tap to retry."},
+    {"name": "timeline_sources_pinned_empty", "value": "No pinned timelines. Add lists, communities or topics below."},
+    {"name":"video_controls_mirror","value":"Mirror controls"},
+    {"name":"video_controls_speed","value":"Speed"},
+    {"name":"video_controls_aspect","value":"Aspect"},
+    {"name":"video_controls_background","value":"Background"},
+    {"name":"video_controls_quality_hd","value":"HD"},
+    {"name":"video_controls_quality_sd","value":"SD"},
+    {"name":"video_controls_quality_ld","value":"LD"},
+    {"name":"video_controls_more","value":"More"},
+    {"name":"video_controls_download","value":"Download"},
+    {"name":"settings_navigation_style","value":"Bottom navigation style"},
+    {"name":"settings_hds_bottom_bar","value":"Floating HdsTabs"},
+    {"name":"settings_split_bottom_bar","value":"Split capsule navigation"},
+    {"name":"settings_split_bottom_bar_desc","value":"Switch pages in the left capsule. The separate right button composes, starts a chat, refreshes, or returns to the top. Both use HDS material; older systems use compatible navigation."},
+    {"name":"split_navigation_action_top","value":"Back to top"},
+    {"name":"split_navigation_action_refresh","value":"Refresh Home"},
+    {"name":"split_navigation_action_compose","value":"Create post"},
+    {"name": "settings_reply_capsule_split", "value": "Separate reply capsules"},
+    {"name": "settings_reply_capsule_split_desc", "value": "Separate the reply entry and post actions when collapsed"},
+    {"name": "reply_capsule_write_reply", "value": "Reply"},
+    {"name":"settings_native_bottom_bar","value":"7.0 material capsule navigation"},
+    {"name":"settings_native_bottom_bar_desc","value":"Use the reply capsule’s HarmonyOS 7.0 immersive material, with touch lighting, a liquid indicator and grip-based side switching. Falls back to HDS capsule navigation when unavailable."},
+    {"name":"settings_native_navigation_material","value":"Navigation capsule material thickness"},
+    {"name":"settings_for_you_only_sensitive_age_title","value":"Confirm your age"},
+    {"name":"settings_for_you_only_sensitive_age_message","value":"“Sensitive content only in For You” is available only to people aged 18 or older. Are you 18 or older?"},
+    {"name":"settings_for_you_only_sensitive_age_under","value":"Under 18"},
+    {"name":"settings_for_you_only_sensitive_age_adult","value":"18 or older"},
+    {"name":"settings_theme_icon_blue","value":"Icon blue"},
+    {"name":"settings_theme_icon_red","value":"Icon red"},
+    {"name":"settings_theme_icon_orange","value":"Icon orange"},
+    {"name":"settings_theme_icon_yellow","value":"Icon yellow"},
+    {"name":"settings_theme_icon_green","value":"Icon green"},
+    {"name":"settings_theme_icon_pink","value":"Icon pink"},
+    {"name":"settings_theme_icon_cyan","value":"Icon cyan"},
+    {"name":"settings_theme_icon_navy","value":"Icon navy"}
   ]
 }

@@ -9,9 +9,9 @@ function evaluate(source, dependencies, globals = {}) {
     compilerOptions: { target: ts.ScriptTarget.ES2020, module: ts.ModuleKind.CommonJS }
   }).outputText;
   const exports = {};
-  new Function('require', 'exports', 'setTimeout', 'clearTimeout', 'Curve', output)(
+  new Function('require', 'exports', 'setTimeout', 'clearTimeout', 'SourceType', 'Curve', output)(
     name => dependencies[name] || {}, exports,
-    globals.setTimeout || setTimeout, globals.clearTimeout || clearTimeout, { EaseOut: 0 });
+    globals.setTimeout || setTimeout, globals.clearTimeout || clearTimeout, { Mouse: 1, TouchScreen: 2 }, { EaseOut: 0 });
   return exports;
 }
 
@@ -218,6 +218,16 @@ test('loading an original keeps the visible preview and zoom until the new image
   assert.equal(h.component.fallbackPixelMap, original);
   assert.equal(h.component.zoomScale, 2.5); assert.equal(h.component.offsetX, 40);
   assert.deepEqual(h.released, [preview]);
+});
+
+test('failed readoption falls back to cached loading rather than retaining an empty ContentSlot', async () => {
+  const image = {}, h = zoomHarness(async () => image);
+  Object.assign(h.component, { url: 'photo', sharedPhoto: {}, presentImage: true,
+    onAdoptNode: () => false, canAdoptNode: () => true });
+  h.component.onUrlChanged(); await flush();
+  assert.equal(h.component.sharedPhoto, null);
+  assert.equal(h.component.fallbackPixelMap, image);
+  h.component.aboutToDisappear();
 });
 
 test('each pinch and double tap reports gesture start even when a photo is already zoomed', () => {

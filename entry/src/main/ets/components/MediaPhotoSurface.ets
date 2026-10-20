@@ -1,18 +1,20 @@
 import { BuilderNode, NodeContent, UIContext } from '@kit.ArkUI';
 import { ProxyMediaImage } from './ProxyMediaImage';
 import { createMediaSourcePrefix } from '../utils/MediaViewerMotion';
+import { MediaImageLifetime } from '../utils/MediaImageLifetime';
 
 interface MediaPhotoParameters {
   url: string;
   contain: boolean;
   viewer: boolean;
+  lifetime: MediaImageLifetime;
   onDimensions: (width: number, height: number) => void;
 }
 
 @Builder
 function BuildMediaPhoto(params: MediaPhotoParameters): void {
   ProxyMediaImage({ url: params.url, contain: params.contain,
-    fillParent: true, viewerResolution: params.viewer, onDimensions: params.onDimensions })
+    fillParent: true, viewerResolution: params.viewer, lifetime: params.lifetime, onDimensions: params.onDimensions })
     .width('100%').height('100%').hitTestBehavior(HitTestMode.None)
 }
 
@@ -31,6 +33,7 @@ export class MediaPhotoNode {
   private sourceOwner: string = '';
   private viewer: string = '';
   private inPage: boolean = false;
+  private lifetime: MediaImageLifetime = new MediaImageLifetime();
   private onDimensions: (width: number, height: number) => void = (): void => {};
 
   mount(ui: UIContext, url: string, contain: boolean,
@@ -40,6 +43,7 @@ export class MediaPhotoNode {
     this.sourceId = sourceId;
     this.sourceOwner = sourceOwner;
     if (sourceId.length > 0) { mediaPhotoNodes.set(sourceId, this); }
+    if (this.entryUrl !== url && this.viewer.length === 0) { this.width = 0; this.height = 0; }
     this.entryUrl = url;
     this.entryContain = contain;
     this.onDimensions = onDimensions;
@@ -59,9 +63,19 @@ export class MediaPhotoNode {
 
   adopt(ui: UIContext, owner: string, url: string): boolean {
     if (this.viewer.length > 0 && this.viewer !== owner) { return false; }
+    // An empty/failed thumbnail has no pixels to transfer; let the viewer decode independently.
+    if (this.width <= 0 || this.height <= 0) { return false; }
     if (this.viewer.length === 0) { this.move(true); }
     this.viewer = owner;
     this.update(ui, url, true, true);
+    // A source can disappear between capture and presentation. Rebuild it if
+    // needed, and acknowledge adoption only after it has a real viewer parent.
+    this.move(true);
+    const node = this.builder?.getFrameNode();
+    if (node === undefined || node === null || !this.inPage) {
+      this.viewer = '';
+      return false;
+    }
     return true;
   }
 
@@ -74,13 +88,15 @@ export class MediaPhotoNode {
   }
 
   private update(ui: UIContext, url: string, contain: boolean, viewer: boolean): void {
-    const params: MediaPhotoParameters = { url: url, contain: contain, viewer: viewer,
+    const params: MediaPhotoParameters = { url: url, contain: contain, viewer: viewer, lifetime: this.lifetime,
       onDimensions: (width: number, height: number): void => {
         this.width = width;
         this.height = height;
         if (this.sourceMounted) { this.onDimensions(width, height); }
       } };
     if (this.builder !== undefined) { this.builder.update(params); return; }
+    this.lifetime = new MediaImageLifetime();
+    params.lifetime = this.lifetime;
     this.builder = new BuilderNode<[MediaPhotoParameters]>(ui);
     this.builder.build(wrapBuilder(BuildMediaPhoto), params);
     const node = this.builder.getFrameNode();
@@ -100,6 +116,7 @@ export class MediaPhotoNode {
   }
 
   private dispose(): void {
+    this.lifetime.release();
     const node = this.builder?.getFrameNode();
     if (node !== undefined && node !== null) {
       (this.inPage ? this.pageContent : this.entryContent).removeFrameNode(node);

@@ -10,13 +10,14 @@ import {
   HdsNavDestination,
   HdsNavDestinationTitleMode,
   HdsTabs,
+  HdsTabsAttribute,
   HdsTabsController,
-  HdsTabsModifier,
   hdsMaterial,
   ScrollEffectType
 } from '@kit.UIDesignKit';
 import { ImageEditDrawingCanvas } from '../components/ImageEditDrawingCanvas';
 import { destinationTitleBarStyle } from '../utils/DestinationTitleBar';
+import { materialModifier, SystemMaterialUtil } from '../utils/SystemMaterial';
 import {
   cardSurfaceColor,
   fieldSurfaceColor,
@@ -30,6 +31,34 @@ const TOOL_CROP: number = 0;
 const TOOL_FILTER: number = 1;
 const TOOL_TEXT: number = 2;
 const TOOL_DRAW: number = 3;
+
+class ToolTabsMaterialModifier implements AttributeModifier<HdsTabsAttribute> {
+  private navigationIndicatorHeight: number;
+  private accentColor: string;
+
+  constructor(navigationIndicatorHeight: number, accentColor: string) {
+    this.navigationIndicatorHeight = navigationIndicatorHeight;
+    this.accentColor = accentColor;
+  }
+
+  applyNormalAttribute(instance: HdsTabsAttribute): void {
+    if (deviceInfo.apiAvailable('6.1.0(23)')) {
+      instance
+        .vertical(false)
+        .barPosition(BarPosition.End)
+        .barHeight(56)
+        .barFloatingStyle({
+          adaptToHandedness: true,
+          barBottomMargin: this.navigationIndicatorHeight,
+          lightColor: this.accentColor,
+          systemMaterialEffect: {
+            materialType: hdsMaterial.MaterialType.IMMERSIVE,
+            materialLevel: hdsMaterial.MaterialLevel.EXQUISITE
+          }
+        });
+    }
+  }
+}
 
 interface ImageEditFilterPreset {
   title: Resource;
@@ -102,7 +131,8 @@ export struct ImageEditPage {
   @State private flippedHorizontally: boolean = false;
   @State private activeTool: number = TOOL_CROP;
   @State private panelVisible: boolean = true;
-  @State private toolTabsModifier: HdsTabsModifier = new HdsTabsModifier();
+  private toolTabsModifier: AttributeModifier<HdsTabsAttribute> =
+    new ToolTabsMaterialModifier(0, '#007DFF');
   @State private filterIndex: number = FILTER_ORIGINAL;
   @State private overlayText: string = '';
   @State private overlayTextColor: string = '#FFFFFF';
@@ -135,19 +165,8 @@ export struct ImageEditPage {
   }
 
   aboutToAppear(): void {
-    this.toolTabsModifier
-      .vertical(false)
-      .barPosition(BarPosition.End)
-      .barHeight(56)
-      .barFloatingStyle({
-        adaptToHandedness: true,
-        barBottomMargin: this.navigationIndicatorHeight,
-        lightColor: this.accentColor,
-        systemMaterialEffect: {
-          materialType: hdsMaterial.MaterialType.IMMERSIVE,
-          materialLevel: hdsMaterial.MaterialLevel.EXQUISITE
-        }
-      });
+    this.toolTabsModifier =
+      new ToolTabsMaterialModifier(this.navigationIndicatorHeight, this.accentColor);
   }
 
   private text(resource: Resource): string {
@@ -679,34 +698,15 @@ export struct ImageEditPage {
   }
 
   private controlPanelMaterial(): uiMaterial.Material | undefined {
-    if (!deviceInfo.apiAvailable('26.0.0')) {
-      return undefined;
-    }
-    return new uiMaterial.ImmersiveMaterial({
-      style: uiMaterial.ImmersiveStyle.REGULAR,
-      interactive: true,
-      applyShadow: false,
-      colorInvert: true,
-      lightEffect: {}
-    });
+    return SystemMaterialUtil.immersiveMaterial(2, true, false, true, Color.White);
   }
 
   private toolButtonMaterial(color: string): uiMaterial.Material | undefined {
-    if (!deviceInfo.apiAvailable('26.0.0')) {
-      return undefined;
-    }
     let materialColor: string = color;
     if (color.length === 7 && color.substring(0, 1) === '#') {
       materialColor = '#55' + color.substring(1);
     }
-    return new uiMaterial.ImmersiveMaterial({
-      style: uiMaterial.ImmersiveStyle.THIN,
-      materialColor: materialColor,
-      interactive: true,
-      applyShadow: false,
-      colorInvert: false,
-      lightEffect: { color: color }
-    });
+    return SystemMaterialUtil.immersiveMaterial(1, true, false, false, color, materialColor);
   }
 
   private toolButtonSurfaceColor(color: string): string {
@@ -855,7 +855,7 @@ export struct ImageEditPage {
                       .fontColor($r('app.color.text_primary'))
                       .backgroundColor(deviceInfo.apiAvailable('26.0.0') ? Color.Transparent :
                         this.toolButtonSurfaceColor('#5AC8FA'))
-                      .systemMaterial(this.toolButtonMaterial('#5AC8FA'))
+                      .attributeModifier(materialModifier(this.toolButtonMaterial('#5AC8FA')))
                       .enabled(!this.processing)
                       .onClick((): void => this.editSelectedOverlayText());
                     Button($r('app.string.image_edit_text_delete'),
@@ -865,7 +865,7 @@ export struct ImageEditPage {
                       .fontColor($r('app.color.text_primary'))
                       .backgroundColor(deviceInfo.apiAvailable('26.0.0') ? Color.Transparent :
                         this.toolButtonSurfaceColor('#FF5C5C'))
-                      .systemMaterial(this.toolButtonMaterial('#FF5C5C'))
+                      .attributeModifier(materialModifier(this.toolButtonMaterial('#FF5C5C')))
                       .enabled(!this.processing)
                       .onClick((): void => this.deleteOverlayText());
                   }
@@ -956,7 +956,7 @@ export struct ImageEditPage {
       .padding(0)
       .backgroundColor(deviceInfo.apiAvailable('26.0.0') ? Color.Transparent :
         this.toolButtonSurfaceColor('#8290A5'))
-      .systemMaterial(this.toolButtonMaterial('#8290A5'))
+      .attributeModifier(materialModifier(this.toolButtonMaterial('#8290A5')))
       .onClick((): void => { this.panelVisible = false; });
     }
     .width('100%')
@@ -986,7 +986,7 @@ export struct ImageEditPage {
               .fontColor($r('app.color.text_primary'))
               .backgroundColor(deviceInfo.apiAvailable('26.0.0') ? Color.Transparent :
                 this.toolButtonSurfaceColor('#5AC8FA'))
-              .systemMaterial(this.toolButtonMaterial('#5AC8FA'))
+              .attributeModifier(materialModifier(this.toolButtonMaterial('#5AC8FA')))
               .enabled(!this.processing)
               .onClick((): void => this.rotateLeft());
             Button($r('app.string.image_edit_rotate_right'), { type: ButtonType.Capsule, stateEffect: true })
@@ -996,7 +996,7 @@ export struct ImageEditPage {
               .fontColor($r('app.color.text_primary'))
               .backgroundColor(deviceInfo.apiAvailable('26.0.0') ? Color.Transparent :
                 this.toolButtonSurfaceColor('#007DFF'))
-              .systemMaterial(this.toolButtonMaterial('#007DFF'))
+              .attributeModifier(materialModifier(this.toolButtonMaterial('#007DFF')))
               .enabled(!this.processing)
               .onClick((): void => this.rotateRight());
             Button($r('app.string.image_edit_flip'), { type: ButtonType.Capsule, stateEffect: true })
@@ -1006,7 +1006,7 @@ export struct ImageEditPage {
               .fontColor($r('app.color.text_primary'))
               .backgroundColor(deviceInfo.apiAvailable('26.0.0') ? Color.Transparent :
                 this.toolButtonSurfaceColor('#AF52DE'))
-              .systemMaterial(this.toolButtonMaterial('#AF52DE'))
+              .attributeModifier(materialModifier(this.toolButtonMaterial('#AF52DE')))
               .enabled(!this.processing)
               .onClick((): void => this.flipHorizontal());
           }
@@ -1047,7 +1047,7 @@ export struct ImageEditPage {
               .fontColor($r('app.color.danger'))
               .backgroundColor(deviceInfo.apiAvailable('26.0.0') ? Color.Transparent :
                 this.toolButtonSurfaceColor('#FF5C5C'))
-              .systemMaterial(this.toolButtonMaterial('#FF5C5C'))
+              .attributeModifier(materialModifier(this.toolButtonMaterial('#FF5C5C')))
               .enabled(!this.processing && this.overlayText.length > 0)
               .onClick((): void => this.deleteOverlayText());
           }
@@ -1076,7 +1076,7 @@ export struct ImageEditPage {
               .fontColor($r('app.color.danger'))
               .backgroundColor(deviceInfo.apiAvailable('26.0.0') ? Color.Transparent :
                 this.toolButtonSurfaceColor('#FF5C5C'))
-              .systemMaterial(this.toolButtonMaterial('#FF5C5C'))
+              .attributeModifier(materialModifier(this.toolButtonMaterial('#FF5C5C')))
               .enabled(!this.processing && this.drawingStrokeCount > 0)
               .onClick((): void => this.clearDrawing());
           }
@@ -1103,7 +1103,7 @@ export struct ImageEditPage {
     .border({ width: deviceInfo.apiAvailable('26.0.0') ? 0 : 1, color: $r('app.color.divider') })
     .borderRadius(26)
     .clip(true)
-    .systemMaterial(this.controlPanelMaterial());
+    .attributeModifier(materialModifier(this.controlPanelMaterial()));
   }
 
   @Builder
@@ -1116,7 +1116,7 @@ export struct ImageEditPage {
       .backgroundColor(deviceInfo.apiAvailable('26.0.0') ? Color.Transparent :
         (this.ratioIndex === index ? this.accentColor :
           this.toolButtonSurfaceColor('#718096')))
-      .systemMaterial(this.toolButtonMaterial(this.ratioIndex === index ? this.accentColor : '#718096'))
+      .attributeModifier(materialModifier(this.toolButtonMaterial(this.ratioIndex === index ? this.accentColor : '#718096')))
       .enabled(!this.processing)
       .onClick((): void => this.selectRatio(index));
   }
@@ -1154,7 +1154,7 @@ export struct ImageEditPage {
     .border({ width: this.filterIndex === index ? 2 : 1,
       color: this.filterIndex === index ? this.accentColor : this.filterTint(index) })
     .clip(true)
-    .systemMaterial(this.toolButtonMaterial(this.filterTint(index)))
+    .attributeModifier(materialModifier(this.toolButtonMaterial(this.filterTint(index))))
     .enabled(!this.processing)
     .onClick((): void => this.selectFilter(index));
   }
@@ -1186,7 +1186,7 @@ export struct ImageEditPage {
     .height(38)
     .padding(3)
     .backgroundColor(Color.Transparent)
-    .systemMaterial(this.toolButtonMaterial(color))
+    .attributeModifier(materialModifier(this.toolButtonMaterial(color)))
     .enabled(!this.processing)
     .onClick((): void => this.selectColor(color, forText));
   }

@@ -70,12 +70,13 @@ function rootFixture() {
   const root = new exports.Root();
   Object.assign(root, {
     breakpoint: 'sm', desktopLayoutEnabled: false, desktopAsideEnabled: true,
+    videoLayoutBreakpoint: '', videoFullscreenOwner: '', scheduleVideoLayoutRelease() {},
     desktopRailAutoHide: true, desktopRailSwipe: true, desktopRailOpen: false, desktopModalOpen: false,
     fullscreenDesktopPhoto: () => false,
     currentTab: 0, desktopRoute: '', showSideDrawer: false, homeFeedPresented: true,
     showOnboardingGuide: false, showLoginSheet: false, showMidAutumnGreeting: false,
     showChatUnlock: false, showLinkPreview: false, photoOverlayOpen: false,
-    showSpacePreview: false, showPauseTopics: false, showFollowingOrder: false,
+    showSpacePreview: false, showPauseTopics: false, showFollowingOrder: false, showHomeSourceOptions: false,
     timelineColumnsMode: 0, desktopContentWidth: 900,
     navPathStack: { getAllPathName: () => [], getParamByName: () => [] },
     beginHomeViewportChange() {}, syncAllWaterFlowSections() {}, titleBarStyle: () => ({}),
@@ -436,14 +437,31 @@ test('right sidebar preference respects width and route exclusions when re-enabl
   }
 });
 
-test('resizing through tablet and narrow windows preserves the preference and restores the old layout', () => {
+test('portrait tablets and wide phones activate desktop layout from 600vp and narrow windows retain the preference', () => {
   const f = fixture();
   f.layoutSettingsStore.save({}, true);
-  for (const width of [1464, 840, 839, 600, 390, 1464]) {
+  for (const width of [1464, 840, 839, 720, 600, 599, 440, 326, 707, 440, 1464]) {
     const breakpoint = f.responsive.breakpointForWidth(width);
-    assert.equal(f.desktop.active(true, breakpoint), width >= 840);
+    assert.equal(f.desktop.active(true, breakpoint), width >= 600);
     assert.equal(f.desktop.active(false, breakpoint), false);
     assert.equal(f.layoutSettingsStore.load({}), true);
+  }
+});
+
+test('medium desktop windows keep chat full-page and retain a compact rail without a trends column', () => {
+  const { root, responsive, desktop } = rootFixture();
+  root.desktopLayoutEnabled = true;
+  root.currentTab = 3;
+  root.desktopRoute = 'DmConversation';
+  for (const width of [1200, 840, 839, 720, 707, 600, 599, 440, 326, 720, 840]) {
+    root.breakpoint = responsive.breakpointForWidth(width);
+    root.onBreakpointChange();
+    assert.equal(root.isDesktopLayout(), width >= 600, `${width}vp desktop`);
+    assert.equal(root.mainNavigationMode, width >= 840 ? 'split' : 'stack', `${width}vp chat`);
+    if (width >= 600 && width < 840) {
+      assert.equal(desktop.compactRail(root.breakpoint, false), true);
+      assert.equal(desktop.hasAside(root.breakpoint, '', false), false);
+    }
   }
 });
 
@@ -562,6 +580,81 @@ function methodsHarness(component, file, names, dependencies) {
   }).outputText;
   return new Function(...Object.keys(dependencies), `${output}; return Harness;`)(...Object.values(dependencies));
 }
+
+test('medium desktop settings return from a category to the menu before leaving settings', () => {
+  const responsive = fixture().responsive;
+  const Settings = methodsHarness('DesktopSettingsHost', 'entry/src/main/ets/components/DesktopSettingsHost.ets',
+    ['onSettingsBack'], { ResponsiveLayout: responsive });
+  for (const bp of ['sm', 'md', 'lg', 'xl']) {
+    let count = 2;
+    let outerPops = 0;
+    const settings = Object.assign(new Settings(), { breakpoint: bp,
+      pageStack: { size: () => count, pop: () => { count--; } },
+      outerStack: { pop: () => { outerPops++; } } });
+    assert.equal(settings.onSettingsBack(), true);
+    assert.equal(count, 1);
+    settings.onSettingsBack();
+    if (responsive.isLarge(bp)) {
+      assert.equal(count, 1);
+      assert.equal(outerPops, 1);
+    } else {
+      assert.equal(count, 0, 'narrow settings reveal the category menu');
+      assert.equal(outerPops, 0);
+      settings.onSettingsBack();
+      assert.equal(outerPops, 1);
+    }
+  }
+});
+
+test('foldable launch and fullscreen exit share a rotation policy that respects the system lock', async () => {
+  const Orientation = { AUTO_ROTATION_RESTRICTED: 8, FOLLOW_DESKTOP: 17 };
+  let foldable = false;
+  let unavailable = false;
+  const appWindowOrientation = load('utils/AppWindowOrientation', { '@kit.ArkUI': {
+    window: { Orientation }, display: { isFoldable: () => {
+      if (unavailable) throw Error('Display unavailable');
+      return foldable;
+    } }
+  } }, new Map()).appWindowOrientation;
+  const log = { warn() {}, error() {} };
+  const Ability = methodsHarness('EntryAbility', 'entry/src/main/ets/entryability/EntryAbility.ets',
+    ['configureFullScreen'], { appWindowOrientation, hilog: log, DOMAIN: 0, TAG: 'test' });
+  const Player = methodsHarness('SurfaceVideoPlayer', 'entry/src/main/ets/components/PostMedia.ets',
+    ['setFullscreenWindowOrientation'], { appWindowOrientation, window: { Orientation },
+      hilog: log, DOMAIN: 0, TAG: 'test' });
+  for (const isFoldable of [false, true, false]) {
+    foldable = isFoldable;
+    const calls = [];
+    const win = { setWindowLayoutFullScreen: async value => { assert.equal(value, true); },
+      setPreferredOrientation: async value => { calls.push(value); } };
+    await new Ability().configureFullScreen({ getMainWindowSync: () => win });
+    const player = Object.assign(new Player(), { fullscreenOrientationRequest: 0, ensurePlayerWindow: async () => win });
+    await player.setFullscreenWindowOrientation(true);
+    await player.setFullscreenWindowOrientation(false);
+    const policy = foldable ? 8 : 17;
+    assert.deepEqual(calls, [policy, 8, policy]);
+  }
+  unavailable = true;
+  assert.equal(appWindowOrientation(), 17);
+});
+
+test('a pending fullscreen request cannot overwrite a newer exit orientation', async () => {
+  const pending = [];
+  const calls = [];
+  const win = { setPreferredOrientation: async value => { calls.push(value); } };
+  const Player = methodsHarness('SurfaceVideoPlayer', 'entry/src/main/ets/components/PostMedia.ets',
+    ['setFullscreenWindowOrientation'], { appWindowOrientation: () => 17,
+      window: { Orientation: { AUTO_ROTATION_RESTRICTED: 8 } } });
+  const player = Object.assign(new Player(), { fullscreenOrientationRequest: 0,
+    ensurePlayerWindow: () => new Promise(resolve => pending.push(resolve)) });
+  const enter = player.setFullscreenWindowOrientation(true);
+  const exit = player.setFullscreenWindowOrientation(false);
+  pending[1](win);
+  await exit;
+  pending[0](win);
+  await enter;
+  assert.deepEqual(calls, [17]);
+});
 
 test('phone-style feed fills the video area in both large-screen shells and orientations', () => {
   const f = fixture();

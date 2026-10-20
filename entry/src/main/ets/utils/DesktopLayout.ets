@@ -2,7 +2,8 @@ import { ResponsiveLayout } from './ResponsiveLayout';
 
 export class DesktopLayout {
   static active(enabled: boolean, breakpoint: string): boolean {
-    return enabled && ResponsiveLayout.isLarge(breakpoint);
+    // Medium windows include portrait tablets and unfolded wide phones.
+    return enabled && (breakpoint === ResponsiveLayout.BREAKPOINT_MD || ResponsiveLayout.isLarge(breakpoint));
   }
 
   static timelineColumns(mode: number, contentWidth: number): number {

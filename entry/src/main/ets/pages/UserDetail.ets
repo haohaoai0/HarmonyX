@@ -1,3 +1,5 @@
+import { scrollFrame, scrollStarted, scrollStopped, stopScrollOnTouch } from '../utils/ScrollInteraction';
+import { ProfileBioTranslation } from '../components/ProfileBioTranslation';
 import { AdaptivePostFeed } from '../components/AdaptivePostFeed';
 import { pageTextColor } from '../utils/ThemeColors';
 import { appPageBackground } from '../components/PageBackgroundLayer';
@@ -73,6 +75,7 @@ import {
   STORAGE_KEY_FILTER_HIDE_ADS,
   STORAGE_KEY_FILTER_HIDE_REPLIES,
   STORAGE_KEY_FILTER_HIDE_REPOSTS,
+  STORAGE_KEY_FILTER_LANGUAGES,
   STORAGE_KEY_FILTER_KEYWORDS,
   STORAGE_KEY_FILTER_MUTED_USERS,
   STORAGE_KEY_FILTER_ONLY_MEDIA,
@@ -123,6 +126,7 @@ export struct UserDetail {
   @StorageLink(STORAGE_KEY_FILTER_HIDE_REPOSTS) filterHideReposts: boolean = false;
   @StorageLink(STORAGE_KEY_FILTER_HIDE_REPLIES) filterHideReplies: boolean = false;
   @StorageLink(STORAGE_KEY_FILTER_HIDE_ADS) filterHideAds: boolean = true;
+  @StorageProp(STORAGE_KEY_FILTER_LANGUAGES) private filterLanguages: string = '';
   @StorageLink(STORAGE_KEY_FILTER_KEYWORDS) filterKeywords: string = '';
   @StorageLink(STORAGE_KEY_FILTER_MUTED_USERS) filterMutedUsers: string = '';
   @StorageLink(STORAGE_KEY_FILTER_REVISION) filterRevision: number = 0;
@@ -155,17 +159,21 @@ export struct UserDetail {
   private privateProfileAvailable: boolean = false;
   @State selectedTab: number = 0;
   private readonly activityTabOrder: number[] = [0, 1, 3, 2, 4];
+  private activityTabs(): number[] {
+    return this.isSelfProfile ? [0, 1, 3, 2, 4, 6] : this.activityTabOrder;
+  }
+
   private activitySwiper: SwiperController = new SwiperController();
   private readonly activityScrollers: Scroller[] = [new Scroller(), new Scroller(), new Scroller(),
-    new Scroller(), new Scroller()];
+    new Scroller(), new Scroller(), new Scroller(), new Scroller()];
   @State private activityIndex: number = 0;
   @State private tabPosition: number = 0;
   @State private tabBarWidth: number = 0;
-  @State private tabTextWidths: number[] = [32, 32, 32, 32, 32];
+  @State private tabTextWidths: number[] = [32, 32, 32, 32, 32, 32];
   private tabBarOriginX: number = 0;
   @State private activityPages: ProfileActivityPage[] = [new ProfileActivityPage(),
     new ProfileActivityPage(), new ProfileActivityPage(), new ProfileActivityPage(), new ProfileActivityPage(),
-    new ProfileActivityPage()];
+    new ProfileActivityPage(), new ProfileActivityPage()];
   @State private mediaFilter: string = 'video';
   @State private postsFilter: string = 'posts';
   @State private aboutOpen: boolean = false;
@@ -321,7 +329,7 @@ export struct UserDetail {
       tab === 0 ? this.filterHideReplies : false,
       this.filterKeywords,
       this.filterMutedUsers,
-      this.filterHideAds
+      this.filterHideAds, this.filterLanguages
     );
   }
 
@@ -546,7 +554,7 @@ export struct UserDetail {
   }
 
   private selectTab(index: number): void {
-    const position: number = this.activityTabOrder.indexOf(index);
+    const position: number = this.activityTabs().indexOf(index);
     if (position < 0) {
       return;
     }
@@ -585,16 +593,16 @@ export struct UserDetail {
   }
 
   private onActivityScroll(index: number, position: number): void {
-    const progress: number = ProfileTabMotion.scrollPosition(index, position);
+    const progress: number = ProfileTabMotion.scrollPosition(index, position, this.activityTabs().length);
     if (Math.abs(this.tabPosition - progress) > 0.0001) {
       this.tabPosition = progress;
     }
-    this.ensureActivityLoaded(this.activityTabOrder[index]);
+    this.ensureActivityLoaded(this.activityTabs()[index]);
   }
 
   private activityChanged(index: number): void {
     this.activityIndex = index;
-    this.selectedTab = this.activityTabOrder[index];
+    this.selectedTab = this.activityTabs()[index];
     this.ensureActivityLoaded(this.selectedTab);
   }
 
@@ -639,6 +647,7 @@ export struct UserDetail {
   }
 
   private async loadProfilePage(tab: number, replace: boolean): Promise<void> {
+    if (tab === 6 && !this.isSelfProfile) { return; }
     const userId: string = this.resolvedUserId();
     const state: ProfileActivityPage = this.activityPages[tab];
     if (userId.length === 0 || state.loading || (!replace && state.cursor.length === 0)) {
@@ -658,6 +667,8 @@ export struct UserDetail {
           result = await xPrivateClient.userTweetsAndReplies(userId, cursor, 20);
         } else if (tab === 2) {
           result = await xPrivateClient.userMedia(userId, cursor, 20);
+        } else if (tab === 6) {
+          result = await xPrivateClient.userLikes(userId, cursor, 20);
         } else if (tab === 5) {
           result = await xPrivateClient.userHighlights(userId, cursor, 20);
         } else {
@@ -672,6 +683,11 @@ export struct UserDetail {
                 !this.suggestionGroups.some((existing: FollowSuggestionGroup): boolean => existing.id === group.id))];
           }
         }
+      }
+      if (page === null && tab === 6 && authStore.isSignedIn()) {
+        this.api.setToken(authStore.getToken());
+        this.api.setUser(authStore.getUserId());
+        page = await this.api.userLikesPage(userId, cursor);
       }
       if (page === null && authStore.isSignedIn() && (!this.privateProfileAvailable || tab === 0) && tab < 3) {
         this.api.setToken(authStore.getToken());
@@ -1138,7 +1154,10 @@ export struct UserDetail {
 
   @Builder
   private ProfileBanner(): void {
-    AnchoredCover({ coverHeight: this.statusBarHeight + 120, pullOffset: this.headerPullOffset }) {
+    // Scroll the hero's 60-vp cover space away while keeping the toolbar covered.
+    // Transparent activity surfaces must reveal the page wallpaper below it.
+    AnchoredCover({ coverHeight: this.statusBarHeight + 120, pullOffset: this.headerPullOffset,
+      scrollOffset: Math.min(60, this.headerScrollOffset) }) {
     Stack() {
       if (this.bannerUrl().length > 0) {
         ProxyMediaImage({ url: this.bannerUrl(), displayHeight: this.statusBarHeight + 120,
@@ -1328,7 +1347,8 @@ export struct UserDetail {
                   this.accentColor : $r('app.color.text_primary'))
             })
           }.fontFamily(this.appFontFamily)
-          .fontSize(15).width('100%').margin({ bottom: 16 })
+          .fontSize(15).width('100%').margin({ bottom: 4 })
+          ProfileBioTranslation({ userId: this.resolvedUserId(), bio: this.profileDescription() })
         }
         if (this.profile !== null && (this.profile.location ?? '').length > 0) {
           Text(this.profile.location).fontFamily(this.appFontFamily).fontSize(14).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
@@ -1387,6 +1407,7 @@ export struct UserDetail {
   }
 
   private tabLabel(index: number): Resource {
+    if (index === 6) { return $r('app.string.profile_detail_likes'); }
     if (index === 0) { return this.postsFilter === 'highlights' ? $r('app.string.profile_highlights_tab') :
       $r('app.string.profile_detail_posts_tab'); }
     if (index === 1) { return $r('app.string.profile_detail_replies_tab'); }
@@ -1430,6 +1451,7 @@ export struct UserDetail {
   }
 
   private tabSymbol(index: number): Resource {
+    if (index === 6) { return $r('sys.symbol.heart'); }
     if (index === 0) { return this.postsFilter === 'highlights' ? $r('sys.symbol.star') : $r('sys.symbol.doc_plaintext'); }
     if (index === 1) { return $r('sys.symbol.message'); }
     if (index === 3) { return $r('sys.symbol.arrow_2_circlepath'); }
@@ -1442,7 +1464,7 @@ export struct UserDetail {
   }
 
   private tabIconOffset(tab: number, position: number): number {
-    return -(5 + this.tabLabelWidth(tab, position)) / 2 * ProfileTabMotion.fraction(position, this.tabPosition);
+    return -(5 + this.tabLabelWidth(tab, position)) / 2 * ProfileTabMotion.fraction(position, this.tabPosition, this.activityTabs().length);
   }
 
   private measureTabText(position: number, area: Area): void {
@@ -1456,8 +1478,8 @@ export struct UserDetail {
 
   private selectTabAt(event: ClickEvent): void {
     const position: number = ProfileTabMotion.tabAt(event.windowX - this.tabBarOriginX,
-      this.tabPosition, this.tabBarWidth);
-    this.selectTab(this.activityTabOrder[position]);
+      this.tabPosition, this.tabBarWidth, this.activityTabs().length);
+    this.selectTab(this.activityTabs()[position]);
   }
 
   @Builder
@@ -1467,22 +1489,22 @@ export struct UserDetail {
       Row() {
         Text(this.tabLabel(tab)).fontFamily(this.appFontFamily).fontSize($r('app.float.icon_tabs_label_size')).fontWeight(FontWeight.Medium)
           .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).maxLines(1).textOverflow({ overflow: TextOverflow.Ellipsis })
-          .constraintSize({ maxWidth: Math.max(1, ProfileTabMotion.baseWidth(this.tabBarWidth) - 10) })
-      }.width(ProfileTabMotion.baseWidth(this.tabBarWidth)).height(50).justifyContent(FlexAlign.Center)
-        .opacity(1 - ProfileTabMotion.fraction(position, this.tabPosition))
+          .constraintSize({ maxWidth: Math.max(1, ProfileTabMotion.baseWidth(this.tabBarWidth, this.activityTabs().length) - 10) })
+      }.width(ProfileTabMotion.baseWidth(this.tabBarWidth, this.activityTabs().length)).height(50).justifyContent(FlexAlign.Center)
+        .opacity(1 - ProfileTabMotion.fraction(position, this.tabPosition, this.activityTabs().length))
       Stack() {
         SymbolGlyph(this.tabSymbol(tab)).fontSize(22).fontColor([pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)])
       }
       .width(22).height(50)
-      .translate({ x: (ProfileTabMotion.baseWidth(this.tabBarWidth) - 22) / 2 +
+      .translate({ x: (ProfileTabMotion.baseWidth(this.tabBarWidth, this.activityTabs().length) - 22) / 2 +
         this.tabIconOffset(tab, position) })
-      .scale({ x: Math.max(0.001, ProfileTabMotion.fraction(position, this.tabPosition)), y: 1 })
-      .opacity(ProfileTabMotion.fraction(position, this.tabPosition))
+      .scale({ x: Math.max(0.001, ProfileTabMotion.fraction(position, this.tabPosition, this.activityTabs().length)), y: 1 })
+      .opacity(ProfileTabMotion.fraction(position, this.tabPosition, this.activityTabs().length))
       .hitTestBehavior(HitTestMode.None)
       Row({ space: 5 }) {
         Text(this.tabLabel(tab)).fontFamily(this.appFontFamily).fontSize(16).fontWeight(FontWeight.Bold).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
           .maxLines(1).textOverflow({ overflow: TextOverflow.Ellipsis })
-          .constraintSize({ maxWidth: Math.max(1, ProfileTabMotion.expandedWidth(this.tabBarWidth) - 27 -
+          .constraintSize({ maxWidth: Math.max(1, ProfileTabMotion.expandedWidth(this.tabBarWidth, this.activityTabs().length) - 27 -
             (tab === 0 || tab === 2 ? 27 : 0)) })
           .onAreaChange((oldArea: Area, area: Area): void => this.measureTabText(position, area))
         if (tab === 0 || tab === 2) {
@@ -1490,15 +1512,15 @@ export struct UserDetail {
             .width(22)
         }
       }
-      .width(Math.max(1, ProfileTabMotion.expandedWidth(this.tabBarWidth) - 27)).height(50)
-      .translate({ x: ProfileTabMotion.baseWidth(this.tabBarWidth) / 2 + 16 + this.tabIconOffset(tab, position) })
-      .scale({ x: Math.max(0.001, ProfileTabMotion.fraction(position, this.tabPosition)), y: 1, centerX: 0 })
-      .opacity(ProfileTabMotion.fraction(position, this.tabPosition))
+      .width(Math.max(1, ProfileTabMotion.expandedWidth(this.tabBarWidth, this.activityTabs().length) - 27)).height(50)
+      .translate({ x: ProfileTabMotion.baseWidth(this.tabBarWidth, this.activityTabs().length) / 2 + 16 + this.tabIconOffset(tab, position) })
+      .scale({ x: Math.max(0.001, ProfileTabMotion.fraction(position, this.tabPosition, this.activityTabs().length)), y: 1, centerX: 0 })
+      .opacity(ProfileTabMotion.fraction(position, this.tabPosition, this.activityTabs().length))
       .hitTestBehavior(HitTestMode.None).accessibilityLevel('no')
     }
-    .width(ProfileTabMotion.baseWidth(this.tabBarWidth)).height(50).clip(false)
-    .translate({ x: ProfileTabMotion.center(position, this.tabPosition, this.tabBarWidth) -
-      ProfileTabMotion.baseWidth(this.tabBarWidth) / 2 })
+    .width(ProfileTabMotion.baseWidth(this.tabBarWidth, this.activityTabs().length)).height(50).clip(false)
+    .translate({ x: ProfileTabMotion.center(position, this.tabPosition, this.tabBarWidth, this.activityTabs().length) -
+      ProfileTabMotion.baseWidth(this.tabBarWidth, this.activityTabs().length) / 2 })
     .accessibilityText(this.text(this.tabLabel(tab))).accessibilitySelected(this.selectedTab === tab)
     .onClick((): void => this.selectTab(tab))
   }
@@ -1506,19 +1528,19 @@ export struct UserDetail {
   @Builder
   private ProfileTabs(): void {
     Stack({ alignContent: Alignment.TopStart }) {
-      ForEach(this.activityTabOrder, (tab: number, position: number) => {
+      ForEach(this.activityTabs(), (tab: number, position: number) => {
         this.ProfileTab(tab, position)
       }, (tab: number): string => tab.toString())
-      Row().width(ProfileTabMotion.indicatorWidth(this.tabBarWidth))
+      Row().width(ProfileTabMotion.indicatorWidth(this.tabBarWidth, this.activityTabs().length))
         .height($r('app.float.icon_tabs_indicator_height')).borderRadius($r('app.float.icon_tabs_indicator_radius'))
         .backgroundColor($r('app.color.text_primary')).hitTestBehavior(HitTestMode.None)
-        .translate({ x: ProfileTabMotion.indicatorLeft(this.tabPosition, this.tabBarWidth), y: 49 })
+        .translate({ x: ProfileTabMotion.indicatorLeft(this.tabPosition, this.tabBarWidth, this.activityTabs().length), y: 49 })
       // The selected tab's whole slot opens its filter, including the icon, label, chevron and padding.
       if ((this.selectedTab === 0 || this.selectedTab === 2) && Math.abs(this.tabPosition - this.activityIndex) < 0.01) {
         Button({ type: ButtonType.Normal }) { Row() }
-          .width(ProfileTabMotion.expandedWidth(this.tabBarWidth)).height(PROFILE_TAB_BAR_HEIGHT)
+          .width(ProfileTabMotion.expandedWidth(this.tabBarWidth, this.activityTabs().length)).height(PROFILE_TAB_BAR_HEIGHT)
           .borderRadius(0).backgroundColor(Color.Transparent)
-          .translate({ x: ProfileTabMotion.slotStart(this.activityIndex, this.tabPosition, this.tabBarWidth) })
+          .translate({ x: ProfileTabMotion.slotStart(this.activityIndex, this.tabPosition, this.tabBarWidth, this.activityTabs().length) })
           .accessibilityText(this.text($r('app.string.profile_content_filter')))
           .bindMenu(this.ActivityFilterMenu)
       }
@@ -1578,6 +1600,8 @@ export struct UserDetail {
 
   @Builder
   private ActivityPost(tab: number, post: Tweet, index: number): void {
+    // A FlowItem accepts one child: keep the post and its suggestions in the
+    // same vertical container so the recommendation strip takes layout space.
     Column() {
       Column() {
         if (post.pinned && tab === 0 && this.postsFilter === 'posts') {
@@ -1602,17 +1626,18 @@ export struct UserDetail {
             onMentionTapped: (handle: string): void => this.openMention(handle) })
         }
       }.width('100%')
-    }
-    if (tab === 0) {
-      ForEach(this.suggestionGroups.filter((group: FollowSuggestionGroup): boolean => group.afterTweetId === post.id),
-        (group: FollowSuggestionGroup) => {
-          Column() { FollowSuggestions({ group: group, contextualUserId: this.resolvedUserId(), showBanner: true }) }
-        }, (group: FollowSuggestionGroup): string => group.id)
-      if (this.privateProfileAvailable && !this.isSelfProfile && this.suggestionGroups.length === 0 &&
-        index === Math.min(2, this.tabPosts(tab).length - 1)) {
-        Column() { FollowSuggestions({ autoLoad: true, contextualUserId: this.resolvedUserId(), showBanner: true }) }
+      if (tab === 0) {
+        ForEach(this.suggestionGroups.filter((group: FollowSuggestionGroup): boolean => group.afterTweetId === post.id),
+          (group: FollowSuggestionGroup) => {
+            Column() { FollowSuggestions({ group: group, contextualUserId: this.resolvedUserId(), showBanner: true }) }
+          }, (group: FollowSuggestionGroup): string => group.id)
+        if (this.privateProfileAvailable && !this.isSelfProfile && this.suggestionGroups.length === 0 &&
+          index === Math.min(2, this.tabPosts(tab).length - 1)) {
+          Column() { FollowSuggestions({ autoLoad: true, contextualUserId: this.resolvedUserId(), showBanner: true }) }
+        }
       }
     }
+    .width('100%')
   }
 
   @Builder
@@ -1655,7 +1680,7 @@ export struct UserDetail {
   @Builder
   private ActivityPager(): void {
     Swiper(this.activitySwiper) {
-      ForEach(this.activityTabOrder, (tab: number) => { this.ActivityList(tab) },
+      ForEach(this.activityTabs(), (tab: number) => { this.ActivityList(tab) },
         (tab: number): string => tab.toString())
     }
     .width('100%').height(Math.max(1, this.viewportHeight - PROFILE_TAB_BAR_HEIGHT))
@@ -1667,7 +1692,7 @@ export struct UserDetail {
       this.onActivityScroll(index, position);
     })
     .onAnimationStart((index: number, target: number, event: SwiperAnimationEvent): void => {
-      this.ensureActivityLoaded(this.activityTabOrder[target]);
+      this.ensureActivityLoaded(this.activityTabs()[target]);
     })
     .onAnimationEnd((index: number, event: SwiperAnimationEvent): void => { this.tabPosition = index; })
   }
@@ -1805,7 +1830,13 @@ export struct UserDetail {
               ListItemGroup({ header: this.ProfileTabs() }) {
                 ListItem() { this.ActivityPager() }
               }
+              .backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue))
             }
+            .onScrollStop((): void => scrollStopped(this.scroller))
+            .onScrollStart((): void => scrollStarted(this.scroller))
+            .onScrollFrameBegin((offset: number, state: ScrollState): OnScrollFrameBeginHandlerResult =>
+              scrollFrame(this.scroller, offset, state))
+            .onTouchIntercept((event: TouchEvent): HitTestMode => stopScrollOnTouch(event, this.scroller, this.activityScrollers))
             .width('100%').height('100%').scrollBar(BarState.Off).sticky(StickyStyle.Header)
             .onDidScroll((): void => {
               this.updateHeaderScroll();

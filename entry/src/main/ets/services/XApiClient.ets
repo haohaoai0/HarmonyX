@@ -19,6 +19,7 @@ import { ComposerOptions } from '../models/ComposerOptions';
 import { composerV2Fields } from './XComposerRequest';
 import { proxyStore } from './ProxyStore';
 import { normalizedPostMediaType } from '../utils/PostGif';
+import { optionalPostCount, postEditHistoryIds } from '../utils/PostMetadata';
 import { ReplyConversation } from './ReplyConversation';
 import { XPostCardParser } from './XPostCardParser';
 import { XPostPresentationParser } from './XPostPresentationParser';
@@ -635,12 +636,15 @@ export class XApiClient {
           },
           text: String(t['text'] ?? ''),
           language: String(t['lang'] ?? ''),
+          editHistoryIds: postEditHistoryIds(t),
           createdAt: String(t['created_at'] ?? ''),
           metrics: {
             replyCount: Number(metrics['reply_count'] ?? 0),
             repostCount: Number(metrics['retweet_count'] ?? 0),
             likeCount: Number(metrics['like_count'] ?? 0),
-            viewCount: Number(metrics['impression_count'] ?? 0)
+            viewCount: Number(metrics['impression_count'] ?? 0),
+            bookmarkCount: optionalPostCount(metrics['bookmark_count']),
+            quoteCount: optionalPostCount(metrics['quote_count'])
           },
           liked: false,
           reposted: false,
@@ -662,7 +666,7 @@ export class XApiClient {
             const quote: Tweet = out[k];
             if (quote.id === quotedId) {
               out[i].quotedTweet = { id: quote.id, author: quote.author, text: quote.text,
-                createdAt: quote.createdAt, attachments: quote.attachments, poll: quote.poll, card: quote.card,
+                createdAt: quote.createdAt, editHistoryIds: quote.editHistoryIds, attachments: quote.attachments, poll: quote.poll, card: quote.card,
                 article: quote.article, presentation: quote.presentation };
               break;
             }

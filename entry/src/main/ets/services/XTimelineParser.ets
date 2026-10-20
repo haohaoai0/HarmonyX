@@ -55,6 +55,7 @@ import type {
 } from '../models/Tweet';
 import type { TweetPage } from './XApiClient';
 import { normalizedPostMediaType } from '../utils/PostGif';
+import { optionalPostCount, postEditHistoryIds } from '../utils/PostMetadata';
 import { ReplyConversation } from './ReplyConversation';
 import { XPostCardParser } from './XPostCardParser';
 import { XArticleParser } from './XArticleParser';
@@ -74,6 +75,13 @@ export interface TweetDetailPage {
   discoverMore: Tweet[];
   nextToken: string;
   discoverMoreStarted: boolean;
+}
+
+interface PostReplyRelation {
+  parentId: string;
+  username: string;
+  conversationId: string;
+  isReply: boolean;
 }
 
 export class XTimelineParser {
@@ -238,10 +246,7 @@ export class XTimelineParser {
         const moduleItems: Array<Record<string, Object>> = XTimelineParser.arr(instruction, 'moduleItems');
         const additions: Tweet[] = [];
         for (let m: number = 0; m < moduleItems.length; m++) {
-          const item: Record<string, Object> = XTimelineParser.obj(moduleItems[m], 'item');
-          const tweet: Tweet | null = Object.keys(item).length > 0 ?
-            XTimelineParser.parseTweetItemContent(XTimelineParser.obj(item, 'itemContent')) :
-            XTimelineParser.entryTweet(moduleItems[m]);
+          const tweet: Tweet | null = XTimelineParser.moduleItemTweet(moduleItems[m]);
           if (tweet !== null) {
             additions.push(tweet);
           }
@@ -352,8 +357,7 @@ export class XTimelineParser {
         discoverMoreStarted = discoverMoreStarted || relatedModule;
         const additions: Array<Record<string, Object>> = XTimelineParser.arr(instruction, 'moduleItems');
         for (let m: number = 0; m < additions.length; m++) {
-          const item: Record<string, Object> = XTimelineParser.obj(additions[m], 'item');
-          const post: Tweet | null = XTimelineParser.parseTweetItemContent(XTimelineParser.obj(item, 'itemContent'));
+          const post: Tweet | null = XTimelineParser.moduleItemTweet(additions[m]);
           if (post !== null) {
             if (relatedModule || (discoverMoreStarted && !conversationModule)) {
               suggestedIds.add(post.id);
@@ -403,6 +407,9 @@ export class XTimelineParser {
           discoverMore.push(post);
         }
       }
+      hilog.info(DOMAIN, TAG, 'detail %{public}s posts=%{public}d replies=%{public}d modules=%{public}d related=%{public}d cursor=%{public}s expected=%{public}d',
+        focalId, page.tweets.length, replies.length, replyIds.size, suggestedIds.size,
+        String(page.nextToken.length > 0), focal?.metrics.replyCount ?? -1);
       return { focal: focal, replies: replies, discoverMore: discoverMore, nextToken: page.nextToken,
         discoverMoreStarted: discoverMoreStarted || discoverMore.length > 0 };
     } catch (error) {
@@ -746,20 +753,22 @@ export class XTimelineParser {
     }
     const items: Array<Record<string, Object>> = XTimelineParser.arr(content, 'items');
     for (let i: number = 0; i < items.length; i++) {
-      const item: Record<string, Object> = XTimelineParser.obj(items[i], 'item');
-      const itemContent: Record<string, Object> = XTimelineParser.obj(item, 'itemContent');
-      const hasTweetResults: boolean = Object.keys(
-        XTimelineParser.obj(itemContent, 'tweet_results')).length > 0;
-      if (!hasTweetResults && XTimelineParser.itemType(itemContent) !== 'TimelineTweet') {
-        continue;
-      }
-      const tweet: Tweet | null = XTimelineParser.parseTweetItemContent(itemContent, String(items[i]['entryId'] ?? item['entryId'] ?? ''));
-      if (tweet !== null) {
-        XTimelineParser.readFeedbackKeys(tweet, item);
-        out.push(tweet);
-      }
+      const tweet: Tweet | null = XTimelineParser.moduleItemTweet(items[i]);
+      if (tweet !== null) { out.push(tweet); }
     }
     return conversationCards ? ReplyConversation.module(out) : out;
+  }
+
+  // Initial modules and TimelineAddToModule use the same two item wrappers.
+  private static moduleItemTweet(row: Record<string, Object>): Tweet | null {
+    const item: Record<string, Object> = XTimelineParser.obj(row, 'item');
+    let content: Record<string, Object> = XTimelineParser.obj(item, 'itemContent');
+    if (Object.keys(content).length === 0) { content = XTimelineParser.obj(row, 'itemContent'); }
+    const tweet: Tweet | null = Object.keys(content).length > 0 ?
+      XTimelineParser.parseTweetItemContent(content, String(row['entryId'] ?? row['entry_id'] ?? item['entryId'] ?? '')) :
+      XTimelineParser.entryTweet(row);
+    if (tweet !== null) { XTimelineParser.readFeedbackKeys(tweet, item); }
+    return tweet;
   }
 
   // Compact structural summary, used when parsing yields nothing. Prints the
@@ -1228,6 +1237,7 @@ export class XTimelineParser {
     const metrics: TweetMetrics = XTimelineParser.metrics(result, legacy);
     const quotedTweet: QuotedTweet | undefined = XTimelineParser.quotedTweet(result);
     const community: Record<string, Object> = XTimelineParser.communityNode(result);
+    const reply: PostReplyRelation = XTimelineParser.replyRelation(result, legacy);
     return {
       id: restId,
       communityId: String(community['rest_id'] ?? community['id'] ?? ''),
@@ -1235,20 +1245,19 @@ export class XTimelineParser {
       author: author,
       text: XTimelineParser.text(result, legacy),
       language: String(legacy['lang'] ?? ''),
+      editHistoryIds: postEditHistoryIds(result),
       createdAt: XTimelineParser.createdAt(result, legacy),
       metrics: metrics,
       liked: Boolean(perspective['favorited'] ?? legacy['favorited'] ?? false),
       reposted: Boolean(perspective['retweeted'] ?? legacy['retweeted'] ?? false),
       bookmarked: Boolean(perspective['bookmarked'] ?? legacy['bookmarked'] ?? false),
-      isReply: XTimelineParser.isReply(legacy),
-      replyToTweetId: String(legacy['in_reply_to_status_id_str'] ??
-        legacy['in_reply_to_status_id'] ?? ''),
-      replyToUsername: String(legacy['in_reply_to_screen_name'] ?? ''),
-      conversationId: String(legacy['conversation_id_str'] ?? legacy['conversation_id'] ??
-        XTimelineParser.obj(result, 'details')['conversation_id_str'] ??
-        XTimelineParser.obj(result, 'details')['conversation_id'] ?? ''),
+      isReply: reply.isReply,
+      replyToTweetId: reply.parentId,
+      replyToUsername: reply.username,
+      conversationId: reply.conversationId,
       isRepost: XTimelineParser.isRepost(result, legacy),
       quotedTweet: quotedTweet,
+      possiblySensitive: XTimelineParser.isPossiblySensitive(result, legacy),
       article: XArticleParser.parse(result),
       presentation: XPostPresentationParser.parse(input, result),
       poll: XPostCardParser.poll(result),
@@ -1271,13 +1280,18 @@ export class XTimelineParser {
     if (id.length > 0 && name.length > 0) { tweet.communityId = id; tweet.communityName = name; }
   }
 
-  private static isReply(legacy: Record<string, Object>): boolean {
-    const statusId: string = String(legacy['in_reply_to_status_id_str'] ??
-      legacy['in_reply_to_status_id'] ?? '');
-    const userId: string = String(legacy['in_reply_to_user_id_str'] ??
-      legacy['in_reply_to_user_id'] ?? '');
-    const screenName: string = String(legacy['in_reply_to_screen_name'] ?? '');
-    return statusId.length > 0 || userId.length > 0 || screenName.length > 0;
+  private static replyRelation(result: Record<string, Object>, legacy: Record<string, Object>): PostReplyRelation {
+    const details: Record<string, Object> = XTimelineParser.obj(result, 'details');
+    const parentId: string = String(legacy['in_reply_to_status_id_str'] ?? legacy['in_reply_to_status_id'] ?? '') ||
+      String(details['in_reply_to_status_id_str'] ?? details['in_reply_to_status_id'] ?? '');
+    const username: string = String(legacy['in_reply_to_screen_name'] ?? '') ||
+      String(details['in_reply_to_screen_name'] ?? '');
+    const userId: string = String(legacy['in_reply_to_user_id_str'] ?? legacy['in_reply_to_user_id'] ?? '') ||
+      String(details['in_reply_to_user_id_str'] ?? details['in_reply_to_user_id'] ?? '');
+    return { parentId: parentId, username: username,
+      conversationId: String(legacy['conversation_id_str'] ?? legacy['conversation_id'] ?? '') ||
+        String(details['conversation_id_str'] ?? details['conversation_id'] ?? ''),
+      isReply: parentId.length > 0 || userId.length > 0 || username.length > 0 };
   }
 
   private static article(result: Record<string, Object>): ProfileArticle | undefined {
@@ -1374,15 +1388,19 @@ export class XTimelineParser {
       return undefined;
     }
     const legacy: Record<string, Object> = XTimelineParser.obj(quote, 'legacy');
+    const reply: PostReplyRelation = XTimelineParser.replyRelation(quote, legacy);
     return {
       id: id,
       author: XTimelineParser.author(quote),
       text: XTimelineParser.text(quote, legacy),
       createdAt: XTimelineParser.createdAt(quote, legacy),
+      editHistoryIds: postEditHistoryIds(quote),
+      isReply: reply.isReply, replyToTweetId: reply.parentId, replyToUsername: reply.username,
       poll: XPostCardParser.poll(quote),
       card: XPostCardParser.link(quote, id),
       article: XArticleParser.parse(quote),
       presentation: XPostPresentationParser.parse(outer, quote),
+      possiblySensitive: XTimelineParser.isPossiblySensitive(quote, legacy),
       attachments: XTimelineParser.media(quote, legacy,
         XTimelineParser.isPossiblySensitive(quote, legacy))
     };
@@ -1625,7 +1643,9 @@ export class XTimelineParser {
       likeCount: XTimelineParser.num(counts, 'like_count') > 0 ?
         XTimelineParser.num(counts, 'like_count') :
         Number(counts['favorite_count'] ?? legacy['favorite_count'] ?? 0),
-      viewCount: !isFinite(viewCount) || viewCount < 0 ? 0 : viewCount
+      viewCount: !isFinite(viewCount) || viewCount < 0 ? 0 : viewCount,
+      bookmarkCount: optionalPostCount(counts['bookmark_count'] ?? legacy['bookmark_count']),
+      quoteCount: optionalPostCount(counts['quote_count'] ?? legacy['quote_count'])
     };
   }
 

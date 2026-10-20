@@ -16,6 +16,7 @@ import { SystemMaterialUtil } from '../utils/SystemMaterial';
 import { DEFAULT_SHEET_MATERIAL_ENABLED, STORAGE_KEY_SHEET_MATERIAL_ENABLED } from '../services/SheetMaterialSettingsStore';
 import { sheetMaterialActive } from '../utils/SheetMaterial';
 import { fieldSurfaceColor, pageSurfaceColor } from '../utils/ThemeColors';
+import { materialModifier } from '../utils/SystemMaterial';
 
 const LAST_GUIDE_PAGE: number = 7;
 const X_LOGIN_URL: string = 'https://x.com/i/flow/login';
@@ -667,8 +668,8 @@ export struct OnboardingGuide {
         fieldSurfaceColor(this.displayMode, this.darkSurface) : Color.Transparent)
       .borderRadius(28)
       .clip(true)
-      .systemMaterial(sheetMaterialActive(this.sheetMaterialEnabled) ? undefined :
-        SystemMaterialUtil.immersiveMaterial(2, false, true, false, undefined))
+      .attributeModifier(materialModifier(sheetMaterialActive(this.sheetMaterialEnabled) ? undefined :
+        SystemMaterialUtil.immersiveMaterial(2, false, true, false, undefined)))
     }
     .width('100%')
     .height('100%')

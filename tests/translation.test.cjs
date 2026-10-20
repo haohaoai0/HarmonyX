@@ -482,3 +482,14 @@ test('all supported locales include the Grok option and login instruction', () =
     }
   }
 });
+
+test('biographies use configured API or web translation and never send a user id to translateTweet', async () => {
+  const f = fixture();
+  const x = await f.service.translateBiography('user-123', 'Biography', settings(model.TRANSLATION_MODE_X));
+  assert.equal(x.ok, true); assert.equal(x.text, 'Google result');
+  assert.equal(f.calls.length, 0); assert.match(f.httpCalls[0].url, /translate.googleapis.com/);
+  const api = await f.service.translateBiography('user-123', 'Biography', settings(model.TRANSLATION_MODE_API));
+  assert.equal(api.ok, true); assert.equal(api.text, 'API result');
+  const disabled = settings(); disabled.enabled = false;
+  assert.equal((await f.service.translateBiography('user-123', 'Biography', disabled)).ok, false);
+});

@@ -1,13 +1,15 @@
+import { submitInputKey, backInputKey } from '../utils/InputSupport';
 import { STORAGE_KEY_PAGE_TRANSITION_MODE, DEFAULT_PAGE_TRANSITION_MODE } from '../services/PageTransitionSettingsStore';
 import { pageSystemTransition, PageTransitionMotion } from '../utils/PageTransition';
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
-import { userAvatarRadius, verificationBadgeColor, userVerifiedType, userAvatarShape } from '../utils/UserIdentity';
+import { verificationBadgeColor, userVerifiedType, userAvatarShape } from '../utils/UserIdentity';
 import { DEFAULT_SHEET_MATERIAL_ENABLED, DEFAULT_SHEET_MATERIAL_LEVEL, STORAGE_KEY_SHEET_MATERIAL_ENABLED, STORAGE_KEY_SHEET_MATERIAL_LEVEL } from '../services/SheetMaterialSettingsStore';
 import { sheetMaterialOptions } from '../utils/SheetMaterial';
 // The native conversation UI delegates cryptography to the official Chat XDK.
 import common from '@ohos.app.ability.common';
 import promptAction from '@ohos.promptAction';
 import hilog from '@ohos.hilog';
+import { deviceInfo } from '@kit.BasicServicesKit';
 import { KeyboardAvoidMode, LengthMetrics, window } from '@kit.ArkUI';
 import { HdsNavDestination, HdsNavDestinationTitleMode, ScrollEffectType, BottomBuilderShowType } from '@kit.UIDesignKit';
 import type { DmMessage, UserProfile, TweetAuthor } from '../models/Tweet';
@@ -67,11 +69,14 @@ import { gifSearchSelectionStore } from '../services/GifSearchSelectionStore';
 import { DmInfoRouteParam } from './DmInfo';
 import { ChatBackgroundLayer } from '../components/ChatBackgroundLayer';
 import { ChatBackgroundState, chatBackgroundStore } from '../services/ChatBackgroundStore';
+import { CHAT_DECORATION_REVISION_KEY, ChatDecorationSelection,
+  chatDecorationService } from '../services/ChatDecorationService';
 import { DmWebRouteParam } from './DmWeb';
 import { chatMessageTime } from '../utils/ChatTime';
 import { effectiveAppLocale, STORAGE_KEY_APP_LOCALE } from '../utils/AppLocale';
 import { chatInputMaterial, chatPageMaterial, chatTintedControlMaterial } from '../utils/ChatMaterial';
 import { SystemMaterialUtil } from '../utils/SystemMaterial';
+import { materialModifier } from '../utils/SystemMaterial';
 import { STORAGE_KEY_REPLY_CAPSULE_MATERIAL_LEVEL, DEFAULT_REPLY_CAPSULE_MATERIAL_LEVEL,
   STORAGE_KEY_TITLE_BAR_GLASS_MATERIAL_LEVEL, DEFAULT_TITLE_BAR_GLASS_MATERIAL_LEVEL } from '../services/AppearanceStore';
 
@@ -121,6 +126,7 @@ export struct DmConversationPage {
   @State private messages: DmMessage[] = [];
   @State private mediaSends: ChatMediaSend[] = [];
   @State private chatBackground: ChatBackgroundState = new ChatBackgroundState();
+  @State private chatDecoration: ChatDecorationSelection = new ChatDecorationSelection();
   @State private status: string = '';
   @State private loading: boolean = true;
   @State private sending: boolean = false;
@@ -174,6 +180,8 @@ export struct DmConversationPage {
   @State private pinnedMessageId: string = '';
   @StorageProp('harmonyx.accounts_changed') @Watch('accountChanged')
   private accountRevision: number = 0;
+  @StorageProp(CHAT_DECORATION_REVISION_KEY) @Watch('decorationChanged')
+  private decorationRevision: number = 0;
   private conversationId: string = '';
   @State private title: string = '';
   private originalTitle: string = '';
@@ -274,7 +282,14 @@ export struct DmConversationPage {
     this.syncOutbox();
     this.loadContact();
     this.chatBackground = chatBackgroundStore.load(getContext(this) as common.UIAbilityContext, this.conversationId);
+    this.chatDecoration = chatDecorationService.selection(getContext(this) as common.UIAbilityContext);
     this.load(true);
+  }
+
+  private decorationChanged(): void {
+    if (!this.disposed) {
+      this.chatDecoration = chatDecorationService.selection(getContext(this) as common.UIAbilityContext);
+    }
   }
 
   aboutToDisappear(): void {
@@ -975,6 +990,7 @@ export struct DmConversationPage {
     this.active = true;
     this.syncOutbox();
     this.chatBackground = chatBackgroundStore.load(getContext(this) as common.UIAbilityContext, this.conversationId);
+    this.chatDecoration = chatDecorationService.selection(getContext(this) as common.UIAbilityContext);
     this.voiceVisible = true;
     if (this.gifSelectionAccount.length > 0) {
       const gif: string = gifSearchSelectionStore.take();
@@ -996,13 +1012,28 @@ export struct DmConversationPage {
   }
 
   @Builder
+  private DecoratedAvatar(url: string, size: number, radius: number, fallbackText: string,
+    verifiedType: string, avatarShape: string): void {
+    Stack({ alignContent: Alignment.Center }) {
+      ProxyAvatar({ verifiedType: verifiedType, avatarShape: avatarShape, url: url,
+        avatarSize: size, radius: radius, fallbackText: fallbackText })
+      if (this.chatDecoration.frameUri.length > 0) {
+        Image(this.chatDecoration.frameUri)
+          .width(size * 1.78).height(size * 1.78).objectFit(ImageFit.Contain)
+          .hitTestBehavior(HitTestMode.None).accessibilityLevel('no')
+      }
+    }.width(size * 1.78).height(size * 1.78)
+  }
+
+  @Builder
   private ContactTitle(): void {
     Row() {
       Row() {
         Row({ space: 8 }) {
           Button({ type: ButtonType.Normal, stateEffect: false }) {
-            ProxyAvatar({verifiedType: this.contact.verifiedType ?? '', avatarShape: this.contact.avatarShape ?? '',  url: this.avatarUrl, avatarSize: 30, radius: 15, fallbackText: this.avatarInitial() })
-          }.width(40).height(40).borderRadius(userAvatarRadius(40, 20, this.contact.verifiedType, this.contact.avatarShape)).padding(5).backgroundColor(Color.Transparent)
+            this.DecoratedAvatar(this.avatarUrl, 28, 14, this.avatarInitial(),
+              this.contact.verifiedType ?? '', this.contact.avatarShape ?? '')
+          }.width(50).height(50).borderRadius(25).padding(0).backgroundColor(Color.Transparent)
             .monopolizeEvents(true)
             .onClick((): void => { if (this.group) { this.openInfo(); } else { this.openContactProfile(); } })
           Column({ space: 2 }) {
@@ -1288,9 +1319,13 @@ export struct DmConversationPage {
         .fontColor([Color.White])
     }.width($r('app.float.chat_media_retry_size')).height($r('app.float.chat_media_retry_size')).padding(0)
       .backgroundColor(SystemMaterialUtil.isApi26OrAbove() ? Color.Transparent : $r('app.color.danger'))
-      .systemMaterial(chatTintedControlMaterial($r('app.color.chat_media_remove_tint')))
+      .attributeModifier(materialModifier(chatTintedControlMaterial($r('app.color.chat_media_remove_tint'))))
       .accessibilityText($r('app.string.chat_retry'))
       .onClick((): void => { chatMediaOutbox.retry(messageId); })
+  }
+
+  private usesBubbleSkin(message: DmMessage): boolean {
+    return message.outgoing && !this.emoji(message) && this.chatDecoration.bubbleUri.length > 0;
   }
 
   @Builder
@@ -1299,11 +1334,23 @@ export struct DmConversationPage {
       if (this.showsMessageText(message)) {
         ChatLinkText({ text: message.text,
           fontSize: this.emoji(message) ? $r('app.float.chat_emoji_message_size') : $r('sys.float.Body_L'),
-          fontColor: message.outgoing && !this.emoji(message) ? $r('app.color.text_on_accent') : $r('app.color.text_primary'),
-          linkColor: message.outgoing ? $r('app.color.text_on_accent') : this.accentColor,
+          fontColor: this.usesBubbleSkin(message) ? this.chatDecoration.bubbleTextColor :
+            message.outgoing && !this.emoji(message) ? $r('app.color.text_on_accent') : $r('app.color.text_primary'),
+          linkColor: this.usesBubbleSkin(message) ? this.chatDecoration.bubbleTextColor :
+            message.outgoing ? $r('app.color.text_on_accent') : this.accentColor,
           onLink: (link: string): void => { this.openMessageLink(link); } })
-          .padding(this.emoji(message) ? 0 : { left: 15, right: 15, top: 10, bottom: 10 })
-          .backgroundColor(this.emoji(message) ? Color.Transparent : message.outgoing ? this.accentColor : secondaryButtonSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
+          .padding(this.emoji(message) ? 0 : this.usesBubbleSkin(message) ?
+            { left: 26, right: 34, top: 14, bottom: 14 } : { left: 15, right: 15, top: 10, bottom: 10 })
+          .backgroundImage(this.usesBubbleSkin(message) ? this.chatDecoration.bubbleUri : '')
+          .backgroundImageSize({ width: '100%', height: '100%' })
+          .backgroundImageResizable({ slice: {
+            left: this.chatDecoration.sliceLeft.toString() + 'px',
+            right: this.chatDecoration.sliceRight.toString() + 'px',
+            top: this.chatDecoration.sliceTop.toString() + 'px',
+            bottom: this.chatDecoration.sliceBottom.toString() + 'px'
+          } })
+          .backgroundColor(this.emoji(message) || this.usesBubbleSkin(message) ? Color.Transparent :
+            message.outgoing ? this.accentColor : secondaryButtonSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
           .borderRadius($r('app.float.chat_bubble_radius'))
       }
       if (this.mediaSend(message.id) !== undefined) {
@@ -1348,8 +1395,8 @@ export struct DmConversationPage {
       }
       Row({ space: 8 }) {
         if (this.group && !message.outgoing) {
-          ProxyAvatar({verifiedType: message.senderVerifiedType ?? '', avatarShape: message.senderAvatarShape ?? '',  url: message.senderAvatarUrl, avatarSize: 28, radius: 14,
-            fallbackText: message.senderName.substring(0, 1) })
+          this.DecoratedAvatar(message.senderAvatarUrl, 28, 14, message.senderName.substring(0, 1),
+            message.senderVerifiedType ?? '', message.senderAvatarShape ?? '')
         }
         if (this.mediaFailed(message.id)) { this.MediaRetry(message.id); }
         Column({ space: 6 }) {
@@ -1515,7 +1562,7 @@ export struct DmConversationPage {
       .keyboardAppearance(KeyboardAppearance.IMMERSIVE)
       .height(44).margin({ left: 16, right: 16, top: 4 }).backgroundColor(Color.Transparent)
       .fontColor($r('app.color.text_primary')).borderRadius(24).clip(true)
-      .systemMaterial(chatInputMaterial(this.capsuleMaterialLevel))
+      .attributeModifier(materialModifier(chatInputMaterial(this.capsuleMaterialLevel)))
       .onChange((value: string): void => { this.searchQuery = value; })
   }
 
@@ -1544,27 +1591,17 @@ export struct DmConversationPage {
         SymbolGlyph($r('sys.symbol.plus')).fontSize(25).fontColor([$r('app.color.text_primary')])
       }.width(44).height(44).backgroundColor(SystemMaterialUtil.isApi26OrAbove() ? Color.Transparent :
         secondaryButtonSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
-        .systemMaterial(chatInputMaterial(this.capsuleMaterialLevel))
+        .attributeModifier(materialModifier(chatInputMaterial(this.capsuleMaterialLevel)))
         .enabled(!this.plainConversation() && !this.sending && !this.picking && !this.recording && !this.recordingPending)
         .accessibilityText($r('app.string.dm_attachment_message')).id('chat-attachment-button')
         .onClick((): void => { this.toggleAttachmentPanel(); })
-        .bindPopup(this.recentPhotoShown, {
-          builder: this.RecentPhotoSuggestion(), placement: Placement.Top, enableArrow: true, autoCancel: true,
-          // A modal mask consumes the first tap on attachment actions below.
-          mask: false,
-          popupColor: SystemMaterialUtil.isApi26OrAbove() ? Color.Transparent :
-            secondaryButtonSurfaceColor(this.themeDisplayMode, this.themeDarkSurface),
-          backgroundBlurStyle: BlurStyle.NONE, systemMaterial: chatInputMaterial(this.capsuleMaterialLevel),
-          radius: 16, shadow: ShadowStyle.OUTER_DEFAULT_MD,
-          transition: TransitionEffect.OPACITY.combine(TransitionEffect.translate({ y: 8 }))
-            .combine(TransitionEffect.scale({ x: 0.94, y: 0.94 })).animation({ duration: 200, curve: Curve.EaseOut }),
-          onStateChange: (state: PopupStateChangeParam): void => { if (!state.isVisible) { this.hideRecentPhoto(); } }
-        })
+        .bindPopup(this.recentPhotoShown, this.recentPhotoPopupOptions())
       Column() {
         this.ReplyPreview()
         Row() {
         TextInput({ text: this.draft, placeholder: this.plainConversation() ? $r('app.string.chat_contact_plain_message') : $r('app.string.chat_message') }).fontFamily(this.appFontFamily)
           .keyboardAppearance(KeyboardAppearance.IMMERSIVE).enterKeyType(EnterKeyType.Send)
+          .onKeyPreIme((event: KeyEvent): boolean => submitInputKey(event, (): void => { if (this.active) { void this.send(); } }))
           .id('chat-message-input')
           .enableKeyboardOnFocus(true).onFocus((): void => { this.closeAttachmentPanel(); this.showReplyKeyboard(); })
           .layoutWeight(1).fontSize($r('sys.float.Body_L')).fontColor($r('app.color.text_primary'))
@@ -1585,8 +1622,27 @@ export struct DmConversationPage {
         .backgroundColor(SystemMaterialUtil.isApi26OrAbove() ? Color.Transparent :
           secondaryButtonSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
         .border({ width: SystemMaterialUtil.isApi26OrAbove() ? 0 : 1, color: $r('app.color.divider') })
-        .systemMaterial(chatInputMaterial(this.capsuleMaterialLevel))
+        .attributeModifier(materialModifier(chatInputMaterial(this.capsuleMaterialLevel)))
     }.width('100%').height(this.composerSurfaceHeight()).alignItems(VerticalAlign.Bottom)
+  }
+
+  private recentPhotoPopupOptions(): CustomPopupOptions {
+    const options: CustomPopupOptions = {
+      builder: (): void => { this.RecentPhotoSuggestion(); }, placement: Placement.Top, enableArrow: true, autoCancel: true,
+      // A modal mask consumes the first tap on attachment actions below.
+      mask: false,
+      popupColor: SystemMaterialUtil.isApi26OrAbove() ? Color.Transparent :
+        secondaryButtonSurfaceColor(this.themeDisplayMode, this.themeDarkSurface),
+      backgroundBlurStyle: BlurStyle.NONE,
+      radius: 16, shadow: ShadowStyle.OUTER_DEFAULT_MD,
+      transition: TransitionEffect.OPACITY.combine(TransitionEffect.translate({ y: 8 }))
+        .combine(TransitionEffect.scale({ x: 0.94, y: 0.94 })).animation({ duration: 200, curve: Curve.EaseOut }),
+      onStateChange: (state: PopupStateChangeParam): void => { if (!state.isVisible) { this.hideRecentPhoto(); } }
+    };
+    if (deviceInfo.apiAvailable('26.0.0')) {
+      options.systemMaterial = chatInputMaterial(this.capsuleMaterialLevel);
+    }
+    return options;
   }
 
   private composerSurfaceHeight(): number {
@@ -1623,7 +1679,7 @@ export struct DmConversationPage {
       SymbolGlyph($r('sys.symbol.xmark')).fontSize(12).fontColor([Color.White])
     }.width(28).height(28).padding(0)
       .backgroundColor(SystemMaterialUtil.isApi26OrAbove() ? Color.Transparent : $r('app.color.danger'))
-      .systemMaterial(chatTintedControlMaterial($r('app.color.chat_media_remove_tint')))
+      .attributeModifier(materialModifier(chatTintedControlMaterial($r('app.color.chat_media_remove_tint'))))
       .accessibilityText($r('app.string.chat_remove_attachment')).enabled(!this.sending && !this.picking)
       .onClick((): void => { this.removeAttachment(file.uri); })
   }
@@ -1688,27 +1744,28 @@ export struct DmConversationPage {
         TextArea({ text: this.draft, placeholder: $r('app.string.chat_message') }).fontFamily(this.appFontFamily)
           .keyboardAppearance(KeyboardAppearance.IMMERSIVE).layoutWeight(1)
           .height(this.compactWindow && this.keyboardVisible ? 44 : 56)
+          .onKeyPreIme((event: KeyEvent): boolean => submitInputKey(event, (): void => { if (this.active) { void this.send(); } }))
           .id('chat-media-input')
           .enableKeyboardOnFocus(true).onFocus((): void => { this.showReplyKeyboard(); })
           .fontSize($r('sys.float.Body_L')).fontColor($r('app.color.text_primary')).maxLength(10000)
           .backgroundColor(SystemMaterialUtil.isApi26OrAbove() ? Color.Transparent : $r('app.color.bg_field'))
           .borderRadius(24).clip(true).padding({ start: LengthMetrics.vp(14), end: LengthMetrics.vp(12),
             top: LengthMetrics.vp(14), bottom: LengthMetrics.vp(10) })
-          .systemMaterial(chatInputMaterial(this.inputMaterialLevel))
+          .attributeModifier(materialModifier(chatInputMaterial(this.inputMaterialLevel)))
           .enabled(!this.sending).onChange((value: string): void => { this.draft = value; })
         Button({ type: ButtonType.Circle }) {
           if (this.sending) { LoadingProgress().width(22).height(22).color(Color.White) }
           else { SymbolGlyph($r('sys.symbol.arrow_up')).fontSize(24).fontColor([Color.White]) }
         }.width(44).height(44).padding(0)
           .backgroundColor(SystemMaterialUtil.isApi26OrAbove() ? Color.Transparent : this.accentColor)
-          .systemMaterial(chatTintedControlMaterial(this.sendTint()))
+          .attributeModifier(materialModifier(chatTintedControlMaterial(this.sendTint())))
           .enabled(!this.sending && !this.picking).accessibilityText($r('app.string.dm_send'))
           .onClick((): void => { this.send(); })
       }.width('100%').height(this.compactWindow && this.keyboardVisible ? 44 : 56)
     }.width('100%').height(this.composerSurfaceHeight()).padding({ left: 12, right: 12, top: 10, bottom: 10 })
       .backgroundColor(SystemMaterialUtil.isApi26OrAbove() ? Color.Transparent : $r('app.color.bg_field'))
       .border({ width: SystemMaterialUtil.isApi26OrAbove() ? 0 : 1, color: $r('app.color.divider') })
-      .borderRadius(32).clip(true).systemMaterial(chatInputMaterial(this.capsuleMaterialLevel))
+      .borderRadius(32).clip(true).attributeModifier(materialModifier(chatInputMaterial(this.capsuleMaterialLevel)))
   }
 
   @Builder
@@ -1730,7 +1787,7 @@ export struct DmConversationPage {
       }.width('100%').height(40)
     }.width('100%').height(this.composerSurfaceHeight()).padding(16).borderRadius(32).clip(true)
       .backgroundColor(SystemMaterialUtil.isApi26OrAbove() ? Color.Transparent : $r('app.color.bg_field'))
-      .systemMaterial(chatInputMaterial(this.capsuleMaterialLevel))
+      .attributeModifier(materialModifier(chatInputMaterial(this.capsuleMaterialLevel)))
   }
 
   @Builder
@@ -1886,7 +1943,7 @@ export struct DmConversationPage {
       .backgroundColor(SystemMaterialUtil.isApi26OrAbove() ? Color.Transparent :
         secondaryButtonSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
       .border({ width: SystemMaterialUtil.isApi26OrAbove() ? 0 : 1, color: $r('app.color.divider') })
-      .systemMaterial(chatInputMaterial(this.capsuleMaterialLevel))
+      .attributeModifier(materialModifier(chatInputMaterial(this.capsuleMaterialLevel)))
   }
 
   @Builder
@@ -1956,8 +2013,10 @@ export struct DmConversationPage {
           // The foreground follows the resized viewport; the background keeps
           // its window-sized canvas and top origin when the keyboard opens.
           Stack({ alignContent: Alignment.Bottom }) {
-            // Keep the invisible extension behind all message/composer hit targets.
-            if (this.canShowRecentPhoto()) {
+            // Mount the probe only while the attachment panel is open. A
+            // permanent Photos UIExtension is a secure extension, and the
+            // system rejects every context-menu subwindow while it exists.
+            if (this.attachmentPanelShown && this.canShowRecentPhoto()) {
               ForEach([this.recentPhotoQueryEpoch], (epoch: number): void => {
                 this.RecentPhotoProbe(epoch)
               }, (epoch: number): string => epoch.toString())
@@ -2003,8 +2062,12 @@ export struct DmConversationPage {
       .onShown((): void => { this.getUIContext().setKeyboardAvoidMode(KeyboardAvoidMode.RESIZE); this.shown(); })
       .onHidden((): void => { this.closeAttachmentPanel(); this.active = false; this.cancelReplyFocus(); this.voiceVisible = false; this.stopPolling();
         this.pin = ''; this.contactNumber = ''; this.numberSheet = false; this.cancelRecording(); this.privacy(false); })
+      .onKeyEvent((event: KeyEvent): boolean => backInputKey(event, (): void => {
+        if (this.attachmentPanelShown) { this.closeAttachmentPanel(); return; }
+        ResponsiveLayout.closeContentDestination(this.pageStack);
+      }))
       .onBackPressed((): boolean => { ResponsiveLayout.closeContentDestination(this.pageStack); return true; })
       .backgroundColor(pageSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
-      .systemMaterial(chatPageMaterial())
+      .attributeModifier(materialModifier(chatPageMaterial()))
   }
 }

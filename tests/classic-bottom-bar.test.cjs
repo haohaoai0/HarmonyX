@@ -46,6 +46,51 @@ test('switching the bar preserves the separately saved floating material', () =>
   assert.equal(new f.api.HdsTabsSettingsStore().loadHomeTabMaterialLevel({}), f.api.HDS_TAB_MATERIAL_GENTLE);
 });
 
+test('all four navigation presentations persist exclusively without losing labels or material', () => {
+  const f = fixture(), store = new f.api.HdsTabsSettingsStore();
+  assert.equal(store.loadSplitBottomBar({}), false);
+  store.saveRootTabLabelsVisible({}, false);
+  store.saveHomeTabMaterialLevel({}, f.api.HDS_TAB_MATERIAL_GENTLE);
+  for (const style of [1, 3, 2, 0, 3, 1]) {
+    assert.equal(store.saveNavigationStyle({}, style), true);
+    const reopened = new f.api.HdsTabsSettingsStore();
+    assert.equal(reopened.loadSplitBottomBar({}), style === 1 || style === 3);
+    assert.equal(reopened.loadNativeBottomBar({}), style === 3);
+    assert.equal(reopened.loadClassicBottomBar({}), style === 2);
+    assert.equal(f.published.get(f.api.STORAGE_KEY_SPLIT_BOTTOM_BAR), style === 1 || style === 3);
+    assert.equal(f.published.get(f.api.STORAGE_KEY_NATIVE_BOTTOM_BAR), style === 3);
+    assert.equal(f.published.get(f.api.STORAGE_KEY_CLASSIC_BOTTOM_BAR), style === 2);
+    assert.equal(reopened.loadRootTabLabelsVisible({}), false);
+    assert.equal(reopened.loadHomeTabMaterialLevel({}), f.api.HDS_TAB_MATERIAL_GENTLE);
+  }
+});
+
+test('native navigation thickness persists independently and rejects invalid saved levels', () => {
+  const f=fixture(), store=new f.api.HdsTabsSettingsStore();
+  assert.equal(store.loadNativeBottomBar({}),false);
+  assert.equal(store.loadNativeTabMaterialLevel({}),0);
+  store.saveHomeTabMaterialLevel({},f.api.HDS_TAB_MATERIAL_GENTLE);
+  for(const level of [4,1,2,3,0,NaN,Infinity,1.5,-1,5]) {
+    assert.equal(store.saveNativeTabMaterialLevel({},level),true);
+    const expected=Number.isInteger(level)&&level>=0&&level<=4?level:0;
+    assert.equal(new f.api.HdsTabsSettingsStore().loadNativeTabMaterialLevel({}),expected);
+    assert.equal(f.published.get(f.api.STORAGE_KEY_NATIVE_TAB_MATERIAL_LEVEL),expected);
+    assert.equal(store.loadHomeTabMaterialLevel({}),f.api.HDS_TAB_MATERIAL_GENTLE);
+  }
+});
+
+test('failed or invalid style writes retain both saved and published navigation modes', () => {
+  const f = fixture(), store = new f.api.HdsTabsSettingsStore();
+  assert.equal(store.saveNavigationStyle({}, 1), true);
+  assert.equal(store.saveNavigationStyle({}, 99), false);
+  f.fail();
+  assert.equal(store.saveNavigationStyle({}, 2), false);
+  assert.equal(store.loadSplitBottomBar({}), true);
+  assert.equal(store.loadClassicBottomBar({}), false);
+  assert.equal(f.published.get(f.api.STORAGE_KEY_SPLIT_BOTTOM_BAR), true);
+  assert.equal(f.published.get(f.api.STORAGE_KEY_CLASSIC_BOTTOM_BAR), false);
+});
+
 test('tab labels default on, persist off, and survive switching bar presentations', () => {
   const f = fixture(), store = new f.api.HdsTabsSettingsStore();
   assert.equal(store.loadRootTabLabelsVisible({}), true);
@@ -86,6 +131,27 @@ test('failed liquid-indicator writes retain the saved and published setting', ()
   assert.equal(store.saveRootLiquidTabIndicatorEnabled({}, true), false);
   assert.equal(f.published.get(f.api.STORAGE_KEY_ROOT_LIQUID_TAB_INDICATOR_ENABLED), false);
   assert.equal(new f.api.HdsTabsSettingsStore().loadRootLiquidTabIndicatorEnabled({}), false);
+});
+
+test('the bottom gradient mask defaults on and persists independently of the bar presentation', () => {
+  const f = fixture(), store = new f.api.HdsTabsSettingsStore();
+  assert.equal(store.loadRootTabGradientMaskEnabled({}), true);
+  assert.equal(store.saveRootTabGradientMaskEnabled({}, false), true);
+  store.saveClassicBottomBar({}, true);
+  store.saveClassicBottomBar({}, false);
+  assert.equal(new f.api.HdsTabsSettingsStore().loadRootTabGradientMaskEnabled({}), false);
+  assert.equal(f.published.get(f.api.STORAGE_KEY_ROOT_TAB_GRADIENT_MASK_ENABLED), false);
+  assert.equal(store.saveRootTabGradientMaskEnabled({}, true), true);
+  assert.equal(new f.api.HdsTabsSettingsStore().loadRootTabGradientMaskEnabled({}), true);
+});
+
+test('failed gradient-mask writes retain the saved and published setting', () => {
+  const f = fixture(), store = new f.api.HdsTabsSettingsStore();
+  store.saveRootTabGradientMaskEnabled({}, false);
+  f.fail();
+  assert.equal(store.saveRootTabGradientMaskEnabled({}, true), false);
+  assert.equal(f.published.get(f.api.STORAGE_KEY_ROOT_TAB_GRADIENT_MASK_ENABLED), false);
+  assert.equal(new f.api.HdsTabsSettingsStore().loadRootTabGradientMaskEnabled({}), false);
 });
 
 test('failed writes do not publish a new bar mode or replace the saved choice', () => {
@@ -180,4 +246,40 @@ test('floating and classic tab branches both consume the label visibility settin
   }
   const item = fs.readFileSync('entry/src/main/ets/components/RootBottomTabItem.ets', 'utf8');
   assert.match(item, /if \(this\.showLabel\)/);
+});
+
+test('floating HDS foregrounds use the sampled page-background contrast model', () => {
+  const index = fs.readFileSync('entry/src/main/ets/pages/Index.ets', 'utf8');
+  const hdsStart = index.indexOf('private HdsTabBar(');
+  const hdsEnd = index.indexOf('\n  }', hdsStart) + 4;
+  const hdsBar = index.slice(hdsStart, hdsEnd);
+  assert.match(hdsBar, /adaptiveForeground:\s*true/);
+  const item = fs.readFileSync('entry/src/main/ets/components/RootBottomTabItem.ets', 'utf8');
+  assert.match(item, /pageTextColor\(color, this\.pageBackgroundValue, Color\.Transparent, minimum\)/);
+  assert.match(item, /private iconColor\(\): ResourceColor/);
+  assert.match(item, /private labelColor\(\): ResourceColor/);
+});
+
+test('disabling the floating-tab gradient uses a transparent HDS mask while the default keeps the native gradient', () => {
+  const source = fs.readFileSync('entry/src/main/ets/pages/Index.ets', 'utf8').replace('struct Index', 'class Index');
+  const parsed = ts.createSourceFile('Index.ts', source, ts.ScriptTarget.Latest, true);
+  const root = parsed.statements.find(node => ts.isClassDeclaration(node) && node.name.text === 'Index');
+  const method = root.members.find(node => node.name && node.name.getText(parsed) === 'rootTabFloatingStyle').getText(parsed);
+  const code = ts.transpileModule('export class Root {\n' + method + '\n}', {
+    compilerOptions: { target: ts.ScriptTarget.ES2020, module: ts.ModuleKind.CommonJS }
+  }).outputText;
+  const api = {};
+  new Function('exports', 'Color', 'hdsMaterial', code)(api, { Transparent: 'transparent' },
+    { MaterialType: { IMMERSIVE: 'immersive' } });
+  const instance = new api.Root();
+  Object.assign(instance, {
+    rootTabGradientMaskEnabled: true,
+    accentColor: '#ff007dff',
+    usesFloatingTabBar: () => true,
+    floatingTabBottomMargin: () => 24,
+    resolveHomeTabMaterialLevel: () => 10
+  });
+  assert.equal(Object.hasOwn(instance.rootTabFloatingStyle(), 'gradientMask'), false);
+  instance.rootTabGradientMaskEnabled = false;
+  assert.deepEqual(instance.rootTabFloatingStyle().gradientMask, { maskColor: 'transparent' });
 });

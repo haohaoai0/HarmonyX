@@ -15,6 +15,7 @@ import {
 import { pageSurfaceColor, titleBarScrimColor } from './ThemeColors';
 import { ResponsiveLayout } from './ResponsiveLayout';
 import { LengthMetrics, uiMaterial } from '@kit.ArkUI';
+import { deviceInfo } from '@kit.BasicServicesKit';
 import { SystemMaterialUtil } from './SystemMaterial';
 import { pageBackgroundActive } from '../services/PageBackgroundStore';
 import {
@@ -55,12 +56,8 @@ export class TitleBarControlMaterialCache {
   private cachedMaterial: uiMaterial.Material | undefined = undefined;
 
   material(accent: string, shadow: boolean = false): uiMaterial.Material | undefined {
-    if (!SystemMaterialUtil.isApi26OrAbove()) { return undefined; }
     if (this.cachedMaterial === undefined || this.cachedAccent !== accent || this.cachedShadow !== shadow) {
-      this.cachedMaterial = new uiMaterial.ImmersiveMaterial({
-        style: uiMaterial.ImmersiveStyle.THIN, interactive: true, applyShadow: shadow,
-        colorInvert: true, lightEffect: { color: accent }
-      });
+      this.cachedMaterial = SystemMaterialUtil.immersiveMaterial(1, true, shadow, true, accent);
       this.cachedAccent = accent;
       this.cachedShadow = shadow;
     }
@@ -116,10 +113,14 @@ export function rootTitleBarStyle(displayMode: string, darkSurface: string,
   titleBarStyleMode: number, desktop: boolean): TitleBarStyleOptions {
   const full: boolean = titleBarFullStyleEnabled(titleBarStyleMode);
   const custom: boolean = pageBackgroundActive(AppStorage.get<string>('harmonyx.page_background') ?? '');
-  return {
+  let effectType: ScrollEffectType = ScrollEffectType.GRADIENT_BLUR;
+  if (deviceInfo.apiAvailable('6.1.0(23)')) {
+    effectType = ScrollEffectType.IMMERSIVE_GRADIENT_BLUR;
+  }
+  const options: TitleBarStyleOptions = {
     scrollEffectOpts: full ? {
       enableScrollEffect: true,
-      scrollEffectType: ScrollEffectType.IMMERSIVE_GRADIENT_BLUR,
+      scrollEffectType: effectType,
       blurEffectiveStartOffset: LengthMetrics.vp(0),
       blurEffectiveEndOffset: LengthMetrics.vp(16)
     } : (titleBarScrollEffectDisabled(titleBarStyleMode) ? { enableScrollEffect: false } : undefined),
@@ -131,12 +132,15 @@ export function rootTitleBarStyle(displayMode: string, darkSurface: string,
     scrollEffectStyle: full || custom ? {
       backgroundStyle: { backgroundColor: desktop && !custom ? Color.Transparent : pageSurfaceColor(displayMode, darkSurface) },
       contentStyle: titleContentStyle()
-    } : undefined,
-    systemMaterialEffect: {
+    } : undefined
+  };
+  if (deviceInfo.apiAvailable('6.1.0(23)')) {
+    options.systemMaterialEffect = {
       materialType: hdsMaterial.MaterialType.IMMERSIVE,
       materialLevel: hdsMaterial.MaterialLevel.ADAPTIVE
-    }
-  };
+    };
+  }
+  return options;
 }
 
 // Reuse the selected glass material directly on native title-bar content.
@@ -157,10 +161,14 @@ export function destinationTitleBarStyle(
   const full: boolean = destinationTitleBarFullStyleEnabled(titleBarStyleMode);
   const custom: boolean = pageBackgroundActive(AppStorage.get<string>('harmonyx.page_background') ?? '');
   const hasExplicitBackground: boolean = full || backgroundDimmed || custom;
-  return {
+  let effectType: ScrollEffectType = ScrollEffectType.GRADIENT_BLUR;
+  if (deviceInfo.apiAvailable('6.1.0(23)')) {
+    effectType = desktop ? ScrollEffectType.IMMERSIVE_GRADIENT_BLUR : preferredEffect;
+  }
+  const options: TitleBarStyleOptions = {
     scrollEffectOpts: full ? {
       enableScrollEffect: true,
-      scrollEffectType: desktop ? ScrollEffectType.IMMERSIVE_GRADIENT_BLUR : preferredEffect
+      scrollEffectType: effectType
     } : undefined,
     originalStyle: hasExplicitBackground ? {
       backgroundStyle: {
@@ -175,10 +183,13 @@ export function destinationTitleBarStyle(
           (desktop && !custom ? Color.Transparent : pageSurfaceColor(displayMode, darkSurface))
       },
       contentStyle: full || custom ? titleContentStyle() : undefined
-    } : undefined,
-    systemMaterialEffect: {
+    } : undefined
+  };
+  if (deviceInfo.apiAvailable('6.1.0(23)')) {
+    options.systemMaterialEffect = {
       materialType: hdsMaterial.MaterialType.IMMERSIVE,
       materialLevel: hdsMaterial.MaterialLevel.EXQUISITE
-    }
-  };
+    };
+  }
+  return options;
 }

@@ -26,6 +26,14 @@ class ListStateStore {
 
   isRemoved(viewerId: string, id: string): boolean { return this.removed.indexOf(viewerId + ':' + id) >= 0; }
 
+  values(viewerId: string): ListRow[] {
+    const rows: ListRow[] = [];
+    this.rows.forEach((row: ListRow, key: string): void => {
+      if (key.startsWith(viewerId + ':')) { rows.push(row); }
+    });
+    return rows;
+  }
+
   touch(): void {
     AppStorage.setOrCreate(STORAGE_KEY_LIST_REVISION,
       (AppStorage.get<number>(STORAGE_KEY_LIST_REVISION) ?? 0) + 1);

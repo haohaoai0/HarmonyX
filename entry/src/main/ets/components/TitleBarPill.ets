@@ -2,6 +2,7 @@ import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFon
 import { uiMaterial } from '@kit.ArkUI';
 import { SystemMaterialUtil } from '../utils/SystemMaterial';
 import { DEFAULT_ACCENT_COLOR } from '../services/AppearanceStore';
+import { materialModifier } from '../utils/SystemMaterial';
 
 @Component
 export struct TitleBarPill {
@@ -22,14 +23,10 @@ export struct TitleBarPill {
   }
 
   private material(): uiMaterial.Material | undefined {
-    if (!SystemMaterialUtil.isApi26OrAbove()) { return undefined; }
     if (this.cachedMaterial === undefined || this.cachedAccent !== this.accentColor ||
       this.cachedSelected !== this.selected) {
-      this.cachedMaterial = new uiMaterial.ImmersiveMaterial({
-        style: uiMaterial.ImmersiveStyle.THIN, interactive: true, applyShadow: false,
-        materialColor: this.selected ? this.accentColor : undefined,
-        colorInvert: !this.selected, lightEffect: { color: this.accentColor }
-      });
+      this.cachedMaterial = SystemMaterialUtil.immersiveMaterial(1, true, false, !this.selected,
+        this.accentColor, this.selected ? this.accentColor : undefined);
       this.cachedAccent = this.accentColor;
       this.cachedSelected = this.selected;
     }
@@ -52,7 +49,7 @@ export struct TitleBarPill {
     .padding({ left: $r('app.float.title_bar_pill_padding'), right: $r('app.float.title_bar_pill_padding') })
     .backgroundColor(SystemMaterialUtil.isApi26OrAbove() ? Color.Transparent :
       (this.selected ? this.accentColor : $r('app.color.bg_field')))
-    .systemMaterial(this.material())
+    .attributeModifier(materialModifier(this.material()))
     .accessibilityGroup(true).accessibilityText(this.accessibilityLabel())
     .onClick((): void => this.onSelect())
   }

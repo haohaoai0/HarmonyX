@@ -1,5 +1,42 @@
 {
   "string": [
+    {
+      "name": "supporter_config_error",
+      "value": "클라우드 계정 연결을 확인할 수 없습니다. 개발자에게 문의하세요."
+    },
+    {
+      "name": "supporter_restore_hint",
+      "value": "기존 계정으로 전환하면 저장된 상태가 복원됩니다. 새 기기, 재설치 또는 다른 앱 버전에서는 같은 X 계정으로 로그인하고 기존 코드를 입력해 복원하세요."
+    },
+    {"name": "eye_reading_title", "value": "시선으로 페이지 넘기기"},
+    {"name": "eye_reading_intro", "value": "위나 아래를 응시하여 스레드, 오프라인 사본 및 기사를 스크롤합니다."},
+    {"name": "eye_reading_enable", "value": "시선 읽기 사용"},
+    {"name": "eye_reading_supported", "value": "얼굴 추적을 지원합니다. 읽기 페이지에서 시작을 눌러야 카메라가 켜집니다."},
+    {"name": "eye_reading_unsupported", "value": "이 기기는 필요한 얼굴 추적을 지원하지 않습니다. 터치나 키보드를 사용해 주세요."},
+    {"name": "eye_reading_dwell", "value": "시선 유지 시간"},
+    {"name": "eye_reading_threshold", "value": "방향 감지 기준"},
+    {"name": "eye_reading_threshold_desc", "value": "값이 클수록 더 큰 눈 움직임이 필요하므로 실수로 스크롤하는 것을 줄일 수 있습니다."},
+    {"name": "eye_reading_help", "value": "머리를 고정하고 화면 중앙을 보며 보정하세요. 위나 아래를 응시하면 약 반 화면 스크롤됩니다. 매번 중앙으로 시선을 돌려주세요. 터치, 휠, 키보드 입력이 우선합니다."},
+    {"name": "eye_reading_privacy", "value": "시작한 후에만 전면 카메라를 사용합니다. 방향 데이터는 기기에서 처리하며 이미지를 저장하거나 업로드하지 않습니다. 페이지를 떠나거나 백그라운드로 전환하면 중지됩니다. 다시 수동으로 시작하세요."},
+    {"name": "eye_reading_save_failed", "value": "설정을 저장하지 못했습니다. 다시 시도하세요."},
+    {"name": "eye_reading_start", "value": "시선 제어 시작"},
+    {"name": "eye_reading_stop", "value": "시선 제어 중지"},
+    {"name": "eye_reading_recalibrate", "value": "다시 보정"},
+    {"name": "eye_reading_starting", "value": "전면 카메라 시작 중…"},
+    {"name": "eye_reading_permission", "value": "카메라 권한이 필요합니다. 시스템 앱 권한에서 카메라를 허용한 후 다시 시도하세요."},
+    {"name": "eye_reading_failed", "value": "카메라를 사용할 수 없습니다. 다른 카메라 앱을 닫고 다시 시도하세요."},
+    {"name": "eye_reading_calibrating", "value": "화면 중앙을 보고 머리와 시선을 고정하여 보정하세요."},
+    {"name": "eye_reading_center", "value": "다음 동작 전에 시선을 중앙으로 돌려주세요."},
+    {"name": "eye_reading_ready", "value": "준비됨: 위나 아래를 응시하세요."},
+    {"name": "eye_reading_up", "value": "위쪽 스크롤을 위해 위를 계속 보세요."},
+    {"name": "eye_reading_down", "value": "아래쪽 스크롤을 위해 아래를 계속 보세요."},
+    {"name": "eye_reading_lost", "value": "밝은 곳에서 눈을 뜨고 화면을 바라보세요. 반응이 없으면 다시 보정하세요."},
+    {"name": "eye_reading_paused", "value": "수동 입력이 우선합니다. 시선 제어가 잠시 중지되었습니다."},
+    {"name": "eye_reading_camera_reason", "value": "시선 읽기를 시작할 때 전면 카메라로 눈의 방향을 기기에서 인식합니다."},
+    {"name": "compact_video_layout", "value": "외부 화면 동영상 레이아웃"},
+    {"name": "settings_compact_video_layout_desc", "value": "Pura X 같은 작은 정사각형 화면에서 측면 버튼 또는 하단 가로 배치를 선택합니다. 펼치면 기존 동영상 레이아웃으로 돌아갑니다."},
+    {"name": "compact_video_layout_rail", "value": "측면 버튼"},
+    {"name": "compact_video_layout_bottom", "value": "하단 가로 배치"},
     {"name":"settings_component_hdr_enabled","value":"Component HDR effect"},
     {"name":"settings_component_hdr_enabled_desc","value":"Off by default. Turn it on to use 1.25x brightening, then adjust the multiplier below."},
     {"name":"settings_confirm_app_exit","value":"종료 전 확인"},
@@ -1775,6 +1812,14 @@
     {
       "name": "settings_hds_tabs_material_adaptive",
       "value": "자동 조절"
+    },
+    {
+      "name": "settings_hds_tabs_gradient_mask",
+      "value": "하단 탭 그라데이션 마스크"
+    },
+    {
+      "name": "settings_hds_tabs_gradient_mask_desc",
+      "value": "플로팅 HdsTabs 바 아래의 페이드 그라데이션을 제어합니다. 기본값은 켜짐입니다."
     },
     {
       "name": "settings_timeline_columns_title",
@@ -9249,6 +9294,14 @@
       "value": "끄면 타임라인 탭이나 검색창이 프로필 사진과 오른쪽 버튼 사이로 이동합니다."
     },
     {
+      "name": "settings_title_bar_logo_auto_contrast",
+      "value": "Adaptive logo color"
+    },
+    {
+      "name": "settings_title_bar_logo_auto_contrast_desc",
+      "value": "Automatically switches the X or pattern foreground between light and dark to stay readable. Only the single-color foreground is shown, without an icon background."
+    },
+    {
       "name": "notifications_all",
       "value": "전체"
     },
@@ -10705,6 +10758,359 @@
     {"name":"page_background_motif_popular_apps_global_firefox","value":"Firefox"},
     {"name":"page_background_motif_popular_apps_global_edge","value":"Edge"},
     {"name":"page_background_motif_popular_apps_global_gmail","value":"Gmail"},
-    {"name":"page_background_motif_popular_apps_global_google_maps","value":"Google Maps"}
+    {"name":"page_background_motif_popular_apps_global_google_maps","value":"Google Maps"},
+    {"name":"scene_title","value":"Scene modes"},
+    {"name":"scene_intro","value":"Apply a set of playback, quality, motion and background preferences. Restore returns to your settings from before the first mode was enabled."},
+    {"name":"scene_reading","value":"Clear reading"},
+    {"name":"scene_reading_desc","value":"Autoplay off · high quality images · low quality video · reduced motion · plain background"},
+    {"name":"scene_saver","value":"Power and data saver"},
+    {"name":"scene_saver_desc","value":"Autoplay off · small images · low quality video · reduced motion · plain background"},
+    {"name":"scene_media","value":"Media browsing"},
+    {"name":"scene_media_desc","value":"Autoplay on · original images · high quality video · motion on · your saved background"},
+    {"name":"scene_restore","value":"Restore original settings"},
+    {"name":"scene_restore_desc","value":"Keep your preferences from before scene mode. Switching between modes does not replace this backup."},
+    {"name":"scene_failed","value":"Some settings could not be saved. Your original settings are retained; retry or restore."},
+    {"name":"offline_title","value":"Offline & later"},
+    {"name":"offline_online","value":"Online bookmarks"},
+    {"name":"offline_intro","value":"New bookmarks save text and available articles automatically. Enable images before saving to include photos. Local copies stay separate from online bookmarks and ordinary cache cleanup."},
+    {"name":"offline_images","value":"Include photos in future saves"},
+    {"name":"offline_save","value":"Save offline"},
+    {"name":"offline_saving","value":"Saving…"},
+    {"name":"offline_saved","value":"Saved for offline reading"},
+    {"name":"offline_partial_saved","value":"Saved available content. Some article text or photos are missing; retry when online."},
+    {"name":"offline_save_failed","value":"Could not save locally. Please retry."},
+    {"name":"offline_partial","value":"Incomplete copy"},
+    {"name":"offline_unread","value":"Unread"},
+    {"name":"offline_unread_only","value":"Unread only"},
+    {"name":"offline_search","value":"Search titles, tags or notes"},
+    {"name":"offline_empty","value":"No matching offline items. Save a bookmark or use Save offline on a post."},
+    {"name":"offline_edit","value":"Tags & note"},
+    {"name":"offline_tags","value":"Tags"},
+    {"name":"offline_tags_hint","value":"Tags, separated by commas"},
+    {"name":"offline_note","value":"Private note"},
+    {"name":"offline_done","value":"Save"},
+    {"name":"offline_delete","value":"Delete local copy"},
+    {"name":"reader_title","value":"Thread reader"},
+    {"name":"reader_author_only","value":"Author only"},
+    {"name":"reader_translate","value":"Translate passages"},
+    {"name":"reader_font","value":"Text size"},
+    {"name":"reader_missing","value":"This offline item is missing or unavailable. Save it again while online."},
+    {"name":"reader_partial","value":"Only the available article content is shown. Continue loading or retry while online to get the complete text."},
+    {"name":"reader_load_failed","value":"Could not load more replies. Your current reading content is kept."},
+    {"name":"reader_translation_setup","value":"Enable translation and choose a target language in Settings first."},
+    {"name":"reader_translation_failed","value":"Some passages could not be translated. You can hide translations and retry."},
+    {"name":"reader_offline_note","value":"Saved local content. Translation requires a network connection."},
+    {"name":"reader_scope","value":"Replies loaded so far. Use Continue loading to include more of the discussion."},
+    {
+      "name": "input_help_title",
+      "value": "마우스, 키보드 및 터치패드"
+    },
+    {
+      "name": "input_help_desc",
+      "value": "키보드 단축키와 포인터 제스처"
+    },
+    {
+      "name": "input_main_title",
+      "value": "메인 화면 단축키"
+    },
+    {
+      "name": "input_main_scope",
+      "value": "하위 페이지, 사이드바 또는 대화상자가 열리지 않은 다섯 메인 탭에서 사용할 수 있습니다. Ctrl+N은 메시지에서 대화를, 다른 탭에서 게시물을 만듭니다."
+    },
+    {
+      "name": "input_compose",
+      "value": "새 게시물 / 새 대화"
+    },
+    {
+      "name": "input_refresh",
+      "value": "현재 탭 새로 고침"
+    },
+    {
+      "name": "input_keyboard_title",
+      "value": "키보드 조작"
+    },
+    {
+      "name": "input_focus",
+      "value": "초점을 앞 / 뒤로 이동합니다. 기본 컨트롤은 방향키 이동도 지원합니다."
+    },
+    {
+      "name": "input_activate",
+      "value": "초점이 있는 버튼을 실행합니다."
+    },
+    {
+      "name": "input_submit",
+      "value": "게시물, 답글 또는 메시지 입력란에서 전송합니다. 일반 Enter 동작은 유지됩니다."
+    },
+    {
+      "name": "input_back",
+      "value": "도움말, 편집기, 채팅 및 미디어에서 돌아갑니다. 현재 패널을 먼저 닫습니다."
+    },
+    {
+      "name": "input_photo",
+      "value": "사진 뷰어에서 이전 / 다음 사진. 확대 중이거나 패널이 열려 있으면 사용할 수 없습니다."
+    },
+    {
+      "name": "input_video",
+      "value": "동영상 뷰어에서 이전 / 다음 동영상. 패널이 열려 있으면 사용할 수 없습니다."
+    },
+    {
+      "name": "input_playback",
+      "value": "동영상 화면에 초점이 있을 때 Space 또는 Enter로 재생 / 일시 정지, 왼쪽 / 오른쪽 키로 10초 뒤로 / 앞으로 이동합니다."
+    },
+    {
+      "name": "input_pointer_title",
+      "value": "마우스와 터치패드"
+    },
+    {
+      "name": "input_pointer",
+      "value": "왼쪽 클릭이나 탭으로 실행합니다. 사진, 동영상, 채팅 메시지를 오른쪽 클릭하면 작업 메뉴가 열립니다. 버튼은 마우스를 올리면 반응하며 스크롤바와 재생바를 드래그할 수 있습니다."
+    },
+    {
+      "name": "input_trackpad",
+      "value": "두 손가락으로 목록을 스크롤하고 가로로 밀어 사진을 바꿉니다. 핀치로 확대하고 확대된 사진을 끌어 이동합니다. 지원되는 터치패드에서 두 손가락 탭으로 메뉴를 엽니다."
+    },
+    {
+      "name": "input_previous",
+      "value": "이전 사진"
+    },
+    {
+      "name": "input_next",
+      "value": "다음 사진"
+    },
+    {
+      "name": "input_key_home",
+      "value": "Ctrl + 1"
+    },
+    {
+      "name": "input_key_explore",
+      "value": "Ctrl + 2"
+    },
+    {
+      "name": "input_key_notifications",
+      "value": "Ctrl + 3"
+    },
+    {
+      "name": "input_key_messages",
+      "value": "Ctrl + 4"
+    },
+    {
+      "name": "input_key_profile",
+      "value": "Ctrl + 5"
+    },
+    {
+      "name": "input_key_search",
+      "value": "Ctrl + K"
+    },
+    {
+      "name": "input_key_compose",
+      "value": "Ctrl + N"
+    },
+    {
+      "name": "input_key_refresh",
+      "value": "Ctrl + R"
+    },
+    {
+      "name": "input_key_settings",
+      "value": "Ctrl + ,"
+    },
+    {
+      "name": "input_key_help",
+      "value": "F1"
+    },
+    {
+      "name": "input_key_focus",
+      "value": "Tab / Shift + Tab"
+    },
+    {
+      "name": "input_key_activate",
+      "value": "Enter / Space"
+    },
+    {
+      "name": "input_key_submit",
+      "value": "Ctrl + Enter"
+    },
+    {
+      "name": "input_key_back",
+      "value": "Esc / Alt + ←"
+    },
+    {
+      "name": "input_key_photo",
+      "value": "← / →"
+    },
+    {
+      "name": "input_key_video",
+      "value": "↑ / ↓ / Page Up / Page Down"
+    },
+    {
+      "name": "input_key_playback",
+      "value": "Space / Enter / ← / →"
+    },
+    {"name":"settings_filter_languages","value":"숨길 게시물 언어"},
+    {"name":"settings_filter_languages_desc","value":"숨길 언어를 선택하세요. 언어 미확인 및 미디어 전용 게시물은 표시됩니다."},
+    {"name":"appearance_preview_title","value":"효과 미리보기"},
+    {"name":"appearance_preview_hint","value":"설정을 변경하면 즉시 반영됩니다. 시트 예시를 탭하면 펼쳐집니다."},
+    {"name":"post_edited","value":"수정됨"},
+    {"name":"post_metric_bookmarks","value":"북마크"},
+    {"name":"post_metric_quotes","value":"인용"},
+    {"name":"settings_reply_quality","value":"낮은 품질 답글 접기"},
+    {"name":"settings_reply_quality_desc","value":"반복 홍보와 대량 권유를 접습니다. 기기 내 규칙이 잘못 판단할 수 있으며 답글을 펼쳐 확인할 수 있습니다."},
+    {"name":"reply_quality_folded","value":"낮은 품질로 의심되는 답글"},
+    {"name":"reply_quality_reasons","value":"이유 보기"},
+    {"name":"reply_quality_allow","value":"이 작성자 항상 표시"},
+    {"name":"reply_quality_whitelist","value":"답글 허용 목록"},
+    {"name":"reply_quality_whitelist_desc","value":"내 답글, 게시물 작성자, 팔로우한 계정과 허용한 작성자는 계속 표시됩니다. 목록은 현재 계정에만 적용됩니다."},
+    {"name":"reply_quality_empty","value":"허용한 작성자가 없습니다"},
+    {"name":"reply_quality_reason_duplicate","value":"여러 작성자가 같은 홍보 문구를 반복함"},
+    {"name":"reply_quality_reason_author_repeat","value":"같은 작성자가 같은 내용을 반복함"},
+    {"name":"reply_quality_reason_links","value":"여러 외부 링크 포함"},
+    {"name":"reply_quality_reason_promotion","value":"홍보 또는 수익 유도 내용 포함"},
+    {"name":"reply_quality_reason_contact","value":"권유용 연락처 포함"},
+    {
+      "name": "settings_floating_compose_material_tint",
+      "value": "플로팅 게시 버튼의 재질 색상"
+    },
+    {
+      "name": "settings_floating_compose_material_tint_desc",
+      "value": "재질 위에 테마 색상을 덧씌웁니다. 끄면 색상 오버레이만 제거됩니다."
+    },
+    {
+      "name": "chat_decoration",
+      "value": "Chat decorations"
+    },
+    {
+      "name": "chat_decoration_subtitle",
+      "value": "Avatar frames and chat bubbles, downloaded only when you choose them."
+    },
+    {
+      "name": "chat_decoration_frame",
+      "value": "Avatar frames"
+    },
+    {
+      "name": "chat_decoration_bubble",
+      "value": "Chat bubbles"
+    },
+    {
+      "name": "chat_decoration_free",
+      "value": "Free"
+    },
+    {
+      "name": "chat_decoration_download_preview",
+      "value": "Download to preview"
+    },
+    {
+      "name": "chat_decoration_download",
+      "value": "Download"
+    },
+    {
+      "name": "chat_decoration_downloading",
+      "value": "Downloading..."
+    },
+    {
+      "name": "chat_decoration_use",
+      "value": "Use"
+    },
+    {
+      "name": "chat_decoration_in_use",
+      "value": "In use"
+    },
+    {
+      "name": "chat_decoration_remove",
+      "value": "Stop using"
+    },
+    {
+      "name": "chat_decoration_installed",
+      "value": "Downloaded"
+    },
+    {
+      "name": "chat_decoration_applied",
+      "value": "Decoration applied"
+    },
+    {
+      "name": "chat_decoration_download_failed",
+      "value": "Download failed. Try again later."
+    },
+    {
+      "name": "chat_decoration_reset",
+      "value": "Restore defaults"
+    },
+    {
+      "name": "chat_decoration_reset_done",
+      "value": "Defaults restored"
+    },
+    {
+      "name": "chat_decoration_note",
+      "value": "Decorations stay on this device. Other people see styles supported by their client."
+    },
+    {
+      "name": "chat_decoration_loading",
+      "value": "Loading decorations..."
+    },
+    {
+      "name": "chat_decoration_unavailable",
+      "value": "Decorations are unavailable. Check your connection and retry."
+    },
+    {
+      "name": "chat_decoration_sample_text",
+      "value": "Have a lovely day."
+    },
+    {"name": "sign_out_confirm_title", "value": "로그아웃할까요?"},
+    {"name": "sign_out_confirm_message", "value": "이 계정을 사용하려면 다시 로그인해야 합니다."},
+    {"name": "settings_for_you_only_sensitive", "value": "추천에서 민감한 콘텐츠만 표시"},
+    {"name": "settings_for_you_only_sensitive_desc", "value": "인용을 포함해 X가 민감하다고 표시한 게시물만 추천에 표시합니다. 팔로잉과 리스트에는 영향을 주지 않으며 미디어 가림은 유지됩니다."},
+    {"name": "settings_grip_floating", "value": "플로팅 작업 버튼"},
+    {"name": "settings_grip_video", "value": "동영상 작업 표시줄"},
+    {"name": "settings_grip_reply", "value": "게시물 답글 버튼"},
+    {"name": "settings_grip_component_desc", "value": "기기를 잡은 손에 맞춰 위치를 조정합니다. 끄면 선호하는 손을 사용합니다."},
+    {"name": "settings_grip_hdstabs", "value": "HdsTabs 하단 탭 표시줄"},
+    {"name": "settings_grip_hdstabs_desc", "value": "시스템의 기본 손 위치 적응을 사용합니다. 끄면 잡은 손을 따라 이동하지 않습니다."},
+    {"name":"gif_action_save_video","value":"고화질 동영상으로 저장 (MP4)"},
+    {"name":"storage_save_remembered_note","value":"다운로드 폴더를 한 번 선택하면 이후 파일은 해당 폴더에 자동 저장됩니다. 끄면 갤러리에 저장됩니다."},
+    {"name":"storage_save_to_remembered","value":"다운로드 폴더에 저장"},
+    {"name": "storage_permission_reason", "value": "선택한 파일과 폴더에 대한 접근 권한을 유지합니다。"},
+    {"name": "timeline_sources_lists", "value": "리스트"},
+    {"name": "timeline_sources_communities", "value": "커뮤니티"},
+    {"name": "timeline_edit", "value": "편집"},
+    {"name": "timeline_done", "value": "완료"},
+    {"name": "timeline_move_up", "value": "위로 이동"},
+    {"name": "timeline_move_down", "value": "아래로 이동"},
+    {"name": "timeline_remove_source", "value": "%s 삭제"},
+    {"name": "timeline_add_to_home", "value": "홈 타임라인에 추가"},
+    {"name": "timeline_remove_from_home", "value": "홈 타임라인에서 삭제"},
+    {"name": "timeline_sources_failed", "value": "일부 리스트나 커뮤니티를 불러오지 못했습니다. 눌러 다시 시도하세요."},
+    {"name": "timeline_sources_pinned_empty", "value": "고정된 타임라인이 없습니다. 아래에서 추가하세요."},
+    {"name":"video_controls_mirror","value":"컨트롤 좌우 반전"},
+    {"name":"video_controls_speed","value":"속도"},
+    {"name":"video_controls_aspect","value":"비율"},
+    {"name":"video_controls_background","value":"백그라운드"},
+    {"name":"video_controls_quality_hd","value":"HD"},
+    {"name":"video_controls_quality_sd","value":"SD"},
+    {"name":"video_controls_quality_ld","value":"LD"},
+    {"name":"video_controls_more","value":"더 보기"},
+    {"name":"video_controls_download","value":"다운로드"},
+    {"name":"settings_navigation_style","value":"하단 탐색 스타일"},
+    {"name":"settings_hds_bottom_bar","value":"플로팅 HdsTabs"},
+    {"name":"settings_split_bottom_bar","value":"분리형 캡슐 탐색"},
+    {"name":"settings_split_bottom_bar_desc","value":"왼쪽 캡슐에서 페이지를 전환하고 오른쪽 독립 버튼으로 게시, 새 채팅, 새로 고침 또는 맨 위로 이동합니다. 양쪽 모두 HDS 소재를 사용하며 이전 시스템에서는 호환 탐색을 사용합니다."},
+    {"name":"split_navigation_action_top","value":"맨 위로"},
+    {"name":"split_navigation_action_refresh","value":"홈 새로 고침"},
+    {"name":"split_navigation_action_compose","value":"게시물 작성"},
+    {"name": "settings_reply_capsule_split", "value": "답글 캡슐 분리"},
+    {"name": "settings_reply_capsule_split_desc", "value": "접힌 상태에서 답글 입력과 게시물 동작을 분리합니다"},
+    {"name": "reply_capsule_write_reply", "value": "답글"},
+    {"name":"settings_native_bottom_bar","value":"7.0 소재 캡슐 탐색"},
+    {"name":"settings_native_bottom_bar_desc","value":"답글 캡슐과 같은 HarmonyOS 7.0 몰입형 소재를 사용하며 터치 조명, 유동형 표시기와 파지에 따른 좌우 전환을 지원합니다. 사용할 수 없으면 HDS 캡슐을 사용합니다."},
+    {"name":"settings_native_navigation_material","value":"탐색 캡슐 소재 두께"},
+    {"name":"settings_for_you_only_sensitive_age_title","value":"나이 확인"},
+    {"name":"settings_for_you_only_sensitive_age_message","value":"‘추천에서 민감한 콘텐츠만 표시’는 만 18세 이상 사용자만 이용할 수 있습니다. 만 18세 이상인가요?"},
+    {"name":"settings_for_you_only_sensitive_age_under","value":"만 18세 미만"},
+    {"name":"settings_for_you_only_sensitive_age_adult","value":"만 18세 이상"},
+    {"name":"settings_theme_icon_blue","value":"아이콘 블루"},
+    {"name":"settings_theme_icon_red","value":"아이콘 레드"},
+    {"name":"settings_theme_icon_orange","value":"아이콘 오렌지"},
+    {"name":"settings_theme_icon_yellow","value":"아이콘 옐로"},
+    {"name":"settings_theme_icon_green","value":"아이콘 그린"},
+    {"name":"settings_theme_icon_pink","value":"아이콘 핑크"},
+    {"name":"settings_theme_icon_cyan","value":"아이콘 시안"},
+    {"name":"settings_theme_icon_navy","value":"아이콘 네이비"}
   ]
 }

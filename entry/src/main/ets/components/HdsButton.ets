@@ -1,3 +1,4 @@
+import { activateInputKey } from '../utils/InputSupport';
 import { TouchHdrLight } from './TouchHdrLight';
 import { motionDuration, motionScale, motionCurve, symbolMotionEnabled } from '../utils/AppMotion';
 import { STORAGE_KEY_REDUCE_MOTION, STORAGE_KEY_SYMBOL_EFFECTS, STORAGE_KEY_MOTION_AMPLITUDE } from '../services/MotionSettingsStore';
@@ -6,10 +7,12 @@ import { DEFAULT_COMPONENT_HDR_ENABLED, DEFAULT_COMPONENT_HDR_RATIO, STORAGE_KEY
   STORAGE_KEY_COMPONENT_HDR_RATIO } from '../services/ComponentHdrSettingsStore';
 import { ComponentHdrHighlight } from '../utils/ComponentHdrHighlight';
 import { ConfigurationConstant } from '@kit.AbilityKit';
+import { deviceInfo } from '@kit.BasicServicesKit';
 import { uiMaterial } from '@kit.ArkUI';
 import { HdsTabs, HdsTabsController, hdsEffect, hdsMaterial } from '@kit.UIDesignKit';
 import { HdsMaterialUtil } from '../utils/HdsMaterialUtil';
 import { SystemMaterialUtil } from '../utils/SystemMaterial';
+import { materialModifier } from '../utils/SystemMaterial';
 
 /**
  * HDS floating material button adapted from F:\\Mark-dev.  The foreground
@@ -77,15 +80,18 @@ export struct HdsButton {
     return this.useImmersiveMaterial && SystemMaterialUtil.isApi26OrAbove();
   }
 
-  private immersiveMaterial(): uiMaterial.Material {
-    return new uiMaterial.ImmersiveMaterial({
-      style: uiMaterial.ImmersiveStyle.THIN,
-      materialColor: this.immersiveTint,
-      interactive: false,
-      applyShadow: this.enableShadow,
-      colorInvert: this.adaptiveForeground,
-      lightEffect: null
-    });
+  private immersiveMaterial(): uiMaterial.Material | undefined {
+    if (deviceInfo.apiAvailable('26.0.0')) {
+      return new uiMaterial.ImmersiveMaterial({
+        style: uiMaterial.ImmersiveStyle.THIN,
+        materialColor: this.immersiveTint,
+        interactive: false,
+        applyShadow: this.enableShadow,
+        colorInvert: this.adaptiveForeground,
+        lightEffect: null
+      });
+    }
+    return undefined;
   }
 
   private getCornerRadius(): number {
@@ -108,6 +114,16 @@ export struct HdsButton {
     return this.enablePressLight && (this.isPressLightActive || this.isPanLightActive || this.panLightActive);
   }
 
+  @Builder
+  private FallbackSurface(): void {
+    Column()
+      .width('100%')
+      .height('100%')
+      .backgroundColor(this.surfaceColor === Color.Transparent ?
+        $r('sys.color.ohos_id_color_button_normal') : this.surfaceColor)
+      .backgroundBlurStyle(this.enableSurfaceBlur ? BlurStyle.COMPONENT_ULTRA_THIN : BlurStyle.NONE);
+  }
+
   build(): void {
     Stack() {
       Stack() {
@@ -116,41 +132,40 @@ export struct HdsButton {
             .width('100%')
             .height('100%');
         } else if (this.shouldUseHdsMaterial()) {
-          HdsTabs({ controller: this.tabsController, index: 0 }) {
+          if (deviceInfo.apiAvailable('6.1.0(23)')) {
+            HdsTabs({ controller: this.tabsController, index: 0 }) {
+            }
+            .clip(false)
+            .align(Alignment.Center)
+            .barWidth(this.barWidth)
+            .barHeight(this.barHeight - 12)
+            .barOverlap(this.barOverlap)
+            .barPosition(this.barPosition)
+            .backgroundColor(Color.Transparent)
+            .shadow(undefined)
+            .vertical(false)
+            .monopolizeEvents(false)
+            .barFloatingStyle({
+              barWidth: {
+                smallWidth: this.barWidth,
+                mediumWidth: this.barWidth,
+                largeWidth: this.barWidth
+              },
+              lightColor: this.lightColor,
+              gradientMask: { maskColor: Color.Transparent },
+              barBottomMargin: 0,
+              barSideMargin: 0,
+              systemMaterialEffect: {
+                materialType: hdsMaterial.MaterialType.IMMERSIVE,
+                materialLevel: HdsMaterialUtil.resolveLegacyHdsMaterialLevel(this.materialLevel)
+              },
+              thermoCtrl: true
+            });
+          } else {
+            this.FallbackSurface();
           }
-          .clip(false)
-          .align(Alignment.Center)
-          .barWidth(this.barWidth)
-          .barHeight(this.barHeight - 12)
-          .barOverlap(this.barOverlap)
-          .barPosition(this.barPosition)
-          .backgroundColor(Color.Transparent)
-          .shadow(undefined)
-          .vertical(false)
-          .monopolizeEvents(false)
-          .barFloatingStyle({
-            barWidth: {
-              smallWidth: this.barWidth,
-              mediumWidth: this.barWidth,
-              largeWidth: this.barWidth
-            },
-            lightColor: this.lightColor,
-            gradientMask: { maskColor: Color.Transparent },
-            barBottomMargin: 0,
-            barSideMargin: 0,
-            systemMaterialEffect: {
-              materialType: hdsMaterial.MaterialType.IMMERSIVE,
-              materialLevel: HdsMaterialUtil.resolveLegacyHdsMaterialLevel(this.materialLevel)
-            },
-            thermoCtrl: true
-          });
         } else {
-          Column()
-            .width('100%')
-            .height('100%')
-            .backgroundColor(this.surfaceColor === Color.Transparent ?
-              $r('sys.color.ohos_id_color_button_normal') : this.surfaceColor)
-            .backgroundBlurStyle(this.enableSurfaceBlur ? BlurStyle.COMPONENT_ULTRA_THIN : BlurStyle.NONE);
+          this.FallbackSurface();
         }
       }
       .width(this.barWidth)
@@ -178,7 +193,7 @@ export struct HdsButton {
       .borderRadius(this.getCornerRadius())
       .clip(true)
       .hitTestBehavior(HitTestMode.Default)
-      .systemMaterial(this.shouldUseImmersiveMaterial() ? this.immersiveMaterial() : undefined);
+      .attributeModifier(materialModifier(this.shouldUseImmersiveMaterial() ? this.immersiveMaterial() : undefined));
 
       TouchHdrLight({ active: this.pressLightActive(), cornerRadius: this.getCornerRadius() })
         .width(this.barWidth).height(this.barHeight - 12);
@@ -239,6 +254,8 @@ export struct HdsButton {
           }
         })
     )
+    .focusable(true).focusOnTouch(false).hoverEffect(HoverEffect.Highlight)
+    .onKeyEvent((event: KeyEvent): boolean => activateInputKey(event, (): void => { if (this.onButtonClick !== undefined) { hapticTick(); this.onButtonClick(); } }))
     .onClick((): void => {
       if (this.onButtonClick !== undefined) {
         hapticTick();

@@ -42,7 +42,7 @@ test('search opens the page containing a relocated control and explains its loca
     ['主页面返回', 'home_interaction'], ['自动播放', 'playback'], ['长按', 'video_controls'],
     ['玻璃', 'titlebar'], ['自定义字体', 'fonts'], ['头像', 'theme'],
     ['广告', 'content'], ['侧栏', 'layout'], ['下载', 'storage'], ['SOCKS5', 'proxy'],
-    ['经典底部', 'navigation'], ['Tab 文字', 'navigation']
+    ['经典底部', 'navigation'], ['Tab 文字', 'navigation'], ['渐变遮罩', 'tabmaterial']
   ]) {
     assert.ok(results(query).includes(expected), query + ' should find ' + expected);
   }
@@ -92,6 +92,7 @@ test('every category and search keyword has a value in every supported locale', 
 test('menu-only preferences and operations are searchable in their functional categories', () => {
   for (const [key, expected] of [
     ['video_feed_controls_always_visible', 'video_controls'], ['video_feed_layout_douyin', 'video_controls'],
+    ['compact_video_layout_bottom', 'video_controls'], ['compact_video_layout_rail', 'video_controls'],
     ['video_feed_subtitles', 'video_controls'], ['video_feed_auto_advance', 'playback'],
     ['settings_viewer_video_mute', 'playback'], ['post_photo_copy', 'photos'],
     ['post_menu_hidden_replies', 'home_interaction'], ['video_feed_cast', 'video_controls'],

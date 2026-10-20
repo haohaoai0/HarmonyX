@@ -1,3 +1,5 @@
+import { activateInputKey, contextInputMouse } from '../utils/InputSupport';
+import { offlineReadingStore, OfflineSaveResult } from '../services/OfflineReadingStore';
 import { DEFAULT_COMPONENT_HDR_ENABLED, DEFAULT_COMPONENT_HDR_RATIO, STORAGE_KEY_COMPONENT_HDR_ENABLED,
   STORAGE_KEY_COMPONENT_HDR_RATIO } from '../services/ComponentHdrSettingsStore';
 import { ComponentHdrHighlight } from '../utils/ComponentHdrHighlight';
@@ -43,6 +45,7 @@ import { XPrivateResult, xPrivateClient } from '../services/XPrivateClient';
 import { fieldSurfaceColor } from '../utils/ThemeColors';
 import { STORAGE_KEY_PRESS_EFFECT_ENABLED } from '../services/PressEffectSettingsStore';
 import { formatPostTime, STORAGE_KEY_POST_TIME_NOW } from '../utils/PostTime';
+import { postIsEdited, bookmarkCountAfter } from '../utils/PostMetadata';
 import { effectiveAppLocale, isAppRtl, STORAGE_KEY_APP_LOCALE } from '../utils/AppLocale';
 import { LengthMetrics } from '@kit.ArkUI';
 import { postViewCounts, STORAGE_KEY_POST_VIEWS_REVISION } from '../services/PostViewCounts';
@@ -67,6 +70,8 @@ const LONG_TEXT_MAX_LINES_EXPANDED: number = 400;
 
 @Component
 export struct TweetCard {
+  private bodyTextController: TextController = new TextController();
+  private translatedTextController: TextController = new TextController();
   @StorageProp(STORAGE_KEY_COMPONENT_HDR_ENABLED) private componentHdrEnabled: boolean = DEFAULT_COMPONENT_HDR_ENABLED;
   @StorageProp(STORAGE_KEY_COMPONENT_HDR_RATIO) private componentHdrRatio: number = DEFAULT_COMPONENT_HDR_RATIO;
   @StorageProp('harmonyx.page_background') private pageBackgroundValue: string = '';
@@ -127,6 +132,7 @@ export struct TweetCard {
   onPromotionHideSession: () => void = (): void => { };
   onPromotionHideWeek: () => void = (): void => { };
   @State private cardHeight: number = 0;
+  @State private inputMenuRequest: number = 0;
   @State private avatarTop: number = 12;
   @State liked: boolean = false;
   @State private likeCount: number = 0;
@@ -245,7 +251,8 @@ export struct TweetCard {
 
   private authorTimeLabel(): string {
     const time: string = formatPostTime(this.tweet.createdAt, this.postTimeNow);
-    return '@' + this.tweet.author.username + (time.length > 0 ? ' · ' + time : '');
+    return '@' + this.tweet.author.username + (time.length > 0 ? ' · ' + time : '') +
+      (postIsEdited(this.tweet.editHistoryIds) ? ' · ' + this.resourceText($r('app.string.post_edited')) : '');
   }
 
   private mentionSegments(): MentionSegment[] {
@@ -468,6 +475,7 @@ export struct TweetCard {
     }
     this.bookmarkPending = true;
     const next: boolean = !this.bookmarked;
+    const saveAccount: string = offlineReadingStore.account(context);
     try {
       const result: XPrivateResult = await xPrivateClient.bookmark(this.tweet.id, next);
       if (!result.ok) {
@@ -477,6 +485,8 @@ export struct TweetCard {
         });
         return;
       }
+      if (saveAccount !== offlineReadingStore.account(context)) { return; }
+      this.tweet.metrics.bookmarkCount = bookmarkCountAfter(this.tweet.metrics.bookmarkCount, this.bookmarked, next);
       this.bookmarked = next;
       this.tweet.bookmarked = next;
       this.playBookmarkMotion(next);
@@ -485,6 +495,13 @@ export struct TweetCard {
       const message: Resource = next ? $r('app.string.toast_bookmark_added') :
         $r('app.string.toast_bookmark_removed');
       promptAction.showToast({ message: this.resourceText(message), duration: 1500 });
+      if (next) {
+        const saved: OfflineSaveResult = await offlineReadingStore.capture(context, this.tweet, saveAccount);
+        if (saveAccount === offlineReadingStore.account(context) && (!saved.ok || !saved.complete)) {
+          promptAction.showToast({ message: this.resourceText(saved.ok ? $r('app.string.offline_partial_saved') :
+            $r('app.string.offline_save_failed')), duration: 2500 });
+        }
+      }
     } finally {
       this.bookmarkPending = false;
     }
@@ -638,6 +655,7 @@ export struct TweetCard {
             .fontWeight(FontWeight.Medium)
             .fontColor(this.readingText($r('app.color.text_secondary')))
         }
+        .layoutWeight(1).height(44).justifyContent(FlexAlign.Center)
         .onClick(() => {
           if (!canPostAction(this.tweet, 'reply')) { return; }
           this.onReply(this.tweet);
@@ -657,6 +675,7 @@ export struct TweetCard {
             .fontWeight(FontWeight.Medium)
             .fontColor(this.reposted ? this.readingText($r('app.color.repost')) : this.readingText($r('app.color.text_secondary')))
         }
+        .layoutWeight(1).height(44).justifyContent(FlexAlign.Center)
         .onClick(async () => {
           if (!canPostAction(this.tweet, 'repost')) { return; }
           if (this.repostPending) return;
@@ -685,6 +704,7 @@ export struct TweetCard {
             .fontWeight(FontWeight.Medium)
             .fontColor(this.liked ? this.readingText($r('app.color.like')) : this.readingText($r('app.color.text_secondary')))
         }
+        .layoutWeight(1).height(44).justifyContent(FlexAlign.Center)
         .onClick((): void => { void this.toggleLike(); })
         .accessibilityText(this.resourceText($r('app.string.action_like')))
 
@@ -699,6 +719,8 @@ export struct TweetCard {
               .fontColor(this.readingText($r('app.color.text_secondary')))
           }
         }
+        .layoutWeight(1).height(44).justifyContent(FlexAlign.Center)
+        .onClick((): void => {})
 
         Row({ space: 4 }) {
           SymbolGlyph(this.bookmarked ? $r('sys.symbol.bookmark_fill') : $r('sys.symbol.bookmark'))
@@ -708,6 +730,7 @@ export struct TweetCard {
             .scale({ x: this.reduceMotion ? 1 : this.bookmarkScale, y: this.reduceMotion ? 1 : this.bookmarkScale })
         }
         .opacity(this.bookmarkPending ? 0.5 : 1)
+        .layoutWeight(1).height(44).justifyContent(FlexAlign.Center)
         .onClick((): void => {
           this.toggleBookmark();
         })
@@ -718,6 +741,7 @@ export struct TweetCard {
             .fontSize(18)
             .fontColor([this.readingText($r('app.color.text_secondary'))])
         }
+        .layoutWeight(1).height(44).justifyContent(FlexAlign.Center)
         .onClick((): void => {
           const context: common.UIAbilityContext =
             this.getUIContext().getHostContext() as common.UIAbilityContext;
@@ -739,8 +763,8 @@ export struct TweetCard {
                   this.readingText($r('app.color.text_secondary'))])
             }
           }
-          .width(32)
-          .height(32)
+          .layoutWeight(1)
+          .height(44)
           .justifyContent(FlexAlign.Center)
           .onClick((): void => {
             this.runTranslation();
@@ -752,6 +776,7 @@ export struct TweetCard {
       }
       .width('100%')
       .justifyContent(FlexAlign.SpaceBetween)
+      .onClick((): void => {})
       .margin({ top: 8 })
         }
     }
@@ -910,6 +935,9 @@ export struct TweetCard {
               ])
           }
         }.width('100%').alignItems(VerticalAlign.Center).id('narrow-post-author-' + this.tweet.id)
+        if (!this.promotion) {
+          PostOverflowButton({ tweet: this.tweet, inputMenuRequest: this.inputMenuRequest, hideTrigger: true })
+        }
       }.width('100%').alignItems(HorizontalAlign.Start).padding($r('app.float.timeline_column_inset'))
     }.width('100%').id('narrow-post-card-' + this.tweet.id)
   }
@@ -1008,7 +1036,7 @@ export struct TweetCard {
                   { value: $r('app.string.promotion_hide_week'), action: (): void => this.onPromotionHideWeek() }
                 ])
               } else if (!this.promotion) {
-                PostOverflowButton({ foreground: this.readingText($r('app.color.text_secondary')), tweet: this.tweet })
+                PostOverflowButton({ foreground: this.readingText($r('app.color.text_secondary')), tweet: this.tweet, inputMenuRequest: this.inputMenuRequest })
               }
               if (this.translationEnabled && !this.showActions && !this.promotion) {
                 Stack() {
@@ -1053,7 +1081,7 @@ export struct TweetCard {
           }
 
           if (this.translationReplaceOriginal && this.translatedText.length > 0) {
-            Text() { EmojiSpans(this.getUIContext(), this.translatedText, $r('sys.float.Body_L'), this.systemEmojiEnabled) }
+            Text(undefined, { controller: this.translatedTextController }) { EmojiSpans(this.getUIContext(), this.translatedText, $r('sys.float.Body_L'), this.systemEmojiEnabled) }
               .fontSize($r('sys.float.Body_L'))
               .fontFamily(this.appFontFamily === DEFAULT_APP_FONT_FAMILY ? this.contentFontFamily : this.appFontFamily)
               .fontWeight(FontWeight.Medium)
@@ -1063,13 +1091,16 @@ export struct TweetCard {
                 LONG_TEXT_MAX_LINES)
               .textOverflow({ overflow: TextOverflow.Ellipsis })
               .copyOption(CopyOptions.LocalDevice)
+              .onMouse((event: MouseEvent): void => {
+                if (event.button === MouseButton.Right) { event.stopPropagation(); }
+              })
               .accessibilityText(this.translatedText)
-              .editMenuOptions(new EmojiCopyMenu(getContext(this) as common.UIAbilityContext, this.translatedText, this.systemEmojiEnabled))
+              .editMenuOptions(new EmojiCopyMenu(this.getUIContext(), this.translatedTextController, this.translatedText, this.systemEmojiEnabled))
               .onClick((): void => {
                 this.onOpen(this.tweet, this.sharedElementId);
               })
           } else if (this.tweet.text.length > 0 && this.tweet.presentation?.visibility?.hidden !== true) {
-            Text() {
+            Text(undefined, { controller: this.bodyTextController }) {
               ForEach(this.mentionSegments(), (segment: MentionSegment) => {
                 if (segment.mention) {
                   EmojiSpans(this.getUIContext(), segment.text, $r('sys.float.Body_L'), this.systemEmojiEnabled, (): void => {
@@ -1099,8 +1130,11 @@ export struct TweetCard {
                 LONG_TEXT_MAX_LINES)
               .textOverflow({ overflow: TextOverflow.Ellipsis })
               .copyOption(CopyOptions.LocalDevice)
+              .onMouse((event: MouseEvent): void => {
+                if (event.button === MouseButton.Right) { event.stopPropagation(); }
+              })
               .accessibilityText(this.tweet.text)
-              .editMenuOptions(new EmojiCopyMenu(getContext(this) as common.UIAbilityContext, this.tweet.text, this.systemEmojiEnabled))
+              .editMenuOptions(new EmojiCopyMenu(this.getUIContext(), this.bodyTextController, this.tweet.text, this.systemEmojiEnabled))
               // Clickable spans handle mentions, hashtags and links first. This
               // handler opens the post when the rest of the body is tapped.
               .onClick((): void => {
@@ -1199,6 +1233,11 @@ export struct TweetCard {
     // the expansion instead of letting it be torn down the moment the list
     // rebuilds under the opening page.
     .transition(TransitionEffect.opacity(0.99))
+    .focusable(true).focusOnTouch(false).hoverEffect(HoverEffect.Highlight)
+    .onKeyEvent((event: KeyEvent): boolean => activateInputKey(event, (): void => this.onOpen(this.tweet, this.sharedElementId)))
+    .onMouse((event: MouseEvent): void => contextInputMouse(event, (): void => {
+      if (!this.promotion) { this.inputMenuRequest++; }
+    }))
     .onClick((): void => {
       this.onOpen(this.tweet, this.sharedElementId);
     })

@@ -60,6 +60,19 @@ export class XListParser {
     }
   }
 
+  // Management timelines may also contain discovery/recommendation modules.
+  // Only the default directory is limited to lists the viewer owns or follows;
+  // search, profile memberships and detail reads keep their full results.
+  static directory(body: string, viewerId: string): ListPage | null {
+    const page: ListPage | null = XListParser.parse(body);
+    if (page === null) { return null; }
+    return {
+      lists: page.lists.filter((row: ListRow): boolean => row.following ||
+        (viewerId.length > 0 && row.ownerId === viewerId)),
+      nextToken: page.nextToken
+    };
+  }
+
   private static row(list: Record<string, Object>): ListRow | null {
     const id: string = String(list['listId'] ?? list['rest_id'] ?? list['id_str'] ?? '');
     const name: string = String(list['name'] ?? '');

@@ -47,6 +47,9 @@ export function normalizeVideoDoubleTapSeekSeconds(value: number): number {
 }
 
 export const STORAGE_KEY_VIDEO_FEED_LAYOUT: string = 'harmonyx.video_feed_layout';
+export const STORAGE_KEY_COMPACT_VIDEO_LAYOUT: string = 'harmonyx.compact_video_layout';
+export const COMPACT_VIDEO_LAYOUT_RAIL: number = 0;
+export const COMPACT_VIDEO_LAYOUT_BOTTOM: number = 1;
 export const STORAGE_KEY_VIDEO_CONTROL_STYLE: string = 'harmonyx.video_control_style';
 // What a fullscreen video does when the reader leaves the app or locks the
 // screen: keep the sound running through the control centre, or hand the
@@ -142,6 +145,7 @@ export class MediaSettingsStore {
   private static readonly VIDEO_DOUBLE_TAP_SEEK_KEY: string = 'video_double_tap_seek';
   private static readonly VIDEO_DOUBLE_TAP_SEEK_SECONDS_KEY: string = 'video_double_tap_seek_seconds';
   private static readonly VIDEO_FEED_LAYOUT_KEY: string = 'video_feed_layout';
+  private static readonly COMPACT_VIDEO_LAYOUT_KEY: string = 'compact_video_layout';
   private static readonly VIDEO_CONTROL_STYLE_KEY: string = 'video_control_style';
   private static readonly VIDEO_BACKGROUND_MODE_KEY: string = 'video_background_mode';
   private static readonly CAPTION_OPACITY_KEY: string = 'caption_opacity';
@@ -533,6 +537,32 @@ export class MediaSettingsStore {
 
   publishVideoHoldSpeed(enabled: boolean): void {
     AppStorage.setOrCreate<boolean>(STORAGE_KEY_VIDEO_HOLD_SPEED, enabled);
+  }
+
+  loadCompactVideoLayout(context: common.Context): number {
+    try {
+      const options: preferences.Options = { name: MediaSettingsStore.STORE_NAME };
+      const store: preferences.Preferences = preferences.getPreferencesSync(context, options);
+      const value: number = store.getSync(MediaSettingsStore.COMPACT_VIDEO_LAYOUT_KEY,
+        COMPACT_VIDEO_LAYOUT_RAIL) as number;
+      return value === COMPACT_VIDEO_LAYOUT_BOTTOM ? value : COMPACT_VIDEO_LAYOUT_RAIL;
+    } catch (error) {
+      return COMPACT_VIDEO_LAYOUT_RAIL;
+    }
+  }
+
+  saveCompactVideoLayout(context: common.Context, layout: number): boolean {
+    const value: number = layout === COMPACT_VIDEO_LAYOUT_BOTTOM ? layout : COMPACT_VIDEO_LAYOUT_RAIL;
+    try {
+      const options: preferences.Options = { name: MediaSettingsStore.STORE_NAME };
+      const store: preferences.Preferences = preferences.getPreferencesSync(context, options);
+      store.putSync(MediaSettingsStore.COMPACT_VIDEO_LAYOUT_KEY, value);
+      store.flushSync();
+      AppStorage.setOrCreate<number>(STORAGE_KEY_COMPACT_VIDEO_LAYOUT, value);
+      return true;
+    } catch (error) {
+      return false;
+    }
   }
 
   loadVideoFeedLayout(context: common.Context): number {

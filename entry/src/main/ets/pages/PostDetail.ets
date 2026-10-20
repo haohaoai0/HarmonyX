@@ -1,3 +1,6 @@
+import { scrollFrame, scrollStarted, scrollStopped, stopScrollOnTouch } from '../utils/ScrollInteraction';
+import type { ThreadReaderRouteParam } from './ThreadReader';
+import { offlineReadingStore, OfflineSaveResult } from '../services/OfflineReadingStore';
 import { AdaptivePostGrid } from '../components/AdaptivePostGrid';
 import { DEFAULT_COMPONENT_HDR_ENABLED, DEFAULT_COMPONENT_HDR_RATIO, STORAGE_KEY_COMPONENT_HDR_ENABLED,
   STORAGE_KEY_COMPONENT_HDR_RATIO } from '../services/ComponentHdrSettingsStore';
@@ -51,13 +54,19 @@ import { FloatingComposeButton } from '../components/FloatingComposeButton';
 import type { GrokRouteParam } from './Grok';
 import type { PostInteractionsRouteParam } from './PostInteractions';
 import type { EditHistoryRouteParam } from './EditHistory';
-import { ReplyComposerCapsuleBuilder } from '../components/ReplyComposer';
+import { ReplyComposerCapsule } from '../components/ReplyComposer';
 import type { ReplyComposerContext, ReplyComposerRouteParam } from '../components/ReplyComposer';
 import { XPrivateResult, xPrivateClient } from '../services/XPrivateClient';
 import { XUserParser } from '../services/XUserParser';
 import { XTimelineParser } from '../services/XTimelineParser';
 import type { TweetDetailPage } from '../services/XTimelineParser';
 import { ThreadReplyOrder } from '../services/ThreadReplyOrder';
+import { ReplyQuality, ReplyQualityAssessment } from '../utils/ReplyQuality';
+import { replyQualityStore, ReplyQualitySettings, ReplyQualityAllowedAuthor,
+  STORAGE_KEY_REPLY_QUALITY_ENABLED, STORAGE_KEY_REPLY_QUALITY_REVISION } from '../services/ReplyQualityStore';
+import { STORAGE_KEY_ACCOUNTS_CHANGED, accountStore } from '../services/AccountStore';
+import { ReplyQualityNotice } from '../components/ReplyQualityNotice';
+import { postIsEdited, refreshedPostMetrics, bookmarkCountAfter } from '../utils/PostMetadata';
 import type { ThreadReplyRow } from '../services/ThreadReplyOrder';
 import { formatCount } from '../models/Tweet';
 import type { MediaAttachment, Tweet, TweetAuthor, UserProfile } from '../models/Tweet';
@@ -99,10 +108,13 @@ import { GripHandManager } from '../utils/GripHandManager';
 import { cardSurfaceColor, fieldSurfaceColor, pageSurfaceColor } from '../utils/ThemeColors';
 import { formatPostDetailTime, STORAGE_KEY_POST_TIME_NOW } from '../utils/PostTime';
 import { postViewCounts, STORAGE_KEY_POST_VIEWS_REVISION } from '../services/PostViewCounts';
+import { materialModifier } from '../utils/SystemMaterial';
 import {
   DEFAULT_CONTENT_FONT_FAMILY,
   STORAGE_KEY_CONTENT_FONT_FAMILY,
-  STORAGE_KEY_AVATAR_TINT_ENABLED
+  STORAGE_KEY_AVATAR_TINT_ENABLED,
+  STORAGE_KEY_REPLY_CAPSULE_SPLIT_ENABLED,
+  DEFAULT_REPLY_CAPSULE_SPLIT_ENABLED
 } from '../services/AppearanceStore';
 
 const REPLY_CAPSULE_GRIP_KEY: string = 'post-detail-reply-capsule';
@@ -113,6 +125,7 @@ class CommentTimelineRow {
   key: string = '';
   reply: ThreadReplyRow | null = null;
   promotion: XXAuthPromotionPost | null = null;
+  quality: ReplyQualityAssessment | null = null;
 }
 
 const REPLY_SORT_RECENT: string = 'recent';
@@ -134,12 +147,14 @@ export interface PostDetailRouteParam {
 }
 
 @Builder
-export function PostDetailBuilder(): void {
-  PostDetail();
+export function PostDetailBuilder(param: Object): void {
+  PostDetail({ initialRoute: param as PostDetailRouteParam });
 }
 
 @Component
 export struct PostDetail {
+  private bodyTextController: TextController = new TextController();
+  private translatedTextController: TextController = new TextController();
   @StorageProp(STORAGE_KEY_COMPONENT_HDR_ENABLED) private componentHdrEnabled: boolean = DEFAULT_COMPONENT_HDR_ENABLED;
   @StorageProp(STORAGE_KEY_COMPONENT_HDR_RATIO) private componentHdrRatio: number = DEFAULT_COMPONENT_HDR_RATIO;
   @StorageProp('harmonyx.page_background') private pageBackgroundValue: string = '';
@@ -156,6 +171,12 @@ export struct PostDetail {
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @StorageProp(STORAGE_KEY_SYSTEM_EMOJI_ENABLED) private systemEmojiEnabled: boolean = false;
   @StorageLink(STORAGE_KEY_FILTER_HIDE_ADS) private filterHideAds: boolean = true;
+  @StorageProp(STORAGE_KEY_REPLY_QUALITY_ENABLED) private replyQualityEnabled: boolean = false;
+  @StorageProp(STORAGE_KEY_REPLY_QUALITY_REVISION) @Watch('loadReplyQuality') private replyQualityRevision: number = 0;
+  @StorageProp(STORAGE_KEY_ACCOUNTS_CHANGED) @Watch('loadReplyQuality') private qualityAccountRevision: number = 0;
+  @State private qualityAllowedIds: string[] = [];
+  @State private qualityViewerId: string = '';
+  @State private bookmarkCount: number = -1;
   @StorageProp('harmonyx.breakpoint') private sheetWindowBreakpoint: string = 'sm';
   @StorageProp(STORAGE_KEY_DESKTOP_LAYOUT) desktopLayoutEnabled: boolean = false;
   @StorageProp(STORAGE_KEY_SHEET_MATERIAL_ENABLED) private sheetMaterialEnabled: boolean = DEFAULT_SHEET_MATERIAL_ENABLED;
@@ -163,6 +184,7 @@ export struct PostDetail {
   @Prop embedded: boolean = false;
   @StorageProp(STORAGE_KEY_MEDIA_COMMENT_BACKGROUND) private mediaCommentBackground: boolean = true;
   @Prop initialTweet: Tweet | null = null;
+  @Prop initialRoute: PostDetailRouteParam | null = null;
   onEmbeddedPostChanged: (post: Tweet) => void = (): void => {};
   onEmbeddedNavigate: () => void = (): void => {};
   @StorageProp(STORAGE_KEY_POST_TIME_NOW) private postTimeNow: number = Date.now();
@@ -190,6 +212,7 @@ export struct PostDetail {
   @StorageLink(STORAGE_KEY_TRANSLATION_REPLACE_ORIGINAL) translationReplaceOriginal: boolean = false;
   @StorageLink('harmonyx.breakpoint') @Watch('onPostDetailBreakpointChanged')
   breakpoint: string = ResponsiveLayout.BREAKPOINT_SM;
+  @StorageProp('harmonyx.grip_reply_enabled') @Watch('onReplyGripHandEnabledChanged') private componentGripEnabled: boolean = true;
   @StorageLink('harmonyx.grip_hand_enabled') @Watch('onReplyGripHandEnabledChanged')
   replyGripHandEnabled: boolean = true;
   @StorageLink('harmonyx.grip_preferred_hand') @Watch('onReplyPreferredHandChanged')
@@ -233,6 +256,9 @@ export struct PostDetail {
   @StorageProp(STORAGE_KEY_APP_LOCALE) @Watch('onTranslationAppLocaleChanged')
   private appLocale: string = effectiveAppLocale();
   @State private replySortSheetVisible: boolean = false;
+  @StorageProp(STORAGE_KEY_REPLY_CAPSULE_SPLIT_ENABLED)
+  private replyCapsuleSplitEnabled: boolean = DEFAULT_REPLY_CAPSULE_SPLIT_ENABLED;
+  @State private replyBarWidth: number = 0;
   @State private replyCapsuleExpanded: boolean = false;
   @State private replyComposerDismissRequest: number = 0;
   @State private replySortMode: string = REPLY_SORT_RELEVANCE;
@@ -339,23 +365,32 @@ export struct PostDetail {
 
   aboutToAppear(): void {
     this.alive = true;
+    this.loadReplyQuality();
     this.detailVisible = true;
+    // Bind the shared element before the destination's first layout. onReady
+    // is too late: inserting it with an empty id loses the in/out pairing.
+    this.initializeRoute();
     this.getUIContext().setKeyboardAvoidMode(KeyboardAvoidMode.RESIZE);
     this.observeKeyboardState();
     this.readViewportShortSide();
     this.initializeReplyGripHand();
-    // The route parameter is ready on the next frame after the destination
-    // mounts, matching the child-page handoff used in PaperTalk.
+    // Defer data loading, but keep route identity out of this later frame.
     setTimeout((): void => {
-      if (this.embedded && this.initialTweet !== null) {
-        const param: PostDetailRouteParam = { tweet: this.initialTweet };
-        this.applyRouteParam(param);
-      } else {
-        this.loadRouteParam();
-      }
+      if (!this.alive) { return; }
       this.startInitialLoad();
       this.registerGesturesShare();
     }, 50);
+  }
+
+  private initializeRoute(): void {
+    if (this.embedded && this.initialTweet !== null) {
+      const param: PostDetailRouteParam = { tweet: this.initialTweet };
+      this.applyRouteParam(param);
+    } else if (this.initialRoute !== null) {
+      this.applyRouteParam(this.initialRoute);
+    } else {
+      this.loadRouteParam();
+    }
   }
 
   onWillApplyTheme(theme: Theme): void {
@@ -532,8 +567,8 @@ export struct PostDetail {
       this.replyGripHandEnabled = GripHandManager.getInstance().isGripHandEnabled();
       this.replyPreferredHand = GripHandManager.getInstance().getPreferredHand();
     }
-    this.replyCapsuleHand = GripHandManager.getInstance().getLastHand();
-    if (this.replyGripHandEnabled && this.useWideThreadLayout()) {
+    this.replyCapsuleHand = this.componentGripEnabled ? GripHandManager.getInstance().getLastHand() : this.replyPreferredHand;
+    if (this.replyGripHandEnabled && this.componentGripEnabled && this.useWideThreadLayout()) {
       GripHandManager.getInstance().startFor(REPLY_CAPSULE_GRIP_KEY, (hand: string): void => {
         this.onReplyGripHandChanged(hand);
       });
@@ -548,7 +583,7 @@ export struct PostDetail {
   }
 
   private onReplyGripHandEnabledChanged(): void {
-    if (this.replyGripHandEnabled && this.useWideThreadLayout()) {
+    if (this.replyGripHandEnabled && this.componentGripEnabled && this.useWideThreadLayout()) {
       this.initializeReplyGripHand();
       return;
     }
@@ -557,13 +592,13 @@ export struct PostDetail {
   }
 
   private onReplyPreferredHandChanged(): void {
-    if (!this.replyGripHandEnabled) {
+    if ((!this.replyGripHandEnabled || !this.componentGripEnabled)) {
       this.replyCapsuleHand = this.replyPreferredHand;
     }
   }
 
   private onReplyGripHandChanged(hand: string): void {
-    if (!this.replyGripHandEnabled) { return; }
+    if ((!this.replyGripHandEnabled || !this.componentGripEnabled)) { return; }
     this.replyCapsuleHand = hand;
   }
 
@@ -630,6 +665,7 @@ export struct PostDetail {
     this.likeCount = tweet.metrics.likeCount;
     this.reposted = tweet.reposted;
     this.bookmarked = tweet.bookmarked ?? false;
+    this.bookmarkCount = tweet.metrics.bookmarkCount ?? -1;
   }
 
   private syncLikeState(): void {
@@ -662,7 +698,8 @@ export struct PostDetail {
       text: current.text,
       language: (live.language ?? '').length > 0 ? live.language : current.language,
       createdAt: live.createdAt.length > 0 ? live.createdAt : current.createdAt,
-      metrics: live.metrics,
+      metrics: refreshedPostMetrics(current.metrics, live.metrics),
+      editHistoryIds: live.editHistoryIds ?? current.editHistoryIds,
       liked: live.liked,
       reposted: live.reposted,
       bookmarked: live.bookmarked,
@@ -971,33 +1008,39 @@ export struct PostDetail {
   }
 
   private async loadThreadViaPrivate(tweetId: string, rankingMode: string, generation: number): Promise<void> {
-    const result: XPrivateResult = await xPrivateClient.tweetDetail(tweetId, rankingMode);
-    if (!this.alive || generation !== this.threadLoadGeneration) {
-      return;
+    let cursor: string = '';
+    const visited: Set<string> = new Set<string>();
+    // X can return a cursor-only page before the readable replies. Follow a
+    // bounded number automatically; an unfinished reply timeline is not empty.
+    for (let pageIndex: number = 0; pageIndex < 3; pageIndex++) {
+      visited.add(cursor);
+      const result: XPrivateResult = await xPrivateClient.tweetDetail(tweetId, rankingMode, cursor);
+      if (!this.alive || generation !== this.threadLoadGeneration) { return; }
+      const previous: Tweet[] = pageIndex === 0 ? [] :
+        (this.tweet === null ? this.replies : [this.tweet, ...this.replies]);
+      const page: TweetDetailPage | null = result.ok ?
+        XTimelineParser.parseTweetDetail(result.body, tweetId, previous, this.discoverMoreStarted) : null;
+      if (page === null || (page.focal === null && page.replies.length === 0 && page.discoverMore.length === 0 &&
+        page.nextToken.length === 0)) {
+        if (pageIndex === 0) { this.replies = []; }
+        this.threadLoadMoreFailed = pageIndex > 0;
+        this.threadStatus = result.status === 401 || result.status === 403 ?
+          this.text($r('app.string.private_session_expired')) :
+          this.text($r('app.string.post_detail_unavailable'));
+        return;
+      }
+      if (page.focal !== null) { this.applyLivePostState(page.focal); }
+      this.replies = pageIndex === 0 ? page.replies : this.mergeThreadPosts(this.replies, page.replies);
+      this.discoverMore = pageIndex === 0 ? page.discoverMore :
+        this.mergeThreadPosts(this.discoverMore, page.discoverMore);
+      this.threadNextToken = visited.has(page.nextToken) ? '' : page.nextToken;
+      this.discoverMoreStarted = page.discoverMoreStarted;
+      this.threadStatus = this.replies.length > 0 ? this.text($r('app.string.post_detail_live')) :
+        (this.threadNextToken.length > 0 && !this.discoverMoreStarted ?
+          this.text($r('app.string.timeline_load_more')) : this.text($r('app.string.post_detail_no_replies')));
+      if (this.replies.length > 0 || this.threadNextToken.length === 0 || this.discoverMoreStarted) { return; }
+      cursor = this.threadNextToken;
     }
-    if (!result.ok) {
-      this.replies = [];
-      this.threadStatus = result.status === 401 || result.status === 403 ?
-        this.text($r('app.string.private_session_expired')) :
-        this.text($r('app.string.post_detail_unavailable'));
-      return;
-    }
-    const page: TweetDetailPage | null = XTimelineParser.parseTweetDetail(result.body, tweetId);
-    if (page === null || (page.focal === null && page.replies.length === 0 && page.discoverMore.length === 0 &&
-      page.nextToken.length === 0)) {
-      this.replies = [];
-      this.threadStatus = this.text($r('app.string.post_detail_unavailable'));
-      return;
-    }
-    if (page.focal !== null) {
-      this.applyLivePostState(page.focal);
-    }
-    this.replies = page.replies;
-    this.discoverMore = page.discoverMore;
-    this.threadNextToken = page.nextToken;
-    this.discoverMoreStarted = page.discoverMoreStarted;
-    this.threadStatus = this.replies.length > 0 ? this.text($r('app.string.post_detail_live')) :
-      this.text($r('app.string.post_detail_no_replies'));
   }
 
   private mergeThreadPosts(current: Tweet[], incoming: Tweet[]): Tweet[] {
@@ -1045,7 +1088,8 @@ export struct PostDetail {
       this.threadNextToken = page.nextToken === cursor ? '' : page.nextToken;
       this.discoverMoreStarted = page.discoverMoreStarted;
       this.threadStatus = this.replies.length > 0 ? this.text($r('app.string.post_detail_live')) :
-        this.text($r('app.string.post_detail_no_replies'));
+        (this.threadNextToken.length > 0 && !this.discoverMoreStarted ?
+          this.text($r('app.string.timeline_load_more')) : this.text($r('app.string.post_detail_no_replies')));
     } catch (error) {
       if (this.alive && generation === this.threadLoadGeneration) {
         this.threadLoadMoreFailed = true;
@@ -1111,21 +1155,27 @@ export struct PostDetail {
     const rows: CommentTimelineRow[] = [];
     const replies: ThreadReplyRow[] = this.orderedReplies().filter((row: ThreadReplyRow): boolean =>
       !this.filterHideAds || !isAdPost(row.tweet.presentation));
-    if (this.embedded) { return rows; }
+    const quality: Map<string, ReplyQualityAssessment> = this.replyQualityEnabled ?
+      ReplyQuality.analyze(replies.map((row: ThreadReplyRow): Tweet => row.tweet),
+        this.tweet?.author.id ?? '', this.qualityViewerId, this.qualityAllowedIds) : new Map<string, ReplyQualityAssessment>();
     const anchors: number[] = [];
     for (let i: number = 1; i < replies.length; i++) {
       if (!replies[i].isNestedReply) { anchors.push(i); }
     }
-    const plan: XXAuthPromotionPlan = this.promotionPlan();
     const placement: Map<number, XXAuthPromotionPost> = new Map();
-    if (anchors.length > 0 && plan.posts.length > 0 && plan.commentCount > 0) {
-      const count: number = Math.min(plan.commentCount, plan.posts.length, anchors.length);
-      const salt: string = 'comments:' + (this.tweet === null ? '' : this.tweet.id);
-      const slots: XXAuthPromotionSlot[] = XXAuthPromotionInjector.slots(anchors.length,
-        plan.posts, count, salt);
-      for (let i: number = 0; i < slots.length; i++) {
-        const at: number = Math.max(0, Math.min(anchors.length, slots[i].index) - 1);
-        placement.set(anchors[at], slots[i].post);
+    // Embedded media viewers omit injected promotions, while the real reply
+    // rows below must still be rendered for both photo and video comments.
+    if (!this.embedded) {
+      const plan: XXAuthPromotionPlan = this.promotionPlan();
+      if (anchors.length > 0 && plan.posts.length > 0 && plan.commentCount > 0) {
+        const count: number = Math.min(plan.commentCount, plan.posts.length, anchors.length);
+        const salt: string = 'comments:' + (this.tweet === null ? '' : this.tweet.id);
+        const slots: XXAuthPromotionSlot[] = XXAuthPromotionInjector.slots(anchors.length,
+          plan.posts, count, salt);
+        for (let i: number = 0; i < slots.length; i++) {
+          const at: number = Math.max(0, Math.min(anchors.length, slots[i].index) - 1);
+          placement.set(anchors[at], slots[i].post);
+        }
       }
     }
     for (let i: number = 0; i < replies.length; i++) {
@@ -1139,9 +1189,39 @@ export struct PostDetail {
       const row: CommentTimelineRow = new CommentTimelineRow();
       row.key = replies[i].tweet.id;
       row.reply = replies[i];
+      row.quality = quality.get(replies[i].tweet.id) ?? null;
       rows.push(row);
     }
     return rows;
+  }
+
+  private loadReplyQuality(): void {
+    const context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
+    const settings: ReplyQualitySettings = replyQualityStore.load(context);
+    this.qualityAllowedIds = settings.authors.map((author: ReplyQualityAllowedAuthor): string => author.id);
+    this.qualityViewerId = accountStore.active(context)?.userId || xPrivateClient.viewerId() || authStore.getUserId();
+  }
+
+  private allowQualityAuthor(author: TweetAuthor): void {
+    if (!replyQualityStore.allow(getContext(this) as common.UIAbilityContext, author)) {
+      promptAction.showToast({ message: this.text($r('app.string.settings_filter_save_failed')) });
+    }
+  }
+
+  @Builder
+  private QualityReplyRow(row: CommentTimelineRow): void {
+    if (row.reply !== null) {
+      if (row.quality !== null) {
+        ReplyQualityNotice({ tweetId: row.reply.tweet.id,
+          authorName: row.reply.tweet.author.name + ' @' + row.reply.tweet.author.username,
+          reasons: row.quality.reasons, pageBackground: this.embedded ? '' : this.pageBackgroundValue,
+          onAllow: (): void => { this.allowQualityAuthor((row.reply as ThreadReplyRow).tweet.author); } }) {
+          this.CommentReplyRow(row.reply as ThreadReplyRow)
+        }
+      } else {
+        this.CommentReplyRow(row.reply as ThreadReplyRow)
+      }
+    }
   }
 
   @Builder
@@ -1690,6 +1770,13 @@ export struct PostDetail {
     });
   }
 
+  private openThreadReader(): void {
+    if (this.tweet === null) { return; }
+    const param: ThreadReaderRouteParam = { root: this.tweet, replies: this.replies,
+      cursor: this.threadLoading ? undefined : this.threadNextToken, rankingMode: this.privateReplyRankingMode() };
+    this.pageStack.pushPath({ name: 'ThreadReader', param: param });
+  }
+
   private async toggleBookmark(): Promise<void> {
     if (this.tweet !== null && !canPostAction(this.tweet, 'bookmark')) { return; }
     const current: Tweet | null = this.tweet;
@@ -1704,6 +1791,11 @@ export struct PostDetail {
       return;
     }
     const next: boolean = !this.bookmarked;
+    const saveContext: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
+    const saveAccount: string = offlineReadingStore.account(saveContext);
+    const previousBookmarkCount: number | undefined = current.metrics.bookmarkCount;
+    current.metrics.bookmarkCount = bookmarkCountAfter(previousBookmarkCount, this.bookmarked, next);
+    this.bookmarkCount = current.metrics.bookmarkCount ?? -1;
     this.bookmarked = next;
     current.bookmarked = next;
     if (symbolMotionEnabled()) { this.bookmarkSymbolTrigger++; }
@@ -1711,7 +1803,10 @@ export struct PostDetail {
     this.bookmarkPending = true;
     const result: XPrivateResult = await xPrivateClient.bookmark(current.id, next);
     this.bookmarkPending = false;
+    if (saveAccount !== offlineReadingStore.account(saveContext)) { return; }
     if (!result.ok) {
+      current.metrics.bookmarkCount = previousBookmarkCount;
+      this.bookmarkCount = previousBookmarkCount ?? -1;
       this.bookmarked = !next;
       current.bookmarked = !next;
       promptAction.showToast({
@@ -1723,6 +1818,13 @@ export struct PostDetail {
     const message: Resource = next ? $r('app.string.toast_bookmark_added') :
       $r('app.string.toast_bookmark_removed');
     promptAction.showToast({ message: this.text(message), duration: 1500 });
+    if (next) {
+      const saved: OfflineSaveResult = await offlineReadingStore.capture(saveContext, current, saveAccount);
+      if (saveAccount === offlineReadingStore.account(saveContext) && (!saved.ok || !saved.complete)) {
+        promptAction.showToast({ message: this.text(saved.ok ? $r('app.string.offline_partial_saved') :
+          $r('app.string.offline_save_failed')), duration: 2500 });
+      }
+    }
   }
 
   private postShareUrl(post: Tweet): string {
@@ -1846,19 +1948,37 @@ export struct PostDetail {
     }
   }
 
+  private useSplitReplyCapsule(): boolean {
+    return this.replyCapsuleSplitEnabled;
+  }
+
+  private replyActionCapsuleWidth(): number {
+    const fullActionStripWidth: number = 232;
+    const minimumReplyWidth: number = 120;
+    const availableWithoutGap: number = this.replyBarWidth - 8;
+    if (availableWithoutGap >= fullActionStripWidth + minimumReplyWidth) {
+      return fullActionStripWidth;
+    }
+    // Only narrow panes need overflow; all actions stay at their full touch size.
+    return Math.min(fullActionStripWidth, Math.max(116, availableWithoutGap * 0.54));
+  }
+
   @Builder
   private ReplyComposerBar(): void {
-    ReplyComposerCapsuleBuilder(this.replyComposerContext(),
-      (text: string, imageUri: string, gifUri: string): void => {
+    ReplyComposerCapsule({
+      context: this.replyComposerContext(),
+      accentColor: this.accentColor,
+      materialEnabled: deviceInfo.apiAvailable('26.0.0'),
+      splitStyle: this.useSplitReplyCapsule(),
+      actionWidth: this.replyActionCapsuleWidth(),
+      dismissRequest: this.replyComposerDismissRequest,
+      onExpand: (text: string, imageUri: string, gifUri: string): void => {
         this.openReplyComposer(text, imageUri, gifUri);
       },
-      (text: string): Promise<boolean> => {
-        return this.sendCapsuleReply(text);
-      },
-      (expanded: boolean): void => {
-        this.replyCapsuleExpanded = expanded;
-      },
-      this.replyComposerDismissRequest);
+      onSend: (text: string): Promise<boolean> => this.sendCapsuleReply(text),
+      onExpandedChange: (expanded: boolean): void => { this.replyCapsuleExpanded = expanded; },
+      postActions: (): void => { this.CapsulePostActions(); }
+    });
   }
 
   @Builder
@@ -2044,119 +2164,206 @@ export struct PostDetail {
   }
 
   @Builder
+  private PostReplyButton(capsule: boolean): void {
+    if (this.tweet !== null) {
+      Button({ type: ButtonType.Normal, stateEffect: true }) {
+        Flex({ direction: capsule ? FlexDirection.Column : FlexDirection.Row,
+          justifyContent: FlexAlign.Center, alignItems: ItemAlign.Center }) {
+          SymbolGlyph($r('sys.symbol.ellipsis_bubble'))
+            .fontSize(capsule ? $r('app.float.reply_capsule_split_icon_size') : $r('app.float.post_detail_action_icon'))
+            .fontWeight(capsule ? FontWeight.Medium : FontWeight.Normal)
+            .fontColor([capsule ? $r('sys.color.font_secondary') : this.postActionColor($r('app.color.text_secondary'))])
+          Text(formatCount(this.tweet.metrics.replyCount)).fontFamily(this.appFontFamily)
+            .fontSize(capsule ? $r('app.float.reply_capsule_split_caption_size') : $r('app.float.post_detail_action_text'))
+            .margin({ left: capsule ? 0 : 5, top: capsule ? 2 : 0 })
+            .maxLines(1).textOverflow({ overflow: TextOverflow.Ellipsis })
+            .fontColor(capsule ? $r('sys.color.font_secondary') : this.postActionColor($r('app.color.text_secondary')))
+        }
+        .width('100%').height('100%')
+      }
+      .width(capsule ? $r('app.float.reply_capsule_split_action_width') : this.postActionButtonWidth())
+      .height(capsule ? $r('app.float.root_tab_bar_height') : $r('app.float.post_detail_action_height'))
+      .padding(0)
+      .backgroundColor(Color.Transparent)
+      .id(capsule ? 'reply-capsule-action-reply' : 'post-detail-action-reply')
+      .accessibilityText(this.text($r('app.string.action_reply')))
+      .onClick((): void => this.openReplyComposer('', '', ''))
+    }
+  }
+
+  @Builder
+  private PostRepostButton(capsule: boolean): void {
+    if (this.tweet !== null) {
+      Button({ type: ButtonType.Normal, stateEffect: true }) {
+        Flex({ direction: capsule ? FlexDirection.Column : FlexDirection.Row,
+          justifyContent: FlexAlign.Center, alignItems: ItemAlign.Center }) {
+          SymbolGlyph($r('sys.symbol.repeat'))
+            .symbolEffect(!this.reduceMotion && this.symbolEffects && this.motionAmplitude > 0 ?
+              new BounceSymbolEffect(EffectScope.WHOLE) : new SymbolEffect(), this.repostSymbolTrigger)
+            .fontSize(capsule ? $r('app.float.reply_capsule_split_icon_size') : $r('app.float.post_detail_action_icon'))
+            .fontWeight(capsule ? FontWeight.Medium : FontWeight.Normal)
+            .fontColor([this.reposted ? this.postActionColor($r('app.color.repost')) : (capsule ? $r('sys.color.font_secondary') : this.postActionColor($r('app.color.text_secondary')))])
+            .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.componentHdrEnabled && this.reposted, this.componentHdrRatio))
+            .scale({ x: this.reposted ? 1.08 : 1, y: this.reposted ? 1.08 : 1 })
+            .animation({ duration: 150, curve: Curve.EaseOut })
+          Text(formatCount(this.tweet.metrics.repostCount)).fontFamily(this.appFontFamily)
+            .fontSize(capsule ? $r('app.float.reply_capsule_split_caption_size') : $r('app.float.post_detail_action_text'))
+            .margin({ left: capsule ? 0 : 5, top: capsule ? 2 : 0 })
+            .maxLines(1).textOverflow({ overflow: TextOverflow.Ellipsis })
+            .fontColor(this.reposted ? this.postActionColor($r('app.color.repost')) : (capsule ? $r('sys.color.font_secondary') : this.postActionColor($r('app.color.text_secondary'))))
+            .animation({ duration: 150, curve: Curve.EaseOut })
+        }
+        .width('100%').height('100%')
+      }
+      .width(capsule ? $r('app.float.reply_capsule_split_action_width') : this.postActionButtonWidth())
+      .height(capsule ? $r('app.float.root_tab_bar_height') : $r('app.float.post_detail_action_height'))
+      .padding(0)
+      .backgroundColor(Color.Transparent)
+      .id(capsule ? 'reply-capsule-action-repost' : 'post-detail-action-repost')
+      .accessibilityText(this.text($r('app.string.action_repost')))
+      .onClick((): void => this.toggleRepost())
+    }
+  }
+
+  @Builder
+  private PostLikeButton(capsule: boolean): void {
+    if (this.tweet !== null) {
+      Button({ type: ButtonType.Normal, stateEffect: true }) {
+        Flex({ direction: capsule ? FlexDirection.Column : FlexDirection.Row,
+          justifyContent: FlexAlign.Center, alignItems: ItemAlign.Center }) {
+          SymbolGlyph(this.liked ? $r('sys.symbol.heart_fill') : $r('sys.symbol.heart'))
+            .symbolEffect(!this.reduceMotion && this.symbolEffects && this.motionAmplitude > 0 ?
+              new BounceSymbolEffect(EffectScope.WHOLE) : new SymbolEffect(), this.likeSymbolTrigger)
+            .fontSize(capsule ? $r('app.float.reply_capsule_split_icon_size') : $r('app.float.post_detail_action_icon'))
+            .fontWeight(capsule ? FontWeight.Medium : FontWeight.Normal)
+            .fontColor([this.liked ? this.postActionColor($r('app.color.like')) : (capsule ? $r('sys.color.font_secondary') : this.postActionColor($r('app.color.text_secondary')))])
+            .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.componentHdrEnabled && this.liked, this.componentHdrRatio))
+            .scale({ x: this.liked ? 1.08 : 1, y: this.liked ? 1.08 : 1 })
+            .animation({ duration: 150, curve: Curve.EaseOut })
+          Text(formatCount(this.likeCount)).fontFamily(this.appFontFamily)
+            .fontSize(capsule ? $r('app.float.reply_capsule_split_caption_size') : $r('app.float.post_detail_action_text'))
+            .margin({ left: capsule ? 0 : 5, top: capsule ? 2 : 0 })
+            .maxLines(1).textOverflow({ overflow: TextOverflow.Ellipsis })
+            .fontColor(this.liked ? this.postActionColor($r('app.color.like')) : (capsule ? $r('sys.color.font_secondary') : this.postActionColor($r('app.color.text_secondary'))))
+            .animation({ duration: 150, curve: Curve.EaseOut })
+        }
+        .width('100%').height('100%')
+      }
+      .width(capsule ? $r('app.float.reply_capsule_split_action_width') : this.postActionButtonWidth())
+      .height(capsule ? $r('app.float.root_tab_bar_height') : $r('app.float.post_detail_action_height'))
+      .padding(0)
+      .backgroundColor(Color.Transparent)
+      .id(capsule ? 'reply-capsule-action-like' : 'post-detail-action-like')
+      .accessibilityText(this.text($r('app.string.action_like')))
+      .onClick((): void => { void this.toggleLike(); })
+    }
+  }
+
+  @Builder
+  private PostBookmarkButton(capsule: boolean): void {
+    if (this.tweet !== null) {
+      Button({ type: ButtonType.Normal, stateEffect: true }) {
+        Flex({ direction: capsule ? FlexDirection.Column : FlexDirection.Row,
+          justifyContent: FlexAlign.Center, alignItems: ItemAlign.Center }) {
+          SymbolGlyph(this.bookmarked ? $r('sys.symbol.bookmark_fill') : $r('sys.symbol.bookmark'))
+            .symbolEffect(!this.reduceMotion && this.symbolEffects && this.motionAmplitude > 0 ?
+              new BounceSymbolEffect(EffectScope.WHOLE) : new SymbolEffect(), this.bookmarkSymbolTrigger)
+            .fontSize(capsule ? $r('app.float.reply_capsule_split_icon_size') : $r('app.float.post_detail_action_icon'))
+            .fontWeight(capsule ? FontWeight.Medium : FontWeight.Normal)
+            .fontColor([this.bookmarked ? this.postActionColor(this.accentColor) : (capsule ? $r('sys.color.font_secondary') : this.postActionColor($r('app.color.text_secondary')))])
+            .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.componentHdrEnabled && this.bookmarked, this.componentHdrRatio))
+            .scale({ x: this.bookmarked ? 1.08 : 1, y: this.bookmarked ? 1.08 : 1 })
+            .animation({ duration: 150, curve: Curve.EaseOut })
+          if (capsule) {
+            Text(this.bookmarkCount >= 0 ? formatCount(this.bookmarkCount) : '')
+              .fontFamily(this.appFontFamily).fontSize($r('app.float.reply_capsule_split_caption_size')).height(12).margin({ top: 2 }).maxLines(1)
+              .textOverflow({ overflow: TextOverflow.Ellipsis })
+              .fontColor(this.bookmarked ? this.accentColor : $r('sys.color.font_secondary'))
+          }
+        }
+        .width('100%').height('100%')
+      }
+      .width(capsule ? $r('app.float.reply_capsule_split_action_width') : this.postActionButtonWidth())
+      .height(capsule ? $r('app.float.root_tab_bar_height') : $r('app.float.post_detail_action_height'))
+      .padding(0)
+      .backgroundColor(Color.Transparent)
+      .id(capsule ? 'reply-capsule-action-bookmark' : 'post-detail-action-bookmark')
+      .accessibilityText(this.text($r('app.string.action_bookmark')))
+      .onClick((): void => {
+        this.toggleBookmark();
+      })
+    }
+  }
+
+  @Builder
+  private PostShareButton(capsule: boolean): void {
+    if (this.tweet !== null) {
+      Button({ type: ButtonType.Normal, stateEffect: true }) {
+        Flex({ direction: capsule ? FlexDirection.Column : FlexDirection.Row,
+          justifyContent: FlexAlign.Center, alignItems: ItemAlign.Center }) {
+          SymbolGlyph($r('sys.symbol.share'))
+            .fontSize(capsule ? $r('app.float.reply_capsule_split_icon_size') : $r('app.float.post_detail_action_icon'))
+            .fontWeight(capsule ? FontWeight.Medium : FontWeight.Normal)
+            .fontColor([capsule ? $r('sys.color.font_secondary') : this.postActionColor($r('app.color.text_secondary'))])
+          if (capsule) {
+            Text($r('app.string.action_share')).fontFamily(this.appFontFamily)
+              .fontSize($r('app.float.reply_capsule_split_caption_size')).height(12).margin({ top: 2 }).maxLines(1).textOverflow({ overflow: TextOverflow.Ellipsis })
+              .fontColor($r('sys.color.font_secondary'))
+          }
+        }
+        .width('100%').height('100%')
+      }
+      .width(capsule ? $r('app.float.reply_capsule_split_action_width') : this.postActionButtonWidth())
+      .height(capsule ? $r('app.float.root_tab_bar_height') : $r('app.float.post_detail_action_height'))
+      .padding(0)
+      .backgroundColor(Color.Transparent)
+      .id(capsule ? 'reply-capsule-action-share' : 'post-detail-action-share')
+      .accessibilityText(this.text($r('app.string.action_share')))
+      .onClick((): void => {
+        this.shareCurrentPost();
+      })
+    }
+  }
+
+  @Builder
+  private PostActionButtons(capsule: boolean): void {
+    if (capsule) {
+      this.PostLikeButton(true);
+      this.PostReplyButton(true);
+      this.PostBookmarkButton(true);
+      this.PostRepostButton(true);
+      this.PostShareButton(true);
+    } else {
+      this.PostReplyButton(false);
+      this.PostRepostButton(false);
+      this.PostLikeButton(false);
+      this.PostBookmarkButton(false);
+      this.PostShareButton(false);
+    }
+  }
+
+  @Builder
+  private CapsulePostActions(): void {
+    Scroll() {
+      Row() { this.PostActionButtons(true); }
+        .width($r('app.float.reply_capsule_split_actions_width')).height($r('app.float.root_tab_bar_height'))
+    }.width('100%').height($r('app.float.root_tab_bar_height'))
+      .padding({ left: 6, right: 6 }).scrollable(ScrollDirection.Horizontal)
+      .scrollBar(BarState.Off).edgeEffect(EdgeEffect.Spring)
+      .id('reply-capsule-actions-scroll')
+  }
+
+  @Builder
   private PostActions(): void {
     if (this.tweet !== null) {
       Flex({ wrap: FlexWrap.Wrap }) {
-        Button({ type: ButtonType.Normal, stateEffect: true }) {
-          Row({ space: 5 }) {
-            SymbolGlyph($r('sys.symbol.ellipsis_bubble'))
-              .fontSize($r('app.float.post_detail_action_icon'))
-              .fontColor([this.postActionColor($r('app.color.text_secondary'))])
-            Text(formatCount(this.tweet.metrics.replyCount)).fontFamily(this.appFontFamily)
-              .fontSize($r('app.float.post_detail_action_text'))
-              .fontColor(this.postActionColor($r('app.color.text_secondary')))
-          }
-          .justifyContent(FlexAlign.Center)
-        }
-        .width(this.postActionButtonWidth())
-        .height($r('app.float.post_detail_action_height'))
-        .padding(0)
-        .backgroundColor(Color.Transparent)
-        .accessibilityText(this.text($r('app.string.action_reply')))
-        .onClick((): void => this.openReplyComposer('', '', ''))
-
-        Button({ type: ButtonType.Normal, stateEffect: true }) {
-          Row({ space: 5 }) {
-            SymbolGlyph($r('sys.symbol.repeat'))
-              .symbolEffect(!this.reduceMotion && this.symbolEffects && this.motionAmplitude > 0 ?
-                new BounceSymbolEffect(EffectScope.WHOLE) : new SymbolEffect(), this.repostSymbolTrigger)
-              .fontSize($r('app.float.post_detail_action_icon'))
-              .fontColor([this.reposted ? this.postActionColor($r('app.color.repost')) : this.postActionColor($r('app.color.text_secondary'))])
-              .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.componentHdrEnabled && this.reposted, this.componentHdrRatio))
-              .scale({ x: this.reposted ? 1.08 : 1, y: this.reposted ? 1.08 : 1 })
-              .animation({ duration: 150, curve: Curve.EaseOut })
-            Text(formatCount(this.tweet.metrics.repostCount)).fontFamily(this.appFontFamily)
-              .fontSize($r('app.float.post_detail_action_text'))
-              .fontColor(this.reposted ? this.postActionColor($r('app.color.repost')) : this.postActionColor($r('app.color.text_secondary')))
-              .animation({ duration: 150, curve: Curve.EaseOut })
-          }
-          .justifyContent(FlexAlign.Center)
-        }
-        .width(this.postActionButtonWidth())
-        .height($r('app.float.post_detail_action_height'))
-        .padding(0)
-        .backgroundColor(Color.Transparent)
-        .accessibilityText(this.text($r('app.string.action_repost')))
-        .onClick((): void => this.toggleRepost())
-
-        Button({ type: ButtonType.Normal, stateEffect: true }) {
-          Row({ space: 5 }) {
-            SymbolGlyph(this.liked ? $r('sys.symbol.heart_fill') : $r('sys.symbol.heart'))
-              .symbolEffect(!this.reduceMotion && this.symbolEffects && this.motionAmplitude > 0 ?
-                new BounceSymbolEffect(EffectScope.WHOLE) : new SymbolEffect(), this.likeSymbolTrigger)
-              .fontSize($r('app.float.post_detail_action_icon'))
-              .fontColor([this.liked ? this.postActionColor($r('app.color.like')) : this.postActionColor($r('app.color.text_secondary'))])
-              .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.componentHdrEnabled && this.liked, this.componentHdrRatio))
-              .scale({ x: this.liked ? 1.08 : 1, y: this.liked ? 1.08 : 1 })
-              .animation({ duration: 150, curve: Curve.EaseOut })
-            Text(formatCount(this.likeCount)).fontFamily(this.appFontFamily)
-              .fontSize($r('app.float.post_detail_action_text'))
-              .fontColor(this.liked ? this.postActionColor($r('app.color.like')) : this.postActionColor($r('app.color.text_secondary')))
-              .animation({ duration: 150, curve: Curve.EaseOut })
-          }
-          .justifyContent(FlexAlign.Center)
-        }
-        .width(this.postActionButtonWidth())
-        .height($r('app.float.post_detail_action_height'))
-        .padding(0)
-        .backgroundColor(Color.Transparent)
-        .accessibilityText(this.text($r('app.string.action_like')))
-        .onClick((): void => { void this.toggleLike(); })
-
-        Button({ type: ButtonType.Normal, stateEffect: true }) {
-          Row({ space: 5 }) {
-            SymbolGlyph(this.bookmarked ? $r('sys.symbol.bookmark_fill') : $r('sys.symbol.bookmark'))
-              .symbolEffect(!this.reduceMotion && this.symbolEffects && this.motionAmplitude > 0 ?
-                new BounceSymbolEffect(EffectScope.WHOLE) : new SymbolEffect(), this.bookmarkSymbolTrigger)
-              .fontSize($r('app.float.post_detail_action_icon'))
-              .fontColor([this.bookmarked ? this.postActionColor(this.accentColor) : this.postActionColor($r('app.color.text_secondary'))])
-              .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.componentHdrEnabled && this.bookmarked, this.componentHdrRatio))
-              .scale({ x: this.bookmarked ? 1.08 : 1, y: this.bookmarked ? 1.08 : 1 })
-              .animation({ duration: 150, curve: Curve.EaseOut })
-          }
-          .justifyContent(FlexAlign.Center)
-        }
-        .width(this.postActionButtonWidth())
-        .height($r('app.float.post_detail_action_height'))
-        .padding(0)
-        .backgroundColor(Color.Transparent)
-        .accessibilityText(this.text($r('app.string.action_bookmark')))
-        .onClick((): void => {
-          this.toggleBookmark();
-        })
-
-        Button({ type: ButtonType.Normal, stateEffect: true }) {
-          Row({ space: 5 }) {
-            SymbolGlyph($r('sys.symbol.share'))
-              .fontSize($r('app.float.post_detail_action_icon'))
-              .fontColor([this.postActionColor($r('app.color.text_secondary'))])
-            }
-            .justifyContent(FlexAlign.Center)
-          }
-        .width(this.postActionButtonWidth())
-        .height($r('app.float.post_detail_action_height'))
-        .padding(0)
-        .backgroundColor(Color.Transparent)
-        .accessibilityText(this.text($r('app.string.action_share')))
-        .onClick((): void => {
-          this.shareCurrentPost();
-        })
+        this.PostActionButtons(false);
       }
       .width('100%')
       .padding({ left: 4, right: 4, top: 2, bottom: 2 })
       .backgroundColor(this.transparentEmbeddedBackground() || this.usesCardMaterial() ? Color.Transparent :
         postCardSurfaceColor(cardSurfaceColor(this.themeDisplayMode, this.themeDarkSurface), this.pageBackgroundValue))
-      .systemMaterial(this.cardMaterial())
+      .attributeModifier(materialModifier(this.cardMaterial()))
       .borderRadius(this.postActionRadius())
       .clip(true)
       .visualEffect(new hdsEffect.HdsEffectBuilder()
@@ -2412,7 +2619,7 @@ export struct PostDetail {
         }
         .width('100%')
         if (this.translationReplaceOriginal && this.heroTranslatedText.length > 0 && this.tweet.presentation?.visibility?.hidden !== true) {
-          Text() { EmojiSpans(this.getUIContext(), this.heroTranslatedText, $r('sys.float.Title_S'), this.systemEmojiEnabled) }
+          Text(undefined, { controller: this.translatedTextController }) { EmojiSpans(this.getUIContext(), this.heroTranslatedText, $r('sys.float.Title_S'), this.systemEmojiEnabled) }
             .fontSize($r('sys.float.Title_S'))
             .fontFamily(this.appFontFamily === DEFAULT_APP_FONT_FAMILY ? this.contentFontFamily : this.appFontFamily)
             .fontColor(pageTextColor($r('app.color.text_primary'), this.embedded ? '' : this.pageBackgroundValue, postCardSurfaceColor(this.transparentEmbeddedBackground() ? Color.Transparent :
@@ -2421,9 +2628,9 @@ export struct PostDetail {
             .width('100%')
             .copyOption(CopyOptions.LocalDevice)
             .accessibilityText(this.heroTranslatedText)
-            .editMenuOptions(new EmojiCopyMenu(getContext(this) as common.UIAbilityContext, this.heroTranslatedText, this.systemEmojiEnabled))
+            .editMenuOptions(new EmojiCopyMenu(this.getUIContext(), this.translatedTextController, this.heroTranslatedText, this.systemEmojiEnabled))
         } else {
-          Text() {
+          Text(undefined, { controller: this.bodyTextController }) {
             ForEach(splitPostText(this.tweet.text), (segment: MentionSegment) => {
               if (segment.mention) {
                 EmojiSpans(this.getUIContext(), segment.text, $r('sys.float.Title_S'), this.systemEmojiEnabled, (): void => {
@@ -2452,7 +2659,7 @@ export struct PostDetail {
             .width('100%')
             .copyOption(CopyOptions.LocalDevice)
             .accessibilityText(this.tweet.text)
-            .editMenuOptions(new EmojiCopyMenu(getContext(this) as common.UIAbilityContext, this.tweet.text, this.systemEmojiEnabled))
+            .editMenuOptions(new EmojiCopyMenu(this.getUIContext(), this.bodyTextController, this.tweet.text, this.systemEmojiEnabled))
         }
         if (this.heroTranslating) {
           Row({ space: 6 }) {
@@ -2516,6 +2723,15 @@ export struct PostDetail {
         avatarTintSurface(this.avatarPalette, this.tweet.author.avatarUrl ?? '',
         this.avatarTintEnabled, this.themeDisplayMode, this.themeDarkSurface, this.avatarThemeDark), this.pageBackgroundValue)))
           Span(' ' + this.text($r('app.string.post_detail_views')))
+          if (this.bookmarkCount >= 0) {
+            Span(' · ' + formatCount(this.bookmarkCount) + ' ' + this.text($r('app.string.post_metric_bookmarks')))
+          }
+          if (this.tweet.metrics.quoteCount !== undefined) {
+            Span(' · ' + formatCount(this.tweet.metrics.quoteCount ?? 0) + ' ' + this.text($r('app.string.post_metric_quotes')))
+          }
+          if (postIsEdited(this.tweet.editHistoryIds)) {
+            Span(' · ' + this.text($r('app.string.post_edited'))).onClick((): void => this.openEditHistory())
+          }
         }.fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Body_M'))
           .fontColor(pageTextColor($r('app.color.text_secondary'), this.embedded ? '' : this.pageBackgroundValue, postCardSurfaceColor(this.transparentEmbeddedBackground() ? Color.Transparent :
@@ -2546,7 +2762,7 @@ export struct PostDetail {
         this.PostActionsPlaceholder()
       } else {
         this.PostHero()
-        this.PostActions()
+        if (!this.useSplitReplyCapsule()) { this.PostActions(); }
       }
     }
     .width('100%')
@@ -2579,7 +2795,7 @@ export struct PostDetail {
           if (row.promotion !== null) {
             this.PromotionRow(row.promotion as XXAuthPromotionPost)
           } else {
-            this.CommentReplyRow(row.reply as ThreadReplyRow)
+            this.QualityReplyRow(row)
           }
         }, (row: CommentTimelineRow) => row.key)
         }.width('100%')
@@ -2677,9 +2893,14 @@ export struct PostDetail {
         left: 12,
         right: 12,
         top: this.embedded ? 16 : this.statusBarHeight + 64,
-        bottom: this.navigationIndicatorHeight + 92
+        bottom: this.navigationIndicatorHeight + (this.useSplitReplyCapsule() ? 68 : 92)
       })
     }
+    .onScrollStop((): void => scrollStopped(this.scroller))
+    .onScrollStart((): void => scrollStarted(this.scroller))
+    .onScrollFrameBegin((offset: number, state: ScrollState): OnScrollFrameBeginHandlerResult =>
+      scrollFrame(this.scroller, offset, state))
+    .onTouchIntercept((event: TouchEvent): HitTestMode => stopScrollOnTouch(event, this.scroller))
     .width('100%')
     .height('100%')
     .scrollBar(BarState.Off)
@@ -2705,8 +2926,13 @@ export struct PostDetail {
           this.PrimaryPane()
         }
         .width('100%')
-        .padding({ bottom: this.navigationIndicatorHeight + 92 })
+        .padding({ bottom: this.navigationIndicatorHeight + (this.useSplitReplyCapsule() ? 68 : 92) })
       }
+      .onScrollStop((): void => scrollStopped(this.primaryScroller))
+      .onScrollStart((): void => scrollStarted(this.primaryScroller))
+      .onScrollFrameBegin((offset: number, state: ScrollState): OnScrollFrameBeginHandlerResult =>
+        scrollFrame(this.primaryScroller, offset, state))
+      .onTouchIntercept((event: TouchEvent): HitTestMode => stopScrollOnTouch(event, this.primaryScroller))
       .width('42%')
       .height('100%')
       .scrollBar(BarState.Off)
@@ -2720,8 +2946,13 @@ export struct PostDetail {
           this.RepliesPane()
         }
         .width('100%')
-        .padding({ bottom: this.navigationIndicatorHeight + 92 })
+        .padding({ bottom: this.navigationIndicatorHeight + (this.useSplitReplyCapsule() ? 68 : 92) })
       }
+      .onScrollStop((): void => scrollStopped(this.repliesScroller))
+      .onScrollStart((): void => scrollStarted(this.repliesScroller))
+      .onScrollFrameBegin((offset: number, state: ScrollState): OnScrollFrameBeginHandlerResult =>
+        scrollFrame(this.repliesScroller, offset, state))
+      .onTouchIntercept((event: TouchEvent): HitTestMode => stopScrollOnTouch(event, this.repliesScroller))
       .layoutWeight(1)
       .height('100%')
       .scrollBar(BarState.Off)
@@ -2774,8 +3005,13 @@ export struct PostDetail {
           this.PrimaryPane()
           this.RepliesPane()
         }.width('100%').padding({ left: 16, right: 16, top: 16,
-          bottom: this.navigationIndicatorHeight + 92 })
-      }.layoutWeight(1).height('100%').scrollBar(BarState.Off)
+          bottom: this.navigationIndicatorHeight + (this.useSplitReplyCapsule() ? 68 : 92) })
+      }
+      .onScrollStop((): void => scrollStopped(this.repliesScroller))
+      .onScrollStart((): void => scrollStarted(this.repliesScroller))
+      .onScrollFrameBegin((offset: number, state: ScrollState): OnScrollFrameBeginHandlerResult =>
+        scrollFrame(this.repliesScroller, offset, state))
+      .onTouchIntercept((event: TouchEvent): HitTestMode => stopScrollOnTouch(event, this.repliesScroller)).layoutWeight(1).height('100%').scrollBar(BarState.Off)
         .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: true })
         .onWillScroll((scrollOffset: number): void => this.onRepliesDetailScroll(scrollOffset))
         .onScrollEdge((edge: Edge): void => { if (edge === Edge.Bottom && !this.threadLoadMoreFailed) { this.loadMoreThread(); } })
@@ -2819,16 +3055,21 @@ export struct PostDetail {
             .width('100%')
             .height('100%')
             .backgroundColor($r('app.color.reply_composer_scrim'))
+            .transition(TransitionEffect.OPACITY.animation({ duration: 240, curve: Curve.EaseOut }))
             .onClick((): void => this.dismissExpandedReply())
         }
         if (this.tweet !== null) {
           Column() {
             this.ReplyComposerBar();
           }
+          .onAreaChange((_oldValue: Area, area: Area): void => {
+            const width: number = Number(area.width) - 24;
+            if (width > 0 && Math.abs(width - this.replyBarWidth) > 0.5) { this.replyBarWidth = width; }
+          })
           .width(this.useWideMediaLayout() ? '44%' : '100%')
           .align(this.useWideMediaLayout() ? Alignment.BottomEnd : Alignment.Bottom)
           .padding({ left: 12, right: 12,
-            bottom: this.keyboardVisible ? 4 : this.navigationIndicatorHeight + 12 })
+            bottom: this.keyboardVisible ? 4 : this.navigationIndicatorHeight + (this.useSplitReplyCapsule() ? 6 : 12) })
         }
       }
       .width('100%')
@@ -2936,6 +3177,8 @@ export struct PostDetail {
           $r('app.string.community_post_title') : $r('app.string.post_detail_title') },
         menu: {
           value: this.translationEnabled ? [
+            { content: { icon: $r('sys.symbol.bookmark'), label: this.text($r('app.string.reader_title')),
+              action: (): void => { this.openThreadReader(); } } },
             {
               content: {
                 icon: $r('sys.symbol.translate'),
@@ -2960,6 +3203,8 @@ export struct PostDetail {
               }
             }
           ] : [
+            { content: { icon: $r('sys.symbol.bookmark'), label: this.text($r('app.string.reader_title')),
+              action: (): void => { this.openThreadReader(); } } },
             {
               content: {
                 icon: $r('app.media.grok_mark'),

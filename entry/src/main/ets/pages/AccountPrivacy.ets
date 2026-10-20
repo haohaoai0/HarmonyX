@@ -1,3 +1,4 @@
+import { DesktopLayout } from '../utils/DesktopLayout';
 import { pageBackgroundActive } from '../services/PageBackgroundStore';
 import { pageTextColor } from '../utils/ThemeColors';
 import { appPageBackground } from '../components/PageBackgroundLayer';
@@ -28,6 +29,7 @@ import { ProfileWebRouteParam } from './ProfileWeb';
 import { DmSettingsRouteParam } from './DmSettings';
 import { SettingsRouteParam } from './Settings';
 import { NavigationGuard } from '../utils/NavigationGuard';
+import { materialModifier } from '../utils/SystemMaterial';
 
 @Builder
 export function AccountPrivacyBuilder(): void { AccountPrivacyPage(); }
@@ -403,7 +405,7 @@ struct AccountPrivacyPage {
               .onClick((): void => { this.refresh(); })
           }
         }.width('100%').alignItems(HorizontalAlign.Start).padding({ top:
-          this.desktopLayoutEnabled && ResponsiveLayout.isLarge(this.breakpoint) ? 12 : this.statusBarHeight + 74,
+          DesktopLayout.active(this.desktopLayoutEnabled, this.breakpoint) ? 12 : this.statusBarHeight + 74,
           bottom: this.bottomInset + 28 })
       }.width('100%').height('100%').align(Alignment.TopStart).scrollBar(BarState.Off)
       .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: true })
@@ -422,9 +424,9 @@ struct AccountPrivacyPage {
     .onBackPressed((): boolean => { ResponsiveLayout.closeContentDestination(this.pageStack); return true; })
     .bindToScrollable([this.scroller])
     .titleBar({ avoidLayoutSafeArea: true,
-      enableComponentSafeArea: this.desktopLayoutEnabled && ResponsiveLayout.isLarge(this.breakpoint),
+      enableComponentSafeArea: DesktopLayout.active(this.desktopLayoutEnabled, this.breakpoint),
       content: { title: { mainTitle: accountManagementSection(this.section).title } },
       style: destinationTitleBarStyle(ScrollEffectType.GRADIENT_BLUR, this.displayMode, this.darkSurface, this.titleBarStyleMode) })
-    .backgroundColor(pageCanvasColor(this.displayMode, this.darkSurface, this.pageBackgroundValue)).systemMaterial(pageBackgroundActive(this.pageBackgroundValue) ? undefined : this.material());
+    .backgroundColor(pageCanvasColor(this.displayMode, this.darkSurface, this.pageBackgroundValue)).attributeModifier(materialModifier(pageBackgroundActive(this.pageBackgroundValue) ? undefined : this.material()));
   }
 }

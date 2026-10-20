@@ -1,3 +1,4 @@
+import { DesktopLayout } from '../utils/DesktopLayout';
 import { pageTextColor } from '../utils/ThemeColors';
 import { appPageBackground } from '../components/PageBackgroundLayer';
 import { pageCanvasColor, pageReadingSurfaceColor } from '../utils/ThemeColors';
@@ -315,7 +316,7 @@ export struct GrokPage {
       .padding({
         left: 12,
         right: 12,
-        top: this.desktopLayoutEnabled && ResponsiveLayout.isLarge(this.windowBreakpoint) ?
+        top: DesktopLayout.active(this.desktopLayoutEnabled, this.windowBreakpoint) ?
           8 : this.statusBarHeight + 64,
         bottom: this.navigationIndicatorHeight + 104
       })
@@ -323,7 +324,7 @@ export struct GrokPage {
     .width('100%')
     .height('100%')
     .scrollBar(BarState.Off)
-    .clip(!(this.desktopLayoutEnabled && ResponsiveLayout.isLarge(this.windowBreakpoint)))
+    .clip(!(DesktopLayout.active(this.desktopLayoutEnabled, this.windowBreakpoint)))
     .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: true })
   }
 
@@ -452,7 +453,7 @@ export struct GrokPage {
     // Leave the native destination title bar unobstructed while rendering
     // grok.com directly below it, with no app-authored web-mode banner.
     .padding({
-      top: this.desktopLayoutEnabled && ResponsiveLayout.isLarge(this.windowBreakpoint) ?
+      top: DesktopLayout.active(this.desktopLayoutEnabled, this.windowBreakpoint) ?
         0 : this.statusBarHeight + 56
     })
     .backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue))
@@ -494,7 +495,7 @@ export struct GrokPage {
     .bindToScrollable([this.scroller])
     .titleBar({
       avoidLayoutSafeArea: true,
-      enableComponentSafeArea: this.desktopLayoutEnabled && ResponsiveLayout.isLarge(this.windowBreakpoint),
+      enableComponentSafeArea: DesktopLayout.active(this.desktopLayoutEnabled, this.windowBreakpoint),
       content: { title: { mainTitle: $r('app.string.grok_title') } },
       style: destinationTitleBarStyle(ScrollEffectType.GRADIENT_BLUR, this.themeDisplayMode,
         this.themeDarkSurface, this.titleBarStyleMode)

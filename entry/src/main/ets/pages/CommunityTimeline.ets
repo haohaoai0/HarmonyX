@@ -1,3 +1,6 @@
+import { scrollFrame, scrollStarted, scrollStopped, stopScrollOnTouch } from '../utils/ScrollInteraction';
+import { homeTimelineSourceStore } from '../services/HomeTimelineSourceStore';
+import { STORAGE_KEY_HOME_TIMELINE_REVISION } from '../services/HomeTimelineStore';
 import { AdaptivePostFeed } from '../components/AdaptivePostFeed';
 import { pageTextColor } from '../utils/ThemeColors';
 import { pageBackgroundActive } from '../services/PageBackgroundStore';
@@ -121,6 +124,8 @@ export struct CommunityTimeline {
   @State private membershipFailed: boolean = false;
   @State private membershipStatus: string = '';
   @State private favorite: boolean = false;
+  @State private pinnedHomeTimeline: boolean = false;
+  @StorageProp(STORAGE_KEY_HOME_TIMELINE_REVISION) @Watch('syncHomePin') private homeTimelineRevision: number = 0;
   private communityId: string = '';
   private nextToken: string = '';
   private timelineCursor: string = '';
@@ -162,6 +167,8 @@ export struct CommunityTimeline {
     if (param.community !== undefined) { this.applyCommunityMetadata(param.community); }
     const context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
     this.favorite = communityFavoritesStore.contains(context, this.communityId);
+    this.syncHomePin();
+    if (this.pinnedHomeTimeline) { this.sortMode = homeTimelineSourceStore.ranking(this.communityId); }
   }
 
   private text(resource: Resource): string {
@@ -420,6 +427,14 @@ export struct CommunityTimeline {
     this.pageStack.pushPath({ name: 'CommunityRules', param: param });
   }
 
+  private syncHomePin(): void { this.pinnedHomeTimeline = homeTimelineSourceStore.communityPinned(this.communityId); }
+  private toggleHomeTimeline(): void {
+    if (!homeTimelineSourceStore.setCommunityPinned(getContext(this), this.currentCommunityRow(), !this.pinnedHomeTimeline)) {
+      promptAction.showToast({ message: this.text($r('app.string.timeline_save_failed')) }); return;
+    }
+    this.syncHomePin(); this.actionSheetOpen = false;
+  }
+
   private toggleFavorite(): void {
     if (this.communityId.length === 0) {
       return;
@@ -495,6 +510,7 @@ export struct CommunityTimeline {
   private selectSort(mode: string): void {
     this.actionSheetOpen = false;
     if (this.sortMode === mode && this.viewMode === 0) { return; }
+    if (this.pinnedHomeTimeline) { homeTimelineSourceStore.setRanking(getContext(this), this.communityId, mode); }
     this.sortMode = mode; this.viewMode = 0; this.selectedTab = 0; this.tabPosition = 0; this.activitySwiper.changeIndex(0, true); this.mediaOnly = false;
     this.hashtagSearchOpen = false; this.hashtagQuery = ''; this.status = '';
     this.timelinePosts = []; this.timelineLoaded = false; this.posts = []; this.load(true);
@@ -864,6 +880,10 @@ export struct CommunityTimeline {
         (): void => this.selectSort('Recency'))
       this.SortOption($r('sys.symbol.heart'), $r('app.string.community_sort_top'), this.sortMode === 'Likes' && this.viewMode === 0, 'Likes',
         (): void => this.selectSort('Likes'))
+      Button(this.pinnedHomeTimeline ? $r('app.string.timeline_remove_from_home') : $r('app.string.timeline_add_to_home'))
+        .fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontColor(this.accentColor)
+        .backgroundColor(Color.Transparent).width('100%').height(52).id('community-home-timeline-pin')
+        .onClick((): void => this.toggleHomeTimeline())
       Text($r('app.string.community_view_section')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_S')).fontWeight(FontWeight.Medium)
         .fontColor($r('app.color.text_secondary')).width('100%').padding({ left: 24, top: 14, bottom: 12 })
       this.SortOption($r('sys.symbol.person'), $r('app.string.community_my_posts'), this.viewMode === 1, 'posts',
@@ -910,7 +930,12 @@ export struct CommunityTimeline {
               ListItemGroup({ header: this.ProfileTabs() }) {
                 ListItem() { this.ActivityPager() }
               }
-            }.width('100%').height('100%').scrollBar(BarState.Off).sticky(StickyStyle.Header)
+            }
+            .onScrollStop((): void => scrollStopped(this.scroller))
+            .onScrollStart((): void => scrollStarted(this.scroller))
+            .onScrollFrameBegin((offset: number, state: ScrollState): OnScrollFrameBeginHandlerResult =>
+              scrollFrame(this.scroller, offset, state))
+            .onTouchIntercept((event: TouchEvent): HitTestMode => stopScrollOnTouch(event, this.scroller, this.activityScrollers)).width('100%').height('100%').scrollBar(BarState.Off).sticky(StickyStyle.Header)
               .onDidScroll((): void => { this.scrollOffset = Math.max(0, this.scroller.currentOffset().yOffset); })
           }.width('100%').layoutWeight(1).onRefreshing((): void => {
             this.loadCommunityInfo();

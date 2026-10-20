@@ -76,15 +76,30 @@ export struct FollowSuggestions {
   }
 
   private async toggleFollow(row: UserRow): Promise<void> {
-    if (this.pendingIds.indexOf(row.id) >= 0) { return; }
+    if (this.pendingIds.indexOf(row.id) >= 0 || xPrivateClient.viewerId() !== this.viewerId ||
+      !xPrivateClient.isSignedIn()) { return; }
     this.pendingIds = [...this.pendingIds, row.id];
-    const next: boolean = !row.following;
+    const viewer: string = this.viewerId;
+    const previous: boolean = row.following;
+    const next: boolean = !previous;
+    followStateStore.set(viewer, row.id, next);
+    this.syncFollowState();
     try {
-      if (xPrivateClient.viewerId() !== this.viewerId || !xPrivateClient.isSignedIn()) { return; }
       const result: XPrivateResult = await xPrivateClient.follow(row.id, next);
-      if (!this.alive || this.viewerId !== xPrivateClient.viewerId()) { return; }
-      if (result.ok) { followStateStore.set(this.viewerId, row.id, next); }
-      else { promptAction.showToast({ message: this.text($r('app.string.profile_follow_failed')) }); }
+      if (result.ok) { followStateStore.set(viewer, row.id, next); }
+      else {
+        followStateStore.set(viewer, row.id, previous);
+        if (this.alive && viewer === xPrivateClient.viewerId()) {
+          this.syncFollowState();
+          promptAction.showToast({ message: this.text($r('app.string.profile_follow_failed')) });
+        }
+      }
+    } catch (error) {
+      followStateStore.set(viewer, row.id, previous);
+      if (this.alive && viewer === xPrivateClient.viewerId()) {
+        this.syncFollowState();
+        promptAction.showToast({ message: this.text($r('app.string.profile_follow_failed')) });
+      }
     } finally {
       this.pendingIds = this.pendingIds.filter((id: string): boolean => id !== row.id);
     }
@@ -178,11 +193,11 @@ export struct FollowSuggestions {
                   .onClick((): void => this.openUser(row))
                 this.FollowButton(row)
               }.width('100%')
-            }, (row: UserRow): string => row.id)
+            }, (row: UserRow): string => row.id + ':' + row.following + ':' + (this.pendingIds.indexOf(row.id) >= 0))
           }.width('100%').padding({ left: 16, right: 16 })
         } else {
         List({ space: 12 }) {
-          ForEach(this.rows, (row: UserRow) => { ListItem() { this.Card(row) } }, (row: UserRow): string => row.id)
+          ForEach(this.rows, (row: UserRow) => { ListItem() { this.Card(row) } }, (row: UserRow): string => row.id + ':' + row.following + ':' + (this.pendingIds.indexOf(row.id) >= 0))
         }.listDirection(Axis.Horizontal).height(this.showBanner ? 300 : 230)
           .width('100%').scrollBar(BarState.Off).padding({ left: 16, right: 16 })
         }

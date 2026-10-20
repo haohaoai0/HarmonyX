@@ -62,13 +62,16 @@ export class ReplyConversation {
   static flat(tweet: Tweet): Tweet {
     return {
       id: tweet.id, author: tweet.author, text: tweet.text, language: tweet.language,
+      editHistoryIds: tweet.editHistoryIds,
       createdAt: tweet.createdAt, metrics: tweet.metrics, liked: tweet.liked,
       reposted: tweet.reposted, bookmarked: tweet.bookmarked, isReply: tweet.isReply,
       replyToTweetId: tweet.replyToTweetId, replyToUsername: tweet.replyToUsername,
       conversationId: tweet.conversationId,
       isRepost: tweet.isRepost, repostAuthor: tweet.repostAuthor, repostText: tweet.repostText,
-      quotedTweet: tweet.quotedTweet, attachments: tweet.attachments,
-      pinned: tweet.pinned, article: tweet.article, poll: tweet.poll, card: tweet.card
+      quotedTweet: tweet.quotedTweet, possiblySensitive: tweet.possiblySensitive, attachments: tweet.attachments,
+      pinned: tweet.pinned, article: tweet.article, poll: tweet.poll, card: tweet.card,
+      communityId: tweet.communityId, communityName: tweet.communityName, presentation: tweet.presentation,
+      feedbackKeys: tweet.feedbackKeys, feedbackActions: tweet.feedbackActions
     };
   }
 }

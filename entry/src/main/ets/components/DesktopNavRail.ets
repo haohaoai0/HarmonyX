@@ -6,6 +6,9 @@ import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFon
 import type { UserProfile } from '../models/Tweet';
 import { ProxyAvatar } from './ProxyAvatar';
 import { ComponentHdrHighlight } from '../utils/ComponentHdrHighlight';
+import { common } from '@kit.AbilityKit';
+import { XAccount, accountStore, STORAGE_KEY_ACCOUNTS_CHANGED } from '../services/AccountStore';
+import { appIconForeground, STORAGE_KEY_CURRENT_APP_ICON } from '../services/AppIconStore';
 
 @Component
 export struct DesktopNavRail {
@@ -17,6 +20,9 @@ export struct DesktopNavRail {
   @Prop compact: boolean = false;
   @Prop selected: string = 'home';
   @Prop profile: UserProfile | null = null;
+  @StorageProp(STORAGE_KEY_ACCOUNTS_CHANGED) @Watch('loadCachedAccount') private accountsChanged: number = 0;
+  @StorageProp(STORAGE_KEY_CURRENT_APP_ICON) private currentAppIcon: string = '';
+  @State private cachedAccount: XAccount | null = null;
   @Prop handle: string = '';
   @Prop unread: number = 0;
   @StorageProp('harmonyx.accent_theme') private accentTheme: string = '';
@@ -26,6 +32,20 @@ export struct DesktopNavRail {
   onSelect: (name: string) => void = (): void => {};
   onCompose: () => void = (): void => {};
   onAccounts: () => void = (): void => {};
+
+  aboutToAppear(): void {
+    this.loadCachedAccount();
+  }
+
+  private loadCachedAccount(): void {
+    const context: common.Context | undefined = this.getUIContext().getHostContext();
+    this.cachedAccount = context === undefined ? null : accountStore.active(context);
+  }
+
+  private avatarInitial(): string {
+    return (this.profile?.name || this.cachedAccount?.displayName || this.cachedAccount?.username || 'X')
+      .substring(0, 1).toUpperCase();
+  }
 
   private itemColor(name: string): ResourceColor {
     return isMixedAccentTheme(this.accentTheme) ?
@@ -57,6 +77,7 @@ export struct DesktopNavRail {
     .width('100%').height($r('app.float.desktop_nav_row')).padding({ left: 12, right: 12 })
     .borderRadius(28).backgroundColor(this.hovered === name ? $r('app.color.bg_field') : Color.Transparent)
     .onHover((hover: boolean): void => { this.hovered = hover ? name : ''; })
+    .focusable(true).hoverEffect(HoverEffect.Highlight)
     .id('desktop-nav-' + name).accessibilityText(title)
     .onClick((): void => { hapticTick(); this.moreOpen = false; this.onSelect(name); })
   }
@@ -87,7 +108,7 @@ export struct DesktopNavRail {
   build(): void {
     Column({ space: 8 }) {
       Button({ type: ButtonType.Circle }) {
-        Image($r('app.media.ui_brand_foreground')).width(38).height(38).objectFit(ImageFit.Contain)
+        Image(appIconForeground(this.currentAppIcon)).width(38).height(38).objectFit(ImageFit.Contain)
       }.width(52).height(52).backgroundColor(Color.Transparent)
         .align(Alignment.Start).accessibilityText($r('app.string.home_title'))
         .onClick((): void => this.onSelect('home'))
@@ -135,8 +156,11 @@ export struct DesktopNavRail {
       }.width('100%').layoutWeight(1).scrollBar(BarState.Auto).align(Alignment.TopStart)
       Button({ type: ButtonType.Normal }) {
         Row({ space: 10 }) {
-          ProxyAvatar({verifiedType: this.profile?.verifiedType ?? '', avatarShape: this.profile?.avatarShape ?? '',  url: this.profile?.avatarUrl ?? '', avatarSize: 40, radius: 20,
-            fallbackText: (this.profile?.name ?? 'X').substring(0, 1), fallbackColor: this.accentColor })
+          ProxyAvatar({ verifiedType: this.profile?.verifiedType ?? this.cachedAccount?.verifiedType ?? '',
+            avatarShape: this.profile?.avatarShape ?? this.cachedAccount?.avatarShape ?? '',
+            url: this.profile?.avatarUrl || this.cachedAccount?.avatarUrl || '', avatarSize: 40, radius: 20,
+            fallbackText: this.avatarInitial(), fallbackColor: this.accentColor })
+            .id('desktop-sidebar-avatar')
           if (!this.compact) {
             Column({ space: 2 }) {
               Text(this.profile?.name ?? 'Harmony X').fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontWeight(FontWeight.Bold)

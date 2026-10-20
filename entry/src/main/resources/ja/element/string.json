@@ -1,5 +1,42 @@
 {
   "string": [
+    {
+      "name": "supporter_config_error",
+      "value": "クラウドのアカウント連携を確認できません。開発者にお問い合わせください。"
+    },
+    {
+      "name": "supporter_restore_hint",
+      "value": "元のアカウントに切り替えると保存済みの状態が復元されます。機種変更、再インストール、別バージョンへの切り替え後は、同じ X アカウントにログインし、元のコードを入力して復元してください。"
+    },
+    {"name": "eye_reading_title", "value": "視線でページ送り"},
+    {"name": "eye_reading_intro", "value": "上下を見つめて、スレッド、オフラインのコピー、記事をスクロールします。"},
+    {"name": "eye_reading_enable", "value": "視線操作を有効にする"},
+    {"name": "eye_reading_supported", "value": "顔の追跡に対応しています。閲覧ページで開始を押すとカメラが起動します。"},
+    {"name": "eye_reading_unsupported", "value": "この端末は必要な顔の追跡に対応していません。タッチまたはキーボードをご利用ください。"},
+    {"name": "eye_reading_dwell", "value": "視線を保持する時間"},
+    {"name": "eye_reading_threshold", "value": "方向の判定しきい値"},
+    {"name": "eye_reading_threshold_desc", "value": "値を上げると、より大きな目の動きが必要になり、誤操作を減らせます。"},
+    {"name": "eye_reading_help", "value": "頭を動かさず画面中央を見て調整します。上下を見つめると約半画面スクロールします。操作後は中央に視線を戻してください。タッチ、ホイール、キーボードを優先します。"},
+    {"name": "eye_reading_privacy", "value": "開始後のみ前面カメラを使います。方向データは端末内で処理し、画像を保存・送信しません。ページを離れるかバックグラウンドに移ると停止します。再開は手動です。"},
+    {"name": "eye_reading_save_failed", "value": "設定を保存できませんでした。再試行してください。"},
+    {"name": "eye_reading_start", "value": "視線操作を開始"},
+    {"name": "eye_reading_stop", "value": "視線操作を停止"},
+    {"name": "eye_reading_recalibrate", "value": "再調整"},
+    {"name": "eye_reading_starting", "value": "前面カメラを起動中…"},
+    {"name": "eye_reading_permission", "value": "カメラの権限が必要です。システムのアプリ権限で許可してから再試行してください。"},
+    {"name": "eye_reading_failed", "value": "カメラを使用できません。他のカメラアプリを閉じて再試行してください。"},
+    {"name": "eye_reading_calibrating", "value": "画面中央を見て、頭と視線を動かさずに調整してください。"},
+    {"name": "eye_reading_center", "value": "次の操作の前に視線を中央に戻してください。"},
+    {"name": "eye_reading_ready", "value": "準備完了：上または下を見つめてください。"},
+    {"name": "eye_reading_up", "value": "上を見続けると上にスクロールします。"},
+    {"name": "eye_reading_down", "value": "下を見続けると下にスクロールします。"},
+    {"name": "eye_reading_lost", "value": "明るい場所で目を開けて画面に顔を向けてください。反応しない場合は再調整してください。"},
+    {"name": "eye_reading_paused", "value": "手動操作を優先し、視線操作を一時停止しています。"},
+    {"name": "eye_reading_camera_reason", "value": "視線操作を開始した際に、前面カメラを使って目の方向を端末内で認識します。"},
+    {"name": "compact_video_layout", "value": "カバー画面の動画レイアウト"},
+    {"name": "settings_compact_video_layout_desc", "value": "Pura X などの小型正方形画面で、操作を横または下部に配置します。開くと通常の動画レイアウトに戻ります。"},
+    {"name": "compact_video_layout_rail", "value": "サイド操作"},
+    {"name": "compact_video_layout_bottom", "value": "下部横並び"},
     {"name":"settings_component_hdr_enabled","value":"Component HDR effect"},
     {"name":"settings_component_hdr_enabled_desc","value":"Off by default. Turn it on to use 1.25x brightening, then adjust the multiplier below."},
     {"name":"settings_confirm_app_exit","value":"終了前に確認"},
@@ -1775,6 +1812,14 @@
     {
       "name": "settings_hds_tabs_material_adaptive",
       "value": "自動調整"
+    },
+    {
+      "name": "settings_hds_tabs_gradient_mask",
+      "value": "下部タブのグラデーションマスク"
+    },
+    {
+      "name": "settings_hds_tabs_gradient_mask_desc",
+      "value": "フローティング HdsTabs バー下のフェードグラデーションを制御します。初期状態はオンです。"
     },
     {
       "name": "settings_timeline_columns_title",
@@ -9249,6 +9294,14 @@
       "value": "オフにすると、タイムラインのタブや検索欄をアバターと右側のボタンの間に移動します。"
     },
     {
+      "name": "settings_title_bar_logo_auto_contrast",
+      "value": "Adaptive logo color"
+    },
+    {
+      "name": "settings_title_bar_logo_auto_contrast_desc",
+      "value": "Automatically switches the X or pattern foreground between light and dark to stay readable. Only the single-color foreground is shown, without an icon background."
+    },
+    {
       "name": "notifications_all",
       "value": "すべて"
     },
@@ -10705,6 +10758,359 @@
     {"name":"page_background_motif_popular_apps_global_firefox","value":"Firefox"},
     {"name":"page_background_motif_popular_apps_global_edge","value":"Edge"},
     {"name":"page_background_motif_popular_apps_global_gmail","value":"Gmail"},
-    {"name":"page_background_motif_popular_apps_global_google_maps","value":"Google Maps"}
+    {"name":"page_background_motif_popular_apps_global_google_maps","value":"Google Maps"},
+    {"name":"scene_title","value":"Scene modes"},
+    {"name":"scene_intro","value":"Apply a set of playback, quality, motion and background preferences. Restore returns to your settings from before the first mode was enabled."},
+    {"name":"scene_reading","value":"Clear reading"},
+    {"name":"scene_reading_desc","value":"Autoplay off · high quality images · low quality video · reduced motion · plain background"},
+    {"name":"scene_saver","value":"Power and data saver"},
+    {"name":"scene_saver_desc","value":"Autoplay off · small images · low quality video · reduced motion · plain background"},
+    {"name":"scene_media","value":"Media browsing"},
+    {"name":"scene_media_desc","value":"Autoplay on · original images · high quality video · motion on · your saved background"},
+    {"name":"scene_restore","value":"Restore original settings"},
+    {"name":"scene_restore_desc","value":"Keep your preferences from before scene mode. Switching between modes does not replace this backup."},
+    {"name":"scene_failed","value":"Some settings could not be saved. Your original settings are retained; retry or restore."},
+    {"name":"offline_title","value":"Offline & later"},
+    {"name":"offline_online","value":"Online bookmarks"},
+    {"name":"offline_intro","value":"New bookmarks save text and available articles automatically. Enable images before saving to include photos. Local copies stay separate from online bookmarks and ordinary cache cleanup."},
+    {"name":"offline_images","value":"Include photos in future saves"},
+    {"name":"offline_save","value":"Save offline"},
+    {"name":"offline_saving","value":"Saving…"},
+    {"name":"offline_saved","value":"Saved for offline reading"},
+    {"name":"offline_partial_saved","value":"Saved available content. Some article text or photos are missing; retry when online."},
+    {"name":"offline_save_failed","value":"Could not save locally. Please retry."},
+    {"name":"offline_partial","value":"Incomplete copy"},
+    {"name":"offline_unread","value":"Unread"},
+    {"name":"offline_unread_only","value":"Unread only"},
+    {"name":"offline_search","value":"Search titles, tags or notes"},
+    {"name":"offline_empty","value":"No matching offline items. Save a bookmark or use Save offline on a post."},
+    {"name":"offline_edit","value":"Tags & note"},
+    {"name":"offline_tags","value":"Tags"},
+    {"name":"offline_tags_hint","value":"Tags, separated by commas"},
+    {"name":"offline_note","value":"Private note"},
+    {"name":"offline_done","value":"Save"},
+    {"name":"offline_delete","value":"Delete local copy"},
+    {"name":"reader_title","value":"Thread reader"},
+    {"name":"reader_author_only","value":"Author only"},
+    {"name":"reader_translate","value":"Translate passages"},
+    {"name":"reader_font","value":"Text size"},
+    {"name":"reader_missing","value":"This offline item is missing or unavailable. Save it again while online."},
+    {"name":"reader_partial","value":"Only the available article content is shown. Continue loading or retry while online to get the complete text."},
+    {"name":"reader_load_failed","value":"Could not load more replies. Your current reading content is kept."},
+    {"name":"reader_translation_setup","value":"Enable translation and choose a target language in Settings first."},
+    {"name":"reader_translation_failed","value":"Some passages could not be translated. You can hide translations and retry."},
+    {"name":"reader_offline_note","value":"Saved local content. Translation requires a network connection."},
+    {"name":"reader_scope","value":"Replies loaded so far. Use Continue loading to include more of the discussion."},
+    {
+      "name": "input_help_title",
+      "value": "マウス・キーボード・タッチパッド"
+    },
+    {
+      "name": "input_help_desc",
+      "value": "ショートカットとポインター操作"
+    },
+    {
+      "name": "input_main_title",
+      "value": "メイン画面のショートカット"
+    },
+    {
+      "name": "input_main_scope",
+      "value": "5 つのメインタブで、サブページ・サイドバー・ダイアログが開いていないときに使用できます。Ctrl+N はメッセージでは会話を、それ以外では投稿を作成します。"
+    },
+    {
+      "name": "input_compose",
+      "value": "新規投稿 / 新規会話"
+    },
+    {
+      "name": "input_refresh",
+      "value": "現在のタブを更新"
+    },
+    {
+      "name": "input_keyboard_title",
+      "value": "キーボード操作"
+    },
+    {
+      "name": "input_focus",
+      "value": "フォーカスを前 / 後に移動。標準コントロールは矢印キーにも対応します。"
+    },
+    {
+      "name": "input_activate",
+      "value": "フォーカス中のボタンを実行。"
+    },
+    {
+      "name": "input_submit",
+      "value": "投稿・返信・メッセージの入力欄から送信。通常の Enter の動作は変わりません。"
+    },
+    {
+      "name": "input_back",
+      "value": "ヘルプ・編集・チャット・メディア画面で戻る。開いているパネルを先に閉じます。"
+    },
+    {
+      "name": "input_photo",
+      "value": "写真表示中に前 / 次の写真へ。拡大中やパネル表示中は使用できません。"
+    },
+    {
+      "name": "input_video",
+      "value": "動画表示中に前 / 次の動画へ。パネル表示中は使用できません。"
+    },
+    {
+      "name": "input_playback",
+      "value": "動画画面にフォーカスがあるとき、Space または Enter で再生 / 一時停止、左 / 右キーで 10 秒戻る / 進む。"
+    },
+    {
+      "name": "input_pointer_title",
+      "value": "マウスとタッチパッド"
+    },
+    {
+      "name": "input_pointer",
+      "value": "左クリックやタップで実行。写真・動画・チャットメッセージを右クリックすると操作メニューが開きます。ボタンはホバーに反応し、スクロールバーや再生バーはドラッグできます。"
+    },
+    {
+      "name": "input_trackpad",
+      "value": "2 本指でリストをスクロール、横スワイプで写真を切り替え、ピンチで写真を拡大縮小できます。拡大後はドラッグで移動。対応タッチパッドでは 2 本指タップで右クリックメニューを開けます。"
+    },
+    {
+      "name": "input_previous",
+      "value": "前の写真"
+    },
+    {
+      "name": "input_next",
+      "value": "次の写真"
+    },
+    {
+      "name": "input_key_home",
+      "value": "Ctrl + 1"
+    },
+    {
+      "name": "input_key_explore",
+      "value": "Ctrl + 2"
+    },
+    {
+      "name": "input_key_notifications",
+      "value": "Ctrl + 3"
+    },
+    {
+      "name": "input_key_messages",
+      "value": "Ctrl + 4"
+    },
+    {
+      "name": "input_key_profile",
+      "value": "Ctrl + 5"
+    },
+    {
+      "name": "input_key_search",
+      "value": "Ctrl + K"
+    },
+    {
+      "name": "input_key_compose",
+      "value": "Ctrl + N"
+    },
+    {
+      "name": "input_key_refresh",
+      "value": "Ctrl + R"
+    },
+    {
+      "name": "input_key_settings",
+      "value": "Ctrl + ,"
+    },
+    {
+      "name": "input_key_help",
+      "value": "F1"
+    },
+    {
+      "name": "input_key_focus",
+      "value": "Tab / Shift + Tab"
+    },
+    {
+      "name": "input_key_activate",
+      "value": "Enter / Space"
+    },
+    {
+      "name": "input_key_submit",
+      "value": "Ctrl + Enter"
+    },
+    {
+      "name": "input_key_back",
+      "value": "Esc / Alt + ←"
+    },
+    {
+      "name": "input_key_photo",
+      "value": "← / →"
+    },
+    {
+      "name": "input_key_video",
+      "value": "↑ / ↓ / Page Up / Page Down"
+    },
+    {
+      "name": "input_key_playback",
+      "value": "Space / Enter / ← / →"
+    },
+    {"name":"settings_filter_languages","value":"非表示にする投稿の言語"},
+    {"name":"settings_filter_languages_desc","value":"非表示にする言語を選択。言語不明やメディアのみの投稿は表示されます。"},
+    {"name":"appearance_preview_title","value":"プレビュー"},
+    {"name":"appearance_preview_hint","value":"設定の変更がすぐに反映されます。シートの例をタップすると展開します。"},
+    {"name":"post_edited","value":"編集済み"},
+    {"name":"post_metric_bookmarks","value":"ブックマーク"},
+    {"name":"post_metric_quotes","value":"引用"},
+    {"name":"settings_reply_quality","value":"低品質の返信を折りたたむ"},
+    {"name":"settings_reply_quality_desc","value":"繰り返しの宣伝や大量の勧誘を折りたたみます。端末内の判定には誤りがあり、返信を展開して確認できます。"},
+    {"name":"reply_quality_folded","value":"低品質の可能性がある返信"},
+    {"name":"reply_quality_reasons","value":"理由を表示"},
+    {"name":"reply_quality_allow","value":"この投稿者を常に表示"},
+    {"name":"reply_quality_whitelist","value":"返信の許可リスト"},
+    {"name":"reply_quality_whitelist_desc","value":"自分、元の投稿者、フォロー中のアカウントと許可した投稿者の返信は表示します。リストは現在のアカウント専用です。"},
+    {"name":"reply_quality_empty","value":"許可した投稿者はいません"},
+    {"name":"reply_quality_reason_duplicate","value":"複数の投稿者が同じ宣伝文を繰り返しています"},
+    {"name":"reply_quality_reason_author_repeat","value":"同じ投稿者が同じ内容を繰り返しています"},
+    {"name":"reply_quality_reason_links","value":"複数の外部リンクが含まれています"},
+    {"name":"reply_quality_reason_promotion","value":"宣伝や利益をうたう内容が含まれています"},
+    {"name":"reply_quality_reason_contact","value":"勧誘用の連絡先が含まれています"},
+    {
+      "name": "settings_floating_compose_material_tint",
+      "value": "フローティング投稿ボタンのマテリアルカラー"
+    },
+    {
+      "name": "settings_floating_compose_material_tint_desc",
+      "value": "マテリアルにテーマカラーを重ねます。オフにすると色の重ね合わせだけを解除します。"
+    },
+    {
+      "name": "chat_decoration",
+      "value": "Chat decorations"
+    },
+    {
+      "name": "chat_decoration_subtitle",
+      "value": "Avatar frames and chat bubbles, downloaded only when you choose them."
+    },
+    {
+      "name": "chat_decoration_frame",
+      "value": "Avatar frames"
+    },
+    {
+      "name": "chat_decoration_bubble",
+      "value": "Chat bubbles"
+    },
+    {
+      "name": "chat_decoration_free",
+      "value": "Free"
+    },
+    {
+      "name": "chat_decoration_download_preview",
+      "value": "Download to preview"
+    },
+    {
+      "name": "chat_decoration_download",
+      "value": "Download"
+    },
+    {
+      "name": "chat_decoration_downloading",
+      "value": "Downloading..."
+    },
+    {
+      "name": "chat_decoration_use",
+      "value": "Use"
+    },
+    {
+      "name": "chat_decoration_in_use",
+      "value": "In use"
+    },
+    {
+      "name": "chat_decoration_remove",
+      "value": "Stop using"
+    },
+    {
+      "name": "chat_decoration_installed",
+      "value": "Downloaded"
+    },
+    {
+      "name": "chat_decoration_applied",
+      "value": "Decoration applied"
+    },
+    {
+      "name": "chat_decoration_download_failed",
+      "value": "Download failed. Try again later."
+    },
+    {
+      "name": "chat_decoration_reset",
+      "value": "Restore defaults"
+    },
+    {
+      "name": "chat_decoration_reset_done",
+      "value": "Defaults restored"
+    },
+    {
+      "name": "chat_decoration_note",
+      "value": "Decorations stay on this device. Other people see styles supported by their client."
+    },
+    {
+      "name": "chat_decoration_loading",
+      "value": "Loading decorations..."
+    },
+    {
+      "name": "chat_decoration_unavailable",
+      "value": "Decorations are unavailable. Check your connection and retry."
+    },
+    {
+      "name": "chat_decoration_sample_text",
+      "value": "Have a lovely day."
+    },
+    {"name": "sign_out_confirm_title", "value": "ログアウトしますか？"},
+    {"name": "sign_out_confirm_message", "value": "このアカウントを使うには再度ログインが必要です。"},
+    {"name": "settings_for_you_only_sensitive", "value": "おすすめでセンシティブな内容のみ表示"},
+    {"name": "settings_for_you_only_sensitive_desc", "value": "引用を含め、X がセンシティブと判定した投稿のみをおすすめに表示します。フォロー中やリストには影響せず、メディアの覆いも維持します。"},
+    {"name": "settings_grip_floating", "value": "フローティング操作ボタン"},
+    {"name": "settings_grip_video", "value": "動画操作バー"},
+    {"name": "settings_grip_reply", "value": "投稿返信ボタン"},
+    {"name": "settings_grip_component_desc", "value": "持つ手に合わせて配置します。オフの場合は優先する手を使用します。"},
+    {"name": "settings_grip_hdstabs", "value": "HdsTabs 下部タブバー"},
+    {"name": "settings_grip_hdstabs_desc", "value": "システム標準の左右追従を使用します。オフにすると持つ手に追従しません。"},
+    {"name":"gif_action_save_video","value":"高画質の動画として保存（MP4）"},
+    {"name":"storage_save_remembered_note","value":"ダウンロード先を一度選ぶと、以降のファイルはそのフォルダに自動保存されます。オフにするとギャラリーに保存します。"},
+    {"name":"storage_save_to_remembered","value":"ダウンロードフォルダに保存"},
+    {"name": "storage_permission_reason", "value": "選択したファイルやフォルダへのアクセスを保持します。"},
+    {"name": "timeline_sources_lists", "value": "リスト"},
+    {"name": "timeline_sources_communities", "value": "コミュニティ"},
+    {"name": "timeline_edit", "value": "編集"},
+    {"name": "timeline_done", "value": "完了"},
+    {"name": "timeline_move_up", "value": "上へ移動"},
+    {"name": "timeline_move_down", "value": "下へ移動"},
+    {"name": "timeline_remove_source", "value": "%s を削除"},
+    {"name": "timeline_add_to_home", "value": "ホームのタイムラインに追加"},
+    {"name": "timeline_remove_from_home", "value": "ホームのタイムラインから削除"},
+    {"name": "timeline_sources_failed", "value": "一部のリストやコミュニティを読み込めませんでした。タップして再試行。"},
+    {"name": "timeline_sources_pinned_empty", "value": "固定したタイムラインはありません。下から追加できます。"},
+    {"name":"video_controls_mirror","value":"操作ボタンを左右反転"},
+    {"name":"video_controls_speed","value":"速度"},
+    {"name":"video_controls_aspect","value":"比率"},
+    {"name":"video_controls_background","value":"バック"},
+    {"name":"video_controls_quality_hd","value":"HD"},
+    {"name":"video_controls_quality_sd","value":"SD"},
+    {"name":"video_controls_quality_ld","value":"LD"},
+    {"name":"video_controls_more","value":"その他"},
+    {"name":"video_controls_download","value":"保存"},
+    {"name":"settings_navigation_style","value":"下部ナビゲーションのスタイル"},
+    {"name":"settings_hds_bottom_bar","value":"フローティング HdsTabs"},
+    {"name":"settings_split_bottom_bar","value":"分離カプセルナビゲーション"},
+    {"name":"settings_split_bottom_bar_desc","value":"左のカプセルでページを切り替え、右の独立ボタンで投稿、新規チャット、更新、先頭への移動を行います。両方に HDS マテリアルを使用し、古いシステムでは互換ナビゲーションを使用します。"},
+    {"name":"split_navigation_action_top","value":"先頭へ"},
+    {"name":"split_navigation_action_refresh","value":"ホームを更新"},
+    {"name":"split_navigation_action_compose","value":"投稿を作成"},
+    {"name": "settings_reply_capsule_split", "value": "返信カプセルを分離"},
+    {"name": "settings_reply_capsule_split_desc", "value": "折りたたみ時に返信欄と投稿の操作を別々に表示"},
+    {"name": "reply_capsule_write_reply", "value": "返信"},
+    {"name":"settings_native_bottom_bar","value":"7.0 マテリアルのカプセルナビ"},
+    {"name":"settings_native_bottom_bar_desc","value":"返信カプセルと同じ HarmonyOS 7.0 の没入型マテリアルを使用します。タッチ光、液体インジケーター、持ち手に応じた左右切り替えに対応。利用できない場合は HDS カプセルを使用します。"},
+    {"name":"settings_native_navigation_material","value":"ナビカプセルのマテリアルの厚さ"},
+    {"name":"settings_for_you_only_sensitive_age_title","value":"年齢の確認"},
+    {"name":"settings_for_you_only_sensitive_age_message","value":"「おすすめでセンシティブな内容のみ表示」は18歳以上の方のみ利用できます。18歳以上ですか？"},
+    {"name":"settings_for_you_only_sensitive_age_under","value":"18歳未満"},
+    {"name":"settings_for_you_only_sensitive_age_adult","value":"18歳以上"},
+    {"name":"settings_theme_icon_blue","value":"アイコンブルー"},
+    {"name":"settings_theme_icon_red","value":"アイコンレッド"},
+    {"name":"settings_theme_icon_orange","value":"アイコンオレンジ"},
+    {"name":"settings_theme_icon_yellow","value":"アイコンイエロー"},
+    {"name":"settings_theme_icon_green","value":"アイコングリーン"},
+    {"name":"settings_theme_icon_pink","value":"アイコンピンク"},
+    {"name":"settings_theme_icon_cyan","value":"アイコンシアン"},
+    {"name":"settings_theme_icon_navy","value":"アイコンネイビー"}
   ]
 }

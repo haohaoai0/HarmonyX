@@ -314,22 +314,22 @@ export class ProxyStore {
       return;
     }
     if (proxy.isSocks5()) {
-      if (!deviceInfo.apiAvailable('26.0.0')) {
+      if (deviceInfo.apiAvailable('26.0.0')) {
+        const socks: connection.Socks5Proxy = {
+          host: proxy.host,
+          port: proxy.port,
+          dnsStrategy: connection.Socks5DnsStrategy.PROXY_MODE,
+          exclusionList: this.exclusionList(proxy)
+        };
+        if (proxy.username.length > 0 && proxy.password.length > 0) {
+          socks.username = proxy.username;
+          socks.password = proxy.password;
+        }
         options.usingProxy = false;
+        options.usingSocks5Proxy = socks;
         return;
       }
-      const socks: connection.Socks5Proxy = {
-        host: proxy.host,
-        port: proxy.port,
-        dnsStrategy: connection.Socks5DnsStrategy.PROXY_MODE,
-        exclusionList: this.exclusionList(proxy)
-      };
-      if (proxy.username.length > 0 && proxy.password.length > 0) {
-        socks.username = proxy.username;
-        socks.password = proxy.password;
-      }
       options.usingProxy = false;
-      options.usingSocks5Proxy = socks;
       return;
     }
     const httpProxy: connection.HttpProxy = {
@@ -511,23 +511,30 @@ export class ProxyStore {
   }
 
   supportedSocks5(): boolean {
-    return deviceInfo.apiAvailable('26.0.0');
+    if (deviceInfo.apiAvailable('26.0.0')) {
+      return true;
+    }
+    return false;
   }
 
   private applyEntry(options: http.HttpRequestOptions, proxy: ProxyEntry): void {
     if (proxy.isSocks5()) {
-      const socks: connection.Socks5Proxy = {
-        host: proxy.host,
-        port: proxy.port,
-        dnsStrategy: connection.Socks5DnsStrategy.PROXY_MODE,
-        exclusionList: this.exclusionList(proxy)
-      };
-      if (proxy.username.length > 0 && proxy.password.length > 0) {
-        socks.username = proxy.username;
-        socks.password = proxy.password;
+      if (deviceInfo.apiAvailable('26.0.0')) {
+        const socks: connection.Socks5Proxy = {
+          host: proxy.host,
+          port: proxy.port,
+          dnsStrategy: connection.Socks5DnsStrategy.PROXY_MODE,
+          exclusionList: this.exclusionList(proxy)
+        };
+        if (proxy.username.length > 0 && proxy.password.length > 0) {
+          socks.username = proxy.username;
+          socks.password = proxy.password;
+        }
+        options.usingProxy = false;
+        options.usingSocks5Proxy = socks;
+        return;
       }
       options.usingProxy = false;
-      options.usingSocks5Proxy = socks;
       return;
     }
     const httpProxy: connection.HttpProxy = {

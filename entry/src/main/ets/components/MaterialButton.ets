@@ -1,9 +1,11 @@
+import { activateInputKey } from '../utils/InputSupport';
 import { DEFAULT_COMPONENT_HDR_ENABLED, DEFAULT_COMPONENT_HDR_RATIO, STORAGE_KEY_COMPONENT_HDR_ENABLED,
   STORAGE_KEY_COMPONENT_HDR_RATIO } from '../services/ComponentHdrSettingsStore';
 import { ComponentHdrHighlight } from '../utils/ComponentHdrHighlight';
 import { motionDuration, motionScale, motionCurve } from '../utils/AppMotion';
 import { hapticTick } from '../utils/Haptics';
 import { SystemMaterialUtil } from '../utils/SystemMaterial';
+import { materialModifier } from '../utils/SystemMaterial';
 
 @Component
 export struct MaterialButton {
@@ -69,7 +71,7 @@ export struct MaterialButton {
         .focusable(false)
         .accessibilityLevel('no')
         .hitTestBehavior(HitTestMode.None)
-        .systemMaterial(this.material())
+        .attributeModifier(materialModifier(this.material()))
     } else {
       Column()
         .width(LayoutPolicy.matchParent)
@@ -106,7 +108,7 @@ export struct MaterialButton {
         .focusable(false)
         .accessibilityLevel('no')
         .hitTestBehavior(HitTestMode.None)
-        .systemMaterial(this.material())
+        .attributeModifier(materialModifier(this.material()))
       } else {
         this.MaterialLayer();
         this.ForegroundContent();
@@ -121,6 +123,8 @@ export struct MaterialButton {
       hapticTick();
       this.onButtonClick();
     })
+    .focusable(true).focusOnTouch(false).hoverEffect(HoverEffect.Highlight)
+    .onKeyEvent((event: KeyEvent): boolean => activateInputKey(event, (): void => { if (this.buttonEnabled) { hapticTick(); this.onButtonClick(); } }))
     .enabled(this.buttonEnabled)
     .scale({ x: this.buttonPressFeedback && this.pressed && !this.reduceMotion ? motionScale(0.96) : 1,
       y: this.buttonPressFeedback && this.pressed && !this.reduceMotion ? motionScale(0.96) : 1 })

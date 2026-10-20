@@ -8,6 +8,7 @@ import { HdsButton } from './HdsButton';
 import { GripHandManager } from '../utils/GripHandManager';
 import { SystemMaterialUtil } from '../utils/SystemMaterial';
 import { ComponentHdrHighlight } from '../utils/ComponentHdrHighlight';
+import { STORAGE_KEY_FLOATING_COMPOSE_MATERIAL_TINT } from '../services/InteractionSettingsStore';
 
 const FAB_SIZE: number = 56;
 const FAB_SIDE_MARGIN: number = 16;
@@ -34,6 +35,8 @@ export struct FloatingComposeButton {
   @Prop @Watch('onBottomClearanceChanged') bottomInset: number = 0;
   @StorageProp('harmonyx.accent_theme') private accentTheme: string = '';
   @StorageLink('harmonyx.accent_color') accentColor: string = '#007DFF';
+  @StorageProp(STORAGE_KEY_FLOATING_COMPOSE_MATERIAL_TINT) private materialTintEnabled: boolean = true;
+  @StorageProp('harmonyx.grip_floating_enabled') @Watch('onGripHandEnabledChanged') private componentGripEnabled: boolean = true;
   @StorageLink('harmonyx.grip_hand_enabled') @Watch('onGripHandEnabledChanged')
   gripHandEnabled: boolean = true;
   @StorageLink('harmonyx.grip_preferred_hand') @Watch('onPreferredHandChanged')
@@ -71,6 +74,7 @@ export struct FloatingComposeButton {
   private initialButtonY: number = 0;
   private lastHand: string = 'right';
   private hasPositioned: boolean = false;
+  private manuallyPositioned: boolean = false;
   private lastBottomClearance: number = HDS_TAB_BAR_HEIGHT;
 
   aboutToAppear(): void {
@@ -97,7 +101,7 @@ export struct FloatingComposeButton {
     const clearance: number = this.bottomBarHeight + this.bottomInset;
     const delta: number = clearance - this.lastBottomClearance;
     this.lastBottomClearance = clearance;
-    if (this.hasPositioned && !this.isDragging) { this.buttonY = this.clampY(this.buttonY - delta); }
+    if (this.hasPositioned && !this.isDragging && !this.manuallyPositioned) { this.buttonY = this.clampY(this.buttonY - delta); }
   }
 
   aboutToDisappear(): void {
@@ -111,9 +115,9 @@ export struct FloatingComposeButton {
       this.gripHandEnabled = GripHandManager.getInstance().isGripHandEnabled();
       this.preferredHand = GripHandManager.getInstance().getPreferredHand();
     }
-    this.lastHand = GripHandManager.getInstance().getLastHand();
-    this.positionForHand(this.lastHand, false);
-    if (this.gripHandEnabled) {
+    this.lastHand = this.componentGripEnabled ? GripHandManager.getInstance().getLastHand() : this.preferredHand;
+    if (!this.manuallyPositioned) { this.positionForHand(this.lastHand, false); }
+    if (this.gripHandEnabled && this.componentGripEnabled) {
       GripHandManager.getInstance().startFor(this.gripSubscriberKey, (hand: string): void => {
         this.onGripHandChanged(hand);
       });
@@ -123,7 +127,7 @@ export struct FloatingComposeButton {
   }
 
   private onGripHandEnabledChanged(): void {
-    if (this.gripHandEnabled) {
+    if (this.gripHandEnabled && this.componentGripEnabled) {
       this.initializeGripHand();
       return;
     }
@@ -132,16 +136,16 @@ export struct FloatingComposeButton {
   }
 
   private onPreferredHandChanged(): void {
-    if (!this.gripHandEnabled) {
+    if ((!this.gripHandEnabled || !this.componentGripEnabled)) {
       this.lastHand = this.preferredHand;
       this.positionForHand(this.lastHand, true);
     }
   }
 
   private onGripHandChanged(hand: string): void {
-    if (!this.gripHandEnabled) { return; }
+    if ((!this.gripHandEnabled || !this.componentGripEnabled)) { return; }
     this.lastHand = hand;
-    this.positionForHand(hand, true);
+    if (!this.isDragging) { this.positionForHand(hand, true); }
   }
 
   private readScreenSize(): void {
@@ -162,7 +166,8 @@ export struct FloatingComposeButton {
     }
     const targetX: number = hand === 'left' ? FAB_SIDE_MARGIN :
       this.pageWidth - FAB_SIZE - FAB_SIDE_MARGIN;
-    const targetY: number = this.pageHeight - FAB_SIZE - this.bottomBarHeight - FAB_BAR_GAP - this.bottomInset;
+    const targetY: number = this.manuallyPositioned ? this.buttonY :
+      this.pageHeight - FAB_SIZE - this.bottomBarHeight - FAB_BAR_GAP - this.bottomInset;
     const safeX: number = this.clampX(targetX);
     const safeY: number = this.clampY(targetY);
     this.hasPositioned = true;
@@ -178,14 +183,13 @@ export struct FloatingComposeButton {
   }
 
   private clampX(value: number): number {
-    const maxX: number = Math.max(FAB_SIDE_MARGIN, this.pageWidth - FAB_SIZE - FAB_SIDE_MARGIN);
-    return Math.min(Math.max(value, FAB_SIDE_MARGIN), maxX);
+    const maxX: number = Math.max(0, this.pageWidth - FAB_SIZE);
+    return Math.min(Math.max(value, 0), maxX);
   }
 
   private clampY(value: number): number {
-    const maxY: number = Math.max(FAB_TOP_LIMIT,
-      this.pageHeight - FAB_SIZE - this.bottomBarHeight - this.bottomInset - FAB_BAR_GAP);
-    return Math.min(Math.max(value, FAB_TOP_LIMIT), maxY);
+    const maxY: number = Math.max(0, this.pageHeight - FAB_SIZE);
+    return Math.min(Math.max(value, 0), maxY);
   }
 
   private updateViewport(area: Area): void {
@@ -194,7 +198,10 @@ export struct FloatingComposeButton {
     if (width <= 0 || height <= 0 || (width === this.pageWidth && height === this.pageHeight)) { return; }
     this.pageWidth = width;
     this.pageHeight = height;
-    this.positionForHand(this.lastHand, false);
+    if (this.manuallyPositioned) {
+      this.buttonX = this.clampX(this.buttonX);
+      this.buttonY = this.clampY(this.buttonY);
+    } else { this.positionForHand(this.lastHand, false); }
   }
 
   private buttonSurfaceColor(): ResourceColor {
@@ -218,7 +225,8 @@ export struct FloatingComposeButton {
     return 1;
   }
 
-  private materialTint(): string {
+  private materialTint(): string | undefined {
+    if (!this.materialTintEnabled) { return undefined; }
     try {
       const color: ColorMetrics = ColorMetrics.resourceColor(this.actionColor());
       return ColorMetrics.rgba(color.red, color.green, color.blue, 0.8).color;
@@ -232,6 +240,7 @@ export struct FloatingComposeButton {
 
   private handlePanStart(): void {
     this.isDragging = true;
+    this.manuallyPositioned = true;
     this.initialButtonX = this.buttonX;
     this.initialButtonY = this.buttonY;
   }
@@ -415,7 +424,7 @@ export struct FloatingComposeButton {
         y: this.isDragging ? motionScale(1.08) : 1
       })
       .accessibilityText(this.accessibilityLabel)
-      .animation({ duration: motionDuration(240), curve: Curve.EaseOut });
+      .animation({ duration: this.isDragging ? 0 : motionDuration(240), curve: Curve.EaseOut });
     } else {
       Stack() {
         this.FloatingActionButton();
@@ -428,7 +437,7 @@ export struct FloatingComposeButton {
         y: this.isDragging ? motionScale(1.08) : 1
       })
       .accessibilityText(this.accessibilityLabel)
-      .animation({ duration: motionDuration(240), curve: Curve.EaseOut });
+      .animation({ duration: this.isDragging ? 0 : motionDuration(240), curve: Curve.EaseOut });
     }
     }
     }

@@ -1,3 +1,4 @@
+import { scrollFrame, scrollStarted, scrollStopped, stopScrollOnTouch } from '../utils/ScrollInteraction';
 import { pageTextColor } from '../utils/ThemeColors';
 import { appPageBackground } from '../components/PageBackgroundLayer';
 import { pageCanvasColor, pageReadingSurfaceColor } from '../utils/ThemeColors';
@@ -21,12 +22,15 @@ import { PostMedia } from '../components/PostMedia';
 import { ProxyMediaImage } from '../components/ProxyMediaImage';
 import { EmojiSpans, EmojiSpanStyle } from '../components/EmojiSpans';
 import { EmojiCopyMenu } from '../utils/EmojiCopyMenu';
+import { EyeReadingControl } from '../components/EyeReadingControl';
 
 @Builder
 export function PostArticleBuilder(): void { PostArticle(); }
 
 @Component
 struct PostArticle {
+  private plainTextController: TextController = new TextController();
+  private blockTextControllers: Map<string, TextController> = new Map<string, TextController>();
   @StorageProp('harmonyx.page_background') private pageBackgroundValue: string = '';
   @State private pageMotion: PageTransitionMotion = new PageTransitionMotion();
   @StorageProp(STORAGE_KEY_PAGE_TRANSITION_MODE) private pageTransitionMode: string = DEFAULT_PAGE_TRANSITION_MODE;
@@ -42,11 +46,18 @@ struct PostArticle {
   @State private loading: boolean = false;
   @State private failed: boolean = false;
   @State private status: number = 0;
+  @State private eyeVisible: boolean = false;
+  @State private eyeInteraction: number = 0;
+  private eyeViewport: number = 400;
   private postId: string = '';
   private scroller: Scroller = new Scroller();
   private alive: boolean = true;
   private generation: number = 0;
   aboutToDisappear(): void { this.alive = false; ++this.generation; }
+  private eyePage(direction: number): void {
+    if (!this.eyeVisible || !this.alive || this.article === undefined) { return; }
+    try { this.scroller.scrollBy(0, direction * Math.max(120, this.eyeViewport * 0.6)); } catch (_error) { }
+  }
   private open(url: string): void { openPostCardUrl(getContext(this) as common.UIAbilityContext, url); }
   private async load(): Promise<void> {
     if (this.article === undefined) { return; }
@@ -81,6 +92,13 @@ struct PostArticle {
       color: pageTextColor(run.url.length > 0 ? this.accentColor : $r('app.color.text_primary'), this.pageBackgroundValue)
     };
   }
+  private blockTextController(block: ArticleBlock): TextController {
+    const existing: TextController | undefined = this.blockTextControllers.get(block.id);
+    if (existing !== undefined) { return existing; }
+    const controller: TextController = new TextController();
+    this.blockTextControllers.set(block.id, controller);
+    return controller;
+  }
   @Builder
   private Block(block: ArticleBlock, index: number): void {
     Column({ space: 8 }) {
@@ -88,13 +106,13 @@ struct PostArticle {
         Row({ space: 8 }) {
           if (block.kind === 'unordered-list-item') { Text('•').fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontColor(pageTextColor(this.accentColor, this.pageBackgroundValue)) }
           if (block.kind === 'ordered-list-item') { Text(String(index + 1) + '.').fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontColor(pageTextColor(this.accentColor, this.pageBackgroundValue)) }
-          Text() {
+          Text(undefined, { controller: this.blockTextController(block) }) {
             ForEach(block.runs, (run: ArticleRun) => {
               EmojiSpans(this.getUIContext(), run.text, this.font(block), this.systemEmojiEnabled,
                 (): void => { if (run.url.length > 0) { this.open(run.url); } }, this.accentColor, this.runStyle(block, run))
             })
           }.fontFamily(this.appFontFamily).layoutWeight(1).fontSize(this.font(block)).lineHeight(28).copyOption(CopyOptions.LocalDevice)
-            .editMenuOptions(new EmojiCopyMenu(getContext(this) as common.UIAbilityContext, block.runs.map((run: ArticleRun): string => run.text).join(''), this.systemEmojiEnabled))
+            .editMenuOptions(new EmojiCopyMenu(this.getUIContext(), this.blockTextController(block), block.runs.map((run: ArticleRun): string => run.text).join(''), this.systemEmojiEnabled))
         }.width('100%').alignItems(VerticalAlign.Top)
           .padding({ left: block.kind === 'blockquote' ? 12 : 0 })
           .border({ width: { left: block.kind === 'blockquote' ? 3 : 0 }, color: this.accentColor })
@@ -110,6 +128,10 @@ struct PostArticle {
     HdsNavDestination() {
       Stack({ alignContent: Alignment.TopStart }) {
         appPageBackground()
+      Column() {
+        EyeReadingControl({ active: this.eyeVisible && this.article !== undefined, interaction: this.eyeInteraction,
+          onPage: (direction: number): void => this.eyePage(direction) })
+          .padding({ left: 16, right: 16, top: this.statusBarHeight + 64, bottom: 6 })
       Scroll(this.scroller) {
         Column({ space: 18 }) {
           if (this.article !== undefined) {
@@ -119,9 +141,9 @@ struct PostArticle {
             if ((this.article.blocks?.length ?? 0) > 0) {
               ForEach(this.article.blocks ?? [], (block: ArticleBlock, index: number) => { this.Block(block, index) }, (block: ArticleBlock): string => block.id)
             } else if ((this.article.plainText?.length ?? 0) > 0) {
-              Text() { EmojiSpans(this.getUIContext(), this.article.plainText ?? '', $r('sys.float.Body_L'), this.systemEmojiEnabled) }.fontFamily(this.appFontFamily)
+              Text(undefined, { controller: this.plainTextController }) { EmojiSpans(this.getUIContext(), this.article.plainText ?? '', $r('sys.float.Body_L'), this.systemEmojiEnabled) }.fontFamily(this.appFontFamily)
                 .width('100%').fontSize($r('sys.float.Body_L')).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)).copyOption(CopyOptions.LocalDevice)
-                .editMenuOptions(new EmojiCopyMenu(getContext(this) as common.UIAbilityContext, this.article.plainText ?? '', this.systemEmojiEnabled))
+                .editMenuOptions(new EmojiCopyMenu(this.getUIContext(), this.plainTextController, this.article.plainText ?? '', this.systemEmojiEnabled))
             } else {
               Text() { EmojiSpans(this.getUIContext(), this.article.previewText, $r('sys.float.Body_L'), this.systemEmojiEnabled) }.fontFamily(this.appFontFamily)
                 .width('100%').fontSize($r('sys.float.Body_L')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
@@ -136,8 +158,17 @@ struct PostArticle {
               .onClick((): void => openExternalLink(getContext(this) as common.UIAbilityContext, 'https://x.com/i/article/' + this.article?.id))
           }
         }.width('100%').constraintSize({ maxWidth: 780 }).alignItems(HorizontalAlign.Start)
-          .padding({ left: 16, right: 16, top: this.statusBarHeight + 64, bottom: this.navigationIndicatorHeight + 32 })
-      }.width('100%').height('100%').scrollBar(BarState.Off)
+          .padding({ left: 16, right: 16, top: 12, bottom: this.navigationIndicatorHeight + 32 })
+      }
+      .onScrollStop((): void => scrollStopped(this.scroller))
+      .onScrollFrameBegin((offset: number, state: ScrollState): OnScrollFrameBeginHandlerResult =>
+        scrollFrame(this.scroller, offset, state))
+      .onTouchIntercept((event: TouchEvent): HitTestMode => stopScrollOnTouch(event, this.scroller)).width('100%').layoutWeight(1).scrollBar(BarState.Off)
+        .onAreaChange((_old: Area, area: Area): void => { this.eyeViewport = Number(area.height); })
+        .onScrollStart((): void => { scrollStarted(this.scroller); this.eyeInteraction++; })
+      }.width('100%').height('100%')
+        .onTouch((event: TouchEvent): void => { if (event.type === TouchType.Down) { this.eyeInteraction++; } })
+        .onKeyEvent((_event: KeyEvent): boolean => { this.eyeInteraction++; return false; })
     
       }.width('100%').height('100%')
     }
@@ -156,5 +187,8 @@ struct PostArticle {
       .titleBar({ avoidLayoutSafeArea: true, content: { title: { mainTitle: $r('app.string.card_article') } },
         style: destinationTitleBarStyle(ScrollEffectType.GRADIENT_BLUR, this.themeDisplayMode, this.themeDarkSurface, this.titleBarStyleMode) })
       .backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue))
+      .onShown((): void => { this.eyeVisible = true; })
+      .onHidden((): void => { this.eyeVisible = false; })
+      .onWillDisappear((): void => { this.eyeVisible = false; })
   }
 }

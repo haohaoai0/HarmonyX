@@ -1,5 +1,42 @@
 {
   "string": [
+    {
+      "name": "supporter_config_error",
+      "value": "क्लाउड पर खाते का बंधन सत्यापित नहीं हो सका। कृपया डेवलपर से संपर्क करें।"
+    },
+    {
+      "name": "supporter_restore_hint",
+      "value": "खाते पर वापस जाने से उसकी सहेजी गई स्थिति बहाल होती है। नए डिवाइस पर, दोबारा इंस्टॉल करने के बाद या दूसरे संस्करण में, उसी X खाते में साइन इन करके अपना मूल कोड दर्ज करें।"
+    },
+    {"name": "eye_reading_title", "value": "नज़र से पढ़ना"},
+    {"name": "eye_reading_intro", "value": "थ्रेड, ऑफ़लाइन प्रतियों और लेखों को स्क्रॉल करने के लिए ऊपर या नीचे देखें और नज़र टिकाएँ।"},
+    {"name": "eye_reading_enable", "value": "नज़र से पढ़ना चालू करें"},
+    {"name": "eye_reading_supported", "value": "चेहरा ट्रैकिंग समर्थित है। पढ़ने वाले पेज पर शुरू करें दबाने के बाद ही कैमरा चालू होगा।"},
+    {"name": "eye_reading_unsupported", "value": "यह डिवाइस आवश्यक चेहरा ट्रैकिंग का समर्थन नहीं करता। टच या कीबोर्ड से पढ़ें।"},
+    {"name": "eye_reading_dwell", "value": "नज़र टिकाने का समय"},
+    {"name": "eye_reading_threshold", "value": "दिशा की सीमा"},
+    {"name": "eye_reading_threshold_desc", "value": "बड़ी सीमा के लिए आँखों को अधिक हिलाना पड़ता है और अनचाही स्क्रॉलिंग कम होती है।"},
+    {"name": "eye_reading_help", "value": "कैलिब्रेशन के लिए सिर स्थिर रखकर स्क्रीन के बीच में देखें। लगभग आधी स्क्रीन स्क्रॉल करने के लिए ऊपर या नीचे नज़र टिकाएँ। हर बार बाद में बीच में देखें। टच, पहिए और कीबोर्ड को प्राथमिकता मिलती है।"},
+    {"name": "eye_reading_privacy", "value": "फ्रंट कैमरा केवल आपके शुरू करने पर उपयोग होता है। दिशा का डेटा डिवाइस पर संसाधित होता है; तस्वीरें सहेजी या अपलोड नहीं होतीं। पेज छोड़ने या बैकग्राउंड में जाने पर सत्र रुकता है। दोबारा मैन्युअल रूप से शुरू करें।"},
+    {"name": "eye_reading_save_failed", "value": "सेटिंग सहेजी नहीं जा सकीं। फिर कोशिश करें।"},
+    {"name": "eye_reading_start", "value": "नज़र नियंत्रण शुरू करें"},
+    {"name": "eye_reading_stop", "value": "नज़र नियंत्रण रोकें"},
+    {"name": "eye_reading_recalibrate", "value": "दोबारा कैलिब्रेट करें"},
+    {"name": "eye_reading_starting", "value": "फ्रंट कैमरा शुरू हो रहा है…"},
+    {"name": "eye_reading_permission", "value": "कैमरा अनुमति आवश्यक है। सिस्टम ऐप अनुमतियों में कैमरे की अनुमति देकर फिर कोशिश करें।"},
+    {"name": "eye_reading_failed", "value": "कैमरा उपलब्ध नहीं है। अन्य कैमरा ऐप बंद करके फिर कोशिश करें।"},
+    {"name": "eye_reading_calibrating", "value": "कैलिब्रेशन के लिए स्क्रीन के बीच में देखें और सिर तथा नज़र स्थिर रखें।"},
+    {"name": "eye_reading_center", "value": "अगली क्रिया से पहले नज़र वापस बीच में लाएँ।"},
+    {"name": "eye_reading_ready", "value": "तैयार: ऊपर या नीचे देखें और नज़र टिकाएँ।"},
+    {"name": "eye_reading_up", "value": "ऊपर स्क्रॉल करने के लिए ऊपर देखते रहें।"},
+    {"name": "eye_reading_down", "value": "नीचे स्क्रॉल करने के लिए नीचे देखते रहें।"},
+    {"name": "eye_reading_lost", "value": "अच्छी रोशनी में आँखें खोलकर स्क्रीन की ओर देखें। प्रतिक्रिया न मिलने पर दोबारा कैलिब्रेट करें।"},
+    {"name": "eye_reading_paused", "value": "मैन्युअल इनपुट को प्राथमिकता है। नज़र नियंत्रण अस्थायी रूप से रुका है।"},
+    {"name": "eye_reading_camera_reason", "value": "नज़र से पढ़ना शुरू करने पर आँखों की दिशा डिवाइस पर पहचानने के लिए फ्रंट कैमरे का उपयोग करता है।"},
+    {"name": "compact_video_layout", "value": "बाहरी स्क्रीन का वीडियो लेआउट"},
+    {"name": "settings_compact_video_layout_desc", "value": "Pura X जैसी छोटी चौकोर स्क्रीन के लिए साइड बटन या निचली पंक्ति चुनें। फ़ोन खोलने पर सामान्य वीडियो लेआउट लौट आता है।"},
+    {"name": "compact_video_layout_rail", "value": "साइड बटन"},
+    {"name": "compact_video_layout_bottom", "value": "निचली पंक्ति"},
     {"name":"settings_component_hdr_enabled","value":"Component HDR effect"},
     {"name":"settings_component_hdr_enabled_desc","value":"Off by default. Turn it on to use 1.25x brightening, then adjust the multiplier below."},
     {"name":"settings_confirm_app_exit","value":"बाहर निकलने से पहले पुष्टि"},
@@ -1775,6 +1812,14 @@
     {
       "name": "settings_hds_tabs_material_adaptive",
       "value": "अनुकूल"
+    },
+    {
+      "name": "settings_hds_tabs_gradient_mask",
+      "value": "निचले टैब का ग्रेडिएंट मास्क"
+    },
+    {
+      "name": "settings_hds_tabs_gradient_mask_desc",
+      "value": "फ्लोटिंग HdsTabs बार के नीचे फीके ग्रेडिएंट को नियंत्रित करें। डिफ़ॉल्ट रूप से चालू।"
     },
     {
       "name": "settings_timeline_columns_title",
@@ -9249,6 +9294,14 @@
       "value": "बंद करने पर टाइमलाइन टैब या खोज बॉक्स आपकी प्रोफ़ाइल फ़ोटो और दाएँ बटन के बीच आ जाते हैं।"
     },
     {
+      "name": "settings_title_bar_logo_auto_contrast",
+      "value": "Adaptive logo color"
+    },
+    {
+      "name": "settings_title_bar_logo_auto_contrast_desc",
+      "value": "Automatically switches the X or pattern foreground between light and dark to stay readable. Only the single-color foreground is shown, without an icon background."
+    },
+    {
       "name": "notifications_all",
       "value": "सभी"
     },
@@ -10705,6 +10758,359 @@
     {"name":"page_background_motif_popular_apps_global_firefox","value":"Firefox"},
     {"name":"page_background_motif_popular_apps_global_edge","value":"Edge"},
     {"name":"page_background_motif_popular_apps_global_gmail","value":"Gmail"},
-    {"name":"page_background_motif_popular_apps_global_google_maps","value":"Google Maps"}
+    {"name":"page_background_motif_popular_apps_global_google_maps","value":"Google Maps"},
+    {"name":"scene_title","value":"Scene modes"},
+    {"name":"scene_intro","value":"Apply a set of playback, quality, motion and background preferences. Restore returns to your settings from before the first mode was enabled."},
+    {"name":"scene_reading","value":"Clear reading"},
+    {"name":"scene_reading_desc","value":"Autoplay off · high quality images · low quality video · reduced motion · plain background"},
+    {"name":"scene_saver","value":"Power and data saver"},
+    {"name":"scene_saver_desc","value":"Autoplay off · small images · low quality video · reduced motion · plain background"},
+    {"name":"scene_media","value":"Media browsing"},
+    {"name":"scene_media_desc","value":"Autoplay on · original images · high quality video · motion on · your saved background"},
+    {"name":"scene_restore","value":"Restore original settings"},
+    {"name":"scene_restore_desc","value":"Keep your preferences from before scene mode. Switching between modes does not replace this backup."},
+    {"name":"scene_failed","value":"Some settings could not be saved. Your original settings are retained; retry or restore."},
+    {"name":"offline_title","value":"Offline & later"},
+    {"name":"offline_online","value":"Online bookmarks"},
+    {"name":"offline_intro","value":"New bookmarks save text and available articles automatically. Enable images before saving to include photos. Local copies stay separate from online bookmarks and ordinary cache cleanup."},
+    {"name":"offline_images","value":"Include photos in future saves"},
+    {"name":"offline_save","value":"Save offline"},
+    {"name":"offline_saving","value":"Saving…"},
+    {"name":"offline_saved","value":"Saved for offline reading"},
+    {"name":"offline_partial_saved","value":"Saved available content. Some article text or photos are missing; retry when online."},
+    {"name":"offline_save_failed","value":"Could not save locally. Please retry."},
+    {"name":"offline_partial","value":"Incomplete copy"},
+    {"name":"offline_unread","value":"Unread"},
+    {"name":"offline_unread_only","value":"Unread only"},
+    {"name":"offline_search","value":"Search titles, tags or notes"},
+    {"name":"offline_empty","value":"No matching offline items. Save a bookmark or use Save offline on a post."},
+    {"name":"offline_edit","value":"Tags & note"},
+    {"name":"offline_tags","value":"Tags"},
+    {"name":"offline_tags_hint","value":"Tags, separated by commas"},
+    {"name":"offline_note","value":"Private note"},
+    {"name":"offline_done","value":"Save"},
+    {"name":"offline_delete","value":"Delete local copy"},
+    {"name":"reader_title","value":"Thread reader"},
+    {"name":"reader_author_only","value":"Author only"},
+    {"name":"reader_translate","value":"Translate passages"},
+    {"name":"reader_font","value":"Text size"},
+    {"name":"reader_missing","value":"This offline item is missing or unavailable. Save it again while online."},
+    {"name":"reader_partial","value":"Only the available article content is shown. Continue loading or retry while online to get the complete text."},
+    {"name":"reader_load_failed","value":"Could not load more replies. Your current reading content is kept."},
+    {"name":"reader_translation_setup","value":"Enable translation and choose a target language in Settings first."},
+    {"name":"reader_translation_failed","value":"Some passages could not be translated. You can hide translations and retry."},
+    {"name":"reader_offline_note","value":"Saved local content. Translation requires a network connection."},
+    {"name":"reader_scope","value":"Replies loaded so far. Use Continue loading to include more of the discussion."},
+    {
+      "name": "input_help_title",
+      "value": "माउस, कीबोर्ड और टचपैड"
+    },
+    {
+      "name": "input_help_desc",
+      "value": "कीबोर्ड शॉर्टकट और जेस्चर"
+    },
+    {
+      "name": "input_main_title",
+      "value": "मुख्य पेज के शॉर्टकट"
+    },
+    {
+      "name": "input_main_scope",
+      "value": "पाँच मुख्य टैब में उपलब्ध, जब कोई उपपृष्ठ, साइडबार या संवाद खुला न हो। Ctrl+N संदेशों में नई बातचीत और अन्य टैब में नई पोस्ट बनाता है।"
+    },
+    {
+      "name": "input_compose",
+      "value": "नई पोस्ट / बातचीत"
+    },
+    {
+      "name": "input_refresh",
+      "value": "वर्तमान टैब रीफ़्रेश करें"
+    },
+    {
+      "name": "input_keyboard_title",
+      "value": "कीबोर्ड नियंत्रण"
+    },
+    {
+      "name": "input_focus",
+      "value": "फ़ोकस आगे / पीछे ले जाएँ। मूल नियंत्रण तीर कुंजियों का भी समर्थन करते हैं।"
+    },
+    {
+      "name": "input_activate",
+      "value": "फ़ोकस वाले बटन को सक्रिय करें।"
+    },
+    {
+      "name": "input_submit",
+      "value": "पोस्ट, उत्तर या संदेश इनपुट से भेजें। सामान्य Enter का व्यवहार पहले जैसा रहता है।"
+    },
+    {
+      "name": "input_back",
+      "value": "सहायता, संपादक, चैट और मीडिया व्यूअर में वापस जाएँ। पहले वर्तमान पैनल बंद होता है।"
+    },
+    {
+      "name": "input_photo",
+      "value": "पिछली / अगली फ़ोटो, जब ज़ूम न हो और कोई पैनल खुला न हो।"
+    },
+    {
+      "name": "input_video",
+      "value": "पिछला / अगला वीडियो, जब कोई पैनल खुला न हो।"
+    },
+    {
+      "name": "input_playback",
+      "value": "वीडियो चित्र पर फ़ोकस होने पर: Space या Enter चलाता / रोकता है; बायाँ / दायाँ तीर 10 सेकंड पीछे / आगे जाता है।"
+    },
+    {
+      "name": "input_pointer_title",
+      "value": "माउस और टचपैड"
+    },
+    {
+      "name": "input_pointer",
+      "value": "बायाँ क्लिक या टैप सक्रिय करता है। फ़ोटो, वीडियो या संदेश पर दायाँ क्लिक क्रिया मेन्यू खोलता है। बटन होवर पर प्रतिक्रिया देते हैं। स्क्रॉलबार और प्रगति पट्टी खींच सकते हैं।"
+    },
+    {
+      "name": "input_trackpad",
+      "value": "दो उँगलियों से सूचियाँ स्क्रॉल करें, फ़ोटो बदलने के लिए क्षैतिज स्वाइप करें और ज़ूम के लिए पिंच करें। बड़ी फ़ोटो खींचकर देखें। समर्थित टचपैड पर दो उँगलियों का टैप मेन्यू खोलता है।"
+    },
+    {
+      "name": "input_previous",
+      "value": "पिछली फ़ोटो"
+    },
+    {
+      "name": "input_next",
+      "value": "अगली फ़ोटो"
+    },
+    {
+      "name": "input_key_home",
+      "value": "Ctrl + 1"
+    },
+    {
+      "name": "input_key_explore",
+      "value": "Ctrl + 2"
+    },
+    {
+      "name": "input_key_notifications",
+      "value": "Ctrl + 3"
+    },
+    {
+      "name": "input_key_messages",
+      "value": "Ctrl + 4"
+    },
+    {
+      "name": "input_key_profile",
+      "value": "Ctrl + 5"
+    },
+    {
+      "name": "input_key_search",
+      "value": "Ctrl + K"
+    },
+    {
+      "name": "input_key_compose",
+      "value": "Ctrl + N"
+    },
+    {
+      "name": "input_key_refresh",
+      "value": "Ctrl + R"
+    },
+    {
+      "name": "input_key_settings",
+      "value": "Ctrl + ,"
+    },
+    {
+      "name": "input_key_help",
+      "value": "F1"
+    },
+    {
+      "name": "input_key_focus",
+      "value": "Tab / Shift + Tab"
+    },
+    {
+      "name": "input_key_activate",
+      "value": "Enter / Space"
+    },
+    {
+      "name": "input_key_submit",
+      "value": "Ctrl + Enter"
+    },
+    {
+      "name": "input_key_back",
+      "value": "Esc / Alt + ←"
+    },
+    {
+      "name": "input_key_photo",
+      "value": "← / →"
+    },
+    {
+      "name": "input_key_video",
+      "value": "↑ / ↓ / Page Up / Page Down"
+    },
+    {
+      "name": "input_key_playback",
+      "value": "Space / Enter / ← / →"
+    },
+    {"name":"settings_filter_languages","value":"छिपाई जाने वाली पोस्ट की भाषाएँ"},
+    {"name":"settings_filter_languages_desc","value":"छिपाने के लिए भाषाएँ चुनें। अज्ञात भाषा और केवल मीडिया वाली पोस्ट दिखती रहेंगी।"},
+    {"name":"appearance_preview_title","value":"लाइव पूर्वावलोकन"},
+    {"name":"appearance_preview_hint","value":"सेटिंग बदलते ही अपडेट होता है। पैनल के नमूने को खोलने के लिए टैप करें।"},
+    {"name":"post_edited","value":"संपादित"},
+    {"name":"post_metric_bookmarks","value":"बुकमार्क"},
+    {"name":"post_metric_quotes","value":"उद्धरण"},
+    {"name":"settings_reply_quality","value":"कम गुणवत्ता वाले जवाब समेटें"},
+    {"name":"settings_reply_quality_desc","value":"दोहराए गए प्रचार और सामूहिक आग्रह समेटें। स्थानीय नियम गलत हो सकते हैं; जवाब खोलकर देख सकते हैं।"},
+    {"name":"reply_quality_folded","value":"संभवतः कम गुणवत्ता वाला जवाब"},
+    {"name":"reply_quality_reasons","value":"कारण देखें"},
+    {"name":"reply_quality_allow","value":"इस लेखक को हमेशा दिखाएँ"},
+    {"name":"reply_quality_whitelist","value":"अनुमत लेखक"},
+    {"name":"reply_quality_whitelist_desc","value":"आपके जवाब, पोस्ट का लेखक, फ़ॉलो किए गए खाते और अनुमत लेखक दिखते रहेंगे। सूची केवल मौजूदा खाते की है।"},
+    {"name":"reply_quality_empty","value":"अभी कोई अनुमत लेखक नहीं"},
+    {"name":"reply_quality_reason_duplicate","value":"कई लेखक एक ही प्रचार प्रारूप दोहरा रहे हैं"},
+    {"name":"reply_quality_reason_author_repeat","value":"लेखक वही सामग्री बार-बार पोस्ट करता है"},
+    {"name":"reply_quality_reason_links","value":"कई बाहरी लिंक हैं"},
+    {"name":"reply_quality_reason_promotion","value":"प्रचार या लाभ के प्रलोभन वाली सामग्री है"},
+    {"name":"reply_quality_reason_contact","value":"आग्रह के लिए संपर्क जानकारी है"},
+    {
+      "name": "settings_floating_compose_material_tint",
+      "value": "फ़्लोटिंग पोस्ट बटन के मटीरियल का रंग"
+    },
+    {
+      "name": "settings_floating_compose_material_tint_desc",
+      "value": "मटीरियल पर थीम का रंग जोड़ें। इसे बंद करने पर केवल रंग की परत हटती है।"
+    },
+    {
+      "name": "chat_decoration",
+      "value": "Chat decorations"
+    },
+    {
+      "name": "chat_decoration_subtitle",
+      "value": "Avatar frames and chat bubbles, downloaded only when you choose them."
+    },
+    {
+      "name": "chat_decoration_frame",
+      "value": "Avatar frames"
+    },
+    {
+      "name": "chat_decoration_bubble",
+      "value": "Chat bubbles"
+    },
+    {
+      "name": "chat_decoration_free",
+      "value": "Free"
+    },
+    {
+      "name": "chat_decoration_download_preview",
+      "value": "Download to preview"
+    },
+    {
+      "name": "chat_decoration_download",
+      "value": "Download"
+    },
+    {
+      "name": "chat_decoration_downloading",
+      "value": "Downloading..."
+    },
+    {
+      "name": "chat_decoration_use",
+      "value": "Use"
+    },
+    {
+      "name": "chat_decoration_in_use",
+      "value": "In use"
+    },
+    {
+      "name": "chat_decoration_remove",
+      "value": "Stop using"
+    },
+    {
+      "name": "chat_decoration_installed",
+      "value": "Downloaded"
+    },
+    {
+      "name": "chat_decoration_applied",
+      "value": "Decoration applied"
+    },
+    {
+      "name": "chat_decoration_download_failed",
+      "value": "Download failed. Try again later."
+    },
+    {
+      "name": "chat_decoration_reset",
+      "value": "Restore defaults"
+    },
+    {
+      "name": "chat_decoration_reset_done",
+      "value": "Defaults restored"
+    },
+    {
+      "name": "chat_decoration_note",
+      "value": "Decorations stay on this device. Other people see styles supported by their client."
+    },
+    {
+      "name": "chat_decoration_loading",
+      "value": "Loading decorations..."
+    },
+    {
+      "name": "chat_decoration_unavailable",
+      "value": "Decorations are unavailable. Check your connection and retry."
+    },
+    {
+      "name": "chat_decoration_sample_text",
+      "value": "Have a lovely day."
+    },
+    {"name": "sign_out_confirm_title", "value": "लॉग आउट करें?"},
+    {"name": "sign_out_confirm_message", "value": "इस खाते का उपयोग करने के लिए फिर से लॉग इन करना होगा।"},
+    {"name": "settings_for_you_only_sensitive", "value": "आपके लिए में केवल संवेदनशील सामग्री"},
+    {"name": "settings_for_you_only_sensitive_desc", "value": "उद्धरणों सहित केवल X द्वारा संवेदनशील चिह्नित पोस्ट दिखाएँ। फ़ॉलोइंग और सूचियाँ नहीं बदलेंगी। मीडिया ढका रहेगा।"},
+    {"name": "settings_grip_floating", "value": "फ़्लोटिंग ऐक्शन बटन"},
+    {"name": "settings_grip_video", "value": "वीडियो ऐक्शन बार"},
+    {"name": "settings_grip_reply", "value": "पोस्ट जवाब बटन"},
+    {"name": "settings_grip_component_desc", "value": "डिवाइस पकड़े हुए हाथ के अनुसार स्थान बदलें। बंद होने पर पसंदीदा हाथ का उपयोग करें।"},
+    {"name": "settings_grip_hdstabs", "value": "HdsTabs निचला टैब बार"},
+    {"name": "settings_grip_hdstabs_desc", "value": "सिस्टम के मूल हाथ अनुकूलन का उपयोग करें। बंद होने पर टैब बार पकड़े हुए हाथ का अनुसरण नहीं करता।"},
+    {"name":"gif_action_save_video","value":"उच्च गुणवत्ता वाले वीडियो के रूप में सहेजें (MP4)"},
+    {"name":"storage_save_remembered_note","value":"डाउनलोड फ़ोल्डर एक बार चुनें। आगे की फ़ाइलें वहाँ अपने आप सहेजी जाएँगी। गैलरी में सहेजने के लिए बंद करें।"},
+    {"name":"storage_save_to_remembered","value":"डाउनलोड फ़ोल्डर में सहेजें"},
+    {"name": "storage_permission_reason", "value": "आपके चुने हुए फ़ाइलों और फ़ोल्डरों तक पहुँच बनाए रखें।"},
+    {"name": "timeline_sources_lists", "value": "सूचियाँ"},
+    {"name": "timeline_sources_communities", "value": "समुदाय"},
+    {"name": "timeline_edit", "value": "संपादित करें"},
+    {"name": "timeline_done", "value": "पूर्ण"},
+    {"name": "timeline_move_up", "value": "ऊपर ले जाएँ"},
+    {"name": "timeline_move_down", "value": "नीचे ले जाएँ"},
+    {"name": "timeline_remove_source", "value": "%s हटाएँ"},
+    {"name": "timeline_add_to_home", "value": "होम टाइमलाइन में जोड़ें"},
+    {"name": "timeline_remove_from_home", "value": "होम टाइमलाइन से हटाएँ"},
+    {"name": "timeline_sources_failed", "value": "कुछ सूचियाँ या समुदाय लोड नहीं हो सके। फिर कोशिश करने के लिए टैप करें।"},
+    {"name": "timeline_sources_pinned_empty", "value": "कोई पिन की गई टाइमलाइन नहीं है। नीचे सूचियाँ, समुदाय या विषय जोड़ें।"},
+    {"name":"video_controls_mirror","value":"कंट्रोल की जगह बदलें"},
+    {"name":"video_controls_speed","value":"गति"},
+    {"name":"video_controls_aspect","value":"अनुपात"},
+    {"name":"video_controls_background","value":"पृष्ठभूमि"},
+    {"name":"video_controls_quality_hd","value":"HD"},
+    {"name":"video_controls_quality_sd","value":"SD"},
+    {"name":"video_controls_quality_ld","value":"LD"},
+    {"name":"video_controls_more","value":"और"},
+    {"name":"video_controls_download","value":"डाउनलोड"},
+    {"name":"settings_navigation_style","value":"निचले नेविगेशन की शैली"},
+    {"name":"settings_hds_bottom_bar","value":"फ़्लोटिंग HdsTabs"},
+    {"name":"settings_split_bottom_bar","value":"अलग कैप्सूल नेविगेशन"},
+    {"name":"settings_split_bottom_bar_desc","value":"बाएँ कैप्सूल से पेज बदलें। अलग बटन से पोस्ट करें, चैट शुरू करें, रीफ़्रेश करें या ऊपर जाएँ। दोनों में HDS सामग्री है; पुराने सिस्टम पर संगत नेविगेशन इस्तेमाल होता है।"},
+    {"name":"split_navigation_action_top","value":"ऊपर जाएँ"},
+    {"name":"split_navigation_action_refresh","value":"होम रीफ़्रेश करें"},
+    {"name":"split_navigation_action_compose","value":"पोस्ट बनाएँ"},
+    {"name": "settings_reply_capsule_split", "value": "अलग जवाब कैप्सूल"},
+    {"name": "settings_reply_capsule_split_desc", "value": "संकुचित होने पर जवाब और पोस्ट की कार्रवाइयाँ अलग रखें"},
+    {"name": "reply_capsule_write_reply", "value": "जवाब दें"},
+    {"name":"settings_native_bottom_bar","value":"7.0 मटेरियल कैप्सूल नेविगेशन"},
+    {"name":"settings_native_bottom_bar_desc","value":"रिप्लाई कैप्सूल के HarmonyOS 7.0 इमर्सिव मटेरियल का उपयोग करें, जिसमें टच लाइट, लिक्विड संकेतक और पकड़ के अनुसार साइड बदलना शामिल है। उपलब्ध न होने पर HDS कैप्सूल उपयोग होगा।"},
+    {"name":"settings_native_navigation_material","value":"नेविगेशन कैप्सूल मटेरियल की मोटाई"},
+    {"name":"settings_for_you_only_sensitive_age_title","value":"आयु की पुष्टि करें"},
+    {"name":"settings_for_you_only_sensitive_age_message","value":"«आपके लिए में केवल संवेदनशील सामग्री» केवल 18 वर्ष या उससे अधिक आयु के लोगों के लिए उपलब्ध है। क्या आपकी आयु 18 वर्ष या अधिक है?"},
+    {"name":"settings_for_you_only_sensitive_age_under","value":"18 वर्ष से कम"},
+    {"name":"settings_for_you_only_sensitive_age_adult","value":"18 वर्ष या अधिक"},
+    {"name":"settings_theme_icon_blue","value":"आइकन नीला"},
+    {"name":"settings_theme_icon_red","value":"आइकन लाल"},
+    {"name":"settings_theme_icon_orange","value":"आइकन नारंगी"},
+    {"name":"settings_theme_icon_yellow","value":"आइकन पीला"},
+    {"name":"settings_theme_icon_green","value":"आइकन हरा"},
+    {"name":"settings_theme_icon_pink","value":"आइकन गुलाबी"},
+    {"name":"settings_theme_icon_cyan","value":"आइकन सियान"},
+    {"name":"settings_theme_icon_navy","value":"आइकन नेवी"}
   ]
 }

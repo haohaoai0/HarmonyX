@@ -1,3 +1,4 @@
+import { backInputKey } from '../utils/InputSupport';
 import { pageBackgroundActive } from '../services/PageBackgroundStore';
 import { pageTextColor } from '../utils/ThemeColors';
 import { appPageBackground } from '../components/PageBackgroundLayer';
@@ -18,6 +19,7 @@ import {
 import { destinationTitleBarStyle } from '../utils/DestinationTitleBar';
 import { ResponsiveLayout } from '../utils/ResponsiveLayout';
 import { cardSurfaceColor, fieldSurfaceColor, pageSurfaceColor } from '../utils/ThemeColors';
+import { materialModifier } from '../utils/SystemMaterial';
 
 const FEEDBACK_URL: string = 'https://github.com/haohaoai0/HarmonyX/issues/new';
 const QQ_GROUP_URL: string = 'https://qm.qq.com/q/QGxbHyYXuI';
@@ -152,6 +154,23 @@ struct HelpCenter {
           }
           .width('100%')
           .alignItems(HorizontalAlign.Start)
+
+          Button({ type: ButtonType.Normal, stateEffect: true }) {
+            Row({ space: 12 }) {
+              SymbolGlyph($r('sys.symbol.keyboard')).fontSize(26).fontColor([this.accentColor])
+              Column({ space: 5 }) {
+                Text($r('app.string.input_help_title')).fontFamily(this.appFontFamily)
+                  .fontSize($r('sys.float.Title_S')).fontWeight(FontWeight.Bold)
+                  .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, pageReadingSurfaceColor(cardSurfaceColor(this.themeDisplayMode, this.themeDarkSurface), this.pageBackgroundValue)))
+                Text($r('app.string.input_help_desc')).fontFamily(this.appFontFamily)
+                  .fontSize($r('sys.float.Body_M')).fontColor($r('app.color.text_secondary'))
+              }.layoutWeight(1).alignItems(HorizontalAlign.Start)
+              SymbolGlyph($r('sys.symbol.chevron_right')).fontSize(18).fontColor([$r('app.color.text_secondary')])
+            }.width('100%')
+          }.width('100%').padding(18).borderRadius(20)
+            .id('help-input-shortcuts').accessibilityText($r('app.string.input_help_title'))
+            .backgroundColor(pageReadingSurfaceColor(cardSurfaceColor(this.themeDisplayMode, this.themeDarkSurface), this.pageBackgroundValue))
+            .onClick((): void => { this.pageStack.pushPath({ name: 'InputHelp' }); })
 
           Column({ space: 12 }) {
             Row({ space: 14 }) {
@@ -293,6 +312,8 @@ struct HelpCenter {
       ResponsiveLayout.closeContentDestination(this.pageStack);
       return true;
     })
+    .onKeyEvent((event: KeyEvent): boolean => backInputKey(event,
+      (): void => ResponsiveLayout.closeContentDestination(this.pageStack)))
     .bindToScrollable([this.scroller])
     .titleBar({
       avoidLayoutSafeArea: true,
@@ -301,6 +322,6 @@ struct HelpCenter {
         this.themeDarkSurface, this.titleBarStyleMode)
     })
     .backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue))
-    .systemMaterial(pageBackgroundActive(this.pageBackgroundValue) ? undefined : this.pageMaterial());
+    .attributeModifier(materialModifier(pageBackgroundActive(this.pageBackgroundValue) ? undefined : this.pageMaterial()));
   }
 }

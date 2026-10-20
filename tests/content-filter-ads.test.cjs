@@ -63,3 +63,20 @@ test('turning the switch off restores ads and survives reload', () => {
   assert.equal(restored.hideAds, false);
   assert.equal(contentFilterStore.shouldHide(post('ad', 'ad'), restored), false);
 });
+
+test('multiple blocked languages survive restart and match regional tags without hiding unknown media', () => {
+  const f = fixture(), settings = f.contentFilterStore.load({});
+  settings.mutedLanguagesText = 'en-US, zh-Hant, en, ja, und';
+  assert.equal(f.contentFilterStore.save({}, settings), true);
+  const restored = new f.ContentFilterStore().load({});
+  assert.equal(restored.mutedLanguagesText, 'en,zh,ja');
+  const posts = ['en-GB', 'ZH-cn', 'ja', 'fr', '', 'und', 'zxx'].map((language, i) => ({ ...post(String(i)), text: 'caption', language }));
+  assert.deepEqual(f.contentFilterStore.filter(posts, restored).map(p => p.language), ['fr', '', 'und', 'zxx']);
+  assert.equal(f.contentFilterStore.shouldHide({ ...post('media-only'), language: 'en',
+    attachments: [{ type: 'photo', url: 'https://photo' }] }, restored), false);
+  restored.mutedLanguagesText = 'ja';
+  assert.equal(f.contentFilterStore.shouldHide({ ...post('quote'), language: 'en', quotedTweet: { language: 'ja' } }, restored), false);
+  restored.mutedLanguagesText = '';
+  f.contentFilterStore.save({}, restored);
+  assert.equal(new f.ContentFilterStore().load({}).mutedLanguagesText, '');
+});

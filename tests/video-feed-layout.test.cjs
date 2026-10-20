@@ -31,9 +31,9 @@ const Alignment = { Top: 'top', Center: 'center' };
 const playerSource = fs.readFileSync('entry/src/main/ets/components/PostMedia.ets', 'utf8');
 const controlsHeight = Number(playerSource.match(/export const VIDEO_FEED_CONTROLS_HEIGHT: number = (\d+);/)[1]);
 const edgeFillMaxScale = Number(playerSource.match(/const VIDEO_FEED_EDGE_FILL_MAX_SCALE: number = ([\d.]+);/)[1]);
-const Player = new Function('VIDEO_FEED_CONTROLS_HEIGHT', 'CONTROLS_HIDE_DELAY_MS',
+const Player = new Function('VIDEO_FEED_CONTROLS_HEIGHT', 'CONTROLS_HIDE_DELAY_MS', 'LANDSCAPE_CONTROLS_HIDE_DELAY_MS',
   'setTimeout', 'mediaKit', 'Alignment', 'hilog', 'DOMAIN', 'TAG', 'VIDEO_FEED_EDGE_FILL_MAX_SCALE',
-  '$r', `${playerCode}; return Harness;`)(controlsHeight, 3000, () => 1, mediaKit, Alignment, { warn() {} }, 0, '', edgeFillMaxScale,
+  '$r', `${playerCode}; return Harness;`)(controlsHeight, 3000, 15000, () => 1, mediaKit, Alignment, { warn() {} }, 0, '', edgeFillMaxScale,
     name => name);
 const dimensions = new Map(JSON.parse(fs.readFileSync('entry/src/main/resources/base/element/float.json', 'utf8'))
   .float.map(item => ['app.float.' + item.name, parseFloat(item.value)]));
@@ -210,17 +210,17 @@ test('feed scale always preserves the full frame, while an explicit fullscreen p
 const feedMethods = methodsFrom('entry/src/main/ets/pages/VideoFeedViewer.ets', 'VideoFeedViewer', [
   'updateVideoViewportHeight', 'videoViewportHeightForLayout', 'updateVideoChromeVisible',
   'isVideoChromeVisible', 'onWindowSizeChanged', 'isWideLandscape', 'useSideComments', 'usesPhoneFeedLayout', 'compactWindow',
-  'usesShortVideoLayout', 'usesBiliLayout', 'feedControlStripHeight', 'shortVideoRailHeight', 'shortVideoRailButtonSize'
+  'usesShortVideoLayout', 'usesCompactBottomLayout', 'compactBottomCaptionFits', 'usesBiliLayout', 'feedControlStripHeight', 'shortVideoRailHeight', 'shortVideoRailButtonSize'
 ]);
 const feedCode = ts.transpileModule(`class Harness { ${feedMethods} }`, {
   compilerOptions: { target: ts.ScriptTarget.ES2020 }
 }).outputText;
-const Feed = new Function('ResponsiveLayout', '$r', 'VIDEO_FEED_LAYOUT_DOUYIN', 'VIDEO_FEED_LAYOUT_BILIBILI',
+const Feed = new Function('ResponsiveLayout', '$r', 'VIDEO_FEED_LAYOUT_DOUYIN', 'VIDEO_FEED_LAYOUT_BILIBILI', 'COMPACT_VIDEO_LAYOUT_BOTTOM',
   'VIDEO_FEED_CONTROLS_HEIGHT', 'VIDEO_FEED_RAIL_BUTTON', 'TOP_CONTROLS_HEIGHT', 'VIDEO_FEED_RAIL_GAP',
   `${feedCode}; return Harness;`)(
   { isLarge: breakpoint => breakpoint === 'lg' || breakpoint === 'xl',
     isCompactWindow: (width, height) => width > 0 && height > 0 && width < 600 && height / width < 1.2 },
-  name => name, 1, 2, controlsHeight, 52,
+  name => name, 1, 2, 1, controlsHeight, 52,
   Number(fs.readFileSync('entry/src/main/ets/pages/VideoFeedViewer.ets', 'utf8')
     .match(/const TOP_CONTROLS_HEIGHT: number = (\d+);/)[1]), 12);
 
@@ -262,4 +262,47 @@ test('adjacent pages retain their own available height and rotation discards old
   feed.onWindowSizeChanged();
   assert.deepEqual(feed.videoViewportHeights, []);
   assert.equal(feed.videoViewportHeightForLayout(0), 396);
+});
+
+test('cover layout choice is independent of portrait choice through fold, unfold, and rotation', () => {
+  for (const videoFeedLayout of [0, 1, 2]) {
+    for (const compactVideoLayout of [0, 1]) {
+      const feed = Object.assign(new Feed(), { windowWidth: 326, windowHeight: 326, sheetWindowBreakpoint: 'sm',
+        videoFeedLayout, compactVideoLayout, navigationIndicatorHeight: 20,
+        feedDimension: resource => dimensions.get(resource) });
+      assert.equal(feed.usesCompactBottomLayout(), compactVideoLayout === 1);
+      assert.equal(feed.feedControlStripHeight(), (compactVideoLayout === 1 ? 96 : 64) + 20);
+      for (const [width, height, breakpoint] of [[440, 707, 'sm'], [950, 430, 'lg'], [800, 1000, 'md']]) {
+        feed.windowWidth = width; feed.windowHeight = height; feed.sheetWindowBreakpoint = breakpoint;
+        assert.equal(feed.usesCompactBottomLayout(), false);
+        assert.equal(feed.videoFeedLayout, videoFeedLayout);
+        assert.equal(feed.compactVideoLayout, compactVideoLayout);
+      }
+      feed.windowWidth = 326; feed.windowHeight = 326; feed.sheetWindowBreakpoint = 'sm';
+      assert.equal(feed.usesCompactBottomLayout(), compactVideoLayout === 1);
+    }
+  }
+});
+
+test('switching cover toolbars retains the full video frame and agrees with the parent footer inset', () => {
+  const player = setup(326, 326, 1080, 1920);
+  player.compactFeedLayout = true;
+  const frame = [player.videoFrameWidth(), player.videoFrameHeight(), player.videoLayerHeight()];
+  for (const compactBottomActions of [true, false, true]) {
+    player.compactBottomActions = compactBottomActions;
+    assert.deepEqual([player.videoFrameWidth(), player.videoFrameHeight(), player.videoLayerHeight()], frame);
+    assert.equal(player.feedPlayerBarHeight(), (compactBottomActions ? 96 : 64) + player.navigationIndicatorHeight);
+  }
+});
+
+test('very short windows keep the bottom actions clear of the header by hiding the optional caption', () => {
+  const feed = Object.assign(new Feed(), { windowWidth: 326, windowHeight: 326, sheetWindowBreakpoint: 'sm',
+    compactVideoLayout: 1, statusBarHeight: 32, navigationIndicatorHeight: 20,
+    feedDimension: resource => dimensions.get(resource) });
+  assert.equal(feed.compactBottomCaptionFits(), true);
+  feed.windowWidth = 340; feed.windowHeight = 220;
+  assert.equal(feed.usesCompactBottomLayout(), true);
+  assert.equal(feed.compactBottomCaptionFits(), false);
+  feed.windowHeight = 326; feed.windowWidth = 326;
+  assert.equal(feed.compactBottomCaptionFits(), true);
 });

@@ -1,3 +1,6 @@
+import { offlineReadingStore, OfflineSaveResult } from '../services/OfflineReadingStore';
+import { KeyCode } from '@kit.InputKit';
+import { backInputKey, plainInputKey, contextInputMouse } from '../utils/InputSupport';
 import { motionDuration, motionCurve, motionDistance, motionScale } from '../utils/AppMotion';
 import { menuActionVisible, menuActionsForGroup, MenuActionOption } from '../models/MenuActionCatalog';
 import { STORAGE_KEY_HIDDEN_MENU_ACTIONS } from '../services/MenuSettingsStore';
@@ -26,6 +29,7 @@ import { VideoFeedBackdrop } from '../components/VideoFeedBackdrop';
 import { videoPosterSource, videoPosterRendition } from '../services/VideoPosterStore';
 import { chooseVideoDownloadUrl } from '../services/VideoDownloadChoice';
 import { MaterialButton } from '../components/MaterialButton';
+import { CompactVideoActionButton } from '../components/CompactVideoActionButton';
 import { VideoHoldSpeedCapsule } from '../components/VideoHoldSpeedCapsule';
 import { formatCount } from '../models/Tweet';
 import type { MediaAttachment, Tweet, UserProfile } from '../models/Tweet';
@@ -45,6 +49,9 @@ import {
   STORAGE_KEY_SHOW_SENSITIVE_MEDIA,
   STORAGE_KEY_VIDEO_FEED_CONTROLS_ALWAYS_VISIBLE,
   STORAGE_KEY_VIDEO_FEED_LAYOUT,
+  STORAGE_KEY_COMPACT_VIDEO_LAYOUT,
+  COMPACT_VIDEO_LAYOUT_RAIL,
+  COMPACT_VIDEO_LAYOUT_BOTTOM,
   videoHoldSpeedLabel,
   STORAGE_KEY_VIDEO_IMMERSIVE_FILL,
   STORAGE_KEY_VIDEO_QUALITY,
@@ -94,6 +101,7 @@ import { XTimelineParser, TweetDetailPage } from '../services/XTimelineParser';
 import { XApiClient } from '../services/XApiClient';
 import { XPostFeedback } from '../services/XPostFeedback';
 import { SystemMaterialUtil } from '../utils/SystemMaterial';
+import { materialModifier } from '../utils/SystemMaterial';
 
 export interface VideoFeedRouteParam {
   source?: MediaViewerSource;
@@ -180,7 +188,9 @@ export struct VideoFeedViewer {
   videoFeedControlsAlwaysVisible: boolean = false;
   @StorageProp(STORAGE_KEY_HIDDEN_MENU_ACTIONS) private hiddenMenuActions: string = '';
   @StorageLink(STORAGE_KEY_VIDEO_FEED_LAYOUT) videoFeedLayout: number = VIDEO_FEED_LAYOUT_CLASSIC;
+  @StorageLink(STORAGE_KEY_COMPACT_VIDEO_LAYOUT) private compactVideoLayout: number = COMPACT_VIDEO_LAYOUT_RAIL;
   @StorageLink(STORAGE_KEY_VIDEO_FEED_TAP_PAUSE) private videoFeedTapPause: boolean = false;
+  @StorageProp('harmonyx.grip_video_enabled') @Watch('onGripHandEnabledChanged') private componentGripEnabled: boolean = true;
   @StorageLink('harmonyx.grip_hand_enabled') @Watch('onGripHandEnabledChanged')
   gripHandEnabled: boolean = true;
   @StorageLink('harmonyx.grip_preferred_hand') @Watch('onPreferredHandChanged')
@@ -234,6 +244,26 @@ export struct VideoFeedViewer {
   @State private downloading: boolean = false;
   private choosingDownloadQuality: boolean = false;
   private pager: SwiperController = new SwiperController();
+
+  private inputBack(): void {
+    if (this.showDanmakuSheet) { this.showDanmakuSheet = false; return; }
+    if (this.showPostSheet) { this.closePostSheet(); return; }
+    if (this.showMoreSheet) { this.showMoreSheet = false; return; }
+    this.close();
+  }
+
+  private videoInputKey(event: KeyEvent): boolean {
+    if (!this.pageShown || this.closing || this.postSheetActive || this.showDanmakuSheet || this.showMoreSheet ||
+      this.castPickerShowing || this.danmakuSending || !plainInputKey(event)) { return false; }
+    const previous: boolean = event.keyCode === KeyCode.KEYCODE_DPAD_UP || event.keyCode === KeyCode.KEYCODE_PAGE_UP;
+    const next: boolean = event.keyCode === KeyCode.KEYCODE_DPAD_DOWN || event.keyCode === KeyCode.KEYCODE_PAGE_DOWN;
+    if (!previous && !next) { return false; }
+    if (event.type === KeyType.Down) {
+      const target: number = this.current + (previous ? -1 : 1);
+      if (target >= 0 && target < this.items.length) { this.pager.changeIndex(target, true); }
+    }
+    return true;
+  }
   private authorUserId: string = '';
   @State private likePending: boolean = false;
   @State private repostPending: boolean = false;
@@ -989,12 +1019,15 @@ export struct VideoFeedViewer {
       return;
     }
     const next: boolean = !this.bookmarked;
+    const context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
+    const account: string = offlineReadingStore.account(context);
     this.bookmarked = next;
     tweet.bookmarked = next;
     this.bookmarkPending = true;
     hapticTick();
     const result: XPrivateResult = await xPrivateClient.bookmark(tweet.id, next);
     this.bookmarkPending = false;
+    if (account !== offlineReadingStore.account(context)) { return; }
     if (!result.ok) {
       this.bookmarked = !next;
       tweet.bookmarked = !next;
@@ -1007,6 +1040,12 @@ export struct VideoFeedViewer {
     const message: Resource = next ? $r('app.string.toast_bookmark_added') :
       $r('app.string.toast_bookmark_removed');
     promptAction.showToast({ message: this.text(message), duration: 1500 });
+    if (next) {
+      const saved: OfflineSaveResult = await offlineReadingStore.capture(context, tweet, account);
+      if (account === offlineReadingStore.account(context) && (!saved.ok || !saved.complete)) {
+        promptAction.showToast({ message: this.text(saved.ok ? $r('app.string.offline_partial_saved') : $r('app.string.offline_save_failed')), duration: 2500 });
+      }
+    }
   }
 
   private share(tweet: Tweet): void {
@@ -1137,6 +1176,16 @@ export struct VideoFeedViewer {
     hapticTick();
   }
 
+  private setCompactVideoLayout(layout: number): void {
+    if (layout === this.compactVideoLayout) { return; }
+    const context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
+    if (mediaSettingsStore.saveCompactVideoLayout(context, layout)) {
+      hapticTick();
+    } else {
+      promptAction.showToast({ message: this.text($r('app.string.settings_layout_save_failed')) });
+    }
+  }
+
   private setVideoFeedLayout(layout: number): void {
     if (this.videoFeedLayout === layout) {
       return;
@@ -1174,7 +1223,7 @@ export struct VideoFeedViewer {
   // button and the post-detail reply capsule do, so the thumb reaches it.
 
   private railGripAdaptationNeeded(): boolean {
-    return this.gripHandEnabled && this.layoutSwitchAvailable() &&
+    return this.gripHandEnabled && this.componentGripEnabled && this.layoutSwitchAvailable() &&
       this.usesShortVideoLayout();
   }
 
@@ -1220,7 +1269,7 @@ export struct VideoFeedViewer {
       this.gripHandEnabled = GripHandManager.getInstance().isGripHandEnabled();
       this.preferredHand = GripHandManager.getInstance().getPreferredHand();
     }
-    this.railHand = GripHandManager.getInstance().getLastHand();
+    this.railHand = this.componentGripEnabled ? GripHandManager.getInstance().getLastHand() : this.preferredHand;
     this.applyRailHand(this.railHand, false);
     if (this.railGripAdaptationNeeded()) {
       GripHandManager.getInstance().startFor(VIDEO_FEED_RAIL_GRIP_KEY, (hand: string): void => {
@@ -1232,7 +1281,7 @@ export struct VideoFeedViewer {
   }
 
   private onGripHandEnabledChanged(): void {
-    if (!this.gripHandEnabled) {
+    if ((!this.gripHandEnabled || !this.componentGripEnabled)) {
       GripHandManager.getInstance().stopFor(VIDEO_FEED_RAIL_GRIP_KEY);
       this.applyRailHand(this.preferredHand, true);
       return;
@@ -1241,7 +1290,7 @@ export struct VideoFeedViewer {
   }
 
   private onPreferredHandChanged(): void {
-    if (!this.gripHandEnabled) {
+    if ((!this.gripHandEnabled || !this.componentGripEnabled)) {
       this.applyRailHand(this.preferredHand, true);
     }
   }
@@ -1311,7 +1360,7 @@ export struct VideoFeedViewer {
         avatarShape: tweet.author.avatarShape ?? '',
         fallbackText: tweet.author.name.substring(0, 1).toUpperCase(),
         fallbackColor: tweet.author.avatarColor
-      })
+      }).onClick((): void => this.openAuthorProfile(tweet))
       PostAdLabel({ presentation: tweet.presentation })
       Column({ space: 1 }) {
         Row({ space: 4 }) {
@@ -1335,6 +1384,7 @@ export struct VideoFeedViewer {
       }
       .layoutWeight(1)
       .alignItems(HorizontalAlign.Start)
+      .onClick((): void => this.openAuthorProfile(tweet))
 
       if (!this.isOwnPost(tweet)) {
         MaterialButton({
@@ -1576,13 +1626,13 @@ export struct VideoFeedViewer {
   }
 
   @Builder
-  private LayoutChoiceRow(value: number, title: Resource): void {
+  private LayoutChoiceRow(value: number, title: Resource, compact: boolean = false): void {
     Row({ space: 14 }) {
       Text(title).fontFamily(this.appFontFamily)
         .fontSize($r('sys.float.Body_L'))
         .fontColor($r('app.color.text_primary'))
         .layoutWeight(1)
-      if (this.videoFeedLayout === value) {
+      if ((compact ? this.compactVideoLayout : this.videoFeedLayout) === value) {
         SymbolGlyph($r('sys.symbol.checkmark_circle_fill'))
           .fontSize(22)
           .fontColor([this.accentColor])
@@ -1593,7 +1643,8 @@ export struct VideoFeedViewer {
     .padding({ left: 70, right: 20 })
     .accessibilityText(this.text(title))
     .onClick((): void => {
-      this.setVideoFeedLayout(value);
+      if (compact) { this.setCompactVideoLayout(value); }
+      else { this.setVideoFeedLayout(value); }
     })
   }
 
@@ -1634,7 +1685,11 @@ export struct VideoFeedViewer {
         }
         ForEach([this.moreSheetRevision() + '-tail'], (revision: string) => {
           Column() {
-            if (!this.compactWindow() && this.menuVisible('video.layout')) {
+            if (this.compactWindow() && this.menuVisible('video.layout')) {
+              this.MoreSectionHeader($r('sys.symbol.rectangle_split_2x1'), $r('app.string.compact_video_layout'))
+              this.LayoutChoiceRow(COMPACT_VIDEO_LAYOUT_RAIL, $r('app.string.compact_video_layout_rail'), true)
+              this.LayoutChoiceRow(COMPACT_VIDEO_LAYOUT_BOTTOM, $r('app.string.compact_video_layout_bottom'), true)
+            } else if (this.menuVisible('video.layout')) {
               this.MoreSectionHeader($r('sys.symbol.rectangle_split_2x1'), $r('app.string.video_feed_layout'))
               this.LayoutChoiceRow(VIDEO_FEED_LAYOUT_CLASSIC, $r('app.string.video_feed_layout_classic'))
               if (this.layoutSwitchAvailable()) {
@@ -1768,6 +1823,7 @@ export struct VideoFeedViewer {
       (this.autoAdvance ? 'advance-on' : 'advance-off') + '-' +
       (this.videoImmersiveFill ? 'immersive-on' : 'immersive-off') + '-' +
       this.videoFeedLayout.toString() + '-' + (this.videoFeedTapPause ? 'tap-pause' : 'tap-controls') + '-' +
+      this.compactVideoLayout.toString() + '-' +
       (this.videoFeedControlsAlwaysVisible ? 'controls-persistent' : 'controls-auto-hide') + '-' +
       this.videoQuality.toString() + '-' + (this.qualityExpanded ? 'quality-open' : 'quality-closed') + '-' +
       Math.round(this.captionOpacity * 100).toString();
@@ -1781,6 +1837,14 @@ export struct VideoFeedViewer {
       },
       attachments: this.feedItem(item).attachments,
       sourceTweet: this.feedItem(item).tweet,
+      viewerDanmakuEnabled: this.danmakuEnabled,
+      viewerAuthorFollowing: this.authorFollowing,
+      viewerDownloading: this.downloading || this.choosingDownloadQuality,
+      onViewerDownload: (): void => { void this.downloadCurrentVideo(); },
+      onViewerFollow: (): void => { void this.toggleFollow(this.feedItem(item).tweet); },
+      onViewerComment: (): void => this.openPostSheet(this.feedItem(item).tweet),
+      onViewerDanmakuToggle: (): void => { this.danmakuEnabled = !this.danmakuEnabled; },
+      onViewerDanmakuSend: (): void => { this.showDanmakuSheet = true; },
       mediaViewerLayout: true,
       viewerFullscreenRequest: this.feedItem(item).index === this.current ? this.fullscreenRequest : 0,
       viewerDanmakuContent: (): void => this.FullscreenDanmaku(this.feedItem(item)),
@@ -1831,6 +1895,8 @@ export struct VideoFeedViewer {
       fillVideoViewport: true,
       videoViewportHeight: this.videoViewportHeightForLayout(this.feedItem(item).index),
       compactFeedLayout: this.compactWindow(),
+      compactBottomActions: this.usesCompactBottomLayout(),
+      compactFeedActions: (): void => this.CompactBottomActions(this.feedItem(item)),
       controlsAtScreenBottom: this.isWideLandscape(),
       adaptiveShortVideo: true,
       forceUnmuted: true,
@@ -1903,7 +1969,8 @@ export struct VideoFeedViewer {
   private feedControlStripHeight(): number {
     if (this.isWideLandscape()) { return 0; }
     const height: number = this.compactWindow() ?
-      this.feedDimension($r('app.float.compact_video_controls_height')) : VIDEO_FEED_CONTROLS_HEIGHT;
+      this.feedDimension(this.usesCompactBottomLayout() ? $r('app.float.compact_video_bottom_controls_height') :
+        $r('app.float.compact_video_controls_height')) : VIDEO_FEED_CONTROLS_HEIGHT;
     return height + this.navigationIndicatorHeight;
   }
 
@@ -1914,6 +1981,15 @@ export struct VideoFeedViewer {
 
   private usesShortVideoLayout(): boolean {
     return this.compactWindow() || this.videoFeedLayout === VIDEO_FEED_LAYOUT_DOUYIN;
+  }
+
+  private usesCompactBottomLayout(): boolean {
+    return this.compactWindow() && this.compactVideoLayout === COMPACT_VIDEO_LAYOUT_BOTTOM;
+  }
+
+  private compactBottomCaptionFits(): boolean {
+    return this.windowHeight - this.statusBarHeight - TOP_CONTROLS_HEIGHT - this.feedControlStripHeight() >=
+      this.feedDimension($r('app.float.compact_video_bottom_caption_height'));
   }
 
   private shortVideoRailButtonSize(): number {
@@ -1976,7 +2052,11 @@ export struct VideoFeedViewer {
           Stack({ alignContent: Alignment.Bottom }) {
             Column() {
               if (this.isVideoChromeVisible(this.feedItem(item).index)) {
-                if (this.usesShortVideoLayout()) {
+                if (this.usesCompactBottomLayout()) {
+                  if (this.compactBottomCaptionFits()) {
+                    this.CompactBottomCaption(this.feedItem(item).tweet)
+                  }
+                } else if (this.usesShortVideoLayout()) {
                   this.ShortVideoCaption(this.feedItem(item).tweet, this.compactWindow() ? 8 : 16)
                 } else {
                   this.PostOverlay(this.feedItem(item).tweet, 16)
@@ -1994,7 +2074,8 @@ export struct VideoFeedViewer {
           .height('100%')
           .padding({ bottom: this.feedControlStripHeight() })
           .hitTestBehavior(HitTestMode.Transparent)
-          if (this.usesShortVideoLayout() && this.isVideoChromeVisible(this.feedItem(item).index)) {
+          if (this.usesShortVideoLayout() && !this.usesCompactBottomLayout() &&
+            this.isVideoChromeVisible(this.feedItem(item).index)) {
             Stack({ alignContent: Alignment.BottomStart }) {
               if (this.compactWindow()) {
                 Scroll() { this.ShortVideoRail(this.feedItem(item).tweet) }
@@ -2076,7 +2157,7 @@ export struct VideoFeedViewer {
             .fontSize($r('sys.float.Body_M'))
             .fontColor($r('app.color.text_on_brand'))
             .backgroundColor(deviceInfo.apiAvailable('26.0.0') ? Color.Transparent : '#66000000')
-            .systemMaterial(this.controlMaterial(false))
+            .attributeModifier(materialModifier(this.controlMaterial(false)))
             .borderRadius(14)
             .padding({ left: 10, right: 10, top: 4, bottom: 4 })
         }
@@ -2139,6 +2220,82 @@ export struct VideoFeedViewer {
 
   private compactWindow(): boolean {
     return ResponsiveLayout.isCompactWindow(this.windowWidth, this.windowHeight);
+  }
+
+  @Builder
+  private CompactBottomCaption(tweet: Tweet): void {
+    Column({ space: $r('app.float.compact_video_bottom_gap') }) {
+      Row({ space: $r('app.float.compact_video_bottom_gap') }) {
+        Row({ space: $r('app.float.compact_video_bottom_gap') }) {
+          ProxyAvatar({ url: tweet.author.avatarUrl ?? '',
+            avatarSize: this.feedDimension($r('app.float.compact_video_bottom_avatar')),
+            radius: this.feedDimension($r('app.float.compact_video_bottom_avatar')) / 2,
+            verifiedType: tweet.author.verifiedType ?? '', avatarShape: tweet.author.avatarShape ?? '',
+            fallbackText: tweet.author.name.substring(0, 1).toUpperCase(), fallbackColor: tweet.author.avatarColor })
+          Text(tweet.author.name).fontFamily(this.appFontFamily)
+            .fontSize($r('app.float.compact_video_caption_font')).fontWeight(FontWeight.Bold)
+            .fontColor($r('app.color.text_on_brand')).maxLines(1).maxFontScale(1.15)
+            .textOverflow({ overflow: TextOverflow.Ellipsis }).layoutWeight(1)
+          if (tweet.author.verified) {
+            SymbolGlyph($r('sys.symbol.checkmark_circle_fill'))
+              .fontSize($r('app.float.compact_video_caption_font'))
+              .fontColor([verificationBadgeColor(tweet.author.verifiedType ?? '', this.accentColor)])
+          }
+        }.layoutWeight(1).height($r('app.float.compact_video_bottom_action_height'))
+          .accessibilityText(tweet.author.name).monopolizeEvents(true)
+          .onClick((): void => this.openAuthorProfile(tweet))
+        PostAdLabel({ presentation: tweet.presentation })
+        if (!this.isOwnPost(tweet)) {
+          MaterialButton({ buttonWidth: $r('app.float.compact_video_bottom_follow_width'),
+            buttonHeight: $r('app.float.compact_video_bottom_action_height'),
+            buttonRadius: $r('app.float.compact_video_bottom_radius'), materialLevel: 1,
+            surfaceColor: $r('app.color.video_episode_surface'), lightColor: this.accentColor,
+            buttonEnabled: !this.authorFollowPending, buttonOpacity: this.authorFollowPending ? 0.6 : 1,
+            accessibilityLabel: this.text(this.authorFollowing ?
+              $r('app.string.profile_detail_following') : $r('app.string.profile_detail_follow')),
+            buttonMonopolizeEvents: true, onButtonClick: (): void => { void this.toggleFollow(tweet); } }) {
+            Text(this.authorFollowing ? $r('app.string.profile_detail_following') : $r('app.string.profile_detail_follow'))
+              .fontFamily(this.appFontFamily).fontSize($r('app.float.compact_video_count_font'))
+              .fontColor($r('app.color.text_on_brand')).maxLines(1).maxFontScale(1)
+          }
+        }
+        CompactVideoActionButton({ icon: $r('sys.symbol.share'), label: $r('app.string.action_share'),
+          onAction: (): void => this.share(tweet) }).width($r('app.float.compact_video_bottom_action_height'))
+      }.width('100%')
+      if (tweet.text.length > 0) {
+        Text() { EmojiSpans(this.getUIContext(), tweet.text, $r('app.float.compact_video_caption_font'), this.systemEmojiEnabled) }
+          .fontFamily(this.appFontFamily === DEFAULT_APP_FONT_FAMILY ? this.contentFontFamily : this.appFontFamily)
+          .fontSize($r('app.float.compact_video_caption_font')).fontColor($r('app.color.text_on_brand'))
+          .maxLines(1).maxFontScale(1.15).textOverflow({ overflow: TextOverflow.Ellipsis }).width('100%')
+          .monopolizeEvents(true).onClick((): void => this.openPostSheet(tweet))
+      }
+    }.width('100%').alignItems(HorizontalAlign.Start)
+      .padding({ left: $r('app.float.compact_video_bottom_inset'), right: $r('app.float.compact_video_bottom_inset'),
+        top: $r('app.float.compact_video_bottom_gap'), bottom: $r('app.float.compact_video_bottom_gap') })
+      .id('video-feed-compact-bottom-caption')
+  }
+
+  @LocalBuilder
+  private CompactBottomActions(item: VideoFeedItem): void {
+    Row({ space: $r('app.float.compact_video_bottom_gap') }) {
+      CompactVideoActionButton({ icon: $r('sys.symbol.pencil_line'), label: $r('app.string.action_reply'),
+        value: this.text($r('app.string.post_detail_reply_placeholder')), pill: true,
+        onAction: (): void => this.openPostSheet(this.feedItem(item).tweet) }).layoutWeight(1.5)
+      CompactVideoActionButton({ icon: this.liked ? $r('sys.symbol.heart_fill') : $r('sys.symbol.heart'),
+        label: $r('app.string.action_like'), value: formatCount(this.likeCount),
+        selected: this.liked, pending: this.likePending, selectedColor: $r('app.color.like'),
+        onAction: (): void => { void this.toggleLike(this.feedItem(item).tweet); } }).layoutWeight(1)
+      CompactVideoActionButton({ icon: this.bookmarked ? $r('sys.symbol.bookmark_fill') : $r('sys.symbol.bookmark'),
+        label: $r('app.string.action_bookmark'), selected: this.bookmarked, pending: this.bookmarkPending,
+        selectedColor: this.accentColor,
+        onAction: (): void => { void this.toggleBookmark(this.feedItem(item).tweet); } })
+        .width($r('app.float.compact_video_bottom_action_height'))
+      CompactVideoActionButton({ icon: $r('sys.symbol.ellipsis_bubble'), label: $r('app.string.action_reply'),
+        value: formatCount(this.feedItem(item).tweet.metrics.replyCount),
+        onAction: (): void => this.openPostSheet(this.feedItem(item).tweet) }).layoutWeight(1)
+    }.width('100%').height($r('app.float.compact_video_bottom_action_height'))
+      .padding({ left: $r('app.float.compact_video_bottom_inset'), right: $r('app.float.compact_video_bottom_inset') })
+      .id('video-feed-compact-bottom-actions')
   }
 
   // ---- Short-video (Douyin-style) layout -----------------------------------
@@ -2434,22 +2591,30 @@ export struct VideoFeedViewer {
     try {
       let cursor: string = '';
       let replies: Tweet[] = [];
+      let pendingReplies: boolean = false;
       // Only the reply portion is parsed; discover-more recommendations never
       // become comments. Bound pagination so entering a feed cannot flood X.
       for (let pageIndex: number = 0; pageIndex < 3; pageIndex++) {
-        const result: XPrivateResult = await xPrivateClient.tweetDetail(tweet.id, 'Relevance', cursor);
+        const result: XPrivateResult = await xPrivateClient.tweetDetail(tweet.id, 'Relevance', cursor, retry);
         if (!this.viewerAlive || generation !== this.danmakuGeneration) { return; }
         if (!result.ok) { this.danmakuFailed = true; break; }
-        const page: TweetDetailPage | null = XTimelineParser.parseTweetDetail(result.body, tweet.id);
+        const page: TweetDetailPage | null = XTimelineParser.parseTweetDetail(result.body, tweet.id, [tweet, ...replies]);
         if (page === null) { this.danmakuFailed = true; break; }
         replies = [...replies, ...page.replies];
-        const comments: VideoDanmakuComment[] = VideoDanmaku.comments(replies, tweet.id);
+        // The detail parser already excludes ancestors and recommendations.
+        // Rechecking conversation_id here loses nested replies to a video that
+        // is itself a reply, and module replies with omitted relation fields.
+        const comments: VideoDanmakuComment[] = VideoDanmaku.comments(replies, tweet.id, true);
         const own: VideoDanmakuComment[] = this.danmakuComments.filter((comment: VideoDanmakuComment): boolean =>
           comment.own && !comments.some((loaded: VideoDanmakuComment): boolean => loaded.id === comment.id));
         this.danmakuComments = [...own, ...comments];
+        pendingReplies = page.nextToken.length > 0 && page.nextToken !== cursor && !page.discoverMoreStarted;
         if (comments.length >= 100 || page.nextToken.length === 0 || page.nextToken === cursor || page.discoverMoreStarted) { break; }
         cursor = page.nextToken;
       }
+      // Exhausting the request budget with unread reply pages is not proof of
+      // an empty thread. Keep the existing retry affordance in that case.
+      if (this.danmakuComments.length === 0 && pendingReplies) { this.danmakuFailed = true; }
     } catch (error) {
       if (generation === this.danmakuGeneration) { this.danmakuFailed = true; }
     } finally {
@@ -2524,7 +2689,7 @@ export struct VideoFeedViewer {
         .fontFamily(this.appFontFamily).fontSize(17).height(52).maxLength(280)
         .keyboardAppearance(KeyboardAppearance.IMMERSIVE)
         .fontColor($r('sys.color.font_primary')).backgroundColor(Color.Transparent)
-        .systemMaterial(SystemMaterialUtil.immersiveMaterial(2, false, true, true, undefined))
+        .attributeModifier(materialModifier(SystemMaterialUtil.immersiveMaterial(2, false, true, true, undefined)))
         .borderRadius(26).enterKeyType(EnterKeyType.Send)
         .onChange((value: string): void => { this.danmakuDraft = value; })
         .onSubmit((): void => { void this.sendDanmaku(); })
@@ -2674,10 +2839,7 @@ export struct VideoFeedViewer {
               .fontSize(12).fontColor($r('app.color.video_danmaku_hint'))
               .onClick((): void => { if (this.danmakuFailed) { void this.loadDanmaku(item.tweet, true); } })
           }
-          VideoFullscreenCapsule({ mediaId: item.attachments[0].id,
-            surfaceTapSerial: item.index === this.current ? this.fullscreenCapsuleTapSerial : 0,
-            active: item.index === this.current && this.pageShown && !this.postSheetActive,
-            onOpenFullscreen: (): void => { ++this.fullscreenRequest; } })
+
         }.width('100%').padding({ bottom: 12 }).hitTestBehavior(HitTestMode.Transparent)
       }.width('100%').layoutWeight(1).hitTestBehavior(HitTestMode.Transparent)
       if (this.compactWindow()) {
@@ -2742,7 +2904,7 @@ export struct VideoFeedViewer {
         .fontSize($r('sys.float.Body_M'))
         .fontColor($r('app.color.text_on_brand'))
         .backgroundColor(deviceInfo.apiAvailable('26.0.0') ? Color.Transparent : '#66000000')
-        .systemMaterial(this.controlMaterial(true))
+        .attributeModifier(materialModifier(this.controlMaterial(true)))
         .borderRadius(20)
         .padding({ left: 20, right: 20 })
         .height(40)
@@ -2754,25 +2916,16 @@ export struct VideoFeedViewer {
 
   @LocalBuilder
   private LandscapePostOverlay(tweet: Tweet): void {
-    Column({ space: 10 }) {
-      Row() {
-        Column() { this.AuthorLine(tweet) }
-          .width('40%')
-        Blank()
-      }.width('100%')
-      Row({ space: 24 }) {
-        Text() { EmojiSpans(this.getUIContext(), tweet.text, $r('sys.float.Body_L'), this.systemEmojiEnabled) }
-          .fontSize($r('sys.float.Body_L')).fontWeight(FontWeight.Bold)
+    Column({ space: 4 }) {
+        Text() { EmojiSpans(this.getUIContext(), tweet.text, $r('sys.float.Caption_M'), this.systemEmojiEnabled) }
+          .fontSize($r('sys.float.Caption_M')).fontWeight(FontWeight.Medium)
           .fontFamily(this.appFontFamily === DEFAULT_APP_FONT_FAMILY ? this.contentFontFamily : this.appFontFamily).fontColor($r('app.color.text_on_brand'))
-          .maxLines(2).textOverflow({ overflow: TextOverflow.Ellipsis }).layoutWeight(1)
-          .onClick((): void => this.openPostSheet(tweet))
-        Column() {
-          MediaViewerPostActions({ tweet: tweet,
-            onOpenPost: (): void => this.openPostSheet(tweet), onLike: this.likeAction, onRepost: this.repostAction,
-            onPostChanged: (post: Tweet): void => this.applyPostSheetChange(post) })
-        }.width('56%')
-      }.width('100%')
-    }.width('100%')
+          .maxLines(1).textOverflow({ overflow: TextOverflow.Ellipsis }).width('100%')
+        Text(tweet.author.name + ' · @' + tweet.author.username).fontFamily(this.appFontFamily)
+          .fontSize($r('sys.float.Caption_M')).fontColor($r('app.color.video_feed_secondary_text'))
+          .maxLines(1).textOverflow({ overflow: TextOverflow.Ellipsis }).width('100%')
+    }.width('100%').alignItems(HorizontalAlign.Start).id('landscape-player-title')
+      .onClick((): void => this.openPostSheet(tweet))
   }
 
   build(): void {
@@ -2843,7 +2996,11 @@ export struct VideoFeedViewer {
       .backgroundColor(Color.Transparent)
       .layoutWeight(56)
       .clip(true)
-      .id('video-feed-playback-pane')
+      .id('video-feed-playback-pane').focusable(true).defaultFocus(true)
+      .onKeyEvent((event: KeyEvent): boolean => this.videoInputKey(event))
+      .onMouse((event: MouseEvent): void => contextInputMouse(event, (): void => {
+        if (!this.closing && !this.postSheetActive && !this.showDanmakuSheet) { this.showMoreSheet = true; }
+      }))
       if (this.useSideComments()) {
         Column() {
           ForEach(this.commentsTweets(), (post: Tweet) => {
@@ -2886,13 +3043,8 @@ export struct VideoFeedViewer {
       this.preloadActive = false;
       this.stopNetworkPolicyMonitoring();
     })
-    .onBackPressed((): boolean => {
-      if (this.showDanmakuSheet) { this.showDanmakuSheet = false; return true; }
-      if (this.showPostSheet) { this.closePostSheet(); return true; }
-      if (this.showMoreSheet) { this.showMoreSheet = false; return true; }
-      this.close();
-      return true;
-    })
+    .onKeyEvent((event: KeyEvent): boolean => backInputKey(event, (): void => this.inputBack()))
+    .onBackPressed((): boolean => { this.inputBack(); return true; })
     .backgroundColor(Color.Transparent);
   }
 }

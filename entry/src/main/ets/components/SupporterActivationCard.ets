@@ -1,6 +1,7 @@
 import { common } from '@kit.AbilityKit';
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
 import { accountStore } from '../services/AccountStore';
+import { XXAuthSupporterPolicy } from '../services/XXAuthSupporterPolicy';
 import { SUPPORTER_ACTIVE_KEY, SUPPORTER_EXPIRY_KEY, SupporterOutcome,
   xxAuthSupporterService } from '../services/XXAuthSupporterService';
 import { cardSurfaceColor, fieldSurfaceColor } from '../utils/ThemeColors';
@@ -19,20 +20,31 @@ export struct SupporterActivationCard {
   @State private code: string = '';
   @State private busy: boolean = false;
   @State private outcome: SupporterOutcome = SupporterOutcome.NONE;
+  private revision: number = 0;
+  private alive: boolean = false;
 
   aboutToAppear(): void {
+    this.alive = true;
     this.onAccountsChanged();
   }
 
-  aboutToDisappear(): void { this.code = ''; }
+  aboutToDisappear(): void {
+    this.alive = false;
+    this.revision++;
+    this.code = '';
+    this.busy = false;
+  }
 
   // The entitlement belongs to the X account, so a switch re-reads both the
   // account shown here and the cached code that account already redeemed.
   private onAccountsChanged(): void {
+    this.revision++;
+    this.code = '';
+    this.busy = false;
     const context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
     try {
       const account = accountStore.active(context);
-      this.signedIn = account !== null;
+      this.signedIn = account !== null && XXAuthSupporterPolicy.accountIdValid(account.userId);
       this.accountName = account === null ? '' : account.username;
     } catch (error) {
       this.signedIn = false;
@@ -45,19 +57,22 @@ export struct SupporterActivationCard {
   private async redeem(refresh: boolean): Promise<void> {
     if (this.busy) { return; }
     this.busy = true;
+    const revision: number = this.revision;
     const value: string = this.code;
     this.code = '';
     this.outcome = SupporterOutcome.NONE;
     try {
       const context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
-      this.outcome = refresh ? await xxAuthSupporterService.refresh(context, true) :
+      const outcome: SupporterOutcome = refresh ? await xxAuthSupporterService.refresh(context, true) :
         await xxAuthSupporterService.activate(context, value);
-    } finally { this.busy = false; }
+      if (this.alive && revision === this.revision) { this.outcome = outcome; }
+    } finally { if (this.alive && revision === this.revision) { this.busy = false; } }
   }
 
   private resultText(): Resource {
     if (this.outcome === SupporterOutcome.INVALID) { return $r('app.string.supporter_invalid'); }
     if (this.outcome === SupporterOutcome.STORAGE) { return $r('app.string.supporter_storage_error'); }
+    if (this.outcome === SupporterOutcome.CONFIG) { return $r('app.string.supporter_config_error'); }
     return $r('app.string.supporter_network_error');
   }
 
@@ -93,8 +108,10 @@ export struct SupporterActivationCard {
           .enabled(!this.busy && this.signedIn && this.code.trim().length >= 8)
           .onClick((): void => { this.redeem(false); })
       }
+      Text($r('app.string.supporter_restore_hint')).fontFamily(this.appFontFamily)
+        .fontSize($r('sys.float.Body_M')).fontColor($r('app.color.text_secondary')).width('100%')
       if (this.outcome === SupporterOutcome.INVALID || this.outcome === SupporterOutcome.NETWORK ||
-        this.outcome === SupporterOutcome.STORAGE) {
+        this.outcome === SupporterOutcome.STORAGE || this.outcome === SupporterOutcome.CONFIG) {
         Text(this.resultText()).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M'))
           .fontColor($r('app.color.danger')).width('100%')
       }

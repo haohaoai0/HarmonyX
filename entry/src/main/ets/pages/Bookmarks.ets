@@ -1,3 +1,6 @@
+import { OfflineReadingLibrary } from '../components/OfflineReadingLibrary';
+import { offlineReadingStore, OfflineSaveResult } from '../services/OfflineReadingStore';
+import { DesktopLayout } from '../utils/DesktopLayout';
 import { AdaptivePostFeed } from '../components/AdaptivePostFeed';
 import { pageTextColor } from '../utils/ThemeColors';
 import { pageBackgroundActive } from '../services/PageBackgroundStore';
@@ -29,12 +32,14 @@ import type { PostDetailRouteParam } from './PostDetail';
 import type { UserDetailRouteParam } from './UserDetail';
 import type { ReadAloudRouteParam } from './ReadAloud';
 import { STORAGE_KEY_READ_ALOUD_ENTRY_ENABLED } from '../services/ReadAloudSettingsStore';
+import { materialModifier } from '../utils/SystemMaterial';
 import {
   ContentFilterSettings,
   contentFilterStore,
   STORAGE_KEY_FILTER_HIDE_ADS,
   STORAGE_KEY_FILTER_HIDE_REPLIES,
   STORAGE_KEY_FILTER_HIDE_REPOSTS,
+  STORAGE_KEY_FILTER_LANGUAGES,
   STORAGE_KEY_FILTER_KEYWORDS,
   STORAGE_KEY_FILTER_MUTED_USERS,
   STORAGE_KEY_FILTER_ONLY_MEDIA,
@@ -70,9 +75,12 @@ export struct BookmarksPage {
   @StorageLink(STORAGE_KEY_FILTER_HIDE_REPOSTS) filterHideReposts: boolean = false;
   @StorageLink(STORAGE_KEY_FILTER_HIDE_REPLIES) filterHideReplies: boolean = false;
   @StorageLink(STORAGE_KEY_FILTER_HIDE_ADS) filterHideAds: boolean = true;
+  @StorageProp(STORAGE_KEY_FILTER_LANGUAGES) private filterLanguages: string = '';
   @StorageLink(STORAGE_KEY_FILTER_KEYWORDS) filterKeywords: string = '';
   @StorageLink(STORAGE_KEY_FILTER_MUTED_USERS) filterMutedUsers: string = '';
   @StorageLink(STORAGE_KEY_FILTER_REVISION) filterRevision: number = 0;
+  @State private offlineMode: boolean = false;
+  @State private savingOfflineId: string = '';
   @State private posts: Tweet[] = [];
   @State private status: string = '';
   @State private loading: boolean = true;
@@ -334,7 +342,7 @@ export struct BookmarksPage {
       this.filterHideReplies,
       this.filterKeywords,
       this.filterMutedUsers,
-      this.filterHideAds
+      this.filterHideAds, this.filterLanguages
     );
   }
 
@@ -342,9 +350,37 @@ export struct BookmarksPage {
     return contentFilterStore.filter(this.posts, this.contentFilterSettings());
   }
 
+  private async saveOffline(tweet: Tweet): Promise<void> {
+    if (this.savingOfflineId.length > 0) { return; }
+    this.savingOfflineId = tweet.id;
+    const context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
+    const account: string = offlineReadingStore.account(context);
+    const result: OfflineSaveResult = await offlineReadingStore.capture(context, tweet, account);
+    this.savingOfflineId = '';
+    if (account !== offlineReadingStore.account(context)) { return; }
+    promptAction.showToast({ message: this.text(result.ok ? result.complete ? $r('app.string.offline_saved') :
+      $r('app.string.offline_partial_saved') : $r('app.string.offline_save_failed')), duration: 2500 });
+  }
+
+  @Builder
+  private LibraryTabs(): void {
+    Row({ space: 8 }) {
+      Button($r('app.string.offline_online')).layoutWeight(1)
+        .backgroundColor(this.offlineMode ? $r('app.color.bg_field') : this.accentColor)
+        .fontColor(this.offlineMode ? $r('app.color.text_primary') : $r('app.color.text_on_accent'))
+        .accessibilitySelected(!this.offlineMode).onClick((): void => { this.offlineMode = false; })
+      Button($r('app.string.offline_title')).layoutWeight(1)
+        .backgroundColor(this.offlineMode ? this.accentColor : $r('app.color.bg_field'))
+        .fontColor(this.offlineMode ? $r('app.color.text_on_accent') : $r('app.color.text_primary'))
+        .accessibilitySelected(this.offlineMode).id('bookmarks-offline')
+        .onClick((): void => { this.offlineMode = true; })
+    }.width('100%').padding({ top: 8, bottom: 8 })
+  }
+
   @Builder
   private BookmarkControls(): void {
     Column() {
+      this.LibraryTabs()
       Column({ space: 10 }) {
         if (!this.showCollections) {
           Search({ value: this.searchInput, placeholder: $r('app.string.bookmarks_search_placeholder') })
@@ -513,6 +549,7 @@ export struct BookmarksPage {
 
   @Builder
   private BookmarkPost(tweet: Tweet): void {
+    Column() {
     TweetCard({
       tweet: tweet,
       onLikeChanged: (t: Tweet, liked: boolean): Promise<boolean> => this.toggleLike(t, liked),
@@ -539,6 +576,10 @@ export struct BookmarksPage {
         this.pageStack.pushPath({ name: 'UserDetail', param: param });
       }
     })
+    Button(this.savingOfflineId === tweet.id ? $r('app.string.offline_saving') : $r('app.string.offline_save'))
+      .fontColor(this.accentColor).backgroundColor(Color.Transparent).enabled(this.savingOfflineId.length === 0)
+      .onClick((): void => { void this.saveOffline(tweet); })
+    }.width('100%')
   }
 
   @Builder
@@ -571,11 +612,16 @@ export struct BookmarksPage {
       Stack({ alignContent: Alignment.TopStart }) {
         appPageBackground()
       Stack({ alignContent: Alignment.BottomEnd }) {
+        if (this.offlineMode) {
+          OfflineReadingLibrary({ header: (): void => { this.LibraryTabs(); },
+            topInset: DesktopLayout.active(this.desktopLayoutEnabled, this.windowBreakpoint) ? 0 : this.statusBarHeight + 60,
+            bottomInset: this.navigationIndicatorHeight })
+        } else {
         Refresh({ refreshing: $$this.refreshing }) {
           AdaptivePostFeed({ scroller: this.scroller,
             itemKeys: this.showCollections || this.loading ? [] : this.visiblePosts().map((post: Tweet): string => post.id),
             feedId: 'bookmarks-post-feed',
-            startOffset: this.desktopLayoutEnabled && ResponsiveLayout.isLarge(this.windowBreakpoint) ? 0 : this.statusBarHeight + 60,
+            startOffset: DesktopLayout.active(this.desktopLayoutEnabled, this.windowBreakpoint) ? 0 : this.statusBarHeight + 60,
             endOffset: this.navigationIndicatorHeight + 24,
             header: (): void => { this.BookmarkControls(); this.Content(); },
             item: (index: number): void => this.BookmarkPost(this.visiblePosts()[index]),
@@ -585,12 +631,13 @@ export struct BookmarksPage {
         }
         .width('100%')
           .height('100%')
-          .clip(!(this.desktopLayoutEnabled && ResponsiveLayout.isLarge(this.windowBreakpoint)))
+          .clip(!(DesktopLayout.active(this.desktopLayoutEnabled, this.windowBreakpoint)))
           .onRefreshing((): void => {
             this.refreshBookmarks();
           })
 
-        if (!this.showCollections && this.readAloudEntryEnabled && this.visiblePosts().length > 0) {
+        }
+        if (!this.offlineMode && !this.showCollections && this.readAloudEntryEnabled && this.visiblePosts().length > 0) {
           FloatingComposeButton({
             bottomInset: this.navigationIndicatorHeight,
             mode: this.readAloudFabMode,
@@ -606,7 +653,7 @@ export struct BookmarksPage {
       }
       .width('100%')
       .height('100%')
-      .clip(!(this.desktopLayoutEnabled && ResponsiveLayout.isLarge(this.windowBreakpoint)))
+      .clip(!(DesktopLayout.active(this.desktopLayoutEnabled, this.windowBreakpoint)))
     
       }.width('100%').height('100%')
     }
@@ -623,12 +670,12 @@ export struct BookmarksPage {
     .bindToScrollable([this.scroller])
     .titleBar({
       avoidLayoutSafeArea: true,
-      enableComponentSafeArea: this.desktopLayoutEnabled && ResponsiveLayout.isLarge(this.windowBreakpoint),
+      enableComponentSafeArea: DesktopLayout.active(this.desktopLayoutEnabled, this.windowBreakpoint),
       content: { title: { mainTitle: $r('app.string.bookmarks_title') } },
       style: destinationTitleBarStyle(ScrollEffectType.IMMERSIVE_GRADIENT_BLUR,
         this.themeDisplayMode, this.themeDarkSurface, this.titleBarStyleMode)
     })
     .backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue))
-    .systemMaterial(pageBackgroundActive(this.pageBackgroundValue) ? undefined : this.pageMaterial());
+    .attributeModifier(materialModifier(pageBackgroundActive(this.pageBackgroundValue) ? undefined : this.pageMaterial()));
   }
 }

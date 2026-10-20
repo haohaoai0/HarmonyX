@@ -28,6 +28,8 @@ import { SystemMaterialUtil } from '../utils/SystemMaterial';
 import { ResponsiveLayout } from '../utils/ResponsiveLayout';
 import { STORAGE_KEY_TITLE_BAR_GLASS_MATERIAL_LEVEL, DEFAULT_TITLE_BAR_GLASS_MATERIAL_LEVEL } from '../services/AppearanceStore';
 import { ChatBackgroundRouteParam } from './ChatBackground';
+import { ChatDecorationsRouteParam } from './ChatDecorations';
+import { materialModifier } from '../utils/SystemMaterial';
 
 export interface DmInfoRouteParam extends DmConversationRouteParam { section?: string; }
 interface ChatSharedMedia { attachment: DmAttachment; keyVersion: string; id: string; }
@@ -156,6 +158,11 @@ struct DmInfoPage {
     if (this.route === null) { return; }
     const param: ChatBackgroundRouteParam = { conversationId: this.route.conversationId };
     this.pageStack.pushPath({ name: 'ChatBackground', param: param });
+  }
+  private openDecorations(): void {
+    if (this.route === null) { return; }
+    const param: ChatDecorationsRouteParam = { conversationId: this.route.conversationId };
+    this.pageStack.pushPath({ name: 'ChatDecorations', param: param });
   }
   private async saveNickname(): Promise<void> {
     if (this.route === null || this.busy) { return; }
@@ -311,6 +318,8 @@ struct DmInfoPage {
           $r('app.string.chat_verified_safety') : $r('app.string.chat_unverified')) }.onClick((): void => this.open('safety'))
         Divider().color($r('app.color.divider'))
         Column() { this.InfoRow($r('sys.symbol.picture'), $r('app.string.chat_background')) }.onClick((): void => this.openBackground())
+        Divider().color($r('app.color.divider'))
+        Column() { this.InfoRow($r('sys.symbol.paintpalette'), $r('app.string.chat_decoration')) }.onClick((): void => this.openDecorations())
       }.width('100%').padding({ left: 12, right: 12 }).borderRadius(16)
         .backgroundColor(secondaryButtonSurfaceColor(this.displayMode, this.darkSurface))
     }.width('100%').padding({ left: 16, right: 16, top: 32, bottom: 24 })
@@ -330,7 +339,7 @@ struct DmInfoPage {
                 .keyboardAppearance(KeyboardAppearance.IMMERSIVE).fontSize($r('sys.float.Body_L'))
                 .maxLength(50).height(48).borderRadius(24)
                 .border({ width: SystemMaterialUtil.isApi26OrAbove() ? 0 : 1, color: $r('app.color.divider') })
-                .systemMaterial(chatInputMaterial(this.inputMaterialLevel))
+                .attributeModifier(materialModifier(chatInputMaterial(this.inputMaterialLevel)))
                 .backgroundColor(Color.Transparent).onChange((value: string): void => { this.nickname = value; })
             }.width('100%').padding(24)
           } else if (this.section === 'safety') {
@@ -372,7 +381,7 @@ struct DmInfoPage {
         content: { title: { mainTitle: this.pageTitle() }, menu: { value: this.titleMenu() } },
         style: destinationTitleBarStyle(ScrollEffectType.GRADIENT_BLUR, this.displayMode, this.darkSurface, this.titleBarStyleMode)
       })
-      .backgroundColor(pageCanvasColor(this.displayMode, this.darkSurface, this.pageBackgroundValue)).systemMaterial(chatPageMaterial())
+      .backgroundColor(pageCanvasColor(this.displayMode, this.darkSurface, this.pageBackgroundValue)).attributeModifier(materialModifier(chatPageMaterial()))
       .onShown((): void => { this.load(); })
       .onBackPressed((): boolean => { ResponsiveLayout.closeContentDestination(this.pageStack); return true; })
   }

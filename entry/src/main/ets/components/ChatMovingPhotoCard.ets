@@ -11,6 +11,7 @@ import { chatVoicePlayback } from '../services/ChatVoicePlayback';
 import { chatControlMaterial, chatInputMaterial } from '../utils/ChatMaterial';
 import { SystemMaterialUtil } from '../utils/SystemMaterial';
 import { ChatAlbumGeometry, chatAlbumLayout } from '../utils/ChatAlbumLayout';
+import { materialModifier } from '../utils/SystemMaterial';
 
 interface MovingPhotoPopupState { isVisible: boolean; }
 
@@ -243,7 +244,7 @@ export struct ChatMovingPhotoCard {
     }.width('100%').height('100%').padding($r('app.float.chat_moving_photo_menu_padding'))
       .borderRadius($r('app.float.chat_moving_photo_menu_radius')).clip(true)
       .backgroundColor(SystemMaterialUtil.isApi26OrAbove() ? Color.Transparent : $r('app.color.bg_secondary_btn'))
-      .systemMaterial(chatInputMaterial(3))
+      .attributeModifier(materialModifier(chatInputMaterial(3)))
   }
 
   @Builder
@@ -272,7 +273,7 @@ export struct ChatMovingPhotoCard {
       }
     }.width('100%').height('100%').padding(0).borderRadius(this.controlSize()).clip(true)
       .backgroundColor(SystemMaterialUtil.isApi26OrAbove() ? Color.Transparent : $r('app.color.bg_secondary_btn'))
-      .systemMaterial(chatControlMaterial(this.accentColor))
+      .attributeModifier(materialModifier(chatControlMaterial(this.accentColor)))
       .accessibilityText($r('app.string.chat_moving_photo_options'))
       .onClick((): void => { this.menuShown = !this.menuShown; })
       .bindPopup(this.menuShown, { builder: this.LiveMenu(), placement: Placement.BottomLeft, enableArrow: false,
@@ -303,7 +304,7 @@ export struct ChatMovingPhotoCard {
         .fontSize($r('sys.float.Body_L')).fontColor([$r('app.color.text_primary')])
     }.width('100%').height('100%').padding(0)
       .backgroundColor(SystemMaterialUtil.isApi26OrAbove() ? Color.Transparent : $r('app.color.bg_secondary_btn'))
-      .systemMaterial(chatControlMaterial(this.accentColor)).enabled(this.liveEnabled)
+      .attributeModifier(materialModifier(chatControlMaterial(this.accentColor))).enabled(this.liveEnabled)
       .accessibilityText(this.muted ? $r('app.string.chat_moving_photo_unmute') : $r('app.string.chat_moving_photo_mute'))
       .onClick((): void => { this.muted = !this.muted; })
   }

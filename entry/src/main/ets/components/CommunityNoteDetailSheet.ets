@@ -11,6 +11,7 @@ import { EmojiCopyMenu } from '../utils/EmojiCopyMenu';
 
 @Component
 export struct CommunityNoteDetailSheet {
+  private noteTextController: TextController = new TextController();
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @StorageProp(STORAGE_KEY_SYSTEM_EMOJI_ENABLED) private systemEmojiEnabled: boolean = false;
   @Prop noteId: string = '';
@@ -109,9 +110,9 @@ export struct CommunityNoteDetailSheet {
         Text($r('app.string.card_note')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Title_S')).fontWeight(FontWeight.Bold).fontColor($r('app.color.text_primary'))
         if (this.loading) { LoadingProgress().width(28).height(28).color(this.accentColor) }
         if (this.note !== undefined) {
-          Text() { EmojiSpans(this.getUIContext(), this.note.text, $r('sys.float.Body_L'), this.systemEmojiEnabled) }.fontFamily(this.appFontFamily)
+          Text(undefined, { controller: this.noteTextController }) { EmojiSpans(this.getUIContext(), this.note.text, $r('sys.float.Body_L'), this.systemEmojiEnabled) }.fontFamily(this.appFontFamily)
             .width('100%').fontSize($r('sys.float.Body_L')).fontColor($r('app.color.text_primary')).copyOption(CopyOptions.LocalDevice)
-            .editMenuOptions(new EmojiCopyMenu(getContext(this) as common.UIAbilityContext, this.note.text, this.systemEmojiEnabled))
+            .editMenuOptions(new EmojiCopyMenu(this.getUIContext(), this.noteTextController, this.note.text, this.systemEmojiEnabled))
           if (this.note.status.length > 0) {
             Text(this.note.status === 'CurrentlyRatedHelpful' ? $r('app.string.note_status_helpful') :
               this.note.status === 'CurrentlyRatedNotHelpful' ? $r('app.string.note_status_unhelpful') : $r('app.string.note_status_waiting')).fontFamily(this.appFontFamily)

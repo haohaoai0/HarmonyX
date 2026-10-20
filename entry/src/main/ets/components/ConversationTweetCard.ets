@@ -52,7 +52,8 @@ export struct ConversationTweetCard {
     const generation: number = this.generation;
     const context: Tweet[] = await replyContextStore.resolve(this.tweet);
     if (this.alive && this.generation === generation) {
-      this.context = context;
+      if (context.length > 0) { this.context = context; }
+      else { this.requestedId = ''; }
     }
   }
 
@@ -69,6 +70,7 @@ export struct ConversationTweetCard {
       videoFeedEnabled: this.videoFeedEnabled, homeTimelineVideo: this.homeTimelineVideo,
       recordRecommendationSeen: this.recordRecommendationSeen,
       naturalVideoSize: this.naturalVideoSize, connectAbove: above, connectBelow: below,
+      showReplyContext: !above && post.isReply === true,
       onLikeChanged: this.onLikeChanged, onRepostChanged: this.onRepostChanged,
       onBookmarkChanged: this.onBookmarkChanged, onReply: this.onReply,
       onOpen: this.onOpen, onVideoOpen: this.onVideoOpen,
@@ -83,7 +85,7 @@ export struct ConversationTweetCard {
       }, (post: Tweet): string => this.tweet.id + '-parent-' + post.id)
       this.Post(this.tweet, this.context.length > 0, false)
     }
-    .width('100%')
+    .width('100%').id('conversation-tweet-' + this.tweet.id)
     .onVisibleAreaApproximateChange({ ratios: [0, 0.01], expectedUpdateInterval: 200 },
       (_visible: boolean, ratio: number): void => {
         this.visible = ratio > 0;

@@ -31,9 +31,8 @@
         "label": "$string:EntryAbility_label",
         "startWindowIcon": "$media:start_window_icon",
         "startWindowBackground": "$color:start_window_background",
-        // Phones and folded devices stay in the app's portrait shell. Tablets
-        // and unfolded devices follow the desktop, while fullscreen video can
-        // temporarily request its own direction at runtime.
+        // Follow the desktop by default. EntryAbility enables sensor rotation
+        // on foldable devices, and fullscreen video restores that app policy.
         "orientation": "follow_desktop",
         "exported": true,
         "continuable": true,
@@ -166,6 +165,13 @@
     ],
     "requestPermissions": [
       {
+        "name": "ohos.permission.CAMERA",
+        "reason": "$string:eye_reading_camera_reason",
+        "usedScene": { "abilities": ["EntryAbility"], "when": "inuse" }
+      },
+      { "name": "ohos.permission.GYROSCOPE" },
+      { "name": "ohos.permission.ACCELEROMETER" },
+      {
         "name": "ohos.permission.HDR_BRIGHTNESS"
       },
       // {
@@ -180,6 +186,11 @@
       // },
       {
         "name": "ohos.permission.INTERNET"
+      },
+      {
+        "name": "ohos.permission.FILE_ACCESS_PERSIST",
+        "reason": "$string:storage_permission_reason",
+        "usedScene": { "abilities": ["EntryAbility"], "when": "inuse" }
       },
       {
         "name": "ohos.permission.PRIVACY_WINDOW"

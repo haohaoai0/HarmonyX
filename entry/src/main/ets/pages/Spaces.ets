@@ -26,6 +26,7 @@ import { ResponsiveLayout } from '../utils/ResponsiveLayout';
 import { pageSurfaceColor, cardSurfaceColor } from '../utils/ThemeColors';
 import { formatCount } from '../models/Tweet';
 import { shareSpace } from '../utils/SharePost';
+import { materialModifier } from '../utils/SystemMaterial';
 
 @Builder
 export function SpacesBuilder(): void { Spaces(); }
@@ -254,8 +255,8 @@ struct Spaces {
         style: destinationTitleBarStyle(ScrollEffectType.IMMERSIVE_GRADIENT_BLUR,
           this.themeDisplayMode, this.themeDarkSurface, this.titleBarStyleMode) })
       .backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue))
-      .systemMaterial(deviceInfo.apiAvailable('26.0.0') ? new uiMaterial.ImmersiveMaterial({
-        style: uiMaterial.ImmersiveStyle.REGULAR, applyShadow: true, colorInvert: true }) : undefined)
+      .attributeModifier(materialModifier(deviceInfo.apiAvailable('26.0.0') ? new uiMaterial.ImmersiveMaterial({
+        style: uiMaterial.ImmersiveStyle.REGULAR, applyShadow: true, colorInvert: true }) : undefined))
   }
 }
 
@@ -487,7 +488,7 @@ struct SpaceRoomPage {
         style: destinationTitleBarStyle(ScrollEffectType.IMMERSIVE_GRADIENT_BLUR,
           this.themeDisplayMode, this.themeDarkSurface, this.titleBarStyleMode) })
       .backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue))
-      .systemMaterial(deviceInfo.apiAvailable('26.0.0') ? new uiMaterial.ImmersiveMaterial({
-        style: uiMaterial.ImmersiveStyle.REGULAR, applyShadow: true, colorInvert: true }) : undefined)
+      .attributeModifier(materialModifier(deviceInfo.apiAvailable('26.0.0') ? new uiMaterial.ImmersiveMaterial({
+        style: uiMaterial.ImmersiveStyle.REGULAR, applyShadow: true, colorInvert: true }) : undefined))
   }
 }

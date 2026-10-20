@@ -1,5 +1,7 @@
 // Adapted from Petrelgram's PatternTileLayer (Apache-2.0). Preserve each
 // original SVG's aspect ratio and tile horizontally at the viewport's height.
+import { pagePatternOpacity } from '../utils/PageBackgroundContrast';
+
 @Component
 export struct ChatBackgroundPattern {
   @Prop pattern: Resource | undefined = undefined;
@@ -38,7 +40,7 @@ export struct ChatBackgroundPattern {
             .autoResize(false).objectFit(ImageFit.Cover).draggable(false).colorFilter(this.filter()).syncLoad(this.syncImages)
         }, (index: number): string => index.toString())
       }.width(this.indices().length * this.tileWidth()).height(this.contentHeight())
-        .opacity(0.5 * this.strength)
+        .opacity(pagePatternOpacity(this.strength, this.ink))
         .scale({ x: this.blurRadius > 0 ? 1.08 : 1, y: this.blurRadius > 0 ? 1.08 : 1 })
         .blur(this.blurRadius).renderGroup(true)
     }.width('100%').height('100%').clip(true).hitTestBehavior(HitTestMode.None)

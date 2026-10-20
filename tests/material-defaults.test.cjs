@@ -202,6 +202,28 @@ test('reply capsule small-button material defaults off without changing the caps
   }
 });
 
+test('split reply capsules persist independently of material and other appearance preferences', () => {
+  const f = fixture();
+  const store = new f.appearance.AppearanceStore();
+  const settings = store.load({});
+  assert.equal(settings.replyCapsuleSplitEnabled, false);
+  settings.replyCapsuleMaterialLevel = 3;
+  settings.replyCapsuleButtonMaterialEnabled = true;
+  settings.replyCapsuleSplitEnabled = true;
+  store.save({}, settings);
+  const restored = new f.appearance.AppearanceStore().load({});
+  assert.equal(restored.replyCapsuleSplitEnabled, true);
+  assert.equal(restored.replyCapsuleMaterialLevel, 3);
+  assert.equal(restored.replyCapsuleButtonMaterialEnabled, true);
+  restored.replyCapsuleSplitEnabled = false;
+  store.save({}, restored);
+  assert.equal(new f.appearance.AppearanceStore().load({}).replyCapsuleSplitEnabled, false);
+  f.disk.get('harmonyx_appearance').set('reply_capsule_split_enabled', 'true');
+  assert.equal(store.load({}).replyCapsuleSplitEnabled, false);
+  f.failRead(true);
+  assert.equal(store.load({}).replyCapsuleSplitEnabled, false);
+});
+
 test('sheet consumers and standalone sidebar layers use the shared material defaults', () => {
   let consumers = 0;
   for (const directory of ['pages', 'components']) {

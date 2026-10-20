@@ -1,3 +1,4 @@
+import { PostMedia } from './PostMedia';
 import { pageTextColor } from '../utils/ThemeColors';
 import { postCardSurfaceColor } from '../utils/ThemeColors';
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
@@ -12,6 +13,7 @@ import { EmojiSpans } from './EmojiSpans';
 import { PostInteractiveContent } from './PostInteractiveContent';
 import { postPollStore, STORAGE_KEY_POST_POLL_REVISION } from '../services/PostPollStore';
 import { formatPostTime, STORAGE_KEY_POST_TIME_NOW } from '../utils/PostTime';
+import { postIsEdited } from '../utils/PostMetadata';
 import {
   DEFAULT_CONTENT_FONT_FAMILY,
   STORAGE_KEY_CONTENT_FONT_FAMILY,
@@ -61,7 +63,9 @@ export struct QuotedPostCard {
 
   private authorTimeLabel(): string {
     const time: string = formatPostTime(this.quoted.createdAt, this.postTimeNow);
-    return '@' + this.quoted.author.username + (time.length > 0 ? ' · ' + time : '');
+    return '@' + this.quoted.author.username + (time.length > 0 ? ' · ' + time : '') +
+      (postIsEdited(this.quoted.editHistoryIds) ? ' · ' +
+        getContext(this).resourceManager.getStringSync($r('app.string.post_edited').id) : '');
   }
 
   private asTweet(): Tweet {
@@ -70,6 +74,7 @@ export struct QuotedPostCard {
       author: this.quoted.author,
       text: this.quoted.text,
       createdAt: this.quoted.createdAt,
+      editHistoryIds: this.quoted.editHistoryIds,
       metrics: {
         replyCount: 0,
         repostCount: 0,
@@ -79,6 +84,8 @@ export struct QuotedPostCard {
       liked: false,
       reposted: false,
       bookmarked: false,
+      isReply: this.quoted.isReply, replyToTweetId: this.quoted.replyToTweetId,
+      replyToUsername: this.quoted.replyToUsername, possiblySensitive: this.quoted.possiblySensitive,
       attachments: this.quoted.attachments,
       poll: this.interactivePoll(),
       card: this.quoted.card,
@@ -131,6 +138,14 @@ export struct QuotedPostCard {
         PostAdLabel({ foreground: this.readingText($r('app.color.text_secondary')), presentation: this.quoted.presentation })
       }
       .width('100%')
+      if ((this.quoted.replyToUsername ?? '').length > 0) {
+        Text() {
+          Span($r('app.string.compose_replying_to'))
+          Span(this.quoted.replyToUsername ?? '')
+        }.fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M'))
+          .fontColor(this.readingText($r('app.color.text_secondary'))).width('100%')
+          .maxLines(1).textOverflow({ overflow: TextOverflow.Ellipsis })
+      }
       if (this.quoted.text.length > 0 && this.quoted.presentation?.visibility?.hidden !== true) {
         Text() { EmojiSpans(this.getUIContext(), this.quoted.text, (this.narrowColumn ? $r('app.float.timeline_column_body_font') : $r('sys.float.Body_L')), this.systemEmojiEnabled) }
           .width('100%')
@@ -146,30 +161,10 @@ export struct QuotedPostCard {
           accentColor: this.accentColor, showPollMedia: this.firstMedia() === null })
       }
       if (this.firstMedia() !== null && this.quoted.presentation?.visibility?.hidden !== true) {
-        Stack({ alignContent: Alignment.Center }) {
-          Image(this.mediaPreview(this.firstMedia() as MediaAttachment))
-            .width('100%')
-            .height(150)
-            .objectFit(ImageFit.Cover)
-          if ((this.firstMedia() as MediaAttachment).type === 'animated_gif') {
-            Text('GIF').fontFamily(this.appFontFamily)
-              .fontSize(11)
-              .fontWeight(FontWeight.Bold)
-              .fontColor(Color.White)
-              .backgroundColor('#99000000')
-              .borderRadius(6)
-              .padding({ left: 7, right: 7, top: 4, bottom: 4 })
-              .position({ x: 10, y: 10 })
-          } else if ((this.firstMedia() as MediaAttachment).type !== 'photo') {
-            SymbolGlyph($r('sys.symbol.play_fill'))
-              .fontSize(34)
-              .fontColor([$r('app.color.text_on_brand')])
-          }
-        }
-        .width('100%')
-        .height(150)
-        .borderRadius(12)
-        .clip(true)
+        PostMedia({ sourceTweet: this.asTweet(), attachments: this.quoted.attachments ?? [],
+          playbackEnabled: false, showDownloadButton: false, hideInlineControls: true,
+          naturalVideoSize: true,
+          onVideoOpen: (): void => this.onOpen(this.asTweet()) }).width('100%')
       }
     }
     .width('100%')

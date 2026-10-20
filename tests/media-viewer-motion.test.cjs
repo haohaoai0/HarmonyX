@@ -141,15 +141,16 @@ function photoNodeHarness() {
   }
   class BuilderNode {
     constructor() { this.node = {}; this.updates = []; this.disposed = false; builders.push(this); }
-    build(_builder, params) { this.updates.push(params); }
+    build(_builder, params) { this.updates.push(params); params.onDimensions(640, 480); }
     getFrameNode() { return this.node; }
-    update(params) { this.updates.push(params); }
+    update(params) { this.updates.push(params); params.onDimensions(640, 480); }
     dispose() { assert.equal(this.disposed, false); this.disposed = true; }
   }
   const file = fs.readFileSync('entry/src/main/ets/components/MediaPhotoSurface.ets', 'utf8');
   const source = file.slice(file.indexOf('export class MediaPhotoNode'), file.indexOf('@Component'));
-  const result = evaluate(source, {}, ['NodeContent', 'BuilderNode', 'wrapBuilder', 'BuildMediaPhoto'],
-    [NodeContent, BuilderNode, value => value, () => {}]);
+  const lifetime = evaluate(fs.readFileSync('entry/src/main/ets/utils/MediaImageLifetime.ets', 'utf8')).MediaImageLifetime;
+  const result = evaluate(source, {}, ['NodeContent', 'BuilderNode', 'wrapBuilder', 'BuildMediaPhoto', 'MediaImageLifetime'],
+    [NodeContent, BuilderNode, value => value, () => {}, lifetime]);
   return { node: new result.MediaPhotoNode(), builders, ownership,
     session: () => new result.MediaPhotoSession(),
     newNode: () => new result.MediaPhotoNode(), lookup: result.mediaPhotoNodeFor };
@@ -266,7 +267,7 @@ test('the source keeps its live image until the destination has a visible card f
     compilerOptions: { target: ts.ScriptTarget.ES2020 }
   }).outputText;
   let moves = 0;
-  const node = { adopt() { moves++; return true; } };
+  const node = { width: 640, height: 480, adopt() { moves++; return true; } };
   const Harness = new Function('mediaPhotoNodeFor', 'createMediaSourcePrefix', `${code}; return Harness;`)(
     () => node, () => 'visit-1');
   const photo = Object.assign(new Harness(), { sourceId: 'card', presentImage: false, sharedPhoto: null, gifMedia: null,
@@ -286,7 +287,7 @@ test('an avatar or banner waits for its decoded image, while a live source is im
   const code = ts.transpileModule(`class Harness { ${method.getText(tree)} }`, {
     compilerOptions: { target: ts.ScriptTarget.ES2020 }
   }).outputText;
-  for (const liveNode of [undefined, {}]) {
+  for (const liveNode of [undefined, { width: 640, height: 480 }]) {
     const Harness = new Function('mediaPhotoNodeFor', `${code}; return Harness;`)(() => liveNode);
     const viewer = Object.assign(new Harness(), { motion: { prepare() {} }, viewerSession: 0 });
     viewer.readRoute({ source: source(), items: [{ previewUrl: 'https://photo', sourceId: 'card' }],
@@ -526,4 +527,22 @@ test('an old album cannot reclaim a neighbour that has since moved into a new vi
   assert.equal(h.ownership.get(h.builders[0].node), h.node.pageContent);
   newAlbum.restore(ui);
   assert.equal(h.ownership.get(h.builders[0].node), h.node.entryContent);
+});
+
+test('an undecoded thumbnail stays in its source and falls back to independent viewer loading', () => {
+  const h = photoNodeHarness(); h.node.mount({}, 'failed-thumbnail', false);
+  h.node.width = 0; h.node.height = 0;
+  const frame = h.builders[0].node;
+  assert.equal(h.node.adopt({}, 'viewer', 'failed-thumbnail'), false);
+  assert.equal(h.ownership.get(frame), h.node.entryContent);
+  assert.equal(h.node.hasViewer(), false);
+});
+
+test('a native thumbnail failure before viewing recovers through the configured resolver', async () => {
+  let requests = 0;
+  const map = {}, h = proxyPhotoHarness(async () => { requests++; return map; }, false);
+  h.component.url = 'https://photo'; h.component.aboutToAppear();
+  h.component.onImageError(); await flush();
+  assert.equal(requests, 1); assert.equal(h.component.fallbackPixelMap, map);
+  h.component.aboutToDisappear(); assert.deepEqual(h.released, [map]);
 });

@@ -15,6 +15,7 @@ import { pageSurfaceColor } from '../utils/ThemeColors';
 import { destinationTitleBarStyle } from '../utils/DestinationTitleBar';
 import { chatPageMaterial } from '../utils/ChatMaterial';
 import { ResponsiveLayout } from '../utils/ResponsiveLayout';
+import { materialModifier } from '../utils/SystemMaterial';
 
 interface RequestProfile { core?: RequestCore; avatar?: RequestAvatar; }
 interface RequestCore { name: string; }
@@ -127,7 +128,7 @@ struct DmRequestsPage {
       .titleBar({ avoidLayoutSafeArea: true, content: { title: { mainTitle: $r('app.string.chat_requests') } },
         style: destinationTitleBarStyle(ScrollEffectType.GRADIENT_BLUR, this.displayMode, this.darkSurface, this.titleBarStyleMode)
       })
-      .backgroundColor(pageCanvasColor(this.displayMode, this.darkSurface, this.pageBackgroundValue)).systemMaterial(chatPageMaterial())
+      .backgroundColor(pageCanvasColor(this.displayMode, this.darkSurface, this.pageBackgroundValue)).attributeModifier(materialModifier(chatPageMaterial()))
       .onBackPressed((): boolean => { ResponsiveLayout.closeContentDestination(this.pageStack); return true; })
   }
 }

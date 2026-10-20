@@ -1,3 +1,4 @@
+import { InputModalScope } from '../utils/InputModalScope';
 import { menuActionVisible, menuActionsForGroup, MenuActionOption } from '../models/MenuActionCatalog';
 import { STORAGE_KEY_HIDDEN_MENU_ACTIONS } from '../services/MenuSettingsStore';
 import { common } from '@kit.AbilityKit';
@@ -19,10 +20,22 @@ import type { ProfileWebRouteParam } from '../pages/ProfileWeb';
 
 @Component
 export struct PostOverflowButton {
+  private inputModalScope: InputModalScope = new InputModalScope();
+
+  aboutToDisappear(): void { this.inputModalScope.setActive(false); }
   @StorageProp(STORAGE_KEY_HIDDEN_MENU_ACTIONS) private hiddenMenuActions: string = '';
   @Prop foreground: ResourceColor = $r('app.color.text_secondary');
   @StorageProp('harmonyx.compact_window') private compactWindow: boolean = false;
   @Prop tweet: Tweet;
+  @Prop @Watch('onInputMenuRequest') inputMenuRequest: number = 0;
+  @Prop hideTrigger: boolean = false;
+
+  private onInputMenuRequest(): void {
+    if (this.inputMenuRequest <= 0) { return; }
+    this.following = this.tweet.author.following === true;
+    this.listPicker = false;
+    this.showing = true;
+  }
   @Consume('pageStack') pageStack: NavPathStack;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @StorageProp('harmonyx.display_mode') private themeDisplayMode: string = '';
@@ -269,7 +282,8 @@ export struct PostOverflowButton {
     Button({ type: ButtonType.Circle }) {
       SymbolGlyph($r('sys.symbol.line_3_horizontal'))
         .fontSize($r('app.float.post_menu_button_icon')).fontColor([this.foreground])
-    }.width($r('app.float.post_menu_button_size')).height($r('app.float.post_menu_button_size')).backgroundColor(Color.Transparent)
+    }.width(this.hideTrigger ? 0 : $r('app.float.post_menu_button_size')).height(this.hideTrigger ? 0 : $r('app.float.post_menu_button_size')).backgroundColor(Color.Transparent)
+      .focusable(!this.hideTrigger).accessibilityLevel(this.hideTrigger ? 'no' : 'auto')
       .id('post-overflow-' + this.tweet.id)
       .accessibilityText($r('app.string.post_menu_more')).monopolizeEvents(true)
       .onClick((): void => { this.following = this.tweet.author.following === true;
@@ -277,7 +291,8 @@ export struct PostOverflowButton {
       .bindSheet($$this.showing, this.MenuSheet(), sheetMaterialOptions({ height: SheetSize.FIT_CONTENT,
         preferType: SheetType.BOTTOM, dragBar: true, showClose: false,
         backgroundColor: pageSurfaceColor(this.themeDisplayMode, this.themeDarkSurface),
-        onDisappear: (): void => { this.showing = false; } }, this.materialEnabled, this.materialLevel,
+        onAppear: (): void => { this.inputModalScope.setActive(true); },
+        onDisappear: (): void => { this.inputModalScope.setActive(false); this.showing = false; } }, this.materialEnabled, this.materialLevel,
         this.breakpoint, this.compactWindow))
   }
 }

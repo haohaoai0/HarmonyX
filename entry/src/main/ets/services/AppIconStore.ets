@@ -8,6 +8,7 @@ import { deviceInfo } from '@kit.BasicServicesKit';
 import type { BusinessError } from '@kit.BasicServicesKit';
 
 // 传空字符串表示取消备用图标，回到 app.json5 的默认图标。
+export const STORAGE_KEY_CURRENT_APP_ICON: string = 'harmonyx.current_app_icon';
 export const APP_ICON_DEFAULT: string = '';
 // 备用图标接口的起始版本，低版本设备需要降级处理。
 export const APP_ICON_REQUIRED_API: string = '26.0.0';
@@ -114,9 +115,40 @@ export class AppIconApplyResult {
   }
 }
 
+export function appIconForeground(name: string): Resource {
+  if (name === APP_ICON_CLASSIC) { return $r('app.media.app_icon_classic_foreground'); }
+  if (name === APP_ICON_SPECTRUM) { return $r('app.media.app_icon_spectrum_foreground'); }
+  if (name === APP_ICON_OUTLINE) { return $r('app.media.app_icon_outline_foreground'); }
+  if (name === APP_ICON_BRUSH) { return $r('app.media.app_icon_brush_foreground'); }
+  if (name === APP_ICON_BLOSSOM) { return $r('app.media.app_icon_blossom_foreground'); }
+  if (name === APP_ICON_BLUE_BIRD) { return $r('app.media.app_icon_blue_bird_foreground'); }
+  if (name === APP_ICON_TWITTER_BLUE) { return $r('app.media.app_icon_twitter_blue_foreground'); }
+  if (name === APP_ICON_TWITTER_WHITE) { return $r('app.media.app_icon_twitter_white_foreground'); }
+  if (name === APP_ICON_X_BLACK) { return $r('app.media.app_icon_x_black_foreground'); }
+  if (name === APP_ICON_X_WHITE) { return $r('app.media.app_icon_x_white_foreground'); }
+  if (name === APP_ICON_FROG_WHITE || name === APP_ICON_FROG_BLACK) { return $r('app.media.frog_foreground'); }
+  if (name === APP_ICON_MILK_FROG_WHITE || name === APP_ICON_MILK_FROG_BLACK) { return $r('app.media.milk_frog_foreground'); }
+  if (name === APP_ICON_ZOMBIE_X) { return $r('app.media.zombie_x_foreground'); }
+  if (name === APP_ICON_MID_AUTUMN) { return $r('app.media.app_icon_mid_autumn_foreground'); }
+  return $r('app.media.ui_brand_foreground');
+}
+
+// The title-bar mark is always glyph artwork. The default branding resource
+// can carry an icon plate in some resource qualifiers, so use a transparent
+// X-only foreground and let RootTitleBarLogo apply the selected ink color.
+export function titleBarLogoForeground(name: string): Resource {
+  if (name === APP_ICON_DEFAULT) {
+    return $r('app.media.title_bar_logo_foreground');
+  }
+  return appIconForeground(name);
+}
+
 export class AppIconStore {
   supported(): boolean {
-    return deviceInfo.apiAvailable(APP_ICON_REQUIRED_API);
+    if (deviceInfo.apiAvailable('26.0.0')) {
+      return true;
+    }
+    return false;
   }
 
   // 当前启用的备用图标名称；返回空串表示正在使用默认图标。
@@ -128,12 +160,14 @@ export class AppIconStore {
       const icons: bundleManager.AlternateIconInfo[] = await bundleManager.getAlternateIcons();
       for (let i: number = 0; i < icons.length; i++) {
         if (icons[i].enabled) {
+          AppStorage.setOrCreate<string>(STORAGE_KEY_CURRENT_APP_ICON, icons[i].iconName);
           return icons[i].iconName;
         }
       }
     } catch (error) {
       // 分身应用会拒绝查询，此时按默认图标展示。
     }
+    AppStorage.setOrCreate<string>(STORAGE_KEY_CURRENT_APP_ICON, APP_ICON_DEFAULT);
     return APP_ICON_DEFAULT;
   }
 
@@ -143,6 +177,7 @@ export class AppIconStore {
     }
     try {
       await bundleManager.setAlternateIcon(name);
+      AppStorage.setOrCreate<string>(STORAGE_KEY_CURRENT_APP_ICON, name);
       return new AppIconApplyResult(true, 0);
     } catch (error) {
       const failure: BusinessError = error as BusinessError;

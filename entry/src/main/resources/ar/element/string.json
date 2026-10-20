@@ -1,5 +1,42 @@
 {
   "string": [
+    {
+      "name": "supporter_config_error",
+      "value": "تعذر تأكيد ربط الحساب في السحابة. يرجى التواصل مع المطور."
+    },
+    {
+      "name": "supporter_restore_hint",
+      "value": "تؤدي العودة إلى الحساب إلى استعادة حالته المحفوظة. على جهاز جديد أو بعد إعادة التثبيت أو في إصدار آخر، سجّل الدخول إلى حساب X نفسه وأدخل الرمز الأصلي لاستعادة الوصول."
+    },
+    {"name": "eye_reading_title", "value": "القراءة بالنظر"},
+    {"name": "eye_reading_intro", "value": "انظر لأعلى أو لأسفل وثبّت نظرك لتمرير سلاسل المنشورات والنسخ دون اتصال والمقالات."},
+    {"name": "eye_reading_enable", "value": "تفعيل القراءة بالنظر"},
+    {"name": "eye_reading_supported", "value": "تتبّع الوجه مدعوم. لا تعمل الكاميرا إلا بعد الضغط على البدء في صفحة القراءة."},
+    {"name": "eye_reading_unsupported", "value": "هذا الجهاز لا يدعم تتبّع الوجه المطلوب. استخدم اللمس أو لوحة المفاتيح."},
+    {"name": "eye_reading_dwell", "value": "مدة تثبيت النظر"},
+    {"name": "eye_reading_threshold", "value": "حدّ اكتشاف الاتجاه"},
+    {"name": "eye_reading_threshold_desc", "value": "القيمة الأعلى تتطلب حركة عين أوضح وتقلّل التمرير غير المقصود."},
+    {"name": "eye_reading_help", "value": "ثبّت رأسك وانظر إلى وسط الشاشة للمعايرة. ثبّت النظر لأعلى أو لأسفل لتمرير نحو نصف الشاشة، ثم أعد النظر إلى الوسط بعد كل حركة. الأولوية للمس والعجلة ولوحة المفاتيح."},
+    {"name": "eye_reading_privacy", "value": "تُستخدم الكاميرا الأمامية فقط بعد البدء. تُعالج بيانات الاتجاه محليًا ولا تُحفظ الصور أو تُرفع. تتوقف الجلسة عند مغادرة الصفحة أو الانتقال للخلفية. أعد البدء يدويًا."},
+    {"name": "eye_reading_save_failed", "value": "تعذّر حفظ الإعدادات. حاول مجددًا."},
+    {"name": "eye_reading_start", "value": "بدء التحكم بالنظر"},
+    {"name": "eye_reading_stop", "value": "إيقاف التحكم بالنظر"},
+    {"name": "eye_reading_recalibrate", "value": "إعادة المعايرة"},
+    {"name": "eye_reading_starting", "value": "جارٍ تشغيل الكاميرا الأمامية…"},
+    {"name": "eye_reading_permission", "value": "يلزم إذن الكاميرا. اسمح بالوصول من أذونات التطبيق في النظام ثم حاول مجددًا."},
+    {"name": "eye_reading_failed", "value": "الكاميرا غير متاحة. أغلق تطبيقات الكاميرا الأخرى ثم حاول مجددًا."},
+    {"name": "eye_reading_calibrating", "value": "انظر إلى وسط الشاشة وثبّت الرأس والنظر لإتمام المعايرة."},
+    {"name": "eye_reading_center", "value": "أعد النظر إلى الوسط قبل الحركة التالية."},
+    {"name": "eye_reading_ready", "value": "جاهز: انظر لأعلى أو لأسفل وثبّت نظرك."},
+    {"name": "eye_reading_up", "value": "واصل النظر لأعلى للتمرير لأعلى."},
+    {"name": "eye_reading_down", "value": "واصل النظر لأسفل للتمرير لأسفل."},
+    {"name": "eye_reading_lost", "value": "افتح عينيك وواجه الشاشة في إضاءة جيدة. أعد المعايرة إذا لم يستجب."},
+    {"name": "eye_reading_paused", "value": "الأولوية للإدخال اليدوي. أُوقف التحكم بالنظر مؤقتًا."},
+    {"name": "eye_reading_camera_reason", "value": "تستخدم الكاميرا الأمامية للتعرّف على اتجاه العين محليًا عند بدء القراءة بالنظر."},
+    {"name": "compact_video_layout", "value": "تخطيط فيديو الشاشة الخارجية"},
+    {"name": "settings_compact_video_layout_desc", "value": "للشاشات المربعة الصغيرة مثل Pura X. اختر أزرار الجانب أو الصف السفلي. عند فتح الهاتف يعود تخطيط الفيديو المعتاد."},
+    {"name": "compact_video_layout_rail", "value": "أزرار جانبية"},
+    {"name": "compact_video_layout_bottom", "value": "صف سفلي"},
     {"name":"settings_component_hdr_enabled","value":"Component HDR effect"},
     {"name":"settings_component_hdr_enabled_desc","value":"Off by default. Turn it on to use 1.25x brightening, then adjust the multiplier below."},
     {"name":"settings_confirm_app_exit","value":"التأكيد قبل الخروج"},
@@ -1775,6 +1812,14 @@
     {
       "name": "settings_hds_tabs_material_adaptive",
       "value": "تكيفي"
+    },
+    {
+      "name": "settings_hds_tabs_gradient_mask",
+      "value": "قناع التدرج لشريط علامات التبويب"
+    },
+    {
+      "name": "settings_hds_tabs_gradient_mask_desc",
+      "value": "تبديل تدرج التلاشي أسفل شريط HdsTabs العائم. يكون مفعلاً افتراضياً."
     },
     {
       "name": "settings_timeline_columns_title",
@@ -9249,6 +9294,14 @@
       "value": "أوقفه لنقل علامات تبويب الخط الزمني أو حقل البحث بين صورتك وزر اليمين."
     },
     {
+      "name": "settings_title_bar_logo_auto_contrast",
+      "value": "Adaptive logo color"
+    },
+    {
+      "name": "settings_title_bar_logo_auto_contrast_desc",
+      "value": "Automatically switches the X or pattern foreground between light and dark to stay readable. Only the single-color foreground is shown, without an icon background."
+    },
+    {
       "name": "notifications_all",
       "value": "الكل"
     },
@@ -10705,6 +10758,359 @@
     {"name":"page_background_motif_popular_apps_global_firefox","value":"Firefox"},
     {"name":"page_background_motif_popular_apps_global_edge","value":"Edge"},
     {"name":"page_background_motif_popular_apps_global_gmail","value":"Gmail"},
-    {"name":"page_background_motif_popular_apps_global_google_maps","value":"Google Maps"}
+    {"name":"page_background_motif_popular_apps_global_google_maps","value":"Google Maps"},
+    {"name":"scene_title","value":"Scene modes"},
+    {"name":"scene_intro","value":"Apply a set of playback, quality, motion and background preferences. Restore returns to your settings from before the first mode was enabled."},
+    {"name":"scene_reading","value":"Clear reading"},
+    {"name":"scene_reading_desc","value":"Autoplay off · high quality images · low quality video · reduced motion · plain background"},
+    {"name":"scene_saver","value":"Power and data saver"},
+    {"name":"scene_saver_desc","value":"Autoplay off · small images · low quality video · reduced motion · plain background"},
+    {"name":"scene_media","value":"Media browsing"},
+    {"name":"scene_media_desc","value":"Autoplay on · original images · high quality video · motion on · your saved background"},
+    {"name":"scene_restore","value":"Restore original settings"},
+    {"name":"scene_restore_desc","value":"Keep your preferences from before scene mode. Switching between modes does not replace this backup."},
+    {"name":"scene_failed","value":"Some settings could not be saved. Your original settings are retained; retry or restore."},
+    {"name":"offline_title","value":"Offline & later"},
+    {"name":"offline_online","value":"Online bookmarks"},
+    {"name":"offline_intro","value":"New bookmarks save text and available articles automatically. Enable images before saving to include photos. Local copies stay separate from online bookmarks and ordinary cache cleanup."},
+    {"name":"offline_images","value":"Include photos in future saves"},
+    {"name":"offline_save","value":"Save offline"},
+    {"name":"offline_saving","value":"Saving…"},
+    {"name":"offline_saved","value":"Saved for offline reading"},
+    {"name":"offline_partial_saved","value":"Saved available content. Some article text or photos are missing; retry when online."},
+    {"name":"offline_save_failed","value":"Could not save locally. Please retry."},
+    {"name":"offline_partial","value":"Incomplete copy"},
+    {"name":"offline_unread","value":"Unread"},
+    {"name":"offline_unread_only","value":"Unread only"},
+    {"name":"offline_search","value":"Search titles, tags or notes"},
+    {"name":"offline_empty","value":"No matching offline items. Save a bookmark or use Save offline on a post."},
+    {"name":"offline_edit","value":"Tags & note"},
+    {"name":"offline_tags","value":"Tags"},
+    {"name":"offline_tags_hint","value":"Tags, separated by commas"},
+    {"name":"offline_note","value":"Private note"},
+    {"name":"offline_done","value":"Save"},
+    {"name":"offline_delete","value":"Delete local copy"},
+    {"name":"reader_title","value":"Thread reader"},
+    {"name":"reader_author_only","value":"Author only"},
+    {"name":"reader_translate","value":"Translate passages"},
+    {"name":"reader_font","value":"Text size"},
+    {"name":"reader_missing","value":"This offline item is missing or unavailable. Save it again while online."},
+    {"name":"reader_partial","value":"Only the available article content is shown. Continue loading or retry while online to get the complete text."},
+    {"name":"reader_load_failed","value":"Could not load more replies. Your current reading content is kept."},
+    {"name":"reader_translation_setup","value":"Enable translation and choose a target language in Settings first."},
+    {"name":"reader_translation_failed","value":"Some passages could not be translated. You can hide translations and retry."},
+    {"name":"reader_offline_note","value":"Saved local content. Translation requires a network connection."},
+    {"name":"reader_scope","value":"Replies loaded so far. Use Continue loading to include more of the discussion."},
+    {
+      "name": "input_help_title",
+      "value": "الماوس ولوحة المفاتيح ولوحة اللمس"
+    },
+    {
+      "name": "input_help_desc",
+      "value": "اختصارات لوحة المفاتيح والإيماءات"
+    },
+    {
+      "name": "input_main_title",
+      "value": "اختصارات الصفحة الرئيسية"
+    },
+    {
+      "name": "input_main_scope",
+      "value": "متاحة في علامات التبويب الخمس الرئيسية عند عدم فتح صفحة فرعية أو شريط جانبي أو مربع حوار. ينشئ Ctrl+N محادثة في الرسائل ومنشورًا في الصفحات الأخرى."
+    },
+    {
+      "name": "input_compose",
+      "value": "منشور جديد / محادثة جديدة"
+    },
+    {
+      "name": "input_refresh",
+      "value": "تحديث علامة التبويب الحالية"
+    },
+    {
+      "name": "input_keyboard_title",
+      "value": "التحكم بلوحة المفاتيح"
+    },
+    {
+      "name": "input_focus",
+      "value": "نقل التركيز للأمام / للخلف. تدعم عناصر التحكم الأصلية مفاتيح الأسهم أيضًا."
+    },
+    {
+      "name": "input_activate",
+      "value": "تنشيط الزر الذي عليه التركيز."
+    },
+    {
+      "name": "input_submit",
+      "value": "الإرسال من حقل المنشور أو الرد أو الرسالة. يحتفظ Enter العادي بسلوكه السابق."
+    },
+    {
+      "name": "input_back",
+      "value": "الرجوع في المساعدة والمحرر والمحادثات وعارض الوسائط. تُغلق اللوحة الحالية أولًا."
+    },
+    {
+      "name": "input_photo",
+      "value": "الصورة السابقة / التالية عندما لا تكون مكبّرة ولا توجد لوحة مفتوحة."
+    },
+    {
+      "name": "input_video",
+      "value": "الفيديو السابق / التالي عندما لا توجد لوحة مفتوحة."
+    },
+    {
+      "name": "input_playback",
+      "value": "عند التركيز على صورة الفيديو: Space أو Enter للتشغيل / الإيقاف المؤقت، ويسار / يمين للرجوع / التقدم 10 ثوانٍ."
+    },
+    {
+      "name": "input_pointer_title",
+      "value": "الماوس ولوحة اللمس"
+    },
+    {
+      "name": "input_pointer",
+      "value": "انقر بالزر الأيسر أو المس للتنشيط. انقر بالزر الأيمن على صورة أو فيديو أو رسالة لفتح الإجراءات. تستجيب الأزرار لمرور المؤشر، ويمكن سحب أشرطة التمرير والتقدم."
+    },
+    {
+      "name": "input_trackpad",
+      "value": "مرّر القوائم بإصبعين واسحب أفقيًا للتنقل بين الصور واقرص للتكبير. اسحب الصورة المكبّرة لتحريكها. تفتح النقرة بإصبعين القائمة على لوحات اللمس المدعومة."
+    },
+    {
+      "name": "input_previous",
+      "value": "الصورة السابقة"
+    },
+    {
+      "name": "input_next",
+      "value": "الصورة التالية"
+    },
+    {
+      "name": "input_key_home",
+      "value": "Ctrl + 1"
+    },
+    {
+      "name": "input_key_explore",
+      "value": "Ctrl + 2"
+    },
+    {
+      "name": "input_key_notifications",
+      "value": "Ctrl + 3"
+    },
+    {
+      "name": "input_key_messages",
+      "value": "Ctrl + 4"
+    },
+    {
+      "name": "input_key_profile",
+      "value": "Ctrl + 5"
+    },
+    {
+      "name": "input_key_search",
+      "value": "Ctrl + K"
+    },
+    {
+      "name": "input_key_compose",
+      "value": "Ctrl + N"
+    },
+    {
+      "name": "input_key_refresh",
+      "value": "Ctrl + R"
+    },
+    {
+      "name": "input_key_settings",
+      "value": "Ctrl + ,"
+    },
+    {
+      "name": "input_key_help",
+      "value": "F1"
+    },
+    {
+      "name": "input_key_focus",
+      "value": "Tab / Shift + Tab"
+    },
+    {
+      "name": "input_key_activate",
+      "value": "Enter / Space"
+    },
+    {
+      "name": "input_key_submit",
+      "value": "Ctrl + Enter"
+    },
+    {
+      "name": "input_key_back",
+      "value": "Esc / Alt + ←"
+    },
+    {
+      "name": "input_key_photo",
+      "value": "← / →"
+    },
+    {
+      "name": "input_key_video",
+      "value": "↑ / ↓ / Page Up / Page Down"
+    },
+    {
+      "name": "input_key_playback",
+      "value": "Space / Enter / ← / →"
+    },
+    {"name":"settings_filter_languages","value":"لغات المنشورات المحظورة"},
+    {"name":"settings_filter_languages_desc","value":"اختر اللغات لإخفائها. تبقى اللغات غير المعروفة ومنشورات الوسائط فقط ظاهرة."},
+    {"name":"appearance_preview_title","value":"معاينة مباشرة"},
+    {"name":"appearance_preview_hint","value":"تظهر التغييرات فوراً. اضغط على نموذج اللوحة لتوسيعه."},
+    {"name":"post_edited","value":"تم التعديل"},
+    {"name":"post_metric_bookmarks","value":"إشارات مرجعية"},
+    {"name":"post_metric_quotes","value":"اقتباسات"},
+    {"name":"settings_reply_quality","value":"طي الردود منخفضة الجودة"},
+    {"name":"settings_reply_quality_desc","value":"طي الترويج المتكرر والاستدراج الجماعي. قد تخطئ القواعد المحلية، ويمكن توسيع الردود لمراجعتها."},
+    {"name":"reply_quality_folded","value":"رد يحتمل أن يكون منخفض الجودة"},
+    {"name":"reply_quality_reasons","value":"عرض الأسباب"},
+    {"name":"reply_quality_allow","value":"إظهار هذا الكاتب دائمًا"},
+    {"name":"reply_quality_whitelist","value":"قائمة الكتّاب المسموحين"},
+    {"name":"reply_quality_whitelist_desc","value":"تبقى ردودك وكاتب المنشور والحسابات المتابَعة والكتّاب المسموحون ظاهرين. القائمة خاصة بالحساب الحالي."},
+    {"name":"reply_quality_empty","value":"لا يوجد كتّاب مسموحون بعد"},
+    {"name":"reply_quality_reason_duplicate","value":"يكرر عدة كتّاب القالب الترويجي نفسه"},
+    {"name":"reply_quality_reason_author_repeat","value":"يكرر الكاتب المحتوى نفسه"},
+    {"name":"reply_quality_reason_links","value":"يحتوي على عدة روابط خارجية"},
+    {"name":"reply_quality_reason_promotion","value":"يحتوي على ترويج أو وعود بالأرباح"},
+    {"name":"reply_quality_reason_contact","value":"يحتوي على بيانات اتصال للاستدراج"},
+    {
+      "name": "settings_floating_compose_material_tint",
+      "value": "لون خامة زر النشر العائم"
+    },
+    {
+      "name": "settings_floating_compose_material_tint_desc",
+      "value": "أضف لون السمة فوق الخامة. يؤدي إيقاف هذا الخيار إلى إزالة طبقة اللون فقط."
+    },
+    {
+      "name": "chat_decoration",
+      "value": "Chat decorations"
+    },
+    {
+      "name": "chat_decoration_subtitle",
+      "value": "Avatar frames and chat bubbles, downloaded only when you choose them."
+    },
+    {
+      "name": "chat_decoration_frame",
+      "value": "Avatar frames"
+    },
+    {
+      "name": "chat_decoration_bubble",
+      "value": "Chat bubbles"
+    },
+    {
+      "name": "chat_decoration_free",
+      "value": "Free"
+    },
+    {
+      "name": "chat_decoration_download_preview",
+      "value": "Download to preview"
+    },
+    {
+      "name": "chat_decoration_download",
+      "value": "Download"
+    },
+    {
+      "name": "chat_decoration_downloading",
+      "value": "Downloading..."
+    },
+    {
+      "name": "chat_decoration_use",
+      "value": "Use"
+    },
+    {
+      "name": "chat_decoration_in_use",
+      "value": "In use"
+    },
+    {
+      "name": "chat_decoration_remove",
+      "value": "Stop using"
+    },
+    {
+      "name": "chat_decoration_installed",
+      "value": "Downloaded"
+    },
+    {
+      "name": "chat_decoration_applied",
+      "value": "Decoration applied"
+    },
+    {
+      "name": "chat_decoration_download_failed",
+      "value": "Download failed. Try again later."
+    },
+    {
+      "name": "chat_decoration_reset",
+      "value": "Restore defaults"
+    },
+    {
+      "name": "chat_decoration_reset_done",
+      "value": "Defaults restored"
+    },
+    {
+      "name": "chat_decoration_note",
+      "value": "Decorations stay on this device. Other people see styles supported by their client."
+    },
+    {
+      "name": "chat_decoration_loading",
+      "value": "Loading decorations..."
+    },
+    {
+      "name": "chat_decoration_unavailable",
+      "value": "Decorations are unavailable. Check your connection and retry."
+    },
+    {
+      "name": "chat_decoration_sample_text",
+      "value": "Have a lovely day."
+    },
+    {"name": "sign_out_confirm_title", "value": "تسجيل الخروج؟"},
+    {"name": "sign_out_confirm_message", "value": "ستحتاج إلى تسجيل الدخول مجددًا لاستخدام هذا الحساب."},
+    {"name": "settings_for_you_only_sensitive", "value": "المحتوى الحساس فقط في «لك»"},
+    {"name": "settings_for_you_only_sensitive_desc", "value": "عرض المنشورات التي يصنفها X حساسة بما فيها الاقتباسات. لا يؤثر على المتابَعين والقوائم ولا يكشف الوسائط المحجوبة."},
+    {"name": "settings_grip_floating", "value": "زر الإجراءات العائم"},
+    {"name": "settings_grip_video", "value": "شريط إجراءات الفيديو"},
+    {"name": "settings_grip_reply", "value": "زر الرد على المنشور"},
+    {"name": "settings_grip_component_desc", "value": "تغيير موضع هذا المكون حسب اليد الممسكة بالجهاز. عند الإيقاف تُستخدم اليد المفضلة."},
+    {"name": "settings_grip_hdstabs", "value": "شريط تبويبات HdsTabs السفلي"},
+    {"name": "settings_grip_hdstabs_desc", "value": "استخدام التكيف الأصلي مع اليد. عند الإيقاف لا يتحرك الشريط مع اليد الممسكة بالجهاز."},
+    {"name":"gif_action_save_video","value":"حفظ كفيديو عالي الجودة (MP4)"},
+    {"name":"storage_save_remembered_note","value":"اختر مجلد التنزيل مرة واحدة لحفظ الملفات التالية تلقائيًا فيه. أوقف الخيار للحفظ في المعرض."},
+    {"name":"storage_save_to_remembered","value":"حفظ في مجلد التنزيل"},
+    {"name": "storage_permission_reason", "value": "الاحتفاظ بالوصول إلى الملفات والمجلدات التي تختارها."},
+    {"name": "timeline_sources_lists", "value": "القوائم"},
+    {"name": "timeline_sources_communities", "value": "المجتمعات"},
+    {"name": "timeline_edit", "value": "تعديل"},
+    {"name": "timeline_done", "value": "تم"},
+    {"name": "timeline_move_up", "value": "نقل لأعلى"},
+    {"name": "timeline_move_down", "value": "نقل لأسفل"},
+    {"name": "timeline_remove_source", "value": "إزالة %s"},
+    {"name": "timeline_add_to_home", "value": "إضافة إلى الخطوط الرئيسية"},
+    {"name": "timeline_remove_from_home", "value": "إزالة من الخطوط الرئيسية"},
+    {"name": "timeline_sources_failed", "value": "تعذر تحميل بعض القوائم أو المجتمعات. اضغط لإعادة المحاولة."},
+    {"name": "timeline_sources_pinned_empty", "value": "لا توجد خطوط زمنية مثبتة. أضف قوائم أو مجتمعات أو مواضيع أدناه."},
+    {"name":"video_controls_mirror","value":"عكس مواضع عناصر التحكم"},
+    {"name":"video_controls_speed","value":"السرعة"},
+    {"name":"video_controls_aspect","value":"الأبعاد"},
+    {"name":"video_controls_background","value":"الخلفية"},
+    {"name":"video_controls_quality_hd","value":"HD"},
+    {"name":"video_controls_quality_sd","value":"SD"},
+    {"name":"video_controls_quality_ld","value":"LD"},
+    {"name":"video_controls_more","value":"المزيد"},
+    {"name":"video_controls_download","value":"تنزيل"},
+    {"name":"settings_navigation_style","value":"نمط التنقل السفلي"},
+    {"name":"settings_hds_bottom_bar","value":"HdsTabs عائم"},
+    {"name":"settings_split_bottom_bar","value":"تنقل بكبسولة منفصلة"},
+    {"name":"settings_split_bottom_bar_desc","value":"بدّل الصفحات من الكبسولة اليسرى. يتيح الزر المنفصل النشر أو بدء محادثة أو التحديث أو العودة للأعلى. يستخدم كلاهما خامة HDS، مع تنقل متوافق على الأنظمة الأقدم."},
+    {"name":"split_navigation_action_top","value":"العودة للأعلى"},
+    {"name":"split_navigation_action_refresh","value":"تحديث الرئيسية"},
+    {"name":"split_navigation_action_compose","value":"إنشاء منشور"},
+    {"name": "settings_reply_capsule_split", "value": "كبسولات رد منفصلة"},
+    {"name": "settings_reply_capsule_split_desc", "value": "فصل مدخل الرد وإجراءات المنشور عند الطي"},
+    {"name": "reply_capsule_write_reply", "value": "رد"},
+    {"name":"settings_native_bottom_bar","value":"تنقل كبسولي بخامة 7.0"},
+    {"name":"settings_native_bottom_bar_desc","value":"استخدم خامة HarmonyOS 7.0 الغامرة لكبسولة الرد، مع إضاءة اللمس ومؤشر سائل وتبديل الجانب حسب القبضة. تُستخدم كبسولة HDS عند عدم توفرها."},
+    {"name":"settings_native_navigation_material","value":"سماكة خامة كبسولة التنقل"},
+    {"name":"settings_for_you_only_sensitive_age_title","value":"تأكيد العمر"},
+    {"name":"settings_for_you_only_sensitive_age_message","value":"ميزة «المحتوى الحساس فقط في ‹لك›» متاحة فقط لمن أعمارهم 18 عامًا أو أكثر. هل عمرك 18 عامًا أو أكثر؟"},
+    {"name":"settings_for_you_only_sensitive_age_under","value":"أقل من 18 عامًا"},
+    {"name":"settings_for_you_only_sensitive_age_adult","value":"18 عامًا أو أكثر"},
+    {"name":"settings_theme_icon_blue","value":"أزرق الأيقونات"},
+    {"name":"settings_theme_icon_red","value":"أحمر الأيقونات"},
+    {"name":"settings_theme_icon_orange","value":"برتقالي الأيقونات"},
+    {"name":"settings_theme_icon_yellow","value":"أصفر الأيقونات"},
+    {"name":"settings_theme_icon_green","value":"أخضر الأيقونات"},
+    {"name":"settings_theme_icon_pink","value":"وردي الأيقونات"},
+    {"name":"settings_theme_icon_cyan","value":"سماوي الأيقونات"},
+    {"name":"settings_theme_icon_navy","value":"كحلي الأيقونات"}
   ]
 }

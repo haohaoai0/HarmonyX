@@ -15,6 +15,7 @@ new Function('require', 'module', 'exports', output)(
   (id) => {
     if (id === '@ohos.hilog') return { info() {}, warn() {}, error() {} };
     if (id === './ReplyConversation') return require('./reply-conversation-fixture.cjs');
+    if (id === '../utils/PostMetadata') return require('./post-card-fixture.cjs').load('utils/PostMetadata');
     if (id === '../utils/PostGif') return require('./post-gif-fixture.cjs');
     if (id === './ReplyConversation') {
       const source = fs.readFileSync(path.resolve(__dirname, '../entry/src/main/ets/services/ReplyConversation.ets'), 'utf8');

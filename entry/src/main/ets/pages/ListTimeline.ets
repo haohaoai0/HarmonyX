@@ -35,12 +35,14 @@ import type { UserDetailRouteParam } from './UserDetail';
 import type { ListMembersRouteParam, ListTimelineRouteParam, ListEditorRouteParam } from './Lists';
 import type { ReadAloudRouteParam } from './ReadAloud';
 import { STORAGE_KEY_READ_ALOUD_ENTRY_ENABLED } from '../services/ReadAloudSettingsStore';
+import { materialModifier } from '../utils/SystemMaterial';
 import {
   ContentFilterSettings,
   contentFilterStore,
   STORAGE_KEY_FILTER_HIDE_ADS,
   STORAGE_KEY_FILTER_HIDE_REPLIES,
   STORAGE_KEY_FILTER_HIDE_REPOSTS,
+  STORAGE_KEY_FILTER_LANGUAGES,
   STORAGE_KEY_FILTER_KEYWORDS,
   STORAGE_KEY_FILTER_MUTED_USERS,
   STORAGE_KEY_FILTER_ONLY_MEDIA,
@@ -74,6 +76,7 @@ export struct ListTimeline {
   @StorageLink(STORAGE_KEY_FILTER_HIDE_REPOSTS) filterHideReposts: boolean = false;
   @StorageLink(STORAGE_KEY_FILTER_HIDE_REPLIES) filterHideReplies: boolean = false;
   @StorageLink(STORAGE_KEY_FILTER_HIDE_ADS) filterHideAds: boolean = true;
+  @StorageProp(STORAGE_KEY_FILTER_LANGUAGES) private filterLanguages: string = '';
   @StorageLink(STORAGE_KEY_FILTER_KEYWORDS) filterKeywords: string = '';
   @StorageLink(STORAGE_KEY_FILTER_MUTED_USERS) filterMutedUsers: string = '';
   @StorageLink(STORAGE_KEY_FILTER_REVISION) filterRevision: number = 0;
@@ -366,7 +369,7 @@ export struct ListTimeline {
       this.filterHideReplies,
       this.filterKeywords,
       this.filterMutedUsers,
-      this.filterHideAds
+      this.filterHideAds, this.filterLanguages
     );
   }
 
@@ -623,6 +626,6 @@ export struct ListTimeline {
       style: this.coverTitleBarStyle()
     })
     .backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue))
-    .systemMaterial(pageBackgroundActive(this.pageBackgroundValue) ? undefined : this.pageMaterial());
+    .attributeModifier(materialModifier(pageBackgroundActive(this.pageBackgroundValue) ? undefined : this.pageMaterial()));
   }
 }

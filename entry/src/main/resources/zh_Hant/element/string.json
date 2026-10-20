@@ -1,5 +1,42 @@
 {
   "string": [
+    {
+      "name": "supporter_config_error",
+      "value": "雲端帳號綁定設定異常，請聯絡作者核對。"
+    },
+    {
+      "name": "supporter_restore_hint",
+      "value": "在應用程式內切回原帳號會恢復已儲存的狀態。更換裝置、重新安裝或切換應用程式版本後，請登入同一 X 帳號並輸入原兌換碼恢復。"
+    },
+    {"name": "eye_reading_title", "value": "眼動翻頁"},
+    {"name": "eye_reading_intro", "value": "在長討論串、離線副本與文章中，用眼睛上下看並停留來捲動閱讀。"},
+    {"name": "eye_reading_enable", "value": "啟用眼動閱讀"},
+    {"name": "eye_reading_supported", "value": "此裝置支援臉部追蹤。進入閱讀頁後，點「開始眼動」才會開啟相機。"},
+    {"name": "eye_reading_unsupported", "value": "此裝置不支援所需的臉部追蹤功能，請繼續使用觸控或鍵盤閱讀。"},
+    {"name": "eye_reading_dwell", "value": "注視停留時間"},
+    {"name": "eye_reading_threshold", "value": "方向觸發幅度"},
+    {"name": "eye_reading_threshold_desc", "value": "幅度越大，眼睛需要轉動得越明顯，可減少誤觸。"},
+    {"name": "eye_reading_help", "value": "開始後保持頭部穩定，正視螢幕中央完成校準。向下或向上看並停留，捲動約半個畫面；每次觸發後先回到正視位置。觸控、滾輪與鍵盤操作優先。"},
+    {"name": "eye_reading_privacy", "value": "僅在主動開始後使用前置相機，在本機處理方向參數，不儲存或上傳畫面。離開頁面或切換至背景會停止，再次使用需手動開始。"},
+    {"name": "eye_reading_save_failed", "value": "設定儲存失敗，請重試。"},
+    {"name": "eye_reading_start", "value": "開始眼動"},
+    {"name": "eye_reading_stop", "value": "停止眼動"},
+    {"name": "eye_reading_recalibrate", "value": "重新校準"},
+    {"name": "eye_reading_starting", "value": "正在啟動前置相機…"},
+    {"name": "eye_reading_permission", "value": "需要相機權限。請在系統應用程式權限中允許相機後重試。"},
+    {"name": "eye_reading_failed", "value": "相機暫時無法使用，請關閉其他相機應用程式後重試。"},
+    {"name": "eye_reading_calibrating", "value": "請正視螢幕中央，保持頭部與視線穩定，完成校準。"},
+    {"name": "eye_reading_center", "value": "請先回到正視位置，再進行下一次翻頁。"},
+    {"name": "eye_reading_ready", "value": "已就緒：向上或向下看並停留。"},
+    {"name": "eye_reading_up", "value": "保持向上看，即將向上捲動。"},
+    {"name": "eye_reading_down", "value": "保持向下看，即將向下捲動。"},
+    {"name": "eye_reading_lost", "value": "請睜眼並面向螢幕，確保光線充足；持續無反應時可重新校準。"},
+    {"name": "eye_reading_paused", "value": "手動操作優先，眼動已暫緩。"},
+    {"name": "eye_reading_camera_reason", "value": "用於您主動開啟眼動翻頁時，透過前置相機在本機辨識眼球方向。"},
+    {"name": "compact_video_layout", "value": "外螢幕影片版面"},
+    {"name": "settings_compact_video_layout_desc", "value": "適用於 Pura X 等小方形螢幕，可選側邊操作列或底部橫列；展開後仍使用原來的影片版面。"},
+    {"name": "compact_video_layout_rail", "value": "側邊操作列"},
+    {"name": "compact_video_layout_bottom", "value": "底部橫列"},
     {"name":"settings_component_hdr_enabled","value":"元件 HDR 效果"},
     {"name":"settings_component_hdr_enabled_desc","value":"預設關閉；開啟後使用 1.25 倍提亮，可在下方調整。"},
     {"name":"settings_confirm_app_exit","value":"結束前確認"},
@@ -1775,6 +1812,14 @@
     {
       "name": "settings_hds_tabs_material_adaptive",
       "value": "自適應"
+    },
+    {
+      "name": "settings_hds_tabs_gradient_mask",
+      "value": "底部 Tab 漸變遮罩"
+    },
+    {
+      "name": "settings_hds_tabs_gradient_mask_desc",
+      "value": "控制懸浮 HdsTabs 底部的漸隱漸變，預設開啟；關閉後使用透明遮罩。"
     },
     {
       "name": "settings_timeline_columns_title",
@@ -9249,6 +9294,14 @@
       "value": "關閉後，將時間軸標籤或搜尋框移到頭像和右側按鈕之間。"
     },
     {
+      "name": "settings_title_bar_logo_auto_contrast",
+      "value": "Logo 自適應反色"
+    },
+    {
+      "name": "settings_title_bar_logo_auto_contrast_desc",
+      "value": "依標題欄背景自動切換 X 或圖案前景的深淺色；只顯示單色前景，不繪製圖示背景。"
+    },
+    {
       "name": "notifications_all",
       "value": "全部"
     },
@@ -10705,6 +10758,359 @@
     {"name":"page_background_motif_popular_apps_global_firefox","value":"Firefox"},
     {"name":"page_background_motif_popular_apps_global_edge","value":"Edge"},
     {"name":"page_background_motif_popular_apps_global_gmail","value":"Gmail"},
-    {"name":"page_background_motif_popular_apps_global_google_maps","value":"Google 地圖"}
+    {"name":"page_background_motif_popular_apps_global_google_maps","value":"Google 地圖"},
+    {"name":"scene_title","value":"情境模式"},
+    {"name":"scene_intro","value":"組合調整自動播放、畫質、動效和背景。恢復時將找回首次啟用情境前的個人設定。"},
+    {"name":"scene_reading","value":"清爽閱讀"},
+    {"name":"scene_reading_desc","value":"關閉自動播放 · 高畫質圖片 · 低畫質影片 · 減少動效 · 純淨背景"},
+    {"name":"scene_saver","value":"節能省流量"},
+    {"name":"scene_saver_desc","value":"關閉自動播放 · 小圖 · 低畫質影片 · 減少動效 · 純淨背景"},
+    {"name":"scene_media","value":"媒體瀏覽"},
+    {"name":"scene_media_desc","value":"開啟自動播放 · 原圖 · 高畫質影片 · 開啟動效 · 保留個人背景"},
+    {"name":"scene_restore","value":"恢復原設定"},
+    {"name":"scene_restore_desc","value":"恢復首次啟用情境前的設定；連續切換情境不會覆蓋這份備份。"},
+    {"name":"scene_failed","value":"部分設定未能儲存。原設定仍保留，可重試或恢復。"},
+    {"name":"offline_title","value":"離線與稍後閱讀"},
+    {"name":"offline_online","value":"線上書籤"},
+    {"name":"offline_intro","value":"新增收藏自動儲存正文和可取得的長文。儲存前開啟配圖可一併下載圖片。本機副本獨立於線上書籤，清理一般快取不會刪除。"},
+    {"name":"offline_images","value":"後續儲存包含配圖"},
+    {"name":"offline_save","value":"儲存離線副本"},
+    {"name":"offline_saving","value":"正在儲存…"},
+    {"name":"offline_saved","value":"已儲存，可離線閱讀"},
+    {"name":"offline_partial_saved","value":"已儲存可用內容，部分長文或圖片未儲存完整，可連線後重試。"},
+    {"name":"offline_save_failed","value":"本機儲存失敗，請重試。"},
+    {"name":"offline_partial","value":"內容不完整"},
+    {"name":"offline_unread","value":"未讀"},
+    {"name":"offline_unread_only","value":"只看未讀"},
+    {"name":"offline_search","value":"搜尋標題、標籤或備註"},
+    {"name":"offline_empty","value":"暫無符合的離線內容。收藏貼文，或在貼文中儲存離線副本。"},
+    {"name":"offline_edit","value":"標籤與備註"},
+    {"name":"offline_tags","value":"本機標籤"},
+    {"name":"offline_tags_hint","value":"輸入標籤，多個標籤以逗號分隔"},
+    {"name":"offline_note","value":"私人備註"},
+    {"name":"offline_done","value":"儲存"},
+    {"name":"offline_delete","value":"刪除本機副本"},
+    {"name":"reader_title","value":"長討論串閱讀"},
+    {"name":"reader_author_only","value":"只看作者"},
+    {"name":"reader_translate","value":"整段翻譯"},
+    {"name":"reader_font","value":"字級"},
+    {"name":"reader_missing","value":"離線內容不存在或無法讀取，請連線重新儲存。"},
+    {"name":"reader_partial","value":"目前僅顯示可取得的長文內容。請連線後繼續載入或重試以取得完整正文。"},
+    {"name":"reader_load_failed","value":"後續回覆載入失敗，已保留目前閱讀內容。"},
+    {"name":"reader_translation_setup","value":"請先在設定中開啟翻譯並選擇目標語言。"},
+    {"name":"reader_translation_failed","value":"部分段落未能翻譯，可隱藏譯文後重試。"},
+    {"name":"reader_offline_note","value":"正在閱讀本機副本，翻譯需要連線。"},
+    {"name":"reader_scope","value":"目前為已載入的討論內容，可繼續載入更多回覆。"},
+    {
+      "name": "input_help_title",
+      "value": "滑鼠、鍵盤與觸控板"
+    },
+    {
+      "name": "input_help_desc",
+      "value": "查看快捷鍵與滑鼠、觸控板操作方式"
+    },
+    {
+      "name": "input_main_title",
+      "value": "主頁面快捷鍵"
+    },
+    {
+      "name": "input_main_scope",
+      "value": "在五個主頁面中可用；開啟子頁面、側欄或彈窗時暫停回應。Ctrl+N 在訊息頁新增對話，在其他主頁面建立貼文。"
+    },
+    {
+      "name": "input_compose",
+      "value": "新增貼文 / 新增對話"
+    },
+    {
+      "name": "input_refresh",
+      "value": "重新整理目前頁面"
+    },
+    {
+      "name": "input_keyboard_title",
+      "value": "鍵盤操作"
+    },
+    {
+      "name": "input_focus",
+      "value": "向前 / 向後移動焦點；原生控制項也支援方向鍵導覽。"
+    },
+    {
+      "name": "input_activate",
+      "value": "啟動目前聚焦的按鈕。"
+    },
+    {
+      "name": "input_submit",
+      "value": "在貼文、回覆或訊息輸入框中送出；一般 Enter 保留原有輸入行為。"
+    },
+    {
+      "name": "input_back",
+      "value": "在說明、編輯、聊天與媒體頁面返回；優先收起目前面板。"
+    },
+    {
+      "name": "input_photo",
+      "value": "圖片檢視器中上一張 / 下一張；圖片未放大且未開啟面板時可用。"
+    },
+    {
+      "name": "input_video",
+      "value": "影片檢視器中上一部 / 下一部影片；未開啟面板時可用。"
+    },
+    {
+      "name": "input_playback",
+      "value": "聚焦影片畫面後：空白鍵或 Enter 播放 / 暫停，左 / 右方向鍵倒退 / 快轉 10 秒。"
+    },
+    {
+      "name": "input_pointer_title",
+      "value": "滑鼠與觸控板"
+    },
+    {
+      "name": "input_pointer",
+      "value": "左鍵點擊或單指輕點執行操作；在圖片、影片或聊天訊息上按右鍵開啟選單。按鈕支援懸停回饋，可拖曳捲軸或進度條。"
+    },
+    {
+      "name": "input_trackpad",
+      "value": "雙指捲動清單、橫向滑動切換圖片；雙指捏合縮放圖片，放大後拖曳檢視。支援雙指輕點的觸控板可開啟右鍵選單。"
+    },
+    {
+      "name": "input_previous",
+      "value": "上一張圖片"
+    },
+    {
+      "name": "input_next",
+      "value": "下一張圖片"
+    },
+    {
+      "name": "input_key_home",
+      "value": "Ctrl + 1"
+    },
+    {
+      "name": "input_key_explore",
+      "value": "Ctrl + 2"
+    },
+    {
+      "name": "input_key_notifications",
+      "value": "Ctrl + 3"
+    },
+    {
+      "name": "input_key_messages",
+      "value": "Ctrl + 4"
+    },
+    {
+      "name": "input_key_profile",
+      "value": "Ctrl + 5"
+    },
+    {
+      "name": "input_key_search",
+      "value": "Ctrl + K"
+    },
+    {
+      "name": "input_key_compose",
+      "value": "Ctrl + N"
+    },
+    {
+      "name": "input_key_refresh",
+      "value": "Ctrl + R"
+    },
+    {
+      "name": "input_key_settings",
+      "value": "Ctrl + ,"
+    },
+    {
+      "name": "input_key_help",
+      "value": "F1"
+    },
+    {
+      "name": "input_key_focus",
+      "value": "Tab / Shift + Tab"
+    },
+    {
+      "name": "input_key_activate",
+      "value": "Enter / Space"
+    },
+    {
+      "name": "input_key_submit",
+      "value": "Ctrl + Enter"
+    },
+    {
+      "name": "input_key_back",
+      "value": "Esc / Alt + ←"
+    },
+    {
+      "name": "input_key_photo",
+      "value": "← / →"
+    },
+    {
+      "name": "input_key_video",
+      "value": "↑ / ↓ / Page Up / Page Down"
+    },
+    {
+      "name": "input_key_playback",
+      "value": "Space / Enter / ← / →"
+    },
+    {"name":"settings_filter_languages","value":"封鎖貼文語言"},
+    {"name":"settings_filter_languages_desc","value":"選擇要封鎖的語言；未識別語言與純媒體貼文仍會顯示。"},
+    {"name":"appearance_preview_title","value":"效果預覽"},
+    {"name":"appearance_preview_hint","value":"修改設定後立即更新。點按彈窗材質範例可展開。"},
+    {"name":"post_edited","value":"已編輯"},
+    {"name":"post_metric_bookmarks","value":"收藏"},
+    {"name":"post_metric_quotes","value":"引用"},
+    {"name":"settings_reply_quality","value":"摺疊低品質回覆"},
+    {"name":"settings_reply_quality_desc","value":"摺疊重複推廣和大量引流。僅本機判斷，可能誤判，可展開查看原因。"},
+    {"name":"reply_quality_folded","value":"疑似低品質回覆"},
+    {"name":"reply_quality_reasons","value":"查看原因"},
+    {"name":"reply_quality_allow","value":"一律顯示此作者"},
+    {"name":"reply_quality_whitelist","value":"回覆白名單"},
+    {"name":"reply_quality_whitelist_desc","value":"一律顯示你自己、貼文作者、已追蹤及白名單作者。白名單僅對目前帳號生效。"},
+    {"name":"reply_quality_empty","value":"尚無白名單作者"},
+    {"name":"reply_quality_reason_duplicate","value":"多位作者重複發布相同推廣範本"},
+    {"name":"reply_quality_reason_author_repeat","value":"同一作者反覆發布相同內容"},
+    {"name":"reply_quality_reason_links","value":"包含多個外部連結"},
+    {"name":"reply_quality_reason_promotion","value":"包含推廣或利益誘導內容"},
+    {"name":"reply_quality_reason_contact","value":"包含引流聯絡方式"},
+    {
+      "name": "settings_floating_compose_material_tint",
+      "value": "懸浮發文按鈕材質顏色"
+    },
+    {
+      "name": "settings_floating_compose_material_tint_desc",
+      "value": "開啟後在材質上疊加主題色，關閉後僅移除疊加顏色。"
+    },
+    {
+      "name": "chat_decoration",
+      "value": "聊天裝扮"
+    },
+    {
+      "name": "chat_decoration_subtitle",
+      "value": "頭像掛件與聊天氣泡，按需下載。"
+    },
+    {
+      "name": "chat_decoration_frame",
+      "value": "頭像掛件"
+    },
+    {
+      "name": "chat_decoration_bubble",
+      "value": "聊天氣泡"
+    },
+    {
+      "name": "chat_decoration_free",
+      "value": "免費"
+    },
+    {
+      "name": "chat_decoration_download_preview",
+      "value": "下載後可預覽"
+    },
+    {
+      "name": "chat_decoration_download",
+      "value": "下載"
+    },
+    {
+      "name": "chat_decoration_downloading",
+      "value": "下載中…"
+    },
+    {
+      "name": "chat_decoration_use",
+      "value": "使用"
+    },
+    {
+      "name": "chat_decoration_in_use",
+      "value": "使用中"
+    },
+    {
+      "name": "chat_decoration_remove",
+      "value": "取消使用"
+    },
+    {
+      "name": "chat_decoration_installed",
+      "value": "已下載"
+    },
+    {
+      "name": "chat_decoration_applied",
+      "value": "裝扮已套用"
+    },
+    {
+      "name": "chat_decoration_download_failed",
+      "value": "下載失敗，請稍後再試"
+    },
+    {
+      "name": "chat_decoration_reset",
+      "value": "恢復預設"
+    },
+    {
+      "name": "chat_decoration_reset_done",
+      "value": "已恢復預設"
+    },
+    {
+      "name": "chat_decoration_note",
+      "value": "素材僅保存在本機；對方看到的樣式仍取決於其自己的用戶端和裝扮。"
+    },
+    {
+      "name": "chat_decoration_loading",
+      "value": "正在取得裝扮…"
+    },
+    {
+      "name": "chat_decoration_unavailable",
+      "value": "暫時無法取得裝扮，請檢查網路後再試。"
+    },
+    {
+      "name": "chat_decoration_sample_text",
+      "value": "今天也要開心呀。"
+    },
+    {"name": "sign_out_confirm_title", "value": "確認登出？"},
+    {"name": "sign_out_confirm_message", "value": "登出目前帳號後，需要重新登入才能繼續使用該帳號。"},
+    {"name": "settings_for_you_only_sensitive", "value": "推薦只顯示敏感內容"},
+    {"name": "settings_for_you_only_sensitive_desc", "value": "僅篩選「為你推薦」中 X 標記為敏感的貼文，含引用內容；不影響正在跟隨與列表，也不會自動揭開敏感媒體。"},
+    {"name": "settings_grip_floating", "value": "懸浮操作按鈕"},
+    {"name": "settings_grip_video", "value": "影片操作列"},
+    {"name": "settings_grip_reply", "value": "貼文回覆膠囊"},
+    {"name": "settings_grip_component_desc", "value": "根據握持手自動調整此元件位置；關閉後使用偏好手。"},
+    {"name": "settings_grip_hdstabs", "value": "HdsTabs 底部標籤列"},
+    {"name": "settings_grip_hdstabs_desc", "value": "使用系統原生左右跟手；關閉後標籤列不隨握持手移動。"},
+    {"name":"gif_action_save_video","value":"儲存為高畫質影片（MP4）"},
+    {"name":"storage_save_remembered_note","value":"開啟後，選擇一次下載目錄，後續檔案會自動儲存至該目錄；關閉後儲存至相簿。"},
+    {"name":"storage_save_to_remembered","value":"儲存至下載目錄"},
+    {"name": "storage_permission_reason", "value": "保留您選擇的檔案與資料夾的存取權限。"},
+    {"name": "timeline_sources_lists", "value": "列表"},
+    {"name": "timeline_sources_communities", "value": "社群"},
+    {"name": "timeline_edit", "value": "編輯"},
+    {"name": "timeline_done", "value": "完成"},
+    {"name": "timeline_move_up", "value": "上移"},
+    {"name": "timeline_move_down", "value": "下移"},
+    {"name": "timeline_remove_source", "value": "移除 %s"},
+    {"name": "timeline_add_to_home", "value": "加入首頁時間軸"},
+    {"name": "timeline_remove_from_home", "value": "從首頁時間軸移除"},
+    {"name": "timeline_sources_failed", "value": "部分列表或社群無法載入，點一下重試"},
+    {"name": "timeline_sources_pinned_empty", "value": "尚無置頂時間軸，可在下方加入列表、社群或話題。"},
+    {"name":"video_controls_mirror","value":"切換左右佈局"},
+    {"name":"video_controls_speed","value":"倍速"},
+    {"name":"video_controls_aspect","value":"比例"},
+    {"name":"video_controls_background","value":"背景"},
+    {"name":"video_controls_quality_hd","value":"HD"},
+    {"name":"video_controls_quality_sd","value":"SD"},
+    {"name":"video_controls_quality_ld","value":"LD"},
+    {"name":"video_controls_more","value":"更多"},
+    {"name":"video_controls_download","value":"下載"},
+    {"name":"settings_navigation_style","value":"底部導覽樣式"},
+    {"name":"settings_hds_bottom_bar","value":"HdsTabs 懸浮導覽"},
+    {"name":"settings_split_bottom_bar","value":"分離式膠囊導覽"},
+    {"name":"settings_split_bottom_bar_desc","value":"左側膠囊用於切換頁面，右側獨立按鈕承接發文、新建私訊、重新整理或回到頂部。兩側使用相同的 HDS 材質；舊版系統自動使用相容導覽。"},
+    {"name":"split_navigation_action_top","value":"回到頂部"},
+    {"name":"split_navigation_action_refresh","value":"重新整理首頁"},
+    {"name":"split_navigation_action_compose","value":"發佈貼文"},
+    {"name": "settings_reply_capsule_split", "value": "分離式回覆膠囊"},
+    {"name": "settings_reply_capsule_split_desc", "value": "收起時將回覆入口與貼文操作分成兩個膠囊"},
+    {"name": "reply_capsule_write_reply", "value": "寫回覆"},
+    {"name":"settings_native_bottom_bar","value":"7.0 材質膠囊導覽"},
+    {"name":"settings_native_bottom_bar_desc","value":"使用與回覆膠囊相同的 HarmonyOS 7.0 沉浸材質，支援觸控光效、液態指示器與智慧握姿換邊；不支援時自動使用 HDS 膠囊導覽。"},
+    {"name":"settings_native_navigation_material","value":"導覽膠囊材質厚度"},
+    {"name":"settings_for_you_only_sensitive_age_title","value":"確認年齡"},
+    {"name":"settings_for_you_only_sensitive_age_message","value":"「推薦只顯示敏感內容」僅適用於已滿 18 歲的使用者。你是否已滿 18 歲？"},
+    {"name":"settings_for_you_only_sensitive_age_under","value":"未滿 18 歲"},
+    {"name":"settings_for_you_only_sensitive_age_adult","value":"已滿 18 歲"},
+    {"name":"settings_theme_icon_blue","value":"圖示藍"},
+    {"name":"settings_theme_icon_red","value":"圖示紅"},
+    {"name":"settings_theme_icon_orange","value":"圖示橙"},
+    {"name":"settings_theme_icon_yellow","value":"圖示黃"},
+    {"name":"settings_theme_icon_green","value":"圖示綠"},
+    {"name":"settings_theme_icon_pink","value":"圖示粉"},
+    {"name":"settings_theme_icon_cyan","value":"圖示青"},
+    {"name":"settings_theme_icon_navy","value":"圖示靛藍"}
   ]
 }

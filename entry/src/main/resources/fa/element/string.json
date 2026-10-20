@@ -1,5 +1,42 @@
 {
   "string": [
+    {
+      "name": "supporter_config_error",
+      "value": "پیوند حساب در فضای ابری تأیید نشد. لطفاً با توسعه‌دهنده تماس بگیرید."
+    },
+    {
+      "name": "supporter_restore_hint",
+      "value": "با بازگشت به حساب، وضعیت ذخیره‌شده آن بازیابی می‌شود. در دستگاه جدید، پس از نصب مجدد یا در نسخه دیگر، وارد همان حساب X شوید و کد اصلی را برای بازیابی وارد کنید."
+    },
+    {"name": "eye_reading_title", "value": "مطالعه با نگاه"},
+    {"name": "eye_reading_intro", "value": "برای پیمایش رشته‌ها، نسخه‌های آفلاین و مقاله‌ها به بالا یا پایین نگاه کنید و نگاه را نگه دارید."},
+    {"name": "eye_reading_enable", "value": "فعال‌سازی مطالعه با نگاه"},
+    {"name": "eye_reading_supported", "value": "ردیابی چهره پشتیبانی می‌شود. دوربین فقط پس از زدن شروع در صفحه مطالعه روشن می‌شود."},
+    {"name": "eye_reading_unsupported", "value": "این دستگاه از ردیابی چهره موردنیاز پشتیبانی نمی‌کند. از لمس یا صفحه‌کلید استفاده کنید."},
+    {"name": "eye_reading_dwell", "value": "مدت نگه‌داشتن نگاه"},
+    {"name": "eye_reading_threshold", "value": "آستانه جهت"},
+    {"name": "eye_reading_threshold_desc", "value": "آستانه بالاتر به حرکت بیشتر چشم نیاز دارد و پیمایش ناخواسته را کاهش می‌دهد."},
+    {"name": "eye_reading_help", "value": "برای کالیبراسیون سر را ثابت نگه دارید و به مرکز صفحه نگاه کنید. با نگه‌داشتن نگاه به بالا یا پایین حدود نیم صفحه پیمایش کنید. پس از هر حرکت به مرکز برگردید. لمس، چرخ ماوس و صفحه‌کلید اولویت دارند."},
+    {"name": "eye_reading_privacy", "value": "دوربین جلو فقط پس از شروع استفاده می‌شود. داده جهت در دستگاه پردازش می‌شود؛ تصاویر ذخیره یا بارگذاری نمی‌شوند. خروج از صفحه یا رفتن به پس‌زمینه جلسه را متوقف می‌کند. دوباره دستی شروع کنید."},
+    {"name": "eye_reading_save_failed", "value": "تنظیمات ذخیره نشد. دوباره تلاش کنید."},
+    {"name": "eye_reading_start", "value": "شروع کنترل با نگاه"},
+    {"name": "eye_reading_stop", "value": "توقف کنترل با نگاه"},
+    {"name": "eye_reading_recalibrate", "value": "کالیبراسیون دوباره"},
+    {"name": "eye_reading_starting", "value": "در حال راه‌اندازی دوربین جلو…"},
+    {"name": "eye_reading_permission", "value": "مجوز دوربین لازم است. در مجوزهای برنامه در سیستم اجازه دهید و دوباره تلاش کنید."},
+    {"name": "eye_reading_failed", "value": "دوربین در دسترس نیست. برنامه‌های دوربین دیگر را ببندید و دوباره تلاش کنید."},
+    {"name": "eye_reading_calibrating", "value": "برای کالیبراسیون به مرکز صفحه نگاه کنید و سر و نگاه را ثابت نگه دارید."},
+    {"name": "eye_reading_center", "value": "پیش از حرکت بعدی نگاه را به مرکز برگردانید."},
+    {"name": "eye_reading_ready", "value": "آماده: به بالا یا پایین نگاه کنید و نگاه را نگه دارید."},
+    {"name": "eye_reading_up", "value": "برای پیمایش رو به بالا، به بالا نگاه کنید."},
+    {"name": "eye_reading_down", "value": "برای پیمایش رو به پایین، به پایین نگاه کنید."},
+    {"name": "eye_reading_lost", "value": "چشم‌ها را باز کنید و در نور مناسب رو به صفحه باشید. اگر پاسخی نیست دوباره کالیبره کنید."},
+    {"name": "eye_reading_paused", "value": "ورودی دستی اولویت دارد. کنترل با نگاه موقتاً مکث شده است."},
+    {"name": "eye_reading_camera_reason", "value": "پس از شروع مطالعه با نگاه، از دوربین جلو برای تشخیص جهت چشم در دستگاه استفاده می‌کند."},
+    {"name": "compact_video_layout", "value": "چیدمان ویدیوی صفحه بیرونی"},
+    {"name": "settings_compact_video_layout_desc", "value": "برای صفحه‌های مربعی کوچک مانند Pura X، کنش‌های کناری یا ردیف پایین را انتخاب کنید. با باز کردن گوشی، چیدمان معمول برمی‌گردد."},
+    {"name": "compact_video_layout_rail", "value": "کنش‌های کناری"},
+    {"name": "compact_video_layout_bottom", "value": "ردیف پایین"},
     {"name":"settings_component_hdr_enabled","value":"Component HDR effect"},
     {"name":"settings_component_hdr_enabled_desc","value":"Off by default. Turn it on to use 1.25x brightening, then adjust the multiplier below."},
     {"name":"settings_confirm_app_exit","value":"تأیید پیش از خروج"},
@@ -1775,6 +1812,14 @@
     {
       "name": "settings_hds_tabs_material_adaptive",
       "value": "تطبیقی"
+    },
+    {
+      "name": "settings_hds_tabs_gradient_mask",
+      "value": "ماسک گرادیان زبانه‌های پایین"
+    },
+    {
+      "name": "settings_hds_tabs_gradient_mask_desc",
+      "value": "گرادیان محو شونده زیر نوار شناور HdsTabs را کنترل می‌کند. به‌طور پیش‌فرض روشن است."
     },
     {
       "name": "settings_timeline_columns_title",
@@ -9249,6 +9294,14 @@
       "value": "با خاموش کردن، زبانه‌های خط زمانی یا کادر جستجو بین تصویر شما و دکمه سمت راست قرار می‌گیرند."
     },
     {
+      "name": "settings_title_bar_logo_auto_contrast",
+      "value": "Adaptive logo color"
+    },
+    {
+      "name": "settings_title_bar_logo_auto_contrast_desc",
+      "value": "Automatically switches the X or pattern foreground between light and dark to stay readable. Only the single-color foreground is shown, without an icon background."
+    },
+    {
       "name": "notifications_all",
       "value": "همه"
     },
@@ -10705,6 +10758,359 @@
     {"name":"page_background_motif_popular_apps_global_firefox","value":"Firefox"},
     {"name":"page_background_motif_popular_apps_global_edge","value":"Edge"},
     {"name":"page_background_motif_popular_apps_global_gmail","value":"Gmail"},
-    {"name":"page_background_motif_popular_apps_global_google_maps","value":"Google Maps"}
+    {"name":"page_background_motif_popular_apps_global_google_maps","value":"Google Maps"},
+    {"name":"scene_title","value":"Scene modes"},
+    {"name":"scene_intro","value":"Apply a set of playback, quality, motion and background preferences. Restore returns to your settings from before the first mode was enabled."},
+    {"name":"scene_reading","value":"Clear reading"},
+    {"name":"scene_reading_desc","value":"Autoplay off · high quality images · low quality video · reduced motion · plain background"},
+    {"name":"scene_saver","value":"Power and data saver"},
+    {"name":"scene_saver_desc","value":"Autoplay off · small images · low quality video · reduced motion · plain background"},
+    {"name":"scene_media","value":"Media browsing"},
+    {"name":"scene_media_desc","value":"Autoplay on · original images · high quality video · motion on · your saved background"},
+    {"name":"scene_restore","value":"Restore original settings"},
+    {"name":"scene_restore_desc","value":"Keep your preferences from before scene mode. Switching between modes does not replace this backup."},
+    {"name":"scene_failed","value":"Some settings could not be saved. Your original settings are retained; retry or restore."},
+    {"name":"offline_title","value":"Offline & later"},
+    {"name":"offline_online","value":"Online bookmarks"},
+    {"name":"offline_intro","value":"New bookmarks save text and available articles automatically. Enable images before saving to include photos. Local copies stay separate from online bookmarks and ordinary cache cleanup."},
+    {"name":"offline_images","value":"Include photos in future saves"},
+    {"name":"offline_save","value":"Save offline"},
+    {"name":"offline_saving","value":"Saving…"},
+    {"name":"offline_saved","value":"Saved for offline reading"},
+    {"name":"offline_partial_saved","value":"Saved available content. Some article text or photos are missing; retry when online."},
+    {"name":"offline_save_failed","value":"Could not save locally. Please retry."},
+    {"name":"offline_partial","value":"Incomplete copy"},
+    {"name":"offline_unread","value":"Unread"},
+    {"name":"offline_unread_only","value":"Unread only"},
+    {"name":"offline_search","value":"Search titles, tags or notes"},
+    {"name":"offline_empty","value":"No matching offline items. Save a bookmark or use Save offline on a post."},
+    {"name":"offline_edit","value":"Tags & note"},
+    {"name":"offline_tags","value":"Tags"},
+    {"name":"offline_tags_hint","value":"Tags, separated by commas"},
+    {"name":"offline_note","value":"Private note"},
+    {"name":"offline_done","value":"Save"},
+    {"name":"offline_delete","value":"Delete local copy"},
+    {"name":"reader_title","value":"Thread reader"},
+    {"name":"reader_author_only","value":"Author only"},
+    {"name":"reader_translate","value":"Translate passages"},
+    {"name":"reader_font","value":"Text size"},
+    {"name":"reader_missing","value":"This offline item is missing or unavailable. Save it again while online."},
+    {"name":"reader_partial","value":"Only the available article content is shown. Continue loading or retry while online to get the complete text."},
+    {"name":"reader_load_failed","value":"Could not load more replies. Your current reading content is kept."},
+    {"name":"reader_translation_setup","value":"Enable translation and choose a target language in Settings first."},
+    {"name":"reader_translation_failed","value":"Some passages could not be translated. You can hide translations and retry."},
+    {"name":"reader_offline_note","value":"Saved local content. Translation requires a network connection."},
+    {"name":"reader_scope","value":"Replies loaded so far. Use Continue loading to include more of the discussion."},
+    {
+      "name": "input_help_title",
+      "value": "ماوس، صفحه‌کلید و پد لمسی"
+    },
+    {
+      "name": "input_help_desc",
+      "value": "میان‌برهای صفحه‌کلید و حرکت‌ها"
+    },
+    {
+      "name": "input_main_title",
+      "value": "میان‌برهای صفحهٔ اصلی"
+    },
+    {
+      "name": "input_main_scope",
+      "value": "در پنج زبانهٔ اصلی و بدون صفحهٔ فرعی، نوار کناری یا پنجرهٔ باز قابل استفاده است. Ctrl+N در پیام‌ها گفتگو و در سایر زبانه‌ها پست ایجاد می‌کند."
+    },
+    {
+      "name": "input_compose",
+      "value": "پست / گفتگوی جدید"
+    },
+    {
+      "name": "input_refresh",
+      "value": "تازه‌سازی زبانهٔ فعلی"
+    },
+    {
+      "name": "input_keyboard_title",
+      "value": "کنترل با صفحه‌کلید"
+    },
+    {
+      "name": "input_focus",
+      "value": "انتقال تمرکز به جلو / عقب. کنترل‌های بومی از کلیدهای جهت نیز پشتیبانی می‌کنند."
+    },
+    {
+      "name": "input_activate",
+      "value": "فعال‌کردن دکمهٔ دارای تمرکز."
+    },
+    {
+      "name": "input_submit",
+      "value": "ارسال از ورودی پست، پاسخ یا پیام. Enter عادی رفتار قبلی خود را حفظ می‌کند."
+    },
+    {
+      "name": "input_back",
+      "value": "بازگشت در راهنما، ویرایشگر، گفتگو و نمایشگر رسانه. ابتدا پنل فعلی بسته می‌شود."
+    },
+    {
+      "name": "input_photo",
+      "value": "عکس قبلی / بعدی، بدون بزرگ‌نمایی و پنل باز."
+    },
+    {
+      "name": "input_video",
+      "value": "ویدیوی قبلی / بعدی، بدون پنل باز."
+    },
+    {
+      "name": "input_playback",
+      "value": "با تمرکز روی تصویر ویدیو: Space یا Enter پخش / مکث؛ چپ / راست ۱۰ ثانیه عقب / جلو."
+    },
+    {
+      "name": "input_pointer_title",
+      "value": "ماوس و پد لمسی"
+    },
+    {
+      "name": "input_pointer",
+      "value": "کلیک چپ یا لمس برای فعال‌کردن. کلیک راست روی عکس، ویدیو یا پیام فهرست عملیات را باز می‌کند. دکمه‌ها به قرارگرفتن نشانگر واکنش نشان می‌دهند. نوار پیمایش و پیشرفت را می‌توان کشید."
+    },
+    {
+      "name": "input_trackpad",
+      "value": "فهرست‌ها را با دو انگشت پیمایش کنید، برای تغییر عکس افقی بکشید و برای بزرگ‌نمایی نیشگون بگیرید. عکس بزرگ‌شده را جابه‌جا کنید. لمس دو انگشتی در پدهای سازگار فهرست را باز می‌کند."
+    },
+    {
+      "name": "input_previous",
+      "value": "عکس قبلی"
+    },
+    {
+      "name": "input_next",
+      "value": "عکس بعدی"
+    },
+    {
+      "name": "input_key_home",
+      "value": "Ctrl + 1"
+    },
+    {
+      "name": "input_key_explore",
+      "value": "Ctrl + 2"
+    },
+    {
+      "name": "input_key_notifications",
+      "value": "Ctrl + 3"
+    },
+    {
+      "name": "input_key_messages",
+      "value": "Ctrl + 4"
+    },
+    {
+      "name": "input_key_profile",
+      "value": "Ctrl + 5"
+    },
+    {
+      "name": "input_key_search",
+      "value": "Ctrl + K"
+    },
+    {
+      "name": "input_key_compose",
+      "value": "Ctrl + N"
+    },
+    {
+      "name": "input_key_refresh",
+      "value": "Ctrl + R"
+    },
+    {
+      "name": "input_key_settings",
+      "value": "Ctrl + ,"
+    },
+    {
+      "name": "input_key_help",
+      "value": "F1"
+    },
+    {
+      "name": "input_key_focus",
+      "value": "Tab / Shift + Tab"
+    },
+    {
+      "name": "input_key_activate",
+      "value": "Enter / Space"
+    },
+    {
+      "name": "input_key_submit",
+      "value": "Ctrl + Enter"
+    },
+    {
+      "name": "input_key_back",
+      "value": "Esc / Alt + ←"
+    },
+    {
+      "name": "input_key_photo",
+      "value": "← / →"
+    },
+    {
+      "name": "input_key_video",
+      "value": "↑ / ↓ / Page Up / Page Down"
+    },
+    {
+      "name": "input_key_playback",
+      "value": "Space / Enter / ← / →"
+    },
+    {"name":"settings_filter_languages","value":"زبان‌های پست مسدودشده"},
+    {"name":"settings_filter_languages_desc","value":"زبان‌های مورد نظر برای پنهان‌سازی را انتخاب کنید. زبان‌های نامشخص و پست‌های فقط رسانه نمایش داده می‌شوند."},
+    {"name":"appearance_preview_title","value":"پیش‌نمایش زنده"},
+    {"name":"appearance_preview_hint","value":"تغییرات فوری نمایش داده می‌شوند. برای گسترش نمونه پنل روی آن بزنید."},
+    {"name":"post_edited","value":"ویرایش‌شده"},
+    {"name":"post_metric_bookmarks","value":"نشانک"},
+    {"name":"post_metric_quotes","value":"نقل‌قول"},
+    {"name":"settings_reply_quality","value":"جمع‌کردن پاسخ‌های کم‌کیفیت"},
+    {"name":"settings_reply_quality_desc","value":"تبلیغات تکراری و دعوت‌های انبوه را جمع می‌کند. قواعد محلی ممکن است اشتباه کنند؛ پاسخ‌ها قابل بازکردن هستند."},
+    {"name":"reply_quality_folded","value":"پاسخ احتمالاً کم‌کیفیت"},
+    {"name":"reply_quality_reasons","value":"دیدن دلیل‌ها"},
+    {"name":"reply_quality_allow","value":"همیشه این نویسنده را نشان بده"},
+    {"name":"reply_quality_whitelist","value":"نویسندگان مجاز"},
+    {"name":"reply_quality_whitelist_desc","value":"پاسخ‌های شما، نویسنده پست، حساب‌های دنبال‌شده و نویسندگان مجاز نمایش داده می‌شوند. فهرست مخصوص حساب فعلی است."},
+    {"name":"reply_quality_empty","value":"هنوز نویسنده مجازی وجود ندارد"},
+    {"name":"reply_quality_reason_duplicate","value":"چند نویسنده یک الگوی تبلیغاتی را تکرار می‌کنند"},
+    {"name":"reply_quality_reason_author_repeat","value":"نویسنده محتوای یکسان را تکرار می‌کند"},
+    {"name":"reply_quality_reason_links","value":"شامل چند پیوند خارجی است"},
+    {"name":"reply_quality_reason_promotion","value":"شامل تبلیغ یا وعده سود است"},
+    {"name":"reply_quality_reason_contact","value":"شامل راه تماس برای جذب مخاطب است"},
+    {
+      "name": "settings_floating_compose_material_tint",
+      "value": "رنگ متریال دکمه شناور نوشتن"
+    },
+    {
+      "name": "settings_floating_compose_material_tint_desc",
+      "value": "رنگ پوسته را روی متریال قرار می‌دهد. خاموش کردن این گزینه فقط لایه رنگ را حذف می‌کند."
+    },
+    {
+      "name": "chat_decoration",
+      "value": "Chat decorations"
+    },
+    {
+      "name": "chat_decoration_subtitle",
+      "value": "Avatar frames and chat bubbles, downloaded only when you choose them."
+    },
+    {
+      "name": "chat_decoration_frame",
+      "value": "Avatar frames"
+    },
+    {
+      "name": "chat_decoration_bubble",
+      "value": "Chat bubbles"
+    },
+    {
+      "name": "chat_decoration_free",
+      "value": "Free"
+    },
+    {
+      "name": "chat_decoration_download_preview",
+      "value": "Download to preview"
+    },
+    {
+      "name": "chat_decoration_download",
+      "value": "Download"
+    },
+    {
+      "name": "chat_decoration_downloading",
+      "value": "Downloading..."
+    },
+    {
+      "name": "chat_decoration_use",
+      "value": "Use"
+    },
+    {
+      "name": "chat_decoration_in_use",
+      "value": "In use"
+    },
+    {
+      "name": "chat_decoration_remove",
+      "value": "Stop using"
+    },
+    {
+      "name": "chat_decoration_installed",
+      "value": "Downloaded"
+    },
+    {
+      "name": "chat_decoration_applied",
+      "value": "Decoration applied"
+    },
+    {
+      "name": "chat_decoration_download_failed",
+      "value": "Download failed. Try again later."
+    },
+    {
+      "name": "chat_decoration_reset",
+      "value": "Restore defaults"
+    },
+    {
+      "name": "chat_decoration_reset_done",
+      "value": "Defaults restored"
+    },
+    {
+      "name": "chat_decoration_note",
+      "value": "Decorations stay on this device. Other people see styles supported by their client."
+    },
+    {
+      "name": "chat_decoration_loading",
+      "value": "Loading decorations..."
+    },
+    {
+      "name": "chat_decoration_unavailable",
+      "value": "Decorations are unavailable. Check your connection and retry."
+    },
+    {
+      "name": "chat_decoration_sample_text",
+      "value": "Have a lovely day."
+    },
+    {"name": "sign_out_confirm_title", "value": "از حساب خارج می‌شوید؟"},
+    {"name": "sign_out_confirm_message", "value": "برای استفاده از این حساب باید دوباره وارد شوید."},
+    {"name": "settings_for_you_only_sensitive", "value": "فقط محتوای حساس در «برای شما»"},
+    {"name": "settings_for_you_only_sensitive_desc", "value": "فقط پست‌های حساس علامت‌گذاری‌شده توسط X، شامل نقل‌قول‌ها، نمایش داده شوند. دنبال‌شده‌ها و فهرست‌ها تغییر نمی‌کنند و رسانه‌ها پوشیده می‌مانند."},
+    {"name": "settings_grip_floating", "value": "دکمه شناور"},
+    {"name": "settings_grip_video", "value": "نوار کنش‌های ویدیو"},
+    {"name": "settings_grip_reply", "value": "دکمه پاسخ به پست"},
+    {"name": "settings_grip_component_desc", "value": "جای این جزء با دست نگهدارنده دستگاه تنظیم شود. در حالت خاموش از دست ترجیحی استفاده می‌شود."},
+    {"name": "settings_grip_hdstabs", "value": "نوار زبانه پایین HdsTabs"},
+    {"name": "settings_grip_hdstabs_desc", "value": "از سازگاری بومی با دست استفاده شود. در حالت خاموش نوار با دست نگهدارنده جابه‌جا نمی‌شود."},
+    {"name":"gif_action_save_video","value":"ذخیره به‌صورت ویدیوی باکیفیت (MP4)"},
+    {"name":"storage_save_remembered_note","value":"یک بار پوشه دانلود را انتخاب کنید تا فایل‌های بعدی خودکار در آن ذخیره شوند. برای ذخیره در گالری خاموش کنید."},
+    {"name":"storage_save_to_remembered","value":"ذخیره در پوشه دانلود"},
+    {"name": "storage_permission_reason", "value": "حفظ دسترسی به فایل‌ها و پوشه‌های انتخاب‌شده."},
+    {"name": "timeline_sources_lists", "value": "فهرست‌ها"},
+    {"name": "timeline_sources_communities", "value": "انجمن‌ها"},
+    {"name": "timeline_edit", "value": "ویرایش"},
+    {"name": "timeline_done", "value": "انجام شد"},
+    {"name": "timeline_move_up", "value": "انتقال به بالا"},
+    {"name": "timeline_move_down", "value": "انتقال به پایین"},
+    {"name": "timeline_remove_source", "value": "حذف %s"},
+    {"name": "timeline_add_to_home", "value": "افزودن به خط زمانی خانه"},
+    {"name": "timeline_remove_from_home", "value": "حذف از خط زمانی خانه"},
+    {"name": "timeline_sources_failed", "value": "برخی فهرست‌ها یا انجمن‌ها بارگیری نشدند. برای تلاش دوباره بزنید."},
+    {"name": "timeline_sources_pinned_empty", "value": "خط زمانی سنجاق‌شده‌ای نیست. در پایین فهرست، انجمن یا موضوع اضافه کنید."},
+    {"name":"video_controls_mirror","value":"قرینه کردن کنترل‌ها"},
+    {"name":"video_controls_speed","value":"سرعت"},
+    {"name":"video_controls_aspect","value":"نسبت"},
+    {"name":"video_controls_background","value":"پس‌زمینه"},
+    {"name":"video_controls_quality_hd","value":"HD"},
+    {"name":"video_controls_quality_sd","value":"SD"},
+    {"name":"video_controls_quality_ld","value":"LD"},
+    {"name":"video_controls_more","value":"بیشتر"},
+    {"name":"video_controls_download","value":"دانلود"},
+    {"name":"settings_navigation_style","value":"سبک پیمایش پایین"},
+    {"name":"settings_hds_bottom_bar","value":"HdsTabs شناور"},
+    {"name":"settings_split_bottom_bar","value":"پیمایش کپسولی جداگانه"},
+    {"name":"settings_split_bottom_bar_desc","value":"صفحه‌ها را از کپسول سمت چپ عوض کنید. دکمه جداگانه برای ارسال پست، گفتگوی جدید، تازه‌سازی یا بازگشت به بالا است. هر دو از جنس HDS استفاده می‌کنند؛ در سیستم‌های قدیمی پیمایش سازگار فعال می‌شود."},
+    {"name":"split_navigation_action_top","value":"بازگشت به بالا"},
+    {"name":"split_navigation_action_refresh","value":"تازه‌سازی خانه"},
+    {"name":"split_navigation_action_compose","value":"ایجاد پست"},
+    {"name": "settings_reply_capsule_split", "value": "کپسول‌های پاسخ جداگانه"},
+    {"name": "settings_reply_capsule_split_desc", "value": "ورودی پاسخ و اقدامات پست در حالت جمع‌شده جدا باشند"},
+    {"name": "reply_capsule_write_reply", "value": "پاسخ"},
+    {"name":"settings_native_bottom_bar","value":"پیمایش کپسولی با متریال 7.0"},
+    {"name":"settings_native_bottom_bar_desc","value":"از متریال فراگیر HarmonyOS 7.0 کپسول پاسخ، با نور لمسی، نشانگر مایع و تغییر سمت بر اساس نحوه گرفتن دستگاه استفاده می‌کند. در صورت عدم پشتیبانی، کپسول HDS استفاده می‌شود."},
+    {"name":"settings_native_navigation_material","value":"ضخامت متریال کپسول پیمایش"},
+    {"name":"settings_for_you_only_sensitive_age_title","value":"تأیید سن"},
+    {"name":"settings_for_you_only_sensitive_age_message","value":"«فقط محتوای حساس در ‹برای شما›» فقط برای افراد ۱۸ ساله یا بیشتر در دسترس است. آیا ۱۸ سال یا بیشتر دارید؟"},
+    {"name":"settings_for_you_only_sensitive_age_under","value":"کمتر از ۱۸ سال"},
+    {"name":"settings_for_you_only_sensitive_age_adult","value":"۱۸ سال یا بیشتر"},
+    {"name":"settings_theme_icon_blue","value":"آبی آیکون"},
+    {"name":"settings_theme_icon_red","value":"قرمز آیکون"},
+    {"name":"settings_theme_icon_orange","value":"نارنجی آیکون"},
+    {"name":"settings_theme_icon_yellow","value":"زرد آیکون"},
+    {"name":"settings_theme_icon_green","value":"سبز آیکون"},
+    {"name":"settings_theme_icon_pink","value":"صورتی آیکون"},
+    {"name":"settings_theme_icon_cyan","value":"فیروزه‌ای آیکون"},
+    {"name":"settings_theme_icon_navy","value":"سرمه‌ای آیکون"}
   ]
 }

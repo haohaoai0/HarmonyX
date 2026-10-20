@@ -70,14 +70,16 @@ export function sheetMaterialOptions(options: SheetOptions, enabled: boolean, le
     }
   }
   // Keep an explicit SDK guard beside the material construction.
-  if (enabled && deviceInfo.apiAvailable('26.0.0')) {
-    options.backgroundColor = Color.Transparent;
-    options.blurStyle = BlurStyle.NONE;
-    options.systemMaterial = new uiMaterial.ImmersiveMaterial({
-      style: SystemMaterialUtil.resolveImmersiveStyle(validSheetMaterialLevel(level)),
-      interactive: false,
-      lightEffect: null
-    });
+  if (deviceInfo.apiAvailable('26.0.0')) {
+    if (enabled) {
+      options.backgroundColor = Color.Transparent;
+      options.blurStyle = BlurStyle.NONE;
+      options.systemMaterial = new uiMaterial.ImmersiveMaterial({
+        style: SystemMaterialUtil.resolveImmersiveStyle(validSheetMaterialLevel(level)),
+        interactive: false,
+        lightEffect: null
+      });
+    }
   } else if (enabled) {
     options.backgroundColor = Color.Transparent;
     options.blurStyle = sheetBlurStyle(level);

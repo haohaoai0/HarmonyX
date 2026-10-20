@@ -1,3 +1,4 @@
+import { scrollFrame, scrollStarted, scrollStopped, stopScrollOnTouch } from '../utils/ScrollInteraction';
 import { STORAGE_KEY_TIMELINE_COLUMNS } from '../services/TimelineSettingsStore';
 import { PostFeedLayout } from '../utils/PostFeedLayout';
 import { common } from '@kit.AbilityKit';
@@ -62,10 +63,15 @@ export struct AdaptivePostFeed {
       }, (key: string, index: number): string => index.toString() + ':' + key)
       FlowItem() { Column() { this.footer() }.width('100%') }
     }
+    .onScrollStop((): void => scrollStopped(this.scroller))
+    .onScrollStart((): void => scrollStarted(this.scroller))
+    .onScrollFrameBegin((offset: number, state: ScrollState): OnScrollFrameBeginHandlerResult =>
+      scrollFrame(this.scroller, offset, state))
+    .onTouchIntercept((event: TouchEvent): HitTestMode => stopScrollOnTouch(event, this.scroller))
     .id(this.feedId).width('100%').height('100%')
     .columnsTemplate(PostFeedLayout.template(this.columns()))
     .contentStartOffset(this.startOffset).contentEndOffset(this.endOffset)
-    .cachedCount(8).clip(this.clipContent).scrollBar(BarState.Off)
+    .cachedCount(8).clip(this.clipContent).scrollBar(BarState.Auto)
     .nestedScroll({ scrollForward: this.forwardMode, scrollBackward: this.backwardMode })
     .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: true })
     .onAreaChange((_old: Area, area: Area): void => {

@@ -1,5 +1,42 @@
 {
   "string": [
+    {
+      "name": "supporter_config_error",
+      "value": "Không thể xác nhận liên kết tài khoản trên đám mây. Vui lòng liên hệ tác giả."
+    },
+    {
+      "name": "supporter_restore_hint",
+      "value": "Chuyển lại tài khoản sẽ khôi phục trạng thái đã lưu. Trên thiết bị mới, sau khi cài lại hoặc trong phiên bản khác, hãy đăng nhập cùng tài khoản X và nhập mã gốc để khôi phục quyền truy cập."
+    },
+    {"name": "eye_reading_title", "value": "Đọc bằng ánh mắt"},
+    {"name": "eye_reading_intro", "value": "Nhìn lên hoặc xuống và giữ để cuộn chuỗi bài, bản ngoại tuyến và bài viết."},
+    {"name": "eye_reading_enable", "value": "Bật đọc bằng ánh mắt"},
+    {"name": "eye_reading_supported", "value": "Thiết bị hỗ trợ theo dõi khuôn mặt. Camera chỉ bật khi bạn nhấn Bắt đầu trên trang đọc."},
+    {"name": "eye_reading_unsupported", "value": "Thiết bị không hỗ trợ tính năng theo dõi khuôn mặt cần thiết. Hãy dùng cảm ứng hoặc bàn phím."},
+    {"name": "eye_reading_dwell", "value": "Thời gian giữ ánh mắt"},
+    {"name": "eye_reading_threshold", "value": "Ngưỡng hướng nhìn"},
+    {"name": "eye_reading_threshold_desc", "value": "Ngưỡng cao hơn yêu cầu chuyển động mắt rõ hơn và giúp giảm cuộn nhầm."},
+    {"name": "eye_reading_help", "value": "Giữ đầu yên và nhìn giữa màn hình để hiệu chỉnh. Nhìn lên hoặc xuống và giữ để cuộn khoảng nửa màn hình. Trở về giữa sau mỗi thao tác. Cảm ứng, con lăn và bàn phím được ưu tiên."},
+    {"name": "eye_reading_privacy", "value": "Camera trước chỉ được dùng sau khi bạn bắt đầu. Dữ liệu hướng nhìn được xử lý trên thiết bị, không lưu hay tải ảnh lên. Rời trang hoặc chuyển sang nền sẽ dừng phiên. Cần bắt đầu lại thủ công."},
+    {"name": "eye_reading_save_failed", "value": "Không lưu được cài đặt. Vui lòng thử lại."},
+    {"name": "eye_reading_start", "value": "Bắt đầu điều khiển mắt"},
+    {"name": "eye_reading_stop", "value": "Dừng điều khiển mắt"},
+    {"name": "eye_reading_recalibrate", "value": "Hiệu chỉnh lại"},
+    {"name": "eye_reading_starting", "value": "Đang bật camera trước…"},
+    {"name": "eye_reading_permission", "value": "Cần quyền camera. Hãy cho phép trong quyền ứng dụng của hệ thống rồi thử lại."},
+    {"name": "eye_reading_failed", "value": "Camera không khả dụng. Đóng ứng dụng camera khác rồi thử lại."},
+    {"name": "eye_reading_calibrating", "value": "Nhìn giữa màn hình, giữ đầu và ánh mắt ổn định để hiệu chỉnh."},
+    {"name": "eye_reading_center", "value": "Đưa ánh mắt về giữa trước thao tác tiếp theo."},
+    {"name": "eye_reading_ready", "value": "Sẵn sàng: nhìn lên hoặc xuống và giữ."},
+    {"name": "eye_reading_up", "value": "Tiếp tục nhìn lên để cuộn lên."},
+    {"name": "eye_reading_down", "value": "Tiếp tục nhìn xuống để cuộn xuống."},
+    {"name": "eye_reading_lost", "value": "Mở mắt và hướng mặt vào màn hình ở nơi đủ sáng. Hiệu chỉnh lại nếu vẫn không phản hồi."},
+    {"name": "eye_reading_paused", "value": "Thao tác thủ công được ưu tiên. Điều khiển mắt tạm dừng."},
+    {"name": "eye_reading_camera_reason", "value": "Dùng camera trước để nhận biết hướng mắt trên thiết bị khi bạn bắt đầu đọc bằng ánh mắt."},
+    {"name": "compact_video_layout", "value": "Bố cục video màn hình ngoài"},
+    {"name": "settings_compact_video_layout_desc", "value": "Dành cho màn hình vuông nhỏ như Pura X. Chọn nút bên cạnh hoặc hàng dưới. Khi mở máy, bố cục video thông thường được khôi phục."},
+    {"name": "compact_video_layout_rail", "value": "Nút bên cạnh"},
+    {"name": "compact_video_layout_bottom", "value": "Hàng dưới"},
     {"name":"settings_component_hdr_enabled","value":"Component HDR effect"},
     {"name":"settings_component_hdr_enabled_desc","value":"Off by default. Turn it on to use 1.25x brightening, then adjust the multiplier below."},
     {"name":"settings_confirm_app_exit","value":"Xác nhận trước khi thoát"},
@@ -1775,6 +1812,14 @@
     {
       "name": "settings_hds_tabs_material_adaptive",
       "value": "Tự điều chỉnh"
+    },
+    {
+      "name": "settings_hds_tabs_gradient_mask",
+      "value": "Mặt nạ chuyển màu của tab dưới"
+    },
+    {
+      "name": "settings_hds_tabs_gradient_mask_desc",
+      "value": "Điều khiển chuyển màu mờ bên dưới thanh HdsTabs nổi. Bật theo mặc định."
     },
     {
       "name": "settings_timeline_columns_title",
@@ -9249,6 +9294,14 @@
       "value": "Tắt để chuyển các thẻ dòng thời gian hoặc ô tìm kiếm vào giữa ảnh đại diện và nút bên phải."
     },
     {
+      "name": "settings_title_bar_logo_auto_contrast",
+      "value": "Adaptive logo color"
+    },
+    {
+      "name": "settings_title_bar_logo_auto_contrast_desc",
+      "value": "Automatically switches the X or pattern foreground between light and dark to stay readable. Only the single-color foreground is shown, without an icon background."
+    },
+    {
       "name": "notifications_all",
       "value": "Tất cả"
     },
@@ -10705,6 +10758,359 @@
     {"name":"page_background_motif_popular_apps_global_firefox","value":"Firefox"},
     {"name":"page_background_motif_popular_apps_global_edge","value":"Edge"},
     {"name":"page_background_motif_popular_apps_global_gmail","value":"Gmail"},
-    {"name":"page_background_motif_popular_apps_global_google_maps","value":"Google Maps"}
+    {"name":"page_background_motif_popular_apps_global_google_maps","value":"Google Maps"},
+    {"name":"scene_title","value":"Scene modes"},
+    {"name":"scene_intro","value":"Apply a set of playback, quality, motion and background preferences. Restore returns to your settings from before the first mode was enabled."},
+    {"name":"scene_reading","value":"Clear reading"},
+    {"name":"scene_reading_desc","value":"Autoplay off · high quality images · low quality video · reduced motion · plain background"},
+    {"name":"scene_saver","value":"Power and data saver"},
+    {"name":"scene_saver_desc","value":"Autoplay off · small images · low quality video · reduced motion · plain background"},
+    {"name":"scene_media","value":"Media browsing"},
+    {"name":"scene_media_desc","value":"Autoplay on · original images · high quality video · motion on · your saved background"},
+    {"name":"scene_restore","value":"Restore original settings"},
+    {"name":"scene_restore_desc","value":"Keep your preferences from before scene mode. Switching between modes does not replace this backup."},
+    {"name":"scene_failed","value":"Some settings could not be saved. Your original settings are retained; retry or restore."},
+    {"name":"offline_title","value":"Offline & later"},
+    {"name":"offline_online","value":"Online bookmarks"},
+    {"name":"offline_intro","value":"New bookmarks save text and available articles automatically. Enable images before saving to include photos. Local copies stay separate from online bookmarks and ordinary cache cleanup."},
+    {"name":"offline_images","value":"Include photos in future saves"},
+    {"name":"offline_save","value":"Save offline"},
+    {"name":"offline_saving","value":"Saving…"},
+    {"name":"offline_saved","value":"Saved for offline reading"},
+    {"name":"offline_partial_saved","value":"Saved available content. Some article text or photos are missing; retry when online."},
+    {"name":"offline_save_failed","value":"Could not save locally. Please retry."},
+    {"name":"offline_partial","value":"Incomplete copy"},
+    {"name":"offline_unread","value":"Unread"},
+    {"name":"offline_unread_only","value":"Unread only"},
+    {"name":"offline_search","value":"Search titles, tags or notes"},
+    {"name":"offline_empty","value":"No matching offline items. Save a bookmark or use Save offline on a post."},
+    {"name":"offline_edit","value":"Tags & note"},
+    {"name":"offline_tags","value":"Tags"},
+    {"name":"offline_tags_hint","value":"Tags, separated by commas"},
+    {"name":"offline_note","value":"Private note"},
+    {"name":"offline_done","value":"Save"},
+    {"name":"offline_delete","value":"Delete local copy"},
+    {"name":"reader_title","value":"Thread reader"},
+    {"name":"reader_author_only","value":"Author only"},
+    {"name":"reader_translate","value":"Translate passages"},
+    {"name":"reader_font","value":"Text size"},
+    {"name":"reader_missing","value":"This offline item is missing or unavailable. Save it again while online."},
+    {"name":"reader_partial","value":"Only the available article content is shown. Continue loading or retry while online to get the complete text."},
+    {"name":"reader_load_failed","value":"Could not load more replies. Your current reading content is kept."},
+    {"name":"reader_translation_setup","value":"Enable translation and choose a target language in Settings first."},
+    {"name":"reader_translation_failed","value":"Some passages could not be translated. You can hide translations and retry."},
+    {"name":"reader_offline_note","value":"Saved local content. Translation requires a network connection."},
+    {"name":"reader_scope","value":"Replies loaded so far. Use Continue loading to include more of the discussion."},
+    {
+      "name": "input_help_title",
+      "value": "Chuột, bàn phím và bàn di chuột"
+    },
+    {
+      "name": "input_help_desc",
+      "value": "Phím tắt và cử chỉ"
+    },
+    {
+      "name": "input_main_title",
+      "value": "Phím tắt trang chính"
+    },
+    {
+      "name": "input_main_scope",
+      "value": "Dùng trên năm thẻ chính khi không mở trang con, thanh bên hoặc hộp thoại. Ctrl+N tạo cuộc trò chuyện trong Tin nhắn và bài đăng ở các thẻ khác."
+    },
+    {
+      "name": "input_compose",
+      "value": "Bài đăng / cuộc trò chuyện mới"
+    },
+    {
+      "name": "input_refresh",
+      "value": "Làm mới thẻ hiện tại"
+    },
+    {
+      "name": "input_keyboard_title",
+      "value": "Điều khiển bàn phím"
+    },
+    {
+      "name": "input_focus",
+      "value": "Di chuyển tiêu điểm tới / lui. Điều khiển gốc cũng hỗ trợ phím mũi tên."
+    },
+    {
+      "name": "input_activate",
+      "value": "Kích hoạt nút đang được chọn."
+    },
+    {
+      "name": "input_submit",
+      "value": "Gửi từ ô bài đăng, trả lời hoặc tin nhắn. Enter thông thường giữ nguyên cách nhập."
+    },
+    {
+      "name": "input_back",
+      "value": "Quay lại trong Trợ giúp, trình soạn, trò chuyện và trình xem. Đóng bảng hiện tại trước."
+    },
+    {
+      "name": "input_photo",
+      "value": "Ảnh trước / sau khi chưa phóng to và không mở bảng."
+    },
+    {
+      "name": "input_video",
+      "value": "Video trước / sau khi không mở bảng."
+    },
+    {
+      "name": "input_playback",
+      "value": "Khi hình video có tiêu điểm: Space hoặc Enter phát / tạm dừng; Trái / Phải lùi / tiến 10 giây."
+    },
+    {
+      "name": "input_pointer_title",
+      "value": "Chuột và bàn di chuột"
+    },
+    {
+      "name": "input_pointer",
+      "value": "Nhấp trái hoặc chạm để kích hoạt. Nhấp phải ảnh, video hoặc tin nhắn để mở tác vụ. Nút phản hồi khi rê chuột. Kéo thanh cuộn hoặc thanh tiến trình."
+    },
+    {
+      "name": "input_trackpad",
+      "value": "Cuộn danh sách bằng hai ngón, vuốt ngang để đổi ảnh, chụm để thu phóng. Kéo ảnh đã phóng to. Chạm hai ngón mở menu trên bàn di chuột được hỗ trợ."
+    },
+    {
+      "name": "input_previous",
+      "value": "Ảnh trước"
+    },
+    {
+      "name": "input_next",
+      "value": "Ảnh sau"
+    },
+    {
+      "name": "input_key_home",
+      "value": "Ctrl + 1"
+    },
+    {
+      "name": "input_key_explore",
+      "value": "Ctrl + 2"
+    },
+    {
+      "name": "input_key_notifications",
+      "value": "Ctrl + 3"
+    },
+    {
+      "name": "input_key_messages",
+      "value": "Ctrl + 4"
+    },
+    {
+      "name": "input_key_profile",
+      "value": "Ctrl + 5"
+    },
+    {
+      "name": "input_key_search",
+      "value": "Ctrl + K"
+    },
+    {
+      "name": "input_key_compose",
+      "value": "Ctrl + N"
+    },
+    {
+      "name": "input_key_refresh",
+      "value": "Ctrl + R"
+    },
+    {
+      "name": "input_key_settings",
+      "value": "Ctrl + ,"
+    },
+    {
+      "name": "input_key_help",
+      "value": "F1"
+    },
+    {
+      "name": "input_key_focus",
+      "value": "Tab / Shift + Tab"
+    },
+    {
+      "name": "input_key_activate",
+      "value": "Enter / Space"
+    },
+    {
+      "name": "input_key_submit",
+      "value": "Ctrl + Enter"
+    },
+    {
+      "name": "input_key_back",
+      "value": "Esc / Alt + ←"
+    },
+    {
+      "name": "input_key_photo",
+      "value": "← / →"
+    },
+    {
+      "name": "input_key_video",
+      "value": "↑ / ↓ / Page Up / Page Down"
+    },
+    {
+      "name": "input_key_playback",
+      "value": "Space / Enter / ← / →"
+    },
+    {"name":"settings_filter_languages","value":"Ngôn ngữ bài viết bị ẩn"},
+    {"name":"settings_filter_languages_desc","value":"Chọn ngôn ngữ muốn ẩn. Bài viết không rõ ngôn ngữ hoặc chỉ có phương tiện vẫn hiển thị."},
+    {"name":"appearance_preview_title","value":"Xem trước trực tiếp"},
+    {"name":"appearance_preview_hint","value":"Thay đổi được hiển thị ngay. Chạm vào mẫu bảng để mở rộng."},
+    {"name":"post_edited","value":"Đã chỉnh sửa"},
+    {"name":"post_metric_bookmarks","value":"dấu trang"},
+    {"name":"post_metric_quotes","value":"trích dẫn"},
+    {"name":"settings_reply_quality","value":"Thu gọn phản hồi chất lượng thấp"},
+    {"name":"settings_reply_quality_desc","value":"Thu gọn quảng bá lặp lại và lời mời hàng loạt. Quy tắc trên máy có thể nhầm; bạn có thể mở phản hồi để xem."},
+    {"name":"reply_quality_folded","value":"Phản hồi có thể có chất lượng thấp"},
+    {"name":"reply_quality_reasons","value":"Xem lý do"},
+    {"name":"reply_quality_allow","value":"Luôn hiện tác giả này"},
+    {"name":"reply_quality_whitelist","value":"Tác giả được phép"},
+    {"name":"reply_quality_whitelist_desc","value":"Phản hồi của bạn, tác giả bài đăng, tài khoản đang theo dõi và tác giả được phép luôn hiển thị. Danh sách dành riêng cho tài khoản hiện tại."},
+    {"name":"reply_quality_empty","value":"Chưa có tác giả được phép"},
+    {"name":"reply_quality_reason_duplicate","value":"Nhiều tác giả lặp lại cùng mẫu quảng bá"},
+    {"name":"reply_quality_reason_author_repeat","value":"Tác giả đăng lại cùng nội dung nhiều lần"},
+    {"name":"reply_quality_reason_links","value":"Có nhiều liên kết bên ngoài"},
+    {"name":"reply_quality_reason_promotion","value":"Có nội dung quảng bá hoặc hứa hẹn lợi nhuận"},
+    {"name":"reply_quality_reason_contact","value":"Có thông tin liên hệ để lôi kéo"},
+    {
+      "name": "settings_floating_compose_material_tint",
+      "value": "Màu chất liệu nút đăng bài nổi"
+    },
+    {
+      "name": "settings_floating_compose_material_tint_desc",
+      "value": "Phủ màu chủ đề lên chất liệu. Tắt tùy chọn này chỉ loại bỏ lớp màu phủ."
+    },
+    {
+      "name": "chat_decoration",
+      "value": "Chat decorations"
+    },
+    {
+      "name": "chat_decoration_subtitle",
+      "value": "Avatar frames and chat bubbles, downloaded only when you choose them."
+    },
+    {
+      "name": "chat_decoration_frame",
+      "value": "Avatar frames"
+    },
+    {
+      "name": "chat_decoration_bubble",
+      "value": "Chat bubbles"
+    },
+    {
+      "name": "chat_decoration_free",
+      "value": "Free"
+    },
+    {
+      "name": "chat_decoration_download_preview",
+      "value": "Download to preview"
+    },
+    {
+      "name": "chat_decoration_download",
+      "value": "Download"
+    },
+    {
+      "name": "chat_decoration_downloading",
+      "value": "Downloading..."
+    },
+    {
+      "name": "chat_decoration_use",
+      "value": "Use"
+    },
+    {
+      "name": "chat_decoration_in_use",
+      "value": "In use"
+    },
+    {
+      "name": "chat_decoration_remove",
+      "value": "Stop using"
+    },
+    {
+      "name": "chat_decoration_installed",
+      "value": "Downloaded"
+    },
+    {
+      "name": "chat_decoration_applied",
+      "value": "Decoration applied"
+    },
+    {
+      "name": "chat_decoration_download_failed",
+      "value": "Download failed. Try again later."
+    },
+    {
+      "name": "chat_decoration_reset",
+      "value": "Restore defaults"
+    },
+    {
+      "name": "chat_decoration_reset_done",
+      "value": "Defaults restored"
+    },
+    {
+      "name": "chat_decoration_note",
+      "value": "Decorations stay on this device. Other people see styles supported by their client."
+    },
+    {
+      "name": "chat_decoration_loading",
+      "value": "Loading decorations..."
+    },
+    {
+      "name": "chat_decoration_unavailable",
+      "value": "Decorations are unavailable. Check your connection and retry."
+    },
+    {
+      "name": "chat_decoration_sample_text",
+      "value": "Have a lovely day."
+    },
+    {"name": "sign_out_confirm_title", "value": "Đăng xuất?"},
+    {"name": "sign_out_confirm_message", "value": "Bạn cần đăng nhập lại để dùng tài khoản này."},
+    {"name": "settings_for_you_only_sensitive", "value": "Chỉ nội dung nhạy cảm trong Dành cho bạn"},
+    {"name": "settings_for_you_only_sensitive_desc", "value": "Hiển thị bài đăng được X đánh dấu nhạy cảm, gồm cả trích dẫn. Đang theo dõi và Danh sách không đổi. Nội dung đa phương tiện vẫn được che."},
+    {"name": "settings_grip_floating", "value": "Nút thao tác nổi"},
+    {"name": "settings_grip_video", "value": "Thanh thao tác video"},
+    {"name": "settings_grip_reply", "value": "Nút trả lời bài đăng"},
+    {"name": "settings_grip_component_desc", "value": "Điều chỉnh vị trí theo tay cầm thiết bị. Khi tắt, dùng tay ưu tiên."},
+    {"name": "settings_grip_hdstabs", "value": "Thanh thẻ dưới HdsTabs"},
+    {"name": "settings_grip_hdstabs_desc", "value": "Dùng tính năng thích ứng tay gốc. Khi tắt, thanh thẻ không di chuyển theo tay cầm thiết bị."},
+    {"name":"gif_action_save_video","value":"Lưu dưới dạng video chất lượng cao (MP4)"},
+    {"name":"storage_save_remembered_note","value":"Chọn thư mục tải xuống một lần để tự động lưu các tệp tiếp theo vào đó. Tắt để lưu vào Thư viện."},
+    {"name":"storage_save_to_remembered","value":"Lưu vào thư mục tải xuống"},
+    {"name": "storage_permission_reason", "value": "Giữ quyền truy cập vào tệp và thư mục bạn chọn."},
+    {"name": "timeline_sources_lists", "value": "Danh sách"},
+    {"name": "timeline_sources_communities", "value": "Cộng đồng"},
+    {"name": "timeline_edit", "value": "Sửa"},
+    {"name": "timeline_done", "value": "Xong"},
+    {"name": "timeline_move_up", "value": "Chuyển lên"},
+    {"name": "timeline_move_down", "value": "Chuyển xuống"},
+    {"name": "timeline_remove_source", "value": "Xóa %s"},
+    {"name": "timeline_add_to_home", "value": "Thêm vào dòng thời gian Trang chủ"},
+    {"name": "timeline_remove_from_home", "value": "Xóa khỏi dòng thời gian Trang chủ"},
+    {"name": "timeline_sources_failed", "value": "Không tải được một số danh sách hoặc cộng đồng. Nhấn để thử lại."},
+    {"name": "timeline_sources_pinned_empty", "value": "Chưa có dòng thời gian được ghim. Thêm danh sách, cộng đồng hoặc chủ đề bên dưới."},
+    {"name":"video_controls_mirror","value":"Đảo vị trí điều khiển"},
+    {"name":"video_controls_speed","value":"Tốc độ"},
+    {"name":"video_controls_aspect","value":"Tỷ lệ"},
+    {"name":"video_controls_background","value":"Nền"},
+    {"name":"video_controls_quality_hd","value":"HD"},
+    {"name":"video_controls_quality_sd","value":"SD"},
+    {"name":"video_controls_quality_ld","value":"LD"},
+    {"name":"video_controls_more","value":"Thêm"},
+    {"name":"video_controls_download","value":"Tải xuống"},
+    {"name":"settings_navigation_style","value":"Kiểu điều hướng dưới cùng"},
+    {"name":"settings_hds_bottom_bar","value":"HdsTabs nổi"},
+    {"name":"settings_split_bottom_bar","value":"Điều hướng viên nang tách nút"},
+    {"name":"settings_split_bottom_bar_desc","value":"Chuyển trang trong viên nang bên trái. Nút riêng để đăng bài, tạo cuộc trò chuyện, làm mới hoặc về đầu trang. Cả hai dùng vật liệu HDS; hệ thống cũ dùng điều hướng tương thích."},
+    {"name":"split_navigation_action_top","value":"Về đầu trang"},
+    {"name":"split_navigation_action_refresh","value":"Làm mới Trang chủ"},
+    {"name":"split_navigation_action_compose","value":"Tạo bài đăng"},
+    {"name": "settings_reply_capsule_split", "value": "Tách viên nang trả lời"},
+    {"name": "settings_reply_capsule_split_desc", "value": "Tách ô trả lời và thao tác bài đăng khi thu gọn"},
+    {"name": "reply_capsule_write_reply", "value": "Trả lời"},
+    {"name":"settings_native_bottom_bar","value":"Điều hướng viên nang vật liệu 7.0"},
+    {"name":"settings_native_bottom_bar_desc","value":"Dùng vật liệu đắm chìm HarmonyOS 7.0 của viên nang trả lời, với ánh sáng chạm, chỉ báo lỏng và đổi bên theo cách cầm. Tự dùng viên nang HDS khi không được hỗ trợ."},
+    {"name":"settings_native_navigation_material","value":"Độ dày vật liệu viên nang điều hướng"},
+    {"name":"settings_for_you_only_sensitive_age_title","value":"Xác nhận tuổi"},
+    {"name":"settings_for_you_only_sensitive_age_message","value":"“Chỉ nội dung nhạy cảm trong Dành cho bạn” chỉ dành cho người từ 18 tuổi trở lên. Bạn đã đủ 18 tuổi chưa?"},
+    {"name":"settings_for_you_only_sensitive_age_under","value":"Dưới 18 tuổi"},
+    {"name":"settings_for_you_only_sensitive_age_adult","value":"Đủ 18 tuổi"},
+    {"name":"settings_theme_icon_blue","value":"Xanh biểu tượng"},
+    {"name":"settings_theme_icon_red","value":"Đỏ biểu tượng"},
+    {"name":"settings_theme_icon_orange","value":"Cam biểu tượng"},
+    {"name":"settings_theme_icon_yellow","value":"Vàng biểu tượng"},
+    {"name":"settings_theme_icon_green","value":"Xanh lá biểu tượng"},
+    {"name":"settings_theme_icon_pink","value":"Hồng biểu tượng"},
+    {"name":"settings_theme_icon_cyan","value":"Xanh lục lam biểu tượng"},
+    {"name":"settings_theme_icon_navy","value":"Xanh navy biểu tượng"}
   ]
 }

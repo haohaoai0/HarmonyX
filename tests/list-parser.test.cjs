@@ -244,3 +244,103 @@ test('the web management page module decodes rows, their owner and the bottom cu
   assert.equal(page.lists[0].memberCount, 1);
   assert.equal(page.nextToken, '0|2110432712396374014');
 });
+
+function directoryBody(lists, cursor = '') {
+  return JSON.stringify({ data: { viewer: { timeline: { instructions: [{ entries: [
+    { entryId: 'list-module', content: { items: lists.map(list => ({ item: { itemContent: { list } } })) } },
+    { entryId: 'cursor-bottom-1', content: { cursorType: 'Bottom', value: cursor } }
+  ] }] } } } });
+}
+
+function directoryList(id, ownerId, following = false, extra = {}) {
+  return { __typename: 'List', id_str: id, name: id, following,
+    user_results: { result: { rest_id: ownerId } }, ...extra };
+}
+
+test('the default directory keeps followed and owned lists, excluding recommendations and unfollowed pins', () => {
+  const body = directoryBody([
+    directoryList('followed', 'other', true),
+    directoryList('own', 'viewer'),
+    directoryList('private-own', 'viewer', false, { mode: 'Private' }),
+    directoryList('recommended', 'other'),
+    directoryList('unfollowed-pin', 'other', false, { pinning: true }),
+    { __typename: 'List', listId: 'android-own', name: 'Android', memberCount: 0,
+      ownerResult: { result: { rest_id: 'viewer' } } },
+    { id_str: 'rest-own', name: 'REST', mode: 'private', user: { id_str: 'viewer' } },
+    { __typename: 'List', id_str: 'no-relationship', name: 'Unknown' }
+  ], 'NEXT');
+  assert.deepEqual(XListParser.directory(body, 'viewer').lists.map(row => row.id),
+    ['followed', 'own', 'private-own', 'android-own', 'rest-own']);
+  assert.equal(XListParser.directory(body, 'viewer').nextToken, 'NEXT');
+  assert.deepEqual(XListParser.directory(body, '').lists.map(row => row.id), ['followed']);
+  // The same payload is still usable by search and membership destinations.
+  assert.equal(XListParser.parse(body).lists.length, 8);
+});
+
+test('recommendation-only directory pages remain valid and keep pagination and parse failures distinct', () => {
+  assert.deepEqual(XListParser.directory(directoryBody([directoryList('suggested', 'other')], 'NEXT'), 'viewer'),
+    { lists: [], nextToken: 'NEXT' });
+  assert.deepEqual(XListParser.directory(directoryBody([]), 'viewer'), { lists: [], nextToken: '' });
+  assert.equal(XListParser.directory('{bad json', 'viewer'), null);
+  assert.equal(XListParser.directory(JSON.stringify({ errors: [{ message: 'Access denied' }] }), 'viewer'), null);
+});
+
+// Execute the real page loading methods so the directory restriction cannot
+// accidentally spread to search/profile/membership results or skip pagination.
+function listsPageFixture(pages, context = {}) {
+  const source = fs.readFileSync(path.resolve(__dirname, '../entry/src/main/ets/pages/Lists.ets'), 'utf8')
+    .replace('export struct Lists', 'export class Lists');
+  const tree = ts.createSourceFile('Lists.ts', source, ts.ScriptTarget.Latest, true);
+  const component = tree.statements.find(node => ts.isClassDeclaration(node) && node.name?.text === 'Lists');
+  const methods = ['ownDirectory', 'searching', 'load'].map(name =>
+    component.members.find(node => node.name?.getText(tree) === name).getText(tree)).join('\n');
+  const code = ts.transpileModule('class Subject {' + methods + '}', {
+    compilerOptions: { target: ts.ScriptTarget.ES2020 }
+  }).outputText;
+  const calls = [];
+  const respond = async (kind, args) => {
+    calls.push({ kind, args });
+    return { ok: true, status: 200, body: pages.shift(), operation: 'ListsManagementPageTimeline' };
+  };
+  const client = { isSignedIn: () => true, viewerId: () => 'viewer',
+    subscribedLists: (...args) => respond('directory', args),
+    userLists: (...args) => respond('profile', args),
+    searchTimeline: (...args) => respond('search', args) };
+  const Subject = new Function('XListParser', 'xPrivateClient', 'XPrivateClient', '$r', 'getContext', 'pinnedHomeListStore', 'listStateStore',
+    code + '; return Subject;')(XListParser, client, { explain: () => 'failure' }, value => value,
+      () => ({}), { merge() {} }, { get() { return undefined; } });
+  const subject = Object.assign(new Subject(), {
+    userId: '', memberships: false, submittedQuery: '', rows: [], searchRows: [],
+    loading: false, loadingMore: false, nextToken: '', directoryOperation: '',
+    generation: 0, alive: true, text: value => value, ...context
+  });
+  return { subject, calls };
+}
+
+test('the default list page filters every page and refresh removes a list after unfollowing', async () => {
+  const f = listsPageFixture([
+    directoryBody([directoryList('suggested', 'other'), directoryList('followed', 'other', true)], 'NEXT'),
+    directoryBody([directoryList('suggested-2', 'other'), directoryList('own', 'viewer')]),
+    directoryBody([directoryList('followed', 'other'), directoryList('own', 'viewer')])
+  ]);
+  await f.subject.load(true);
+  assert.deepEqual(f.subject.rows.map(row => row.id), ['followed']);
+  await f.subject.load(false);
+  assert.deepEqual(f.subject.rows.map(row => row.id), ['followed', 'own']);
+  assert.deepEqual(f.calls[1], { kind: 'directory', args: ['NEXT', 20, 'ListsManagementPageTimeline'] });
+  await f.subject.load(true);
+  assert.deepEqual(f.subject.rows.map(row => row.id), ['own']);
+});
+
+test('search, other users lists and memberships keep unfollowed public lists visible', async () => {
+  for (const context of [
+    { submittedQuery: 'topic' },
+    { userId: 'other' },
+    { userId: 'viewer', memberships: true }
+  ]) {
+    const f = listsPageFixture([directoryBody([directoryList('public', 'other')])], context);
+    await f.subject.load(true);
+    assert.deepEqual((context.submittedQuery ? f.subject.searchRows : f.subject.rows).map(row => row.id), ['public']);
+    assert.equal(f.calls[0].kind, context.submittedQuery ? 'search' : 'profile');
+  }
+});

@@ -1,3 +1,4 @@
+import { sceneModeStore } from '../services/SceneModeStore';
 import { componentHdrSettingsStore } from '../services/ComponentHdrSettingsStore';
 import { menuSettingsStore } from '../services/MenuSettingsStore';
 import { videoHdrCapability } from '../services/VideoHdrEnhancement';
@@ -33,6 +34,7 @@ import {
   STORAGE_KEY_AUTO_HIDE_FAB,
   STORAGE_KEY_HOME_HEADER_COLLAPSE,
   STORAGE_KEY_TITLE_BAR_LOGO,
+  STORAGE_KEY_TITLE_BAR_LOGO_AUTO_CONTRAST,
   STORAGE_KEY_COMPACT_SWITCH_STYLE,
   STORAGE_KEY_AUTO_HIDE_TAB_BAR,
   STORAGE_KEY_AUTO_HIDE_TITLE_BAR,
@@ -44,6 +46,7 @@ import {
   STORAGE_KEY_TITLE_BAR_GLASS_MATERIAL_LEVEL,
   STORAGE_KEY_REPLY_CAPSULE_MATERIAL_LEVEL,
   STORAGE_KEY_REPLY_CAPSULE_BUTTON_MATERIAL_ENABLED,
+  STORAGE_KEY_REPLY_CAPSULE_SPLIT_ENABLED,
   STORAGE_KEY_SYSTEM_DARK
 } from '../services/AppearanceStore';
 import { accentUsesDarkMode, resolveAccentColor } from '../utils/AccentPalette';
@@ -52,6 +55,7 @@ import { GripHandManager } from '../utils/GripHandManager';
 import { layoutSettingsStore, STORAGE_KEY_DESKTOP_LAYOUT, STORAGE_KEY_DESKTOP_ASIDE,
   STORAGE_KEY_DESKTOP_RAIL_AUTO_HIDE, STORAGE_KEY_DESKTOP_RAIL_MATERIAL_LEVEL } from '../services/LayoutSettingsStore';
 import { ResponsiveLayout } from '../utils/ResponsiveLayout';
+import { appWindowOrientation } from '../utils/AppWindowOrientation';
 import { STORAGE_KEY_DESKTOP_RAIL_SWIPE, STORAGE_KEY_SIDEBAR_MATERIAL_TYPE } from '../services/LayoutSettingsStore';
 import { STORAGE_KEY_DESKTOP_VIDEO_LAYOUT } from '../services/LayoutSettingsStore';
 import { sidebarHandleStore, SidebarHandleState, STORAGE_KEY_SIDEBAR_HANDLE_STYLE,
@@ -74,6 +78,7 @@ import {
   STORAGE_KEY_VIDEO_CONTROL_STYLE,
   STORAGE_KEY_VIDEO_FEED_CONTROLS_ALWAYS_VISIBLE,
   STORAGE_KEY_VIDEO_FEED_LAYOUT,
+  STORAGE_KEY_COMPACT_VIDEO_LAYOUT,
   STORAGE_KEY_VIDEO_FEED_TAP_PAUSE,
   STORAGE_KEY_VIDEO_HOLD_SPEED,
   STORAGE_KEY_VIDEO_DOUBLE_TAP_SEEK,
@@ -102,9 +107,12 @@ import {
 import {
   hdsTabsSettingsStore,
   STORAGE_KEY_CLASSIC_BOTTOM_BAR,
+  STORAGE_KEY_SPLIT_BOTTOM_BAR,
   STORAGE_KEY_ROOT_LIQUID_TAB_INDICATOR_ENABLED,
+  STORAGE_KEY_ROOT_TAB_GRADIENT_MASK_ENABLED,
   STORAGE_KEY_HOME_TAB_MATERIAL_LEVEL,
-  STORAGE_KEY_ROOT_TAB_LABELS_VISIBLE
+  STORAGE_KEY_ROOT_TAB_LABELS_VISIBLE,
+  STORAGE_KEY_NATIVE_BOTTOM_BAR, STORAGE_KEY_NATIVE_TAB_MATERIAL_LEVEL
 } from '../services/HdsTabsSettingsStore';
 import {
   readAloudSettingsStore,
@@ -199,6 +207,7 @@ export default class EntryAbility extends UIAbility {
     AppStorage.setOrCreate<boolean>(STORAGE_KEY_AUTO_HIDE_FAB, appearance.autoHideFab);
     AppStorage.setOrCreate<boolean>(STORAGE_KEY_HOME_HEADER_COLLAPSE, appearance.homeHeaderCollapseEnabled);
     AppStorage.setOrCreate<boolean>(STORAGE_KEY_TITLE_BAR_LOGO, appearance.titleBarLogoEnabled);
+    AppStorage.setOrCreate<boolean>(STORAGE_KEY_TITLE_BAR_LOGO_AUTO_CONTRAST, appearance.titleBarLogoAutoContrast);
     AppStorage.setOrCreate<string>(STORAGE_KEY_COMPACT_SWITCH_STYLE, appearance.compactSwitchStyle);
     AppStorage.setOrCreate<number>(STORAGE_KEY_TITLE_BAR_STYLE_MODE, appearance.titleBarStyleMode);
     AppStorage.setOrCreate<number>(STORAGE_KEY_TITLE_BAR_GLASS_MATERIAL_LEVEL,
@@ -207,6 +216,7 @@ export default class EntryAbility extends UIAbility {
       appearance.replyCapsuleMaterialLevel);
     AppStorage.setOrCreate<boolean>(STORAGE_KEY_REPLY_CAPSULE_BUTTON_MATERIAL_ENABLED,
       appearance.replyCapsuleButtonMaterialEnabled);
+    AppStorage.setOrCreate<boolean>(STORAGE_KEY_REPLY_CAPSULE_SPLIT_ENABLED, appearance.replyCapsuleSplitEnabled);
     // 旧键仍写入，旧版本或尚未迁移的读取方按它的语义（开 = 有模糊）工作。
     AppStorage.setOrCreate<boolean>(STORAGE_KEY_IMMERSIVE_TITLE_BAR_BLUR,
       appearance.titleBarStyleMode !== 2);
@@ -273,6 +283,7 @@ export default class EntryAbility extends UIAbility {
     AppStorage.setOrCreate<number>(STORAGE_KEY_VIDEO_DOUBLE_TAP_SEEK_SECONDS, mediaSettingsStore.loadVideoDoubleTapSeekSeconds(this.context));
     AppStorage.setOrCreate<boolean>(STORAGE_KEY_VIDEO_HOLD_SPEED, videoHoldSpeed);
     AppStorage.setOrCreate<number>(STORAGE_KEY_VIDEO_FEED_LAYOUT, mediaSettingsStore.loadVideoFeedLayout(this.context));
+    AppStorage.setOrCreate<number>(STORAGE_KEY_COMPACT_VIDEO_LAYOUT, mediaSettingsStore.loadCompactVideoLayout(this.context));
     AppStorage.setOrCreate<boolean>(STORAGE_KEY_VIDEO_FEED_TAP_PAUSE, mediaSettingsStore.loadVideoFeedTapPause(this.context));
     // Keep the retired original floating-control option disabled, including for
     // users whose saved preference still points to it.
@@ -298,10 +309,16 @@ export default class EntryAbility extends UIAbility {
     AppStorage.setOrCreate<number>(STORAGE_KEY_HOME_TAB_MATERIAL_LEVEL, homeTabMaterialLevel);
     const classicBottomBar: boolean = hdsTabsSettingsStore.loadClassicBottomBar(this.context);
     AppStorage.setOrCreate<boolean>(STORAGE_KEY_CLASSIC_BOTTOM_BAR, classicBottomBar);
+    AppStorage.setOrCreate<boolean>(STORAGE_KEY_SPLIT_BOTTOM_BAR, hdsTabsSettingsStore.loadSplitBottomBar(this.context));
+    AppStorage.setOrCreate<boolean>(STORAGE_KEY_NATIVE_BOTTOM_BAR, hdsTabsSettingsStore.loadNativeBottomBar(this.context));
+    AppStorage.setOrCreate<number>(STORAGE_KEY_NATIVE_TAB_MATERIAL_LEVEL,
+      hdsTabsSettingsStore.loadNativeTabMaterialLevel(this.context));
     const rootTabLabelsVisible: boolean = hdsTabsSettingsStore.loadRootTabLabelsVisible(this.context);
     AppStorage.setOrCreate<boolean>(STORAGE_KEY_ROOT_TAB_LABELS_VISIBLE, rootTabLabelsVisible);
     AppStorage.setOrCreate<boolean>(STORAGE_KEY_ROOT_LIQUID_TAB_INDICATOR_ENABLED,
       hdsTabsSettingsStore.loadRootLiquidTabIndicatorEnabled(this.context));
+    AppStorage.setOrCreate<boolean>(STORAGE_KEY_ROOT_TAB_GRADIENT_MASK_ENABLED,
+      hdsTabsSettingsStore.loadRootTabGradientMaskEnabled(this.context));
     const readAloudEntryEnabled: boolean = readAloudSettingsStore.loadEntryEnabled(this.context);
     AppStorage.setOrCreate<boolean>(STORAGE_KEY_READ_ALOUD_ENTRY_ENABLED, readAloudEntryEnabled);
     AppStorage.setOrCreate<string>(STORAGE_KEY_PAGE_TRANSITION_MODE, pageTransitionSettingsStore.load(this.context));
@@ -322,6 +339,7 @@ export default class EntryAbility extends UIAbility {
     // Web surfaces (the in-app browser, Grok web mode, the private-message
     // thread) read the application level proxy instead of the per-request one.
     proxyStore.applyToWebStack();
+    sceneModeStore.initialize(this.context);
     this.restoreGripHandPreference();
     try {
       this.context.getApplicationContext().setColorMode(this.appearanceStore.colorMode(appearance.mode));
@@ -442,6 +460,11 @@ export default class EntryAbility extends UIAbility {
     try {
       const mainWindow: window.Window = windowStage.getMainWindowSync();
       await mainWindow.setWindowLayoutFullScreen(true);
+      try {
+        await mainWindow.setPreferredOrientation(appWindowOrientation());
+      } catch (error) {
+        hilog.warn(DOMAIN, TAG, '%{public}s', 'Unable to configure app window rotation');
+      }
     } catch (error) {
       const businessError: BusinessError = error as BusinessError;
       hilog.error(DOMAIN, TAG, 'Failed to enable full-screen layout: %{public}d', businessError.code);

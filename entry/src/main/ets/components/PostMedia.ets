@@ -1,3 +1,6 @@
+import { InputModalScope } from '../utils/InputModalScope';
+import { KeyCode } from '@kit.InputKit';
+import { activateInputKey, plainInputKey, contextInputMouse } from '../utils/InputSupport';
 // Media renderer shared by the timeline, the search results and the post
 // detail page.
 //
@@ -24,8 +27,10 @@ import type { MediaAttachment, Tweet, VideoRendition } from '../models/Tweet';
 import { STORAGE_KEY_VIDEO_HDR_ENHANCEMENT, DEFAULT_VIDEO_HDR_ENHANCEMENT } from '../services/MediaSettingsStore';
 import { STORAGE_KEY_VIDEO_HDR_SUPPORTED, VideoHdrEnhancementModifier } from '../services/VideoHdrEnhancement';
 import { videoKeepAwake } from '../services/VideoKeepAwake';
+import { appWindowOrientation, STORAGE_KEY_VIDEO_FULLSCREEN_OWNER } from '../utils/AppWindowOrientation';
 import { normalizedPostMediaType, postGifHeight } from '../utils/PostGif';
 import { GifPreviewImage } from './GifPreviewImage';
+import { LandscapeVideoControls } from './LandscapeVideoControls';
 import { MaterialButton } from './MaterialButton';
 import { SystemMaterialUtil } from '../utils/SystemMaterial';
 import { MediaPhotoSurface, mediaPhotoNodeFor } from './MediaPhotoSurface';
@@ -116,6 +121,7 @@ import { videoBackgroundPlayback } from '../services/VideoBackgroundPlayback';
 import { videoPipPlaybackKeeper, VideoPipPlaybackHandle } from '../services/VideoPipPlaybackKeeper';
 import { MediaDownloadButton } from './MediaDownloadButton';
 import { VideoDownloadChoice, videoDownloadChoices } from '../services/VideoDownloadChoice';
+import { gifVideoDownloadUrl } from '../services/GifDownloadChoice';
 import { HdsButton } from './HdsButton';
 import { ProxyMediaImage } from './ProxyMediaImage';
 import { PostMediaActions } from './PostMediaActions';
@@ -124,10 +130,10 @@ import { VideoHoldSpeedCapsule } from './VideoHoldSpeedCapsule';
 import { MAIN_NAVIGATION_ID } from '../utils/NavigationIdentity';
 import { fieldSurfaceColor } from '../utils/ThemeColors';
 import { pageTextColor } from '../utils/ThemeColors';
+import { materialModifier } from '../utils/SystemMaterial';
 
 const DOMAIN = 0xFF00;
 const TAG = 'HarmonyX-Media';
-const STORAGE_KEY_VIDEO_FULLSCREEN_OWNER: string = 'harmonyx.video_fullscreen_owner';
 const MEDIA_HEIGHT: number = 228;
 const VIDEO_FEED_WIDE_BREAKPOINT: number = 840;
 const VIDEO_FEED_COMPACT_HEIGHT_RATIO: number = 0.58;
@@ -522,6 +528,7 @@ const PLAYER_HIDE_RATIO: number = 0.05;
 // Once playback is running the control row gets out of the way; tapping the
 // picture only changes the control row's visibility.
 const CONTROLS_HIDE_DELAY_MS: number = 3000;
+const LANDSCAPE_CONTROLS_HIDE_DELAY_MS: number = 15000;
 const PIP_FALLBACK_WIDTH: number = 1280;
 const PIP_FALLBACK_HEIGHT: number = 720;
 const PIP_SEEK_STEP_SECONDS: number = 10;
@@ -570,6 +577,15 @@ function clockLabel(seconds: number): string {
 
 @Component
 export struct SurfaceVideoPlayer {
+  @Prop sourceTweet: Tweet | null = null;
+  @Prop viewerDanmakuEnabled: boolean = false;
+  @Prop viewerAuthorFollowing: boolean = false;
+  @Prop viewerDownloading: boolean = false;
+  onViewerDownload: () => void = (): void => {};
+  onViewerFollow: () => void = (): void => {};
+  onViewerComment: () => void = (): void => {};
+  onViewerDanmakuToggle: () => void = (): void => {};
+  onViewerDanmakuSend: () => void = (): void => {};
   @StorageProp(STORAGE_KEY_VIDEO_HDR_ENHANCEMENT) private videoHdrEnhancement: boolean = DEFAULT_VIDEO_HDR_ENHANCEMENT;
   @StorageProp(STORAGE_KEY_VIDEO_HDR_SUPPORTED) private videoHdrSupported: boolean = false;
   @StorageProp('harmonyx.page_background') private pageBackgroundValue: string = '';
@@ -603,6 +619,7 @@ export struct SurfaceVideoPlayer {
   @Prop controlsAtScreenBottom: boolean = false;
   @Prop hideInlineControls: boolean = false;
   @Prop @Watch('applyVideoScaleType') compactFeedLayout: boolean = false;
+  @Prop compactBottomActions: boolean = false;
   @Prop mediaViewerLayout: boolean = false;
   @Prop viewerUsesSideComments: boolean = false;
   @Prop viewerPhoneFeedLayout: boolean = false;
@@ -612,6 +629,7 @@ export struct SurfaceVideoPlayer {
   @Prop retainViewerPlayback: boolean = false;
   @BuilderParam landscapePostContent: () => void = this.EmptyLandscapePost;
   @BuilderParam viewerDanmakuContent: () => void = this.EmptyLandscapePost;
+  @BuilderParam compactFeedActions: () => void = this.EmptyLandscapePost;
   onViewerBack: () => void = (): void => {};
   onViewerMore: () => void = (): void => {};
   onViewerCommentDismiss: () => void = (): void => {};
@@ -1498,7 +1516,8 @@ export struct SurfaceVideoPlayer {
 
   private feedPlayerBarHeight(): number {
     const height: number = this.compactFeedLayout ?
-      this.commentDimension($r('app.float.compact_video_controls_height')) : VIDEO_FEED_CONTROLS_HEIGHT;
+      this.commentDimension(this.compactBottomActions ? $r('app.float.compact_video_bottom_controls_height') :
+        $r('app.float.compact_video_controls_height')) : VIDEO_FEED_CONTROLS_HEIGHT;
     return height + this.navigationIndicatorHeight;
   }
 
@@ -1664,7 +1683,7 @@ export struct SurfaceVideoPlayer {
       if (this.alive && this.playing && !this.scrubbing) {
         this.controlsVisible = false;
       }
-    }, CONTROLS_HIDE_DELAY_MS);
+    }, this.isWindowLandscape() ? LANDSCAPE_CONTROLS_HIDE_DELAY_MS : CONTROLS_HIDE_DELAY_MS);
   }
 
   // Paused or being scrubbed: the row stays until playback resumes.
@@ -2603,6 +2622,16 @@ export struct SurfaceVideoPlayer {
     }
   }
 
+  private playerInputKey(event: KeyEvent): boolean {
+    if (!this.playbackEnabled || !this.alive || !plainInputKey(event)) { return false; }
+    if (activateInputKey(event, (): void => this.togglePlay())) { return true; }
+    if (event.keyCode === KeyCode.KEYCODE_DPAD_LEFT || event.keyCode === KeyCode.KEYCODE_DPAD_RIGHT) {
+      if (event.type === KeyType.Down) { this.seekBy(event.keyCode === KeyCode.KEYCODE_DPAD_LEFT ? -10 : 10); }
+      return true;
+    }
+    return false;
+  }
+
   private togglePlay(): void {
     if (this.failed) {
       this.retry();
@@ -3090,7 +3119,7 @@ export struct SurfaceVideoPlayer {
     }
     this.playerControlsLocked = true;
     this.clearHideTimer();
-    this.controlsVisible = false;
+    this.controlsVisible = true;
     this.clearFullscreenGestureHint();
     this.clearFullscreenPinchHint();
   }
@@ -3100,7 +3129,7 @@ export struct SurfaceVideoPlayer {
       return;
     }
     this.playerControlsLocked = false;
-    this.holdControls();
+    if (this.playing) { this.scheduleHide(); } else { this.holdControls(); }
   }
 
   private applyVideoScaleType(): void {
@@ -3241,7 +3270,12 @@ export struct SurfaceVideoPlayer {
 
   private onFullscreenSurfaceTap(): void {
     if (this.holdSeekDirection !== 0 || Date.now() < this.suppressVideoTapUntil) { return; }
-    if (this.playerControlsLocked) { this.unlockPlayerControls(); return; }
+    if (this.playerControlsLocked) {
+      if (this.isWindowLandscape()) { this.scheduleHide(); }
+      else { this.unlockPlayerControls(); }
+      return;
+    }
+    if (this.isWindowLandscape()) { this.toggleControls(); return; }
     if (this.mediaViewerLayout && this.videoFeedTapPause) { this.togglePlay(); }
     else { this.toggleControls(); }
   }
@@ -3424,7 +3458,7 @@ export struct SurfaceVideoPlayer {
   // ArkUI rotation uses window coordinates, which reverses portrait and
   // landscape on some phones.  AUTO_ROTATION_RESTRICTED lets the system's
   // rotation lock control fullscreen playback; exiting restores the app's
-  // declared follow_desktop policy.
+  // device policy, including sensor rotation on Pura X.
   private async setFullscreenWindowOrientation(fullscreen: boolean): Promise<void> {
     this.fullscreenOrientationRequest += 1;
     const request: number = this.fullscreenOrientationRequest;
@@ -3433,7 +3467,7 @@ export struct SurfaceVideoPlayer {
       return;
     }
     const orientation: window.Orientation = fullscreen ?
-      window.Orientation.AUTO_ROTATION_RESTRICTED : window.Orientation.FOLLOW_DESKTOP;
+      window.Orientation.AUTO_ROTATION_RESTRICTED : appWindowOrientation();
     try {
       await current.setPreferredOrientation(orientation);
     } catch (error) {
@@ -4316,95 +4350,60 @@ export struct SurfaceVideoPlayer {
     return SystemMaterialUtil.isApi26OrAbove() ? Color.Transparent : $r('app.color.video_control_glass_tint');
   }
 
-  @Builder
-  private LandscapeControlButton(symbol: Resource, label: Resource, action: () => void): void {
-    Button({ type: ButtonType.Circle, stateEffect: true }) {
-      SymbolGlyph(symbol).fontSize(24).fontColor([$r('app.color.text_on_brand')])
-    }
-    .width(44).height(44).backgroundColor(Color.Transparent)
-    .accessibilityText(label).onClick((): void => { hapticTick(); action(); })
+  private async showLandscapeQuality(): Promise<void> {
+    this.holdControls();
+    try {
+      const result: promptAction.ActionMenuSuccessResponse = await this.getUIContext().getPromptAction().showActionMenu({
+        title: this.text($r('app.string.video_feed_quality')),
+        buttons: [
+          { text: this.text($r('app.string.video_feed_quality_auto')), color: $r('app.color.text_primary') },
+          { text: this.text($r('app.string.media_download_quality_hd')), color: $r('app.color.text_primary') },
+          { text: this.text($r('app.string.media_download_quality_sd')), color: $r('app.color.text_primary') },
+          { text: this.text($r('app.string.media_download_quality_ld')), color: $r('app.color.text_primary') }
+        ]
+      });
+      if (result.index >= 0 && result.index < 4) {
+        mediaSettingsStore.saveVideoQuality(this.getUIContext().getHostContext() as common.Context, result.index);
+      }
+    } catch (error) {}
   }
 
   @Builder
   private LandscapeViewerControls(): void {
-    Column() {
-      Row() {
-        Button({ type: ButtonType.Circle, stateEffect: true }) {
-          SymbolGlyph($r('sys.symbol.arrow_left')).fontSize(24).fontColor([$r('app.color.text_on_brand')])
-        }
-        .width(44).height(44).backgroundColor(this.fullscreenControlsBackground())
-        .systemMaterial(this.fullscreenControlsMaterial())
-        .accessibilityText($r('app.string.common_back'))
-        .onClick((): void => { if (this.fullscreen) { this.exitFullscreen(); } else { this.onViewerBack(); } })
-        Blank()
-        Row({ space: 2 }) {
-          Button(this.playbackRateLabel(), { type: ButtonType.Normal, stateEffect: true })
-            .width(50).height(44).fontSize($r('sys.float.Body_L')).fontWeight(FontWeight.Bold)
-            .fontColor($r('app.color.text_on_brand')).backgroundColor(Color.Transparent)
-            .accessibilityText($r('app.string.video_playback_speed'))
-            .onClick((): void => { hapticTick(); this.cyclePlaybackRate(); })
-          this.LandscapeControlButton(this.muted ? $r('sys.symbol.speaker_slash_fill') :
-            $r('sys.symbol.speaker_wave_2_fill'), this.muted ? $r('app.string.video_unmute') :
-            $r('app.string.video_mute'), (): void => this.toggleMutedFromUser())
-          this.LandscapeControlButton($r('sys.symbol.exit_full_screen'), $r('app.string.video_exit_fullscreen'),
-            (): void => { if (this.fullscreen) { this.exitFullscreen(); } else { this.enterFullscreen(); } })
-          if (this.allowPip && this.pipSupported() && !this.pipActive) {
-            this.LandscapeControlButton($r('sys.symbol.rectangle_on_rectangle'), $r('app.string.video_pip'),
-              (): void => this.requestPip())
-          }
-          if (this.mediaViewerLayout) {
-            this.LandscapeControlButton($r('sys.symbol.more'), $r('app.string.video_feed_more'),
-              (): void => { this.holdControls(); this.onViewerMore(); })
-          } else {
-            Button({ type: ButtonType.Circle, stateEffect: true }) {
-              SymbolGlyph($r('sys.symbol.more')).fontSize(24).fontColor([$r('app.color.text_on_brand')])
-            }
-            .width(44).height(44).backgroundColor(Color.Transparent)
-            .accessibilityText($r('app.string.video_feed_more'))
-            .bindMenu([
-              { value: this.text($r('app.string.video_feed_subtitles')), action: (): void => this.toggleAiCaption() },
-              { value: this.text($r('app.string.video_player_lock_controls')), action: (): void => this.lockPlayerControls() }
-            ])
-          }
-        }
-        .height(44).padding({ left: 10, right: 10 }).borderRadius(24)
-        .backgroundColor(this.fullscreenControlsBackground())
-        .systemMaterial(this.fullscreenControlsMaterial())
-      }
-      .width('100%')
-      Blank()
-      if (this.mediaViewerLayout) {
-        this.landscapePostContent()
-      }
-      Row({ space: 12 }) {
-        this.LandscapeControlButton(this.playing ? $r('sys.symbol.pause_fill') : $r('sys.symbol.play_fill'),
-          this.playing ? $r('app.string.video_pause') : $r('app.string.video_play'), (): void => this.togglePlay())
-        Slider({ value: this.displaySeconds(), min: 0, max: this.durationSec > 0 ? this.durationSec : 1,
-          step: 1, style: SliderStyle.OutSet })
-          .layoutWeight(1).height($r('app.float.video_viewer_seek_height'))
-          .trackThickness($r('app.float.video_viewer_seek_track'))
-          .blockSize({ width: $r('app.float.video_viewer_seek_thumb'), height: $r('app.float.video_viewer_seek_thumb') })
-          .selectedColor($r('app.color.text_on_brand'))
-        .blockColor($r('app.color.text_on_brand'))
-          .trackColor($r('app.color.video_control_progress_track'))
-          .onChange((value: number, mode: SliderChangeMode): void => this.onSliderChange(value, mode))
-          .monopolizeEvents(true)
-        Text(this.feedTimeLabel()).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L'))
-          .fontColor($r('app.color.text_on_brand')).width(this.feedElapsedTime ? 110 : 62)
-          .height(48).textAlign(TextAlign.End).maxFontScale(1)
-          .onClick((): void => { hapticTick(); this.feedElapsedTime = !this.feedElapsedTime; this.holdControls(); })
-      }
-      .width('100%').height(48).margin({ top: 18 })
-      .padding({ left: 8, right: 12 })
-      .borderRadius($r('app.float.video_fullscreen_controls_radius'))
-      .backgroundColor(this.fullscreenControlsBackground())
-      .systemMaterial(this.fullscreenControlsMaterial())
-    }
-    .width('100%').height('100%')
-    .padding({ left: 24, right: 24, top: this.statusBarHeight + 16,
-      bottom: this.navigationIndicatorHeight + 28 })
-    .hitTestBehavior(HitTestMode.Transparent)
-    .transition(TransitionEffect.OPACITY.animation({ duration: 160, curve: Curve.EaseOut }))
+    LandscapeVideoControls({
+      playing: $playing, muted: $muted, controlsVisible: $controlsVisible, locked: $playerControlsLocked,
+      rateIndex: $playbackRateIndex, positionSeconds: $positionSec, duration: $durationSec,
+      scrubbing: $scrubbing, scrubPosition: $scrubSec,
+      fullscreen: this.fullscreen, rates: FULLSCREEN_PLAYBACK_RATES,
+      backgroundAudio: this.videoBackgroundMode === VIDEO_BACKGROUND_AUDIO,
+      holdSpeedActive: this.holdSpeedActive, holdSpeedRate: this.holdSpeedRate,
+      statusBarHeight: this.statusBarHeight, navigationIndicatorHeight: this.navigationIndicatorHeight,
+      sourceTweet: this.sourceTweet, danmakuAvailable: this.mediaViewerLayout,
+      authorFollowing: this.viewerAuthorFollowing,
+      danmakuEnabled: this.viewerDanmakuEnabled,
+      downloadAvailable: this.mediaViewerLayout, downloading: this.viewerDownloading,
+      qualityLabel: this.text(this.videoQuality === 1 ? $r('app.string.video_controls_quality_hd') :
+        this.videoQuality === 2 ? $r('app.string.video_controls_quality_sd') :
+        this.videoQuality === 3 ? $r('app.string.video_controls_quality_ld') : $r('app.string.video_feed_quality_auto')),
+      onPlayPause: (): void => { this.togglePlay(); },
+      onMute: (): void => { this.toggleMutedFromUser(); },
+      onRate: (): void => { this.cyclePlaybackRate(); },
+      onSeek: (value: number, mode: SliderChangeMode): void => this.onSliderChange(value, mode),
+      onBack: (): void => { if (this.fullscreen) { this.exitFullscreen(); } else { this.onViewerBack(); } },
+      onFullscreen: (): void => { if (this.fullscreen) { this.exitFullscreen(); } else { this.enterFullscreen(); } },
+      onLock: (): void => { if (this.playerControlsLocked) { this.unlockPlayerControls(); } else { this.lockPlayerControls(); } },
+      onAspect: (): void => { this.fullscreenFill = !this.fullscreenFill; this.applyVideoScaleType(); this.showFullscreenPinchHint(); },
+      onBackground: (): void => {
+        mediaSettingsStore.saveVideoBackgroundMode(this.getUIContext().getHostContext() as common.Context,
+          this.videoBackgroundMode === VIDEO_BACKGROUND_AUDIO ? VIDEO_BACKGROUND_PIP : VIDEO_BACKGROUND_AUDIO);
+      },
+      onMore: (): void => { this.onViewerMore(); },
+      onQuality: (): void => { void this.showLandscapeQuality(); },
+      onDownload: this.onViewerDownload,
+      onFollow: this.onViewerFollow, onComment: this.onViewerComment,
+      onDanmakuToggle: this.onViewerDanmakuToggle, onDanmakuSend: this.onViewerDanmakuSend,
+      onInteraction: (): void => { if (this.playing) { this.scheduleHide(); } else { this.holdControls(); } }
+    })
   }
 
   @Builder
@@ -4498,7 +4497,7 @@ export struct SurfaceVideoPlayer {
     .padding({ top: 10, bottom: 6 })
     .borderRadius($r('app.float.video_fullscreen_controls_radius'))
     .backgroundColor(this.fullscreenControlsBackground())
-    .systemMaterial(this.fullscreenControlsMaterial())
+    .attributeModifier(materialModifier(this.fullscreenControlsMaterial()))
     .margin({ bottom: this.navigationIndicatorHeight + 8 })
     .transition(TransitionEffect.OPACITY.animation({ duration: 180, curve: Curve.EaseOut })
       .combine(TransitionEffect.translate({ y: 14 })))
@@ -4514,7 +4513,7 @@ export struct SurfaceVideoPlayer {
       .height(56)
       .borderRadius($r('app.float.video_fullscreen_controls_radius'))
       .backgroundColor(this.fullscreenControlsBackground())
-      .systemMaterial(this.fullscreenControlsMaterial())
+      .attributeModifier(materialModifier(this.fullscreenControlsMaterial()))
       Slider({
         value: this.displaySeconds(),
         min: 0,
@@ -4528,7 +4527,7 @@ export struct SurfaceVideoPlayer {
         .blockSize({ width: $r('app.float.video_viewer_seek_thumb'), height: $r('app.float.video_viewer_seek_thumb') })
         .selectedColor($r('app.color.text_on_brand'))
         .blockColor($r('app.color.text_on_brand'))
-        .systemMaterial(this.fullscreenControlsMaterial())
+        .attributeModifier(materialModifier(this.fullscreenControlsMaterial()))
         .trackColor($r('app.color.video_control_progress_track'))
         .onChange((value: number, mode: SliderChangeMode): void => this.onSliderChange(value, mode))
         .monopolizeEvents(true)
@@ -4636,7 +4635,7 @@ export struct SurfaceVideoPlayer {
       })
     }
     .width('100%')
-    .systemMaterial(this.fullscreenControlsMaterial())
+    .attributeModifier(materialModifier(this.fullscreenControlsMaterial()))
     .backgroundBlurStyle(BlurStyle.COMPONENT_ULTRA_THIN)
     .linearGradient({
       angle: 180,
@@ -4755,90 +4754,132 @@ export struct SurfaceVideoPlayer {
   }
 
   @Builder
+  private CompactPlaybackMenu(): void {
+    Menu() {
+      MenuItem({ content: this.playing ? $r('app.string.video_pause') : $r('app.string.video_play'),
+        labelInfo: this.feedTimeLabel() })
+        .onClick((): void => { hapticTick(); this.togglePlay(); })
+      MenuItem({ content: $r('app.string.video_playback_speed'), labelInfo: this.playbackRateLabel() })
+        .onClick((): void => { hapticTick(); this.cyclePlaybackRate(); })
+      MenuItem({ content: this.muted ? $r('app.string.video_unmute') : $r('app.string.video_mute') })
+        .onClick((): void => { hapticTick(); this.toggleMutedFromUser(); })
+      MenuItem({ content: $r('app.string.video_fullscreen') })
+        .onClick((): void => { hapticTick(); this.enterFullscreen(); })
+      if (this.allowPip && this.pipSupported() && !this.pipActive) {
+        MenuItem({ content: $r('app.string.video_pip') })
+          .onClick((): void => { hapticTick(); this.requestPip(); })
+      }
+    }.onAppear((): void => this.clearHideTimer())
+      .onDisAppear((): void => this.scheduleHide())
+  }
+
+  @Builder
+  private FeedProgressSlider(): void {
+    Slider({
+      value: this.displaySeconds(),
+      min: 0,
+      max: this.durationSec > 0 ? this.durationSec : 1,
+      step: 1,
+      style: SliderStyle.OutSet
+    })
+      .width('100%')
+      .height(this.compactFeedLayout ? $r('app.float.compact_video_seek_height') : $r('app.float.video_viewer_seek_height'))
+      .trackThickness(this.compactFeedLayout ? $r('app.float.compact_video_seek_track') : $r('app.float.video_viewer_seek_track'))
+      .blockSize({
+        width: this.compactFeedLayout ? $r('app.float.compact_video_seek_thumb') : $r('app.float.video_viewer_seek_thumb'),
+        height: this.compactFeedLayout ? $r('app.float.compact_video_seek_thumb') : $r('app.float.video_viewer_seek_thumb')
+      })
+      .margin({ bottom: this.compactFeedLayout ? 0 : $r('app.float.video_viewer_seek_gap') })
+      .id('video-viewer-seek')
+      .accessibilityText($r('app.string.video_progress'))
+      .selectedColor($r('app.color.text_on_brand'))
+      .blockColor($r('app.color.text_on_brand'))
+      .trackColor($r('app.color.video_control_progress_track'))
+      .onChange((value: number, mode: SliderChangeMode): void => {
+        this.onSliderChange(value, mode);
+        if (mode !== SliderChangeMode.Begin && mode !== SliderChangeMode.Moving) { hapticTick(); }
+      })
+      .monopolizeEvents(true)
+  }
+
+  @Builder
   private FeedPlayerBar(): void {
     Column() {
-      Slider({
-        value: this.displaySeconds(),
-        min: 0,
-        max: this.durationSec > 0 ? this.durationSec : 1,
-        step: 1,
-        style: SliderStyle.OutSet
-      })
-        .width('100%')
-        .height(this.compactFeedLayout ? $r('app.float.compact_video_seek_height') : $r('app.float.video_viewer_seek_height'))
-        .trackThickness(this.compactFeedLayout ? $r('app.float.compact_video_seek_track') : $r('app.float.video_viewer_seek_track'))
-        .blockSize({
-          width: this.compactFeedLayout ? $r('app.float.compact_video_seek_thumb') : $r('app.float.video_viewer_seek_thumb'),
-          height: this.compactFeedLayout ? $r('app.float.compact_video_seek_thumb') : $r('app.float.video_viewer_seek_thumb')
-        })
-        .margin({ bottom: this.compactFeedLayout ? 0 : $r('app.float.video_viewer_seek_gap') })
-        .id('video-viewer-seek')
-        .accessibilityText($r('app.string.video_progress'))
-        .selectedColor($r('app.color.text_on_brand'))
-        .blockColor($r('app.color.text_on_brand'))
-        .trackColor($r('app.color.video_control_progress_track'))
-        .onChange((value: number, mode: SliderChangeMode): void => {
-          this.onSliderChange(value, mode);
-          if (mode !== SliderChangeMode.Begin && mode !== SliderChangeMode.Moving) { hapticTick(); }
-        })
-        .monopolizeEvents(true)
-      Row({ space: this.compactFeedLayout ? $r('app.float.compact_video_control_gap') : 14 }) {
-        SymbolGlyph(this.playing ? $r('sys.symbol.pause_fill') : $r('sys.symbol.play_fill'))
-          .fontSize(24)
-          .fontColor([$r('app.color.text_on_brand')])
-          .accessibilityText(this.playing ? $r('app.string.video_pause') : $r('app.string.video_play'))
-          .width(32)
-          .height(this.compactFeedLayout ? $r('app.float.compact_video_controls_row_height') : 48)
-          .onClick((): void => { hapticTick(); this.togglePlay(); })
-        Text(this.feedTimeLabel()).fontFamily(this.appFontFamily)
-          .fontSize(14)
-          .fontColor($r('app.color.video_feed_secondary_text'))
-          .layoutWeight(1)
-          .maxLines(1)
-          .height(this.compactFeedLayout ? $r('app.float.compact_video_controls_row_height') : 48)
-          .onClick((): void => { hapticTick(); this.feedElapsedTime = !this.feedElapsedTime; this.holdControls(); })
-        Text(this.playbackRateLabel()).fontFamily(this.appFontFamily)
-          .fontSize(18)
-          .fontWeight(FontWeight.Bold)
-          .fontColor($r('app.color.text_on_brand'))
-          .width(40)
-          .height(this.compactFeedLayout ? $r('app.float.compact_video_controls_row_height') : 48)
-          .textAlign(TextAlign.Center)
-          .onClick((): void => { hapticTick(); this.cyclePlaybackRate(); })
-        SymbolGlyph(this.muted ? $r('sys.symbol.speaker_slash_fill') : $r('sys.symbol.speaker_wave_2_fill'))
-          .fontSize(22)
-          .fontColor([$r('app.color.text_on_brand')])
-          .accessibilityText(this.muted ? $r('app.string.video_unmute') : $r('app.string.video_mute'))
-          .width(32)
-          .height(this.compactFeedLayout ? $r('app.float.compact_video_controls_row_height') : 48)
-          .onClick((): void => { hapticTick(); this.toggleMutedFromUser(); })
-        SymbolGlyph($r('sys.symbol.arrow_up_left_and_arrow_down_right'))
-          .fontSize(22)
-          .fontColor([$r('app.color.text_on_brand')])
-          .accessibilityText($r('app.string.video_fullscreen'))
-          .width(32)
-          .height(this.compactFeedLayout ? $r('app.float.compact_video_controls_row_height') : 48)
-          .onClick((): void => { hapticTick(); this.enterFullscreen(); })
-        if (this.allowPip && this.pipSupported() && !this.pipActive) {
-          SymbolGlyph($r('sys.symbol.rectangle_on_rectangle'))
-            .fontSize(22)
+      if (this.compactFeedLayout && this.compactBottomActions) {
+        Row() {
+          Row() { this.FeedProgressSlider() }.layoutWeight(1)
+          Button({ type: ButtonType.Normal, stateEffect: true }) {
+            SymbolGlyph($r('sys.symbol.slider_horizontal_2_square'))
+              .fontSize($r('app.float.compact_video_bottom_icon')).fontColor([$r('app.color.text_on_brand')])
+          }.width($r('app.float.compact_video_bottom_action_height'))
+            .height($r('app.float.compact_video_bottom_action_height')).padding(0)
+            .borderRadius($r('app.float.compact_video_bottom_radius')).backgroundColor(Color.Transparent)
+            .accessibilityText($r('app.string.settings_category_video_controls')).monopolizeEvents(true)
+            .bindMenu(this.CompactPlaybackMenu)
+            .id('video-feed-compact-playback-menu')
+        }.width('100%').height($r('app.float.compact_video_bottom_action_height'))
+          .padding({ left: $r('app.float.compact_video_bottom_inset'), right: $r('app.float.compact_video_bottom_inset') })
+        this.compactFeedActions()
+      } else {
+        this.FeedProgressSlider()
+        Row({ space: this.compactFeedLayout ? $r('app.float.compact_video_control_gap') : 14 }) {
+          SymbolGlyph(this.playing ? $r('sys.symbol.pause_fill') : $r('sys.symbol.play_fill'))
+            .fontSize(24)
             .fontColor([$r('app.color.text_on_brand')])
-            .accessibilityText($r('app.string.video_pip'))
+            .accessibilityText(this.playing ? $r('app.string.video_pause') : $r('app.string.video_play'))
             .width(32)
             .height(this.compactFeedLayout ? $r('app.float.compact_video_controls_row_height') : 48)
-            .onClick((): void => { hapticTick(); this.requestPip(); })
+            .onClick((): void => { hapticTick(); this.togglePlay(); })
+          Text(this.feedTimeLabel()).fontFamily(this.appFontFamily)
+            .fontSize(14)
+            .fontColor($r('app.color.video_feed_secondary_text'))
+            .layoutWeight(1)
+            .maxLines(1)
+            .height(this.compactFeedLayout ? $r('app.float.compact_video_controls_row_height') : 48)
+            .onClick((): void => { hapticTick(); this.feedElapsedTime = !this.feedElapsedTime; this.holdControls(); })
+          Text(this.playbackRateLabel()).fontFamily(this.appFontFamily)
+            .fontSize(18)
+            .fontWeight(FontWeight.Bold)
+            .fontColor($r('app.color.text_on_brand'))
+            .width(40)
+            .height(this.compactFeedLayout ? $r('app.float.compact_video_controls_row_height') : 48)
+            .textAlign(TextAlign.Center)
+            .onClick((): void => { hapticTick(); this.cyclePlaybackRate(); })
+          SymbolGlyph(this.muted ? $r('sys.symbol.speaker_slash_fill') : $r('sys.symbol.speaker_wave_2_fill'))
+            .fontSize(22)
+            .fontColor([$r('app.color.text_on_brand')])
+            .accessibilityText(this.muted ? $r('app.string.video_unmute') : $r('app.string.video_mute'))
+            .width(32)
+            .height(this.compactFeedLayout ? $r('app.float.compact_video_controls_row_height') : 48)
+            .onClick((): void => { hapticTick(); this.toggleMutedFromUser(); })
+          SymbolGlyph($r('sys.symbol.arrow_up_left_and_arrow_down_right'))
+            .fontSize(22)
+            .fontColor([$r('app.color.text_on_brand')])
+            .accessibilityText($r('app.string.video_fullscreen'))
+            .width(32)
+            .height(this.compactFeedLayout ? $r('app.float.compact_video_controls_row_height') : 48)
+            .onClick((): void => { hapticTick(); this.enterFullscreen(); })
+          if (this.allowPip && this.pipSupported() && !this.pipActive) {
+            SymbolGlyph($r('sys.symbol.rectangle_on_rectangle'))
+              .fontSize(22)
+              .fontColor([$r('app.color.text_on_brand')])
+              .accessibilityText($r('app.string.video_pip'))
+              .width(32)
+              .height(this.compactFeedLayout ? $r('app.float.compact_video_controls_row_height') : 48)
+              .onClick((): void => { hapticTick(); this.requestPip(); })
+          }
         }
+        .width('100%')
+        .height(this.compactFeedLayout ? $r('app.float.compact_video_controls_row_height') : 48)
+        .padding({ left: 16, right: 16 })
+        .alignItems(VerticalAlign.Center)
+        .monopolizeEvents(true)
+        .onClick((): void => {})
       }
-      .width('100%')
-      .height(this.compactFeedLayout ? $r('app.float.compact_video_controls_row_height') : 48)
-      .padding({ left: 16, right: 16 })
-      .alignItems(VerticalAlign.Center)
-      .monopolizeEvents(true)
-      .onClick((): void => {})
     }
     .width('100%')
     .id('video-feed-player-bar')
-    .systemMaterial(this.fullscreenControlsMaterial())
+    .attributeModifier(materialModifier(this.fullscreenControlsMaterial()))
     .height(this.feedPlayerBarHeight())
     .padding({ bottom: this.navigationIndicatorHeight + 8 })
   }
@@ -4954,7 +4995,7 @@ export struct SurfaceVideoPlayer {
         .height(INLINE_PROGRESS_LINE_HEIGHT)
         .selectedColor($r('app.color.text_on_brand'))
         .blockColor($r('app.color.text_on_brand'))
-        .systemMaterial(this.fullscreenControlsMaterial())
+        .attributeModifier(materialModifier(this.fullscreenControlsMaterial()))
         .trackColor($r('app.color.video_control_progress_track'))
         .onChange((value: number, mode: SliderChangeMode): void => this.onSliderChange(value, mode))
         .monopolizeEvents(true)
@@ -5043,6 +5084,23 @@ export struct SurfaceVideoPlayer {
           })
           .onTouch((event: TouchEvent): void => this.onHoldSpeedTouch(event))
           .gesture(GestureGroup(GestureMode.Exclusive,
+            PinchGesture({ fingers: 2, distance: FULLSCREEN_PINCH_DISTANCE })
+          .onActionEnd((event: GestureEvent): void => {
+            this.onFullscreenPinch(event);
+          }),
+        PanGesture({ fingers: 1, direction: PanDirection.All, distance: FULLSCREEN_PAN_DISTANCE })
+          .onActionStart((event: GestureEvent): void => {
+            this.startFullscreenPan(event);
+          })
+          .onActionUpdate((event: GestureEvent): void => {
+            this.updateFullscreenPan(event);
+          })
+          .onActionEnd((): void => {
+            this.finishFullscreenPan(true);
+          })
+          .onActionCancel((): void => {
+            this.finishFullscreenPan(false);
+          }),
             LongPressGesture({ fingers: 1, repeat: true, duration: HOLD_SEEK_DURATION_MS })
             .onAction((event: GestureEvent): void => {
               if (!this.holdSpeedEnabled) {
@@ -5062,10 +5120,10 @@ export struct SurfaceVideoPlayer {
         if (this.aiCaptionShown) {
           this.AiCaptionLayer()
         }
-        if (this.controlsVisible) {
-          if (this.isWindowLandscape()) {
-            this.LandscapeViewerControls()
-          } else if (this.videoControlStyle === VIDEO_CONTROL_STYLE_ORIGINAL) {
+        if (this.isWindowLandscape()) {
+          this.LandscapeViewerControls()
+        } else if (this.controlsVisible) {
+          if (this.videoControlStyle === VIDEO_CONTROL_STYLE_ORIGINAL) {
             this.LegacyFullscreenControlPanel()
           } else {
             this.FullscreenControlPanel()
@@ -5110,20 +5168,17 @@ export struct SurfaceVideoPlayer {
           .padding({ left: 16, right: 16, top: 10, bottom: 10 })
           .margin({ bottom: this.navigationIndicatorHeight + FULLSCREEN_CONTROL_PANEL_HEIGHT })
         }
-        if (this.playerControlsLocked) {
-          Column({ space: 8 }) {
+        if (this.playerControlsLocked && !this.isWindowLandscape()) {
+          Button({ type: ButtonType.Circle, stateEffect: true }) {
             SymbolGlyph($r('sys.symbol.lock_fill'))
-              .fontSize(28)
+              .fontSize($r('app.float.landscape_player_icon'))
               .fontColor([$r('app.color.text_on_brand')])
-            Text($r('app.string.video_player_unlock_controls')).fontFamily(this.appFontFamily)
-              .fontSize($r('sys.float.Body_M'))
-              .fontColor($r('app.color.text_on_brand'))
           }
-          .padding({ left: 18, right: 18, top: 14, bottom: 14 })
-          .borderRadius(18)
-          .backgroundColor('#99000000')
-          .alignItems(HorizontalAlign.Center)
-          .hitTestBehavior(HitTestMode.None)
+          .width($r('app.float.landscape_player_target')).height($r('app.float.landscape_player_target'))
+          .margin({ left: $r('app.float.landscape_player_inset') })
+          .backgroundColor(Color.Transparent).align(Alignment.Start).monopolizeEvents(true)
+          .accessibilityText($r('app.string.video_player_unlock_controls')).id('landscape-player-unlock')
+          .onClick((): void => this.unlockPlayerControls())
         }
         this.HoldSeekHint()
       }
@@ -5136,27 +5191,7 @@ export struct SurfaceVideoPlayer {
     .height('100%')
     .backgroundColor(Color.Black)
     .clip(true)
-    .gesture(
-      GestureGroup(GestureMode.Exclusive,
-        PinchGesture({ fingers: 2, distance: FULLSCREEN_PINCH_DISTANCE })
-          .onActionEnd((event: GestureEvent): void => {
-            this.onFullscreenPinch(event);
-          }),
-        PanGesture({ fingers: 1, direction: PanDirection.All, distance: FULLSCREEN_PAN_DISTANCE })
-          .onActionStart((event: GestureEvent): void => {
-            this.startFullscreenPan(event);
-          })
-          .onActionUpdate((event: GestureEvent): void => {
-            this.updateFullscreenPan(event);
-          })
-          .onActionEnd((): void => {
-            this.finishFullscreenPan(true);
-          })
-          .onActionCancel((): void => {
-            this.finishFullscreenPan(false);
-          })
-      )
-    )
+
   }
 
   build(): void {
@@ -5172,6 +5207,8 @@ export struct SurfaceVideoPlayer {
             .backgroundColor(Color.Black)
             .borderRadius(this.videoRadius())
             .clip(true)
+            .focusable(true).focusOnTouch(true)
+            .onKeyEvent((event: KeyEvent): boolean => this.playerInputKey(event))
             .onLoad((): void => {
               this.onInlineSurfaceLoaded();
             })
@@ -5374,7 +5411,8 @@ export struct SurfaceVideoPlayer {
         .height(this.displayHeight())
         .hitTestBehavior(HitTestMode.Transparent)
       }
-      if (this.controlsAtScreenBottom && this.controlsVisible && !this.hideVideoChrome() && !this.hideInlineVideoControls()) {
+      if (this.controlsAtScreenBottom && (this.controlsVisible || this.mediaViewerLayout && this.isWindowLandscape()) &&
+        !this.hideVideoChrome() && !this.hideInlineVideoControls()) {
         Stack({ alignContent: Alignment.Bottom }) {
           if (this.mediaViewerLayout && this.isWindowLandscape()) {
             this.LandscapeViewerControls()
@@ -5426,6 +5464,7 @@ export struct SurfaceVideoPlayer {
 
 @Component
 export struct PostMedia {
+  private inputModalScope: InputModalScope = new InputModalScope();
   @Prop controlsUsePageBackground: boolean = true;
   @Prop controlSurface: ResourceColor = Color.Transparent;
   private mediaSourcePrefix: string = createMediaSourcePrefix();
@@ -5436,6 +5475,14 @@ export struct PostMedia {
   onViewerCastPickerChanged: (visible: boolean) => void = (visible: boolean): void => {};
   onViewerCastingChanged: (casting: boolean) => void = (casting: boolean): void => {};
   @Prop sourceTweet: Tweet | null = null;
+  @Prop viewerDanmakuEnabled: boolean = false;
+  @Prop viewerAuthorFollowing: boolean = false;
+  @Prop viewerDownloading: boolean = false;
+  onViewerDownload: () => void = (): void => {};
+  onViewerFollow: () => void = (): void => {};
+  onViewerComment: () => void = (): void => {};
+  onViewerDanmakuToggle: () => void = (): void => {};
+  onViewerDanmakuSend: () => void = (): void => {};
   onViewerAdvance: () => void = (): void => {};
   // Reported by the player that is being held, so the short-video viewer can
   // draw the rate capsule directly under its back/more row.
@@ -5470,6 +5517,7 @@ export struct PostMedia {
   @Prop controlsAtScreenBottom: boolean = false;
   @Prop hideInlineControls: boolean = false;
   @Prop compactFeedLayout: boolean = false;
+  @Prop compactBottomActions: boolean = false;
   @Prop mediaViewerLayout: boolean = false;
   @Prop viewerUsesSideComments: boolean = false;
   @Prop viewerPhoneFeedLayout: boolean = false;
@@ -5493,8 +5541,14 @@ export struct PostMedia {
     this.viewerDanmakuContent()
   }
 
+  @LocalBuilder
+  private ForwardCompactFeedActions(): void {
+    this.compactFeedActions()
+  }
+
   @BuilderParam landscapePostContent: () => void = this.EmptyLandscapePost;
   @BuilderParam viewerDanmakuContent: () => void = this.EmptyLandscapePost;
+  @BuilderParam compactFeedActions: () => void = this.EmptyLandscapePost;
   onViewerBack: () => void = (): void => {};
   onViewerMore: () => void = (): void => {};
   onViewerCommentDismiss: () => void = (): void => {};
@@ -5554,6 +5608,7 @@ export struct PostMedia {
   private gifActionBusy: boolean = false;
 
   aboutToDisappear(): void {
+    this.inputModalScope.setActive(false);
     this.alive = false;
     this.gifActionMenuMediaId = '';
     for (let i: number = 0; i < this.activeIds.length; i++) {
@@ -5566,16 +5621,29 @@ export struct PostMedia {
     return context.resourceManager.getStringSync(resource);
   }
 
-  private gifMenuMaterial(): uiMaterial.ImmersiveMaterial | undefined {
-    if (!deviceInfo.apiAvailable('26.0.0')) {
-      return undefined;
+  private gifMenuMaterial(): uiMaterial.Material | undefined {
+    return SystemMaterialUtil.immersiveMaterial(1, true, false, true, undefined);
+  }
+
+  private gifContextMenuOptions(media: MediaAttachment): ContextMenuOptions {
+    const options: ContextMenuOptions = {
+      preview: MenuPreviewMode.IMAGE,
+      borderRadius: 16,
+      backgroundColor: Color.Transparent,
+      backgroundBlurStyle: BlurStyle.BACKGROUND_THIN,
+      mask: { color: '#52000000', backgroundBlurStyle: BlurStyle.BACKGROUND_THIN },
+      modalMode: ModalMode.TARGET_WINDOW,
+      hapticFeedbackMode: HapticFeedbackMode.AUTO,
+      onAppear: (): void => { this.inputModalScope.setActive(true); },
+      onDisappear: (): void => {
+        this.inputModalScope.setActive(false);
+        if (this.gifActionMenuMediaId === media.id) { this.gifActionMenuMediaId = ''; }
+      }
+    };
+    if (deviceInfo.apiAvailable('26.0.0')) {
+      options.systemMaterial = this.gifMenuMaterial();
     }
-    return new uiMaterial.ImmersiveMaterial({
-      style: uiMaterial.ImmersiveStyle.THIN,
-      interactive: true,
-      applyShadow: false,
-      colorInvert: true
-    });
+    return options;
   }
 
   private isGifFileUrl(url: string): boolean {
@@ -5616,6 +5684,21 @@ export struct PostMedia {
     if (isAnimatedGif(media)) {
       this.gifActionMenuMediaId = media.id;
     }
+  }
+
+  private saveGifAsVideo(media: MediaAttachment): void {
+    if (this.gifActionBusy) { return; }
+    const url: string = gifVideoDownloadUrl(media);
+    if (url.length === 0) { return; }
+    this.gifActionBusy = true;
+    promptAction.showToast({ message: this.text($r('app.string.media_download_started')) });
+    const context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
+    mediaDownloadService.download(context, url, media.id, true, (result: number): void => {
+      this.gifActionBusy = false;
+      const message: Resource = result === MEDIA_DOWNLOAD_SUCCESS ? $r('app.string.media_video_saved') :
+        result === MEDIA_DOWNLOAD_CANCELED ? $r('app.string.media_download_canceled') : $r('app.string.media_download_failed');
+      promptAction.showToast({ message: this.text(message), duration: 2200 });
+    });
   }
 
   private saveGifToGallery(media: MediaAttachment): void {
@@ -5698,6 +5781,12 @@ export struct PostMedia {
       }).onClick((): void => {
         this.saveGifToGallery(media);
       });
+      if (gifVideoDownloadUrl(media).length > 0) {
+        MenuItem({
+          symbolStartIcon: new SymbolGlyphModifier($r('sys.symbol.video')),
+          content: $r('app.string.gif_action_save_video')
+        }).onClick((): void => { this.saveGifAsVideo(media); });
+      }
       MenuItem({
         symbolStartIcon: new SymbolGlyphModifier($r('sys.symbol.share')),
         content: $r('app.string.gif_action_share')
@@ -6406,13 +6495,13 @@ export struct PostMedia {
       }
       // A native target owns the entire animation rectangle. The decoder's
       // XComponent and its preview cannot consume the post's open gesture.
+      // Keep event arbitration enabled so the parent feed can still scroll.
       Button({ type: ButtonType.Normal, stateEffect: false }) {
         Column().width('100%').height('100%')
       }
         .width('100%').height('100%').backgroundColor(Color.Transparent)
         .id('post-gif-open-' + media.id)
         .accessibilityText($r('app.string.post_gif_label'))
-        .monopolizeEvents(true)
         .onClick((): void => this.openPhoto(media))
         .gesture(LongPressGesture({ fingers: 1, repeat: false, duration: 500 })
           .onAction((): void => this.showGifActionMenu(media)))
@@ -6449,17 +6538,9 @@ export struct PostMedia {
           this.deactivate(media);
         }
       })
-    .bindContextMenu(this.gifActionMenuMediaId === media.id, this.GifActionMenu(media), {
-      preview: MenuPreviewMode.IMAGE,
-      borderRadius: 16,
-      backgroundColor: Color.Transparent,
-      backgroundBlurStyle: BlurStyle.BACKGROUND_THIN,
-      systemMaterial: this.gifMenuMaterial(),
-      mask: { color: '#52000000', backgroundBlurStyle: BlurStyle.BACKGROUND_THIN },
-      modalMode: ModalMode.TARGET_WINDOW,
-      hapticFeedbackMode: HapticFeedbackMode.AUTO,
-      onDisappear: (): void => { this.gifActionMenuMediaId = ''; }
-    })
+    .onMouse((event: MouseEvent): void => contextInputMouse(event, (): void => this.showGifActionMenu(media)))
+    .bindContextMenu(this.gifActionMenuMediaId === media.id, this.GifActionMenu(media),
+      this.gifContextMenuOptions(media))
   }
 
   build(): void {
@@ -6497,8 +6578,18 @@ export struct PostMedia {
               onViewerBack: this.onViewerBack,
               onViewerMore: this.onViewerMore,
               onViewerCommentDismiss: this.onViewerCommentDismiss,
+              sourceTweet: this.sourceTweet,
+              viewerDanmakuEnabled: this.viewerDanmakuEnabled,
+              viewerAuthorFollowing: this.viewerAuthorFollowing,
+              viewerDownloading: this.viewerDownloading,
+              onViewerDownload: this.onViewerDownload,
+              onViewerFollow: this.onViewerFollow,
+              onViewerComment: this.onViewerComment,
+              onViewerDanmakuToggle: this.onViewerDanmakuToggle,
+              onViewerDanmakuSend: this.onViewerDanmakuSend,
               viewerFullscreenRequest: this.viewerFullscreenRequest,
               viewerDanmakuContent: this.ForwardDanmaku,
+              compactFeedActions: this.ForwardCompactFeedActions,
               onViewerControlsChanged: this.onViewerControlsChanged,
               onViewerVideoTap: this.onViewerVideoTap,
               media: media,
@@ -6517,6 +6608,7 @@ export struct PostMedia {
               videoViewportHeight: this.videoViewportHeight,
               controlsAtScreenBottom: this.controlsAtScreenBottom,
               compactFeedLayout: this.compactFeedLayout,
+              compactBottomActions: this.compactBottomActions,
               viewerUsesSideComments: this.viewerUsesSideComments,
               viewerPhoneFeedLayout: this.viewerPhoneFeedLayout,
               viewerCommentProgress: this.viewerCommentProgress,

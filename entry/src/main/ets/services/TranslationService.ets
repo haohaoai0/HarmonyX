@@ -61,6 +61,16 @@ export class TranslationService {
     this.xTranslationQueue = Promise.resolve();
   }
 
+  async translateBiography(userId: string, text: string, settings: TranslationSettings): Promise<TranslationResult> {
+    if (!settings.isRunnable()) { return new TranslationResult(false, '', 'not_configured'); }
+    // X's translateTweet endpoint only accepts post IDs. A profile is plain text,
+    // so the keyless web provider handles biographies when X mode is selected.
+    if (settings.mode === TRANSLATION_MODE_X) {
+      return this.translateWithWeb('bio:' + userId, text, settings.sourceLanguage, settings.effectiveTargetLanguage());
+    }
+    return this.translate('bio:' + userId, text, settings);
+  }
+
   async translate(postId: string, text: string, settings: TranslationSettings,
     postLanguage: string = ''): Promise<TranslationResult> {
     // Whitespace can be part of a poem's layout. Trim only for validation.

@@ -32,6 +32,20 @@ export const TRADITIONAL_ACCENT_PALETTE: AccentPaletteEntry[] = [
   new AccentPaletteEntry('mountain', '#636F7A', '#48525C', '#9EADB8', '#26636F7A')
 ];
 
+// Representative colors sampled from the colorful app icons in the Huawei
+// launcher reference. Each entry keeps the vivid icon color as its swatch,
+// while using a readable light/dark accent for actual controls.
+export const ICON_ACCENT_PALETTE: AccentPaletteEntry[] = [
+  new AccentPaletteEntry('icon_blue', '#0B77FD', '#075BC8', '#72B0FF', '#260B77FD'),
+  new AccentPaletteEntry('icon_red', '#F0243C', '#C3182D', '#FF788C', '#26F0243C'),
+  new AccentPaletteEntry('icon_orange', '#F88008', '#C85E00', '#FFB15A', '#26F88008'),
+  new AccentPaletteEntry('icon_yellow', '#F8D040', '#A57200', '#FFE38A', '#26F8D040'),
+  new AccentPaletteEntry('icon_green', '#10B868', '#087D47', '#59E5A1', '#2610B868'),
+  new AccentPaletteEntry('icon_pink', '#F86898', '#C53668', '#FFAAC7', '#26F86898'),
+  new AccentPaletteEntry('icon_cyan', '#18B8D0', '#007E99', '#64D9EB', '#2618B8D0'),
+  new AccentPaletteEntry('icon_navy', '#243878', '#1A2A5E', '#8EA8FF', '#26243878')
+];
+
 // Stable ids share the existing appearance preference. Primary colours mirror
 // their resources because the application-wide accent contract is a hex string.
 export const MIXED_ACCENT_PALETTE: AccentPaletteEntry[] = [
@@ -125,6 +139,12 @@ export function accentPageRole(page: number): string {
 function paletteEntry(theme: string): AccentPaletteEntry | null {
   for (let i = 0; i < TRADITIONAL_ACCENT_PALETTE.length; i++) {
     const entry: AccentPaletteEntry = TRADITIONAL_ACCENT_PALETTE[i];
+    if (entry.id === theme || entry.common === theme || entry.light === theme || entry.dark === theme) {
+      return entry;
+    }
+  }
+  for (let i = 0; i < ICON_ACCENT_PALETTE.length; i++) {
+    const entry: AccentPaletteEntry = ICON_ACCENT_PALETTE[i];
     if (entry.id === theme || entry.common === theme || entry.light === theme || entry.dark === theme) {
       return entry;
     }

@@ -1,6 +1,7 @@
 import { SystemMaterialUtil } from '../utils/SystemMaterial';
 import { desktopRailBlurStyle } from '../utils/DesktopRailMaterial';
 import { DEFAULT_DESKTOP_RAIL_MATERIAL_LEVEL, SIDEBAR_MATERIAL_GLASS, SIDEBAR_MATERIAL_BLUR } from '../services/LayoutSettingsStore';
+import { materialModifier } from '../utils/SystemMaterial';
 
 @Component
 export struct SideBarMaterialLayer {
@@ -22,7 +23,7 @@ export struct SideBarMaterialLayer {
       Toggle({ type: ToggleType.Button, isOn: false })
         .width(this.extendedSize()).height(this.extendedSize()).position({ x: -this.bleed(), y: -this.bleed() })
         .borderRadius(0).borderWidth(0).borderColor(Color.Transparent).backgroundColor(Color.Transparent)
-        .systemMaterial(SystemMaterialUtil.immersiveMaterial(this.materialLevel, false, false, false, undefined))
+        .attributeModifier(materialModifier(SystemMaterialUtil.immersiveMaterial(this.materialLevel, false, false, false, undefined)))
         .hitTestBehavior(HitTestMode.None).focusable(false).accessibilityLevel('no')
         .id(this.layerPrefix + '-native-material')
     } else {

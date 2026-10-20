@@ -1,5 +1,42 @@
 {
   "string": [
+    {
+      "name": "supporter_config_error",
+      "value": "Не вдалося підтвердити прив’язку облікового запису в хмарі. Зверніться до розробника."
+    },
+    {
+      "name": "supporter_restore_hint",
+      "value": "Повернення до облікового запису відновлює збережений статус. На новому пристрої, після перевстановлення або в іншій версії увійдіть до того самого облікового запису X і введіть початковий код для відновлення доступу."
+    },
+    {"name": "eye_reading_title", "value": "Читання з керуванням поглядом"},
+    {"name": "eye_reading_intro", "value": "Дивіться вгору або вниз і затримайте погляд, щоб прокручувати гілки, офлайн-копії та статті."},
+    {"name": "eye_reading_enable", "value": "Увімкнути керування поглядом"},
+    {"name": "eye_reading_supported", "value": "Відстеження обличчя підтримується. Камера вмикається лише після запуску на сторінці читання."},
+    {"name": "eye_reading_unsupported", "value": "Пристрій не підтримує потрібне відстеження обличчя. Скористайтеся дотиком або клавіатурою."},
+    {"name": "eye_reading_dwell", "value": "Час утримання погляду"},
+    {"name": "eye_reading_threshold", "value": "Поріг напрямку"},
+    {"name": "eye_reading_threshold_desc", "value": "Вищий поріг потребує помітнішого руху очей і зменшує випадкове прокручування."},
+    {"name": "eye_reading_help", "value": "Для калібрування тримайте голову нерухомо й дивіться в центр екрана. Затримайте погляд угорі або внизу для прокручування приблизно на пів екрана. Потім поверніться до центру. Дотики, коліщатко й клавіатура мають пріоритет."},
+    {"name": "eye_reading_privacy", "value": "Передня камера використовується лише після запуску. Напрямок обробляється локально, зображення не зберігаються й не надсилаються. Вихід зі сторінки або у фон зупиняє сеанс. Запустіть знову вручну."},
+    {"name": "eye_reading_save_failed", "value": "Не вдалося зберегти налаштування. Спробуйте ще раз."},
+    {"name": "eye_reading_start", "value": "Запустити керування"},
+    {"name": "eye_reading_stop", "value": "Зупинити керування"},
+    {"name": "eye_reading_recalibrate", "value": "Повторне калібрування"},
+    {"name": "eye_reading_starting", "value": "Запуск передньої камери…"},
+    {"name": "eye_reading_permission", "value": "Потрібен дозвіл на камеру. Надайте його в системних налаштуваннях і спробуйте ще раз."},
+    {"name": "eye_reading_failed", "value": "Камера недоступна. Закрийте інші застосунки камери та спробуйте ще раз."},
+    {"name": "eye_reading_calibrating", "value": "Для калібрування дивіться в центр екрана, тримаючи голову й погляд нерухомо."},
+    {"name": "eye_reading_center", "value": "Перед наступною дією поверніть погляд у центр."},
+    {"name": "eye_reading_ready", "value": "Готово: дивіться вгору або вниз і затримайте погляд."},
+    {"name": "eye_reading_up", "value": "Дивіться вгору для прокручування вгору."},
+    {"name": "eye_reading_down", "value": "Дивіться вниз для прокручування вниз."},
+    {"name": "eye_reading_lost", "value": "Розплющте очі та дивіться на екран за доброго освітлення. Якщо немає реакції, повторіть калібрування."},
+    {"name": "eye_reading_paused", "value": "Ручне введення має пріоритет. Керування поглядом тимчасово призупинено."},
+    {"name": "eye_reading_camera_reason", "value": "Використовує передню камеру для локального розпізнавання напрямку очей після запуску читання з керуванням поглядом."},
+    {"name": "compact_video_layout", "value": "Відео на зовнішньому екрані"},
+    {"name": "settings_compact_video_layout_desc", "value": "Для малих квадратних екранів, як у Pura X: кнопки збоку або нижній ряд. Після розгортання відновлюється звичайний макет відео."},
+    {"name": "compact_video_layout_rail", "value": "Кнопки збоку"},
+    {"name": "compact_video_layout_bottom", "value": "Нижній ряд"},
     {"name":"settings_component_hdr_enabled","value":"Component HDR effect"},
     {"name":"settings_component_hdr_enabled_desc","value":"Off by default. Turn it on to use 1.25x brightening, then adjust the multiplier below."},
     {"name":"settings_confirm_app_exit","value":"Підтверджувати вихід"},
@@ -1775,6 +1812,14 @@
     {
       "name": "settings_hds_tabs_material_adaptive",
       "value": "Адаптивний"
+    },
+    {
+      "name": "settings_hds_tabs_gradient_mask",
+      "value": "Градієнтна маска нижніх вкладок"
+    },
+    {
+      "name": "settings_hds_tabs_gradient_mask_desc",
+      "value": "Керує градієнтом згасання під плаваючою панеллю HdsTabs. Типово увімкнено."
     },
     {
       "name": "settings_timeline_columns_title",
@@ -9249,6 +9294,14 @@
       "value": "Вимкніть, щоб розмістити вкладки стрічки або пошук між аватаром і правою кнопкою."
     },
     {
+      "name": "settings_title_bar_logo_auto_contrast",
+      "value": "Adaptive logo color"
+    },
+    {
+      "name": "settings_title_bar_logo_auto_contrast_desc",
+      "value": "Automatically switches the X or pattern foreground between light and dark to stay readable. Only the single-color foreground is shown, without an icon background."
+    },
+    {
       "name": "notifications_all",
       "value": "Усі"
     },
@@ -10705,6 +10758,359 @@
     {"name":"page_background_motif_popular_apps_global_firefox","value":"Firefox"},
     {"name":"page_background_motif_popular_apps_global_edge","value":"Edge"},
     {"name":"page_background_motif_popular_apps_global_gmail","value":"Gmail"},
-    {"name":"page_background_motif_popular_apps_global_google_maps","value":"Google Maps"}
+    {"name":"page_background_motif_popular_apps_global_google_maps","value":"Google Maps"},
+    {"name":"scene_title","value":"Scene modes"},
+    {"name":"scene_intro","value":"Apply a set of playback, quality, motion and background preferences. Restore returns to your settings from before the first mode was enabled."},
+    {"name":"scene_reading","value":"Clear reading"},
+    {"name":"scene_reading_desc","value":"Autoplay off · high quality images · low quality video · reduced motion · plain background"},
+    {"name":"scene_saver","value":"Power and data saver"},
+    {"name":"scene_saver_desc","value":"Autoplay off · small images · low quality video · reduced motion · plain background"},
+    {"name":"scene_media","value":"Media browsing"},
+    {"name":"scene_media_desc","value":"Autoplay on · original images · high quality video · motion on · your saved background"},
+    {"name":"scene_restore","value":"Restore original settings"},
+    {"name":"scene_restore_desc","value":"Keep your preferences from before scene mode. Switching between modes does not replace this backup."},
+    {"name":"scene_failed","value":"Some settings could not be saved. Your original settings are retained; retry or restore."},
+    {"name":"offline_title","value":"Offline & later"},
+    {"name":"offline_online","value":"Online bookmarks"},
+    {"name":"offline_intro","value":"New bookmarks save text and available articles automatically. Enable images before saving to include photos. Local copies stay separate from online bookmarks and ordinary cache cleanup."},
+    {"name":"offline_images","value":"Include photos in future saves"},
+    {"name":"offline_save","value":"Save offline"},
+    {"name":"offline_saving","value":"Saving…"},
+    {"name":"offline_saved","value":"Saved for offline reading"},
+    {"name":"offline_partial_saved","value":"Saved available content. Some article text or photos are missing; retry when online."},
+    {"name":"offline_save_failed","value":"Could not save locally. Please retry."},
+    {"name":"offline_partial","value":"Incomplete copy"},
+    {"name":"offline_unread","value":"Unread"},
+    {"name":"offline_unread_only","value":"Unread only"},
+    {"name":"offline_search","value":"Search titles, tags or notes"},
+    {"name":"offline_empty","value":"No matching offline items. Save a bookmark or use Save offline on a post."},
+    {"name":"offline_edit","value":"Tags & note"},
+    {"name":"offline_tags","value":"Tags"},
+    {"name":"offline_tags_hint","value":"Tags, separated by commas"},
+    {"name":"offline_note","value":"Private note"},
+    {"name":"offline_done","value":"Save"},
+    {"name":"offline_delete","value":"Delete local copy"},
+    {"name":"reader_title","value":"Thread reader"},
+    {"name":"reader_author_only","value":"Author only"},
+    {"name":"reader_translate","value":"Translate passages"},
+    {"name":"reader_font","value":"Text size"},
+    {"name":"reader_missing","value":"This offline item is missing or unavailable. Save it again while online."},
+    {"name":"reader_partial","value":"Only the available article content is shown. Continue loading or retry while online to get the complete text."},
+    {"name":"reader_load_failed","value":"Could not load more replies. Your current reading content is kept."},
+    {"name":"reader_translation_setup","value":"Enable translation and choose a target language in Settings first."},
+    {"name":"reader_translation_failed","value":"Some passages could not be translated. You can hide translations and retry."},
+    {"name":"reader_offline_note","value":"Saved local content. Translation requires a network connection."},
+    {"name":"reader_scope","value":"Replies loaded so far. Use Continue loading to include more of the discussion."},
+    {
+      "name": "input_help_title",
+      "value": "Миша, клавіатура й тачпад"
+    },
+    {
+      "name": "input_help_desc",
+      "value": "Клавіатурні скорочення та жести"
+    },
+    {
+      "name": "input_main_title",
+      "value": "Скорочення головної сторінки"
+    },
+    {
+      "name": "input_main_scope",
+      "value": "Доступні на п’яти головних вкладках без відкритих підсторінок, бічної панелі чи діалогів. Ctrl+N створює розмову в Повідомленнях і допис на інших вкладках."
+    },
+    {
+      "name": "input_compose",
+      "value": "Новий допис / розмова"
+    },
+    {
+      "name": "input_refresh",
+      "value": "Оновити поточну вкладку"
+    },
+    {
+      "name": "input_keyboard_title",
+      "value": "Керування клавіатурою"
+    },
+    {
+      "name": "input_focus",
+      "value": "Перемістити фокус уперед / назад. Стандартні елементи підтримують також стрілки."
+    },
+    {
+      "name": "input_activate",
+      "value": "Активувати кнопку у фокусі."
+    },
+    {
+      "name": "input_submit",
+      "value": "Надіслати з поля допису, відповіді або повідомлення. Звичайний Enter зберігає свою поведінку."
+    },
+    {
+      "name": "input_back",
+      "value": "Назад у довідці, редакторі, чатах і переглядачах. Спочатку закривається поточна панель."
+    },
+    {
+      "name": "input_photo",
+      "value": "Попереднє / наступне фото без масштабування й відкритих панелей."
+    },
+    {
+      "name": "input_video",
+      "value": "Попереднє / наступне відео без відкритих панелей."
+    },
+    {
+      "name": "input_playback",
+      "value": "Коли зображення відео у фокусі: Пробіл або Enter — відтворення / пауза; Ліворуч / Праворуч — назад / уперед на 10 секунд."
+    },
+    {
+      "name": "input_pointer_title",
+      "value": "Миша й тачпад"
+    },
+    {
+      "name": "input_pointer",
+      "value": "Ліве клацання або дотик активує елемент. Праве клацання на фото, відео чи повідомленні відкриває дії. Кнопки реагують на наведення. Смуги прокручування й прогресу можна перетягувати."
+    },
+    {
+      "name": "input_trackpad",
+      "value": "Два пальці прокручують списки, горизонтальний жест перемикає фото, щипок змінює масштаб. Збільшене фото можна переміщати. Дотик двома пальцями відкриває меню на сумісних тачпадах."
+    },
+    {
+      "name": "input_previous",
+      "value": "Попереднє фото"
+    },
+    {
+      "name": "input_next",
+      "value": "Наступне фото"
+    },
+    {
+      "name": "input_key_home",
+      "value": "Ctrl + 1"
+    },
+    {
+      "name": "input_key_explore",
+      "value": "Ctrl + 2"
+    },
+    {
+      "name": "input_key_notifications",
+      "value": "Ctrl + 3"
+    },
+    {
+      "name": "input_key_messages",
+      "value": "Ctrl + 4"
+    },
+    {
+      "name": "input_key_profile",
+      "value": "Ctrl + 5"
+    },
+    {
+      "name": "input_key_search",
+      "value": "Ctrl + K"
+    },
+    {
+      "name": "input_key_compose",
+      "value": "Ctrl + N"
+    },
+    {
+      "name": "input_key_refresh",
+      "value": "Ctrl + R"
+    },
+    {
+      "name": "input_key_settings",
+      "value": "Ctrl + ,"
+    },
+    {
+      "name": "input_key_help",
+      "value": "F1"
+    },
+    {
+      "name": "input_key_focus",
+      "value": "Tab / Shift + Tab"
+    },
+    {
+      "name": "input_key_activate",
+      "value": "Enter / Space"
+    },
+    {
+      "name": "input_key_submit",
+      "value": "Ctrl + Enter"
+    },
+    {
+      "name": "input_key_back",
+      "value": "Esc / Alt + ←"
+    },
+    {
+      "name": "input_key_photo",
+      "value": "← / →"
+    },
+    {
+      "name": "input_key_video",
+      "value": "↑ / ↓ / Page Up / Page Down"
+    },
+    {
+      "name": "input_key_playback",
+      "value": "Space / Enter / ← / →"
+    },
+    {"name":"settings_filter_languages","value":"Приховані мови дописів"},
+    {"name":"settings_filter_languages_desc","value":"Виберіть мови для приховування. Невизначені мови й дописи лише з медіа залишаються видимими."},
+    {"name":"appearance_preview_title","value":"Попередній перегляд"},
+    {"name":"appearance_preview_hint","value":"Зміни відображаються одразу. Торкніться прикладу панелі, щоб розгорнути її."},
+    {"name":"post_edited","value":"Відредаговано"},
+    {"name":"post_metric_bookmarks","value":"закладок"},
+    {"name":"post_metric_quotes","value":"цитувань"},
+    {"name":"settings_reply_quality","value":"Згортати неякісні відповіді"},
+    {"name":"settings_reply_quality_desc","value":"Згортає повторну рекламу й масові пропозиції. Локальні правила можуть помилятися; відповідь можна розгорнути."},
+    {"name":"reply_quality_folded","value":"Можливо неякісна відповідь"},
+    {"name":"reply_quality_reasons","value":"Переглянути причини"},
+    {"name":"reply_quality_allow","value":"Завжди показувати автора"},
+    {"name":"reply_quality_whitelist","value":"Дозволені автори"},
+    {"name":"reply_quality_whitelist_desc","value":"Ваші відповіді, автор допису, ваші підписки й дозволені автори залишаються видимими. Список діє для поточного облікового запису."},
+    {"name":"reply_quality_empty","value":"Дозволених авторів ще немає"},
+    {"name":"reply_quality_reason_duplicate","value":"Кілька авторів повторюють один рекламний шаблон"},
+    {"name":"reply_quality_reason_author_repeat","value":"Автор багаторазово публікує однаковий вміст"},
+    {"name":"reply_quality_reason_links","value":"Містить кілька зовнішніх посилань"},
+    {"name":"reply_quality_reason_promotion","value":"Містить рекламу чи обіцянки прибутку"},
+    {"name":"reply_quality_reason_contact","value":"Містить контакти для залучення користувачів"},
+    {
+      "name": "settings_floating_compose_material_tint",
+      "value": "Відтінок матеріалу плаваючої кнопки публікації"
+    },
+    {
+      "name": "settings_floating_compose_material_tint_desc",
+      "value": "Накладає колір теми на матеріал. Вимкнення прибирає лише колірний шар."
+    },
+    {
+      "name": "chat_decoration",
+      "value": "Chat decorations"
+    },
+    {
+      "name": "chat_decoration_subtitle",
+      "value": "Avatar frames and chat bubbles, downloaded only when you choose them."
+    },
+    {
+      "name": "chat_decoration_frame",
+      "value": "Avatar frames"
+    },
+    {
+      "name": "chat_decoration_bubble",
+      "value": "Chat bubbles"
+    },
+    {
+      "name": "chat_decoration_free",
+      "value": "Free"
+    },
+    {
+      "name": "chat_decoration_download_preview",
+      "value": "Download to preview"
+    },
+    {
+      "name": "chat_decoration_download",
+      "value": "Download"
+    },
+    {
+      "name": "chat_decoration_downloading",
+      "value": "Downloading..."
+    },
+    {
+      "name": "chat_decoration_use",
+      "value": "Use"
+    },
+    {
+      "name": "chat_decoration_in_use",
+      "value": "In use"
+    },
+    {
+      "name": "chat_decoration_remove",
+      "value": "Stop using"
+    },
+    {
+      "name": "chat_decoration_installed",
+      "value": "Downloaded"
+    },
+    {
+      "name": "chat_decoration_applied",
+      "value": "Decoration applied"
+    },
+    {
+      "name": "chat_decoration_download_failed",
+      "value": "Download failed. Try again later."
+    },
+    {
+      "name": "chat_decoration_reset",
+      "value": "Restore defaults"
+    },
+    {
+      "name": "chat_decoration_reset_done",
+      "value": "Defaults restored"
+    },
+    {
+      "name": "chat_decoration_note",
+      "value": "Decorations stay on this device. Other people see styles supported by their client."
+    },
+    {
+      "name": "chat_decoration_loading",
+      "value": "Loading decorations..."
+    },
+    {
+      "name": "chat_decoration_unavailable",
+      "value": "Decorations are unavailable. Check your connection and retry."
+    },
+    {
+      "name": "chat_decoration_sample_text",
+      "value": "Have a lovely day."
+    },
+    {"name": "sign_out_confirm_title", "value": "Вийти з облікового запису?"},
+    {"name": "sign_out_confirm_message", "value": "Для використання цього облікового запису доведеться ввійти знову."},
+    {"name": "settings_for_you_only_sensitive", "value": "Лише чутливий вміст у рекомендаціях"},
+    {"name": "settings_for_you_only_sensitive_desc", "value": "Показувати позначені X чутливі дописи, включно з цитатами. Підписки та списки не змінюються. Медіа залишаються прихованими."},
+    {"name": "settings_grip_floating", "value": "Плаваюча кнопка"},
+    {"name": "settings_grip_video", "value": "Панель дій відео"},
+    {"name": "settings_grip_reply", "value": "Кнопка відповіді"},
+    {"name": "settings_grip_component_desc", "value": "Розташування залежить від руки, що тримає пристрій. Якщо вимкнено, використовується вибрана рука."},
+    {"name": "settings_grip_hdstabs", "value": "Нижня панель HdsTabs"},
+    {"name": "settings_grip_hdstabs_desc", "value": "Використовувати системну адаптацію до руки. Якщо вимкнено, панель не рухається за рукою."},
+    {"name":"gif_action_save_video","value":"Зберегти як відео високої якості (MP4)"},
+    {"name":"storage_save_remembered_note","value":"Виберіть папку завантажень один раз, щоб наступні файли зберігалися в ній автоматично. Вимкніть для збереження в галерею."},
+    {"name":"storage_save_to_remembered","value":"Зберегти в папку завантажень"},
+    {"name": "storage_permission_reason", "value": "Зберігати доступ до вибраних файлів і папок."},
+    {"name": "timeline_sources_lists", "value": "Списки"},
+    {"name": "timeline_sources_communities", "value": "Спільноти"},
+    {"name": "timeline_edit", "value": "Редагувати"},
+    {"name": "timeline_done", "value": "Готово"},
+    {"name": "timeline_move_up", "value": "Угору"},
+    {"name": "timeline_move_down", "value": "Униз"},
+    {"name": "timeline_remove_source", "value": "Прибрати %s"},
+    {"name": "timeline_add_to_home", "value": "Додати до головних стрічок"},
+    {"name": "timeline_remove_from_home", "value": "Прибрати з головних стрічок"},
+    {"name": "timeline_sources_failed", "value": "Деякі списки чи спільноти не завантажилися. Натисніть, щоб повторити."},
+    {"name": "timeline_sources_pinned_empty", "value": "Немає закріплених стрічок. Додайте списки, спільноти чи теми нижче."},
+    {"name":"video_controls_mirror","value":"Віддзеркалити елементи керування"},
+    {"name":"video_controls_speed","value":"Швидкість"},
+    {"name":"video_controls_aspect","value":"Формат"},
+    {"name":"video_controls_background","value":"Тло"},
+    {"name":"video_controls_quality_hd","value":"HD"},
+    {"name":"video_controls_quality_sd","value":"SD"},
+    {"name":"video_controls_quality_ld","value":"LD"},
+    {"name":"video_controls_more","value":"Більше"},
+    {"name":"video_controls_download","value":"Завантажити"},
+    {"name":"settings_navigation_style","value":"Стиль нижньої навігації"},
+    {"name":"settings_hds_bottom_bar","value":"Плаваючі HdsTabs"},
+    {"name":"settings_split_bottom_bar","value":"Розділена капсульна навігація"},
+    {"name":"settings_split_bottom_bar_desc","value":"Перемикайте сторінки в лівій капсулі. Окрема кнопка створює допис або чат, оновлює стрічку чи повертає нагору. Обидві частини використовують матеріал HDS; на старих системах діє сумісна навігація."},
+    {"name":"split_navigation_action_top","value":"Нагору"},
+    {"name":"split_navigation_action_refresh","value":"Оновити головну"},
+    {"name":"split_navigation_action_compose","value":"Створити допис"},
+    {"name": "settings_reply_capsule_split", "value": "Окремі капсули відповіді"},
+    {"name": "settings_reply_capsule_split_desc", "value": "Розділяти поле відповіді та дії з дописом у згорнутому вигляді"},
+    {"name": "reply_capsule_write_reply", "value": "Відповісти"},
+    {"name":"settings_native_bottom_bar","value":"Капсульна навігація з матеріалом 7.0"},
+    {"name":"settings_native_bottom_bar_desc","value":"Використовує імерсивний матеріал HarmonyOS 7.0 капсули відповіді, підсвічування дотику, рідкий індикатор і зміну боку за хватом. Якщо недоступно, використовується капсула HDS."},
+    {"name":"settings_native_navigation_material","value":"Товщина матеріалу капсули навігації"},
+    {"name":"settings_for_you_only_sensitive_age_title","value":"Підтвердьте вік"},
+    {"name":"settings_for_you_only_sensitive_age_message","value":"«Лише делікатний вміст у рекомендаціях» доступно лише користувачам віком від 18 років. Вам виповнилося 18 років?"},
+    {"name":"settings_for_you_only_sensitive_age_under","value":"Молодше 18 років"},
+    {"name":"settings_for_you_only_sensitive_age_adult","value":"18 років або старше"},
+    {"name":"settings_theme_icon_blue","value":"Синій значків"},
+    {"name":"settings_theme_icon_red","value":"Червоний значків"},
+    {"name":"settings_theme_icon_orange","value":"Помаранчевий значків"},
+    {"name":"settings_theme_icon_yellow","value":"Жовтий значків"},
+    {"name":"settings_theme_icon_green","value":"Зелений значків"},
+    {"name":"settings_theme_icon_pink","value":"Рожевий значків"},
+    {"name":"settings_theme_icon_cyan","value":"Блакитний значків"},
+    {"name":"settings_theme_icon_navy","value":"Темно-синій значків"}
   ]
 }

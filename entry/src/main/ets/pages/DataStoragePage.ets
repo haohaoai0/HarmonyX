@@ -42,6 +42,9 @@ export struct DataStoragePage {
   @State private networkAvailable: boolean = false;
   @State private busy: boolean = false;
   @State private useFolder: boolean = false;
+  @State private directorySupported: boolean = false;
+  @State private directoryPath: string = '';
+  @State private directoryAuthorized: boolean = false;
   @State private chatRetention: string = '30';
   private scroller: Scroller = new Scroller();
   private active: boolean = false;
@@ -58,6 +61,9 @@ export struct DataStoragePage {
 
   private refreshLocation(): void {
     this.useFolder = downloadLocationStore.useDownloads(this.context());
+    this.directorySupported = downloadLocationStore.supportsDirectory();
+    this.directoryPath = downloadLocationStore.path(this.context());
+    this.directoryAuthorized = downloadLocationStore.hasDirectory(this.context());
     this.chatRetention = xChatActions.localString(this.context(), 'retention_days', '30');
   }
 
@@ -81,9 +87,23 @@ export struct DataStoragePage {
   private changeSaveTarget(enabled: boolean): void {
     if (this.busy) { return; }
     this.useFolder = enabled; this.busy = true;
-    downloadLocationStore.setUseDownloads(this.context(), enabled)
+    const prepared: Promise<boolean> = enabled ? downloadLocationStore.prepare(this.context()) : Promise.resolve(true);
+    prepared.then((ready: boolean): Promise<void> => ready ?
+      downloadLocationStore.setUseDownloads(this.context(), enabled) : Promise.resolve())
       .catch((): void => { promptAction.showToast({ message: $r('app.string.storage_directory_failed') }); })
       .finally((): void => { this.refreshLocation(); this.busy = false; });
+  }
+
+  private chooseDirectory(): void {
+    if (this.busy) { return; }
+    this.busy = true;
+    downloadLocationStore.chooseDirectory(this.context()).then((changed: boolean): void => {
+      if (changed && this.active) {
+        this.refreshLocation();
+        promptAction.showToast({ message: $r('app.string.storage_directory_changed') });
+      }
+    }).catch((): void => { promptAction.showToast({ message: $r('app.string.storage_directory_failed') }); })
+      .finally((): void => { this.busy = false; });
   }
 
   private confirmClear(kind: StorageCacheKind): void {
@@ -150,16 +170,24 @@ export struct DataStoragePage {
     Column({ space: 12 }) {
       Text($r('app.string.storage_download_path')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Subtitle_L')).fontWeight(FontWeight.Medium)
         .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue))).width('100%')
-      Text($r('app.string.storage_system_save')).fontFamily(this.appFontFamily)
+      Text(this.directorySupported ? this.directoryPath : $r('app.string.storage_system_save')).fontFamily(this.appFontFamily)
         .fontSize($r('sys.float.Body_M')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue))).width('100%')
       Row({ space: 12 }) {
         Column({ space: 5 }) {
           Text($r('app.string.storage_save_to_folder')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue)))
-          Text($r('app.string.storage_save_target_note')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Caption_M')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue)))
+          Text(this.directorySupported ? $r('app.string.storage_save_remembered_note') :
+            $r('app.string.storage_save_target_note')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Caption_M')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue)))
         }.layoutWeight(1).alignItems(HorizontalAlign.Start)
         Toggle({ type: ToggleType.Switch, isOn: this.useFolder }).enabled(!this.busy)
           .onChange((enabled: boolean): void => this.changeSaveTarget(enabled))
       }.width('100%')
+      if (this.directorySupported) {
+        Text(this.directoryAuthorized ? $r('app.string.storage_path_note') : $r('app.string.storage_path_authorize'))
+          .fontFamily(this.appFontFamily).fontSize($r('sys.float.Caption_M')).fontColor($r('app.color.text_secondary')).width('100%')
+        Button($r('app.string.storage_change_path')).width('100%').enabled(!this.busy)
+          .backgroundColor(secondaryButtonSurfaceColor(this.displayMode, this.darkSurface))
+          .fontColor($r('app.color.text_primary')).onClick((): void => this.chooseDirectory())
+      }
       this.ValueRow($r('app.string.storage_download_files'), this.loaded ? storageBytes(this.usage.downloads.bytes) : '—')
       this.ValueRow($r('app.string.storage_other_cache'), this.loaded ? storageBytes(this.usage.otherCacheBytes()) : '—')
       Text($r('app.string.storage_protected_note')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Caption_M')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue))).width('100%')

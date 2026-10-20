@@ -1,3 +1,17 @@
+import { scrollFrame, scrollStarted, scrollStopped, stopScrollOnTouch } from '../utils/ScrollInteraction';
+import { homeTimelineSourceStore } from '../services/HomeTimelineSourceStore';
+import { HomeSourceOptionsSheet } from '../components/HomeTimelineSheets';
+import { pinnedHomeListStore } from '../services/PinnedHomeListStore';
+import { STORAGE_KEY_VIDEO_FULLSCREEN_OWNER } from '../utils/AppWindowOrientation';
+import { listStateStore, STORAGE_KEY_LIST_REVISION } from '../services/ListStateStore';
+import { XListParser } from '../services/XListParser';
+import type { ListRow, ListPage } from '../models/Tweet';
+import { STORAGE_KEY_FOR_YOU_ONLY_SENSITIVE, isSensitivePost } from '../services/ContentFilterStore';
+import { InputModalScope, STORAGE_KEY_INPUT_MODAL_BLOCKED } from '../utils/InputModalScope';
+import { contextInputMouse } from '../utils/InputSupport';
+import { ROOT_INPUT_SHORTCUTS, InputShortcut } from '../models/InputShortcutCatalog';
+import { InputHelpBuilder } from './InputHelp';
+import { ThreadReaderBuilder } from './ThreadReader';
 import { AdaptivePostGrid } from '../components/AdaptivePostGrid';
 import { AdaptivePostFeed } from '../components/AdaptivePostFeed';
 import { motionDuration, motionCurve } from '../utils/AppMotion';
@@ -62,7 +76,10 @@ import { XXAuthPromotionInjector, XXAuthPromotionSlot } from '../utils/XXAuthPro
 import { XXAUTH_PROMOTION_POST, xxAuthPopupStore } from '../services/XXAuthPopupStore';
 import { HomeSpacePill } from '../components/HomeSpacePill';
 import { RootBottomTabItem } from '../components/RootBottomTabItem';
+import { RootSplitNavigation } from '../components/RootSplitNavigation';
 import { RootLiquidTabIndicator } from '../components/RootLiquidTabIndicator';
+import { RootLiquidTabSurface } from '../components/RootLiquidTabSurface';
+import { RootLiquidTabMotion } from '../utils/RootLiquidTabMotion';
 import { SpacePreviewSheet } from '../components/SpacePreviewSheet';
 import { SPACE_SURFACE_REVISION, SPACE_PREVIEW_REQUEST, spaceSurfaceStore } from '../services/SpaceSurfaceStore';
 import { STORAGE_KEY_HOME_SPACE_CAPSULE_ENABLED, STORAGE_KEY_HOME_SPACE_CAPSULE_HIDDEN_FOR_SESSION,
@@ -75,6 +92,8 @@ import { RootRefreshIndicator } from '../components/RootRefreshIndicator';
 import { ProfileTabMotion } from '../utils/ProfileTabMotion';
 import { AccountOverview, AccountOverviewBanner } from '../components/AccountOverview';
 import { RootTitleBarLayout } from '../utils/RootTitleBarLayout';
+import { RootTitleBarIdentity } from '../components/RootTitleBarIdentity';
+import { RootTitleBarLogo } from '../components/RootTitleBarLogo';
 import { NotificationPresentation } from '../utils/NotificationPresentation';
 import { NotificationSummary } from '../components/NotificationSummary';
 import { TweetCard as NotificationTweetCard } from '../components/TweetCard';
@@ -120,7 +139,7 @@ import type { TweetPage } from '../services/XApiClient';
 import { authStore } from '../services/AuthStore';
 import { videoPlaybackPositionStore } from '../services/VideoPlaybackPositionStore';
 import { videoPlayerHandoff } from '../services/VideoPlayerHandoff';
-import { XPrivateClient, XPrivateResult, xPrivateClient } from '../services/XPrivateClient';
+import { SENSITIVE_TIMELINE_QUERY, XPrivateClient, XPrivateResult, xPrivateClient } from '../services/XPrivateClient';
 import { XTimelineParser } from '../services/XTimelineParser';
 import { XNotificationParser } from '../services/XNotificationParser';
 import type { XNotificationPage } from '../services/XNotificationParser';
@@ -218,6 +237,7 @@ import { DmSettingsBuilder, DmSettingsRouteParam } from './DmSettings';
 import { DmInfoBuilder } from './DmInfo';
 import { DmGroupBuilder } from './DmGroup';
 import { ChatBackgroundBuilder } from './ChatBackground';
+import { ChatDecorationsBuilder } from './ChatDecorations';
 import { DmRequestsBuilder } from './DmRequests';
 import { xChatActions } from '../services/XChatActions';
 import type { DmConversationRouteParam } from './DmConversation';
@@ -320,9 +340,12 @@ import {
   HDS_TAB_MATERIAL_SMOOTH,
   STORAGE_KEY_HOME_TAB_MATERIAL_LEVEL,
   STORAGE_KEY_CLASSIC_BOTTOM_BAR,
+  STORAGE_KEY_SPLIT_BOTTOM_BAR,
   STORAGE_KEY_ROOT_LIQUID_TAB_INDICATOR_ENABLED,
+  STORAGE_KEY_ROOT_TAB_GRADIENT_MASK_ENABLED,
   STORAGE_KEY_ROOT_TAB_LABELS_VISIBLE,
-  DEFAULT_HOME_TAB_MATERIAL_LEVEL
+  DEFAULT_HOME_TAB_MATERIAL_LEVEL,
+  STORAGE_KEY_NATIVE_BOTTOM_BAR
 } from '../services/HdsTabsSettingsStore';
 import {
   ContentFilterSettings,
@@ -330,6 +353,7 @@ import {
   STORAGE_KEY_FILTER_HIDE_ADS,
   STORAGE_KEY_FILTER_HIDE_REPLIES,
   STORAGE_KEY_FILTER_HIDE_REPOSTS,
+  STORAGE_KEY_FILTER_LANGUAGES,
   STORAGE_KEY_FILTER_KEYWORDS,
   STORAGE_KEY_FILTER_MUTED_USERS,
   STORAGE_KEY_FILTER_ONLY_MEDIA,
@@ -342,6 +366,7 @@ import {
   STORAGE_KEY_SYSTEM_NOTIFICATIONS
 } from '../services/NotificationSettingsStore';
 import { midAutumnGreetingStore } from '../services/MidAutumnGreetingStore';
+import { materialModifier } from '../utils/SystemMaterial';
 
 // One row of a search-result timeline: either a real post or an injected
 // recommendation. Keeping both in one list is what lets a promotion sit at any
@@ -580,9 +605,14 @@ struct Index {
   @State private exploreCategoryPages: ExploreCategoryPage[] = [new ExploreCategoryPage(), new ExploreCategoryPage(),
     new ExploreCategoryPage(), new ExploreCategoryPage(), new ExploreCategoryPage()];
   @State private activeHomeTopicId: string = '';
+  @StorageProp(STORAGE_KEY_LIST_REVISION) @Watch('onHomeListsChanged') private homeListRevision: number = 0;
   @State private pinnedHomeTopics: TimelineTopic[] = [];
   @State private showPauseTopics: boolean = false;
   @State private showFollowingOrder: boolean = false;
+  @State private showHomeSourceOptions: boolean = false;
+  @State private selectedHomeSource: TimelineTopic | null = null;
+  private communityHomeRankings: Map<string, string> = new Map<string, string>();
+  @StorageProp('harmonyx.home_source_request') @Watch('onHomeSourceRequested') private homeSourceRequest: string = '';
   @StorageLink(STORAGE_KEY_HOME_TIMELINE_REVISION) @Watch('onHomeTimelinePreferencesChanged')
   private homeTimelineRevision: number = 0;
   private manageTimelinesAfterDismiss: boolean = false;
@@ -695,6 +725,8 @@ struct Index {
   @State messages: DirectMessage[] = [];
   @State private chatFilter: string = 'all';
   @State private chatSearch: string = '';
+  @State private inputChatContextId: string = '';
+  private inputInboxScope: InputModalScope = new InputModalScope();
   @State private markingChats: boolean = false;
   @StorageLink('harmonyx.chat_revision') @Watch('onChatChanged') private chatRevision: number = 0;
   @State profile: UserProfile | null = null;
@@ -776,6 +808,10 @@ struct Index {
     AppStorage.get<number>('harmonyx.window_height') ?? 0;
   @StorageProp('harmonyx.compact_window') @Watch('onCompactWindowChanged') private compactWindow: boolean = false;
   @StorageLink('harmonyx.breakpoint') @Watch('onBreakpointChange') breakpoint: string = ResponsiveLayout.BREAKPOINT_SM;
+  @StorageProp(STORAGE_KEY_VIDEO_FULLSCREEN_OWNER) @Watch('onVideoFullscreenOwnerChanged')
+  private videoFullscreenOwner: string = '';
+  @State private videoLayoutBreakpoint: string = '';
+  private videoLayoutReleaseTimer: number = -1;
   @StorageLink('harmonyx.content_destination_open') @Watch('onContentDestinationChange')
   contentDestinationOpen: boolean = false;
   @StorageLink(STORAGE_KEY_TIMELINE_COLUMNS) @Watch('onTimelineLayoutChanged') timelineColumnsMode: number = 0;
@@ -800,21 +836,29 @@ struct Index {
   bottomBarPagesMask: number = DEFAULT_BOTTOM_BAR_PAGES_MASK;
   @StorageLink(STORAGE_KEY_CLASSIC_BOTTOM_BAR) @Watch('onClassicBottomBarChanged')
   classicBottomBar: boolean = false;
+  @StorageLink(STORAGE_KEY_SPLIT_BOTTOM_BAR) @Watch('onClassicBottomBarChanged')
+  splitBottomBar: boolean = false;
+  @StorageLink(STORAGE_KEY_NATIVE_BOTTOM_BAR) @Watch('onClassicBottomBarChanged')
+  nativeBottomBar: boolean = false;
   @StorageLink(STORAGE_KEY_ROOT_TAB_LABELS_VISIBLE) rootTabLabelsVisible: boolean = true;
   @StorageLink(STORAGE_KEY_ROOT_LIQUID_TAB_INDICATOR_ENABLED) rootLiquidTabIndicatorEnabled: boolean = true;
+  @StorageLink(STORAGE_KEY_ROOT_TAB_GRADIENT_MASK_ENABLED) rootTabGradientMaskEnabled: boolean = true;
   @StorageLink(STORAGE_KEY_AUTO_HIDE_FAB) @Watch('onAutoHideFabChanged')
   autoHideFab: boolean = true;
   @StorageLink(STORAGE_KEY_COMPOSE_BUTTON_ENABLED) composeButtonEnabled: boolean = true;
   @StorageProp(STORAGE_KEY_PHOTO_FULLSCREEN) private photoFullscreen: boolean = true;
   @State private tabBarHidden: boolean = false;
   @State private liquidTabRequestedPage: number = 0;
+  @State private liquidTabMotion: RootLiquidTabMotion = new RootLiquidTabMotion();
   @StorageProp(SPACE_PLAYBACK_REVISION) spacePlaybackRevision: number = 0;
   @StorageLink(STORAGE_KEY_HOME_TAB_MATERIAL_LEVEL)
   homeTabMaterialLevel: number = DEFAULT_HOME_TAB_MATERIAL_LEVEL;
+  @StorageLink(STORAGE_KEY_FOR_YOU_ONLY_SENSITIVE) private onlySensitiveForYou: boolean = false;
   @StorageLink(STORAGE_KEY_FILTER_ONLY_MEDIA) filterOnlyMedia: boolean = false;
   @StorageLink(STORAGE_KEY_FILTER_HIDE_REPOSTS) filterHideReposts: boolean = false;
   @StorageLink(STORAGE_KEY_FILTER_HIDE_REPLIES) filterHideReplies: boolean = false;
   @StorageLink(STORAGE_KEY_FILTER_HIDE_ADS) filterHideAds: boolean = true;
+  @StorageProp(STORAGE_KEY_FILTER_LANGUAGES) private filterLanguages: string = '';
   @StorageLink(STORAGE_KEY_FILTER_KEYWORDS) filterKeywords: string = '';
   @StorageLink(STORAGE_KEY_FILTER_MUTED_USERS) filterMutedUsers: string = '';
   @StorageLink(STORAGE_KEY_FILTER_REVISION) @Watch('onContentFilterChanged')
@@ -832,6 +876,8 @@ struct Index {
   private webClient: XWebClient = new XWebClient();
   private connectivity: ConnectivityMonitor = new ConnectivityMonitor();
   private tabsController: TabsController = new TabsController();
+  @StorageProp('harmonyx.grip_hand_enabled') private rootGripEnabled: boolean = true;
+  @StorageProp('harmonyx.grip_hdstabs_enabled') private hdsTabsGripEnabled: boolean = true;
   private hdsTabsController: HdsTabsController = new HdsTabsController();
   private lastHomeTabClickAt: number = 0;
   @Provide('pageStack') navPathStack: NavPathStack = new NavPathStack();
@@ -927,6 +973,7 @@ struct Index {
   private followingSnapshot: HomeFeedSnapshot = new HomeFeedSnapshot();
   private topicSnapshots: Map<string, HomeFeedSnapshot> = new Map<string, HomeFeedSnapshot>();
   private homeTimelineRequestId: number = 0;
+  private lastOnlySensitiveForYou: boolean = false;
   @State private homeWaterFlowSections: WaterFlowSections = new WaterFlowSections();
   private homeWaterFlowSectionsReady: boolean = false;
   @State private exploreWaterFlowSections: WaterFlowSections = new WaterFlowSections();
@@ -960,7 +1007,11 @@ struct Index {
     this.statusLine = this.text($r('app.string.status_loading'));
     this.loadSearchHistory();
     contentFilterStore.load(context);
+    this.lastOnlySensitiveForYou = this.onlySensitiveForYou;
     homeTimelineStore.load(context);
+    pinnedHomeListStore.load(context, xPrivateClient.viewerId());
+    homeTimelineSourceStore.load(context, xPrivateClient.viewerId());
+    homeTimelineSourceStore.refresh(context);
     this.loadTimeline();
     this.spaceRecommendationsAlive = true;
     this.refreshHomeSpaces();
@@ -984,6 +1035,7 @@ struct Index {
 
   aboutToDisappear(): void {
     this.homePageAlive = false;
+    this.clearVideoLayoutReleaseTimer();
     this.homePresentationRevision++;
     this.homePresentationPending = false;
     homeSeenTweetStore.flush(getContext(this) as common.UIAbilityContext);
@@ -1076,15 +1128,54 @@ struct Index {
   }
 
   private supportsHdsNavigation(): boolean {
-    return deviceInfo.sdkApiVersion >= 20;
+    if (deviceInfo.apiAvailable('6.0.0(20)')) {
+      return true;
+    }
+    return false;
   }
 
   private supportsHdsFloatingMaterial(): boolean {
-    return deviceInfo.sdkApiVersion >= 23;
+    if (deviceInfo.apiAvailable('6.1.0(23)')) {
+      return true;
+    }
+    return false;
   }
 
   private usesFloatingTabBar(): boolean {
-    return this.supportsHdsFloatingMaterial() && !this.classicBottomBar;
+    return this.supportsHdsFloatingMaterial() && !this.classicBottomBar && !this.splitBottomBar;
+  }
+
+  private usesSplitTabBar(): boolean {
+    return this.supportsHdsFloatingMaterial() && !this.classicBottomBar && this.splitBottomBar;
+  }
+
+  private rootSplitActionVisible(): boolean {
+    return this.composeButtonEnabled && this.currentTab !== ME_TAB_INDEX &&
+      (this.currentTab !== HOME_TAB_INDEX || this.homeFloatingAction !== HOME_FLOATING_HIDDEN);
+  }
+
+  private rootSplitActionMode(): string {
+    if (this.currentTab === EXPLORE_TAB_INDEX) { return 'search'; }
+    return this.currentTab === HOME_TAB_INDEX ? this.homeFloatingAction : 'compose';
+  }
+
+  private rootSplitActionLabel(): string {
+    const mode: string = this.rootSplitActionMode();
+    if (mode === 'search') { return this.text($r('app.string.search_action')); }
+    if (mode === 'top') { return this.text($r('app.string.split_navigation_action_top')); }
+    if (mode === 'refresh') { return this.text($r('app.string.split_navigation_action_refresh')); }
+    return this.text(this.currentTab === MESSAGES_TAB_INDEX ? $r('app.string.chat_new') :
+      $r('app.string.split_navigation_action_compose'));
+  }
+
+  private onRootSplitAction(): void {
+    if (this.rootSplitActionMode() === 'search') { this.showSearchPage(); return; }
+    if (this.rootSplitActionMode() === 'top') { this.scrollCurrentToTop(); return; }
+    if (this.rootSplitActionMode() === 'refresh') { this.onRefresh(); return; }
+    if (this.currentTab === MESSAGES_TAB_INDEX) { this.openChatComposer(); return; }
+    this.replyToId = '';
+    this.replyToUser = '';
+    this.openComposer('', '', '');
   }
 
   private onClassicBottomBarChanged(): void {
@@ -1135,7 +1226,7 @@ struct Index {
         this.showMidAutumnGreeting = false;
       }
     };
-    if (this.supportsImmersiveMaterial()) {
+    if (deviceInfo.apiAvailable('26.0.0')) {
       options.backgroundColor = Color.Transparent;
       options.systemMaterial = new uiMaterial.ImmersiveMaterial({
         style: uiMaterial.ImmersiveStyle.THICK
@@ -1144,6 +1235,46 @@ struct Index {
       options.backgroundColor = this.themedPageSurface();
     }
     return options;
+  }
+
+  @StorageProp(STORAGE_KEY_INPUT_MODAL_BLOCKED) private inputModalBlocked: boolean = false;
+
+  private rootInputAvailable(): boolean {
+    return !this.inputModalBlocked && this.navPathStack.size() === 0 && !this.photoOverlayOpen && this.photoOverlayStack.size() === 0 &&
+      !this.showOnboardingGuide && !this.showLoginSheet && !this.showMidAutumnGreeting && !this.showChatUnlock &&
+      !this.showLinkPreview && !this.showSpacePreview && !this.showPauseTopics && !this.showFollowingOrder && !this.showHomeSourceOptions &&
+      !(this.showSideDrawer && !this.isLargeScreen()) && !this.desktopAdvancedSearchOpen && !this.exitConfirmationPending;
+  }
+
+  private runRootInput(id: string): void {
+    if (!this.rootInputAvailable()) { return; }
+    if (id === 'home') { this.selectRootTabPage(HOME_TAB_INDEX); }
+    else if (id === 'explore') { this.selectRootTabPage(EXPLORE_TAB_INDEX); }
+    else if (id === 'notifications') { this.selectRootTabPage(NOTIFICATIONS_TAB_INDEX); }
+    else if (id === 'messages') { this.selectRootTabPage(MESSAGES_TAB_INDEX); }
+    else if (id === 'profile') { this.selectRootTabPage(ME_TAB_INDEX); }
+    else if (id === 'search') { this.showSearchPage(); }
+    else if (id === 'compose') {
+      if (this.currentTab === MESSAGES_TAB_INDEX) { this.openChatComposer(); }
+      else { this.openComposer('', '', ''); }
+    } else if (id === 'settings') { this.openSettings(); }
+    else if (id === 'help') { this.openRootContent({ name: 'InputHelp' }); }
+    else if (id === 'refresh') {
+      if (this.currentTab === HOME_TAB_INDEX) { this.onRefresh(); }
+      else if (this.currentTab === EXPLORE_TAB_INDEX) { void this.onExploreHomeRefresh(); }
+      else if (this.currentTab === NOTIFICATIONS_TAB_INDEX) { this.onNotificationsRefresh(); }
+      else if (this.currentTab === MESSAGES_TAB_INDEX) { this.refreshMessages(); }
+      else if (this.currentTab === ME_TAB_INDEX) { this.onMeRefresh(); }
+    }
+  }
+
+  @Builder
+  private RootInputBindings(): void {
+    ForEach(ROOT_INPUT_SHORTCUTS, (shortcut: InputShortcut) => {
+      Row().width(0).height(0).focusable(false).accessibilityLevel('no')
+        .enabled(this.rootInputAvailable())
+        .keyboardShortcut(shortcut.key, shortcut.modifiers, (): void => this.runRootInput(shortcut.id))
+    }, (shortcut: InputShortcut): string => shortcut.id)
   }
 
   private showSearchPage(): void {
@@ -1268,7 +1399,7 @@ struct Index {
   }
 
   private isLargeScreen(): boolean {
-    return ResponsiveLayout.isLarge(this.breakpoint);
+    return ResponsiveLayout.isLarge(this.videoLayoutBreakpoint || this.breakpoint);
   }
 
   private popupHostBlocked(): boolean {
@@ -1278,7 +1409,7 @@ struct Index {
     return !this.homeFeedPresented || this.showOnboardingGuide || this.showLoginSheet || this.showMidAutumnGreeting ||
       this.showChatUnlock || this.showLinkPreview || (this.showSideDrawer && !this.isLargeScreen()) ||
       this.contentDestinationOpen || this.photoOverlayOpen || this.showSpacePreview ||
-      this.showPauseTopics || this.showFollowingOrder;
+      this.showPauseTopics || this.showFollowingOrder || this.showHomeSourceOptions;
   }
 
   private sideDrawerWidth(): number {
@@ -1330,7 +1461,7 @@ struct Index {
   }
 
   private isWideScreen(): boolean {
-    return ResponsiveLayout.isWide(this.breakpoint);
+    return ResponsiveLayout.isWide(this.videoLayoutBreakpoint || this.breakpoint);
   }
 
   private effectiveTimelineColumns(): number {
@@ -1628,6 +1759,7 @@ struct Index {
   }
 
   private onHomeViewportChanged(): void {
+    if (this.videoLayoutBreakpoint.length > 0) { return; }
     this.beginHomeViewportChange();
   }
 
@@ -1666,11 +1798,35 @@ struct Index {
   }
 
   private onContentFilterChanged(): void {
+    const sensitiveModeChanged: boolean = this.onlySensitiveForYou !== this.lastOnlySensitiveForYou;
+    this.lastOnlySensitiveForYou = this.onlySensitiveForYou;
+    if (sensitiveModeChanged && this.homeFeedMode === 0 && this.activeHomeTopicId.length === 0) {
+      void this.reloadSensitiveForYouFeed();
+      return;
+    }
     for (let index: number = 0; index < this.homeTabItems().length; index++) {
       this.replaceHomePageData(index);
     }
     this.syncAllWaterFlowSections();
     this.rememberTimelinePosts();
+  }
+
+  private async reloadSensitiveForYouFeed(): Promise<void> {
+    this.timeline = [];
+    this.timelineTopToken = '';
+    this.timelineNextToken = '';
+    this.timelineCursorHistory = [];
+    this.hasMoreTimeline = false;
+    this.loading = true;
+    try {
+      await this.fetchPosts(false, 'sensitive_filter_changed');
+      for (let index: number = 0; index < this.homeTabItems().length; index++) {
+        this.replaceHomePageData(index);
+      }
+      this.syncAllWaterFlowSections();
+    } finally {
+      this.loading = false;
+    }
   }
 
   private contentFilterSettings(): ContentFilterSettings {
@@ -1680,19 +1836,53 @@ struct Index {
       this.filterHideReplies,
       this.filterKeywords,
       this.filterMutedUsers,
-      this.filterHideAds
+      this.filterHideAds, this.filterLanguages, this.onlySensitiveForYou
     );
   }
 
   private filteredTimeline(index: number = this.homeTabIndex()): Tweet[] {
     const source: Tweet[] = index === this.homeTabIndex() ? this.timeline : this.homeSnapshotAt(index).timeline;
     const filtered: Tweet[] = contentFilterStore.filter(source, this.contentFilterSettings())
-      .filter((tweet: Tweet): boolean => !postModerationStore.hidden(tweet));
+      .filter((tweet: Tweet): boolean => !postModerationStore.hidden(tweet) &&
+        (index !== 0 || !this.onlySensitiveForYou || isSensitivePost(tweet)));
     return index >= 2 ? filtered : homeTimelineStore.present(filtered, index === 0);
+  }
+
+  private onHomeListsChanged(): void {
+    const viewer: string = xPrivateClient.viewerId();
+    const updates: ListRow[] = listStateStore.values(viewer);
+    for (const row of pinnedHomeListStore.current(viewer)) {
+      if (listStateStore.isRemoved(viewer, row.id)) { row.pinned = false; updates.push(row); }
+    }
+    pinnedHomeListStore.merge(getContext(this) as common.UIAbilityContext, viewer, updates);
+  }
+
+  private async loadPinnedHomeLists(): Promise<void> {
+    const viewer: string = xPrivateClient.viewerId();
+    const generation: number = xPrivateClient.sessionGeneration();
+    if (viewer.length === 0 || !xPrivateClient.isSignedIn()) { return; }
+    try {
+      const result: XPrivateResult = await xPrivateClient.subscribedLists('', 100);
+      if (generation !== xPrivateClient.sessionGeneration() || viewer !== xPrivateClient.viewerId()) { return; }
+      const page: ListPage | null = result.ok ? XListParser.directory(result.body, viewer) : null;
+      if (page !== null) { pinnedHomeListStore.merge(getContext(this) as common.UIAbilityContext, viewer,
+        page.lists.map((row: ListRow): ListRow => listStateStore.get(viewer, row.id) ?? row)); }
+    } catch (error) { }
   }
 
   private onHomeTimelinePreferencesChanged(): void {
     this.pinnedHomeTopics = homeTimelineStore.pinnedTopics();
+    let reloadCommunity: boolean = false;
+    for (const source of this.pinnedHomeTopics) {
+      if (source.communityId.length === 0) { continue; }
+      const previous: string | undefined = this.communityHomeRankings.get(source.id);
+      if (previous !== undefined && previous !== source.rankingMode) {
+        this.topicSnapshots.delete(source.id);
+        if (this.activeHomeTopicId === source.id) { reloadCommunity = true; }
+      }
+      this.communityHomeRankings.set(source.id, source.rankingMode);
+    }
+    if (reloadCommunity) { this.timeline = []; this.timelineNextToken = ''; this.loadTimeline(); }
     if (this.activeHomeTopicId.length > 0 && !homeTimelineStore.isPinned(this.activeHomeTopicId)) {
       this.applyHomeFeedMode(this.defaultHomeFeedMode);
     }
@@ -1719,7 +1909,20 @@ struct Index {
     this.syncAllWaterFlowSections();
   }
 
+  private onHomeSourceRequested(): void {
+    const topic: TimelineTopic | null = homeTimelineStore.topicById(this.homeSourceRequest.split('|')[0]);
+    if (topic === null || !homeTimelineStore.isPinned(topic.id)) { return; }
+    this.selectHomeTopic(topic);
+    this.selectRootTabPage(HOME_TAB_INDEX);
+    this.homePager.changeIndex(this.homeTabIndex(), false);
+  }
+
   private openHomeTimelineOptions(mode: number): void {
+    if (mode >= 2) {
+      this.selectedHomeSource = this.pinnedHomeTopics[mode - 2] ?? null;
+      this.showHomeSourceOptions = this.selectedHomeSource !== null;
+      return;
+    }
     if (!this.isBaseHomeFeedSelected(mode)) {
       this.showPauseTopics = false;
       this.showFollowingOrder = false;
@@ -1789,6 +1992,14 @@ struct Index {
   // At 840vp the drawer becomes a persistent navigation rail. At 1200vp we
   // additionally have room for the feed and a destination side by side.
   private onBreakpointChange(): void {
+    // A fullscreen video owns rotation. Replacing root Navigation here would
+    // destroy the destination and its AVPlayer underneath the content cover.
+    if (this.videoLayoutBreakpoint.length > 0) {
+      if (this.videoFullscreenOwner.length > 0 || this.videoRouteOpen()) { return; }
+      if (this.breakpoint !== this.videoLayoutBreakpoint) { return; }
+      this.clearVideoLayoutReleaseTimer();
+      this.videoLayoutBreakpoint = '';
+    }
     this.closeDesktopRail();
     this.beginHomeViewportChange();
     if (ResponsiveLayout.isSmall(this.breakpoint)) {
@@ -1810,7 +2021,7 @@ struct Index {
 
   private updateNavigationMode(): void {
     if (this.isDesktopLayout()) {
-      this.mainNavigationMode = this.currentTab === MESSAGES_TAB_INDEX &&
+      this.mainNavigationMode = this.isLargeScreen() && this.currentTab === MESSAGES_TAB_INDEX &&
         (this.desktopRoute === 'DmConversation' || this.desktopRoute === 'DmInfo' || this.desktopRoute === 'DmGroup') ?
         NavigationMode.Split : NavigationMode.Stack;
       return;
@@ -1855,6 +2066,7 @@ struct Index {
   }
 
   private onCompactWindowChanged(): void {
+    if (this.videoLayoutBreakpoint.length > 0) { return; }
     this.beginHomeViewportChange();
     this.homeHeaderCollapsed = false;
     this.setTabBarHidden(false);
@@ -1984,7 +2196,7 @@ struct Index {
   // which reads as "the last post will not scroll up".
   private contentBottomInset(): number {
     if (this.isDesktopLayout()) { return this.navigationIndicatorHeight + 20; }
-    if (!this.usesFloatingTabBar()) {
+    if (!this.usesFloatingTabBar() && !this.usesSplitTabBar()) {
       if (this.supportsHdsNavigation()) {
         return this.classicTabBarHeight() + (this.hasActiveSpace() ? 72 : 0);
       }
@@ -2004,7 +2216,9 @@ struct Index {
         contentStyle: style.originalStyle?.contentStyle };
       style.scrollEffectStyle = { backgroundStyle: { backgroundColor: Color.Transparent },
         contentStyle: style.scrollEffectStyle?.contentStyle };
-      style.systemMaterialEffect = { materialType: hdsMaterial.MaterialType.NONE };
+      if (deviceInfo.apiAvailable('6.1.0(23)')) {
+        style.systemMaterialEffect = { materialType: hdsMaterial.MaterialType.NONE };
+      }
     }
     return style;
   }
@@ -2043,7 +2257,7 @@ struct Index {
   }
 
   private floatingTabBottomMargin(): number {
-    if (!this.usesFloatingTabBar()) {
+    if (!this.usesFloatingTabBar() && !this.usesSplitTabBar()) {
       return this.navigationIndicatorHeight;
     }
     const context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
@@ -2062,8 +2276,8 @@ struct Index {
     if (!this.usesFloatingTabBar()) {
       return undefined;
     }
-    return {
-      adaptToHandedness: true,
+    const style: HdsTabsFloatingStyle = {
+      adaptToHandedness: this.rootGripEnabled && this.hdsTabsGripEnabled,
       barBottomMargin: this.floatingTabBottomMargin(),
       lightColor: this.accentColor,
       systemMaterialEffect: {
@@ -2071,6 +2285,10 @@ struct Index {
         materialLevel: this.resolveHomeTabMaterialLevel()
       }
     };
+    if (!this.rootTabGradientMaskEnabled) {
+      style.gradientMask = { maskColor: Color.Transparent };
+    }
+    return style;
   }
 
   private resolveHomeTabMaterialLevel(): hdsMaterial.MaterialLevel {
@@ -2330,6 +2548,7 @@ struct Index {
     // Recommended and following timelines carry the promotions; a pinned topic
     // stays exactly what the reader asked for.
     if (key !== 'for-you' && key !== 'following') { return []; }
+    if (key === 'for-you' && this.onlySensitiveForYou) { return []; }
     if (this.filteredTimeline(index).length === 0) { return []; }
     const posts: XXAuthPromotionPost[] = this.promotionPlan().posts;
     return posts;
@@ -2388,6 +2607,7 @@ struct Index {
     if (index < 0 || index >= items.length) { return 0; }
     const key: string = items[index].key;
     if (key !== 'for-you' && key !== 'following') { return 0; }
+    if (key === 'for-you' && this.onlySensitiveForYou) { return 0; }
     return this.promotionPlan().timelineCount;
   }
 
@@ -2523,7 +2743,10 @@ struct Index {
   private feedCacheKey(): string {
     const context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
     const activeId: string = accountStore.activeId(context);
-    const feed: string = this.activeHomeTopicId.length > 0 ? 'topic:' + this.activeHomeTopicId : this.homeFeedMode.toString();
+    const source: TimelineTopic | null = homeTimelineStore.topicById(this.activeHomeTopicId);
+    const feed: string = this.activeHomeTopicId.length > 0 ? 'topic:' + this.activeHomeTopicId +
+      ((source?.communityId.length ?? 0) > 0 ? ':' + source?.rankingMode : '') :
+      (this.homeFeedMode === 0 && this.onlySensitiveForYou ? 'sensitive' : this.homeFeedMode.toString());
     if (activeId.length > 0) {
       return activeId + '|' + feed;
     }
@@ -2553,7 +2776,8 @@ struct Index {
   // The home-screen card has to stay useful without waking the timeline.
   // Keep a tiny account-scoped preview set and push it to every placed form.
   private rememberTimelinePosts(): void {
-    if (this.activeHomeTopicId.length > 0 || this.timelineSource === 'sample' || this.timelineSource.length === 0) {
+    if (this.onlySensitiveForYou || this.activeHomeTopicId.length > 0 ||
+      this.timelineSource === 'sample' || this.timelineSource.length === 0) {
       return;
     }
     const context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
@@ -2763,18 +2987,25 @@ struct Index {
 
     if (authStore.isSignedIn()) {
       if (this.homeFeedMode === 0) {
-        this.recommendationSignalsLoaded = false;
-        await this.loadRecommendationSignals();
-        if (requestId !== this.homeTimelineRequestId) {
-          return;
+        if (this.onlySensitiveForYou) {
+          page = await this.api.searchRecentPage(SENSITIVE_TIMELINE_QUERY);
+          if (page !== null) {
+            page.tweets = page.tweets.filter((tweet: Tweet): boolean => isSensitivePost(tweet));
+          }
+        } else {
+          this.recommendationSignalsLoaded = false;
+          await this.loadRecommendationSignals();
+          if (requestId !== this.homeTimelineRequestId) {
+            return;
+          }
+          this.activeRecommendationQuery = this.recommendationSearchQuery();
+          page = await this.api.searchRecentPage(this.activeRecommendationQuery);
         }
-        this.activeRecommendationQuery = this.recommendationSearchQuery();
-        page = await this.api.searchRecentPage(this.activeRecommendationQuery);
         if (requestId !== this.homeTimelineRequestId) {
           return;
         }
         if (page !== null && page.tweets.length > 0) {
-          this.timelineSource = 'recommend';
+          this.timelineSource = this.onlySensitiveForYou ? 'sensitive-search' : 'recommend';
         }
       } else if (authStore.getUserId().length > 0) {
         page = await this.api.homeTimelinePage(authStore.getUserId());
@@ -2800,7 +3031,7 @@ struct Index {
       return;
     }
 
-    if (this.homeFeedMode === 0) {
+    if (this.homeFeedMode === 0 && !this.onlySensitiveForYou) {
       const publicPosts: Tweet[] = await this.webClient.fetchStarterTimeline();
       if (requestId !== this.homeTimelineRequestId) {
         return;
@@ -2842,6 +3073,16 @@ struct Index {
   }
 
   private async homeTopicPage(topic: TimelineTopic, cursor: string, privateSession: boolean): Promise<TweetPage | null> {
+    if (topic.communityId.length > 0) {
+      if (!privateSession) { return null; }
+      const result: XPrivateResult = await this.xPrivate.communityTimeline(topic.communityId, cursor, 20, topic.rankingMode);
+      return result.ok ? XTimelineParser.parse(result.body) : null;
+    }
+    if (topic.listId.length > 0) {
+      if (!privateSession) { return null; }
+      const result: XPrivateResult = await this.xPrivate.listTimeline(topic.listId, cursor, 20);
+      return result.ok ? XTimelineParser.parse(result.body) : null;
+    }
     if (privateSession) {
       const result: XPrivateResult = await this.xPrivate.searchTimeline(topic.query, cursor, 20, 'Latest');
       return result.ok ? XTimelineParser.parse(result.body) : null;
@@ -2872,7 +3113,7 @@ struct Index {
       this.timelineNextToken = page.nextToken;
       this.hasMoreTimeline = page.nextToken.length > 0;
       this.liveBadge = this.text($r('app.string.status_live_badge'));
-      this.statusLine = page.tweets.length > 0 ? this.text(topic.title) : this.text($r('app.string.status_home_empty'));
+      this.statusLine = page.tweets.length > 0 ? topic.displayTitle || this.text(topic.title) : this.text($r('app.string.status_home_empty'));
       this.persistFeed();
     } else if (!this.restoreCachedFeed()) {
       this.timeline = [];
@@ -2924,24 +3165,9 @@ struct Index {
   private LoginAccountTile(account: XAccount): void {
     Column({ space: 12 }) {
       Stack({ alignContent: Alignment.Center }) {
-        if (account.avatarUrl.length > 0) {
-          Image(account.avatarUrl)
-            .width(92)
-            .height(92)
-            .objectFit(ImageFit.Cover)
-            .borderRadius(userAvatarRadius(92, 46, account.verifiedType ?? '', account.avatarShape ?? ''))
-            .clip(true)
-        } else {
-          Text(account.initial()).fontFamily(this.appFontFamily)
-            .width(92)
-            .height(92)
-            .fontSize($r('sys.float.Title_L'))
-            .fontWeight(FontWeight.Bold)
-            .fontColor($r('app.color.text_on_accent'))
-            .backgroundColor(this.accentColor)
-            .borderRadius(userAvatarRadius(92, 46, account.verifiedType ?? '', account.avatarShape ?? ''))
-            .textAlign(TextAlign.Center)
-        }
+        ProxyAvatar({ url: account.avatarUrl, avatarSize: 92, radius: 46,
+          verifiedType: account.verifiedType, avatarShape: account.avatarShape,
+          fallbackText: account.initial(), fallbackColor: this.accentColor })
         if (account.id === this.loginActiveAccountId) {
           SymbolGlyph($r('sys.symbol.checkmark_circle_fill'))
             .fontSize(26)
@@ -4288,20 +4514,32 @@ struct Index {
   // Runs one private GraphQL timeline request and decodes it. Returns null on
   // any failure so the caller keeps its existing fallback chain.
   private async fetchPrivateTimeline(cursor: string, refreshing: boolean = false, requestContext: string = ''): Promise<TweetPage | null> {
+    const sensitiveForYou: boolean = this.homeFeedMode === 0 && this.onlySensitiveForYou;
+    const count: number = !refreshing && cursor.length > 0 ? 40 : 20;
     const result: XPrivateResult =
-      await this.xPrivate.homeTimeline(this.homeFeedMode === 0, cursor, !refreshing && cursor.length > 0 ? 40 : 20,
-        this.seenTweetIdsForTimeline(), refreshing, requestContext);
+      sensitiveForYou ? await this.xPrivate.sensitiveTimeline(cursor, count) :
+        await this.xPrivate.homeTimeline(this.homeFeedMode === 0, cursor, count,
+          this.seenTweetIdsForTimeline(), refreshing, requestContext);
     if (!result.ok) {
       return null;
     }
-    const suggestions: FollowDiscoveryData | null = FollowDiscoveryData.parse(result.body);
-    spaceSurfaceStore.ingestTimeline(result.body);
-    if (suggestions !== null) {
-      this.homeSuggestionGroups = cursor.length === 0 ? suggestions.groups :
-        [...this.homeSuggestionGroups, ...suggestions.groups.filter((group: FollowSuggestionGroup): boolean =>
-          !this.homeSuggestionGroups.some((existing: FollowSuggestionGroup): boolean => existing.id === group.id))];
+    if (!sensitiveForYou) {
+      const suggestions: FollowDiscoveryData | null = FollowDiscoveryData.parse(result.body);
+      spaceSurfaceStore.ingestTimeline(result.body);
+      if (suggestions !== null) {
+        this.homeSuggestionGroups = cursor.length === 0 ? suggestions.groups :
+          [...this.homeSuggestionGroups, ...suggestions.groups.filter((group: FollowSuggestionGroup): boolean =>
+            !this.homeSuggestionGroups.some((existing: FollowSuggestionGroup): boolean => existing.id === group.id))];
+      }
     }
-    return XTimelineParser.parse(result.body);
+    const page: TweetPage | null = XTimelineParser.parse(result.body);
+    if (page === null) {
+      return null;
+    }
+    if (sensitiveForYou) {
+      page.tweets = page.tweets.filter((tweet: Tweet): boolean => isSensitivePost(tweet));
+    }
+    return page;
   }
 
   // APK rpb/opb/vg4 sends a persistent observation snapshot for For You.
@@ -6074,7 +6312,7 @@ struct Index {
       }
     }.height(34).padding({ left: 12, right: 12 }).backgroundColor(Color.Transparent)
       .border({ width: this.supportsImmersiveMaterial() ? 0 : 1, color: $r('app.color.divider') })
-      .systemMaterial(this.chatFilterMaterialCache.material(this.accentColor)).bindMenu(this.ChatFilterMenu())
+      .attributeModifier(materialModifier(this.chatFilterMaterialCache.material(this.accentColor))).bindMenu(this.ChatFilterMenu())
   }
 
   private refreshMessages(): void {
@@ -6229,9 +6467,26 @@ struct Index {
   // other signed-in account takes over right away, which is the whole point of
   // keeping several: the reload below is triggered by the account store's
   // change notification, not repeated here.
+  @State private signOutPending: boolean = false;
+
   private async signOut(): Promise<void> {
+    if (this.signOutPending) { return; }
+    this.signOutPending = true;
+    try { await this.confirmSignOut(); } finally { this.signOutPending = false; }
+  }
+
+  private async confirmSignOut(): Promise<void> {
     const ctx: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
     const signOutAccountId: string = accountStore.activeId(ctx);
+    const dialog = await promptAction.showDialog({
+      title: this.text($r('app.string.sign_out_confirm_title')),
+      message: this.text($r('app.string.sign_out_confirm_message')),
+      buttons: [
+        { text: this.text($r('app.string.compose_cancel')), color: this.accentColor },
+        { text: this.text($r('app.string.profile_sign_out')), color: '#E0245E' }
+      ]
+    });
+    if (dialog.index !== 1 || accountStore.activeId(ctx) !== signOutAccountId) { return; }
     try {
       await meowPushService.beforeSignOut(ctx, signOutAccountId);
     } catch (error) {
@@ -6327,6 +6582,9 @@ struct Index {
     this.fabHidden = false;
     const context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
     xPrivateClient.load(context);
+    pinnedHomeListStore.load(context, xPrivateClient.viewerId());
+    homeTimelineSourceStore.load(context, xPrivateClient.viewerId());
+    homeTimelineSourceStore.refresh(context);
     accountPrivacyService.syncSensitiveMedia(context, true).catch((): void => { });
     xWebCookieBridge.syncActive(context);
     this.refreshHomeSpaces();
@@ -6353,7 +6611,45 @@ struct Index {
   }
 
   private isDesktopLayout(): boolean {
-    return DesktopLayout.active(this.desktopLayoutEnabled, this.breakpoint);
+    return DesktopLayout.active(this.desktopLayoutEnabled, this.videoLayoutBreakpoint || this.breakpoint);
+  }
+
+  private videoRouteOpen(): boolean {
+    return this.navPathStack.getAllPathName().indexOf('VideoFeedViewer') >= 0;
+  }
+
+  private clearVideoLayoutReleaseTimer(): void {
+    if (this.videoLayoutReleaseTimer >= 0) {
+      clearTimeout(this.videoLayoutReleaseTimer);
+      this.videoLayoutReleaseTimer = -1;
+    }
+  }
+
+  private onVideoFullscreenOwnerChanged(): void {
+    this.clearVideoLayoutReleaseTimer();
+    if (this.videoFullscreenOwner.length > 0) {
+      if (this.videoLayoutBreakpoint.length === 0) {
+        this.videoLayoutBreakpoint = this.breakpoint;
+        hilog.info(0xFF00, 'HarmonyX-VideoLayout', 'Hold root layout breakpoint=%{public}s', this.breakpoint);
+      }
+      return;
+    }
+    this.scheduleVideoLayoutRelease();
+  }
+
+  private scheduleVideoLayoutRelease(): void {
+    if (this.videoLayoutBreakpoint.length === 0 || this.videoFullscreenOwner.length > 0 || this.videoRouteOpen()) { return; }
+    this.clearVideoLayoutReleaseTimer();
+    // A foldable may remain landscape after playback. Apply its new root
+    // layout only after the exiting window rotation has settled.
+    this.videoLayoutReleaseTimer = setTimeout((): void => {
+      this.videoLayoutReleaseTimer = -1;
+      if (!this.homePageAlive || this.videoFullscreenOwner.length > 0 || this.videoRouteOpen()) { return; }
+      this.videoLayoutBreakpoint = '';
+      this.onBreakpointChange();
+      this.onHomeViewportChanged();
+      hilog.info(0xFF00, 'HarmonyX-VideoLayout', 'Release root layout breakpoint=%{public}s', this.breakpoint);
+    }, 600);
   }
 
   private onDesktopLayoutChanged(): void {
@@ -6385,6 +6681,7 @@ struct Index {
       if (names[i] !== 'ReplyComposer' && names[i] !== 'TimelineManager') { route = names[i]; break; }
     }
     this.desktopRoute = route;
+    this.scheduleVideoLayoutRelease();
     const params: DmConversationRouteParam[] = this.navPathStack.getParamByName('DmConversation') as DmConversationRouteParam[];
     const chat: DmConversationRouteParam | undefined = params[params.length - 1] as DmConversationRouteParam;
     this.desktopConversationId = chat?.conversationId ?? '';
@@ -6603,8 +6900,8 @@ struct Index {
   private DesktopTitleBarContent(): void {
     Column() { this.DesktopHeader() }.width('100%').height(this.desktopTitleBarHeight())
       .justifyContent(FlexAlign.Center)
-      .systemMaterial(this.currentTab === ME_TAB_INDEX ? undefined :
-        titleBarGlassMaterial(this.titleBarStyleMode, this.titleBarGlassMaterialLevel))
+      .attributeModifier(materialModifier(this.currentTab === ME_TAB_INDEX ? undefined :
+        titleBarGlassMaterial(this.titleBarStyleMode, this.titleBarGlassMaterialLevel)))
   }
 
   @Builder
@@ -6643,13 +6940,13 @@ struct Index {
       else if (this.currentTab === MESSAGES_TAB_INDEX) { this.ChatTitleBarSearch() }
       else if (this.currentTab === NOTIFICATIONS_TAB_INDEX) { this.NotificationTabs(false) }
     }.width('100%').height(Math.max(0, this.desktopHeaderHeight() - this.desktopTitleBarHeight()))
-      .systemMaterial(this.currentTab === ME_TAB_INDEX ? undefined :
-        titleBarGlassMaterial(this.titleBarStyleMode, this.titleBarGlassMaterialLevel))
+      .attributeModifier(materialModifier(this.currentTab === ME_TAB_INDEX ? undefined :
+        titleBarGlassMaterial(this.titleBarStyleMode, this.titleBarGlassMaterialLevel)))
   }
 
   @Builder
   private DesktopRootPage(): void {
-    if (this.currentTab === MESSAGES_TAB_INDEX && this.navPathStack.size() === 0) {
+    if (this.isLargeScreen() && this.currentTab === MESSAGES_TAB_INDEX && this.navPathStack.size() === 0) {
       Row() {
         Column() {
           Column() { this.MessagesTab() }.width('100%').layoutWeight(1)
@@ -6855,7 +7152,7 @@ struct Index {
             this.NewPostsCapsule()
           }
 
-          if (this.composeButtonEnabled && !this.isDesktopLayout() && this.currentTab !== ME_TAB_INDEX &&
+          if (this.composeButtonEnabled && !this.isDesktopLayout() && !this.usesSplitTabBar() && this.currentTab !== ME_TAB_INDEX &&
             (this.currentTab !== HOME_TAB_INDEX || this.homeFloatingAction !== HOME_FLOATING_HIDDEN)) {
             FloatingComposeButton({
               bottomInset: this.floatingTabBottomMargin(),
@@ -7131,6 +7428,19 @@ struct Index {
           }
         }, this.sheetMaterialEnabled, this.sheetMaterialLevel, this.sheetWindowBreakpoint, this.compactWindow))
 
+      Column().width(0).height(0)
+        .bindSheet($$this.showHomeSourceOptions, this.HomeSourceOptionsContent(), sheetMaterialOptions({
+          height: Math.min((this.selectedHomeSource?.communityId.length ?? 0) > 0 ? 500 : 230,
+            this.pauseTopicsSheetHeight()), preferType: SheetType.BOTTOM, dragBar: true, showClose: false,
+          backgroundColor: this.themedPageSurface(),
+          onDisappear: (): void => {
+            this.showHomeSourceOptions = false;
+            if (this.manageTimelinesAfterDismiss) { this.manageTimelinesAfterDismiss = false; this.openTimelineManager(); }
+          }
+        }, this.sheetMaterialEnabled, this.sheetMaterialLevel, this.sheetWindowBreakpoint, this.compactWindow))
+
+      this.RootInputBindings()
+
       PhotoViewerOverlay({ pageStack: this.photoOverlayStack, active: this.photoOverlayOpen,
         destinationBuilder: this.NavigationBuilder })
         .visibility(this.photoOverlayOpen ? Visibility.Visible : Visibility.Hidden)
@@ -7191,12 +7501,25 @@ struct Index {
         this.DesktopRootPage()
       } else if (this.supportsHdsNavigation()) {
         this.RootHdsTabs()
-        if (this.usesFloatingTabBar() && this.rootLiquidTabIndicatorEnabled) {
-          RootLiquidTabIndicator({ selectedPage: this.currentTab, pagesMask: this.bottomBarPagesMask,
+        if (this.usesSplitTabBar()) {
+          RootSplitNavigation({ pages: this.classicBottomBarPages(), selectedPage: this.currentTab,
+            nativeMaterial: this.nativeBottomBar,
+            showLabel: this.rootTabLabelsVisible, showSelection: this.rootLiquidTabIndicatorEnabled,
+            unreadNotifications: this.unreadNotifications, unreadMessages: this.unreadMessages,
+            materialLevel: this.homeTabMaterialLevel, hidden: this.tabBarHidden,
+            showAction: this.rootSplitActionVisible(), actionMode: this.rootSplitActionMode(),
+            actionHidden: this.currentTab === MESSAGES_TAB_INDEX ? false : this.fabHidden,
+            actionSymbol: this.currentTab === MESSAGES_TAB_INDEX ? $r('sys.symbol.message_badge_plus') :
+              $r('sys.symbol.square_and_pencil'), actionLabel: this.rootSplitActionLabel(), refreshing: this.refreshing,
+            onSelect: (page: number): void => this.tabsController.changeIndex(this.bottomBarPageIndex(page)),
+            onTabClick: (page: number): void => this.onRootTabBarClick(this.bottomBarPageIndex(page)),
+            onAction: (): void => this.onRootSplitAction() })
+            .margin({ bottom: this.floatingTabBottomMargin() })
+            .align(Alignment.Bottom)
+        } else if (this.usesFloatingTabBar() && this.rootLiquidTabIndicatorEnabled) {
+          RootLiquidTabIndicator({ motion: this.liquidTabMotion, selectedPage: this.currentTab, pagesMask: this.bottomBarPagesMask,
             requestedPage: this.liquidTabRequestedPage,
             showLabel: this.rootTabLabelsVisible, hidden: this.tabBarHidden,
-            materialLevel: this.resolveHomeTabMaterialLevel(),
-            unreadNotifications: this.unreadNotifications, unreadMessages: this.unreadMessages,
             onSelect: (visibleIndex: number): void => this.hdsTabsController.changeIndex(visibleIndex),
             onSelectedClick: (visibleIndex: number): void => this.onRootTabBarClick(visibleIndex) })
             .width('100%').height($r('app.float.root_liquid_tab_overlay_height'))
@@ -7235,7 +7558,18 @@ struct Index {
 
   @Builder
   private RootHdsTabs(): void {
-    if (this.usesFloatingTabBar()) {
+    if (this.usesSplitTabBar()) {
+      Tabs({ barPosition: BarPosition.End, index: this.bottomBarPageIndex(this.currentTab),
+        controller: this.tabsController }) {
+        this.ClassicTabContents()
+      }
+      .width('100%').height('100%')
+      .barHeight(0)
+      .barOverlap(true)
+      .scrollable(this.rootTabsAreSwipeEnabled())
+      .animationDuration(this.reduceMotion ? 0 : Math.round(ROOT_TAB_SWITCH_DURATION_MS * this.preferredMotionDuration / 300))
+      .onChange((index: number): void => this.onTabChange(this.bottomBarPageAt(index)))
+    } else if (this.usesFloatingTabBar()) {
         HdsTabs({ controller: this.hdsTabsController, index: this.bottomBarPageIndex(this.currentTab) }) {
           this.HdsTabContents()
         }
@@ -7250,6 +7584,7 @@ struct Index {
         // Bind the native style at creation and on safe-area changes. Mutating
         // a modifier before HdsTabs mounts can leave its first layout at 0vp.
         .barFloatingStyle(this.rootTabFloatingStyle())
+        .onAppear((): void => this.bindHdsTabScrollers())
         .scrollable(this.rootTabsAreSwipeEnabled())
         .animationDuration(this.reduceMotion ? 0 : Math.round(ROOT_TAB_SWITCH_DURATION_MS * this.preferredMotionDuration / 300))
         .onChange((index: number) => {
@@ -7289,7 +7624,7 @@ struct Index {
     if (name === 'Notifications') {
       this.NotificationsDestination();
     } else if (name === 'PostDetail') {
-      PostDetailBuilder();
+      PostDetailBuilder(param);
     } else if (name === 'PostArticle') {
       PostArticleBuilder();
     } else if (name === 'Grok') {
@@ -7298,6 +7633,8 @@ struct Index {
       PostInteractionsBuilder();
     } else if (name === 'EditHistory') {
       EditHistoryBuilder();
+    } else if (name === 'ThreadReader') {
+      ThreadReaderBuilder();
     } else if (name === 'ReadAloud') {
       ReadAloudBuilder();
     } else if (name === 'ReplyComposer') {
@@ -7330,6 +7667,8 @@ struct Index {
       AboutBuilder();
     } else if (name === 'HelpCenter') {
       HelpCenterBuilder();
+    } else if (name === 'InputHelp') {
+      InputHelpBuilder();
     } else if (name === 'ProfileWeb') {
       ProfileWebBuilder();
     } else if (name === 'AccountPrivacy') {
@@ -7404,6 +7743,8 @@ struct Index {
       PageBackgroundBuilder();
     } else if (name === 'ChatBackground') {
       ChatBackgroundBuilder();
+    } else if (name === 'ChatDecorations') {
+      ChatDecorationsBuilder();
     } else if (name === 'DmRequests') {
       DmRequestsBuilder();
     } else if (name === 'DmWeb') {
@@ -7596,9 +7937,26 @@ struct Index {
       unread: index === NOTIFICATIONS_TAB_INDEX ? this.unreadNotifications :
         (index === MESSAGES_TAB_INDEX ? this.unreadMessages : 0),
       showLabel: this.rootTabLabelsVisible,
+      adaptiveForeground: true,
       accessibleLabel: this.text(label)
     })
     .id('root-floating-tab-' + index.toString())
+    .overlay(this.NativeLiquidTabSurface(index), { align: Alignment.TopStart })
+    .clip(false)
+    .zIndex(this.rootLiquidTabIndicatorEnabled && index === this.bottomBarPageAt(0) ? 1 : 0)
+  }
+
+  @Builder
+  private NativeLiquidTabSurface(index: number): void {
+    // One shared capsule lives under the first visible native tab. Its own
+    // horizontal motion is local; HDS moves/fades the complete bar subtree.
+    if (this.rootLiquidTabIndicatorEnabled && index === this.bottomBarPageAt(0)) {
+      RootLiquidTabSurface({ motion: this.liquidTabMotion, showLabel: this.rootTabLabelsVisible,
+        materialLevel: this.resolveHomeTabMaterialLevel(),
+        unreadNotifications: this.unreadNotifications, unreadMessages: this.unreadMessages })
+        .width('100%').height('100%')
+        .hitTestBehavior(HitTestMode.None)
+    }
   }
 
   // Fallback for systems without API 26 material support.
@@ -7831,7 +8189,7 @@ struct Index {
           .offset({ x: -TITLE_BAR_SURFACE_OVERSCAN_VP,
             y: -this.titleBarSurfaceTop - TITLE_BAR_SURFACE_OVERSCAN_VP })
           .backgroundColor(Color.Transparent)
-          .systemMaterial(this.titleBarMaterialCache.material(this.titleBarGlassMaterialLevel))
+          .attributeModifier(materialModifier(this.titleBarMaterialCache.material(this.titleBarGlassMaterialLevel)))
           .hitTestBehavior(HitTestMode.None)
       } else {
         Column()
@@ -7884,7 +8242,7 @@ struct Index {
     ];
     for (let i: number = 0; i < this.pinnedHomeTopics.length; i++) {
       const topic: TimelineTopic = this.pinnedHomeTopics[i];
-      items.push({ key: topic.id, label: topic.title });
+      items.push({ key: topic.id, label: topic.displayTitle || topic.title, icon: topic.icon, imageUrl: topic.bannerUrl, chevron: true });
     }
     return items;
   }
@@ -7897,7 +8255,7 @@ struct Index {
 
   private selectHomeIconTab(index: number): void {
     if (index !== this.homeTabIndex()) { this.homePager.changeIndex(index, true); }
-    else if (index < 2) { this.openHomeTimelineOptions(index); }
+    else { this.openHomeTimelineOptions(index); }
   }
 
   private isBaseHomeFeedSelected(mode: number): boolean {
@@ -7908,7 +8266,7 @@ struct Index {
   private HomeIconTabs(height: number): void {
     Row({ space: 4 }) {
       AnimatedIconTabs({ items: this.homeTabItems(), selected: this.homeTabIndex(), tabPosition: this.homeTabPosition,
-        barHeight: height, equalWidth: true,
+        barHeight: height, contentSized: true,
         buttonStyle: !this.useTitleBarLogo() && this.compactSwitchStyle === COMPACT_SWITCH_BUTTONS,
         onSelect: (index: number): void => this.selectHomeIconTab(index),
         onOptions: (index: number): void => this.openHomeTimelineOptions(index) }).layoutWeight(1)
@@ -7976,9 +8334,16 @@ struct Index {
   }
 
   @Builder
-  private TitleBarIdentityRow(): void {
-    Stack({ alignContent: Alignment.Center }) {
-      Row() {
+  private HomeSourceOptionsContent(): void {
+    if (this.selectedHomeSource !== null) {
+      HomeSourceOptionsSheet({ source: this.selectedHomeSource,
+        onManage: (): void => { this.manageTimelinesAfterDismiss = true; this.showHomeSourceOptions = false; },
+        onRemoved: (): void => { this.showHomeSourceOptions = false; } })
+    }
+  }
+
+  @Builder
+  private TitleIdentityAvatar(): void {
         Button({ type: ButtonType.Normal, stateEffect: true }) {
           if (this.titleBarAvatarUrl().length > 0) {
             ProxyAvatar({verifiedType: this.profile?.verifiedType ?? '', avatarShape: this.profile?.avatarShape ?? '',  url: this.titleBarAvatarUrl(), avatarSize: 36, radius: 18,
@@ -7997,24 +8362,21 @@ struct Index {
         .backgroundColor(this.titleBarAvatarUrl().length > 0 ? Color.Transparent : this.accentColor)
         .accessibilityText(this.text($r('app.string.tab_me')))
         .onClick((): void => this.openSideDrawer())
-        if (!this.useTitleBarLogo()) {
-          Row() { this.CompactTitleBarCenter() }
-            .layoutWeight(1).height($r('app.float.title_bar_compact_row_height'))
-            .margin({ left: $r('app.float.title_bar_compact_gap'), right: $r('app.float.title_bar_compact_gap') })
-        } else { Blank() }
+  }
+
+  @Builder
+  private TitleIdentityAction(): void {
         if (this.chromeTab === MESSAGES_TAB_INDEX) { this.ChatFilterButton() }
         else if (this.chromeTab === NOTIFICATIONS_TAB_INDEX) { this.NotificationSettingsButton() }
         else { this.AddFollowButton() }
-      }
-      .width('100%')
+  }
 
-      if (this.useTitleBarLogo()) {
-      Image($r('app.media.ui_brand_foreground'))
+  @Builder
+  private TitleIdentityLogo(): void {
+      RootTitleBarLogo()
         .width(30)
         .height(30)
-        .objectFit(ImageFit.Contain)
-        .borderRadius(15)
-        .clip(true)
+        .id('current-app-icon-foreground')
         .opacity(this.chromeTab === HOME_TAB_INDEX && this.homeHeaderCollapsed ? 0 : 1)
         .gesture(
           TapGesture({ count: 2 })
@@ -8024,8 +8386,15 @@ struct Index {
               this.showOnboardingGuide = true;
             })
         )
-      }
-    }
+  }
+
+  @Builder
+  private TitleBarIdentityRow(): void {
+    RootTitleBarIdentity({ showLogo: this.useTitleBarLogo(),
+      avatar: (): void => { this.TitleIdentityAvatar(); },
+      center: (): void => { this.CompactTitleBarCenter(); },
+      action: (): void => { this.TitleIdentityAction(); },
+      logo: (): void => { this.TitleIdentityLogo(); } })
     .width('100%')
     .height(this.useTitleBarLogo() ? 36 : $r('app.float.title_bar_compact_row_height'))
     .translate({ y: this.titleBarIdentityOffset() })
@@ -8241,6 +8610,7 @@ struct Index {
     }
     .width('100%')
     .justifyContent(FlexAlign.Center)
+    .onClick((): void => { if (index === this.homeTabIndex() && this.hasMoreTimeline) { this.requestMoreTimeline(); } })
   }
 
   @Builder
@@ -8271,6 +8641,10 @@ struct Index {
         ListItem() { this.HomePageItem(item, index) }.width('100%')
       }, (item: TimelinePageItem): string => item.key)
     }
+    .onScrollStart((): void => scrollStarted(this.contentPageScroller('home', this.homeTabItems()[index].key)))
+    .onScrollFrameBegin((offset: number, state: ScrollState): OnScrollFrameBeginHandlerResult =>
+      scrollFrame(this.contentPageScroller('home', this.homeTabItems()[index].key), offset, state))
+    .onTouchIntercept((event: TouchEvent): HitTestMode => stopScrollOnTouch(event, this.contentPageScroller('home', this.homeTabItems()[index].key)))
     .width('100%')
     .height('100%')
     .id('harmonyx-home-list-' + this.homeTabItems()[index].key)
@@ -8290,7 +8664,7 @@ struct Index {
       }
     })
     .onDidScroll((offset: number): void => { if (index === this.homeTabIndex()) { this.onFeedScroll(offset); } })
-    .onScrollStop((): void => { if (index === this.homeTabIndex()) { this.onFeedScrollStop(); } })
+    .onScrollStop((): void => { scrollStopped(this.contentPageScroller('home', this.homeTabItems()[index].key)); if (index === this.homeTabIndex()) { this.onFeedScrollStop(); } })
     .onReachEnd((): void => {
       if (index === this.homeTabIndex() && !this.homeViewportChanging) { this.requestMoreTimeline(); }
     })
@@ -8309,6 +8683,10 @@ struct Index {
           FlowItem() { this.HomePageItem(item, index) }.width('100%')
         }, (item: TimelinePageItem): string => item.key)
       }
+      .onScrollStart((): void => scrollStarted(this.contentPageScroller('home', this.homeTabItems()[index].key)))
+      .onScrollFrameBegin((offset: number, state: ScrollState): OnScrollFrameBeginHandlerResult =>
+        scrollFrame(this.contentPageScroller('home', this.homeTabItems()[index].key), offset, state))
+      .onTouchIntercept((event: TouchEvent): HitTestMode => stopScrollOnTouch(event, this.contentPageScroller('home', this.homeTabItems()[index].key)))
       .columnsTemplate(this.timelineColumnsTemplate())
       .columnsGap(this.useNarrowTimelineCards() ? 6 : 1)
       .rowsGap(this.useNarrowTimelineCards() ? 8 : 0)
@@ -8333,7 +8711,7 @@ struct Index {
       .onDidScroll((scrollOffset: number): void => {
         if (index === this.homeTabIndex()) { this.onFeedScroll(scrollOffset); }
       })
-      .onScrollStop((): void => {
+      .onScrollStop((): void => { scrollStopped(this.contentPageScroller('home', this.homeTabItems()[index].key));
         if (index === this.homeTabIndex()) { this.onFeedScrollStop(); }
       })
       .onReachEnd((): void => {
@@ -8457,6 +8835,11 @@ struct Index {
         }
       }
       }
+      .onScrollStop((): void => scrollStopped(this.contentPageScroller('explore', EXPLORE_CATEGORY_IDS[index])))
+      .onScrollStart((): void => scrollStarted(this.contentPageScroller('explore', EXPLORE_CATEGORY_IDS[index])))
+      .onScrollFrameBegin((offset: number, state: ScrollState): OnScrollFrameBeginHandlerResult =>
+        scrollFrame(this.contentPageScroller('explore', EXPLORE_CATEGORY_IDS[index]), offset, state))
+      .onTouchIntercept((event: TouchEvent): HitTestMode => stopScrollOnTouch(event, this.contentPageScroller('explore', EXPLORE_CATEGORY_IDS[index])))
       .width('100%')
       .height('100%')
       .backgroundColor(pageCanvasColor(this.displayMode, this.darkSurface, this.pageBackgroundValue))
@@ -9094,6 +9477,10 @@ struct Index {
         .width('100%')
       }, (itemIndex: number): string => 'explore-flow-' + itemIndex.toString())
     }
+    .onScrollStart((): void => scrollStarted(this.getExploreScroller()))
+    .onScrollFrameBegin((offset: number, state: ScrollState): OnScrollFrameBeginHandlerResult =>
+      scrollFrame(this.getExploreScroller(), offset, state))
+    .onTouchIntercept((event: TouchEvent): HitTestMode => stopScrollOnTouch(event, this.getExploreScroller()))
     .width('100%')
     .height('100%')
     .onAreaChange((_oldValue: Area, newValue: Area): void => { this.captureExploreContentTop(newValue); })
@@ -9115,7 +9502,7 @@ struct Index {
     .onDidScroll((scrollOffset: number): void => {
       this.onFeedScroll(scrollOffset);
     })
-    .onScrollStop((): void => {
+    .onScrollStop((): void => { scrollStopped(this.getExploreScroller());
       this.onFeedScrollStop();
     })
     .onReachEnd((): void => {
@@ -9218,13 +9605,13 @@ struct Index {
         .height(40)
         .borderRadius(20)
         .clip(true)
-        .systemMaterial(new uiMaterial.ImmersiveMaterial({
+        .attributeModifier(materialModifier(new uiMaterial.ImmersiveMaterial({
           style: uiMaterial.ImmersiveStyle.THIN,
           interactive: true,
           applyShadow: false,
           colorInvert: true,
           lightEffect: { color: this.accentColor }
-        }))
+        })))
       } else {
         Search({
           value: this.searchText,
@@ -9368,6 +9755,11 @@ struct Index {
             }
           }, (trend: string) => 'search-suggestion-' + trend)
         }
+        .onScrollStop((): void => scrollStopped(this.searchHistoryScroller))
+        .onScrollStart((): void => scrollStarted(this.searchHistoryScroller))
+        .onScrollFrameBegin((offset: number, state: ScrollState): OnScrollFrameBeginHandlerResult =>
+          scrollFrame(this.searchHistoryScroller, offset, state))
+        .onTouchIntercept((event: TouchEvent): HitTestMode => stopScrollOnTouch(event, this.searchHistoryScroller))
         .width('100%')
         .layoutWeight(1)
         .padding({ left: 16, right: 16 })
@@ -9395,7 +9787,7 @@ struct Index {
       avoidLayoutSafeArea: true,
       enableComponentSafeArea: this.isDesktopLayout(),
       content: {
-        stackBuilder: (): void => this.SearchHeader(false, false),
+        stackBuilder: (): void => this.SearchHeader(false, true),
         divider: { showType: DividerShowType.OFF }
       },
       style: destinationTitleBarStyle(ScrollEffectType.GRADIENT_BLUR,
@@ -9767,7 +10159,7 @@ struct Index {
       .backgroundColor(this.supportsImmersiveMaterial() ? Color.Transparent : this.themedFieldSurface())
       .fontColor($r('app.color.text_primary')).placeholderColor($r('app.color.text_secondary'))
       .borderRadius(19).clip(true).defaultFocus(false)
-      .systemMaterial(this.chatSearchMaterialCache.material(this.accentColor))
+      .attributeModifier(materialModifier(this.chatSearchMaterialCache.material(this.accentColor)))
       .onChange((value: string): void => { this.chatSearch = value; })
   }
 
@@ -9797,7 +10189,7 @@ struct Index {
       .height(this.exploreSearchHeight())
       .borderRadius(19)
       .clip(true)
-      .systemMaterial(this.exploreSearchMaterialCache.material(this.accentColor, true))
+      .attributeModifier(materialModifier(this.exploreSearchMaterialCache.material(this.accentColor, true)))
       .onAreaChange((_oldValue: Area, newValue: Area): void => {
         if (this.useTitleBarLogo() && this.activeExploreQuery.length > 0) { this.captureExploreTitleContent(newValue); }
       })
@@ -10056,6 +10448,10 @@ struct Index {
           .width('100%')
           .align(Alignment.Center)
         }
+          .onScrollStart((): void => scrollStarted(this.contentPageScroller('notifications', index.toString())))
+          .onScrollFrameBegin((offset: number, state: ScrollState): OnScrollFrameBeginHandlerResult =>
+            scrollFrame(this.contentPageScroller('notifications', index.toString()), offset, state))
+          .onTouchIntercept((event: TouchEvent): HitTestMode => stopScrollOnTouch(event, this.contentPageScroller('notifications', index.toString())))
         .width('100%')
         .backgroundColor(pageCanvasColor(this.displayMode, this.darkSurface, this.pageBackgroundValue))
         .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: true })
@@ -10073,7 +10469,7 @@ struct Index {
           .onDidScroll((scrollOffset: number): void => {
             if (index === this.notificationFilter) { this.onChromeScroll(scrollOffset); }
           })
-          .onScrollStop((): void => {
+          .onScrollStop((): void => { scrollStopped(this.contentPageScroller('notifications', index.toString()));
             if (index === this.notificationFilter) { this.onChromeScrollStop(); }
           })
           .onReachEnd((): void => {
@@ -10106,6 +10502,10 @@ struct Index {
         .width('100%')
       }, (itemIndex: number): string => 'notification-flow-' + itemIndex.toString())
     }
+    .onScrollStart((): void => scrollStarted(this.contentPageScroller('notifications', index.toString())))
+    .onScrollFrameBegin((offset: number, state: ScrollState): OnScrollFrameBeginHandlerResult =>
+      scrollFrame(this.contentPageScroller('notifications', index.toString()), offset, state))
+    .onTouchIntercept((event: TouchEvent): HitTestMode => stopScrollOnTouch(event, this.contentPageScroller('notifications', index.toString())))
     .width('100%')
     .height('100%')
     .backgroundColor(pageCanvasColor(this.displayMode, this.darkSurface, this.pageBackgroundValue))
@@ -10127,7 +10527,7 @@ struct Index {
     .onDidScroll((scrollOffset: number): void => {
       if (index === this.notificationFilter) { this.onChromeScroll(scrollOffset); }
     })
-    .onScrollStop((): void => {
+    .onScrollStop((): void => { scrollStopped(this.contentPageScroller('notifications', index.toString()));
       if (index === this.notificationFilter) { this.onChromeScrollStop(); }
     })
     .onReachEnd((): void => {
@@ -10265,17 +10665,25 @@ struct Index {
             ConversationInboxRow({ message: message, separatorWidth: this.chatRowSeparatorWidth(),
               selected: this.isDesktopLayout() && message.conversationId === this.desktopConversationId })
               .onClick((): void => this.openConversation(message))
-              .bindContextMenu(this.ChatConversationMenu(message), ResponseType.LongPress, {
-                onDisappear: (): void => { this.chatMenuDismissed(); }
+              .parallelGesture(LongPressGesture().onAction((): void => { this.inputChatContextId = message.id; }))
+              .onMouse((event: MouseEvent): void => contextInputMouse(event,
+                (): void => { this.inputChatContextId = message.id; }))
+              .bindContextMenu(this.inputChatContextId === message.id, this.ChatConversationMenu(message), {
+                onAppear: (): void => { this.inputInboxScope.setActive(true); },
+                onDisappear: (): void => { this.inputInboxScope.setActive(false); this.inputChatContextId = ''; this.chatMenuDismissed(); }
               })
           }
         }, (message: DirectMessage): string => message.id + '|' + message.preview + '|' + message.time + '|' + message.unread + '|' + (message.pinned ?? false) + '|' + (message.avatarUrl ?? ''))
         ListItem() { Column().height(this.navigationIndicatorHeight + 96) }
-      }.width('100%').height('100%').padding({ left: 16, right: 16 }).backgroundColor(pageCanvasColor(this.displayMode, this.darkSurface, this.pageBackgroundValue))
+      }
+      .onScrollStart((): void => scrollStarted(this.messagesScroller))
+      .onScrollFrameBegin((offset: number, state: ScrollState): OnScrollFrameBeginHandlerResult =>
+        scrollFrame(this.messagesScroller, offset, state))
+      .onTouchIntercept((event: TouchEvent): HitTestMode => stopScrollOnTouch(event, this.messagesScroller)).width('100%').height('100%').padding({ left: 16, right: 16 }).backgroundColor(pageCanvasColor(this.displayMode, this.darkSurface, this.pageBackgroundValue))
         .clip(!this.isDesktopLayout()).cachedCount(4, this.isDesktopLayout())
         .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: true }).scrollBar(BarState.Off)
         .onDidScroll((scrollOffset: number): void => { this.onChromeScroll(scrollOffset); })
-        .onScrollStop((): void => { this.onChromeScrollStop(); })
+        .onScrollStop((): void => { scrollStopped(this.messagesScroller); this.onChromeScrollStop(); })
     }.clip(!this.isDesktopLayout()).onRefreshing((): void => this.refreshMessages())
       .onOffsetChange((offset: number): void => { this.messagesRefreshPullOffset = offset; })
     RootRefreshIndicator({ topInset: this.messagesContentTopInset(), pullOffset: this.messagesRefreshPullOffset,
@@ -10289,7 +10697,6 @@ struct Index {
       AccountOverviewBanner({ url: this.hasAnySession() ? this.profile?.bannerUrl ?? '' : '',
         topInset: this.contentTopInset(), pullOffset: this.meRefreshPullOffset,
         scrollOffset: this.meBannerScrollOffset })
-      Refresh({ refreshing: $$this.meRefreshing, builder: this.HiddenRefreshSpinner() }) {
         Scroll(this.profileScroller) {
           Column() {
             AccountOverview({ profile: this.profile, signedIn: this.hasAnySession(), topInset: this.contentTopInset(),
@@ -10300,18 +10707,17 @@ struct Index {
               onLogin: (): void => this.goLogin(),
               onSignOut: (): void => { this.signOut(); } })
           }.width('100%').padding({ bottom: this.navigationIndicatorHeight + 96 })
-        }.width('100%').height('100%').scrollBar(BarState.Off)
+        }
+        .onScrollStart((): void => scrollStarted(this.profileScroller))
+        .onScrollFrameBegin((offset: number, state: ScrollState): OnScrollFrameBeginHandlerResult =>
+          scrollFrame(this.profileScroller, offset, state))
+        .onTouchIntercept((event: TouchEvent): HitTestMode => stopScrollOnTouch(event, this.profileScroller)).width('100%').height('100%').scrollBar(BarState.Off)
           .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: true }).clip(!this.isDesktopLayout())
           .onDidScroll((offset: number): void => {
             this.meBannerScrollOffset = Math.max(0, this.profileScroller.currentOffset().yOffset);
             this.onChromeScroll(offset);
           })
-          .onScrollStop((): void => this.onChromeScrollStop())
-      }.width('100%').height('100%').onRefreshing((): void => this.onMeRefresh())
-        .onOffsetChange((offset: number): void => { this.meRefreshPullOffset = offset; })
-        .ignoreLayoutSafeArea([LayoutSafeAreaType.SYSTEM], [LayoutSafeAreaEdge.TOP])
-      RootRefreshIndicator({ topInset: this.contentTopInset(), pullOffset: this.meRefreshPullOffset,
-        refreshing: this.meRefreshing, phoneLayout: !this.isDesktopLayout() })
+          .onScrollStop((): void => { scrollStopped(this.profileScroller); this.onChromeScrollStop(); })
     }.width('100%').height('100%').backgroundColor(pageCanvasColor(this.displayMode, this.darkSurface, this.pageBackgroundValue))
       .ignoreLayoutSafeArea([LayoutSafeAreaType.SYSTEM], [LayoutSafeAreaEdge.TOP])
   }

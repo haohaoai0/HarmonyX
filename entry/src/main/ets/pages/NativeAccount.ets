@@ -22,6 +22,7 @@ import { destinationTitleBarStyle } from '../utils/DestinationTitleBar';
 import { pageSurfaceColor } from '../utils/ThemeColors';
 import { ResponsiveLayout } from '../utils/ResponsiveLayout';
 import { ProfileWebRouteParam } from './ProfileWeb';
+import { materialModifier } from '../utils/SystemMaterial';
 
 @Builder
 export function NativeAccountBuilder(): void { NativeAccountPage(); }
@@ -536,6 +537,6 @@ struct NativeAccountPage {
     .bindToScrollable([this.scroller])
     .titleBar({ avoidLayoutSafeArea: true, content: { title: { mainTitle: this.title } },
       style: destinationTitleBarStyle(ScrollEffectType.GRADIENT_BLUR, this.displayMode, this.darkSurface, this.titleBarStyleMode) })
-    .backgroundColor(pageCanvasColor(this.displayMode, this.darkSurface, this.pageBackgroundValue)).systemMaterial(pageBackgroundActive(this.pageBackgroundValue) ? undefined : this.material());
+    .backgroundColor(pageCanvasColor(this.displayMode, this.darkSurface, this.pageBackgroundValue)).attributeModifier(materialModifier(pageBackgroundActive(this.pageBackgroundValue) ? undefined : this.material()));
   }
 }

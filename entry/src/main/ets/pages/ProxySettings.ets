@@ -26,6 +26,7 @@ import {
 } from '../services/ProxyStore';
 import { destinationTitleBarStyle } from '../utils/DestinationTitleBar';
 import { ResponsiveLayout } from '../utils/ResponsiveLayout';
+import { materialModifier } from '../utils/SystemMaterial';
 import {
   cardSurfaceColor,
   fieldSurfaceColor,
@@ -600,6 +601,6 @@ export struct ProxySettingsPage {
         this.displayMode, this.darkSurface, this.titleBarStyleMode)
     })
     .backgroundColor(pageCanvasColor(this.displayMode, this.darkSurface, this.pageBackgroundValue))
-    .systemMaterial(pageBackgroundActive(this.pageBackgroundValue) ? undefined : this.pageMaterial());
+    .attributeModifier(materialModifier(pageBackgroundActive(this.pageBackgroundValue) ? undefined : this.pageMaterial()));
   }
 }

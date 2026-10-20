@@ -106,18 +106,85 @@ test('existing installations retain the logo and compact choice survives other a
   const f = appearanceFixture();
   const settings = f.store.load({});
   assert.equal(settings.titleBarLogoEnabled, true);
+  assert.equal(settings.titleBarLogoAutoContrast, true);
   settings.titleBarLogoEnabled = false;
+  settings.titleBarLogoAutoContrast = false;
   f.store.save({}, settings);
   assert.equal(f.values.get('title_bar_logo'), false);
+  assert.equal(f.values.get('title_bar_logo_auto_contrast'), false);
   const restored = f.store.load({});
   assert.equal(restored.titleBarLogoEnabled, false);
+  assert.equal(restored.titleBarLogoAutoContrast, false);
   restored.accentColor = '#AB1234';
   restored.autoHideFab = false;
   f.store.save({}, restored);
   assert.equal(f.store.load({}).titleBarLogoEnabled, false);
+  assert.equal(f.store.load({}).titleBarLogoAutoContrast, false);
   restored.titleBarLogoEnabled = true;
+  restored.titleBarLogoAutoContrast = true;
   f.store.save({}, restored);
   assert.equal(f.store.load({}).titleBarLogoEnabled, true);
+  assert.equal(f.store.load({}).titleBarLogoAutoContrast, true);
+});
+
+test('title-bar logo uses a transparent X-only default and tints only its alpha mask', () => {
+  const logoSource = fs.readFileSync('entry/src/main/ets/components/RootTitleBarLogo.ets', 'utf8');
+  const iconSource = fs.readFileSync('entry/src/main/ets/services/AppIconStore.ets', 'utf8');
+  assert.match(logoSource, /titleBarLogoForeground\(this\.iconName\)/);
+  assert.match(logoSource, /STORAGE_KEY_TITLE_BAR_LOGO_AUTO_CONTRAST/);
+  assert.match(logoSource, /APP_ICON_X_BLACK/);
+  assert.match(logoSource, /APP_ICON_X_WHITE/);
+  assert.match(logoSource, /if \(this\.shouldTintX\(\)\)/);
+  assert.match(logoSource, /0, 0, 0, ink\.red \/ 255, 0/);
+  assert.match(iconSource, /if \(name === APP_ICON_DEFAULT\) \{\s*return \$r\('app\.media\.title_bar_logo_foreground'\);/);
+  assert.ok(fs.existsSync('entry/src/main/resources/base/media/title_bar_logo_foreground.png'));
+});
+
+test('special icon foregrounds bypass the X-only monochrome filter', () => {
+  const logoSource = fs.readFileSync('entry/src/main/ets/components/RootTitleBarLogo.ets', 'utf8');
+  assert.match(logoSource, /return this\.autoContrast && \(this\.iconName === APP_ICON_DEFAULT/);
+  assert.match(logoSource, /this\.iconName === APP_ICON_X_BLACK/);
+  assert.match(logoSource, /this\.iconName === APP_ICON_X_WHITE/);
+  assert.match(logoSource, /else \{\s*Image\(titleBarLogoForeground\(this\.iconName\)\)/s);
+});
+
+test('every selectable app icon has a packaged foreground for title-bar tinting', () => {
+  const source = fs.readFileSync('entry/src/main/ets/services/AppIconStore.ets', 'utf8');
+  const mappings = [
+    ['classic', 'app_icon_classic_foreground'],
+    ['spectrum', 'app_icon_spectrum_foreground'],
+    ['outline', 'app_icon_outline_foreground'],
+    ['brush', 'app_icon_brush_foreground'],
+    ['blossom', 'app_icon_blossom_foreground'],
+    ['blue_bird', 'app_icon_blue_bird_foreground'],
+    ['twitter_blue', 'app_icon_twitter_blue_foreground'],
+    ['twitter_white', 'app_icon_twitter_white_foreground'],
+    ['x_black', 'app_icon_x_black_foreground'],
+    ['x_white', 'app_icon_x_white_foreground'],
+    ['frog_white', 'frog_foreground'],
+    ['frog_black', 'frog_foreground'],
+    ['zombie_x', 'zombie_x_foreground'],
+    ['mid_autumn', 'app_icon_mid_autumn_foreground']
+  ];
+  for (const [name, resource] of mappings) {
+    assert.match(source, new RegExp(name));
+    assert.match(source, new RegExp(`app\.media\.${resource}`));
+    assert.ok(fs.existsSync(`AppScope/resources/base/media/${resource}.png`), resource);
+  }
+});
+
+test('adaptive logo color resources exist in every locale', () => {
+  const root = 'entry/src/main/resources';
+  const localeDirs = fs.readdirSync(root).filter(name => {
+    const file = `${root}/${name}/element/string.json`;
+    return fs.existsSync(file);
+  });
+  assert.ok(localeDirs.length >= 20);
+  for (const locale of localeDirs) {
+    const strings = JSON.parse(fs.readFileSync(`${root}/${locale}/element/string.json`, 'utf8')).string;
+    assert.ok(strings.some(item => item.name === 'settings_title_bar_logo_auto_contrast'), locale);
+    assert.ok(strings.some(item => item.name === 'settings_title_bar_logo_auto_contrast_desc'), locale);
+  }
 });
 
 test('compact button choice persists across logo toggles and unrelated display changes', () => {

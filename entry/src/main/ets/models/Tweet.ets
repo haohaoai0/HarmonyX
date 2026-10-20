@@ -21,6 +21,9 @@ export interface TweetMetrics {
   repostCount: number;
   likeCount: number;
   viewCount: number;
+  // Missing counters are unknown, rather than a fabricated zero.
+  bookmarkCount?: number;
+  quoteCount?: number;
 }
 
 export interface VideoRendition {
@@ -63,10 +66,15 @@ export interface MediaAttachment {
 
 export interface QuotedTweet {
   id: string;
+  isReply?: boolean;
+  replyToTweetId?: string;
+  replyToUsername?: string;
   author: TweetAuthor;
   text: string;
   // Original API timestamp; relative/date labels are resolved by the UI.
   createdAt: string;
+  editHistoryIds?: string[];
+  possiblySensitive?: boolean;
   attachments?: MediaAttachment[];
   poll?: TweetPoll;
   card?: TweetLinkCard;
@@ -113,6 +121,7 @@ export interface Tweet {
   author: TweetAuthor;
   text: string;
   language?: string;
+  editHistoryIds?: string[];
   // Original API timestamp, including the time and zone when available.
   createdAt: string;
   metrics: TweetMetrics;
@@ -138,6 +147,7 @@ export interface Tweet {
   repostAuthor?: TweetAuthor;
   repostText?: string;
   quotedTweet?: QuotedTweet;
+  possiblySensitive?: boolean;
   attachments?: MediaAttachment[];
   pinned?: boolean;
   communityId?: string;

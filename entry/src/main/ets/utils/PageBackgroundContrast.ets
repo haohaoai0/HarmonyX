@@ -1,5 +1,10 @@
 export interface PageRgb { red: number; green: number; blue: number; }
 
+export function pagePatternOpacity(strength: number, ink: number): number {
+  // Light motifs need more opacity on a dark canvas to remain distinguishable.
+  return Math.max(0, Math.min(1, strength)) * (ink > 0 ? 0.9 : 0.5);
+}
+
 export class PagePhotoTone {
   average: string = '#808080';
   darkest: string = '#000000';

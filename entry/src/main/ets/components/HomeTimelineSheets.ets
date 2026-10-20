@@ -1,3 +1,4 @@
+import { homeTimelineSourceStore } from '../services/HomeTimelineSourceStore';
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
 import { common } from '@kit.AbilityKit';
 import { promptAction } from '@kit.ArkUI';
@@ -137,5 +138,82 @@ export struct FollowingOrderSheet {
       .layoutWeight(1).width('100%').scrollBar(BarState.Off)
     }
     .width('100%').height('100%').padding({ bottom: this.bottomInset })
+  }
+}
+
+@Component
+export struct HomeSourceOptionsSheet {
+  @Prop source: TimelineTopic;
+  @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
+  @StorageProp('harmonyx.accent_color') private accentColor: string = '#007DFF';
+  @StorageProp('harmonyx.navigation_indicator_height') private bottomInset: number = 0;
+  @State private ranking: string = 'Recency';
+  @State private removing: boolean = false;
+  onManage: () => void = (): void => {};
+  onRemoved: () => void = (): void => {};
+  aboutToAppear(): void { this.ranking = this.source.rankingMode; }
+  private text(resource: Resource): string { return getContext(this).resourceManager.getStringSync(resource); }
+  private failed(): void { promptAction.showToast({ message: this.text($r('app.string.timeline_save_failed')) }); }
+  private setRanking(value: string): void {
+    if (this.ranking === value) { return; }
+    if (homeTimelineSourceStore.setRanking(getContext(this), this.source.communityId, value)) { this.ranking = value; }
+    else { this.failed(); }
+  }
+  private async removeSource(): Promise<void> {
+    if (this.removing) { return; }
+    this.removing = true;
+    try {
+      if (await homeTimelineSourceStore.setPinned(getContext(this), this.source, false)) { this.onRemoved(); }
+      else { this.failed(); }
+    } finally { this.removing = false; }
+  }
+  private removeLabel(): string {
+    return getContext(this).resourceManager.getStringSync($r('app.string.timeline_remove_source').id,
+      this.source.displayTitle || this.text(this.source.title));
+  }
+  @Builder
+  private OrderOption(title: Resource, icon: Resource, value: string): void {
+    Row({ space: 18 }) {
+      SymbolGlyph(icon).fontSize($r('app.float.timeline_symbol_size')).fontColor([$r('app.color.text_primary')])
+      Text(title).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L'))
+        .fontColor($r('app.color.text_primary')).layoutWeight(1)
+      Radio({ value: value, group: 'home-community-ranking' }).checked(this.ranking === value)
+        .radioStyle({ checkedBackgroundColor: this.accentColor }).width(24).height(24)
+        .onChange((checked: boolean): void => { if (checked) { this.setRanking(value); } })
+    }.width('100%').constraintSize({ minHeight: $r('app.float.timeline_sort_row_height') })
+      .padding({ left: 26, right: 26, top: 10, bottom: 10 })
+      .id('home-community-rank-' + value).onClick((): void => this.setRanking(value))
+  }
+  build(): void {
+    Scroll() {
+      Column() {
+        if (this.source.communityId.length > 0) {
+          Text($r('app.string.timeline_sort_title')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L'))
+            .fontWeight(FontWeight.Bold).fontColor($r('app.color.text_primary')).width('100%')
+            .padding({ left: 26, top: 20, bottom: 14 })
+          this.OrderOption($r('app.string.community_sort_trending'), $r('sys.symbol.flame'), 'Relevance')
+          this.OrderOption($r('app.string.community_sort_new'), $r('sys.symbol.star'), 'Recency')
+          this.OrderOption($r('app.string.community_sort_top'), $r('sys.symbol.heart'), 'Likes')
+          Divider().color($r('app.color.divider')).margin({ top: 10 })
+        }
+        Button({ type: ButtonType.Normal }) {
+          Row({ space: 18 }) {
+            SymbolGlyph($r('sys.symbol.gearshape')).fontSize($r('app.float.timeline_symbol_size'))
+              .fontColor([$r('app.color.text_primary')])
+            Text($r('app.string.timeline_manage')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L'))
+              .fontColor($r('app.color.text_primary')).layoutWeight(1).textAlign(TextAlign.Start)
+          }.width('100%').padding({ left: 26, right: 26, top: 22, bottom: 22 })
+        }.width('100%').padding(0).backgroundColor(Color.Transparent).onClick((): void => this.onManage())
+        Divider().color($r('app.color.divider'))
+        Button({ type: ButtonType.Normal }) {
+          Row({ space: 18 }) {
+            SymbolGlyph($r('sys.symbol.trash')).fontSize($r('app.float.timeline_symbol_size')).fontColor([$r('app.color.danger')])
+            Text(this.removeLabel()).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L'))
+              .fontColor($r('app.color.danger')).layoutWeight(1).textAlign(TextAlign.Start)
+          }.width('100%').padding({ left: 26, right: 26, top: 22, bottom: 22 })
+        }.width('100%').padding(0).backgroundColor(Color.Transparent).enabled(!this.removing)
+          .id('home-source-remove').onClick((): void => { this.removeSource(); })
+      }.width('100%').padding({ bottom: this.bottomInset })
+    }.width('100%').height('100%').scrollBar(BarState.Off)
   }
 }

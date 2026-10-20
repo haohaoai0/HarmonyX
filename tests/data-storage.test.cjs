@@ -6,7 +6,7 @@ const os = require('node:os');
 const path = require('node:path');
 const ts = require(process.env.HARMONYX_TYPESCRIPT || 'D:/DevEco Studio/tools/ohpm/node_modules/typescript/lib/typescript.js');
 const bundleName = fs.readFileSync('AppScope/app.json5', 'utf8').match(/"bundleName"\s*:\s*"([^"]+)"/)[1];
-const mediaFilePrefix = bundleName === 'com.haohaoai0.harmonx' ? 'HarmonyX' : 'HarmonyX';
+const mediaFilePrefix = bundleName === 'com.haohaoai0.harmonx' ? 'HarmonyX' : 'CroakX';
 function load(file, deps, globals = {}) {
   const mod = {exports:{}};
   const code = ts.transpileModule(fs.readFileSync(file,'utf8'), {
@@ -15,11 +15,11 @@ function load(file, deps, globals = {}) {
   new Function('require','exports',...Object.keys(globals),code)(id=>deps[id],mod.exports,...Object.values(globals));
   return mod.exports;
 }
-function harness() {
+function harness(persistent = false) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(),'harmonyx-storage-'));
   const context = {cacheDir:path.join(root,'cache'),filesDir:path.join(root,'files')};
   fs.mkdirSync(context.cacheDir);fs.mkdirSync(context.filesDir);
-  const values = new Map(), trace = [], saves = []; let failCopy=false, failWrite=false;
+  const values = new Map(), trace = [], saves = [], directories = []; let failCopy=false, failWrite=false, failGrant=false;
   const shim = {
     OpenMode:{READ_ONLY:fs.constants.O_RDONLY,WRITE_ONLY:fs.constants.O_WRONLY,CREATE:fs.constants.O_CREAT,TRUNC:fs.constants.O_TRUNC},
     async lstat(p) {try{return await fsp.lstat(p);}catch(e){e.code=e.code==='ENOENT'?13900002:e.code;throw e;}},
@@ -31,7 +31,13 @@ function harness() {
   };
   const store = {getSync:(key,fallback)=>values.has(key)?values.get(key):fallback,putSync:(key,value)=>values.set(key,value),flush:async()=>{if(failWrite)throw Error('disk unavailable');}};
   const kit = {fileIo:shim,fileUri:{FileUri:class{constructor(uri){this.path=uri;}}},
-    picker:{DocumentSaveOptions:class{},DocumentViewPicker:class{async save(options){
+    fileShare:{OperationMode:{READ_MODE:1,WRITE_MODE:2},
+      async persistPermission(policies){trace.push(['persist',policies[0].uri]);if(failGrant)throw {code:201};},
+      async activatePermission(policies){trace.push(['activate',policies[0].uri]);if(failGrant)throw {code:201};},
+      async revokePermission(policies){trace.push(['revoke',policies[0].uri]);}},
+    picker:{DocumentSelectOptions:class{},DocumentSelectMode:{FOLDER:1},DocumentSaveOptions:class{},DocumentViewPicker:class{
+      async select(options){trace.push(['directory',options.defaultFilePathUri]);return directories.shift()??[];}
+      async save(options){
       trace.push(['picker',options.newFileNames[0],options.defaultFilePathUri]);await Promise.resolve();
       const plan=saves.shift();if(plan?.error)throw plan.error;return plan?.uris??[];
     }}},
@@ -39,7 +45,7 @@ function harness() {
   };
   const location = load('entry/src/main/ets/services/DownloadLocationStore.ets',{
     '@kit.CoreFileKit':kit,'@kit.ArkData':{preferences:{getPreferencesSync:()=>store}}
-  });
+  },{canIUse:()=>persistent});
   let chatPaths=[];let holdVideo=false;const appValues=new Map();
   const service = load('entry/src/main/ets/services/DataStorageService.ets',{
     '@kit.CoreFileKit':kit,
@@ -51,7 +57,8 @@ function harness() {
   function put(relative,content='x') {const p=path.join(root,relative);fs.mkdirSync(path.dirname(p),{recursive:true});fs.writeFileSync(p,content);return p;}
   return {root,context,service,location,kit,put,values,trace,
     save:p=>saves.push({uris:p?[p]:[]}),saveError:code=>saves.push({error:{code}}),
-    failCopy:v=>{failCopy=v;},failWrite:v=>{failWrite=v;},chat:paths=>{chatPaths=paths;},holdVideo:v=>{holdVideo=v;},
+    failCopy:v=>{failCopy=v;},failWrite:v=>{failWrite=v;},failGrant:v=>{failGrant=v;},
+    directory:p=>directories.push(p?[p]:[]),chat:paths=>{chatPaths=paths;},holdVideo:v=>{holdVideo=v;},
     close(){assert.equal(path.dirname(root),os.tmpdir());assert.ok(path.basename(root).startsWith('harmonyx-storage-'));fs.rmSync(root,{recursive:true,force:true});}};
 }
 
@@ -80,7 +87,7 @@ test('active video leases report zero immediate freed bytes; category cleanup pr
     assert.equal(result.freedBytes,0);assert.ok(fs.existsSync(feed));assert.equal(result.remainingBytes,11);
   }finally{h.close();}
 });
-test('legacy file-save preferences survive restart while remembered directory grants are never reused',async()=>{
+test('system-picker fallback preserves preferences without reusing unsupported directory grants',async()=>{
   const h=harness();try{
     assert.equal(h.location.downloadLocationStore.useDownloads(h.context),false);
     h.values.set('directory_uri','file://old-authorized-folder');h.values.set('save_to_folder',true);
@@ -92,7 +99,49 @@ test('legacy file-save preferences survive restart while remembered directory gr
     assert.ok(h.trace.every(row=>!String(row[1]).includes('old-authorized-folder')));
     h.failWrite(true);await assert.rejects(h.location.downloadLocationStore.setUseDownloads(h.context,false),/disk unavailable/);
     assert.equal(h.location.downloadLocationStore.useDownloads(h.context),true);
-    assert.ok(!fs.readFileSync('entry/src/main/module.json5','utf8').includes('ohos.permission.FILE_ACCESS_PERSIST'));
+    assert.equal(fs.readFileSync('entry/src/main/module.json5','utf8').includes('ohos.permission.FILE_ACCESS_PERSIST'),
+      bundleName === 'com.haohaoai0.harmonx');
+  }finally{h.close();}
+});
+
+test('HarmonyX remembers one directory across restarts and serializes duplicate filenames; Croak always uses Save As',async()=>{
+  const h=harness(true);try{
+    if(bundleName !== 'com.haohaoai0.harmonx'){
+      assert.equal(h.location.downloadLocationStore.supportsDirectory(),false);
+      const source=h.put('files/source','original'),destination=path.join(h.root,'export.jpg');h.save(destination);
+      assert.equal(await h.location.downloadLocationStore.save(h.context,source,'export.jpg'),0);
+      assert.equal(h.trace.some(row=>['persist','activate','directory'].includes(row[0])),false);
+      assert.equal(h.trace.filter(row=>row[0]==='picker').length,1);return;
+    }
+    const folder=path.join(h.root,'downloads');fs.mkdirSync(folder);h.directory(folder);
+    assert.equal(await h.location.downloadLocationStore.prepare(h.context),true);
+    await h.location.downloadLocationStore.setUseDownloads(h.context,true);
+    const store=new h.location.DownloadLocationStore();
+    assert.equal(store.hasDirectory(h.context),true);assert.ok(store.path(h.context).endsWith('/com.haohaoai0.harmonx'));
+    const source=h.put('files/source','original');
+    assert.deepEqual(await Promise.all([store.save(h.context,source,'photo.jpg'),store.save(h.context,source,'photo.jpg')]),[0,0]);
+    const appFolder=path.join(folder,'com.haohaoai0.harmonx');
+    assert.equal(fs.readFileSync(path.join(appFolder,'photo.jpg'),'utf8'),'original');
+    assert.equal(fs.readFileSync(path.join(appFolder,'photo (1).jpg'),'utf8'),'original');
+    assert.equal(h.trace.filter(row=>row[0]==='directory').length,1);
+    assert.equal(h.trace.filter(row=>row[0]==='picker').length,0);
+    h.failGrant(true);h.directory('');assert.equal(await store.save(h.context,source,'retry.jpg'),2);
+    assert.equal(fs.existsSync(path.join(appFolder,'retry.jpg')),false);assert.ok(fs.existsSync(source));
+  }finally{h.close();}
+});
+
+test('directory cancellation stops transfers and a failed preference write keeps the previous authorization',async()=>{
+  if(bundleName !== 'com.haohaoai0.harmonx')return;
+  const h=harness(true);try{
+    h.directory('');h.values.set('save_to_folder',true);
+    const service=mediaService(h,{enqueue(){throw Error('canceled directory must not start transfer');}});
+    assert.equal(await new Promise(resolve=>service.download(h.context,'https://x/video.mp4','movie',true,resolve)),2);
+    const first=path.join(h.root,'first'),second=path.join(h.root,'second');fs.mkdirSync(first);fs.mkdirSync(second);
+    h.directory(first);assert.equal(await h.location.downloadLocationStore.chooseDirectory(h.context),true);
+    h.failWrite(true);h.directory(second);
+    await assert.rejects(h.location.downloadLocationStore.chooseDirectory(h.context),/disk unavailable/);
+    assert.equal(h.values.get('directory_uri'),first);
+    assert.ok(h.trace.some(row=>row[0]==='revoke'&&row[1]===second));
   }finally{h.close();}
 });
 

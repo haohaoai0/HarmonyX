@@ -131,6 +131,13 @@ export class MediaDownloadService {
 
   download(context: common.UIAbilityContext, url: string, mediaId: string,
     isVideo: boolean, callback: MediaDownloadCallback): void {
+    if (downloadLocationStore.useDownloads(context)) {
+      downloadLocationStore.prepare(context).then((ready: boolean): void => {
+        if (ready) { this.startDownload(context, url, mediaId, isVideo, callback); }
+        else { callback(MEDIA_DOWNLOAD_CANCELED); }
+      }).catch((): void => { callback(MEDIA_DOWNLOAD_FAILED); });
+      return;
+    }
     this.startDownload(context, url, mediaId, isVideo, callback);
   }
 
@@ -163,6 +170,14 @@ export class MediaDownloadService {
   downloadAnimatedGif(context: common.UIAbilityContext, url: string, mediaId: string,
     durationMs: number, sourceWidth: number, sourceHeight: number,
     callback: MediaDownloadCallback): void {
+    if (downloadLocationStore.useDownloads(context)) {
+      downloadLocationStore.prepare(context).then((ready: boolean): void => {
+        if (ready) {
+          this.startAnimatedGifDownload(context, url, mediaId, durationMs, sourceWidth, sourceHeight, callback);
+        } else { callback(MEDIA_DOWNLOAD_CANCELED); }
+      }).catch((): void => { callback(MEDIA_DOWNLOAD_FAILED); });
+      return;
+    }
     this.startAnimatedGifDownload(context, url, mediaId, durationMs, sourceWidth, sourceHeight, callback);
   }
 
@@ -276,6 +291,13 @@ export class MediaDownloadService {
   // file exports ask the system picker for each destination.
   downloadImages(context: common.UIAbilityContext, urls: string[], mediaId: string,
     callback: MediaDownloadCallback): void {
+    if (downloadLocationStore.useDownloads(context)) {
+      downloadLocationStore.prepare(context).then((ready: boolean): void => {
+        if (ready) { this.startImageDownloads(context, urls, mediaId, callback); }
+        else { callback(MEDIA_DOWNLOAD_CANCELED); }
+      }).catch((): void => { callback(MEDIA_DOWNLOAD_FAILED); });
+      return;
+    }
     this.startImageDownloads(context, urls, mediaId, callback);
   }
 

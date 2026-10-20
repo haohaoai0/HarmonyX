@@ -50,6 +50,7 @@ export function normalizePageBackground(value: PageBackgroundState): PageBackgro
   state.mode = value.mode === 'color' || value.mode === 'photo' ? value.mode : 'theme';
   state.color = typeof value.color === 'string' && /^#[0-9a-fA-F]{6}$/.test(value.color) ? value.color.toUpperCase() : '';
   if (state.mode === 'color' && state.color.length === 0) { state.mode = 'theme'; }
+  if (state.mode === 'theme') { state.color = ''; }
   state.path = state.mode === 'photo' && typeof value.path === 'string' ? value.path : '';
   const presetId: string = typeof value.patternId === 'string' ? value.patternId : 'none';
   state.patternId = chatBackgroundPreset(presetId).pattern !== undefined ? presetId : 'none';

@@ -27,7 +27,9 @@ import { meowPushService } from '../services/MeowPushService';
 import { xWebCookieBridge } from '../services/XWebCookieBridge';
 import { destinationTitleBarStyle } from '../utils/DestinationTitleBar';
 import { ResponsiveLayout } from '../utils/ResponsiveLayout';
+import { ProxyAvatar } from '../components/ProxyAvatar';
 import { pageSurfaceColor, secondaryButtonSurfaceColor } from '../utils/ThemeColors';
+import { materialModifier } from '../utils/SystemMaterial';
 
 @Builder
 export function AccountsBuilder(): void {
@@ -185,24 +187,9 @@ export struct AccountsPage {
   @Builder
   private AccountRow(account: XAccount): void {
     Row({ space: 14 }) {
-      if (account.avatarUrl.length > 0) {
-        Image(account.avatarUrl)
-          .width(44)
-          .height(44)
-          .objectFit(ImageFit.Cover)
-          .borderRadius(userAvatarRadius(44, 22, account.verifiedType ?? '', account.avatarShape ?? ''))
-          .clip(true)
-      } else {
-        Text(account.initial()).fontFamily(this.appFontFamily)
-          .width(44)
-          .height(44)
-          .fontSize($r('sys.float.Title_S'))
-          .fontWeight(FontWeight.Bold)
-          .fontColor($r('app.color.text_on_accent'))
-          .backgroundColor(this.accentColor)
-          .borderRadius(userAvatarRadius(44, 22, account.verifiedType ?? '', account.avatarShape ?? ''))
-          .textAlign(TextAlign.Center)
-      }
+      ProxyAvatar({ url: account.avatarUrl, avatarSize: 44, radius: 22,
+        verifiedType: account.verifiedType, avatarShape: account.avatarShape,
+        fallbackText: account.initial(), fallbackColor: this.accentColor })
 
       Column({ space: 3 }) {
         Row({ space: 6 }) {
@@ -324,6 +311,6 @@ export struct AccountsPage {
         this.themeDarkSurface, this.titleBarStyleMode)
     })
     .backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue))
-    .systemMaterial(pageBackgroundActive(this.pageBackgroundValue) ? undefined : this.pageMaterial());
+    .attributeModifier(materialModifier(pageBackgroundActive(this.pageBackgroundValue) ? undefined : this.pageMaterial()));
   }
 }

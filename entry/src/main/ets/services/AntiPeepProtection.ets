@@ -126,7 +126,10 @@ export class AntiPeepProtection {
       this.publish(AntiPeepState.UNSUPPORTED);
       return;
     }
-    if (deviceInfo.sdkApiVersion < 23) { this.publish(AntiPeepState.SYSTEM_OFF); return; }
+    if (!deviceInfo.apiAvailable('6.1.0(23)')) {
+      this.publish(AntiPeepState.SYSTEM_OFF);
+      return;
+    }
     this.configuring = true;
     const configurationVersion: number = this.configurationVersion;
     try {

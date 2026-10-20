@@ -24,6 +24,7 @@ import { XPrivateClient, XPrivateResult, xPrivateClient } from '../services/XPri
 import { communityRoute } from '../utils/CommunityNavigation';
 import { fieldSurfaceColor, pageSurfaceColor, titleBarScrimColor } from '../utils/ThemeColors';
 import { ResponsiveLayout } from '../utils/ResponsiveLayout';
+import { materialModifier } from '../utils/SystemMaterial';
 
 @Builder
 export function CommunitySearchBuilder(): void { CommunitySearch(); }
@@ -95,10 +96,14 @@ export struct CommunitySearch {
   // both inherit the same material as the home surface.
   private titleBarStyle(): TitleBarStyleOptions {
     const full: boolean = titleBarFullStyleEnabled(this.titleBarStyleMode);
-    return {
+    let effectType: ScrollEffectType = ScrollEffectType.GRADIENT_BLUR;
+    if (deviceInfo.apiAvailable('6.1.0(23)')) {
+      effectType = ScrollEffectType.IMMERSIVE_GRADIENT_BLUR;
+    }
+    const options: TitleBarStyleOptions = {
       scrollEffectOpts: full ? {
         enableScrollEffect: true,
-        scrollEffectType: ScrollEffectType.IMMERSIVE_GRADIENT_BLUR,
+        scrollEffectType: effectType,
         blurEffectiveStartOffset: LengthMetrics.vp(0),
         blurEffectiveEndOffset: LengthMetrics.vp(16)
       } : (titleBarScrollEffectDisabled(this.titleBarStyleMode) ? {
@@ -131,12 +136,15 @@ export struct CommunitySearch {
           subIconStyle: { iconColor: $r('app.color.text_primary') },
           menuStyle: { iconColor: $r('app.color.text_primary') }
         }
-      } : undefined,
-      systemMaterialEffect: {
+      } : undefined
+    };
+    if (deviceInfo.apiAvailable('6.1.0(23)')) {
+      options.systemMaterialEffect = {
         materialType: hdsMaterial.MaterialType.IMMERSIVE,
         materialLevel: hdsMaterial.MaterialLevel.ADAPTIVE
-      }
-    };
+      };
+    }
+    return options;
   }
   private async loadTopics(): Promise<void> {
     xPrivateClient.load(getContext(this) as common.UIAbilityContext);
@@ -199,13 +207,13 @@ export struct CommunitySearch {
             }).onSubmit((value: string): void => { this.submit(value); })
         }
         .layoutWeight(1).height(40).borderRadius(20).clip(true)
-        .systemMaterial(new uiMaterial.ImmersiveMaterial({
+        .attributeModifier(materialModifier(new uiMaterial.ImmersiveMaterial({
           style: uiMaterial.ImmersiveStyle.THIN,
           interactive: true,
           applyShadow: false,
           colorInvert: true,
           lightEffect: { color: this.accentColor }
-        }))
+        })))
       } else {
         Search({ value: this.input, placeholder: $r('app.string.community_search_placeholder') })
           .layoutWeight(1).height(40).keyboardAppearance(KeyboardAppearance.IMMERSIVE)
@@ -239,7 +247,7 @@ export struct CommunitySearch {
               .borderRadius(22).clip(true)
               .backgroundColor(Color.Transparent)
               .border({ width: 1, color: this.topicId === topic.id ? this.accentColor : $r('app.color.divider') })
-              .systemMaterial(this.topicMaterial(this.topicId === topic.id))
+              .attributeModifier(materialModifier(this.topicMaterial(this.topicId === topic.id)))
               .onClick((): void => this.selectTopic(topic))
             } else {
               Text(topic.name).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontWeight(FontWeight.Medium)
@@ -312,7 +320,7 @@ export struct CommunitySearch {
         },
         style: this.titleBarStyle() })
       .backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue))
-      .systemMaterial(deviceInfo.apiAvailable('26.0.0') ? new uiMaterial.ImmersiveMaterial({
-        style: uiMaterial.ImmersiveStyle.REGULAR, applyShadow: true, colorInvert: true }) : undefined)
+      .attributeModifier(materialModifier(deviceInfo.apiAvailable('26.0.0') ? new uiMaterial.ImmersiveMaterial({
+        style: uiMaterial.ImmersiveStyle.REGULAR, applyShadow: true, colorInvert: true }) : undefined))
   }
 }

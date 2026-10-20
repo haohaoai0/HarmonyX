@@ -1,5 +1,4 @@
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
-import { userAvatarRadius, userVerifiedType, userAvatarShape, verificationBadgeColor } from '../utils/UserIdentity';
 // X-style drawer built as the content panel of HdsSideBar. The layout follows
 // the PaperTalk pattern: a self-contained content component plus callbacks
 // owned by the root navigation page.
@@ -8,6 +7,9 @@ import { formatCount } from '../models/Tweet';
 import { MaterialButton } from './MaterialButton';
 import { secondaryButtonSurfaceColor } from '../utils/ThemeColors';
 import { SideBarMaterialLayer } from './SideBarMaterialLayer';
+import { ProxyAvatar } from './ProxyAvatar';
+import { XAccount, accountStore, STORAGE_KEY_ACCOUNTS_CHANGED } from '../services/AccountStore';
+import { common } from '@kit.AbilityKit';
 import { DEFAULT_DESKTOP_RAIL_MATERIAL_LEVEL, STORAGE_KEY_DESKTOP_RAIL_MATERIAL_LEVEL,
   SIDEBAR_MATERIAL_GLASS, SIDEBAR_MATERIAL_SYSTEM } from '../services/LayoutSettingsStore';
 
@@ -16,6 +18,8 @@ export struct XSideDrawer {
   @StorageProp('harmonyx.compact_window') private compactWindow: boolean = false;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @Prop profile: UserProfile | null = null;
+  @StorageProp(STORAGE_KEY_ACCOUNTS_CHANGED) @Watch('loadCachedAccount') private accountsChanged: number = 0;
+  @State private cachedAccount: XAccount | null = null;
   @Prop fallbackName: string = 'Harmony X';
   @Prop fallbackHandle: string = '@harmonyx';
   onClose: () => void = (): void => {};
@@ -36,18 +40,32 @@ export struct XSideDrawer {
   private sidebarMaterialLevel: number = DEFAULT_DESKTOP_RAIL_MATERIAL_LEVEL;
   @Prop sidebarMaterialType: number = SIDEBAR_MATERIAL_GLASS;
 
+  aboutToAppear(): void {
+    this.loadCachedAccount();
+  }
+
+  private loadCachedAccount(): void {
+    const context: common.Context | undefined = this.getUIContext().getHostContext();
+    this.cachedAccount = context === undefined ? null : accountStore.active(context);
+  }
+
+  private avatarUrl(): string {
+    return this.profile?.avatarUrl || this.cachedAccount?.avatarUrl || '';
+  }
+
   private name(): string {
     if (this.profile !== null && this.profile.name.length > 0) {
       return this.profile.name;
     }
-    return this.fallbackName;
+    return this.cachedAccount?.displayName || this.cachedAccount?.username || this.fallbackName;
   }
 
   private handle(): string {
     if (this.profile !== null && this.profile.username.length > 0) {
       return '@' + this.profile.username;
     }
-    return this.fallbackHandle;
+    const username: string = this.cachedAccount?.username ?? '';
+    return username.length > 0 ? '@' + username : this.fallbackHandle;
   }
 
   private followingCount(): string {
@@ -104,25 +122,11 @@ export struct XSideDrawer {
       Column({ space: 4 }) {
         Row({ space: 10 }) {
         Column({ space: 8 }) {
-          if (this.profile !== null && this.profile.avatarUrl !== undefined && this.profile.avatarUrl.length > 0) {
-            Image(this.profile.avatarUrl)
-              .width(58)
-              .height(58)
-              .objectFit(ImageFit.Cover)
-              .borderRadius(userAvatarRadius(58, 29, this.profile?.verifiedType ?? '', this.profile?.avatarShape ?? ''))
-              .clip(true)
-          } else {
-            Text(this.name().substring(0, 1).toUpperCase()).fontFamily(this.appFontFamily)
-              .width(58)
-              .height(58)
-              .fontSize($r('sys.float.Title_M'))
-              .maxFontScale(1)
-              .fontWeight(FontWeight.Bold)
-              .fontColor($r('app.color.text_on_accent'))
-              .backgroundColor(this.accentColor)
-              .borderRadius(userAvatarRadius(58, 29, this.profile?.verifiedType ?? '', this.profile?.avatarShape ?? ''))
-              .textAlign(TextAlign.Center)
-          }
+          ProxyAvatar({ url: this.avatarUrl(), avatarSize: 58, radius: 29,
+            verifiedType: this.profile?.verifiedType ?? this.cachedAccount?.verifiedType ?? '',
+            avatarShape: this.profile?.avatarShape ?? this.cachedAccount?.avatarShape ?? '',
+            fallbackText: this.name().substring(0, 1).toUpperCase(), fallbackColor: this.accentColor })
+            .id('sidebar-account-avatar')
           Text(this.name()).fontFamily(this.appFontFamily)
             .fontSize($r('sys.float.Title_S'))
             .fontWeight(FontWeight.Bold)

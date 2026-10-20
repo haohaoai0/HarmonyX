@@ -11,6 +11,7 @@ import { EmojiCopyMenu } from '../utils/EmojiCopyMenu';
 
 @Component
 export struct PostPresentationCard {
+  private noteTextController: TextController = new TextController();
   @StorageProp('harmonyx.compact_window') private sheetCompactWindow: boolean = false;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @StorageProp(STORAGE_KEY_SYSTEM_EMOJI_ENABLED) private systemEmojiEnabled: boolean = false;
@@ -66,11 +67,11 @@ export struct PostPresentationCard {
           Text() { EmojiSpans(this.getUIContext(), this.presentation.note.title || $r('app.string.card_note'), $r('sys.float.Body_M'), this.systemEmojiEnabled) }.fontFamily(this.appFontFamily)
             .width('100%')
             .fontSize($r('sys.float.Body_M')).fontWeight(FontWeight.Bold).fontColor($r('app.color.text_primary'))
-          Text() { EmojiSpans(this.getUIContext(), this.presentation.note.text || this.presentation.note.subtitle, $r('sys.float.Body_M'), this.systemEmojiEnabled) }.fontFamily(this.appFontFamily)
+          Text(undefined, { controller: this.noteTextController }) { EmojiSpans(this.getUIContext(), this.presentation.note.text || this.presentation.note.subtitle, $r('sys.float.Body_M'), this.systemEmojiEnabled) }.fontFamily(this.appFontFamily)
             .width('100%')
             .fontSize($r('sys.float.Body_M')).fontColor($r('app.color.text_primary'))
             .maxLines(this.expanded ? 1000 : 4).textOverflow({ overflow: TextOverflow.Ellipsis }).copyOption(CopyOptions.LocalDevice)
-            .editMenuOptions(new EmojiCopyMenu(getContext(this) as common.UIAbilityContext, this.presentation.note.text || this.presentation.note.subtitle, this.systemEmojiEnabled))
+            .editMenuOptions(new EmojiCopyMenu(this.getUIContext(), this.noteTextController, this.presentation.note.text || this.presentation.note.subtitle, this.systemEmojiEnabled))
           if (this.expanded) {
             ForEach(this.presentation.note.sources, (url: string) => {
               Text(url).fontFamily(this.appFontFamily).fontSize($r('sys.float.Caption_L')).fontColor(this.accentColor).maxLines(2)

@@ -1,5 +1,42 @@
 {
   "string": [
+    {
+      "name": "supporter_config_error",
+      "value": "Bulut hesabı bağlantısı doğrulanamadı. Lütfen geliştiriciyle iletişime geçin."
+    },
+    {
+      "name": "supporter_restore_hint",
+      "value": "Bir hesaba geri dönmek kayıtlı durumunu geri yükler. Yeni bir cihazda, yeniden yüklemeden sonra veya başka bir sürümde aynı X hesabıyla giriş yapıp erişimi geri yüklemek için ilk kodunuzu girin."
+    },
+    {"name": "eye_reading_title", "value": "Gözle okuma"},
+    {"name": "eye_reading_intro", "value": "Akışları, çevrimdışı kopyaları ve makaleleri kaydırmak için yukarı veya aşağı bakıp bekleyin."},
+    {"name": "eye_reading_enable", "value": "Gözle okumayı etkinleştir"},
+    {"name": "eye_reading_supported", "value": "Yüz takibi destekleniyor. Kamera yalnızca okuma sayfasında Başlat'a dokunduğunuzda açılır."},
+    {"name": "eye_reading_unsupported", "value": "Bu cihaz gerekli yüz takibini desteklemiyor. Dokunmatik ekranı veya klavyeyi kullanın."},
+    {"name": "eye_reading_dwell", "value": "Bakış bekleme süresi"},
+    {"name": "eye_reading_threshold", "value": "Yön eşiği"},
+    {"name": "eye_reading_threshold_desc", "value": "Daha yüksek eşik, daha belirgin göz hareketi gerektirir ve yanlış kaydırmaları azaltır."},
+    {"name": "eye_reading_help", "value": "Kalibrasyon için başınızı sabit tutup ekranın ortasına bakın. Yaklaşık yarım ekran kaydırmak için yukarı veya aşağı bakıp bekleyin. Her işlemden sonra ortaya dönün. Dokunma, tekerlek ve klavye önceliklidir."},
+    {"name": "eye_reading_privacy", "value": "Ön kamera yalnızca başlattıktan sonra kullanılır. Yön bilgileri cihazda işlenir; görüntüler kaydedilmez veya yüklenmez. Sayfadan ayrılmak ya da arka plana geçmek oturumu durdurur. Yeniden elle başlatın."},
+    {"name": "eye_reading_save_failed", "value": "Ayarlar kaydedilemedi. Tekrar deneyin."},
+    {"name": "eye_reading_start", "value": "Göz kontrolünü başlat"},
+    {"name": "eye_reading_stop", "value": "Göz kontrolünü durdur"},
+    {"name": "eye_reading_recalibrate", "value": "Yeniden kalibre et"},
+    {"name": "eye_reading_starting", "value": "Ön kamera başlatılıyor…"},
+    {"name": "eye_reading_permission", "value": "Kamera izni gerekli. Sistem uygulama izinlerinden erişime izin verip tekrar deneyin."},
+    {"name": "eye_reading_failed", "value": "Kamera kullanılamıyor. Diğer kamera uygulamalarını kapatıp tekrar deneyin."},
+    {"name": "eye_reading_calibrating", "value": "Kalibrasyon için ekranın ortasına bakıp başınızı ve bakışınızı sabit tutun."},
+    {"name": "eye_reading_center", "value": "Sonraki işlemden önce bakışınızı ortaya döndürün."},
+    {"name": "eye_reading_ready", "value": "Hazır: yukarı veya aşağı bakıp bekleyin."},
+    {"name": "eye_reading_up", "value": "Yukarı kaydırmak için yukarı bakmaya devam edin."},
+    {"name": "eye_reading_down", "value": "Aşağı kaydırmak için aşağı bakmaya devam edin."},
+    {"name": "eye_reading_lost", "value": "İyi ışıkta gözlerinizi açıp ekrana dönün. Yanıt alamıyorsanız yeniden kalibre edin."},
+    {"name": "eye_reading_paused", "value": "Elle giriş önceliklidir. Göz kontrolü geçici olarak duraklatıldı."},
+    {"name": "eye_reading_camera_reason", "value": "Gözle okumayı başlattığınızda göz yönünü cihazda algılamak için ön kamerayı kullanır."},
+    {"name": "compact_video_layout", "value": "Dış ekran video düzeni"},
+    {"name": "settings_compact_video_layout_desc", "value": "Pura X gibi küçük kare ekranlarda yan işlemleri veya alt sırayı seçin. Telefon açılınca normal video düzeni geri yüklenir."},
+    {"name": "compact_video_layout_rail", "value": "Yan işlemler"},
+    {"name": "compact_video_layout_bottom", "value": "Alt sıra"},
     {"name":"settings_component_hdr_enabled","value":"Component HDR effect"},
     {"name":"settings_component_hdr_enabled_desc","value":"Off by default. Turn it on to use 1.25x brightening, then adjust the multiplier below."},
     {"name":"settings_confirm_app_exit","value":"Çıkmadan önce onayla"},
@@ -1775,6 +1812,14 @@
     {
       "name": "settings_hds_tabs_material_adaptive",
       "value": "Uyarlanabilir"
+    },
+    {
+      "name": "settings_hds_tabs_gradient_mask",
+      "value": "Alt sekme gradyan maskesi"
+    },
+    {
+      "name": "settings_hds_tabs_gradient_mask_desc",
+      "value": "Yüzen HdsTabs çubuğunun altındaki solma gradyanını denetler. Varsayılan olarak açıktır."
     },
     {
       "name": "settings_timeline_columns_title",
@@ -9249,6 +9294,14 @@
       "value": "Akış sekmelerini veya arama alanını avatarınızla sağ düğme arasına taşımak için kapatın."
     },
     {
+      "name": "settings_title_bar_logo_auto_contrast",
+      "value": "Adaptive logo color"
+    },
+    {
+      "name": "settings_title_bar_logo_auto_contrast_desc",
+      "value": "Automatically switches the X or pattern foreground between light and dark to stay readable. Only the single-color foreground is shown, without an icon background."
+    },
+    {
       "name": "notifications_all",
       "value": "Tümü"
     },
@@ -10705,6 +10758,359 @@
     {"name":"page_background_motif_popular_apps_global_firefox","value":"Firefox"},
     {"name":"page_background_motif_popular_apps_global_edge","value":"Edge"},
     {"name":"page_background_motif_popular_apps_global_gmail","value":"Gmail"},
-    {"name":"page_background_motif_popular_apps_global_google_maps","value":"Google Maps"}
+    {"name":"page_background_motif_popular_apps_global_google_maps","value":"Google Maps"},
+    {"name":"scene_title","value":"Scene modes"},
+    {"name":"scene_intro","value":"Apply a set of playback, quality, motion and background preferences. Restore returns to your settings from before the first mode was enabled."},
+    {"name":"scene_reading","value":"Clear reading"},
+    {"name":"scene_reading_desc","value":"Autoplay off · high quality images · low quality video · reduced motion · plain background"},
+    {"name":"scene_saver","value":"Power and data saver"},
+    {"name":"scene_saver_desc","value":"Autoplay off · small images · low quality video · reduced motion · plain background"},
+    {"name":"scene_media","value":"Media browsing"},
+    {"name":"scene_media_desc","value":"Autoplay on · original images · high quality video · motion on · your saved background"},
+    {"name":"scene_restore","value":"Restore original settings"},
+    {"name":"scene_restore_desc","value":"Keep your preferences from before scene mode. Switching between modes does not replace this backup."},
+    {"name":"scene_failed","value":"Some settings could not be saved. Your original settings are retained; retry or restore."},
+    {"name":"offline_title","value":"Offline & later"},
+    {"name":"offline_online","value":"Online bookmarks"},
+    {"name":"offline_intro","value":"New bookmarks save text and available articles automatically. Enable images before saving to include photos. Local copies stay separate from online bookmarks and ordinary cache cleanup."},
+    {"name":"offline_images","value":"Include photos in future saves"},
+    {"name":"offline_save","value":"Save offline"},
+    {"name":"offline_saving","value":"Saving…"},
+    {"name":"offline_saved","value":"Saved for offline reading"},
+    {"name":"offline_partial_saved","value":"Saved available content. Some article text or photos are missing; retry when online."},
+    {"name":"offline_save_failed","value":"Could not save locally. Please retry."},
+    {"name":"offline_partial","value":"Incomplete copy"},
+    {"name":"offline_unread","value":"Unread"},
+    {"name":"offline_unread_only","value":"Unread only"},
+    {"name":"offline_search","value":"Search titles, tags or notes"},
+    {"name":"offline_empty","value":"No matching offline items. Save a bookmark or use Save offline on a post."},
+    {"name":"offline_edit","value":"Tags & note"},
+    {"name":"offline_tags","value":"Tags"},
+    {"name":"offline_tags_hint","value":"Tags, separated by commas"},
+    {"name":"offline_note","value":"Private note"},
+    {"name":"offline_done","value":"Save"},
+    {"name":"offline_delete","value":"Delete local copy"},
+    {"name":"reader_title","value":"Thread reader"},
+    {"name":"reader_author_only","value":"Author only"},
+    {"name":"reader_translate","value":"Translate passages"},
+    {"name":"reader_font","value":"Text size"},
+    {"name":"reader_missing","value":"This offline item is missing or unavailable. Save it again while online."},
+    {"name":"reader_partial","value":"Only the available article content is shown. Continue loading or retry while online to get the complete text."},
+    {"name":"reader_load_failed","value":"Could not load more replies. Your current reading content is kept."},
+    {"name":"reader_translation_setup","value":"Enable translation and choose a target language in Settings first."},
+    {"name":"reader_translation_failed","value":"Some passages could not be translated. You can hide translations and retry."},
+    {"name":"reader_offline_note","value":"Saved local content. Translation requires a network connection."},
+    {"name":"reader_scope","value":"Replies loaded so far. Use Continue loading to include more of the discussion."},
+    {
+      "name": "input_help_title",
+      "value": "Fare, klavye ve dokunmatik yüzey"
+    },
+    {
+      "name": "input_help_desc",
+      "value": "Klavye kısayolları ve hareketler"
+    },
+    {
+      "name": "input_main_title",
+      "value": "Ana sayfa kısayolları"
+    },
+    {
+      "name": "input_main_scope",
+      "value": "Alt sayfa, kenar çubuğu veya iletişim kutusu açık değilken beş ana sekmede kullanılabilir. Ctrl+N, Mesajlar’da sohbet, diğer sekmelerde gönderi oluşturur."
+    },
+    {
+      "name": "input_compose",
+      "value": "Yeni gönderi / sohbet"
+    },
+    {
+      "name": "input_refresh",
+      "value": "Geçerli sekmeyi yenile"
+    },
+    {
+      "name": "input_keyboard_title",
+      "value": "Klavye kontrolleri"
+    },
+    {
+      "name": "input_focus",
+      "value": "Odağı ileri / geri taşıyın. Yerel kontroller ok tuşlarını da destekler."
+    },
+    {
+      "name": "input_activate",
+      "value": "Odaklanmış düğmeyi etkinleştirin."
+    },
+    {
+      "name": "input_submit",
+      "value": "Gönderi, yanıt veya mesaj alanından gönderin. Normal Enter mevcut davranışını korur."
+    },
+    {
+      "name": "input_back",
+      "value": "Yardım, düzenleyici, sohbet ve medya görüntüleyicide geri dönün. Önce geçerli panel kapanır."
+    },
+    {
+      "name": "input_photo",
+      "value": "Yakınlaştırma ve açık panel yokken önceki / sonraki fotoğraf."
+    },
+    {
+      "name": "input_video",
+      "value": "Açık panel yokken önceki / sonraki video."
+    },
+    {
+      "name": "input_playback",
+      "value": "Video görüntüsü odaktayken: Boşluk veya Enter oynatır / duraklatır; Sol / Sağ 10 saniye geri / ileri sarar."
+    },
+    {
+      "name": "input_pointer_title",
+      "value": "Fare ve dokunmatik yüzey"
+    },
+    {
+      "name": "input_pointer",
+      "value": "Sol tıklama veya dokunma etkinleştirir. Fotoğraf, video veya mesaja sağ tıklama işlem menüsünü açar. Düğmeler üzerine gelindiğinde tepki verir. Kaydırma ve ilerleme çubukları sürüklenebilir."
+    },
+    {
+      "name": "input_trackpad",
+      "value": "Listeleri iki parmakla kaydırın, fotoğraflar arasında yatay kaydırın ve kıstırarak yakınlaştırın. Büyütülmüş resmi sürükleyin. Desteklenen yüzeylerde iki parmakla dokunma menüyü açar."
+    },
+    {
+      "name": "input_previous",
+      "value": "Önceki fotoğraf"
+    },
+    {
+      "name": "input_next",
+      "value": "Sonraki fotoğraf"
+    },
+    {
+      "name": "input_key_home",
+      "value": "Ctrl + 1"
+    },
+    {
+      "name": "input_key_explore",
+      "value": "Ctrl + 2"
+    },
+    {
+      "name": "input_key_notifications",
+      "value": "Ctrl + 3"
+    },
+    {
+      "name": "input_key_messages",
+      "value": "Ctrl + 4"
+    },
+    {
+      "name": "input_key_profile",
+      "value": "Ctrl + 5"
+    },
+    {
+      "name": "input_key_search",
+      "value": "Ctrl + K"
+    },
+    {
+      "name": "input_key_compose",
+      "value": "Ctrl + N"
+    },
+    {
+      "name": "input_key_refresh",
+      "value": "Ctrl + R"
+    },
+    {
+      "name": "input_key_settings",
+      "value": "Ctrl + ,"
+    },
+    {
+      "name": "input_key_help",
+      "value": "F1"
+    },
+    {
+      "name": "input_key_focus",
+      "value": "Tab / Shift + Tab"
+    },
+    {
+      "name": "input_key_activate",
+      "value": "Enter / Space"
+    },
+    {
+      "name": "input_key_submit",
+      "value": "Ctrl + Enter"
+    },
+    {
+      "name": "input_key_back",
+      "value": "Esc / Alt + ←"
+    },
+    {
+      "name": "input_key_photo",
+      "value": "← / →"
+    },
+    {
+      "name": "input_key_video",
+      "value": "↑ / ↓ / Page Up / Page Down"
+    },
+    {
+      "name": "input_key_playback",
+      "value": "Space / Enter / ← / →"
+    },
+    {"name":"settings_filter_languages","value":"Gizlenen gönderi dilleri"},
+    {"name":"settings_filter_languages_desc","value":"Gizlenecek dilleri seçin. Belirsiz diller ve yalnızca medya içeren gönderiler görünür kalır."},
+    {"name":"appearance_preview_title","value":"Canlı önizleme"},
+    {"name":"appearance_preview_hint","value":"Değişiklikler anında gösterilir. Genişletmek için panel örneğine dokunun."},
+    {"name":"post_edited","value":"Düzenlendi"},
+    {"name":"post_metric_bookmarks","value":"yer işareti"},
+    {"name":"post_metric_quotes","value":"alıntı"},
+    {"name":"settings_reply_quality","value":"Düşük kaliteli yanıtları daralt"},
+    {"name":"settings_reply_quality_desc","value":"Tekrarlanan tanıtımları ve toplu yönlendirmeleri daraltır. Yerel kurallar yanılabilir; yanıtları açabilirsiniz."},
+    {"name":"reply_quality_folded","value":"Düşük kaliteli olabilecek yanıt"},
+    {"name":"reply_quality_reasons","value":"Nedenleri gör"},
+    {"name":"reply_quality_allow","value":"Bu yazarı her zaman göster"},
+    {"name":"reply_quality_whitelist","value":"İzin verilen yazarlar"},
+    {"name":"reply_quality_whitelist_desc","value":"Yanıtlarınız, gönderi yazarı, takip edilen hesaplar ve izin verilen yazarlar görünür kalır. Liste mevcut hesaba özeldir."},
+    {"name":"reply_quality_empty","value":"Henüz izin verilen yazar yok"},
+    {"name":"reply_quality_reason_duplicate","value":"Birden çok yazar aynı tanıtım şablonunu yineliyor"},
+    {"name":"reply_quality_reason_author_repeat","value":"Yazar aynı içeriği tekrar tekrar paylaşıyor"},
+    {"name":"reply_quality_reason_links","value":"Birden çok harici bağlantı içeriyor"},
+    {"name":"reply_quality_reason_promotion","value":"Tanıtım veya kazanç vaadi içeriyor"},
+    {"name":"reply_quality_reason_contact","value":"Yönlendirme için iletişim bilgisi içeriyor"},
+    {
+      "name": "settings_floating_compose_material_tint",
+      "value": "Kayan gönderi düğmesinin malzeme rengi"
+    },
+    {
+      "name": "settings_floating_compose_material_tint_desc",
+      "value": "Tema rengini malzemenin üzerine bindirir. Kapatıldığında yalnızca renk katmanı kaldırılır."
+    },
+    {
+      "name": "chat_decoration",
+      "value": "Chat decorations"
+    },
+    {
+      "name": "chat_decoration_subtitle",
+      "value": "Avatar frames and chat bubbles, downloaded only when you choose them."
+    },
+    {
+      "name": "chat_decoration_frame",
+      "value": "Avatar frames"
+    },
+    {
+      "name": "chat_decoration_bubble",
+      "value": "Chat bubbles"
+    },
+    {
+      "name": "chat_decoration_free",
+      "value": "Free"
+    },
+    {
+      "name": "chat_decoration_download_preview",
+      "value": "Download to preview"
+    },
+    {
+      "name": "chat_decoration_download",
+      "value": "Download"
+    },
+    {
+      "name": "chat_decoration_downloading",
+      "value": "Downloading..."
+    },
+    {
+      "name": "chat_decoration_use",
+      "value": "Use"
+    },
+    {
+      "name": "chat_decoration_in_use",
+      "value": "In use"
+    },
+    {
+      "name": "chat_decoration_remove",
+      "value": "Stop using"
+    },
+    {
+      "name": "chat_decoration_installed",
+      "value": "Downloaded"
+    },
+    {
+      "name": "chat_decoration_applied",
+      "value": "Decoration applied"
+    },
+    {
+      "name": "chat_decoration_download_failed",
+      "value": "Download failed. Try again later."
+    },
+    {
+      "name": "chat_decoration_reset",
+      "value": "Restore defaults"
+    },
+    {
+      "name": "chat_decoration_reset_done",
+      "value": "Defaults restored"
+    },
+    {
+      "name": "chat_decoration_note",
+      "value": "Decorations stay on this device. Other people see styles supported by their client."
+    },
+    {
+      "name": "chat_decoration_loading",
+      "value": "Loading decorations..."
+    },
+    {
+      "name": "chat_decoration_unavailable",
+      "value": "Decorations are unavailable. Check your connection and retry."
+    },
+    {
+      "name": "chat_decoration_sample_text",
+      "value": "Have a lovely day."
+    },
+    {"name": "sign_out_confirm_title", "value": "Çıkış yapılsın mı?"},
+    {"name": "sign_out_confirm_message", "value": "Bu hesabı kullanmak için tekrar giriş yapmanız gerekecek."},
+    {"name": "settings_for_you_only_sensitive", "value": "Sana özel’de yalnızca hassas içerik"},
+    {"name": "settings_for_you_only_sensitive_desc", "value": "Alıntılar dahil X’in hassas olarak işaretlediği gönderileri gösterir. Takip edilenler ve Listeler değişmez. Medya kapalı kalır."},
+    {"name": "settings_grip_floating", "value": "Yüzen işlem düğmesi"},
+    {"name": "settings_grip_video", "value": "Video işlem çubuğu"},
+    {"name": "settings_grip_reply", "value": "Gönderi yanıt düğmesi"},
+    {"name": "settings_grip_component_desc", "value": "Konumu cihazı tutan ele göre ayarla. Kapalıyken tercih edilen eli kullan."},
+    {"name": "settings_grip_hdstabs", "value": "HdsTabs alt sekme çubuğu"},
+    {"name": "settings_grip_hdstabs_desc", "value": "Yerel el uyarlamasını kullan. Kapalıyken çubuk cihazı tutan eli izlemez."},
+    {"name":"gif_action_save_video","value":"Yüksek kaliteli video olarak kaydet (MP4)"},
+    {"name":"storage_save_remembered_note","value":"Sonraki dosyaların otomatik kaydedilmesi için indirme klasörünü bir kez seçin. Galeriye kaydetmek için kapatın."},
+    {"name":"storage_save_to_remembered","value":"İndirme klasörüne kaydet"},
+    {"name": "storage_permission_reason", "value": "Seçtiğiniz dosya ve klasörlere erişimi koru."},
+    {"name": "timeline_sources_lists", "value": "Listeler"},
+    {"name": "timeline_sources_communities", "value": "Topluluklar"},
+    {"name": "timeline_edit", "value": "Düzenle"},
+    {"name": "timeline_done", "value": "Bitti"},
+    {"name": "timeline_move_up", "value": "Yukarı taşı"},
+    {"name": "timeline_move_down", "value": "Aşağı taşı"},
+    {"name": "timeline_remove_source", "value": "%s öğesini kaldır"},
+    {"name": "timeline_add_to_home", "value": "Ana sayfa akışlarına ekle"},
+    {"name": "timeline_remove_from_home", "value": "Ana sayfa akışlarından kaldır"},
+    {"name": "timeline_sources_failed", "value": "Bazı listeler veya topluluklar yüklenemedi. Yeniden denemek için dokun."},
+    {"name": "timeline_sources_pinned_empty", "value": "Sabitlenmiş akış yok. Aşağıdan liste, topluluk veya konu ekle."},
+    {"name":"video_controls_mirror","value":"Kontrolleri yansıt"},
+    {"name":"video_controls_speed","value":"Hız"},
+    {"name":"video_controls_aspect","value":"Oran"},
+    {"name":"video_controls_background","value":"Arka plan"},
+    {"name":"video_controls_quality_hd","value":"HD"},
+    {"name":"video_controls_quality_sd","value":"SD"},
+    {"name":"video_controls_quality_ld","value":"LD"},
+    {"name":"video_controls_more","value":"Diğer"},
+    {"name":"video_controls_download","value":"İndir"},
+    {"name":"settings_navigation_style","value":"Alt gezinme stili"},
+    {"name":"settings_hds_bottom_bar","value":"Yüzen HdsTabs"},
+    {"name":"settings_split_bottom_bar","value":"Ayrık kapsül gezinme"},
+    {"name":"settings_split_bottom_bar_desc","value":"Sol kapsülden sayfa değiştirin. Ayrı düğmeyle gönderi veya sohbet oluşturun, yenileyin ya da başa dönün. İkisi de HDS malzemesi kullanır; eski sistemlerde uyumlu gezinme kullanılır."},
+    {"name":"split_navigation_action_top","value":"Başa dön"},
+    {"name":"split_navigation_action_refresh","value":"Ana sayfayı yenile"},
+    {"name":"split_navigation_action_compose","value":"Gönderi oluştur"},
+    {"name": "settings_reply_capsule_split", "value": "Ayrı yanıt kapsülleri"},
+    {"name": "settings_reply_capsule_split_desc", "value": "Daraltıldığında yanıt alanını ve gönderi işlemlerini ayır"},
+    {"name": "reply_capsule_write_reply", "value": "Yanıtla"},
+    {"name":"settings_native_bottom_bar","value":"7.0 malzemeli kapsül gezinme"},
+    {"name":"settings_native_bottom_bar_desc","value":"Yanıt kapsülünün HarmonyOS 7.0 sürükleyici malzemesini, dokunma ışığını, sıvı göstergeyi ve tutuşa göre taraf değiştirmeyi kullanır. Desteklenmiyorsa HDS kapsülü kullanılır."},
+    {"name":"settings_native_navigation_material","value":"Gezinme kapsülü malzeme kalınlığı"},
+    {"name":"settings_for_you_only_sensitive_age_title","value":"Yaşı onayla"},
+    {"name":"settings_for_you_only_sensitive_age_message","value":"“Sana Özel’de yalnızca hassas içerik” yalnızca 18 yaş ve üzeri kişiler için kullanılabilir. 18 yaşında veya daha büyük müsünüz?"},
+    {"name":"settings_for_you_only_sensitive_age_under","value":"18 yaşından küçük"},
+    {"name":"settings_for_you_only_sensitive_age_adult","value":"18 yaş veya üzeri"},
+    {"name":"settings_theme_icon_blue","value":"Simge mavisi"},
+    {"name":"settings_theme_icon_red","value":"Simge kırmızısı"},
+    {"name":"settings_theme_icon_orange","value":"Simge turuncusu"},
+    {"name":"settings_theme_icon_yellow","value":"Simge sarısı"},
+    {"name":"settings_theme_icon_green","value":"Simge yeşili"},
+    {"name":"settings_theme_icon_pink","value":"Simge pembesi"},
+    {"name":"settings_theme_icon_cyan","value":"Simge camgöbeği"},
+    {"name":"settings_theme_icon_navy","value":"Simge laciverti"}
   ]
 }

@@ -1,3 +1,5 @@
+import { pinnedHomeListStore } from '../services/PinnedHomeListStore';
+import { DesktopLayout } from '../utils/DesktopLayout';
 import { pageTextColor } from '../utils/ThemeColors';
 import { appPageBackground } from '../components/PageBackgroundLayer';
 import { pageCanvasColor, pageReadingSurfaceColor } from '../utils/ThemeColors';
@@ -20,6 +22,7 @@ import { accountStore, XAccount } from '../services/AccountStore';
 import { destinationTitleBarStyle } from '../utils/DestinationTitleBar';
 import { ResponsiveLayout } from '../utils/ResponsiveLayout';
 import { pageSurfaceColor } from '../utils/ThemeColors';
+import { materialModifier } from '../utils/SystemMaterial';
 
 export interface ListsRouteParam { userId: string; memberships: boolean; title: string; }
 export interface ListTimelineRouteParam { listId: string; title: string; row?: ListRow; }
@@ -108,7 +111,9 @@ export struct Lists {
         this.userId.length > 0 ? await xPrivateClient.userLists(this.userId, cursor, this.memberships) :
         await xPrivateClient.subscribedLists(cursor, 20, reset ? '' : this.directoryOperation);
       if (!this.alive || generation !== this.generation) { return; }
-      const page: ListPage | null = result.ok ? XListParser.parse(result.body) : null;
+      const page: ListPage | null = result.ok ?
+        (this.ownDirectory() && !this.searching() ?
+          XListParser.directory(result.body, xPrivateClient.viewerId()) : XListParser.parse(result.body)) : null;
       if (page === null) {
         this.status = result.status === 401 ? this.text($r('app.string.private_session_expired')) :
           this.text($r('app.string.lists_failed')) + ' · ' + XPrivateClient.explain(result).substring(0, 160);
@@ -121,6 +126,10 @@ export struct Lists {
         if (!combined.some((value: ListRow): boolean => value.id === row.id)) { combined.push(row); }
       }
       if (this.searching()) { this.searchRows = combined; } else { this.rows = combined; }
+      if (this.ownDirectory() && !this.searching()) {
+        pinnedHomeListStore.merge(getContext(this) as common.UIAbilityContext, xPrivateClient.viewerId(),
+          page.lists.map((row: ListRow): ListRow => listStateStore.get(xPrivateClient.viewerId(), row.id) ?? row));
+      }
       this.directoryOperation = result.operation;
       this.nextToken = page.nextToken === cursor ? '' : page.nextToken;
     } catch (error) {
@@ -292,14 +301,13 @@ export struct Lists {
             List({ scroller: this.scroller }) { this.Content() }
               .width('100%').height('100%').scrollBar(BarState.Off)
               .contentEndOffset(this.navigationIndicatorHeight + (this.ownDirectory() ? 90 : 24))
-              .clip(!(this.desktopLayoutEnabled && ResponsiveLayout.isLarge(this.windowBreakpoint)))
-              .cachedCount(8, this.desktopLayoutEnabled && ResponsiveLayout.isLarge(this.windowBreakpoint))
+              .clip(!(DesktopLayout.active(this.desktopLayoutEnabled, this.windowBreakpoint)))
+              .cachedCount(8, DesktopLayout.active(this.desktopLayoutEnabled, this.windowBreakpoint))
               .onReachEnd((): void => { this.load(false); })
           }.width('100%').layoutWeight(1)
-            .clip(!(this.desktopLayoutEnabled && ResponsiveLayout.isLarge(this.windowBreakpoint)))
+            .clip(!(DesktopLayout.active(this.desktopLayoutEnabled, this.windowBreakpoint)))
             .onRefreshing((): void => { this.load(true); })
-        }.width('100%').height('100%').padding({ top: this.desktopLayoutEnabled &&
-          ResponsiveLayout.isLarge(this.windowBreakpoint) ? 0 : this.statusBarHeight + 60 })
+        }.width('100%').height('100%').padding({ top: DesktopLayout.active(this.desktopLayoutEnabled, this.windowBreakpoint) ? 0 : this.statusBarHeight + 60 })
         if (this.ownDirectory()) {
           FloatingComposeButton({ bottomInset: this.navigationIndicatorHeight, bottomBarHeight: 0,
             gripSubscriberKey: 'floating-list-create-button', composeSymbol: $r('sys.symbol.list_bullet_square'),
@@ -318,13 +326,13 @@ export struct Lists {
       .onBackPressed((): boolean => { ResponsiveLayout.closeContentDestination(this.pageStack); return true; })
       .bindToScrollable([this.scroller])
       .titleBar({ avoidLayoutSafeArea: true,
-        enableComponentSafeArea: this.desktopLayoutEnabled && ResponsiveLayout.isLarge(this.windowBreakpoint),
+        enableComponentSafeArea: DesktopLayout.active(this.desktopLayoutEnabled, this.windowBreakpoint),
         content: { title: { mainTitle: this.title.length > 0 ? this.title : $r('app.string.lists_title'),
           subTitle: this.memberships && this.username.length > 0 ? '@' + this.username : '' } },
         style: destinationTitleBarStyle(ScrollEffectType.IMMERSIVE_GRADIENT_BLUR,
           this.themeDisplayMode, this.themeDarkSurface, this.titleBarStyleMode) })
       .backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue))
-      .systemMaterial(deviceInfo.apiAvailable('26.0.0') ? new uiMaterial.ImmersiveMaterial({
-        style: uiMaterial.ImmersiveStyle.REGULAR, applyShadow: true, colorInvert: true }) : undefined);
+      .attributeModifier(materialModifier(deviceInfo.apiAvailable('26.0.0') ? new uiMaterial.ImmersiveMaterial({
+        style: uiMaterial.ImmersiveStyle.REGULAR, applyShadow: true, colorInvert: true }) : undefined));
   }
 }

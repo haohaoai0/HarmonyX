@@ -71,6 +71,7 @@ test('narrow media inherits normal playback eligibility for videos and GIFs with
   const postMedia = mediaSource.slice(mediaSource.indexOf('export struct PostMedia'));
   const defaultPlayback = /playbackEnabled: boolean = (true|false);/.exec(postMedia)?.[1] === 'true';
   const row = card();
+  row.readingSurface = () => 'transparent';
   row.videoFeedEnabled = true;
   row.homeTimelineVideo = true;
   row.onVideoOpen = () => {};

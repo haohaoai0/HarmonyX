@@ -4,7 +4,7 @@
 import { DARK_SURFACE_GENTLE, DISPLAY_MODE_DARK } from '../services/AppearanceStore';
 import { ColorMetrics } from '@kit.ArkUI';
 import { pageBackgroundActive, pageBackgroundFromValue, DEFAULT_PAGE_SURFACE_OPACITY, PageBackgroundState } from '../services/PageBackgroundStore';
-import { PageRgb, rgbFromHex, mixPageRgb, pageLightInk, pageContrastRatio, photoReadingVeil } from './PageBackgroundContrast';
+import { PageRgb, rgbFromHex, mixPageRgb, pageLightInk, pageContrastRatio, photoReadingVeil, pagePatternOpacity } from './PageBackgroundContrast';
 
 export class PageBackdropTone {
   average: PageRgb = rgbFromHex('#808080');
@@ -87,8 +87,10 @@ export function pageBackdropTone(state: PageBackgroundState, displayMode: string
   }
   const patterns: number = state.patternLayout === 'preset' ? state.patternIds.length : state.motifIds.length;
   if (patterns > 0) {
+    const ink: number = pageLightInk(tone.average) ? 1 : 0;
     const strength: number = state.patternLayout === 'preset' ?
-      1 - Math.pow(1 - state.patternStrength / Math.sqrt(patterns), patterns) : state.patternStrength;
+      1 - Math.pow(1 - pagePatternOpacity(state.patternStrength / Math.sqrt(patterns), ink), patterns) :
+      pagePatternOpacity(state.patternStrength, ink);
     if (pageLightInk(tone.average)) { tone.lightest = mixPageRgb(tone.lightest, white, strength); }
     else { tone.darkest = mixPageRgb(tone.darkest, black, strength); }
   }
@@ -108,9 +110,10 @@ export function pageBackdropTone(state: PageBackgroundState, displayMode: string
 // keep their own contrast; transparent posts use the visible wallpaper.
 export function pageTextColor(original: ResourceColor, backgroundValue: string, surface: ResourceColor = Color.Transparent,
   minimum: number = 4.6): ResourceColor {
-  if (!pageBackgroundActive(backgroundValue)) { return original; }
   try {
-    const tone: PageBackdropTone = cachedBackdropTone(backgroundValue);
+    // Opaque fields still need readable text when wallpaper is off. Disabled
+    // wallpaper must use the actual theme canvas rather than its saved color.
+    const tone: PageBackdropTone = cachedBackdropTone(pageBackgroundActive(backgroundValue) ? backgroundValue : '');
     const backing: ColorMetrics = ColorMetrics.resourceColor(surface);
     const requestedColor: ColorMetrics = ColorMetrics.resourceColor(original);
     const requested: PageRgb = { red: requestedColor.red, green: requestedColor.green, blue: requestedColor.blue };

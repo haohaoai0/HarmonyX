@@ -79,6 +79,17 @@ test('Home requests match APK context and seen-snapshot semantics without invent
   assert.equal(calls[3][1].request_context, 'foreground');
 });
 
+test('the sensitive For You channel asks SearchTimeline with the server-side sensitive filter', async () => {
+  const Client = harness('services/XPrivateClient', 'XPrivateClient', ['sensitiveTimeline'],
+    { SENSITIVE_TIMELINE_QUERY: 'filter:sensitive' });
+  const calls = [];
+  const client = Object.assign(new Client(), {
+    searchTimeline: async (...args) => { calls.push(args); return { ok: true }; }
+  });
+  await client.sensitiveTimeline('next', 40);
+  assert.deepEqual(calls, [['filter:sensitive', 'next', 40, 'Latest', 'typed_query']]);
+});
+
 test('the Home request path uses 40 posts for Bottom paging and forces a network refresh for Top paging', async () => {
   const Home = harness('pages/Index', 'Index', ['fetchPrivateTimeline'], {
     FollowDiscoveryData: { parse: () => null }, spaceSurfaceStore: { ingestTimeline() {} },
@@ -88,6 +99,28 @@ test('the Home request path uses 40 posts for Bottom paging and forces a network
     xPrivate: { homeTimeline: async (...args) => { calls.push(args); return { ok: true, body: '{"tweets":[]}' }; } } });
   await home.fetchPrivateTimeline('bottom'); await home.fetchPrivateTimeline('top', true, '');
   assert.deepEqual(calls, [[true, 'bottom', 40, ['10'], false, ''], [true, 'top', 20, ['10'], true, '']]);
+});
+
+test('sensitive For You uses its own server channel and still verifies returned post markers', async () => {
+  const Home = harness('pages/Index', 'Index', ['fetchPrivateTimeline'], {
+    FollowDiscoveryData: { parse: () => null }, spaceSurfaceStore: { ingestTimeline() {} },
+    XTimelineParser: { parse: body => JSON.parse(body) },
+    isSensitivePost: row => row.sensitive === true
+  });
+  const calls = [];
+  const home = Object.assign(new Home(), {
+    homeFeedMode: 0, onlySensitiveForYou: true, seenTweetIdsForTimeline: () => ['10'],
+    xPrivate: {
+      sensitiveTimeline: async (...args) => {
+        calls.push(['sensitive', ...args]);
+        return { ok: true, body: JSON.stringify({ tweets: [{ id: '1', sensitive: false }, { id: '2', sensitive: true }] }) };
+      },
+      homeTimeline: async () => { throw new Error('ordinary HomeTimeline must not run'); }
+    }
+  });
+  const page = await home.fetchPrivateTimeline('next', false, 'launch');
+  assert.deepEqual(calls, [['sensitive', 'next', 40]]);
+  assert.deepEqual(page.tweets.map(tweet => tweet.id), ['2']);
 });
 
 function homeFixture(response) {

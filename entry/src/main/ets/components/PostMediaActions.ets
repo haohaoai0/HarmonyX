@@ -1,3 +1,5 @@
+import { InputModalScope } from '../utils/InputModalScope';
+import { contextInputMouse } from '../utils/InputSupport';
 import { menuActionVisible } from '../models/MenuActionCatalog';
 import { STORAGE_KEY_HIDDEN_MENU_ACTIONS } from '../services/MenuSettingsStore';
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
@@ -19,6 +21,7 @@ import { backgroundImageStore } from '../services/BackgroundImageStore';
 import { chatPageMaterial } from '../utils/ChatMaterial';
 import { SystemMaterialUtil } from '../utils/SystemMaterial';
 import { ResponsiveLayout } from '../utils/ResponsiveLayout';
+import { materialModifier } from '../utils/SystemMaterial';
 
 @Builder
 function EmptyMediaActionContent(_onLongPress: () => void): void { Column() {} }
@@ -27,6 +30,9 @@ function EmptyMediaActionContent(_onLongPress: () => void): void { Column() {} }
 // clipboard and navigation start only after the context menu releases focus.
 @Component
 export struct PostMediaActions {
+  private inputModalScope: InputModalScope = new InputModalScope();
+
+  aboutToDisappear(): void { this.inputModalScope.setActive(false); }
   @StorageProp(STORAGE_KEY_HIDDEN_MENU_ACTIONS) private hiddenMenuActions: string = '';
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @Prop media: MediaAttachment;
@@ -233,7 +239,7 @@ export struct PostMediaActions {
       }
     }.width(300).padding({ top: 8, bottom: 8 }).borderRadius(18).clip(true)
       .backgroundColor(SystemMaterialUtil.isApi26OrAbove() ? Color.Transparent : $r('app.color.bg_field'))
-      .systemMaterial(chatPageMaterial())
+      .attributeModifier(materialModifier(chatPageMaterial()))
   }
 
   build(): void {
@@ -242,13 +248,15 @@ export struct PostMediaActions {
       .gesture(LongPressGesture({ repeat: false, duration: 500 }).onAction((): void => {
         this.requestActions();
       }))
+      .onMouse((event: MouseEvent): void => contextInputMouse(event, (): void => this.requestActions()))
       .bindContextMenu(this.menuShown, this.Actions(), {
         preview: MenuPreviewMode.IMAGE, previewBorderRadius: 14,
         previewAnimationOptions: { scale: [0.98, 1.035] }, borderRadius: 18,
         backgroundColor: Color.Transparent, backgroundBlurStyle: BlurStyle.COMPONENT_THICK,
         mask: { color: $r('app.color.chat_message_menu_mask'), backgroundBlurStyle: BlurStyle.BACKGROUND_THIN },
         modalMode: ModalMode.TARGET_WINDOW, hapticFeedbackMode: HapticFeedbackMode.AUTO,
-        onDisappear: (): void => this.onMenuDismissed()
+        onAppear: (): void => { this.inputModalScope.setActive(true); },
+        onDisappear: (): void => { this.inputModalScope.setActive(false); this.onMenuDismissed(); }
       })
   }
 }

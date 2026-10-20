@@ -21,6 +21,7 @@ import { SystemMaterialUtil } from '../utils/SystemMaterial';
 import { ResponsiveLayout } from '../utils/ResponsiveLayout';
 import { ExternalSharePayload } from '../services/ExternalShareStore';
 import { verificationBadgeColor } from '../utils/UserIdentity';
+import { materialModifier } from '../utils/SystemMaterial';
 
 export interface DmComposeRouteParam { sharedPayload?: ExternalSharePayload; }
 
@@ -124,7 +125,7 @@ struct DmComposePage {
       .height($r('app.float.chat_search_height')).borderRadius(24).clip(true)
       .backgroundColor(SystemMaterialUtil.isApi26OrAbove() ? Color.Transparent : fieldSurfaceColor(this.displayMode, this.darkSurface))
       .fontColor($r('app.color.text_primary')).margin({ left: 16, right: 16, top: 4 })
-      .systemMaterial(chatControlMaterial(this.accentColor))
+      .attributeModifier(materialModifier(chatControlMaterial(this.accentColor)))
       .onChange((value: string): void => this.changeQuery(value))
   }
   @Builder
@@ -195,7 +196,7 @@ struct DmComposePage {
           menu: { value: this.titleMenu() } },
         style: destinationTitleBarStyle(ScrollEffectType.GRADIENT_BLUR, this.displayMode, this.darkSurface, this.titleBarStyleMode)
       })
-      .backgroundColor(pageCanvasColor(this.displayMode, this.darkSurface, this.pageBackgroundValue)).systemMaterial(chatPageMaterial())
+      .backgroundColor(pageCanvasColor(this.displayMode, this.darkSurface, this.pageBackgroundValue)).attributeModifier(materialModifier(chatPageMaterial()))
       .onBackPressed((): boolean => {
         if (this.group) { this.group = false; this.selected = []; this.search(); }
         else { ResponsiveLayout.closeContentDestination(this.pageStack); }

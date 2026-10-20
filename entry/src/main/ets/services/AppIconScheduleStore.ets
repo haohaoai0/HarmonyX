@@ -104,11 +104,11 @@ export class AppIconScheduleStore {
 
   async applyIfEnabled(context: common.Context): Promise<void> {
     try {
+      const currentIcon: string = await this.iconStore.currentName();
       const initialSettings: AppIconScheduleSettings = this.load(context, APP_ICON_DEFAULT);
       if (!initialSettings.enabled) {
         return;
       }
-      const currentIcon: string = await this.iconStore.currentName();
       const settings: AppIconScheduleSettings = this.load(context, currentIcon);
       const targetIcon: string = this.iconForTime(settings, new Date());
       if (targetIcon !== currentIcon) {

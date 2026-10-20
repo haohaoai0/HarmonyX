@@ -49,7 +49,7 @@ function playerFixture(options = {}) {
     doubleTapSeekHintTimer: -1, durationSec: 120, positionSec: 40, measuredWidth: 200,
     fullscreen: false, playing: true, muted: true, playbackRateIndex: 2, media: { id: 'video' },
     singleTaps: 0, controlTaps: 0, playTaps: 0, unlocks: 0,
-    isAnimatedGif: () => false, fullscreenGestureWidth: () => 800,
+    isAnimatedGif: () => false, fullscreenGestureWidth: () => 800, isWindowLandscape: () => false,
     onVideoSurfaceTap() { this.singleTaps++; }, toggleControls() { this.controlTaps++; },
     togglePlay() { this.playTaps++; }, unlockPlayerControls() { this.unlocks++; },
     player: { state: 'playing', seek: (ms, mode) => seeks.push(ms / 1000) }

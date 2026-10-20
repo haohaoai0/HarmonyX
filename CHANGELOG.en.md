@@ -4,12 +4,49 @@ User-facing changes in Harmony X. Unreleased entries describe the next version; 
 
 中文版见 [CHANGELOG.md](CHANGELOG.md)。
 
-## 3.1.0 — Unreleased (2026-10-18)
+## 3.2.0 — 2026-10-20
 
-This update adds Home-screen cards, native profile editing, traditional colour themes, and a page-transition choice. It also improves photo saving, video gestures, and timeline reading. The build number is 23.
+This release adds offline bookmarks and continuous thread reading, scene modes, eye-controlled page turning, and mouse, keyboard, and touchpad support. It also introduces chat decorations, reply-quality folding, post-language filtering, and improvements for wide screens, compact foldables, and older systems. The build number is 24.
 
 ### New features
 
+- **Offline bookmarks and read later**: Bookmarks now includes an Offline and read later library. Saving a bookmark captures its text and any available long-form content, optionally with images. Local copies are isolated by account and support full-text search, tags, notes, unread filtering, and deletion. Ordinary cache cleanup leaves them intact.
+- **Continuous thread reading**: Post details include a focused reader that switches between the author's posts and the full discussion, adjusts font size, translates the complete text, and loads more replies. Reading position is retained, reaching the end marks the thread as read, and offline copies use the same reader.
+- **Scene modes**: Reading, data saver, and media presets adjust autoplay, image and video quality, motion, and backgrounds together. The original preferences are saved before the first scene is applied, so Restore original preferences returns the personal setup even after switching scenes.
+- **Eye-controlled page turning**: Devices with AR Engine face tracking can scroll long threads, articles, and offline copies by looking up or down and dwelling. Dwell time and movement threshold are adjustable. The feature starts disabled and opens the front camera only after an explicit start; direction data stays on the device, with no image or facial parameters saved or uploaded.
+- **Mouse, keyboard, and touchpad**: Use Ctrl+1–5 for the main tabs, Ctrl+K, Ctrl+N, Ctrl+R, Ctrl+,, and F1 for common actions, plus Tab focus, Enter/Space activation, Ctrl+Enter submission, and Esc/Alt+← for back. Photos page with the arrow keys; videos switch with Up/Down, play with Space, and seek with Left/Right. The Help Center documents every shortcut. Right-click and touchpad two-finger taps reuse the media, chat, and conversation menus.
+- **Chat decorations**: A free catalog provides avatar frames and chat bubbles that can be previewed, downloaded, applied, replaced, or reset. Only validated local packages are retained, with size and digest limits. What another person sees still depends on their client and selected decoration.
+- **Reply-quality folding**: Content settings can fold suspected low-quality replies such as repeated promotions, bulk solicitation, duplicate external links, and contact details. Each folded reply can show its reasons, and an author can be allowlisted for the active account. The feature is off by default, runs locally, and never hides the viewer, the post author, or followed authors.
+- **Post-language filtering**: Content filters can mute multiple post languages using language metadata on each post. Unrecognized languages and media-only posts remain visible, and a quoted post's language is not mistaken for the outer post.
+- **Compact-cover video layout**: Pura X-style cover screens can place video actions in a side rail or a bottom row, independently of the main video-feed layout. Unfolding restores the main layout, while very short windows hide optional captions to keep the controls clear.
+- **Wide layout**: Desktop layout now starts at 600vp for portrait tablets and wide phones. Medium windows use compact navigation and open chats and settings categories as full pages to avoid cramped split panes. Back inside wide settings returns to the category menu first.
+- **Post details**: Bookmark and quote counts and an Edited marker are shown in post details, with access to edit history. Bookmark changes update the count immediately and restore it if the request fails.
+- **App clones**: The package enables system app clones with a maximum of five copies.
+
+### Improvements and fixes
+
+- **API 22 compatibility**: The minimum supported runtime is now 6.0.2(22). API 26 immersive materials, API 24 HDR, API 23 floating navigation, and eye tracking fall back according to runtime capability, retaining ordinary backgrounds, playback, navigation, and reading paths.
+- **Pura X rotation**: Foldables restore portrait and landscape rotation governed by the system rotation lock after launch and after leaving fullscreen video. A late fullscreen request cannot overwrite a newer exit orientation.
+- **Comment loading**: Post details and video comments follow cursor-only pages, retain nested and module replies, and never treat recommendations as comments. A thread with more pages or a failed request keeps a retry path instead of reporting no comments, and embedded media comments no longer receive promotional posts.
+- **Bottom navigation and title bar**: The liquid capsule is now layered over native HDS navigation so dragging, hidden labels, and large-screen scaling stay aligned. A bottom-tab gradient-mask switch is available, and the title-bar brand mark follows the active alternate icon and light or dark appearance.
+- **Appearance feedback**: Material, palette, title-bar, sheet, and reply-capsule settings include live previews. A material-tint switch is available for the floating compose button, and switches no longer ignore a change back to their initial value.
+- **List directory**: The default Lists page keeps followed and owned lists while filtering recommendations and unfollowed pinned entries. Search, other profiles, and memberships still show public lists in their existing scopes.
+- **Account and media state**: Reply-capsule and drawer avatars now avoid showing or restoring an old account's avatar when offline, switching accounts, or receiving a late network response.
+- **Consistent version information**: The app, bilingual READMEs, and changelogs now use version 3.2.0 (`versionCode` 24).
+
+### Notes
+
+- The entry module passed `devecocli build` compilation and HAP packaging. Reading, scene, eye-tracking, input, comments, media, layout, and compatibility coverage was exercised.
+- The complete test suite still has failures in legacy harness fixtures and English fallback copy for some newly added strings, so this release does not claim a fully green regression run. Eye-tracking accuracy and comfort, physical input devices, the decoration service catalog, offline reading without a network, Pura X cover screens, and API 22 devices still need device acceptance.
+- This release provides unsigned App Pack and HAP files. Re-sign them with your own HarmonyOS certificate and Profile before installation.
+
+## 3.1.0 — 2026-10-18
+
+This update adds Home-screen cards, native profile editing, page backgrounds, mixed colour palettes, animation and haptic settings, and HDR effects. It also expands two-column phone and adaptive large-screen reading, with improvements to GIF viewing, photo saving, video interaction, and settings navigation. The build number is 23.
+
+### New features
+
+- **App clones**: Support up to five system app clones, making it easier to use separate accounts.
 - **Home-screen cards**: Choose 2×2, 2×4, or 4×4 cards showing For You, Following, Trends, or Notifications. Cards follow the active account and display cached content. Tap a post to open its details, or use the gear to change the source and refresh the card.
 - **Native profile editing**: Update your name, bio, location, website, avatar, and banner. Saving reloads the account profile and updates its display throughout the app. If part of a save fails, unfinished edits remain available for retry.
 - **Twelve traditional colour themes**: Add cinnabar, vermilion, amber, autumn bamboo, bamboo green, azurite, cloisonne, indigo, begonia, rouge, sandalwood, and mountain palettes, with separate light and dark colours. Existing accent choices remain available.
@@ -17,6 +54,19 @@ This update adds Home-screen cards, native profile editing, traditional colour t
 - **Double-tap video seeking**: Double-tap the right half to seek forward or the left half to seek backward. The default interval is 10 seconds, adjustable from 1 to 60 seconds, with an independent switch that leaves hold-to-speed preferences unchanged.
 - **Photo author bar**: The photo viewer now shows author information, a profile shortcut, and follow controls, sharing relationship state with other pages.
 - **Alternate icon**: Add a Zombie X icon option.
+- **Two-column phone and adaptive feeds**: Use the existing timeline column setting to read Home in two columns on a phone. Profiles, bookmarks, browsing history, lists, communities, notification posts, search, and interaction histories adapt to the actual content-pane width with one, two, or three columns. Narrow panes return to one column, while headings and loading indicators span the full width.
+- **GIF photo viewer**: Open animations from posts, chats, pending attachments, and GIF search in the shared photo viewer, with enlarged viewing and horizontal browsing. Mixed photo and GIF galleries retain their original order. Preview search results before selecting the current GIF; saving preserves native GIF files and uses the existing GIF conversion flow for video-backed animations.
+- **Page backgrounds**: Combine colours, photos, complete patterns, individual motifs from different sets, and paper textures on ordinary pages. Adjust motif density, texture strength, and separate opacity levels for posts, the inbox, and other content panels. Import or share schemes with their background photo, or temporarily disable the background while retaining the saved design.
+- **Shared background library**: Save post photos to a durable, account-specific library for page or chat backgrounds. Saved images survive cache cleanup, and saving the same source again reuses its existing image.
+- **Ten mixed colour palettes**: Add Confetti, Sea Salt Coral, Sunset Iris, Forest Amber, Berry Mint, Morandi, Candy, Sky Lemon, Peach Mint, and Lilac Cream. Switches, navigation, and compose buttons use coordinated colours in both light and dark appearances.
+- **Animation and haptics**: Choose Quick, Standard, Spring, or Reduced Motion presets, or independently adjust duration, movement, spring damping, Symbol animations, and haptic intensity. Reduced Motion skips page transitions and decorative effects while retaining previous parameters. Haptics respect system settings.
+- **Liquid navigation indicator**: Add a draggable capsule to the floating bottom bar, with spring settling when tapping or dragging between tabs. Its position and size follow the actual visible tabs and label setting.
+- **Component HDR and touch highlights**: Add an independent component HDR switch and brightness multiplier. The effect starts disabled, with a default multiplier of 1.25, and settings show the current screen's system-reported maximum multiplier. Buttons, icons, and selected states can use highlights; touch glows clear when a press or drag ends.
+- **HDR video enhancement**: Use system HDR enhancement for ordinary videos on screens that report support. Recheck capabilities after screen changes and retain normal playback when enhancement is unavailable or fails.
+- **Menu action visibility**: Manage post, photo, and video actions in their settings categories. Hide individual actions or restore defaults; preferences survive restart and are shared with the actual menus across pages.
+- **Exit confirmation**: Optionally show a system confirmation when navigating back from a root page. Only an explicit Exit closes the app; an open phone sidebar closes first. Confirmation can be disabled in settings, and nested pages retain their normal back navigation.
+- **Huawei account and cloud sync entry**: Add Huawei account sign-in, avatar display, and optional preference sync, grouped into appearance and navigation, reading and playback, and local content rules. Cloud sync starts disabled; X credentials, private messages, drafts, and caches remain local. Account-service and signing configuration are still required for actual use.
+- **Anti-peep protection entry**: Add system setup, authorization status, and a recheck action. Returning to the app after authorization triggers another check. The system privacy mask is used only on supported devices with facial recognition configured and the app's required authorization granted.
 
 ### Improvements and fixes
 
@@ -28,12 +78,20 @@ This update adds Home-screen cards, native profile editing, traditional colour t
 - **Initial Home rendering and recommendations**: Show real posts before injecting promotional content or opening the startup sheet. Empty and unrequested timelines no longer use promotions as placeholders. Keep multi-column item counts synchronized to address feeds remaining blank after loading.
 - **Material defaults**: Sidebar material starts disabled and sheet material starts enabled on first use. Existing independent choices are retained.
 - **Storage cleanup**: Recalculate clearable cache before confirmation, retaining completion and failure feedback.
+- **Video taps and preview audio**: Expand manual-play hit targets to the whole video area. Multiple preview cards can keep their pictures playing, with sound belonging only to the most recently activated card. Opened videos retain their separate mute preference.
+- **Rotation, folding, and compact screens**: Preserve the visible post and within-card reading position where possible when changing columns or orientation. Refine title bars, video action rails, comment sheets, and reply attachment previews on Pura X square cover screens and short windows to reduce crowding and overlap.
+- **Photo viewer controls**: Reuse the existing fullscreen setting for viewer controls and remove the duplicate Save action from the more menu. Opening and closing the large-screen photo overlay preserves the underlying detail page and reading position.
+- **Background contrast and performance**: Adapt text, action icons, and playback controls to the background and panel opacity. Ordinary pages reuse composed background textures, reducing repeated work when opening pages and discarding stale results after appearance changes or page dismissal.
+- **Settings first frame and back navigation**: Pass category parameters before the first frame to prevent briefly showing the previous category. Phones reuse an already open settings category; desktop category changes close the old detail branch to reduce duplicate navigation entries.
+- **Announcements and recommendation sheets**: Refine display windows, intervals, and daily budgets, counting only actual presentations. Pause recommendations without valid configuration and avoid repeated sheets or excessive retries.
 - **Consistent version information**: Both X-new and Harmony-X now use version 3.1.0 (`versionCode` 23), with matching version descriptions in all 21 languages and project documentation. Each keeps its own app name, bundle name, and icons.
 
 ### Notes
 
-- This version is unreleased; packages are not being uploaded yet.
+- This release passed its Release build and 217 relevant automated regression tests. App Pack and HAP versions, supported devices, and the five-app-clone configuration are checked before publication.
 - Automated tests and builds do not establish complete device acceptance. Card cold starts, actual profile submissions, video gestures, and tablet and foldable transitions still need full device verification. The previous release's limits for comment submission, playback advance, and server-confirmed account operations still apply.
+- Huawei authorization and cross-device cloud sync still require device validation with matching account-service configuration, certificates, and Profile. Anti-peep protection depends on system support and app-specific authorization, showing a pending state until granted. Actual HDR brightness and enhancement depend on the current screen and system capabilities.
+- Packages are unsigned and require re-signing with your own HarmonyOS certificate and Profile before installation.
 
 ## 3.0.0 — 2026-10-16
 

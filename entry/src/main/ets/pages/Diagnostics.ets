@@ -17,6 +17,7 @@ import { XPrivateResult, xPrivateClient } from '../services/XPrivateClient';
 import { destinationTitleBarStyle } from '../utils/DestinationTitleBar';
 import { ResponsiveLayout } from '../utils/ResponsiveLayout';
 import { fieldSurfaceColor, pageSurfaceColor } from '../utils/ThemeColors';
+import { materialModifier } from '../utils/SystemMaterial';
 
 @Builder
 export function DiagnosticsBuilder(): void {
@@ -207,6 +208,6 @@ export struct Diagnostics {
         this.themeDisplayMode, this.themeDarkSurface, this.titleBarStyleMode)
     })
     .backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue))
-    .systemMaterial(pageBackgroundActive(this.pageBackgroundValue) ? undefined : this.pageMaterial());
+    .attributeModifier(materialModifier(pageBackgroundActive(this.pageBackgroundValue) ? undefined : this.pageMaterial()));
   }
 }

@@ -1,3 +1,4 @@
+import { DesktopLayout } from '../utils/DesktopLayout';
 import { pageTextColor } from '../utils/ThemeColors';
 import { appPageBackground } from '../components/PageBackgroundLayer';
 import { pageCanvasColor, pageReadingSurfaceColor } from '../utils/ThemeColors';
@@ -58,10 +59,10 @@ struct CreatorStudio {
           this.Tool($r('app.string.desktop_studio_live'), $r('sys.symbol.video'), 'https://studio.x.com/')
           this.Tool($r('app.string.desktop_studio_analytics'), $r('sys.symbol.waveform'), 'https://x.com/i/account_analytics')
           this.Tool($r('app.string.desktop_studio_support'), $r('sys.symbol.message'), 'https://help.x.com/en/using-x/creator-revenue-sharing')
-        }.width('100%').padding({ top: this.desktopLayoutEnabled && ResponsiveLayout.isLarge(this.windowBreakpoint) ?
+        }.width('100%').padding({ top: DesktopLayout.active(this.desktopLayoutEnabled, this.windowBreakpoint) ?
           0 : this.statusBarHeight + 60, bottom: 24 })
       }.width('100%').height('100%').scrollBar(BarState.Auto).align(Alignment.TopStart)
-        .clip(!(this.desktopLayoutEnabled && ResponsiveLayout.isLarge(this.windowBreakpoint)))
+        .clip(!(DesktopLayout.active(this.desktopLayoutEnabled, this.windowBreakpoint)))
     
       }.width('100%').height('100%')
     }
@@ -70,7 +71,7 @@ struct CreatorStudio {
     .onReady((context: NavDestinationContext): void => { this.pageMotion.attach(context); })
     .systemTransition(pageSystemTransition(this.pageTransitionMode)).titleMode(HdsNavDestinationTitleMode.MINI)
       .titleBar({ avoidLayoutSafeArea: true,
-        enableComponentSafeArea: this.desktopLayoutEnabled && ResponsiveLayout.isLarge(this.windowBreakpoint),
+        enableComponentSafeArea: DesktopLayout.active(this.desktopLayoutEnabled, this.windowBreakpoint),
         content: { title: { mainTitle: $r('app.string.side_creator_studio') } },
         style: destinationTitleBarStyle(ScrollEffectType.IMMERSIVE_GRADIENT_BLUR,
           this.displayMode, this.darkSurface, this.titleBarStyleMode) })

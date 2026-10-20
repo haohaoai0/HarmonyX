@@ -18,8 +18,11 @@ function load(name, dependencies = {}) {
     if (id === './XChatConversationId') return load('XChatConversationId');
     if (id === './ReplyConversation') return load('ReplyConversation');
     if (id === './JetfuelDecoder' || id === './XStarterPackParser') return {};
+    if (id === '../utils/UserIdentity') return require('./post-card-fixture.cjs').load('utils/UserIdentity');
     if (id === '../models/AccountPrivacy') return require('./post-card-fixture.cjs').load('models/AccountPrivacy');
     if (id === './XPostCardParser' || id === './XPollRequest') return require('./post-card-fixture.cjs');
+    if (id.startsWith('../models/')) return require('./post-card-fixture.cjs').load('models/' + id.slice('../models/'.length));
+    if (id.startsWith('./')) return require('./post-card-fixture.cjs').load('services/' + id.slice(2));
     throw new Error('Unexpected import ' + id);
   }, module, module.exports);
   return module.exports;
@@ -97,7 +100,7 @@ test('429 cooldown prevents repeated community requests to the server',async()=>
 test('native joined directory supplies its declared count, viewer flag and pagination cursor',async()=>{
  const f=fixture();await f.client.myCommunities('NEXT',30);
  assert.match(f.calls[0].url,/CommunitiesMyQuery/);
- const v=variables(f.calls[0]);assert.equal(v.count,30);assert.equal(v.isMemberTargetUserId,'0');assert.equal(v.cursor,'NEXT');
+ const v=variables(f.calls[0]);assert.equal(v.rest_id,'1');assert.equal(v.count,30);assert.equal(v.isMemberTargetUserId,'0');assert.equal(v.cursor,'NEXT');
 });
 test('my community posts and replies query the server with independent author/reply filters and cursors',async()=>{
  const f=fixture();await f.client.communityUserTimeline('123','POST_NEXT',20,false);await f.client.communityUserTimeline('123','REPLY_NEXT',20,true);

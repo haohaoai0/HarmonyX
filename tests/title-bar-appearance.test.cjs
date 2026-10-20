@@ -15,12 +15,19 @@ function fixture(api26 = false) {
       ImmersiveStyle: { THIN: 'thin' },
       ImmersiveMaterial: class { constructor(options) { this.options = options; } }
     } },
+    '@kit.BasicServicesKit': { deviceInfo: { apiAvailable: version =>
+      version === '26.0.0' ? api26 : api26 && version === '6.1.0(23)' } },
     './ThemeColors': { titleBarScrimColor: () => 'scrim', pageSurfaceColor: () => 'page' },
     './ResponsiveLayout': { ResponsiveLayout: { isLarge: bp => bp === 'xl' || bp === 'lg' } },
     './SystemMaterial': { SystemMaterialUtil: {
       isApi26OrAbove: () => api26,
-      immersiveMaterial: level => api26 ? { level } : undefined
+      immersiveMaterial: (level, interactive, applyShadow, colorInvert, lightColor) => api26 ? {
+        level,
+        options: { interactive, applyShadow, colorInvert,
+          lightEffect: lightColor === undefined ? null : { color: lightColor } }
+      } : undefined
     } },
+    '../services/PageBackgroundStore': { pageBackgroundActive: () => false },
     '../services/AppearanceStore': {
       TITLE_BAR_STYLE_IMMERSIVE: 0, TITLE_BAR_STYLE_BLUR: 1,
       TITLE_BAR_STYLE_GLASS: 2, TITLE_BAR_STYLE_GLASS_ONLY: 3
@@ -73,7 +80,7 @@ test('glass thickness follows the existing preference only for glass choices on 
   const f = fixture(true);
   for (const mode of [0, 1]) assert.equal(f.titleBarGlassMaterial(mode, 4), undefined);
   for (const mode of [2, 3]) {
-    for (const level of [0, 1, 2, 3, 4]) assert.deepEqual(f.titleBarGlassMaterial(mode, level), { level });
+    for (const level of [0, 1, 2, 3, 4]) assert.equal(f.titleBarGlassMaterial(mode, level).level, level);
     assert.equal(fixture(false).titleBarGlassMaterial(mode, 4), undefined);
   }
 });
@@ -100,7 +107,7 @@ test('title glass survives repeated geometry updates and recreates only for a ne
   }
   const thick = cache.material(3);
   assert.notEqual(thick, regular);
-  assert.deepEqual(thick, { level: 3 });
+  assert.equal(thick.level, 3);
   assert.equal(cache.material(3), thick);
   assert.equal(new (fixture(false).TitleBarGlassMaterialCache)().material(2), undefined);
 });

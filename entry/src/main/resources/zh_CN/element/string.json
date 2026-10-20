@@ -1,5 +1,42 @@
 {
   "string": [
+    {
+      "name": "supporter_config_error",
+      "value": "云端账号绑定配置异常，请联系作者核对。"
+    },
+    {
+      "name": "supporter_restore_hint",
+      "value": "应用内切回原账号会恢复已保存的状态。换设备、重装或切换应用版本后，请登录同一 X 账号并输入原兑换码恢复。"
+    },
+    {"name": "eye_reading_title", "value": "眼动翻页"},
+    {"name": "eye_reading_intro", "value": "在长线程、离线副本和文章中，用眼睛上下看并停留来滚动阅读。"},
+    {"name": "eye_reading_enable", "value": "启用眼动阅读"},
+    {"name": "eye_reading_supported", "value": "此设备支持人脸跟踪。进入阅读页后，点“开始眼动”才会开启摄像头。"},
+    {"name": "eye_reading_unsupported", "value": "此设备不支持所需的人脸跟踪能力，请继续使用触摸或键盘阅读。"},
+    {"name": "eye_reading_dwell", "value": "注视停留时间"},
+    {"name": "eye_reading_threshold", "value": "方向触发幅度"},
+    {"name": "eye_reading_threshold_desc", "value": "幅度越大，眼睛需要转动得越明显，可减少误触。"},
+    {"name": "eye_reading_help", "value": "开始后保持头部稳定，正视屏幕中心完成校准。向下或向上看并停留，滚动约半屏；每次触发后先回到正视位置。触摸、滚轮和键盘操作优先。"},
+    {"name": "eye_reading_privacy", "value": "仅在主动开始后使用前置摄像头，本地处理方向参数，不保存或上传画面。离开页面或切到后台会停止，再次使用需手动开始。"},
+    {"name": "eye_reading_save_failed", "value": "设置保存失败，请重试。"},
+    {"name": "eye_reading_start", "value": "开始眼动"},
+    {"name": "eye_reading_stop", "value": "停止眼动"},
+    {"name": "eye_reading_recalibrate", "value": "重新校准"},
+    {"name": "eye_reading_starting", "value": "正在启动前置摄像头…"},
+    {"name": "eye_reading_permission", "value": "需要相机权限。请在系统应用权限中允许相机后重试。"},
+    {"name": "eye_reading_failed", "value": "摄像头暂不可用，请关闭其他相机应用后重试。"},
+    {"name": "eye_reading_calibrating", "value": "请正视屏幕中心，保持头部和视线稳定，完成校准。"},
+    {"name": "eye_reading_center", "value": "请先回到正视位置，再进行下一次翻页。"},
+    {"name": "eye_reading_ready", "value": "已就绪：向上或向下看并停留。"},
+    {"name": "eye_reading_up", "value": "保持向上看，即将向上滚动。"},
+    {"name": "eye_reading_down", "value": "保持向下看，即将向下滚动。"},
+    {"name": "eye_reading_lost", "value": "请睁眼并面向屏幕，确保光线充足；持续无响应时可重新校准。"},
+    {"name": "eye_reading_paused", "value": "手动操作优先，眼动已暂缓。"},
+    {"name": "eye_reading_camera_reason", "value": "用于您主动开启眼动翻页时，通过前置摄像头在本地识别眼球方向。"},
+    {"name": "compact_video_layout", "value": "外屏视频布局"},
+    {"name": "settings_compact_video_layout_desc", "value": "适用于 Pura X 等小方屏，可选侧边操作栏或底部横排；展开后仍使用原来的视频布局。"},
+    {"name": "compact_video_layout_rail", "value": "侧边操作栏"},
+    {"name": "compact_video_layout_bottom", "value": "底部横排"},
     {"name":"settings_component_hdr_enabled","value":"组件 HDR 效果"},
     {"name":"settings_component_hdr_enabled_desc","value":"默认关闭；打开后使用 1.25 倍提亮，可在下方调整。"},
     {"name":"settings_confirm_app_exit","value":"退出前确认"},
@@ -1775,6 +1812,14 @@
     {
       "name": "settings_hds_tabs_material_adaptive",
       "value": "自适应"
+    },
+    {
+      "name": "settings_hds_tabs_gradient_mask",
+      "value": "底部 Tab 渐变遮罩"
+    },
+    {
+      "name": "settings_hds_tabs_gradient_mask_desc",
+      "value": "控制悬浮 HdsTabs 底部的渐隐渐变，默认开启；关闭后使用透明遮罩。"
     },
     {
       "name": "settings_timeline_columns_title",
@@ -9253,6 +9298,14 @@
       "value": "关闭后，将时间线标签或搜索框移到头像和右侧按钮之间。"
     },
     {
+      "name": "settings_title_bar_logo_auto_contrast",
+      "value": "Logo 自适应反色"
+    },
+    {
+      "name": "settings_title_bar_logo_auto_contrast_desc",
+      "value": "根据标题栏背景自动切换 X 或图案前景的深浅色；只显示单色前景，不绘制图标背景。"
+    },
+    {
       "name": "notifications_all",
       "value": "全部"
     },
@@ -10705,6 +10758,359 @@
     {"name":"page_background_motif_popular_apps_global_firefox","value":"Firefox"},
     {"name":"page_background_motif_popular_apps_global_edge","value":"Edge"},
     {"name":"page_background_motif_popular_apps_global_gmail","value":"Gmail"},
-    {"name":"page_background_motif_popular_apps_global_google_maps","value":"Google 地图"}
+    {"name":"page_background_motif_popular_apps_global_google_maps","value":"Google 地图"},
+    {"name":"scene_title","value":"场景模式"},
+    {"name":"scene_intro","value":"组合调整自动播放、画质、动效和背景。恢复时将找回首次启用场景前的个人配置。"},
+    {"name":"scene_reading","value":"清爽阅读"},
+    {"name":"scene_reading_desc","value":"关闭自动播放 · 高清图片 · 低清视频 · 减少动效 · 纯净背景"},
+    {"name":"scene_saver","value":"节能省流"},
+    {"name":"scene_saver_desc","value":"关闭自动播放 · 小图 · 低清视频 · 减少动效 · 纯净背景"},
+    {"name":"scene_media","value":"媒体浏览"},
+    {"name":"scene_media_desc","value":"开启自动播放 · 原图 · 高清视频 · 开启动效 · 保留个人背景"},
+    {"name":"scene_restore","value":"恢复原配置"},
+    {"name":"scene_restore_desc","value":"恢复首次启用场景前的配置；连续切换场景不会覆盖这份备份。"},
+    {"name":"scene_failed","value":"部分设置未能保存。原配置仍保留，可重试或恢复。"},
+    {"name":"offline_title","value":"离线与稍后读"},
+    {"name":"offline_online","value":"在线书签"},
+    {"name":"offline_intro","value":"新增收藏自动保存正文和可获取的长文。保存前开启配图可一并下载图片。本地副本独立于在线书签，清理普通缓存不会删除。"},
+    {"name":"offline_images","value":"后续保存包含配图"},
+    {"name":"offline_save","value":"保存离线副本"},
+    {"name":"offline_saving","value":"正在保存…"},
+    {"name":"offline_saved","value":"已保存，可离线阅读"},
+    {"name":"offline_partial_saved","value":"已保存可用内容，部分长文或图片未保存完整，可联网后重试。"},
+    {"name":"offline_save_failed","value":"本地保存失败，请重试。"},
+    {"name":"offline_partial","value":"内容不完整"},
+    {"name":"offline_unread","value":"未读"},
+    {"name":"offline_unread_only","value":"只看未读"},
+    {"name":"offline_search","value":"搜索标题、标签或备注"},
+    {"name":"offline_empty","value":"暂无匹配的离线内容。收藏帖子，或在帖子中保存离线副本。"},
+    {"name":"offline_edit","value":"标签与备注"},
+    {"name":"offline_tags","value":"本地标签"},
+    {"name":"offline_tags_hint","value":"输入标签，多个标签用逗号分隔"},
+    {"name":"offline_note","value":"私人备注"},
+    {"name":"offline_done","value":"保存"},
+    {"name":"offline_delete","value":"删除本地副本"},
+    {"name":"reader_title","value":"长线程阅读"},
+    {"name":"reader_author_only","value":"只看作者"},
+    {"name":"reader_translate","value":"整段翻译"},
+    {"name":"reader_font","value":"字号"},
+    {"name":"reader_missing","value":"离线内容不存在或无法读取，请联网重新保存。"},
+    {"name":"reader_partial","value":"当前仅显示可获取的长文内容。请联网后继续加载或重试以获取完整正文。"},
+    {"name":"reader_load_failed","value":"后续回复加载失败，已保留当前阅读内容。"},
+    {"name":"reader_translation_setup","value":"请先在设置中开启翻译并选择目标语言。"},
+    {"name":"reader_translation_failed","value":"部分段落未能翻译，可隐藏译文后重试。"},
+    {"name":"reader_offline_note","value":"正在阅读本地副本，翻译需要联网。"},
+    {"name":"reader_scope","value":"当前为已加载的讨论内容，可继续加载更多回复。"},
+    {
+      "name": "input_help_title",
+      "value": "鼠标、键盘与触控板"
+    },
+    {
+      "name": "input_help_desc",
+      "value": "查看快捷键和鼠标、触控板操作方法"
+    },
+    {
+      "name": "input_main_title",
+      "value": "主页面快捷键"
+    },
+    {
+      "name": "input_main_scope",
+      "value": "在五个主页面中可用；打开子页面、侧栏或弹窗时暂停响应。Ctrl+N 在消息页新建会话，在其他主页面发布帖子。"
+    },
+    {
+      "name": "input_compose",
+      "value": "新建帖子 / 新建会话"
+    },
+    {
+      "name": "input_refresh",
+      "value": "刷新当前页面"
+    },
+    {
+      "name": "input_keyboard_title",
+      "value": "键盘操作"
+    },
+    {
+      "name": "input_focus",
+      "value": "向前 / 向后移动焦点；原生控件也支持方向键走焦。"
+    },
+    {
+      "name": "input_activate",
+      "value": "激活当前聚焦的按钮。"
+    },
+    {
+      "name": "input_submit",
+      "value": "在发帖、回复或消息输入框中提交；普通回车保留原有输入行为。"
+    },
+    {
+      "name": "input_back",
+      "value": "在帮助、编辑、聊天和媒体页面返回；优先收起当前面板。"
+    },
+    {
+      "name": "input_photo",
+      "value": "图片查看器中上一张 / 下一张；图片未放大且未打开面板时可用。"
+    },
+    {
+      "name": "input_video",
+      "value": "视频查看器中上一个 / 下一个视频；未打开面板时可用。"
+    },
+    {
+      "name": "input_playback",
+      "value": "聚焦视频画面后：空格或回车播放 / 暂停，左 / 右方向键快退 / 快进 10 秒。"
+    },
+    {
+      "name": "input_pointer_title",
+      "value": "鼠标与触控板"
+    },
+    {
+      "name": "input_pointer",
+      "value": "左键点击或单指轻点执行操作；在图片、视频或聊天消息上右键打开操作菜单。按钮支持悬停反馈，可拖动滚动条或进度条。"
+    },
+    {
+      "name": "input_trackpad",
+      "value": "双指滚动列表，横向滑动切换图片；在图片上双指捏合缩放，放大后拖动查看。支持双指轻点的触控板可用它打开右键菜单。"
+    },
+    {
+      "name": "input_previous",
+      "value": "上一张图片"
+    },
+    {
+      "name": "input_next",
+      "value": "下一张图片"
+    },
+    {
+      "name": "input_key_home",
+      "value": "Ctrl + 1"
+    },
+    {
+      "name": "input_key_explore",
+      "value": "Ctrl + 2"
+    },
+    {
+      "name": "input_key_notifications",
+      "value": "Ctrl + 3"
+    },
+    {
+      "name": "input_key_messages",
+      "value": "Ctrl + 4"
+    },
+    {
+      "name": "input_key_profile",
+      "value": "Ctrl + 5"
+    },
+    {
+      "name": "input_key_search",
+      "value": "Ctrl + K"
+    },
+    {
+      "name": "input_key_compose",
+      "value": "Ctrl + N"
+    },
+    {
+      "name": "input_key_refresh",
+      "value": "Ctrl + R"
+    },
+    {
+      "name": "input_key_settings",
+      "value": "Ctrl + ,"
+    },
+    {
+      "name": "input_key_help",
+      "value": "F1"
+    },
+    {
+      "name": "input_key_focus",
+      "value": "Tab / Shift + Tab"
+    },
+    {
+      "name": "input_key_activate",
+      "value": "Enter / Space"
+    },
+    {
+      "name": "input_key_submit",
+      "value": "Ctrl + Enter"
+    },
+    {
+      "name": "input_key_back",
+      "value": "Esc / Alt + ←"
+    },
+    {
+      "name": "input_key_photo",
+      "value": "← / →"
+    },
+    {
+      "name": "input_key_video",
+      "value": "↑ / ↓ / Page Up / Page Down"
+    },
+    {
+      "name": "input_key_playback",
+      "value": "Space / Enter / ← / →"
+    },
+    {"name":"settings_filter_languages","value":"屏蔽帖子语言"},
+    {"name":"settings_filter_languages_desc","value":"多选要屏蔽的语言；未识别语言及纯媒体帖子仍会显示。"},
+    {"name":"appearance_preview_title","value":"效果预览"},
+    {"name":"appearance_preview_hint","value":"修改设置后立即更新。弹窗材质示例可点按展开。"},
+    {"name":"post_edited","value":"已编辑"},
+    {"name":"post_metric_bookmarks","value":"收藏"},
+    {"name":"post_metric_quotes","value":"引用"},
+    {"name":"settings_reply_quality","value":"折叠低质量评论"},
+    {"name":"settings_reply_quality_desc","value":"折叠重复推广和批量引流。仅本机判断，可能误判，可展开查看原因。"},
+    {"name":"reply_quality_folded","value":"疑似低质量评论"},
+    {"name":"reply_quality_reasons","value":"查看原因"},
+    {"name":"reply_quality_allow","value":"始终显示此作者"},
+    {"name":"reply_quality_whitelist","value":"评论白名单"},
+    {"name":"reply_quality_whitelist_desc","value":"始终显示你自己、帖子作者、已关注及白名单作者。白名单仅对当前账号生效。"},
+    {"name":"reply_quality_empty","value":"还没有白名单作者"},
+    {"name":"reply_quality_reason_duplicate","value":"多位作者重复发布相同推广模板"},
+    {"name":"reply_quality_reason_author_repeat","value":"同一作者反复发布相同内容"},
+    {"name":"reply_quality_reason_links","value":"包含多条外部链接"},
+    {"name":"reply_quality_reason_promotion","value":"包含推广或利益诱导内容"},
+    {"name":"reply_quality_reason_contact","value":"包含引流联系方式"},
+    {
+      "name": "settings_floating_compose_material_tint",
+      "value": "悬浮发帖按钮材质颜色"
+    },
+    {
+      "name": "settings_floating_compose_material_tint_desc",
+      "value": "开启后在材质上叠加主题色，关闭后仅移除叠加颜色。"
+    },
+    {
+      "name": "chat_decoration",
+      "value": "聊天装扮"
+    },
+    {
+      "name": "chat_decoration_subtitle",
+      "value": "头像挂件与聊天气泡，按需下载。"
+    },
+    {
+      "name": "chat_decoration_frame",
+      "value": "头像挂件"
+    },
+    {
+      "name": "chat_decoration_bubble",
+      "value": "聊天气泡"
+    },
+    {
+      "name": "chat_decoration_free",
+      "value": "免费"
+    },
+    {
+      "name": "chat_decoration_download_preview",
+      "value": "下载后可预览"
+    },
+    {
+      "name": "chat_decoration_download",
+      "value": "下载"
+    },
+    {
+      "name": "chat_decoration_downloading",
+      "value": "下载中…"
+    },
+    {
+      "name": "chat_decoration_use",
+      "value": "使用"
+    },
+    {
+      "name": "chat_decoration_in_use",
+      "value": "使用中"
+    },
+    {
+      "name": "chat_decoration_remove",
+      "value": "取消使用"
+    },
+    {
+      "name": "chat_decoration_installed",
+      "value": "已下载"
+    },
+    {
+      "name": "chat_decoration_applied",
+      "value": "装扮已应用"
+    },
+    {
+      "name": "chat_decoration_download_failed",
+      "value": "下载失败，请稍后重试"
+    },
+    {
+      "name": "chat_decoration_reset",
+      "value": "恢复默认"
+    },
+    {
+      "name": "chat_decoration_reset_done",
+      "value": "已恢复默认"
+    },
+    {
+      "name": "chat_decoration_note",
+      "value": "素材仅保存在本机；对方看到的样式仍取决于其自己的客户端和装扮。"
+    },
+    {
+      "name": "chat_decoration_loading",
+      "value": "正在获取装扮…"
+    },
+    {
+      "name": "chat_decoration_unavailable",
+      "value": "暂时无法获取装扮，请检查网络后重试。"
+    },
+    {
+      "name": "chat_decoration_sample_text",
+      "value": "今天也要开心呀。"
+    },
+    {"name": "sign_out_confirm_title", "value": "确认退出登录？"},
+    {"name": "sign_out_confirm_message", "value": "退出当前账号后，需要重新登录才能继续使用该账号。"},
+    {"name": "settings_for_you_only_sensitive", "value": "推荐只显示敏感内容"},
+    {"name": "settings_for_you_only_sensitive_desc", "value": "仅筛选“为你推荐”中 X 标记为敏感的帖子，含引用内容；不影响正在关注和列表，也不会自动揭开敏感媒体。"},
+    {"name": "settings_grip_floating", "value": "悬浮操作按钮"},
+    {"name": "settings_grip_video", "value": "视频操作栏"},
+    {"name": "settings_grip_reply", "value": "帖子回复胶囊"},
+    {"name": "settings_grip_component_desc", "value": "根据握持手自动调整此组件的位置；关闭后使用偏好手。"},
+    {"name": "settings_grip_hdstabs", "value": "HdsTabs 底部标签栏"},
+    {"name": "settings_grip_hdstabs_desc", "value": "使用系统原生左右跟手；关闭后标签栏不随握持手移动。"},
+    {"name":"gif_action_save_video","value":"保存为高清视频（MP4）"},
+    {"name":"storage_save_remembered_note","value":"开启后，选择一次下载目录，后续文件自动保存到该目录；关闭后保存到相册。"},
+    {"name":"storage_save_to_remembered","value":"保存到下载目录"},
+    {"name": "storage_permission_reason", "value": "保留您选择的文件和文件夹的访问权限。"},
+    {"name": "timeline_sources_lists", "value": "列表"},
+    {"name": "timeline_sources_communities", "value": "社群"},
+    {"name": "timeline_edit", "value": "编辑"},
+    {"name": "timeline_done", "value": "完成"},
+    {"name": "timeline_move_up", "value": "上移"},
+    {"name": "timeline_move_down", "value": "下移"},
+    {"name": "timeline_remove_source", "value": "移除 %s"},
+    {"name": "timeline_add_to_home", "value": "添加到首页时间线"},
+    {"name": "timeline_remove_from_home", "value": "从首页时间线移除"},
+    {"name": "timeline_sources_failed", "value": "部分列表或社群未能加载，轻点重试"},
+    {"name": "timeline_sources_pinned_empty", "value": "暂无置顶时间线，可在下方添加列表、社群或话题。"},
+    {"name":"video_controls_mirror","value":"切换左右布局"},
+    {"name":"video_controls_speed","value":"倍速"},
+    {"name":"video_controls_aspect","value":"比例"},
+    {"name":"video_controls_background","value":"后台"},
+    {"name":"video_controls_quality_hd","value":"HD"},
+    {"name":"video_controls_quality_sd","value":"SD"},
+    {"name":"video_controls_quality_ld","value":"LD"},
+    {"name":"video_controls_more","value":"更多"},
+    {"name":"video_controls_download","value":"下载"},
+    {"name":"settings_navigation_style","value":"底部导航样式"},
+    {"name":"settings_hds_bottom_bar","value":"HdsTabs 悬浮导航"},
+    {"name":"settings_split_bottom_bar","value":"分离式胶囊导航"},
+    {"name":"settings_split_bottom_bar_desc","value":"左侧胶囊用于切换页面，右侧独立按钮承接发布、新建私信、刷新或回到顶部。两侧使用相同的 HDS 材质；低版本系统自动使用兼容导航。"},
+    {"name":"split_navigation_action_top","value":"回到顶部"},
+    {"name":"split_navigation_action_refresh","value":"刷新首页"},
+    {"name":"split_navigation_action_compose","value":"发布帖子"},
+    {"name": "settings_reply_capsule_split", "value": "分离式回复胶囊"},
+    {"name": "settings_reply_capsule_split_desc", "value": "收起时将回复入口与帖子操作分成两个胶囊"},
+    {"name": "reply_capsule_write_reply", "value": "写回复"},
+    {"name":"settings_native_bottom_bar","value":"7.0 材质胶囊导航"},
+    {"name":"settings_native_bottom_bar_desc","value":"使用与回复胶囊相同的 HarmonyOS 7.0 沉浸材质，支持触摸光、液态指示器和智感握姿换边；不支持时自动使用 HDS 胶囊导航。"},
+    {"name":"settings_native_navigation_material","value":"导航胶囊材质厚度"},
+    {"name":"settings_for_you_only_sensitive_age_title","value":"确认年龄"},
+    {"name":"settings_for_you_only_sensitive_age_message","value":"“推荐只显示敏感内容”仅适用于已满 18 周岁的用户。你是否已满 18 周岁？"},
+    {"name":"settings_for_you_only_sensitive_age_under","value":"未满 18 岁"},
+    {"name":"settings_for_you_only_sensitive_age_adult","value":"已满 18 岁"},
+    {"name":"settings_theme_icon_blue","value":"图标蓝"},
+    {"name":"settings_theme_icon_red","value":"图标红"},
+    {"name":"settings_theme_icon_orange","value":"图标橙"},
+    {"name":"settings_theme_icon_yellow","value":"图标黄"},
+    {"name":"settings_theme_icon_green","value":"图标绿"},
+    {"name":"settings_theme_icon_pink","value":"图标粉"},
+    {"name":"settings_theme_icon_cyan","value":"图标青"},
+    {"name":"settings_theme_icon_navy","value":"图标靛蓝"}
   ]
 }

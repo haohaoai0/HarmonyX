@@ -35,6 +35,7 @@ export const STORAGE_KEY_AUTO_HIDE_TAB_BAR: string = 'harmonyx.auto_hide_tab_bar
 export const STORAGE_KEY_AUTO_HIDE_FAB: string = 'harmonyx.auto_hide_fab';
 export const STORAGE_KEY_HOME_HEADER_COLLAPSE: string = 'harmonyx.home_header_collapse';
 export const STORAGE_KEY_TITLE_BAR_LOGO: string = 'harmonyx.title_bar_logo';
+export const STORAGE_KEY_TITLE_BAR_LOGO_AUTO_CONTRAST: string = 'harmonyx.title_bar_logo_auto_contrast';
 export const STORAGE_KEY_COMPACT_SWITCH_STYLE: string = 'harmonyx.compact_switch_style';
 export const COMPACT_SWITCH_TABS: string = 'tabs';
 export const COMPACT_SWITCH_BUTTONS: string = 'buttons';
@@ -67,6 +68,8 @@ export const DEFAULT_REPLY_CAPSULE_MATERIAL_LEVEL: number = TITLE_BAR_GLASS_ULTR
 export const STORAGE_KEY_REPLY_CAPSULE_BUTTON_MATERIAL_ENABLED: string =
   'harmonyx.reply_capsule_button_material_enabled';
 export const DEFAULT_REPLY_CAPSULE_BUTTON_MATERIAL_ENABLED: boolean = false;
+export const STORAGE_KEY_REPLY_CAPSULE_SPLIT_ENABLED: string = 'harmonyx.reply_capsule_split_enabled';
+export const DEFAULT_REPLY_CAPSULE_SPLIT_ENABLED: boolean = false;
 export const STORAGE_KEY_COMPOSE_BUTTON_ENABLED: string = 'harmonyx.compose_button_enabled';
 export const STORAGE_KEY_DARK_SURFACE: string = 'harmonyx.dark_surface';
 export const STORAGE_KEY_SYSTEM_DARK: string = 'harmonyx.is_dark';
@@ -83,6 +86,7 @@ export class AppearanceSettings {
   autoHideTabBar: boolean = false;
   homeHeaderCollapseEnabled: boolean = false;
   titleBarLogoEnabled: boolean = true;
+  titleBarLogoAutoContrast: boolean = true;
   compactSwitchStyle: string = COMPACT_SWITCH_TABS;
   // true 表示保持原有行为：滑动列表时发帖按钮暂时消失，停止滚动后回来。
   autoHideFab: boolean = true;
@@ -90,6 +94,7 @@ export class AppearanceSettings {
   titleBarGlassMaterialLevel: number = DEFAULT_TITLE_BAR_GLASS_MATERIAL_LEVEL;
   replyCapsuleMaterialLevel: number = DEFAULT_REPLY_CAPSULE_MATERIAL_LEVEL;
   replyCapsuleButtonMaterialEnabled: boolean = DEFAULT_REPLY_CAPSULE_BUTTON_MATERIAL_ENABLED;
+  replyCapsuleSplitEnabled: boolean = DEFAULT_REPLY_CAPSULE_SPLIT_ENABLED;
   darkSurface: string = DARK_SURFACE_BLACK;
   composeButtonEnabled: boolean = true;
   avatarTintEnabled: boolean = false;
@@ -105,7 +110,9 @@ export class AppearanceSettings {
     replyCapsuleMaterialLevel: number = DEFAULT_REPLY_CAPSULE_MATERIAL_LEVEL,
     avatarTintEnabled: boolean = false, titleBarLogoEnabled: boolean = true,
     systemEmojiEnabled: boolean = false, compactSwitchStyle: string = COMPACT_SWITCH_TABS,
-    replyCapsuleButtonMaterialEnabled: boolean = DEFAULT_REPLY_CAPSULE_BUTTON_MATERIAL_ENABLED) {
+    replyCapsuleButtonMaterialEnabled: boolean = DEFAULT_REPLY_CAPSULE_BUTTON_MATERIAL_ENABLED,
+    replyCapsuleSplitEnabled: boolean = DEFAULT_REPLY_CAPSULE_SPLIT_ENABLED,
+    titleBarLogoAutoContrast: boolean = true) {
     this.mode = mode;
     this.accentColor = accentColor;
     this.fontMode = fontMode;
@@ -119,10 +126,12 @@ export class AppearanceSettings {
     this.titleBarGlassMaterialLevel = titleBarGlassMaterialLevel;
     this.replyCapsuleMaterialLevel = replyCapsuleMaterialLevel;
     this.replyCapsuleButtonMaterialEnabled = replyCapsuleButtonMaterialEnabled;
+    this.replyCapsuleSplitEnabled = replyCapsuleSplitEnabled;
     this.darkSurface = darkSurface;
     this.composeButtonEnabled = composeButtonEnabled;
     this.avatarTintEnabled = avatarTintEnabled;
     this.titleBarLogoEnabled = titleBarLogoEnabled;
+    this.titleBarLogoAutoContrast = titleBarLogoAutoContrast;
     this.systemEmojiEnabled = systemEmojiEnabled;
     this.compactSwitchStyle = compactSwitchStyle === COMPACT_SWITCH_BUTTONS ? COMPACT_SWITCH_BUTTONS : COMPACT_SWITCH_TABS;
   }
@@ -140,11 +149,13 @@ export class AppearanceStore {
   private static readonly AUTO_HIDE_FAB_KEY: string = 'auto_hide_fab';
   private static readonly HOME_HEADER_COLLAPSE_KEY: string = 'home_header_collapse';
   private static readonly TITLE_BAR_LOGO_KEY: string = 'title_bar_logo';
+  private static readonly TITLE_BAR_LOGO_AUTO_CONTRAST_KEY: string = 'title_bar_logo_auto_contrast';
   private static readonly IMMERSIVE_TITLE_BAR_BLUR_KEY: string = 'immersive_title_bar_blur';
   private static readonly TITLE_BAR_STYLE_MODE_KEY: string = 'title_bar_style_mode';
   private static readonly TITLE_BAR_GLASS_MATERIAL_LEVEL_KEY: string = 'title_bar_glass_material_level';
   private static readonly REPLY_CAPSULE_MATERIAL_LEVEL_KEY: string = 'reply_capsule_material_level';
   private static readonly REPLY_CAPSULE_BUTTON_MATERIAL_ENABLED_KEY: string = 'reply_capsule_button_material_enabled';
+  private static readonly REPLY_CAPSULE_SPLIT_ENABLED_KEY: string = 'reply_capsule_split_enabled';
   private static readonly COMPOSE_BUTTON_ENABLED_KEY: string = 'compose_button_enabled';
   private static readonly DARK_SURFACE_KEY: string = 'dark_surface';
   private static readonly AVATAR_TINT_ENABLED_KEY: string = 'avatar_tint_enabled';
@@ -169,6 +180,8 @@ export class AppearanceStore {
         store.getSync(AppearanceStore.HOME_HEADER_COLLAPSE_KEY, false) as boolean;
       const savedTitleBarLogoEnabled: boolean =
         store.getSync(AppearanceStore.TITLE_BAR_LOGO_KEY, true) as boolean;
+      const savedTitleBarLogoAutoContrast: boolean =
+        store.getSync(AppearanceStore.TITLE_BAR_LOGO_AUTO_CONTRAST_KEY, true) as boolean;
       const savedAutoHideFab: boolean = store.getSync(AppearanceStore.AUTO_HIDE_FAB_KEY, true) as boolean;
       const savedImmersiveTitleBarBlurEnabled: boolean =
         store.getSync(AppearanceStore.IMMERSIVE_TITLE_BAR_BLUR_KEY, true) as boolean;
@@ -181,6 +194,8 @@ export class AppearanceStore {
       const savedReplyCapsuleButtonMaterialEnabled: boolean =
         store.getSync(AppearanceStore.REPLY_CAPSULE_BUTTON_MATERIAL_ENABLED_KEY,
           DEFAULT_REPLY_CAPSULE_BUTTON_MATERIAL_ENABLED) as boolean;
+      const savedReplyCapsuleSplitEnabled: boolean =
+        store.getSync(AppearanceStore.REPLY_CAPSULE_SPLIT_ENABLED_KEY, DEFAULT_REPLY_CAPSULE_SPLIT_ENABLED) as boolean;
       const savedComposeButtonEnabled: boolean =
         store.getSync(AppearanceStore.COMPOSE_BUTTON_ENABLED_KEY, true) as boolean;
       const savedDarkSurface: string =
@@ -211,7 +226,8 @@ export class AppearanceStore {
         this.isValidReplyCapsuleMaterialLevel(savedReplyCapsuleMaterialLevel) ?
           savedReplyCapsuleMaterialLevel : DEFAULT_REPLY_CAPSULE_MATERIAL_LEVEL,
         savedAvatarTintEnabled === true, savedTitleBarLogoEnabled === true, savedSystemEmojiEnabled === true,
-        savedCompactSwitchStyle, savedReplyCapsuleButtonMaterialEnabled === true);
+        savedCompactSwitchStyle, savedReplyCapsuleButtonMaterialEnabled === true, savedReplyCapsuleSplitEnabled === true,
+        savedTitleBarLogoAutoContrast === true);
     } catch (error) {
       return new AppearanceSettings(DISPLAY_MODE_SYSTEM, DEFAULT_ACCENT_COLOR, FONT_MODE_SYSTEM,
         DEFAULT_FONT_SCALE, false, false, true, DARK_SURFACE_BLACK, true, TITLE_BAR_STYLE_IMMERSIVE,
@@ -245,6 +261,7 @@ export class AppearanceStore {
           settings.replyCapsuleMaterialLevel : DEFAULT_REPLY_CAPSULE_MATERIAL_LEVEL);
       store.putSync(AppearanceStore.REPLY_CAPSULE_BUTTON_MATERIAL_ENABLED_KEY,
         settings.replyCapsuleButtonMaterialEnabled);
+      store.putSync(AppearanceStore.REPLY_CAPSULE_SPLIT_ENABLED_KEY, settings.replyCapsuleSplitEnabled);
       // 写回旧键，降级到旧版本时仍能得到接近的行为：只有整份样式对应旧版的"开"。
       store.putSync(AppearanceStore.IMMERSIVE_TITLE_BAR_BLUR_KEY,
         settings.titleBarStyleMode === TITLE_BAR_STYLE_IMMERSIVE);
@@ -252,6 +269,7 @@ export class AppearanceStore {
       store.putSync(AppearanceStore.AVATAR_TINT_ENABLED_KEY, settings.avatarTintEnabled);
       store.putSync(AppearanceStore.SYSTEM_EMOJI_ENABLED_KEY, settings.systemEmojiEnabled);
       store.putSync(AppearanceStore.TITLE_BAR_LOGO_KEY, settings.titleBarLogoEnabled);
+      store.putSync(AppearanceStore.TITLE_BAR_LOGO_AUTO_CONTRAST_KEY, settings.titleBarLogoAutoContrast);
       store.putSync(AppearanceStore.COMPACT_SWITCH_STYLE_KEY,
         settings.compactSwitchStyle === COMPACT_SWITCH_BUTTONS ? COMPACT_SWITCH_BUTTONS : COMPACT_SWITCH_TABS);
       store.putSync(AppearanceStore.DARK_SURFACE_KEY,

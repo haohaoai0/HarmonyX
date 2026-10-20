@@ -3,6 +3,7 @@ import { preferences } from '@kit.ArkData';
 
 export const STORAGE_KEY_PHOTO_FULLSCREEN: string = 'harmonyx.photo_fullscreen';
 export const STORAGE_KEY_HOME_FLOATING_ACTION: string = 'harmonyx.home_floating_action';
+export const STORAGE_KEY_FLOATING_COMPOSE_MATERIAL_TINT: string = 'harmonyx.floating_compose_material_tint';
 export const STORAGE_KEY_REFRESH_ON_FOREGROUND: string = 'harmonyx.refresh_on_foreground';
 export const STORAGE_KEY_REFRESH_ON_HOME_TAB: string = 'harmonyx.refresh_on_home_tab';
 export const STORAGE_KEY_HOME_DOUBLE_TAP_LATEST: string = 'harmonyx.home_double_tap_latest';
@@ -16,6 +17,7 @@ export const HOME_FLOATING_HIDDEN: string = 'hidden';
 export class InteractionSettings {
   photoFullscreen: boolean = true;
   homeFloatingAction: string = HOME_FLOATING_COMPOSE;
+  floatingComposeMaterialTint: boolean = true;
   refreshOnForeground: boolean = false;
   refreshOnHomeTab: boolean = false;
   homeDoubleTapLatest: boolean = true;
@@ -41,6 +43,7 @@ export class InteractionSettingsStore {
       const store: preferences.Preferences = this.store(context);
       settings.photoFullscreen = store.getSync('photo_fullscreen', true) as boolean;
       settings.homeFloatingAction = this.normaliseAction(store.getSync('home_floating_action', HOME_FLOATING_COMPOSE) as string);
+      settings.floatingComposeMaterialTint = store.getSync('floating_compose_material_tint', true) as boolean;
       settings.refreshOnForeground = store.getSync('refresh_on_foreground', false) as boolean;
       settings.refreshOnHomeTab = store.getSync('refresh_on_home_tab', false) as boolean;
       settings.homeDoubleTapLatest = store.getSync('home_double_tap_latest', true) as boolean;
@@ -53,6 +56,7 @@ export class InteractionSettingsStore {
   publish(settings: InteractionSettings): void {
     AppStorage.setOrCreate<boolean>(STORAGE_KEY_PHOTO_FULLSCREEN, settings.photoFullscreen);
     AppStorage.setOrCreate<string>(STORAGE_KEY_HOME_FLOATING_ACTION, this.normaliseAction(settings.homeFloatingAction));
+    AppStorage.setOrCreate<boolean>(STORAGE_KEY_FLOATING_COMPOSE_MATERIAL_TINT, settings.floatingComposeMaterialTint);
     AppStorage.setOrCreate<boolean>(STORAGE_KEY_REFRESH_ON_FOREGROUND, settings.refreshOnForeground);
     AppStorage.setOrCreate<boolean>(STORAGE_KEY_REFRESH_ON_HOME_TAB, settings.refreshOnHomeTab);
     AppStorage.setOrCreate<boolean>(STORAGE_KEY_HOME_DOUBLE_TAP_LATEST, settings.homeDoubleTapLatest);
@@ -72,6 +76,10 @@ export class InteractionSettingsStore {
 
   savePhotoFullscreen(context: common.Context, value: boolean): boolean {
     return this.saveBoolean(context, 'photo_fullscreen', STORAGE_KEY_PHOTO_FULLSCREEN, value);
+  }
+
+  saveFloatingComposeMaterialTint(context: common.Context, value: boolean): boolean {
+    return this.saveBoolean(context, 'floating_compose_material_tint', STORAGE_KEY_FLOATING_COMPOSE_MATERIAL_TINT, value);
   }
 
   saveRefreshOnForeground(context: common.Context, value: boolean): boolean {

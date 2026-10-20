@@ -25,6 +25,7 @@ import { WEB_AUDIO_CAPTURE, webPermission } from '../utils/WebPermission';
 import { destinationTitleBarStyle } from '../utils/DestinationTitleBar';
 import { ResponsiveLayout } from '../utils/ResponsiveLayout';
 import { pageSurfaceColor, secondaryButtonSurfaceColor } from '../utils/ThemeColors';
+import { materialModifier } from '../utils/SystemMaterial';
 
 const X_MESSAGES_URL: string = 'https://x.com/messages';
 const DISPLAY_MODE_LIGHT: string = 'light';
@@ -322,6 +323,6 @@ export struct DmWebPage {
         this.themeDisplayMode, this.themeDarkSurface, this.titleBarStyleMode)
     })
     .backgroundColor(pageSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
-    .systemMaterial(this.pageMaterial());
+    .attributeModifier(materialModifier(this.pageMaterial()));
   }
 }

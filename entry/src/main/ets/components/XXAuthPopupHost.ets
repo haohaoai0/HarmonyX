@@ -151,7 +151,13 @@ export struct XXAuthPopupHost {
   // The entitlement is bound to the X account, so a switch re-evaluates it
   // before the next promotional panel is queued.
   private onAccountsChanged(): void {
-    this.refresh();
+    // Sync immediately even when this host is already fetching cloud content.
+    // The new account must not inherit the previous account's suppression.
+    this.pending = this.pending.filter((item: XXAuthPanel): boolean => !XXAuthSupporterPolicy.promotional(item.kind));
+    if (this.visible && XXAuthSupporterPolicy.promotional(this.panel.kind)) { this.visible = false; }
+    xxAuthSupporterService.refresh(this.context()).then((): void => {
+      if (this.alive) { this.refresh(); }
+    });
   }
 
   private async refresh(): Promise<void> {

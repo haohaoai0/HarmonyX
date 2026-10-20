@@ -15,6 +15,7 @@ import { XUserParser } from '../services/XUserParser';
 import { pageSurfaceColor } from '../utils/ThemeColors';
 import { ResponsiveLayout } from '../utils/ResponsiveLayout';
 import type { CommunityRulesRouteParam } from './Communities';
+import { materialModifier } from '../utils/SystemMaterial';
 
 @Builder
 export function CommunityRulesBuilder(): void { CommunityRules(); }
@@ -164,8 +165,8 @@ export struct CommunityRules {
         style: destinationTitleBarStyle(ScrollEffectType.IMMERSIVE_GRADIENT_BLUR,
           this.themeDisplayMode, this.themeDarkSurface, this.titleBarStyleMode) })
       .backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue))
-      .systemMaterial(deviceInfo.apiAvailable('26.0.0') ? new uiMaterial.ImmersiveMaterial({
-        style: uiMaterial.ImmersiveStyle.REGULAR, applyShadow: true, colorInvert: true }) : undefined)
+      .attributeModifier(materialModifier(deviceInfo.apiAvailable('26.0.0') ? new uiMaterial.ImmersiveMaterial({
+        style: uiMaterial.ImmersiveStyle.REGULAR, applyShadow: true, colorInvert: true }) : undefined))
   }
 }
 

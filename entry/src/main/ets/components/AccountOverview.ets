@@ -1,3 +1,4 @@
+import { ProfileBioTranslation } from './ProfileBioTranslation';
 import { common } from '@kit.AbilityKit';
 import type { UserProfile } from '../models/Tweet';
 import { formatCount } from '../models/Tweet';
@@ -174,6 +175,7 @@ export struct AccountOverview {
       Text(this.profile?.description || $r('app.string.account_overview_no_bio'))
         .fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M'))
         .fontColor($r('app.color.text_secondary')).width('100%').copyOption(CopyOptions.LocalDevice)
+      ProfileBioTranslation({ userId: this.profile?.id ?? '', bio: this.profile?.description ?? '' })
       if (this.profile !== null) {
         Row({ space: 16 }) {
           Button({ type: ButtonType.Normal }) {
@@ -245,13 +247,13 @@ export struct AccountOverview {
     Column() {
       this.Hero()
       Column({ space: 12 }) {
+        this.AccountActions()
         if (this.signedIn) { this.ProfileInformation() }
         else {
           Text($r('app.string.profile_browse_free')).fontFamily(this.appFontFamily)
             .fontSize($r('sys.float.Body_M')).fontColor($r('app.color.text_secondary'))
             .width('100%').padding({ top: 4, bottom: 4 })
         }
-        this.AccountActions()
       }.width('100%').padding(16)
     }.width('100%')
   }

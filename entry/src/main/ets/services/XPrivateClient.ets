@@ -89,6 +89,8 @@ export class XPrivateResult {
   }
 }
 
+export const SENSITIVE_TIMELINE_QUERY: string = 'filter:sensitive';
+
 export class XPrivateClient {
   private session: XSession = new XSession('', '', '', '', '', '');
   private sessionListeners: Array<() => void> = [];
@@ -1304,6 +1306,12 @@ export class XPrivateClient {
     return this.searchTimeline(query, cursor, count, 'Latest');
   }
 
+  // The ordinary HomeTimeline does not accept a sensitive-only flag. A search
+  // timeline is the server-side channel that can request those posts explicitly.
+  sensitiveTimeline(cursor: string, count: number): Promise<XPrivateResult> {
+    return this.searchTimeline(SENSITIVE_TIMELINE_QUERY, cursor, count, 'Latest', 'typed_query');
+  }
+
   // Uses SearchTimelineQuery rather than the web variant: the registry entry
   // for search_timeline_web carries no variable declaration, so X rejected the
   // request for undefined variables. This operation ships a full document, so
@@ -1872,10 +1880,12 @@ export class XPrivateClient {
 
   // ---- Communities ---------------------------------------------------------
 
-  // The native membership directory declares count and isMemberTargetUserId
-  // in the Android registry, even though its extracted variable list is empty.
+  // The current native directory also requires the viewer's rest_id (confirmed
+  // by the server's validation response); the APK registry omits its variables.
   myCommunities(cursor: string = '', count: number = 30): Promise<XPrivateResult> {
-    const variables: Record<string, Object> = { 'count': count, 'isMemberTargetUserId': '0' };
+    const variables: Record<string, Object> = {
+      'rest_id': this.session.userId, 'count': count, 'isMemberTargetUserId': '0'
+    };
     if (cursor.length > 0) { variables['cursor'] = cursor; }
     return this.graphql('communities_my_query', variables);
   }

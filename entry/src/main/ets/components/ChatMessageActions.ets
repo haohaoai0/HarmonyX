@@ -1,3 +1,5 @@
+import { InputModalScope } from '../utils/InputModalScope';
+import { contextInputMouse } from '../utils/InputSupport';
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
 import { common } from '@kit.AbilityKit';
 import { DmMessage, DmReaction, DmAttachment } from '../models/Tweet';
@@ -8,6 +10,7 @@ import { chatInputMaterial, chatPageMaterial } from '../utils/ChatMaterial';
 import { SystemMaterialUtil } from '../utils/SystemMaterial';
 import { DEFAULT_REPLY_CAPSULE_MATERIAL_LEVEL, STORAGE_KEY_REPLY_CAPSULE_MATERIAL_LEVEL } from '../services/AppearanceStore';
 import hilog from '@ohos.hilog';
+import { materialModifier } from '../utils/SystemMaterial';
 
 const DOMAIN: number = 0xFF00;
 const TAG: string = 'HarmonyX-ChatPost';
@@ -17,6 +20,12 @@ function EmptyMessageContent(_onLongPress: () => void): void { Column() {} }
 
 @Component
 export struct ChatMessageActions {
+  private inputModalScope: InputModalScope = new InputModalScope();
+
+  aboutToDisappear(): void {
+    this.clearMenuAppearTimer();
+    this.inputModalScope.setActive(false);
+  }
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @Prop message: DmMessage = { id: '', conversationId: '', senderId: '', senderName: '', senderUsername: '',
     senderAvatarUrl: '', text: '', time: '', timestampMs: 0, outgoing: false, encrypted: false };
@@ -36,14 +45,31 @@ export struct ChatMessageActions {
   @State private menuShown: boolean = false;
   @State private quick: string[] = CHAT_QUICK_REACTIONS.slice();
   private afterDismiss: (() => void) | null = null;
+  private menuAppeared: boolean = false;
+  private menuAppearTimer: number = -1;
   private requestActions: () => void = (): void => { this.showActions(); };
+
+  private clearMenuAppearTimer(): void {
+    if (this.menuAppearTimer >= 0) { clearTimeout(this.menuAppearTimer); this.menuAppearTimer = -1; }
+  }
 
   private showActions(): void {
     if (this.menuShown) { return; }
     hilog.info(DOMAIN, TAG, 'message menu requested for %{public}s', this.message.id);
     this.quick = chatEmojiStore.recent(getContext(this) as common.UIAbilityContext).slice(0, 13)
       .map((entry: ChatEmoji): string => entry.emoji);
+    this.menuAppeared = false;
     this.menuShown = true;
+    this.clearMenuAppearTimer();
+    // A rejected menu subwindow never calls onDisappear. Release menuShown so
+    // the next long press can retry instead of being ignored for this row.
+    this.menuAppearTimer = setTimeout((): void => {
+      this.menuAppearTimer = -1;
+      if (this.menuShown && !this.menuAppeared) {
+        hilog.warn(DOMAIN, TAG, 'message menu did not appear for %{public}s', this.message.id);
+        this.menuShown = false;
+      }
+    }, 1500);
   }
 
   private dismissThen(action: () => void): void {
@@ -75,7 +101,7 @@ export struct ChatMessageActions {
       }.width('100%')
     }.padding(6).width('100%').height(100).borderRadius(18).clip(true)
       .backgroundColor(SystemMaterialUtil.isApi26OrAbove() ? Color.Transparent : $r('app.color.bg_field'))
-      .systemMaterial(chatInputMaterial(this.materialLevel))
+      .attributeModifier(materialModifier(chatInputMaterial(this.materialLevel)))
   }
   @Builder
   private QuickReactions(): void {
@@ -145,7 +171,7 @@ export struct ChatMessageActions {
       }.id('chat-message-action-list').width('100%').constraintSize({ maxHeight: 336 })
         .scrollBar(BarState.Auto).borderRadius(18).clip(true)
         .backgroundColor(SystemMaterialUtil.isApi26OrAbove() ? Color.Transparent : $r('app.color.bg_field'))
-        .systemMaterial(chatPageMaterial())
+        .attributeModifier(materialModifier(chatPageMaterial()))
     }.id('chat-message-context-menu').width(320)
   }
   build(): void {
@@ -153,13 +179,22 @@ export struct ChatMessageActions {
       .parallelGesture(LongPressGesture({ repeat: false, duration: 500 }).onAction((): void => {
         this.showActions();
       }))
+      .onMouse((event: MouseEvent): void => contextInputMouse(event, (): void => this.showActions()))
       .bindContextMenu(this.menuShown, this.Actions(), {
         preview: (this.message.attachments ?? []).some((a: DmAttachment): boolean => a.mediaType === 3) ? MenuPreviewMode.NONE : MenuPreviewMode.IMAGE,
         previewBorderRadius: 22, previewAnimationOptions: { scale: [0.98, 1.035] }, borderRadius: 18,
         backgroundColor: Color.Transparent, backgroundBlurStyle: BlurStyle.COMPONENT_THICK,
         mask: { color: $r('app.color.chat_message_menu_mask'), backgroundBlurStyle: BlurStyle.BACKGROUND_THIN },
         modalMode: ModalMode.TARGET_WINDOW, hapticFeedbackMode: HapticFeedbackMode.AUTO,
+        onAppear: (): void => {
+          this.menuAppeared = true;
+          this.clearMenuAppearTimer();
+          this.inputModalScope.setActive(true);
+        },
         onDisappear: (): void => {
+          this.menuAppeared = false;
+          this.clearMenuAppearTimer();
+          this.inputModalScope.setActive(false);
           this.menuShown = false;
           const action: (() => void) | null = this.afterDismiss;
           this.afterDismiss = null;

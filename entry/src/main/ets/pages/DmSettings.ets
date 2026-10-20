@@ -20,6 +20,7 @@ import { pageSurfaceColor } from '../utils/ThemeColors';
 import { destinationTitleBarStyle } from '../utils/DestinationTitleBar';
 import { chatPageMaterial } from '../utils/ChatMaterial';
 import { ResponsiveLayout } from '../utils/ResponsiveLayout';
+import { materialModifier } from '../utils/SystemMaterial';
 
 export interface DmSettingsRouteParam { section: string; }
 
@@ -282,7 +283,7 @@ struct DmSettingsPage {
         content: { title: { mainTitle: this.title(), subTitle: this.username.length > 0 ? '@' + this.username : '' } },
         style: destinationTitleBarStyle(ScrollEffectType.GRADIENT_BLUR, this.displayMode, this.darkSurface, this.titleBarStyleMode)
       })
-      .backgroundColor(pageCanvasColor(this.displayMode, this.darkSurface, this.pageBackgroundValue)).systemMaterial(chatPageMaterial())
+      .backgroundColor(pageCanvasColor(this.displayMode, this.darkSurface, this.pageBackgroundValue)).attributeModifier(materialModifier(chatPageMaterial()))
       .onBackPressed((): boolean => { ResponsiveLayout.closeContentDestination(this.pageStack); return true; })
   }
 }

@@ -61,6 +61,10 @@ struct PageBackgroundPage {
   private setMode(mode: string): void {
     const next: PageBackgroundState = normalizePageBackground(this.selected);
     next.mode = mode;
+    if (mode === 'theme') {
+      next.color = '';
+      this.colorInput = '';
+    }
     this.selected = normalizePageBackground(next);
   }
   private setColor(value: string): void {
@@ -275,12 +279,6 @@ struct PageBackgroundPage {
       $r('app.string.settings_theme_amber'), $r('app.string.settings_theme_rouge'),
       $r('app.string.settings_theme_begonia'), $r('app.string.settings_theme_mountain')];
   }
-  private patternPreview(id: string): PageBackgroundState {
-    const state: PageBackgroundState = normalizePageBackground(this.selected);
-    state.patternId = id; state.patternIds = id === 'none' ? [] : [id];
-    state.patternLayout = 'preset'; state.patternStrength = Math.max(0.5, state.patternStrength); return state;
-  }
-
   private previewText(color: ResourceColor): ResourceColor {
     const value: string = JSON.stringify(this.selected);
     const surface: ResourceColor = this.previewInbox ? inboxRowSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), value) :
@@ -498,11 +496,17 @@ struct PageBackgroundPage {
     }.width('100%')
   }
   @Builder
-  private PatternTile(id: string, title: Resource): void {
+  private PatternTile(id: string, title: Resource, thumbnail?: Resource): void {
     Column({ space: 6 }) {
       Button({ type: ButtonType.Normal }) {
         Stack({ alignContent: Alignment.TopEnd }) {
-          PageBackgroundLayer({ wallpaper: this.patternPreview(id) })
+          // The catalog must not instantiate every full SVG pattern renderer.
+          // The main preview above renders the selected composition accurately.
+          if (thumbnail !== undefined) {
+            Image(thumbnail).width('100%').height('100%').autoResize(true).objectFit(ImageFit.Cover).draggable(false)
+          } else {
+            Column().width('100%').height('100%').backgroundColor(pageSurfaceColor(this.displayMode, this.darkSurface))
+          }
           if (id === 'none' ? this.selected.patternIds.length === 0 : this.selected.patternIds.indexOf(id) >= 0) { this.Mark() }
         }.width('100%').height('100%')
       }.width('100%').height($r('app.float.page_background_tile_height')).padding(0).borderRadius(16).clip(true)
@@ -552,7 +556,7 @@ struct PageBackgroundPage {
             GridRow({ columns: { sm: 3, md: 4, lg: 5, xl: 5 }, gutter: { x: 12, y: 16 } }) {
               GridCol() { this.PatternTile('none', $r('app.string.page_background_pattern_none')) }
               ForEach(this.patterns(), (preset: ChatBackgroundPreset) => {
-                GridCol() { this.PatternTile(preset.id, preset.title) }
+                GridCol() { this.PatternTile(preset.id, preset.title, preset.thumbnail) }
               }, (preset: ChatBackgroundPreset): string => preset.id)
             }.id('page-background-patterns')
           }

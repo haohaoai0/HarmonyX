@@ -1,9 +1,11 @@
+import { offlineReadingStore, OfflineSaveResult } from '../services/OfflineReadingStore';
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
 import { common } from '@kit.AbilityKit';
 import { MaterialButton } from './MaterialButton';
 import { SystemMaterialUtil } from '../utils/SystemMaterial';
 import promptAction from '@ohos.promptAction';
 import { formatCount } from '../models/Tweet';
+import { bookmarkCountAfter } from '../utils/PostMetadata';
 import type { Tweet } from '../models/Tweet';
 import { xPrivateClient, XPrivateResult } from '../services/XPrivateClient';
 import { hapticTick } from '../utils/Haptics';
@@ -128,14 +130,23 @@ export struct MediaViewerPostActions {
       return;
     }
     const next: boolean = !this.bookmarked;
+    const account: string = offlineReadingStore.account(context);
     this.bookmarkPending = true;
     const result: XPrivateResult = await xPrivateClient.bookmark(this.tweet.id, next);
     this.bookmarkPending = false;
+    if (account !== offlineReadingStore.account(context)) { return; }
     if (result.ok) {
+      this.tweet.metrics.bookmarkCount = bookmarkCountAfter(this.tweet.metrics.bookmarkCount, this.bookmarked, next);
       this.bookmarked = next;
       this.tweet.bookmarked = next;
       this.onPostChanged(this.tweet);
       hapticTick();
+      if (next) {
+        const saved: OfflineSaveResult = await offlineReadingStore.capture(context, this.tweet, account);
+        if (account === offlineReadingStore.account(context) && (!saved.ok || !saved.complete)) {
+          promptAction.showToast({ message: this.text(saved.ok ? $r('app.string.offline_partial_saved') : $r('app.string.offline_save_failed')) });
+        }
+      }
     } else {
       promptAction.showToast({ message: context.resourceManager.getStringSync($r('app.string.action_bookmark')) +
         ' · HTTP ' + result.status });

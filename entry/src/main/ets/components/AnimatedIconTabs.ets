@@ -1,3 +1,4 @@
+import { TimelineTabCover } from './TimelineTabCover';
 import { motionDuration, motionCurve } from '../utils/AppMotion';
 import { hapticTick } from '../utils/Haptics';
 import { DEFAULT_COMPONENT_HDR_ENABLED, DEFAULT_COMPONENT_HDR_RATIO, STORAGE_KEY_COMPONENT_HDR_ENABLED,
@@ -8,11 +9,13 @@ import { resourceManager } from '@kit.LocalizationKit';
 import { ProfileTabMotion } from '../utils/ProfileTabMotion';
 import { SystemMaterialUtil } from '../utils/SystemMaterial';
 import { ComponentHdrHighlight } from '../utils/ComponentHdrHighlight';
+import { materialModifier } from '../utils/SystemMaterial';
 
 export interface IconTabItem {
   key: string;
   label: ResourceStr;
   icon?: Resource;
+  imageUrl?: string;
   chevron?: boolean;
 }
 
@@ -88,7 +91,7 @@ export struct AnimatedIconTabs {
   private contentBase(index: number): number {
     if (!this.contentSizedActive()) { return this.base(); }
     const measured: number = this.intrinsicWidths[index] ?? this.labelWidth(index);
-    return Math.max(TAB_MIN_SLOT_WIDTH_VP, measured + TAB_LABEL_PADDING_VP);
+    return Math.max(TAB_MIN_SLOT_WIDTH_VP, measured + TAB_LABEL_PADDING_VP + (this.items[index].chevron ? 27 : 0));
   }
   private contentBaseSum(): number {
     let total: number = 0;
@@ -175,7 +178,7 @@ export struct AnimatedIconTabs {
     }
     return center - this.indicatorWidthAt(position) / 2;
   }
-  private iconPrefix(index: number): number { return this.items[index].icon ? 27 : 0; }
+  private iconPrefix(index: number): number { return this.items[index].icon || (this.items[index].imageUrl ?? '').length > 0 ? 27 : 0; }
   private optionsOffset(index: number): number {
     return this.motionCenter(index) + (this.iconPrefix(index) + this.labelWidth(index) - 17) / 2;
   }
@@ -241,11 +244,28 @@ export struct AnimatedIconTabs {
   private buttonHeight(): number { return Math.min(this.buttonMaxHeight, this.barHeight - 4); }
 
   @Builder
+  private TabIcon(index: number): void {
+    if ((this.items[index].imageUrl ?? '').length > 0) {
+      Stack() {
+        if (this.items[index].icon) {
+          SymbolGlyph(this.items[index].icon as Resource).fontSize($r('app.float.icon_tabs_icon_size'))
+            .fontColor([$r('app.color.text_primary')])
+        }
+        TimelineTabCover({ url: this.items[index].imageUrl ?? '' })
+      }.width(22).height(22).borderRadius(5).clip(true)
+    } else if (this.items[index].icon) {
+      SymbolGlyph(this.items[index].icon as Resource)
+        .fontSize(this.buttonStyle ? $r('app.float.icon_buttons_icon_size') : $r('app.float.icon_tabs_icon_size'))
+        .fontColor([$r('app.color.text_primary')])
+        .width(this.buttonStyle ? LayoutPolicy.fixAtIdealSize : 22)
+    }
+  }
+
+  @Builder
   private ButtonLabel(index: number, active: boolean): void {
     Row({ space: 5 }) {
-      if (active && this.items[index].icon) {
-        SymbolGlyph(this.items[index].icon as Resource).fontSize($r('app.float.icon_buttons_icon_size'))
-          .fontColor([$r('app.color.text_primary')])
+      if (active && this.iconPrefix(index) > 0) {
+        this.TabIcon(index)
       }
       Text(this.items[index].label).fontFamily(this.appFontFamily).fontSize($r('app.float.icon_buttons_label_size'))
         .fontWeight(active ? FontWeight.Bold : FontWeight.Medium).fontColor($r('app.color.text_primary'))
@@ -270,7 +290,7 @@ export struct AnimatedIconTabs {
           .width(LayoutPolicy.matchParent).height(LayoutPolicy.matchParent).borderRadius(this.buttonHeight() / 2)
           .backgroundColor(Color.Transparent).focusable(false)
           .hitTestBehavior(HitTestMode.None).accessibilityLevel('no')
-          .systemMaterial(SystemMaterialUtil.immersiveMaterial(1, false, false, false, undefined))
+          .attributeModifier(materialModifier(SystemMaterialUtil.immersiveMaterial(1, false, false, false, undefined)))
       }
       // Only the fill transforms during paging; the pill and label keep their
       // layout sizes so horizontal progress never relayouts the feed.
@@ -300,9 +320,8 @@ export struct AnimatedIconTabs {
         }.width(this.slotWidthAt(index, this.motionPosition())).height(this.barHeight - 3)
           .justifyContent(FlexAlign.Center).opacity(1 - this.fraction(index))
         Row({ space: 5 }) {
-          if (this.items[index].icon) {
-            SymbolGlyph(this.items[index].icon as Resource).fontSize($r('app.float.icon_tabs_icon_size'))
-              .fontColor([$r('app.color.text_primary')]).width(22)
+          if (this.iconPrefix(index) > 0) {
+            this.TabIcon(index)
           }
           Text(this.items[index].label).fontFamily(this.appFontFamily)
             .fontSize($r('app.float.icon_tabs_label_size')).fontWeight(FontWeight.Bold)
@@ -328,9 +347,8 @@ export struct AnimatedIconTabs {
         }.width(this.base()).height(this.barHeight - 3).justifyContent(FlexAlign.Center)
           .opacity(1 - this.fraction(index))
         Row({ space: 5 }) {
-          if (this.items[index].icon) {
-            SymbolGlyph(this.items[index].icon as Resource).fontSize($r('app.float.icon_tabs_icon_size'))
-              .fontColor([$r('app.color.text_primary')]).width(22)
+          if (this.iconPrefix(index) > 0) {
+            this.TabIcon(index)
           }
           Text(this.items[index].label).fontFamily(this.appFontFamily).fontSize($r('app.float.icon_tabs_label_size')).fontWeight(FontWeight.Bold)
             .fontColor($r('app.color.text_primary')).maxLines(1).textOverflow({ overflow: TextOverflow.Ellipsis })

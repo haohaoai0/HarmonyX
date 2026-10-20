@@ -24,6 +24,7 @@ import { ResponsiveLayout } from '../utils/ResponsiveLayout';
 import { pageSurfaceColor } from '../utils/ThemeColors';
 import type { UserDetailRouteParam } from './UserDetail';
 import type { ProfileWebRouteParam } from './ProfileWeb';
+import { materialModifier } from '../utils/SystemMaterial';
 
 export interface FollowDiscoveryRouteParam {
   tab: number;
@@ -410,7 +411,7 @@ export struct FollowDiscovery {
       style: destinationTitleBarStyle(ScrollEffectType.IMMERSIVE_GRADIENT_BLUR,
         this.themeDisplayMode, this.themeDarkSurface, this.titleBarStyleMode) })
     .backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue))
-    .systemMaterial(deviceInfo.apiAvailable('26.0.0') ? new uiMaterial.ImmersiveMaterial({
-      style: uiMaterial.ImmersiveStyle.REGULAR, applyShadow: true, colorInvert: true }) : undefined);
+    .attributeModifier(materialModifier(deviceInfo.apiAvailable('26.0.0') ? new uiMaterial.ImmersiveMaterial({
+      style: uiMaterial.ImmersiveStyle.REGULAR, applyShadow: true, colorInvert: true }) : undefined));
   }
 }

@@ -891,6 +891,11 @@
     {"name":"mix_lilac_control","value":"#BDA2F3"},
     {"name":"mix_lilac_surface","value":"#2D263A"},
     {"name":"mix_lilac_ink","value":"#382B52"},
-    {"name":"mix_lilac_on_control","value":"#382B52"}
+    {"name":"mix_lilac_on_control","value":"#382B52"},
+    {"name":"appearance_preview_canvas","value":"#17191F"},
+    {"name":"appearance_preview_edge","value":"#38FFFFFF"},
+    {"name":"appearance_preview_stage_shadow","value":"#B3000000"},
+    {"name":"appearance_preview_object_shadow","value":"#80000000"},
+    {"name":"split_navigation_selection","value":"#24FFFFFF"}
   ]
 }

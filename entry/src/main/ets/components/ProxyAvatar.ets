@@ -3,7 +3,7 @@
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
 import { common } from '@kit.AbilityKit';
 import { avatarImageStore } from '../services/AvatarImageStore';
-import { proxyStore } from '../services/ProxyStore';
+import { proxyStore, STORAGE_KEY_PROXY_REVISION } from '../services/ProxyStore';
 import { XUserParser } from '../services/XUserParser';
 import { STORAGE_KEY_AVATAR_TINT_ENABLED } from '../services/AppearanceStore';
 import { avatarTintStore } from '../services/AvatarTintStore';
@@ -23,6 +23,7 @@ export struct ProxyAvatar {
   @Prop tintBackground: boolean = false;
   @StorageProp(STORAGE_KEY_AVATAR_TINT_ENABLED) @Watch('onUrlChanged')
   private avatarTintEnabled: boolean = false;
+  @StorageProp(STORAGE_KEY_PROXY_REVISION) @Watch('onUrlChanged') private proxyRevision: number = 0;
   onTintResolved: (palette: AvatarTintPalette | null) => void = (): void => {};
   @State private source: string = '';
   private alive: boolean = true;

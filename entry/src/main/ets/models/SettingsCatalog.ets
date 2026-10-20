@@ -56,6 +56,15 @@ export const SETTINGS_CATEGORIES: SettingsCategory[] = [
   new SettingsCategory('display', 'experience', '', $r('app.string.settings_category_display'),
     $r('app.string.settings_category_display_desc'), $r('sys.symbol.sun_max'), '', [
     ]),
+  new SettingsCategory('scene_modes', 'experience', '', $r('app.string.scene_title'),
+    $r('app.string.scene_intro'), $r('sys.symbol.wand_and_stars'), '', [
+      $r('app.string.scene_reading'), $r('app.string.scene_saver'), $r('app.string.scene_media'), $r('app.string.scene_restore')
+    ]),
+  new SettingsCategory('eye_reading', 'experience', '', $r('app.string.eye_reading_title'),
+    $r('app.string.eye_reading_intro'), $r('sys.symbol.eye'), '', [
+      $r('app.string.eye_reading_enable'), $r('app.string.eye_reading_dwell'),
+      $r('app.string.eye_reading_threshold'), $r('app.string.eye_reading_help')
+    ]),
   new SettingsCategory('home', 'experience', '', $r('app.string.settings_category_home'),
     $r('app.string.settings_category_home_desc'), $r('sys.symbol.house'), '', [
     ]),
@@ -72,6 +81,9 @@ export const SETTINGS_CATEGORIES: SettingsCategory[] = [
     ]),
   new SettingsCategory('accessibility', 'experience', '', $r('app.string.settings_category_accessibility'),
     $r('app.string.settings_category_accessibility_desc'), $r('sys.symbol.hand_point_up_tap_fill_1'), '', [
+      $r('app.string.settings_grip_hdstabs'), $r('app.string.settings_grip_hdstabs_desc'),
+      $r('app.string.settings_grip_floating'), $r('app.string.settings_grip_video'),
+      $r('app.string.settings_grip_reply'), $r('app.string.settings_grip_component_desc'),
       $r('app.string.settings_grip_hand'),
       $r('app.string.settings_grip_hand_desc'),
       $r('app.string.settings_grip_hand_preference'),
@@ -90,10 +102,17 @@ export const SETTINGS_CATEGORIES: SettingsCategory[] = [
       $r('app.string.settings_sensitive_media'),
       $r('app.string.settings_sensitive_media_desc'),
       $r('app.string.settings_filter_title'),
+      $r('app.string.settings_filter_languages'),
+      $r('app.string.settings_filter_languages_desc'),
+      $r('app.string.settings_reply_quality'),
+      $r('app.string.settings_reply_quality_desc'),
+      $r('app.string.reply_quality_whitelist'),
+      $r('app.string.reply_quality_whitelist_desc'),
       $r('app.string.settings_filter_desc'),
       $r('app.string.xsettings_local_filter_note'),
       $r('app.string.settings_filter_hide_ads'),
       $r('app.string.settings_filter_hide_ads_desc'),
+      $r('app.string.settings_for_you_only_sensitive'), $r('app.string.settings_for_you_only_sensitive_desc'),
       $r('app.string.settings_filter_only_media'),
       $r('app.string.settings_filter_only_media_desc'),
       $r('app.string.settings_filter_hide_reposts'),
@@ -176,7 +195,15 @@ export const SETTINGS_CATEGORIES: SettingsCategory[] = [
       $r('app.string.settings_theme_orange'),
       $r('app.string.settings_theme_green'),
       $r('app.string.settings_theme_cat_blue'),
-      $r('app.string.settings_theme_huawei_red')
+      $r('app.string.settings_theme_huawei_red'),
+      $r('app.string.settings_theme_icon_blue'),
+      $r('app.string.settings_theme_icon_red'),
+      $r('app.string.settings_theme_icon_orange'),
+      $r('app.string.settings_theme_icon_yellow'),
+      $r('app.string.settings_theme_icon_green'),
+      $r('app.string.settings_theme_icon_pink'),
+      $r('app.string.settings_theme_icon_cyan'),
+      $r('app.string.settings_theme_icon_navy')
     ]),
   new SettingsCategory('pagebackground', 'experience', 'display', $r('app.string.page_background_title'),
     $r('app.string.page_background_description'), $r('sys.symbol.square_grid_2x2'), 'PageBackground', [
@@ -266,6 +293,8 @@ export const SETTINGS_CATEGORIES: SettingsCategory[] = [
     $r('app.string.settings_category_titlebar_desc'), $r('sys.symbol.rectangle'), '', [
       $r('app.string.settings_title_bar_logo'),
       $r('app.string.settings_title_bar_logo_desc'),
+      $r('app.string.settings_title_bar_logo_auto_contrast'),
+      $r('app.string.settings_title_bar_logo_auto_contrast_desc'),
       $r('app.string.settings_compact_switch_style'),
       $r('app.string.settings_compact_switch_style_desc'),
       $r('app.string.settings_compact_switch_tabs'),
@@ -294,7 +323,9 @@ export const SETTINGS_CATEGORIES: SettingsCategory[] = [
       $r('app.string.settings_hds_tabs_material_exquisite'),
       $r('app.string.settings_hds_tabs_material_gentle'),
       $r('app.string.settings_hds_tabs_material_smooth'),
-      $r('app.string.settings_hds_tabs_material_adaptive')
+      $r('app.string.settings_hds_tabs_material_adaptive'),
+      $r('app.string.settings_hds_tabs_gradient_mask'),
+      $r('app.string.settings_hds_tabs_gradient_mask_desc')
     ]),
   new SettingsCategory('sheetmaterial', 'experience', 'materials', $r('app.string.settings_sheet_material_title'),
     $r('app.string.settings_sheet_material_desc'), $r('sys.symbol.square_and_square'), '', [
@@ -325,6 +356,8 @@ export const SETTINGS_CATEGORIES: SettingsCategory[] = [
     ]),
   new SettingsCategory('replymaterial', 'experience', 'materials', $r('app.string.settings_category_replymaterial'),
     $r('app.string.settings_category_replymaterial_desc'), $r('sys.symbol.message'), '', [
+      $r('app.string.settings_reply_capsule_split'),
+      $r('app.string.settings_reply_capsule_split_desc'),
       $r('app.string.settings_reply_capsule_material_level_label'),
       $r('app.string.settings_reply_capsule_material_level_desc'),
       $r('app.string.settings_title_bar_glass_level_ultra_thin'),
@@ -346,6 +379,13 @@ export const SETTINGS_CATEGORIES: SettingsCategory[] = [
     ]),
   new SettingsCategory('navigation', 'experience', 'home', $r('app.string.settings_category_navigation'),
     $r('app.string.settings_category_navigation_desc'), $r('sys.symbol.rectangle'), '', [
+      $r('app.string.settings_navigation_style'),
+      $r('app.string.settings_hds_bottom_bar'),
+      $r('app.string.settings_split_bottom_bar'),
+      $r('app.string.settings_split_bottom_bar_desc'),
+      $r('app.string.settings_native_bottom_bar'),
+      $r('app.string.settings_native_bottom_bar_desc'),
+      $r('app.string.settings_native_navigation_material'),
       $r('app.string.settings_classic_bottom_bar'),
       $r('app.string.settings_classic_bottom_bar_desc'),
       $r('app.string.settings_root_tab_labels'),
@@ -385,6 +425,8 @@ export const SETTINGS_CATEGORIES: SettingsCategory[] = [
       $r('app.string.settings_confirm_app_exit_desc'),
       $r('app.string.settings_floating_action'),
       $r('app.string.settings_floating_action_desc'),
+      $r('app.string.settings_floating_compose_material_tint'),
+      $r('app.string.settings_floating_compose_material_tint_desc'),
       $r('app.string.settings_floating_compose'),
       $r('app.string.settings_floating_refresh'),
       $r('app.string.settings_floating_top'),
@@ -467,6 +509,10 @@ export const SETTINGS_CATEGORIES: SettingsCategory[] = [
       $r('app.string.video_feed_layout_classic'),
       $r('app.string.video_feed_layout_douyin'),
       $r('app.string.video_feed_layout_bilibili'),
+      $r('app.string.compact_video_layout'),
+      $r('app.string.settings_compact_video_layout_desc'),
+      $r('app.string.compact_video_layout_rail'),
+      $r('app.string.compact_video_layout_bottom'),
       $r('app.string.video_feed_controls_always_visible'),
       $r('app.string.video_feed_controls_always_visible_desc'),
       $r('app.string.video_feed_subtitles'),

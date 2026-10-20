@@ -239,7 +239,7 @@ test('automatic refresh jumps only when requested and while the same Home feed i
 test('settings opened from desktop chat replace the root split instead of adding columns', () => {
   const code = compile(`class Harness { ${methods('pages/Index', 'Index', ['updateNavigationMode'])} }`);
   const Home = new Function('MESSAGES_TAB_INDEX', 'NavigationMode', `${code}; return Harness;`)(3, { Stack: 'stack', Split: 'split' });
-  const home = Object.assign(new Home(), { currentTab: 3, isDesktopLayout: () => true });
+  const home = Object.assign(new Home(), { currentTab: 3, isDesktopLayout: () => true, isLargeScreen: () => true });
   for (const [route, expected] of [['DmConversation', 'split'], ['Settings', 'stack'], ['SettingsSection', 'stack'],
     ['UserDetail', 'stack'], ['DmInfo', 'split']]) {
     home.desktopRoute = route; home.updateNavigationMode(); assert.equal(home.mainNavigationMode, expected, route);

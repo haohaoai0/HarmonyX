@@ -28,6 +28,7 @@ import { destinationTitleBarStyle } from '../utils/DestinationTitleBar';
 import { chatPageMaterial, chatInputMaterial } from '../utils/ChatMaterial';
 import { ResponsiveLayout } from '../utils/ResponsiveLayout';
 import { STORAGE_KEY_TITLE_BAR_GLASS_MATERIAL_LEVEL, DEFAULT_TITLE_BAR_GLASS_MATERIAL_LEVEL } from '../services/AppearanceStore';
+import { materialModifier } from '../utils/SystemMaterial';
 
 export interface DmGroupRouteParam extends DmInfoRouteParam { memberId?: string; }
 
@@ -372,7 +373,7 @@ struct DmGroupPage {
       Text($r('app.string.chat_group_title')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).width('100%')
       TextInput({ text: this.name, placeholder: $r('app.string.chat_group_empty_name') }).fontFamily(this.appFontFamily)
         .keyboardAppearance(KeyboardAppearance.IMMERSIVE).maxLength(100).height(52).fontSize($r('sys.float.Body_L'))
-        .backgroundColor(fieldSurfaceColor(this.displayMode, this.darkSurface)).borderRadius(24).systemMaterial(chatInputMaterial(this.inputMaterialLevel))
+        .backgroundColor(fieldSurfaceColor(this.displayMode, this.darkSurface)).borderRadius(24).attributeModifier(materialModifier(chatInputMaterial(this.inputMaterialLevel)))
         .onChange((value: string): void => { this.name = value; })
       Text($r('app.string.chat_group_description')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).width('100%').margin({ top: 12 })
       TextArea({ text: this.description }).fontFamily(this.appFontFamily).keyboardAppearance(KeyboardAppearance.IMMERSIVE).maxLength(1000)
@@ -518,7 +519,7 @@ struct DmGroupPage {
     .systemTransition(pageSystemTransition(this.pageTransitionMode)).titleMode(HdsNavDestinationTitleMode.MINI).hideBackButton(false).bindToScrollable([this.scroller])
       .titleBar({ avoidLayoutSafeArea: true, content: { title: { mainTitle: this.title() }, menu: { value: this.menu() } },
         style: destinationTitleBarStyle(ScrollEffectType.GRADIENT_BLUR, this.displayMode, this.darkSurface, this.titleBarStyleMode) })
-      .backgroundColor(pageCanvasColor(this.displayMode, this.darkSurface, this.pageBackgroundValue)).systemMaterial(chatPageMaterial())
+      .backgroundColor(pageCanvasColor(this.displayMode, this.darkSurface, this.pageBackgroundValue)).attributeModifier(materialModifier(chatPageMaterial()))
       .onShown((): void => { if (this.section.length === 0 || this.section === 'permissions') { this.load(); } })
       .onBackPressed((): boolean => { ResponsiveLayout.closeContentDestination(this.pageStack); return true; })
   }

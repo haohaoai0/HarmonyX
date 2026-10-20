@@ -21,7 +21,7 @@ function fixture() {
       }
     })
   } }), api, { setOrCreate: (key, value) => storage.set(key, value) });
-  return { api, storage, fail: () => { fail = true; } };
+  return { api, storage, disk, fail: () => { fail = true; } };
 }
 
 test('black viewer backgrounds are optional and survive a new preferences store', () => {
@@ -65,6 +65,32 @@ test('unknown saved layout values fall back and failed writes keep the published
   assert.equal(store.saveVideoFeedLayout({}, f.api.VIDEO_FEED_LAYOUT_CLASSIC), false);
   assert.equal(f.storage.get(f.api.STORAGE_KEY_VIDEO_FEED_LAYOUT), f.api.VIDEO_FEED_LAYOUT_DOUYIN);
   assert.equal(new f.api.MediaSettingsStore().loadVideoFeedLayout({}), f.api.VIDEO_FEED_LAYOUT_DOUYIN);
+});
+
+test('cover layout survives restart independently of the portrait layout', () => {
+  const { api, storage, disk } = fixture();
+  const store = new api.MediaSettingsStore();
+  assert.equal(store.loadCompactVideoLayout({}), api.COMPACT_VIDEO_LAYOUT_RAIL);
+  store.saveVideoFeedLayout({}, api.VIDEO_FEED_LAYOUT_BILIBILI);
+  for (const value of [api.COMPACT_VIDEO_LAYOUT_BOTTOM, api.COMPACT_VIDEO_LAYOUT_RAIL]) {
+    assert.equal(store.saveCompactVideoLayout({}, value), true);
+    assert.equal(new api.MediaSettingsStore().loadCompactVideoLayout({}), value);
+    assert.equal(storage.get(api.STORAGE_KEY_COMPACT_VIDEO_LAYOUT), value);
+    assert.equal(new api.MediaSettingsStore().loadVideoFeedLayout({}), api.VIDEO_FEED_LAYOUT_BILIBILI);
+  }
+  disk.set('compact_video_layout', 9);
+  assert.equal(store.loadCompactVideoLayout({}), api.COMPACT_VIDEO_LAYOUT_RAIL);
+  assert.equal(store.saveCompactVideoLayout({}, 9), true);
+  assert.equal(storage.get(api.STORAGE_KEY_COMPACT_VIDEO_LAYOUT), api.COMPACT_VIDEO_LAYOUT_RAIL);
+});
+
+test('failed cover layout writes preserve the active and persisted choice', () => {
+  const f = fixture(), store = new f.api.MediaSettingsStore();
+  store.saveCompactVideoLayout({}, f.api.COMPACT_VIDEO_LAYOUT_BOTTOM);
+  f.fail();
+  assert.equal(store.saveCompactVideoLayout({}, f.api.COMPACT_VIDEO_LAYOUT_RAIL), false);
+  assert.equal(f.storage.get(f.api.STORAGE_KEY_COMPACT_VIDEO_LAYOUT), f.api.COMPACT_VIDEO_LAYOUT_BOTTOM);
+  assert.equal(new f.api.MediaSettingsStore().loadCompactVideoLayout({}), f.api.COMPACT_VIDEO_LAYOUT_BOTTOM);
 });
 
 

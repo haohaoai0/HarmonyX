@@ -96,3 +96,18 @@ test('reloading from another consumer does not overwrite current motion or a rec
   assert.equal(f.manager.getLastHand(), 'right');
   assert.deepEqual(received.slice(count), ['button:right', 'rail:right']);
 });
+
+test('individual grip components persist independently without changing the master or preferred hand', async () => {
+  const f = fixture(); await f.manager.load({});
+  await f.manager.saveComponentEnabled({}, 'video', false);
+  await f.manager.saveComponentEnabled({}, 'reply', false);
+  assert.equal(f.manager.isComponentEnabled('floating'), true);
+  assert.equal(f.manager.isGripHandEnabled(), true);
+  const restarted = fixture(f.values); await restarted.manager.load({});
+  assert.equal(restarted.manager.isComponentEnabled('video'), false);
+  assert.equal(restarted.manager.isComponentEnabled('reply'), false);
+  assert.equal(restarted.manager.isComponentEnabled('floating'), true);
+  await restarted.manager.saveComponentEnabled({}, 'reply', true);
+  assert.equal(restarted.manager.isComponentEnabled('video'), false);
+  assert.equal(restarted.manager.getPreferredHand(), 'right');
+});

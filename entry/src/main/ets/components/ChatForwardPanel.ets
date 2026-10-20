@@ -4,6 +4,7 @@ import { ChatPerson, xChatActions } from '../services/XChatActions';
 import { ProxyAvatar } from './ProxyAvatar';
 import { chatInputMaterial } from '../utils/ChatMaterial';
 import { DEFAULT_REPLY_CAPSULE_MATERIAL_LEVEL, STORAGE_KEY_REPLY_CAPSULE_MATERIAL_LEVEL } from '../services/AppearanceStore';
+import { materialModifier } from '../utils/SystemMaterial';
 
 @Component
 export struct ChatForwardPanel {
@@ -37,7 +38,7 @@ export struct ChatForwardPanel {
   private SearchBar(): void {
     Search({ value: this.query, placeholder: $r('app.string.chat_search') })
       .keyboardAppearance(KeyboardAppearance.IMMERSIVE).height(44).margin({ left: 16, right: 16 })
-      .backgroundColor(Color.Transparent).borderRadius(24).clip(true).systemMaterial(chatInputMaterial(this.materialLevel))
+      .backgroundColor(Color.Transparent).borderRadius(24).clip(true).attributeModifier(materialModifier(chatInputMaterial(this.materialLevel)))
       .onChange((query: string): void => {
         this.query = query; this.generation++;
         if (this.timer >= 0) { clearTimeout(this.timer); }

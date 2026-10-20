@@ -21,6 +21,7 @@ import { fieldSurfaceColor, pageSurfaceColor } from '../utils/ThemeColors';
 import { destinationTitleBarStyle } from '../utils/DestinationTitleBar';
 import { SystemMaterialUtil } from '../utils/SystemMaterial';
 import { userAvatarRadius } from '../utils/UserIdentity';
+import { materialModifier } from '../utils/SystemMaterial';
 
 export interface EditProfileRouteParam { profile: UserProfile; }
 
@@ -266,6 +267,6 @@ export struct EditProfile {
           this.displayMode, this.darkSurface, this.titleBarStyleMode) })
       .onBackPressed((): boolean => { void this.back(); return true; })
       .backgroundColor(pageCanvasColor(this.displayMode, this.darkSurface, this.pageBackgroundValue))
-      .systemMaterial(this.pageMaterial)
+      .attributeModifier(materialModifier(this.pageMaterial))
   }
 }

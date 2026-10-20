@@ -12,6 +12,7 @@ import { SpaceDraft, SPACE_TITLE_LIMIT, SPACE_TOPIC_KEYS, SPACE_TOPIC_LIMIT, SPA
 import { spaceDraftStore } from '../services/SpaceDraftStore';
 import { destinationTitleBarStyle } from '../utils/DestinationTitleBar';
 import { pageSurfaceColor } from '../utils/ThemeColors';
+import { materialModifier } from '../utils/SystemMaterial';
 
 @Builder
 export function SpaceDraftBuilder(): void { SpaceDraftPage(); }
@@ -163,7 +164,7 @@ struct SpaceDraftPage {
         style: destinationTitleBarStyle(ScrollEffectType.IMMERSIVE_GRADIENT_BLUR,
           this.themeDisplayMode, this.themeDarkSurface, this.titleBarStyleMode) })
       .backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue))
-      .systemMaterial(deviceInfo.apiAvailable('26.0.0') ? new uiMaterial.ImmersiveMaterial({
-        style: uiMaterial.ImmersiveStyle.REGULAR, applyShadow: true, colorInvert: true }) : undefined)
+      .attributeModifier(materialModifier(deviceInfo.apiAvailable('26.0.0') ? new uiMaterial.ImmersiveMaterial({
+        style: uiMaterial.ImmersiveStyle.REGULAR, applyShadow: true, colorInvert: true }) : undefined))
   }
 }

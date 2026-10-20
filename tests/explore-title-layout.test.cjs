@@ -19,7 +19,7 @@ const output = ts.transpileModule(`class Root { ${methods.join('\n')} }`, {
   compilerOptions: { target: ts.ScriptTarget.ES2020 }
 }).outputText;
 const Root = new Function('RootTitleBarLayout', 'EXPLORE_TAB_INDEX', 'HOME_TAB_INDEX', 'MESSAGES_TAB_INDEX',
-  'NOTIFICATIONS_TAB_INDEX', `${output}; return Root;`)(layout, 1, 0, 3, 2);
+  'NOTIFICATIONS_TAB_INDEX', 'ME_TAB_INDEX', `${output}; return Root;`)(layout, 1, 0, 3, 2, 4);
 function fixture() {
   const component = Object.assign(new Root(), { chromeTab: 1, currentTab: 1, titleBarLogoEnabled: true,
     exploreTitleContentBottom: 0, exploreTitleIdentityBottom: 0, exploreContentTop: 12,

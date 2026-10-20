@@ -16,6 +16,7 @@ import { spaceRole, spaceUserParam } from '../utils/SpacePresentation';
 import { destinationTitleBarStyle } from '../utils/DestinationTitleBar';
 import { pageSurfaceColor } from '../utils/ThemeColors';
 import { formatCount } from '../models/Tweet';
+import { materialModifier } from '../utils/SystemMaterial';
 
 @Builder
 export function SpaceMembersBuilder(): void { SpaceMembers(); }
@@ -147,7 +148,7 @@ struct SpaceMembers {
         style: destinationTitleBarStyle(ScrollEffectType.IMMERSIVE_GRADIENT_BLUR,
           this.themeDisplayMode, this.themeDarkSurface, this.titleBarStyleMode) })
       .backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue))
-      .systemMaterial(deviceInfo.apiAvailable('26.0.0') ? new uiMaterial.ImmersiveMaterial({
-        style: uiMaterial.ImmersiveStyle.REGULAR, applyShadow: true, colorInvert: true }) : undefined)
+      .attributeModifier(materialModifier(deviceInfo.apiAvailable('26.0.0') ? new uiMaterial.ImmersiveMaterial({
+        style: uiMaterial.ImmersiveStyle.REGULAR, applyShadow: true, colorInvert: true }) : undefined))
   }
 }

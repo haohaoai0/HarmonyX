@@ -36,6 +36,7 @@ import { DEFAULT_SHEET_MATERIAL_ENABLED, DEFAULT_SHEET_MATERIAL_LEVEL, STORAGE_K
   STORAGE_KEY_SHEET_MATERIAL_LEVEL } from '../services/SheetMaterialSettingsStore';
 import type { PostDetailRouteParam } from './PostDetail';
 import type { UserDetailRouteParam } from './UserDetail';
+import { materialModifier } from '../utils/SystemMaterial';
 
 export interface CommunityTimelineRouteParam {
   communityId: string;
@@ -421,8 +422,8 @@ export struct Communities {
         style: destinationTitleBarStyle(ScrollEffectType.IMMERSIVE_GRADIENT_BLUR,
           this.themeDisplayMode, this.themeDarkSurface, this.titleBarStyleMode) })
       .backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue))
-      .systemMaterial(!pageBackgroundActive(this.pageBackgroundValue) && deviceInfo.apiAvailable('26.0.0') ? new uiMaterial.ImmersiveMaterial({
-        style: uiMaterial.ImmersiveStyle.REGULAR, applyShadow: true, colorInvert: true }) : undefined)
+      .attributeModifier(materialModifier(!pageBackgroundActive(this.pageBackgroundValue) && deviceInfo.apiAvailable('26.0.0') ? new uiMaterial.ImmersiveMaterial({
+        style: uiMaterial.ImmersiveStyle.REGULAR, applyShadow: true, colorInvert: true }) : undefined))
       .bindSheet($$this.composeOpen, this.ComposeSheet(), sheetMaterialOptions({ height: SheetSize.LARGE,
         showClose: true, backgroundColor: pageSurfaceColor(this.themeDisplayMode, this.themeDarkSurface) },
         this.sheetMaterialEnabled, this.sheetMaterialLevel, this.sheetWindowBreakpoint, this.sheetCompactWindow))

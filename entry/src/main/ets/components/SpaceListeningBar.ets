@@ -10,6 +10,7 @@ import {
 } from '../services/AppearanceStore';
 import { cardSurfaceColor } from '../utils/ThemeColors';
 import { SystemMaterialUtil } from '../utils/SystemMaterial';
+import { materialModifier } from '../utils/SystemMaterial';
 
 @Component
 export struct SpaceListeningBar {
@@ -31,16 +32,8 @@ export struct SpaceListeningBar {
       this.playing() ? $r('app.string.spaces_listening') : $r('app.string.spaces_paused');
   }
   private capsuleMaterial(): uiMaterial.Material | undefined {
-    if (!deviceInfo.apiAvailable('26.0.0')) {
-      return undefined;
-    }
-    return new uiMaterial.ImmersiveMaterial({
-      style: SystemMaterialUtil.resolveImmersiveStyle(this.capsuleMaterialLevel),
-      interactive: true,
-      applyShadow: false,
-      colorInvert: true,
-      lightEffect: {}
-    });
+    return SystemMaterialUtil.immersiveMaterial(this.capsuleMaterialLevel, true, false, true,
+      Color.White);
   }
 
   @Builder
@@ -82,7 +75,7 @@ export struct SpaceListeningBar {
       .border({ width: SystemMaterialUtil.isApi26OrAbove() ? 0 : 1, color: $r('app.color.divider') })
       .borderRadius(32)
       .clip(true)
-      .systemMaterial(this.capsuleMaterial())
+      .attributeModifier(materialModifier(this.capsuleMaterial()))
   }
 
   build(): void {

@@ -5,6 +5,7 @@ import { ChatEmojiText } from './ChatEmojiText';
 import { chatInputMaterial } from '../utils/ChatMaterial';
 import { SystemMaterialUtil } from '../utils/SystemMaterial';
 import { DEFAULT_REPLY_CAPSULE_MATERIAL_LEVEL, STORAGE_KEY_REPLY_CAPSULE_MATERIAL_LEVEL } from '../services/AppearanceStore';
+import { materialModifier } from '../utils/SystemMaterial';
 
 interface EmojiRow { id: string; group: string; entries: ChatEmoji[]; }
 class EmojiRows implements IDataSource {
@@ -54,7 +55,7 @@ export struct ChatEmojiPanel {
     Search({ value: this.query, placeholder: $r('app.string.chat_search') })
       .keyboardAppearance(KeyboardAppearance.IMMERSIVE).height(44)
       .fontColor($r('app.color.text_primary')).backgroundColor(SystemMaterialUtil.isApi26OrAbove() ? Color.Transparent : $r('app.color.bg_field'))
-      .borderRadius(24).clip(true).systemMaterial(chatInputMaterial(this.materialLevel)).margin({ left: 16, right: 16 })
+      .borderRadius(24).clip(true).attributeModifier(materialModifier(chatInputMaterial(this.materialLevel))).margin({ left: 16, right: 16 })
       .onChange((value: string): void => { this.query = value; this.search(); })
   }
   build(): void {

@@ -1,3 +1,5 @@
+import { InputModalScope } from '../utils/InputModalScope';
+import { contextInputMouse } from '../utils/InputSupport';
 import { pageTextColor } from '../utils/ThemeColors';
 import { appPageBackground } from '../components/PageBackgroundLayer';
 import { pageCanvasColor, pageReadingSurfaceColor } from '../utils/ThemeColors';
@@ -36,6 +38,7 @@ import { gifSearchSelectionStore } from '../services/GifSearchSelectionStore';
 import { ResponsiveLayout } from '../utils/ResponsiveLayout';
 import { destinationTitleBarStyle } from '../utils/DestinationTitleBar';
 import { fieldSurfaceColor, pageSurfaceColor } from '../utils/ThemeColors';
+import { materialModifier } from '../utils/SystemMaterial';
 
 @Builder
 export function GifSearchBuilder(): void {
@@ -44,6 +47,9 @@ export function GifSearchBuilder(): void {
 
 @Component
 export struct GifSearchPage {
+  private inputModalScope: InputModalScope = new InputModalScope();
+
+  aboutToDisappear(): void { this.inputModalScope.setActive(false); }
   @StorageProp('harmonyx.page_background') private pageBackgroundValue: string = '';
   @State private pageMotion: PageTransitionMotion = new PageTransitionMotion();
   @StorageProp(STORAGE_KEY_PAGE_TRANSITION_MODE) private pageTransitionMode: string = DEFAULT_PAGE_TRANSITION_MODE;
@@ -135,6 +141,32 @@ export struct GifSearchPage {
 
   private showGifActionMenu(item: GifSearchItem): void {
     this.actionMenuItemId = item.id;
+  }
+
+  private gifContextMenuOptions(item: GifSearchItem): ContextMenuOptions {
+    const options: ContextMenuOptions = {
+      preview: MenuPreviewMode.IMAGE,
+      borderRadius: 16,
+      backgroundColor: Color.Transparent,
+      backgroundBlurStyle: BlurStyle.BACKGROUND_THIN,
+      mask: {
+        color: '#52000000',
+        backgroundBlurStyle: BlurStyle.BACKGROUND_THIN
+      },
+      modalMode: ModalMode.TARGET_WINDOW,
+      hapticFeedbackMode: HapticFeedbackMode.AUTO,
+      onAppear: (): void => { this.inputModalScope.setActive(true); },
+      onDisappear: (): void => {
+        this.inputModalScope.setActive(false);
+        if (this.actionMenuItemId === item.id) {
+          this.actionMenuItemId = '';
+        }
+      }
+    };
+    if (deviceInfo.apiAvailable('26.0.0')) {
+      options.systemMaterial = this.gifMenuMaterial();
+    }
+    return options;
   }
 
   private saveGif(item: GifSearchItem): void {
@@ -283,13 +315,13 @@ export struct GifSearchPage {
       .height(height)
       .borderRadius(height / 2)
       .clip(true)
-      .systemMaterial(new uiMaterial.ImmersiveMaterial({
+      .attributeModifier(materialModifier(new uiMaterial.ImmersiveMaterial({
         style: uiMaterial.ImmersiveStyle.THIN,
         interactive: true,
         applyShadow: false,
         colorInvert: true,
         lightEffect: { color: this.accentColor }
-      }))
+      })))
     } else {
       Search({ value: this.query, placeholder: $r('app.string.gif_search_placeholder') })
         .keyboardAppearance(KeyboardAppearance.IMMERSIVE)
@@ -356,24 +388,9 @@ export struct GifSearchPage {
                   this.showGifActionMenu(item);
                 })
             )
-            .bindContextMenu(this.actionMenuItemId === item.id, this.GifActionMenu(item), {
-              preview: MenuPreviewMode.IMAGE,
-              borderRadius: 16,
-              backgroundColor: Color.Transparent,
-              backgroundBlurStyle: BlurStyle.BACKGROUND_THIN,
-              systemMaterial: this.gifMenuMaterial(),
-              mask: {
-                color: '#52000000',
-                backgroundBlurStyle: BlurStyle.BACKGROUND_THIN
-              },
-              modalMode: ModalMode.TARGET_WINDOW,
-              hapticFeedbackMode: HapticFeedbackMode.AUTO,
-              onDisappear: (): void => {
-                if (this.actionMenuItemId === item.id) {
-                  this.actionMenuItemId = '';
-                }
-              }
-            })
+            .onMouse((event: MouseEvent): void => contextInputMouse(event, (): void => this.showGifActionMenu(item)))
+            .bindContextMenu(this.actionMenuItemId === item.id, this.GifActionMenu(item),
+              this.gifContextMenuOptions(item))
           }
           .width('100%')
           .padding(5)

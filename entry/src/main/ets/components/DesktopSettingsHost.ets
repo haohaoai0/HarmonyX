@@ -15,6 +15,8 @@ import type { AccountPrivacyRouteParam } from '../models/AccountPrivacy';
 import { pageSurfaceColor } from '../utils/ThemeColors';
 import { rootTitleBarStyle, titleBarGlassMaterial } from '../utils/DestinationTitleBar';
 import { DEFAULT_TITLE_BAR_GLASS_MATERIAL_LEVEL, STORAGE_KEY_TITLE_BAR_GLASS_MATERIAL_LEVEL } from '../services/AppearanceStore';
+import { ResponsiveLayout } from '../utils/ResponsiveLayout';
+import { materialModifier } from '../utils/SystemMaterial';
 
 @Component
 export struct DesktopSettingsHost {
@@ -43,9 +45,19 @@ export struct DesktopSettingsHost {
   @StorageProp(STORAGE_KEY_TITLE_BAR_GLASS_MATERIAL_LEVEL)
   titleBarGlassMaterialLevel: number = DEFAULT_TITLE_BAR_GLASS_MATERIAL_LEVEL;
   @State private detailOpen: boolean = false;
+  @StorageProp('harmonyx.breakpoint') private breakpoint: string = ResponsiveLayout.BREAKPOINT_SM;
   private outerStack: NavPathStack | null = null;
   private initialized: boolean = false;
   private settingsScroller: Scroller = new Scroller();
+
+  private onSettingsBack(): boolean {
+    if (this.pageStack.size() > (ResponsiveLayout.isLarge(this.breakpoint) ? 1 : 0)) {
+      this.pageStack.pop();
+    } else {
+      this.outerStack?.pop();
+    }
+    return true;
+  }
 
   aboutToAppear(): void {
     this.onMotionPreferenceChanged();
@@ -60,7 +72,7 @@ export struct DesktopSettingsHost {
       Text($r('app.string.settings_title')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Title_M')).fontWeight(FontWeight.Bold)
         .fontColor($r('app.color.text_primary'))
     }.width('100%').height(56).padding({ left: 16, right: 16 })
-      .systemMaterial(titleBarGlassMaterial(this.titleBarStyleMode, this.titleBarGlassMaterialLevel))
+      .attributeModifier(materialModifier(titleBarGlassMaterial(this.titleBarStyleMode, this.titleBarGlassMaterialLevel)))
   }
 
   build(): void {
@@ -75,7 +87,7 @@ export struct DesktopSettingsHost {
       .customNavContentTransition((from: NavContentInfo, to: NavContentInfo,
         operation: NavigationOperation): NavigationAnimatedTransition | undefined =>
         officialPageTransition(this.getUIContext(), this.settingsRootMotion, this.pageTransitionMode, from, to, operation))
-      .mode(this.detailOpen ? NavigationMode.Split : NavigationMode.Stack)
+      .mode(this.detailOpen && ResponsiveLayout.isLarge(this.breakpoint) ? NavigationMode.Split : NavigationMode.Stack)
       .navBarWidth('42%').minContentWidth(360)
       .titleMode(HdsNavigationTitleMode.MINI)
       .titleBar({ avoidLayoutSafeArea: true, enableComponentSafeArea: true,
@@ -107,6 +119,7 @@ export struct DesktopSettingsHost {
     .onShown((): void => {
       if (!this.initialized) {
         this.initialized = true;
+        if (!ResponsiveLayout.isLarge(this.breakpoint)) { return; }
         const section: string = AppStorage.get<string>('harmonyx.desktop_settings_section') ?? 'account';
         const param: AccountPrivacyRouteParam = { section: section };
         this.pageStack.pushPath({ name: section === 'account' || section === 'privacy' || section === 'security' ?
@@ -114,11 +127,7 @@ export struct DesktopSettingsHost {
         this.detailOpen = true;
       }
     })
-    .onBackPressed((): boolean => {
-      if (this.pageStack.size() > 1) { this.pageStack.pop(); }
-      else { this.outerStack?.pop(); }
-      return true;
-    })
+    .onBackPressed((): boolean => this.onSettingsBack())
   }
 
   @Builder

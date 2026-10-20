@@ -1,6 +1,7 @@
+import type { CommunityRow } from '../models/Community';
 import { common } from '@kit.AbilityKit';
 import { preferences } from '@kit.ArkData';
-import type { Tweet, MediaAttachment } from '../models/Tweet';
+import type { Tweet, MediaAttachment, ListRow } from '../models/Tweet';
 
 export const STORAGE_KEY_HOME_TIMELINE_REVISION: string = 'harmonyx.home_timeline_revision';
 export const FOLLOWING_SORT_LATEST: number = 0;
@@ -9,6 +10,11 @@ const PAUSE_DURATION_MS: number = 24 * 60 * 60 * 1000;
 
 export class TimelineTopic {
   id: string;
+  listId: string = '';
+  communityId: string = '';
+  bannerUrl: string = '';
+  rankingMode: string = 'Recency';
+  displayTitle: string = '';
   title: Resource;
   icon: Resource;
   query: string;
@@ -39,6 +45,9 @@ class TopicPause {
 export class HomeTimelineStore {
   private pauses: TopicPause[] = [];
   private pins: string[] = [];
+  private listTopics: TimelineTopic[] = [];
+  private communityTopics: TimelineTopic[] = [];
+  private sourceOrder: string[] = [];
   private order: number = FOLLOWING_SORT_LATEST;
   private topics: TimelineTopic[] = [
     new TimelineTopic('football', $r('app.string.timeline_topic_football'), $r('sys.symbol.ball_fill'),
@@ -79,7 +88,7 @@ export class HomeTimelineStore {
         return this.topics[i];
       }
     }
-    return null;
+    return [...this.listTopics, ...this.communityTopics].find((topic: TimelineTopic): boolean => topic.id === id) ?? null;
   }
 
   pinnedTopics(): TimelineTopic[] {
@@ -90,7 +99,35 @@ export class HomeTimelineStore {
         topics.push(topic);
       }
     }
-    return topics;
+    const combined: TimelineTopic[] = [...topics, ...this.listTopics, ...this.communityTopics];
+    return combined.sort((a: TimelineTopic, b: TimelineTopic): number => {
+      const ai: number = this.sourceOrder.indexOf(a.id); const bi: number = this.sourceOrder.indexOf(b.id);
+      return (ai < 0 ? this.sourceOrder.length : ai) - (bi < 0 ? this.sourceOrder.length : bi);
+    });
+  }
+
+  listSource(row: ListRow): TimelineTopic {
+    const topic: TimelineTopic = new TimelineTopic('list:' + row.id, $r('app.string.lists_title'),
+      $r('sys.symbol.list_bullet_square'), '', [], false);
+    topic.listId = row.id; topic.displayTitle = row.name; topic.bannerUrl = row.bannerUrl ?? '';
+    return topic;
+  }
+
+  communitySource(row: CommunityRow, ranking: string = 'Recency'): TimelineTopic {
+    const topic: TimelineTopic = new TimelineTopic('community:' + row.id, $r('app.string.communities_title'),
+      $r('sys.symbol.person_2_fill'), '', [], false);
+    topic.communityId = row.id; topic.displayTitle = row.name; topic.bannerUrl = row.bannerUrl;
+    topic.rankingMode = ranking; return topic;
+  }
+
+  setListTopics(rows: ListRow[]): void {
+    this.listTopics = rows.map((row: ListRow): TimelineTopic => this.listSource(row)); this.publish();
+  }
+
+  setCommunityTopics(rows: CommunityRow[], rankings: string[], order: string[]): void {
+    this.communityTopics = rows.map((row: CommunityRow, index: number): TimelineTopic =>
+      this.communitySource(row, rankings[index] ?? 'Recency'));
+    this.sourceOrder = order.slice(); this.publish();
   }
 
   pauseTopics(): TimelineTopic[] {
@@ -133,7 +170,8 @@ export class HomeTimelineStore {
   }
 
   isPinned(id: string): boolean {
-    return this.pins.indexOf(id) >= 0;
+    return this.pins.indexOf(id) >= 0 || [...this.listTopics, ...this.communityTopics]
+      .some((topic: TimelineTopic): boolean => topic.id === id);
   }
 
   followingOrder(): number {

@@ -1,5 +1,29 @@
-import { uiMaterial } from '@kit.ArkUI';
+import { CommonModifier, uiMaterial } from '@kit.ArkUI';
 import { deviceInfo } from '@kit.BasicServicesKit';
+
+class ImmersiveMaterialAttribute extends CommonModifier {
+  private material: uiMaterial.Material | undefined;
+
+  constructor(material: uiMaterial.Material | undefined) {
+    super();
+    this.material = material;
+  }
+
+  applyNormalAttribute(instance: CommonAttribute): void {
+    if (!deviceInfo.apiAvailable('26.0.0')) {
+      return;
+    }
+    if (this.material === undefined || !uiMaterial.isImmersiveMaterialSupported()) {
+      instance.systemMaterial(uiMaterial.Material.empty);
+      return;
+    }
+    instance.systemMaterial(this.material);
+  }
+}
+
+export function materialModifier(material: uiMaterial.Material | undefined): CommonModifier {
+  return new ImmersiveMaterialAttribute(material);
+}
 
 export class SystemMaterialUtil {
   public static isApi26OrAbove(): boolean {
@@ -30,16 +54,19 @@ export class SystemMaterialUtil {
     lightColor: ResourceColor | undefined,
     materialColor: ResourceColor | undefined = undefined
   ): uiMaterial.Material | undefined {
-    if (!SystemMaterialUtil.isApi26OrAbove()) {
-      return undefined;
+    if (deviceInfo.apiAvailable('26.0.0')) {
+      if (!uiMaterial.isImmersiveMaterialSupported()) {
+        return undefined;
+      }
+      return new uiMaterial.ImmersiveMaterial({
+        style: SystemMaterialUtil.resolveImmersiveStyle(level),
+        interactive: interactive,
+        applyShadow: applyShadow,
+        colorInvert: colorInvert,
+        materialColor: materialColor,
+        lightEffect: interactive && lightColor !== undefined ? { color: lightColor } : null
+      });
     }
-    return new uiMaterial.ImmersiveMaterial({
-      style: SystemMaterialUtil.resolveImmersiveStyle(level),
-      interactive: false,
-      applyShadow: applyShadow,
-      colorInvert: colorInvert,
-      materialColor: materialColor,
-      lightEffect: null
-    });
+    return undefined;
   }
 }

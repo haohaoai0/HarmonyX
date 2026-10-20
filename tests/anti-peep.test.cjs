@@ -47,7 +47,10 @@ function fixture() {
       flushSync() {}
     }) } },
     '@kit.AbilityKit': {},
-    '@kit.BasicServicesKit': { deviceInfo: { get sdkApiVersion() { return api; } } },
+    '@kit.BasicServicesKit': { deviceInfo: {
+      get sdkApiVersion() { return api; },
+      apiAvailable: version => version === '6.1.0(23)' && api >= 23
+    } },
     '@kit.DeviceSecurityKit': { dlpAntiPeep },
     '@ohos.hilog': { default: { warn() {} } }
   };

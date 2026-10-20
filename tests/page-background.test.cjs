@@ -63,6 +63,23 @@ test('normalization preserves individual motifs from mixed sets and rejects stal
   assert.equal(f.pageBackgroundActive(JSON.stringify({ dim: 0.1 })), true);
 });
 
+test('following the app theme clears a stale custom color on save and restart', () => {
+  const f = fixture();
+  const state = f.normalizePageBackground({ mode: 'theme', color: '#123456', motifIds: ['petrel_cats_0'] });
+  f.pageBackgroundStore.save(f.context, state);
+  const restored = f.pageBackgroundStore.load(f.context);
+  assert.equal(restored.mode, 'theme');
+  assert.equal(restored.color, '');
+  assert.deepEqual(restored.motifIds, ['petrel_cats_0']);
+});
+
+test('dark pattern opacity is stronger and remains adjustable down to zero', () => {
+  const api = compile('entry/src/main/ets/utils/PageBackgroundContrast.ets');
+  assert.equal(api.pagePatternOpacity(0, 1), 0);
+  assert.ok(api.pagePatternOpacity(0.3, 1) > api.pagePatternOpacity(0.3, 0));
+  assert.ok(api.pagePatternOpacity(0.3, 1) >= 0.25);
+});
+
 test('master switch immediately suspends wallpaper, transparency and contrast effects while retaining the saved style', () => {
   const f = fixture(), state = f.normalizePageBackground({ mode: 'color', color: '#AABBCC',
     transparentPosts: true, transparentInbox: true, postOpacity: 0.2, inboxOpacity: 0.3,
@@ -174,6 +191,26 @@ test('density increases coverage without shuffling, and mixed sets stay represen
   assert.deepEqual(pageMotifTiles(0, 800, 50, 2), []);
 });
 
+test('a large motif selection resolves the catalog once rather than rescanning for every snapshot tile', () => {
+  const source=fs.readFileSync('entry/src/main/ets/components/PageMotifLayer.ets','utf8');
+  const catalog=Array.from({length:300},(_,i)=>({id:'motif-'+i,image:'image-'+i}));
+  let scans=0;
+  const original=catalog.filter.bind(catalog);
+  catalog.filter=(predicate)=>{scans++;return original(predicate);};
+  const code=ts.transpileModule('export class Layer {\n'+['updateMotifs','motifs','imageFor','keyFor'].map(name=>method(source,name)).join('\n')+'\n}',{
+    compilerOptions:{target:ts.ScriptTarget.ES2020,module:ts.ModuleKind.CommonJS}}).outputText;
+  const api={};new Function('exports','PAGE_BACKGROUND_MOTIFS',code)(api,catalog);
+  const layer=Object.assign(new api.Layer(),{motifIds:catalog.slice(0,256).map(m=>m.id),selectedMotifs:[]});
+  layer.updateMotifs();
+  for(let i=0;i<400;i++){
+    const tile={motifIndex:i%256,key:String(i)};
+    assert.ok(layer.imageFor(tile));assert.ok(layer.keyFor(tile));
+  }
+  assert.equal(scans,1);
+  layer.motifIds=['motif-299'];layer.updateMotifs();
+  assert.equal(layer.imageFor({motifIndex:0}),'image-299');assert.equal(scans,2);
+});
+
 test('full-pattern mixtures and paper textures combine independently with colors, photos and motifs', () => {
   const f = fixture();
   const state = f.normalizePageBackground({ mode: 'color', color: '#CCAA77', texture: 'kraft', textureStrength: 0.72,
@@ -189,6 +226,29 @@ test('full-pattern mixtures and paper textures combine independently with colors
   for (const texture of ['kraft', 'parchment']) {
     assert.ok(fs.statSync(`entry/src/main/resources/base/media/page_texture_${texture}.png`).size > 1000);
   }
+});
+
+test('opening the full-pattern catalog uses bounded raster thumbnails instead of mounting every SVG renderer', () => {
+  const catalog = compile('entry/src/main/ets/services/ChatBackgroundStore.ets');
+  const presets = catalog.chatBackgroundPresets().filter(preset => preset.pattern !== undefined);
+  assert.equal(presets.length, 17);
+  for (const preset of presets) {
+    assert.ok(preset.thumbnail, `${preset.id}: catalog must have a raster preview`);
+    const name = preset.thumbnail.replace('app.media.', '');
+    for (const theme of ['base', 'dark']) {
+      const png = fs.readFileSync(`entry/src/main/resources/${theme}/media/${name}.png`);
+      assert.equal(png.subarray(1, 4).toString(), 'PNG');
+      assert.ok(png.readUInt32BE(16) <= 512 && png.readUInt32BE(20) <= 512,
+        `${preset.id}/${theme}: thumbnails must stay small when the whole catalog opens`);
+    }
+  }
+  const editor = fs.readFileSync('entry/src/main/ets/pages/PageBackground.ets', 'utf8');
+  const tile = editor.slice(editor.indexOf('private PatternTile('), editor.indexOf('  build(): void'));
+  assert.match(tile, /Image\(thumbnail\)/);
+  assert.doesNotMatch(tile, /PageBackgroundLayer\(|ChatBackgroundPattern\(|PageMotifLayer\(/);
+  assert.match(editor, /this\.PatternTile\(preset\.id, preset\.title, preset\.thumbnail\)/);
+  assert.match(editor, /PageBackgroundLayer\(\{ wallpaper: this\.selected \}\)/,
+    'the main preview must still render the real selected mixture');
 });
 
 test('post and private-message transparency are independently editable, persistent and applied to real row surfaces', () => {
@@ -391,6 +451,15 @@ test('foreground contrast follows the composited photo, paper and independent ca
     }
   }
   assert.equal(colors.pageTextColor('app.color.text_primary',''), 'app.color.text_primary', 'default appearance is unchanged');
+  resources['app.color.bg_page'] = '#000000';
+  resources['app.color.text_secondary'] = '#66686B';
+  for (const value of ['', JSON.stringify(f.normalizePageBackground({ enabled:false, mode:'color', color:'#FFFFFF' }))]) {
+    for (const surface of ['transparent','#202224']) {
+      const adjusted=metric(colors.pageTextColor('app.color.text_secondary',value,surface));
+      assert.ok(contrast.pageContrastRatio(adjusted,metric(surface==='transparent'?'#000000':surface)) >= 4.59,
+        'secondary motion text remains readable with wallpaper off, including disabled saved light wallpaper');
+    }
+  }
 });
 
 test('shared schemes round-trip complete mixed settings and embedded photos without device-local paths', () => {
@@ -443,7 +512,7 @@ test('inline playback controls follow their backing surface, and immersive viewe
   assert.equal((source.match(/controlsUsePageBackground: this.controlsUsePageBackground, controlSurface: this.controlSurface/g)||[]).length,2);
   assert.match(method(source,'fullscreenControlsMaterial'),/immersiveMaterial\(0, false, false, true/);
   const hds=fs.readFileSync('entry/src/main/ets/components/HdsButton.ets','utf8');
-  assert.match(hds,/colorInvert: this.adaptiveForeground/);
+  assert.match(hds,/colorInvert: this\.adaptiveForeground/);
   assert.equal((source.match(/useImmersiveMaterial: true, adaptiveForeground: true/g)||[]).length,2);
   assert.match(source,/\.trackColor\(this.inlineContrastColor\(\$r\('app.color.video_control_progress_track'\), 3.2\)\)/);
   assert.match(source,/\.blockColor\(this.inlineControlColor\(\)\)/);

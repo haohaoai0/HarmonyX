@@ -1,5 +1,42 @@
 {
   "string": [
+    {
+      "name": "supporter_config_error",
+      "value": "Не удалось подтвердить привязку аккаунта в облаке. Обратитесь к разработчику."
+    },
+    {
+      "name": "supporter_restore_hint",
+      "value": "При возврате к аккаунту восстанавливается его сохранённый статус. На новом устройстве, после переустановки или в другой версии войдите в тот же аккаунт X и введите исходный код для восстановления доступа."
+    },
+    {"name": "eye_reading_title", "value": "Чтение с управлением взглядом"},
+    {"name": "eye_reading_intro", "value": "Смотрите вверх или вниз и задержите взгляд, чтобы прокрутить ветки, офлайн-копии и статьи."},
+    {"name": "eye_reading_enable", "value": "Включить управление взглядом"},
+    {"name": "eye_reading_supported", "value": "Отслеживание лица поддерживается. Камера включается только при нажатии запуска на странице чтения."},
+    {"name": "eye_reading_unsupported", "value": "Устройство не поддерживает нужное отслеживание лица. Используйте сенсорный экран или клавиатуру."},
+    {"name": "eye_reading_dwell", "value": "Время удержания взгляда"},
+    {"name": "eye_reading_threshold", "value": "Порог направления"},
+    {"name": "eye_reading_threshold_desc", "value": "Более высокий порог требует заметного движения глаз и уменьшает случайную прокрутку."},
+    {"name": "eye_reading_help", "value": "Для калибровки держите голову неподвижно и смотрите в центр экрана. Задержите взгляд сверху или снизу для прокрутки примерно на полэкрана. Затем вернитесь к центру. Касания, колесо и клавиатура имеют приоритет."},
+    {"name": "eye_reading_privacy", "value": "Фронтальная камера используется только после запуска. Направление обрабатывается локально, изображения не сохраняются и не отправляются. При уходе со страницы или в фон сеанс останавливается. Повторный запуск выполняется вручную."},
+    {"name": "eye_reading_save_failed", "value": "Не удалось сохранить настройки. Повторите попытку."},
+    {"name": "eye_reading_start", "value": "Запустить управление"},
+    {"name": "eye_reading_stop", "value": "Остановить управление"},
+    {"name": "eye_reading_recalibrate", "value": "Повторная калибровка"},
+    {"name": "eye_reading_starting", "value": "Запуск фронтальной камеры…"},
+    {"name": "eye_reading_permission", "value": "Нужно разрешение на камеру. Разрешите доступ в системных настройках и повторите попытку."},
+    {"name": "eye_reading_failed", "value": "Камера недоступна. Закройте другие приложения камеры и повторите попытку."},
+    {"name": "eye_reading_calibrating", "value": "Для калибровки смотрите в центр экрана, удерживая голову и взгляд неподвижно."},
+    {"name": "eye_reading_center", "value": "Перед следующим действием верните взгляд в центр."},
+    {"name": "eye_reading_ready", "value": "Готово: смотрите вверх или вниз и задержите взгляд."},
+    {"name": "eye_reading_up", "value": "Продолжайте смотреть вверх для прокрутки вверх."},
+    {"name": "eye_reading_down", "value": "Продолжайте смотреть вниз для прокрутки вниз."},
+    {"name": "eye_reading_lost", "value": "Откройте глаза и смотрите на экран при хорошем освещении. Если нет отклика, повторите калибровку."},
+    {"name": "eye_reading_paused", "value": "Ручной ввод имеет приоритет. Управление взглядом временно приостановлено."},
+    {"name": "eye_reading_camera_reason", "value": "Использует фронтальную камеру для локального распознавания направления глаз при запуске управления взглядом."},
+    {"name": "compact_video_layout", "value": "Видео на внешнем экране"},
+    {"name": "settings_compact_video_layout_desc", "value": "Для небольших квадратных экранов, как у Pura X: кнопки сбоку или внизу. При раскрытии восстанавливается обычный макет видео."},
+    {"name": "compact_video_layout_rail", "value": "Кнопки сбоку"},
+    {"name": "compact_video_layout_bottom", "value": "Нижний ряд"},
     {"name":"settings_component_hdr_enabled","value":"Component HDR effect"},
     {"name":"settings_component_hdr_enabled_desc","value":"Off by default. Turn it on to use 1.25x brightening, then adjust the multiplier below."},
     {"name":"settings_confirm_app_exit","value":"Подтверждать выход"},
@@ -1775,6 +1812,14 @@
     {
       "name": "settings_hds_tabs_material_adaptive",
       "value": "Адаптивный"
+    },
+    {
+      "name": "settings_hds_tabs_gradient_mask",
+      "value": "Градиентная маска нижних вкладок"
+    },
+    {
+      "name": "settings_hds_tabs_gradient_mask_desc",
+      "value": "Управляет градиентом затухания под плавающей панелью HdsTabs. По умолчанию включено."
     },
     {
       "name": "settings_timeline_columns_title",
@@ -9249,6 +9294,14 @@
       "value": "Отключите, чтобы разместить вкладки ленты или поиск между аватаром и правой кнопкой."
     },
     {
+      "name": "settings_title_bar_logo_auto_contrast",
+      "value": "Adaptive logo color"
+    },
+    {
+      "name": "settings_title_bar_logo_auto_contrast_desc",
+      "value": "Automatically switches the X or pattern foreground between light and dark to stay readable. Only the single-color foreground is shown, without an icon background."
+    },
+    {
       "name": "notifications_all",
       "value": "Все"
     },
@@ -10705,6 +10758,359 @@
     {"name":"page_background_motif_popular_apps_global_firefox","value":"Firefox"},
     {"name":"page_background_motif_popular_apps_global_edge","value":"Edge"},
     {"name":"page_background_motif_popular_apps_global_gmail","value":"Gmail"},
-    {"name":"page_background_motif_popular_apps_global_google_maps","value":"Google Maps"}
+    {"name":"page_background_motif_popular_apps_global_google_maps","value":"Google Maps"},
+    {"name":"scene_title","value":"Scene modes"},
+    {"name":"scene_intro","value":"Apply a set of playback, quality, motion and background preferences. Restore returns to your settings from before the first mode was enabled."},
+    {"name":"scene_reading","value":"Clear reading"},
+    {"name":"scene_reading_desc","value":"Autoplay off · high quality images · low quality video · reduced motion · plain background"},
+    {"name":"scene_saver","value":"Power and data saver"},
+    {"name":"scene_saver_desc","value":"Autoplay off · small images · low quality video · reduced motion · plain background"},
+    {"name":"scene_media","value":"Media browsing"},
+    {"name":"scene_media_desc","value":"Autoplay on · original images · high quality video · motion on · your saved background"},
+    {"name":"scene_restore","value":"Restore original settings"},
+    {"name":"scene_restore_desc","value":"Keep your preferences from before scene mode. Switching between modes does not replace this backup."},
+    {"name":"scene_failed","value":"Some settings could not be saved. Your original settings are retained; retry or restore."},
+    {"name":"offline_title","value":"Offline & later"},
+    {"name":"offline_online","value":"Online bookmarks"},
+    {"name":"offline_intro","value":"New bookmarks save text and available articles automatically. Enable images before saving to include photos. Local copies stay separate from online bookmarks and ordinary cache cleanup."},
+    {"name":"offline_images","value":"Include photos in future saves"},
+    {"name":"offline_save","value":"Save offline"},
+    {"name":"offline_saving","value":"Saving…"},
+    {"name":"offline_saved","value":"Saved for offline reading"},
+    {"name":"offline_partial_saved","value":"Saved available content. Some article text or photos are missing; retry when online."},
+    {"name":"offline_save_failed","value":"Could not save locally. Please retry."},
+    {"name":"offline_partial","value":"Incomplete copy"},
+    {"name":"offline_unread","value":"Unread"},
+    {"name":"offline_unread_only","value":"Unread only"},
+    {"name":"offline_search","value":"Search titles, tags or notes"},
+    {"name":"offline_empty","value":"No matching offline items. Save a bookmark or use Save offline on a post."},
+    {"name":"offline_edit","value":"Tags & note"},
+    {"name":"offline_tags","value":"Tags"},
+    {"name":"offline_tags_hint","value":"Tags, separated by commas"},
+    {"name":"offline_note","value":"Private note"},
+    {"name":"offline_done","value":"Save"},
+    {"name":"offline_delete","value":"Delete local copy"},
+    {"name":"reader_title","value":"Thread reader"},
+    {"name":"reader_author_only","value":"Author only"},
+    {"name":"reader_translate","value":"Translate passages"},
+    {"name":"reader_font","value":"Text size"},
+    {"name":"reader_missing","value":"This offline item is missing or unavailable. Save it again while online."},
+    {"name":"reader_partial","value":"Only the available article content is shown. Continue loading or retry while online to get the complete text."},
+    {"name":"reader_load_failed","value":"Could not load more replies. Your current reading content is kept."},
+    {"name":"reader_translation_setup","value":"Enable translation and choose a target language in Settings first."},
+    {"name":"reader_translation_failed","value":"Some passages could not be translated. You can hide translations and retry."},
+    {"name":"reader_offline_note","value":"Saved local content. Translation requires a network connection."},
+    {"name":"reader_scope","value":"Replies loaded so far. Use Continue loading to include more of the discussion."},
+    {
+      "name": "input_help_title",
+      "value": "Мышь, клавиатура и тачпад"
+    },
+    {
+      "name": "input_help_desc",
+      "value": "Сочетания клавиш и жесты"
+    },
+    {
+      "name": "input_main_title",
+      "value": "Сочетания на главной странице"
+    },
+    {
+      "name": "input_main_scope",
+      "value": "Доступны на пяти основных вкладках, если не открыты другие страницы, боковая панель или диалог. Ctrl+N создаёт беседу в Сообщениях, а на остальных вкладках — публикацию."
+    },
+    {
+      "name": "input_compose",
+      "value": "Новая публикация / беседа"
+    },
+    {
+      "name": "input_refresh",
+      "value": "Обновить текущую вкладку"
+    },
+    {
+      "name": "input_keyboard_title",
+      "value": "Управление клавиатурой"
+    },
+    {
+      "name": "input_focus",
+      "value": "Переместить фокус вперёд / назад. Стандартные элементы также поддерживают стрелки."
+    },
+    {
+      "name": "input_activate",
+      "value": "Активировать кнопку в фокусе."
+    },
+    {
+      "name": "input_submit",
+      "value": "Отправить из поля публикации, ответа или сообщения. Обычный Enter сохраняет своё поведение."
+    },
+    {
+      "name": "input_back",
+      "value": "Назад в справке, редакторе, чатах и просмотрщиках. Сначала закрывается текущая панель."
+    },
+    {
+      "name": "input_photo",
+      "value": "Предыдущее / следующее фото без увеличения и открытых панелей."
+    },
+    {
+      "name": "input_video",
+      "value": "Предыдущее / следующее видео без открытых панелей."
+    },
+    {
+      "name": "input_playback",
+      "value": "Когда изображение видео в фокусе: Пробел или Enter — воспроизведение / пауза; Влево / Вправо — назад / вперёд на 10 секунд."
+    },
+    {
+      "name": "input_pointer_title",
+      "value": "Мышь и тачпад"
+    },
+    {
+      "name": "input_pointer",
+      "value": "Левый щелчок или касание активирует элемент. Правый щелчок по фото, видео или сообщению открывает меню. Кнопки реагируют на наведение. Полосы прокрутки и прогресса можно перетаскивать."
+    },
+    {
+      "name": "input_trackpad",
+      "value": "Два пальца прокручивают списки, горизонтальный жест переключает фото, щипок меняет масштаб. Увеличенное фото можно перемещать. Касание двумя пальцами открывает меню на поддерживаемых тачпадах."
+    },
+    {
+      "name": "input_previous",
+      "value": "Предыдущее фото"
+    },
+    {
+      "name": "input_next",
+      "value": "Следующее фото"
+    },
+    {
+      "name": "input_key_home",
+      "value": "Ctrl + 1"
+    },
+    {
+      "name": "input_key_explore",
+      "value": "Ctrl + 2"
+    },
+    {
+      "name": "input_key_notifications",
+      "value": "Ctrl + 3"
+    },
+    {
+      "name": "input_key_messages",
+      "value": "Ctrl + 4"
+    },
+    {
+      "name": "input_key_profile",
+      "value": "Ctrl + 5"
+    },
+    {
+      "name": "input_key_search",
+      "value": "Ctrl + K"
+    },
+    {
+      "name": "input_key_compose",
+      "value": "Ctrl + N"
+    },
+    {
+      "name": "input_key_refresh",
+      "value": "Ctrl + R"
+    },
+    {
+      "name": "input_key_settings",
+      "value": "Ctrl + ,"
+    },
+    {
+      "name": "input_key_help",
+      "value": "F1"
+    },
+    {
+      "name": "input_key_focus",
+      "value": "Tab / Shift + Tab"
+    },
+    {
+      "name": "input_key_activate",
+      "value": "Enter / Space"
+    },
+    {
+      "name": "input_key_submit",
+      "value": "Ctrl + Enter"
+    },
+    {
+      "name": "input_key_back",
+      "value": "Esc / Alt + ←"
+    },
+    {
+      "name": "input_key_photo",
+      "value": "← / →"
+    },
+    {
+      "name": "input_key_video",
+      "value": "↑ / ↓ / Page Up / Page Down"
+    },
+    {
+      "name": "input_key_playback",
+      "value": "Space / Enter / ← / →"
+    },
+    {"name":"settings_filter_languages","value":"Скрытые языки публикаций"},
+    {"name":"settings_filter_languages_desc","value":"Выберите языки для скрытия. Неопределённый язык и публикации только с медиа остаются видимыми."},
+    {"name":"appearance_preview_title","value":"Предпросмотр"},
+    {"name":"appearance_preview_hint","value":"Изменения отображаются сразу. Нажмите на пример панели, чтобы раскрыть её."},
+    {"name":"post_edited","value":"Изменено"},
+    {"name":"post_metric_bookmarks","value":"закладок"},
+    {"name":"post_metric_quotes","value":"цитат"},
+    {"name":"settings_reply_quality","value":"Сворачивать некачественные ответы"},
+    {"name":"settings_reply_quality_desc","value":"Сворачивает повторную рекламу и массовые предложения. Локальные правила могут ошибаться; ответ можно раскрыть."},
+    {"name":"reply_quality_folded","value":"Возможно некачественный ответ"},
+    {"name":"reply_quality_reasons","value":"Посмотреть причины"},
+    {"name":"reply_quality_allow","value":"Всегда показывать автора"},
+    {"name":"reply_quality_whitelist","value":"Разрешённые авторы"},
+    {"name":"reply_quality_whitelist_desc","value":"Ваши ответы, автор поста, ваши подписки и разрешённые авторы остаются видимыми. Список действует для текущего аккаунта."},
+    {"name":"reply_quality_empty","value":"Разрешённых авторов пока нет"},
+    {"name":"reply_quality_reason_duplicate","value":"Несколько авторов повторяют один рекламный шаблон"},
+    {"name":"reply_quality_reason_author_repeat","value":"Автор многократно публикует одинаковый текст"},
+    {"name":"reply_quality_reason_links","value":"Содержит несколько внешних ссылок"},
+    {"name":"reply_quality_reason_promotion","value":"Содержит рекламу или обещания прибыли"},
+    {"name":"reply_quality_reason_contact","value":"Содержит контакты для привлечения пользователей"},
+    {
+      "name": "settings_floating_compose_material_tint",
+      "value": "Оттенок материала плавающей кнопки публикации"
+    },
+    {
+      "name": "settings_floating_compose_material_tint_desc",
+      "value": "Накладывает цвет темы на материал. При отключении удаляется только цветовой слой."
+    },
+    {
+      "name": "chat_decoration",
+      "value": "Chat decorations"
+    },
+    {
+      "name": "chat_decoration_subtitle",
+      "value": "Avatar frames and chat bubbles, downloaded only when you choose them."
+    },
+    {
+      "name": "chat_decoration_frame",
+      "value": "Avatar frames"
+    },
+    {
+      "name": "chat_decoration_bubble",
+      "value": "Chat bubbles"
+    },
+    {
+      "name": "chat_decoration_free",
+      "value": "Free"
+    },
+    {
+      "name": "chat_decoration_download_preview",
+      "value": "Download to preview"
+    },
+    {
+      "name": "chat_decoration_download",
+      "value": "Download"
+    },
+    {
+      "name": "chat_decoration_downloading",
+      "value": "Downloading..."
+    },
+    {
+      "name": "chat_decoration_use",
+      "value": "Use"
+    },
+    {
+      "name": "chat_decoration_in_use",
+      "value": "In use"
+    },
+    {
+      "name": "chat_decoration_remove",
+      "value": "Stop using"
+    },
+    {
+      "name": "chat_decoration_installed",
+      "value": "Downloaded"
+    },
+    {
+      "name": "chat_decoration_applied",
+      "value": "Decoration applied"
+    },
+    {
+      "name": "chat_decoration_download_failed",
+      "value": "Download failed. Try again later."
+    },
+    {
+      "name": "chat_decoration_reset",
+      "value": "Restore defaults"
+    },
+    {
+      "name": "chat_decoration_reset_done",
+      "value": "Defaults restored"
+    },
+    {
+      "name": "chat_decoration_note",
+      "value": "Decorations stay on this device. Other people see styles supported by their client."
+    },
+    {
+      "name": "chat_decoration_loading",
+      "value": "Loading decorations..."
+    },
+    {
+      "name": "chat_decoration_unavailable",
+      "value": "Decorations are unavailable. Check your connection and retry."
+    },
+    {
+      "name": "chat_decoration_sample_text",
+      "value": "Have a lovely day."
+    },
+    {"name": "sign_out_confirm_title", "value": "Выйти из аккаунта?"},
+    {"name": "sign_out_confirm_message", "value": "Чтобы использовать этот аккаунт, потребуется войти снова."},
+    {"name": "settings_for_you_only_sensitive", "value": "Только деликатный контент в рекомендациях"},
+    {"name": "settings_for_you_only_sensitive_desc", "value": "Показывать отмеченные X деликатные посты, включая цитаты. Подписки и списки не меняются. Медиа остаются скрытыми."},
+    {"name": "settings_grip_floating", "value": "Плавающая кнопка"},
+    {"name": "settings_grip_video", "value": "Панель действий видео"},
+    {"name": "settings_grip_reply", "value": "Кнопка ответа"},
+    {"name": "settings_grip_component_desc", "value": "Положение зависит от руки, держащей устройство. При отключении используется выбранная рука."},
+    {"name": "settings_grip_hdstabs", "value": "Нижняя панель HdsTabs"},
+    {"name": "settings_grip_hdstabs_desc", "value": "Использовать системную адаптацию к руке. При отключении панель не следует за рукой."},
+    {"name":"gif_action_save_video","value":"Сохранить как видео высокого качества (MP4)"},
+    {"name":"storage_save_remembered_note","value":"Выберите папку загрузок один раз, чтобы следующие файлы сохранялись в неё автоматически. Отключите для сохранения в галерею."},
+    {"name":"storage_save_to_remembered","value":"Сохранить в папку загрузок"},
+    {"name": "storage_permission_reason", "value": "Сохранять доступ к выбранным файлам и папкам."},
+    {"name": "timeline_sources_lists", "value": "Списки"},
+    {"name": "timeline_sources_communities", "value": "Сообщества"},
+    {"name": "timeline_edit", "value": "Изменить"},
+    {"name": "timeline_done", "value": "Готово"},
+    {"name": "timeline_move_up", "value": "Вверх"},
+    {"name": "timeline_move_down", "value": "Вниз"},
+    {"name": "timeline_remove_source", "value": "Убрать %s"},
+    {"name": "timeline_add_to_home", "value": "Добавить на главную"},
+    {"name": "timeline_remove_from_home", "value": "Убрать с главной"},
+    {"name": "timeline_sources_failed", "value": "Некоторые списки или сообщества не загрузились. Нажмите, чтобы повторить."},
+    {"name": "timeline_sources_pinned_empty", "value": "Нет закреплённых лент. Добавьте списки, сообщества или темы ниже."},
+    {"name":"video_controls_mirror","value":"Отразить элементы управления"},
+    {"name":"video_controls_speed","value":"Скорость"},
+    {"name":"video_controls_aspect","value":"Формат"},
+    {"name":"video_controls_background","value":"Фон"},
+    {"name":"video_controls_quality_hd","value":"HD"},
+    {"name":"video_controls_quality_sd","value":"SD"},
+    {"name":"video_controls_quality_ld","value":"LD"},
+    {"name":"video_controls_more","value":"Ещё"},
+    {"name":"video_controls_download","value":"Скачать"},
+    {"name":"settings_navigation_style","value":"Стиль нижней навигации"},
+    {"name":"settings_hds_bottom_bar","value":"Плавающие HdsTabs"},
+    {"name":"settings_split_bottom_bar","value":"Раздельная капсульная навигация"},
+    {"name":"settings_split_bottom_bar_desc","value":"Переключайте страницы в левой капсуле. Отдельная кнопка создаёт публикацию или чат, обновляет ленту или возвращает наверх. Обе части используют материал HDS; на старых системах доступна совместимая навигация."},
+    {"name":"split_navigation_action_top","value":"Наверх"},
+    {"name":"split_navigation_action_refresh","value":"Обновить главную"},
+    {"name":"split_navigation_action_compose","value":"Создать публикацию"},
+    {"name": "settings_reply_capsule_split", "value": "Раздельные капсулы ответа"},
+    {"name": "settings_reply_capsule_split_desc", "value": "Разделять поле ответа и действия с публикацией в свёрнутом виде"},
+    {"name": "reply_capsule_write_reply", "value": "Ответить"},
+    {"name":"settings_native_bottom_bar","value":"Капсульная навигация с материалом 7.0"},
+    {"name":"settings_native_bottom_bar_desc","value":"Использует иммерсивный материал HarmonyOS 7.0 капсулы ответа, подсветку касания, жидкий индикатор и смену стороны по хвату. Если недоступно, используется капсула HDS."},
+    {"name":"settings_native_navigation_material","value":"Толщина материала капсулы навигации"},
+    {"name":"settings_for_you_only_sensitive_age_title","value":"Подтвердите возраст"},
+    {"name":"settings_for_you_only_sensitive_age_message","value":"«Только деликатный контент в рекомендациях» доступно только пользователям 18 лет и старше. Вам исполнилось 18 лет?"},
+    {"name":"settings_for_you_only_sensitive_age_under","value":"Младше 18 лет"},
+    {"name":"settings_for_you_only_sensitive_age_adult","value":"18 лет или старше"},
+    {"name":"settings_theme_icon_blue","value":"Синий значков"},
+    {"name":"settings_theme_icon_red","value":"Красный значков"},
+    {"name":"settings_theme_icon_orange","value":"Оранжевый значков"},
+    {"name":"settings_theme_icon_yellow","value":"Жёлтый значков"},
+    {"name":"settings_theme_icon_green","value":"Зелёный значков"},
+    {"name":"settings_theme_icon_pink","value":"Розовый значков"},
+    {"name":"settings_theme_icon_cyan","value":"Голубой значков"},
+    {"name":"settings_theme_icon_navy","value":"Тёмно-синий значков"}
   ]
 }

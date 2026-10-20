@@ -274,7 +274,7 @@ export struct PostInteractionsPage {
   }
 
   private quoteTabLabel(): string {
-    return this.text($r('app.string.post_interactions_quotes')) + ' ' + formatCount(this.quotes.length);
+    return this.text($r('app.string.post_interactions_quotes')) + ' ' + formatCount(this.tweet?.metrics.quoteCount ?? this.quotes.length);
   }
 
   private repostTabLabel(): string {

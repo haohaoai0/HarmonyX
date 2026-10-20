@@ -4,9 +4,11 @@
 import { image } from '@kit.ImageKit';
 import { proxyImageResolver } from '../services/ProxyImageResolver';
 import { proxyStore } from '../services/ProxyStore';
+import { MediaImageLifetime } from '../utils/MediaImageLifetime';
 
 @Component
 export struct ProxyMediaImage {
+  lifetime: MediaImageLifetime | null = null;
   @Prop @Watch('onUrlChanged') url: string = '';
   @Prop displayHeight: number = 228;
   @Prop contain: boolean = false;
@@ -24,11 +26,18 @@ export struct ProxyMediaImage {
   private retryTimer: number = -1;
 
   aboutToAppear(): void {
+    this.lifetime?.attach((): void => this.releaseImage());
+    if (this.alive && (this.fallbackPixelMap !== null || this.source === this.url && this.source.length > 0)) { return; }
     this.alive = true;
     this.resolveSource();
   }
 
   aboutToDisappear(): void {
+    if (this.lifetime !== null) { return; }
+    this.releaseImage();
+  }
+
+  private releaseImage(): void {
     this.alive = false;
     this.requestSerial += 1;
     this.clearRetryTimer();
@@ -41,7 +50,8 @@ export struct ProxyMediaImage {
 
   private onViewerResolutionChanged(): void {
     if (!this.viewerResolution) { this.clearRetryTimer(); return; }
-    if (this.fallbackPixelMap === null && this.source.length === 0) { this.resolveSource(); }
+    // Restart even a native URL whose earlier thumbnail request failed.
+    if (this.fallbackPixelMap === null) { this.resolveSource(); }
   }
 
   private resolveSource(): void {
@@ -102,7 +112,7 @@ export struct ProxyMediaImage {
   }
 
   private onImageError(): void {
-    if (this.alive && this.viewerResolution && this.source === this.url && this.url.length > 0) {
+    if (this.alive && this.source === this.url && this.url.length > 0) {
       this.beginProxyFetch(this.url);
     }
   }

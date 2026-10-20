@@ -1,5 +1,42 @@
 {
   "string": [
+    {
+      "name": "supporter_config_error",
+      "value": "Pengikatan akaun awan tidak dapat disahkan. Sila hubungi pembangun."
+    },
+    {
+      "name": "supporter_restore_hint",
+      "value": "Beralih semula ke akaun akan memulihkan status tersimpannya. Pada peranti baharu, selepas pemasangan semula atau dalam versi lain, log masuk ke akaun X yang sama dan masukkan kod asal untuk memulihkan akses."
+    },
+    {"name": "eye_reading_title", "value": "Membaca dengan pandangan"},
+    {"name": "eye_reading_intro", "value": "Pandang ke atas atau bawah dan tahan untuk menatal bebenang, salinan luar talian dan artikel."},
+    {"name": "eye_reading_enable", "value": "Dayakan bacaan dengan pandangan"},
+    {"name": "eye_reading_supported", "value": "Penjejakan wajah disokong. Kamera hanya bermula apabila anda mengetik Mula pada halaman bacaan."},
+    {"name": "eye_reading_unsupported", "value": "Peranti ini tidak menyokong penjejakan wajah yang diperlukan. Gunakan sentuhan atau papan kekunci."},
+    {"name": "eye_reading_dwell", "value": "Tempoh menahan pandangan"},
+    {"name": "eye_reading_threshold", "value": "Ambang arah"},
+    {"name": "eye_reading_threshold_desc", "value": "Ambang lebih tinggi memerlukan gerakan mata lebih besar dan mengurangkan tatalan tidak sengaja."},
+    {"name": "eye_reading_help", "value": "Pastikan kepala tidak bergerak dan pandang tengah skrin untuk penentukuran. Pandang ke atas atau bawah dan tahan untuk menatal kira-kira separuh skrin. Kembali ke tengah selepas setiap tindakan. Sentuhan, roda dan papan kekunci diutamakan."},
+    {"name": "eye_reading_privacy", "value": "Kamera hadapan hanya digunakan selepas anda mula. Data arah diproses secara setempat; imej tidak disimpan atau dimuat naik. Meninggalkan halaman atau beralih ke latar belakang menghentikan sesi. Mulakan semula secara manual."},
+    {"name": "eye_reading_save_failed", "value": "Tetapan tidak dapat disimpan. Cuba lagi."},
+    {"name": "eye_reading_start", "value": "Mulakan kawalan mata"},
+    {"name": "eye_reading_stop", "value": "Hentikan kawalan mata"},
+    {"name": "eye_reading_recalibrate", "value": "Tentukur semula"},
+    {"name": "eye_reading_starting", "value": "Memulakan kamera hadapan…"},
+    {"name": "eye_reading_permission", "value": "Kebenaran kamera diperlukan. Benarkan akses dalam kebenaran aplikasi sistem, kemudian cuba lagi."},
+    {"name": "eye_reading_failed", "value": "Kamera tidak tersedia. Tutup aplikasi kamera lain, kemudian cuba lagi."},
+    {"name": "eye_reading_calibrating", "value": "Pandang tengah skrin dan pastikan kepala serta pandangan stabil untuk penentukuran."},
+    {"name": "eye_reading_center", "value": "Kembalikan pandangan ke tengah sebelum tindakan seterusnya."},
+    {"name": "eye_reading_ready", "value": "Sedia: pandang ke atas atau bawah dan tahan."},
+    {"name": "eye_reading_up", "value": "Terus pandang ke atas untuk menatal ke atas."},
+    {"name": "eye_reading_down", "value": "Terus pandang ke bawah untuk menatal ke bawah."},
+    {"name": "eye_reading_lost", "value": "Buka mata dan hadap skrin dengan cahaya mencukupi. Tentukur semula jika masih tiada respons."},
+    {"name": "eye_reading_paused", "value": "Input manual diutamakan. Kawalan mata dijeda sementara."},
+    {"name": "eye_reading_camera_reason", "value": "Menggunakan kamera hadapan untuk mengenal pasti arah mata secara setempat apabila anda memulakan bacaan dengan pandangan."},
+    {"name": "compact_video_layout", "value": "Susun atur video skrin luar"},
+    {"name": "settings_compact_video_layout_desc", "value": "Untuk skrin segi empat sama kecil seperti Pura X. Pilih tindakan sisi atau baris bawah. Membuka lipatan memulihkan susun atur biasa."},
+    {"name": "compact_video_layout_rail", "value": "Tindakan sisi"},
+    {"name": "compact_video_layout_bottom", "value": "Baris bawah"},
     {"name":"settings_component_hdr_enabled","value":"Component HDR effect"},
     {"name":"settings_component_hdr_enabled_desc","value":"Off by default. Turn it on to use 1.25x brightening, then adjust the multiplier below."},
     {"name":"settings_confirm_app_exit","value":"Sahkan sebelum keluar"},
@@ -1775,6 +1812,14 @@
     {
       "name": "settings_hds_tabs_material_adaptive",
       "value": "Adaptif"
+    },
+    {
+      "name": "settings_hds_tabs_gradient_mask",
+      "value": "Topeng kecerunan tab bawah"
+    },
+    {
+      "name": "settings_hds_tabs_gradient_mask_desc",
+      "value": "Kawal kecerunan pudar di bawah bar HdsTabs terapung. Dihidupkan secara lalai."
     },
     {
       "name": "settings_timeline_columns_title",
@@ -9249,6 +9294,14 @@
       "value": "Matikan untuk meletakkan tab garis masa atau ruang carian antara avatar dan butang kanan."
     },
     {
+      "name": "settings_title_bar_logo_auto_contrast",
+      "value": "Adaptive logo color"
+    },
+    {
+      "name": "settings_title_bar_logo_auto_contrast_desc",
+      "value": "Automatically switches the X or pattern foreground between light and dark to stay readable. Only the single-color foreground is shown, without an icon background."
+    },
+    {
       "name": "notifications_all",
       "value": "Semua"
     },
@@ -10705,6 +10758,359 @@
     {"name":"page_background_motif_popular_apps_global_firefox","value":"Firefox"},
     {"name":"page_background_motif_popular_apps_global_edge","value":"Edge"},
     {"name":"page_background_motif_popular_apps_global_gmail","value":"Gmail"},
-    {"name":"page_background_motif_popular_apps_global_google_maps","value":"Google Maps"}
+    {"name":"page_background_motif_popular_apps_global_google_maps","value":"Google Maps"},
+    {"name":"scene_title","value":"Scene modes"},
+    {"name":"scene_intro","value":"Apply a set of playback, quality, motion and background preferences. Restore returns to your settings from before the first mode was enabled."},
+    {"name":"scene_reading","value":"Clear reading"},
+    {"name":"scene_reading_desc","value":"Autoplay off · high quality images · low quality video · reduced motion · plain background"},
+    {"name":"scene_saver","value":"Power and data saver"},
+    {"name":"scene_saver_desc","value":"Autoplay off · small images · low quality video · reduced motion · plain background"},
+    {"name":"scene_media","value":"Media browsing"},
+    {"name":"scene_media_desc","value":"Autoplay on · original images · high quality video · motion on · your saved background"},
+    {"name":"scene_restore","value":"Restore original settings"},
+    {"name":"scene_restore_desc","value":"Keep your preferences from before scene mode. Switching between modes does not replace this backup."},
+    {"name":"scene_failed","value":"Some settings could not be saved. Your original settings are retained; retry or restore."},
+    {"name":"offline_title","value":"Offline & later"},
+    {"name":"offline_online","value":"Online bookmarks"},
+    {"name":"offline_intro","value":"New bookmarks save text and available articles automatically. Enable images before saving to include photos. Local copies stay separate from online bookmarks and ordinary cache cleanup."},
+    {"name":"offline_images","value":"Include photos in future saves"},
+    {"name":"offline_save","value":"Save offline"},
+    {"name":"offline_saving","value":"Saving…"},
+    {"name":"offline_saved","value":"Saved for offline reading"},
+    {"name":"offline_partial_saved","value":"Saved available content. Some article text or photos are missing; retry when online."},
+    {"name":"offline_save_failed","value":"Could not save locally. Please retry."},
+    {"name":"offline_partial","value":"Incomplete copy"},
+    {"name":"offline_unread","value":"Unread"},
+    {"name":"offline_unread_only","value":"Unread only"},
+    {"name":"offline_search","value":"Search titles, tags or notes"},
+    {"name":"offline_empty","value":"No matching offline items. Save a bookmark or use Save offline on a post."},
+    {"name":"offline_edit","value":"Tags & note"},
+    {"name":"offline_tags","value":"Tags"},
+    {"name":"offline_tags_hint","value":"Tags, separated by commas"},
+    {"name":"offline_note","value":"Private note"},
+    {"name":"offline_done","value":"Save"},
+    {"name":"offline_delete","value":"Delete local copy"},
+    {"name":"reader_title","value":"Thread reader"},
+    {"name":"reader_author_only","value":"Author only"},
+    {"name":"reader_translate","value":"Translate passages"},
+    {"name":"reader_font","value":"Text size"},
+    {"name":"reader_missing","value":"This offline item is missing or unavailable. Save it again while online."},
+    {"name":"reader_partial","value":"Only the available article content is shown. Continue loading or retry while online to get the complete text."},
+    {"name":"reader_load_failed","value":"Could not load more replies. Your current reading content is kept."},
+    {"name":"reader_translation_setup","value":"Enable translation and choose a target language in Settings first."},
+    {"name":"reader_translation_failed","value":"Some passages could not be translated. You can hide translations and retry."},
+    {"name":"reader_offline_note","value":"Saved local content. Translation requires a network connection."},
+    {"name":"reader_scope","value":"Replies loaded so far. Use Continue loading to include more of the discussion."},
+    {
+      "name": "input_help_title",
+      "value": "Tetikus, papan kekunci dan pad sentuh"
+    },
+    {
+      "name": "input_help_desc",
+      "value": "Pintasan papan kekunci dan gerak isyarat"
+    },
+    {
+      "name": "input_main_title",
+      "value": "Pintasan halaman utama"
+    },
+    {
+      "name": "input_main_scope",
+      "value": "Tersedia pada lima tab utama tanpa subhalaman, bar sisi atau dialog terbuka. Ctrl+N mencipta perbualan dalam Mesej dan siaran pada tab lain."
+    },
+    {
+      "name": "input_compose",
+      "value": "Siaran / perbualan baharu"
+    },
+    {
+      "name": "input_refresh",
+      "value": "Muat semula tab semasa"
+    },
+    {
+      "name": "input_keyboard_title",
+      "value": "Kawalan papan kekunci"
+    },
+    {
+      "name": "input_focus",
+      "value": "Alihkan fokus ke hadapan / belakang. Kawalan asli juga menyokong kekunci anak panah."
+    },
+    {
+      "name": "input_activate",
+      "value": "Aktifkan butang yang difokuskan."
+    },
+    {
+      "name": "input_submit",
+      "value": "Hantar daripada medan siaran, balasan atau mesej. Enter biasa mengekalkan tingkah laku sedia ada."
+    },
+    {
+      "name": "input_back",
+      "value": "Kembali dalam Bantuan, editor, sembang dan pemapar media. Tutup panel semasa dahulu."
+    },
+    {
+      "name": "input_photo",
+      "value": "Foto sebelumnya / seterusnya tanpa zum atau panel terbuka."
+    },
+    {
+      "name": "input_video",
+      "value": "Video sebelumnya / seterusnya tanpa panel terbuka."
+    },
+    {
+      "name": "input_playback",
+      "value": "Apabila gambar video difokuskan: Space atau Enter memainkan / menjeda; Kiri / Kanan mengundur / memaju 10 saat."
+    },
+    {
+      "name": "input_pointer_title",
+      "value": "Tetikus dan pad sentuh"
+    },
+    {
+      "name": "input_pointer",
+      "value": "Klik kiri atau ketik untuk mengaktifkan. Klik kanan foto, video atau mesej membuka tindakan. Butang bertindak balas apabila dituding. Seret bar tatal atau kemajuan."
+    },
+    {
+      "name": "input_trackpad",
+      "value": "Tatal senarai dengan dua jari, leret foto secara mendatar dan cubit untuk zum. Seret foto yang dibesarkan. Ketikan dua jari membuka menu pada pad sentuh yang menyokongnya."
+    },
+    {
+      "name": "input_previous",
+      "value": "Foto sebelumnya"
+    },
+    {
+      "name": "input_next",
+      "value": "Foto seterusnya"
+    },
+    {
+      "name": "input_key_home",
+      "value": "Ctrl + 1"
+    },
+    {
+      "name": "input_key_explore",
+      "value": "Ctrl + 2"
+    },
+    {
+      "name": "input_key_notifications",
+      "value": "Ctrl + 3"
+    },
+    {
+      "name": "input_key_messages",
+      "value": "Ctrl + 4"
+    },
+    {
+      "name": "input_key_profile",
+      "value": "Ctrl + 5"
+    },
+    {
+      "name": "input_key_search",
+      "value": "Ctrl + K"
+    },
+    {
+      "name": "input_key_compose",
+      "value": "Ctrl + N"
+    },
+    {
+      "name": "input_key_refresh",
+      "value": "Ctrl + R"
+    },
+    {
+      "name": "input_key_settings",
+      "value": "Ctrl + ,"
+    },
+    {
+      "name": "input_key_help",
+      "value": "F1"
+    },
+    {
+      "name": "input_key_focus",
+      "value": "Tab / Shift + Tab"
+    },
+    {
+      "name": "input_key_activate",
+      "value": "Enter / Space"
+    },
+    {
+      "name": "input_key_submit",
+      "value": "Ctrl + Enter"
+    },
+    {
+      "name": "input_key_back",
+      "value": "Esc / Alt + ←"
+    },
+    {
+      "name": "input_key_photo",
+      "value": "← / →"
+    },
+    {
+      "name": "input_key_video",
+      "value": "↑ / ↓ / Page Up / Page Down"
+    },
+    {
+      "name": "input_key_playback",
+      "value": "Space / Enter / ← / →"
+    },
+    {"name":"settings_filter_languages","value":"Bahasa siaran disekat"},
+    {"name":"settings_filter_languages_desc","value":"Pilih bahasa untuk disembunyikan. Bahasa tidak diketahui dan siaran media sahaja kekal kelihatan."},
+    {"name":"appearance_preview_title","value":"Pratonton langsung"},
+    {"name":"appearance_preview_hint","value":"Perubahan dipaparkan serta-merta. Ketik contoh panel untuk membukanya."},
+    {"name":"post_edited","value":"Disunting"},
+    {"name":"post_metric_bookmarks","value":"penanda buku"},
+    {"name":"post_metric_quotes","value":"petikan"},
+    {"name":"settings_reply_quality","value":"Lipat balasan berkualiti rendah"},
+    {"name":"settings_reply_quality_desc","value":"Lipat promosi berulang dan pelawaan pukal. Peraturan setempat mungkin tersilap; balasan boleh dikembangkan."},
+    {"name":"reply_quality_folded","value":"Balasan mungkin berkualiti rendah"},
+    {"name":"reply_quality_reasons","value":"Lihat sebab"},
+    {"name":"reply_quality_allow","value":"Sentiasa paparkan penulis ini"},
+    {"name":"reply_quality_whitelist","value":"Penulis dibenarkan"},
+    {"name":"reply_quality_whitelist_desc","value":"Balasan anda, penulis siaran, akaun diikuti dan penulis dibenarkan kekal dipaparkan. Senarai khusus untuk akaun semasa."},
+    {"name":"reply_quality_empty","value":"Belum ada penulis dibenarkan"},
+    {"name":"reply_quality_reason_duplicate","value":"Beberapa penulis mengulang templat promosi yang sama"},
+    {"name":"reply_quality_reason_author_repeat","value":"Penulis berulang kali menyiarkan kandungan yang sama"},
+    {"name":"reply_quality_reason_links","value":"Mengandungi beberapa pautan luar"},
+    {"name":"reply_quality_reason_promotion","value":"Mengandungi promosi atau umpan keuntungan"},
+    {"name":"reply_quality_reason_contact","value":"Mengandungi maklumat hubungan untuk pelawaan"},
+    {
+      "name": "settings_floating_compose_material_tint",
+      "value": "Warna bahan butang siaran terapung"
+    },
+    {
+      "name": "settings_floating_compose_material_tint_desc",
+      "value": "Tindihkan warna tema pada bahan. Mematikannya hanya membuang lapisan warna."
+    },
+    {
+      "name": "chat_decoration",
+      "value": "Chat decorations"
+    },
+    {
+      "name": "chat_decoration_subtitle",
+      "value": "Avatar frames and chat bubbles, downloaded only when you choose them."
+    },
+    {
+      "name": "chat_decoration_frame",
+      "value": "Avatar frames"
+    },
+    {
+      "name": "chat_decoration_bubble",
+      "value": "Chat bubbles"
+    },
+    {
+      "name": "chat_decoration_free",
+      "value": "Free"
+    },
+    {
+      "name": "chat_decoration_download_preview",
+      "value": "Download to preview"
+    },
+    {
+      "name": "chat_decoration_download",
+      "value": "Download"
+    },
+    {
+      "name": "chat_decoration_downloading",
+      "value": "Downloading..."
+    },
+    {
+      "name": "chat_decoration_use",
+      "value": "Use"
+    },
+    {
+      "name": "chat_decoration_in_use",
+      "value": "In use"
+    },
+    {
+      "name": "chat_decoration_remove",
+      "value": "Stop using"
+    },
+    {
+      "name": "chat_decoration_installed",
+      "value": "Downloaded"
+    },
+    {
+      "name": "chat_decoration_applied",
+      "value": "Decoration applied"
+    },
+    {
+      "name": "chat_decoration_download_failed",
+      "value": "Download failed. Try again later."
+    },
+    {
+      "name": "chat_decoration_reset",
+      "value": "Restore defaults"
+    },
+    {
+      "name": "chat_decoration_reset_done",
+      "value": "Defaults restored"
+    },
+    {
+      "name": "chat_decoration_note",
+      "value": "Decorations stay on this device. Other people see styles supported by their client."
+    },
+    {
+      "name": "chat_decoration_loading",
+      "value": "Loading decorations..."
+    },
+    {
+      "name": "chat_decoration_unavailable",
+      "value": "Decorations are unavailable. Check your connection and retry."
+    },
+    {
+      "name": "chat_decoration_sample_text",
+      "value": "Have a lovely day."
+    },
+    {"name": "sign_out_confirm_title", "value": "Log keluar?"},
+    {"name": "sign_out_confirm_message", "value": "Anda perlu log masuk semula untuk menggunakan akaun ini."},
+    {"name": "settings_for_you_only_sensitive", "value": "Hanya kandungan sensitif dalam Untuk Anda"},
+    {"name": "settings_for_you_only_sensitive_desc", "value": "Paparkan siaran yang ditandai sensitif oleh X, termasuk petikan. Mengikuti dan Senarai tidak berubah. Media kekal dilindungi."},
+    {"name": "settings_grip_floating", "value": "Butang tindakan terapung"},
+    {"name": "settings_grip_video", "value": "Bar tindakan video"},
+    {"name": "settings_grip_reply", "value": "Butang balasan siaran"},
+    {"name": "settings_grip_component_desc", "value": "Laraskan kedudukan mengikut tangan yang memegang peranti. Jika dimatikan, gunakan tangan pilihan."},
+    {"name": "settings_grip_hdstabs", "value": "Bar tab bawah HdsTabs"},
+    {"name": "settings_grip_hdstabs_desc", "value": "Gunakan penyesuaian tangan asli. Jika dimatikan, bar tidak mengikut tangan yang memegang peranti."},
+    {"name":"gif_action_save_video","value":"Simpan sebagai video berkualiti tinggi (MP4)"},
+    {"name":"storage_save_remembered_note","value":"Pilih folder muat turun sekali untuk menyimpan fail seterusnya secara automatik di sana. Matikan untuk menyimpan ke Galeri."},
+    {"name":"storage_save_to_remembered","value":"Simpan ke folder muat turun"},
+    {"name": "storage_permission_reason", "value": "Kekalkan akses kepada fail dan folder yang anda pilih."},
+    {"name": "timeline_sources_lists", "value": "Senarai"},
+    {"name": "timeline_sources_communities", "value": "Komuniti"},
+    {"name": "timeline_edit", "value": "Edit"},
+    {"name": "timeline_done", "value": "Selesai"},
+    {"name": "timeline_move_up", "value": "Alih ke atas"},
+    {"name": "timeline_move_down", "value": "Alih ke bawah"},
+    {"name": "timeline_remove_source", "value": "Alih keluar %s"},
+    {"name": "timeline_add_to_home", "value": "Tambah ke garis masa Utama"},
+    {"name": "timeline_remove_from_home", "value": "Alih keluar dari garis masa Utama"},
+    {"name": "timeline_sources_failed", "value": "Sesetengah senarai atau komuniti gagal dimuatkan. Ketik untuk cuba lagi."},
+    {"name": "timeline_sources_pinned_empty", "value": "Tiada garis masa disematkan. Tambah senarai, komuniti atau topik di bawah."},
+    {"name":"video_controls_mirror","value":"Cerminkan kawalan"},
+    {"name":"video_controls_speed","value":"Kelajuan"},
+    {"name":"video_controls_aspect","value":"Nisbah"},
+    {"name":"video_controls_background","value":"Latar"},
+    {"name":"video_controls_quality_hd","value":"HD"},
+    {"name":"video_controls_quality_sd","value":"SD"},
+    {"name":"video_controls_quality_ld","value":"LD"},
+    {"name":"video_controls_more","value":"Lagi"},
+    {"name":"video_controls_download","value":"Muat turun"},
+    {"name":"settings_navigation_style","value":"Gaya navigasi bawah"},
+    {"name":"settings_hds_bottom_bar","value":"HdsTabs terapung"},
+    {"name":"settings_split_bottom_bar","value":"Navigasi kapsul berasingan"},
+    {"name":"settings_split_bottom_bar_desc","value":"Tukar halaman dalam kapsul kiri. Butang berasingan untuk siaran, sembang baharu, muat semula atau kembali ke atas. Kedua-duanya menggunakan bahan HDS; sistem lama menggunakan navigasi serasi."},
+    {"name":"split_navigation_action_top","value":"Kembali ke atas"},
+    {"name":"split_navigation_action_refresh","value":"Muat semula Utama"},
+    {"name":"split_navigation_action_compose","value":"Cipta siaran"},
+    {"name": "settings_reply_capsule_split", "value": "Kapsul balasan berasingan"},
+    {"name": "settings_reply_capsule_split_desc", "value": "Asingkan ruang balasan dan tindakan siaran apabila diringkaskan"},
+    {"name": "reply_capsule_write_reply", "value": "Balas"},
+    {"name":"settings_native_bottom_bar","value":"Navigasi kapsul bahan 7.0"},
+    {"name":"settings_native_bottom_bar_desc","value":"Menggunakan bahan imersif HarmonyOS 7.0 kapsul balasan, dengan cahaya sentuh, penunjuk cecair dan pertukaran sisi mengikut genggaman. Menggunakan kapsul HDS jika tidak tersedia."},
+    {"name":"settings_native_navigation_material","value":"Ketebalan bahan kapsul navigasi"},
+    {"name":"settings_for_you_only_sensitive_age_title","value":"Sahkan umur"},
+    {"name":"settings_for_you_only_sensitive_age_message","value":"“Hanya kandungan sensitif dalam Untuk Anda” tersedia untuk pengguna berumur 18 tahun ke atas sahaja. Adakah anda berumur 18 tahun atau lebih?"},
+    {"name":"settings_for_you_only_sensitive_age_under","value":"Bawah 18 tahun"},
+    {"name":"settings_for_you_only_sensitive_age_adult","value":"18 tahun atau lebih"},
+    {"name":"settings_theme_icon_blue","value":"Biru ikon"},
+    {"name":"settings_theme_icon_red","value":"Merah ikon"},
+    {"name":"settings_theme_icon_orange","value":"Oren ikon"},
+    {"name":"settings_theme_icon_yellow","value":"Kuning ikon"},
+    {"name":"settings_theme_icon_green","value":"Hijau ikon"},
+    {"name":"settings_theme_icon_pink","value":"Merah jambu ikon"},
+    {"name":"settings_theme_icon_cyan","value":"Sian ikon"},
+    {"name":"settings_theme_icon_navy","value":"Navy ikon"}
   ]
 }

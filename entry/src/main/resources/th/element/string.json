@@ -1,5 +1,42 @@
 {
   "string": [
+    {
+      "name": "supporter_config_error",
+      "value": "ไม่สามารถยืนยันการผูกบัญชีบนคลาวด์ได้ โปรดติดต่อผู้พัฒนา"
+    },
+    {
+      "name": "supporter_restore_hint",
+      "value": "เมื่อสลับกลับไปยังบัญชีเดิม สถานะที่บันทึกไว้จะกลับคืนมา บนอุปกรณ์ใหม่ หลังติดตั้งใหม่ หรือในแอปเวอร์ชันอื่น ให้เข้าสู่ระบบด้วยบัญชี X เดิมแล้วป้อนรหัสเดิมเพื่อกู้คืนสิทธิ์"
+    },
+    {"name": "eye_reading_title", "value": "อ่านด้วยสายตา"},
+    {"name": "eye_reading_intro", "value": "มองขึ้นหรือลงค้างไว้เพื่อเลื่อนเธรด สำเนาออฟไลน์ และบทความ"},
+    {"name": "eye_reading_enable", "value": "เปิดการอ่านด้วยสายตา"},
+    {"name": "eye_reading_supported", "value": "รองรับการติดตามใบหน้า กล้องจะเปิดเมื่อแตะเริ่มบนหน้าอ่านเท่านั้น"},
+    {"name": "eye_reading_unsupported", "value": "อุปกรณ์นี้ไม่รองรับการติดตามใบหน้าที่จำเป็น โปรดใช้การสัมผัสหรือแป้นพิมพ์"},
+    {"name": "eye_reading_dwell", "value": "เวลาจ้องค้าง"},
+    {"name": "eye_reading_threshold", "value": "เกณฑ์ทิศทาง"},
+    {"name": "eye_reading_threshold_desc", "value": "ค่าที่สูงขึ้นต้องขยับดวงตามากขึ้น ช่วยลดการเลื่อนโดยไม่ตั้งใจ"},
+    {"name": "eye_reading_help", "value": "ขณะปรับเทียบ ให้อยู่นิ่งและมองกลางจอ มองขึ้นหรือลงค้างไว้เพื่อเลื่อนประมาณครึ่งจอ แล้วกลับมามองกลางจอหลังแต่ละครั้ง การสัมผัส ล้อเมาส์ และแป้นพิมพ์มีลำดับความสำคัญก่อน"},
+    {"name": "eye_reading_privacy", "value": "ใช้กล้องหน้าเมื่อคุณเริ่มเท่านั้น ประมวลผลทิศทางบนอุปกรณ์ ไม่บันทึกหรืออัปโหลดภาพ เมื่อออกจากหน้าหรือไปเบื้องหลังจะหยุด ต้องเริ่มใหม่ด้วยตนเอง"},
+    {"name": "eye_reading_save_failed", "value": "บันทึกการตั้งค่าไม่ได้ โปรดลองอีกครั้ง"},
+    {"name": "eye_reading_start", "value": "เริ่มควบคุมด้วยตา"},
+    {"name": "eye_reading_stop", "value": "หยุดควบคุมด้วยตา"},
+    {"name": "eye_reading_recalibrate", "value": "ปรับเทียบใหม่"},
+    {"name": "eye_reading_starting", "value": "กำลังเปิดกล้องหน้า…"},
+    {"name": "eye_reading_permission", "value": "ต้องมีสิทธิ์ใช้กล้อง โปรดอนุญาตในการตั้งค่าสิทธิ์แอปของระบบแล้วลองอีกครั้ง"},
+    {"name": "eye_reading_failed", "value": "ใช้กล้องไม่ได้ โปรดปิดแอปกล้องอื่นแล้วลองอีกครั้ง"},
+    {"name": "eye_reading_calibrating", "value": "มองกลางจอและรักษาศีรษะกับสายตาให้นิ่งเพื่อปรับเทียบ"},
+    {"name": "eye_reading_center", "value": "กลับมามองกลางจอก่อนเลื่อนครั้งถัดไป"},
+    {"name": "eye_reading_ready", "value": "พร้อม: มองขึ้นหรือลงค้างไว้"},
+    {"name": "eye_reading_up", "value": "มองขึ้นค้างไว้เพื่อเลื่อนขึ้น"},
+    {"name": "eye_reading_down", "value": "มองลงค้างไว้เพื่อเลื่อนลง"},
+    {"name": "eye_reading_lost", "value": "ลืมตาและหันหน้าหาจอในที่สว่าง หากยังไม่ตอบสนองให้ปรับเทียบใหม่"},
+    {"name": "eye_reading_paused", "value": "ให้ความสำคัญกับการควบคุมด้วยมือ หยุดการควบคุมด้วยตาชั่วคราว"},
+    {"name": "eye_reading_camera_reason", "value": "ใช้กล้องหน้าเพื่อรู้จำทิศทางดวงตาบนอุปกรณ์เมื่อคุณเริ่มอ่านด้วยสายตา"},
+    {"name": "compact_video_layout", "value": "เค้าโครงวิดีโอจอนอก"},
+    {"name": "settings_compact_video_layout_desc", "value": "สำหรับจอสี่เหลี่ยมจัตุรัสขนาดเล็ก เช่น Pura X เลือกปุ่มด้านข้างหรือแถวล่าง เมื่อกางเครื่องจะกลับไปใช้เค้าโครงวิดีโอปกติ"},
+    {"name": "compact_video_layout_rail", "value": "ปุ่มด้านข้าง"},
+    {"name": "compact_video_layout_bottom", "value": "แถวล่าง"},
     {"name":"settings_component_hdr_enabled","value":"Component HDR effect"},
     {"name":"settings_component_hdr_enabled_desc","value":"Off by default. Turn it on to use 1.25x brightening, then adjust the multiplier below."},
     {"name":"settings_confirm_app_exit","value":"ยืนยันก่อนออก"},
@@ -1775,6 +1812,14 @@
     {
       "name": "settings_hds_tabs_material_adaptive",
       "value": "ปรับอัตโนมัติ"
+    },
+    {
+      "name": "settings_hds_tabs_gradient_mask",
+      "value": "มาสก์ไล่ระดับของแท็บด้านล่าง"
+    },
+    {
+      "name": "settings_hds_tabs_gradient_mask_desc",
+      "value": "ควบคุมการไล่ระดับการจางใต้แถบ HdsTabs แบบลอย เปิดใช้งานเป็นค่าเริ่มต้น"
     },
     {
       "name": "settings_timeline_columns_title",
@@ -9249,6 +9294,14 @@
       "value": "ปิดเพื่อย้ายแท็บไทม์ไลน์หรือช่องค้นหามาไว้ระหว่างรูปโปรไฟล์และปุ่มด้านขวา"
     },
     {
+      "name": "settings_title_bar_logo_auto_contrast",
+      "value": "Adaptive logo color"
+    },
+    {
+      "name": "settings_title_bar_logo_auto_contrast_desc",
+      "value": "Automatically switches the X or pattern foreground between light and dark to stay readable. Only the single-color foreground is shown, without an icon background."
+    },
+    {
       "name": "notifications_all",
       "value": "ทั้งหมด"
     },
@@ -10705,6 +10758,359 @@
     {"name":"page_background_motif_popular_apps_global_firefox","value":"Firefox"},
     {"name":"page_background_motif_popular_apps_global_edge","value":"Edge"},
     {"name":"page_background_motif_popular_apps_global_gmail","value":"Gmail"},
-    {"name":"page_background_motif_popular_apps_global_google_maps","value":"Google Maps"}
+    {"name":"page_background_motif_popular_apps_global_google_maps","value":"Google Maps"},
+    {"name":"scene_title","value":"Scene modes"},
+    {"name":"scene_intro","value":"Apply a set of playback, quality, motion and background preferences. Restore returns to your settings from before the first mode was enabled."},
+    {"name":"scene_reading","value":"Clear reading"},
+    {"name":"scene_reading_desc","value":"Autoplay off · high quality images · low quality video · reduced motion · plain background"},
+    {"name":"scene_saver","value":"Power and data saver"},
+    {"name":"scene_saver_desc","value":"Autoplay off · small images · low quality video · reduced motion · plain background"},
+    {"name":"scene_media","value":"Media browsing"},
+    {"name":"scene_media_desc","value":"Autoplay on · original images · high quality video · motion on · your saved background"},
+    {"name":"scene_restore","value":"Restore original settings"},
+    {"name":"scene_restore_desc","value":"Keep your preferences from before scene mode. Switching between modes does not replace this backup."},
+    {"name":"scene_failed","value":"Some settings could not be saved. Your original settings are retained; retry or restore."},
+    {"name":"offline_title","value":"Offline & later"},
+    {"name":"offline_online","value":"Online bookmarks"},
+    {"name":"offline_intro","value":"New bookmarks save text and available articles automatically. Enable images before saving to include photos. Local copies stay separate from online bookmarks and ordinary cache cleanup."},
+    {"name":"offline_images","value":"Include photos in future saves"},
+    {"name":"offline_save","value":"Save offline"},
+    {"name":"offline_saving","value":"Saving…"},
+    {"name":"offline_saved","value":"Saved for offline reading"},
+    {"name":"offline_partial_saved","value":"Saved available content. Some article text or photos are missing; retry when online."},
+    {"name":"offline_save_failed","value":"Could not save locally. Please retry."},
+    {"name":"offline_partial","value":"Incomplete copy"},
+    {"name":"offline_unread","value":"Unread"},
+    {"name":"offline_unread_only","value":"Unread only"},
+    {"name":"offline_search","value":"Search titles, tags or notes"},
+    {"name":"offline_empty","value":"No matching offline items. Save a bookmark or use Save offline on a post."},
+    {"name":"offline_edit","value":"Tags & note"},
+    {"name":"offline_tags","value":"Tags"},
+    {"name":"offline_tags_hint","value":"Tags, separated by commas"},
+    {"name":"offline_note","value":"Private note"},
+    {"name":"offline_done","value":"Save"},
+    {"name":"offline_delete","value":"Delete local copy"},
+    {"name":"reader_title","value":"Thread reader"},
+    {"name":"reader_author_only","value":"Author only"},
+    {"name":"reader_translate","value":"Translate passages"},
+    {"name":"reader_font","value":"Text size"},
+    {"name":"reader_missing","value":"This offline item is missing or unavailable. Save it again while online."},
+    {"name":"reader_partial","value":"Only the available article content is shown. Continue loading or retry while online to get the complete text."},
+    {"name":"reader_load_failed","value":"Could not load more replies. Your current reading content is kept."},
+    {"name":"reader_translation_setup","value":"Enable translation and choose a target language in Settings first."},
+    {"name":"reader_translation_failed","value":"Some passages could not be translated. You can hide translations and retry."},
+    {"name":"reader_offline_note","value":"Saved local content. Translation requires a network connection."},
+    {"name":"reader_scope","value":"Replies loaded so far. Use Continue loading to include more of the discussion."},
+    {
+      "name": "input_help_title",
+      "value": "เมาส์ แป้นพิมพ์ และทัชแพด"
+    },
+    {
+      "name": "input_help_desc",
+      "value": "ปุ่มลัดและท่าทางการใช้งาน"
+    },
+    {
+      "name": "input_main_title",
+      "value": "ปุ่มลัดหน้าหลัก"
+    },
+    {
+      "name": "input_main_scope",
+      "value": "ใช้ได้ในห้าแท็บหลักเมื่อไม่มีหน้าย่อย แถบด้านข้าง หรือกล่องโต้ตอบเปิดอยู่ Ctrl+N สร้างการสนทนาในหน้าข้อความ และสร้างโพสต์ในหน้าอื่น"
+    },
+    {
+      "name": "input_compose",
+      "value": "โพสต์ใหม่ / การสนทนาใหม่"
+    },
+    {
+      "name": "input_refresh",
+      "value": "รีเฟรชแท็บปัจจุบัน"
+    },
+    {
+      "name": "input_keyboard_title",
+      "value": "การควบคุมด้วยแป้นพิมพ์"
+    },
+    {
+      "name": "input_focus",
+      "value": "เลื่อนโฟกัสไปข้างหน้า / ย้อนกลับ ตัวควบคุมระบบรองรับปุ่มลูกศรด้วย"
+    },
+    {
+      "name": "input_activate",
+      "value": "เปิดใช้งานปุ่มที่มีโฟกัส"
+    },
+    {
+      "name": "input_submit",
+      "value": "ส่งจากช่องโพสต์ ตอบกลับ หรือข้อความ Enter ปกติยังทำงานเช่นเดิม"
+    },
+    {
+      "name": "input_back",
+      "value": "ย้อนกลับในวิธีใช้ ตัวแก้ไข แชท และตัวดูสื่อ โดยปิดแผงปัจจุบันก่อน"
+    },
+    {
+      "name": "input_photo",
+      "value": "รูปก่อนหน้า / ถัดไป เมื่อไม่ได้ซูมและไม่มีแผงเปิดอยู่"
+    },
+    {
+      "name": "input_video",
+      "value": "วิดีโอก่อนหน้า / ถัดไป เมื่อไม่มีแผงเปิดอยู่"
+    },
+    {
+      "name": "input_playback",
+      "value": "เมื่อภาพวิดีโอมีโฟกัส: Space หรือ Enter เล่น / หยุดชั่วคราว ลูกศรซ้าย / ขวาย้อน / เดินหน้า 10 วินาที"
+    },
+    {
+      "name": "input_pointer_title",
+      "value": "เมาส์และทัชแพด"
+    },
+    {
+      "name": "input_pointer",
+      "value": "คลิกซ้ายหรือแตะเพื่อเปิดใช้งาน คลิกขวาที่รูป วิดีโอ หรือข้อความเพื่อเปิดเมนู ปุ่มตอบสนองเมื่อวางตัวชี้ และลากแถบเลื่อนหรือแถบความคืบหน้าได้"
+    },
+    {
+      "name": "input_trackpad",
+      "value": "ใช้สองนิ้วเลื่อนรายการ ปัดแนวนอนเพื่อเปลี่ยนรูป และจีบนิ้วเพื่อซูม ลากรูปที่ขยายเพื่อเลื่อนดู ทัชแพดที่รองรับใช้การแตะสองนิ้วเพื่อเปิดเมนูได้"
+    },
+    {
+      "name": "input_previous",
+      "value": "รูปก่อนหน้า"
+    },
+    {
+      "name": "input_next",
+      "value": "รูปถัดไป"
+    },
+    {
+      "name": "input_key_home",
+      "value": "Ctrl + 1"
+    },
+    {
+      "name": "input_key_explore",
+      "value": "Ctrl + 2"
+    },
+    {
+      "name": "input_key_notifications",
+      "value": "Ctrl + 3"
+    },
+    {
+      "name": "input_key_messages",
+      "value": "Ctrl + 4"
+    },
+    {
+      "name": "input_key_profile",
+      "value": "Ctrl + 5"
+    },
+    {
+      "name": "input_key_search",
+      "value": "Ctrl + K"
+    },
+    {
+      "name": "input_key_compose",
+      "value": "Ctrl + N"
+    },
+    {
+      "name": "input_key_refresh",
+      "value": "Ctrl + R"
+    },
+    {
+      "name": "input_key_settings",
+      "value": "Ctrl + ,"
+    },
+    {
+      "name": "input_key_help",
+      "value": "F1"
+    },
+    {
+      "name": "input_key_focus",
+      "value": "Tab / Shift + Tab"
+    },
+    {
+      "name": "input_key_activate",
+      "value": "Enter / Space"
+    },
+    {
+      "name": "input_key_submit",
+      "value": "Ctrl + Enter"
+    },
+    {
+      "name": "input_key_back",
+      "value": "Esc / Alt + ←"
+    },
+    {
+      "name": "input_key_photo",
+      "value": "← / →"
+    },
+    {
+      "name": "input_key_video",
+      "value": "↑ / ↓ / Page Up / Page Down"
+    },
+    {
+      "name": "input_key_playback",
+      "value": "Space / Enter / ← / →"
+    },
+    {"name":"settings_filter_languages","value":"ภาษาของโพสต์ที่ซ่อน"},
+    {"name":"settings_filter_languages_desc","value":"เลือกภาษาที่ต้องการซ่อน โพสต์ที่ไม่ทราบภาษาและโพสต์ที่มีแต่สื่อยังคงแสดง"},
+    {"name":"appearance_preview_title","value":"ตัวอย่างสด"},
+    {"name":"appearance_preview_hint","value":"แสดงผลทันทีเมื่อเปลี่ยนการตั้งค่า แตะตัวอย่างแผงเพื่อขยาย"},
+    {"name":"post_edited","value":"แก้ไขแล้ว"},
+    {"name":"post_metric_bookmarks","value":"บุ๊กมาร์ก"},
+    {"name":"post_metric_quotes","value":"อ้างอิง"},
+    {"name":"settings_reply_quality","value":"ยุบคำตอบคุณภาพต่ำ"},
+    {"name":"settings_reply_quality_desc","value":"ยุบโปรโมชันซ้ำและการชักชวนจำนวนมาก กฎบนอุปกรณ์อาจผิดพลาด คุณสามารถขยายคำตอบเพื่อตรวจสอบได้"},
+    {"name":"reply_quality_folded","value":"คำตอบที่อาจมีคุณภาพต่ำ"},
+    {"name":"reply_quality_reasons","value":"ดูเหตุผล"},
+    {"name":"reply_quality_allow","value":"แสดงผู้เขียนนี้เสมอ"},
+    {"name":"reply_quality_whitelist","value":"รายชื่อผู้เขียนที่อนุญาต"},
+    {"name":"reply_quality_whitelist_desc","value":"คำตอบของคุณ ผู้เขียนโพสต์ บัญชีที่ติดตาม และผู้เขียนที่อนุญาตจะยังแสดงอยู่ รายชื่อใช้กับบัญชีปัจจุบันเท่านั้น"},
+    {"name":"reply_quality_empty","value":"ยังไม่มีผู้เขียนที่อนุญาต"},
+    {"name":"reply_quality_reason_duplicate","value":"ผู้เขียนหลายคนใช้ข้อความโปรโมตเดียวกันซ้ำ"},
+    {"name":"reply_quality_reason_author_repeat","value":"ผู้เขียนโพสต์เนื้อหาเดียวกันซ้ำหลายครั้ง"},
+    {"name":"reply_quality_reason_links","value":"มีลิงก์ภายนอกหลายรายการ"},
+    {"name":"reply_quality_reason_promotion","value":"มีการโปรโมตหรือเสนอผลกำไร"},
+    {"name":"reply_quality_reason_contact","value":"มีข้อมูลติดต่อเพื่อชักชวน"},
+    {
+      "name": "settings_floating_compose_material_tint",
+      "value": "สีวัสดุของปุ่มเขียนโพสต์แบบลอย"
+    },
+    {
+      "name": "settings_floating_compose_material_tint_desc",
+      "value": "ซ้อนสีธีมบนวัสดุ เมื่อปิดจะลบเฉพาะชั้นสีที่ซ้อนอยู่เท่านั้น"
+    },
+    {
+      "name": "chat_decoration",
+      "value": "Chat decorations"
+    },
+    {
+      "name": "chat_decoration_subtitle",
+      "value": "Avatar frames and chat bubbles, downloaded only when you choose them."
+    },
+    {
+      "name": "chat_decoration_frame",
+      "value": "Avatar frames"
+    },
+    {
+      "name": "chat_decoration_bubble",
+      "value": "Chat bubbles"
+    },
+    {
+      "name": "chat_decoration_free",
+      "value": "Free"
+    },
+    {
+      "name": "chat_decoration_download_preview",
+      "value": "Download to preview"
+    },
+    {
+      "name": "chat_decoration_download",
+      "value": "Download"
+    },
+    {
+      "name": "chat_decoration_downloading",
+      "value": "Downloading..."
+    },
+    {
+      "name": "chat_decoration_use",
+      "value": "Use"
+    },
+    {
+      "name": "chat_decoration_in_use",
+      "value": "In use"
+    },
+    {
+      "name": "chat_decoration_remove",
+      "value": "Stop using"
+    },
+    {
+      "name": "chat_decoration_installed",
+      "value": "Downloaded"
+    },
+    {
+      "name": "chat_decoration_applied",
+      "value": "Decoration applied"
+    },
+    {
+      "name": "chat_decoration_download_failed",
+      "value": "Download failed. Try again later."
+    },
+    {
+      "name": "chat_decoration_reset",
+      "value": "Restore defaults"
+    },
+    {
+      "name": "chat_decoration_reset_done",
+      "value": "Defaults restored"
+    },
+    {
+      "name": "chat_decoration_note",
+      "value": "Decorations stay on this device. Other people see styles supported by their client."
+    },
+    {
+      "name": "chat_decoration_loading",
+      "value": "Loading decorations..."
+    },
+    {
+      "name": "chat_decoration_unavailable",
+      "value": "Decorations are unavailable. Check your connection and retry."
+    },
+    {
+      "name": "chat_decoration_sample_text",
+      "value": "Have a lovely day."
+    },
+    {"name": "sign_out_confirm_title", "value": "ออกจากระบบหรือไม่"},
+    {"name": "sign_out_confirm_message", "value": "คุณต้องเข้าสู่ระบบอีกครั้งเพื่อใช้บัญชีนี้"},
+    {"name": "settings_for_you_only_sensitive", "value": "เฉพาะเนื้อหาละเอียดอ่อนในสำหรับคุณ"},
+    {"name": "settings_for_you_only_sensitive_desc", "value": "แสดงโพสต์ที่ X ระบุว่าละเอียดอ่อน รวมถึงโพสต์อ้างอิง ไม่กระทบกำลังติดตามและรายการ สื่อยังคงถูกปิดบัง"},
+    {"name": "settings_grip_floating", "value": "ปุ่มดำเนินการลอย"},
+    {"name": "settings_grip_video", "value": "แถบการทำงานวิดีโอ"},
+    {"name": "settings_grip_reply", "value": "ปุ่มตอบกลับโพสต์"},
+    {"name": "settings_grip_component_desc", "value": "ปรับตำแหน่งตามมือที่ถืออุปกรณ์ เมื่อปิดจะใช้มือที่เลือกไว้"},
+    {"name": "settings_grip_hdstabs", "value": "แถบแท็บด้านล่าง HdsTabs"},
+    {"name": "settings_grip_hdstabs_desc", "value": "ใช้การปรับตามมือของระบบ เมื่อปิดแถบแท็บจะไม่เคลื่อนตามมือที่ถืออุปกรณ์"},
+    {"name":"gif_action_save_video","value":"บันทึกเป็นวิดีโอคุณภาพสูง (MP4)"},
+    {"name":"storage_save_remembered_note","value":"เลือกโฟลเดอร์ดาวน์โหลดครั้งเดียวเพื่อบันทึกไฟล์ถัดไปที่นั่นโดยอัตโนมัติ ปิดเพื่อบันทึกในแกลเลอรี"},
+    {"name":"storage_save_to_remembered","value":"บันทึกในโฟลเดอร์ดาวน์โหลด"},
+    {"name": "storage_permission_reason", "value": "คงสิทธิ์เข้าถึงไฟล์และโฟลเดอร์ที่คุณเลือก"},
+    {"name": "timeline_sources_lists", "value": "รายการ"},
+    {"name": "timeline_sources_communities", "value": "ชุมชน"},
+    {"name": "timeline_edit", "value": "แก้ไข"},
+    {"name": "timeline_done", "value": "เสร็จ"},
+    {"name": "timeline_move_up", "value": "เลื่อนขึ้น"},
+    {"name": "timeline_move_down", "value": "เลื่อนลง"},
+    {"name": "timeline_remove_source", "value": "นำ %s ออก"},
+    {"name": "timeline_add_to_home", "value": "เพิ่มในไทม์ไลน์หน้าแรก"},
+    {"name": "timeline_remove_from_home", "value": "นำออกจากไทม์ไลน์หน้าแรก"},
+    {"name": "timeline_sources_failed", "value": "โหลดบางรายการหรือชุมชนไม่สำเร็จ แตะเพื่อลองอีกครั้ง"},
+    {"name": "timeline_sources_pinned_empty", "value": "ยังไม่มีไทม์ไลน์ที่ปักหมุด เพิ่มรายการ ชุมชน หรือหัวข้อด้านล่าง"},
+    {"name":"video_controls_mirror","value":"สลับตำแหน่งปุ่มควบคุม"},
+    {"name":"video_controls_speed","value":"ความเร็ว"},
+    {"name":"video_controls_aspect","value":"สัดส่วน"},
+    {"name":"video_controls_background","value":"เบื้องหลัง"},
+    {"name":"video_controls_quality_hd","value":"HD"},
+    {"name":"video_controls_quality_sd","value":"SD"},
+    {"name":"video_controls_quality_ld","value":"LD"},
+    {"name":"video_controls_more","value":"เพิ่มเติม"},
+    {"name":"video_controls_download","value":"ดาวน์โหลด"},
+    {"name":"settings_navigation_style","value":"รูปแบบการนำทางด้านล่าง"},
+    {"name":"settings_hds_bottom_bar","value":"HdsTabs แบบลอย"},
+    {"name":"settings_split_bottom_bar","value":"การนำทางแคปซูลแยกปุ่ม"},
+    {"name":"settings_split_bottom_bar_desc","value":"สลับหน้าในแคปซูลด้านซ้าย ปุ่มแยกใช้โพสต์ เริ่มแชต รีเฟรช หรือกลับด้านบน ทั้งสองส่วนใช้วัสดุ HDS ระบบรุ่นเก่าจะใช้การนำทางที่เข้ากันได้"},
+    {"name":"split_navigation_action_top","value":"กลับด้านบน"},
+    {"name":"split_navigation_action_refresh","value":"รีเฟรชหน้าหลัก"},
+    {"name":"split_navigation_action_compose","value":"สร้างโพสต์"},
+    {"name": "settings_reply_capsule_split", "value": "แคปซูลตอบกลับแยกกัน"},
+    {"name": "settings_reply_capsule_split_desc", "value": "แยกช่องตอบกลับและการดำเนินการกับโพสต์เมื่อย่อ"},
+    {"name": "reply_capsule_write_reply", "value": "ตอบกลับ"},
+    {"name":"settings_native_bottom_bar","value":"การนำทางแบบแคปซูลวัสดุ 7.0"},
+    {"name":"settings_native_bottom_bar_desc","value":"ใช้วัสดุแบบดื่มด่ำ HarmonyOS 7.0 เช่นเดียวกับแคปซูลตอบกลับ พร้อมแสงสัมผัส ตัวบ่งชี้แบบของเหลว และสลับด้านตามการจับ หากไม่รองรับจะใช้แคปซูล HDS"},
+    {"name":"settings_native_navigation_material","value":"ความหนาวัสดุแคปซูลนำทาง"},
+    {"name":"settings_for_you_only_sensitive_age_title","value":"ยืนยันอายุ"},
+    {"name":"settings_for_you_only_sensitive_age_message","value":"“แสดงเฉพาะเนื้อหาที่ละเอียดอ่อนในสำหรับคุณ” ใช้ได้กับผู้ที่มีอายุ 18 ปีขึ้นไปเท่านั้น คุณมีอายุ 18 ปีขึ้นไปหรือไม่?"},
+    {"name":"settings_for_you_only_sensitive_age_under","value":"อายุต่ำกว่า 18 ปี"},
+    {"name":"settings_for_you_only_sensitive_age_adult","value":"อายุ 18 ปีขึ้นไป"},
+    {"name":"settings_theme_icon_blue","value":"น้ำเงินไอคอน"},
+    {"name":"settings_theme_icon_red","value":"แดงไอคอน"},
+    {"name":"settings_theme_icon_orange","value":"ส้มไอคอน"},
+    {"name":"settings_theme_icon_yellow","value":"เหลืองไอคอน"},
+    {"name":"settings_theme_icon_green","value":"เขียวไอคอน"},
+    {"name":"settings_theme_icon_pink","value":"ชมพูไอคอน"},
+    {"name":"settings_theme_icon_cyan","value":"ฟ้าไอคอน"},
+    {"name":"settings_theme_icon_navy","value":"กรมท่าไอคอน"}
   ]
 }

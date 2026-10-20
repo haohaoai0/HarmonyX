@@ -292,7 +292,8 @@ test('history detail replaces the preview with the complete fetched post while o
   const enriched=[];
   const Detail=methods('pages/PostDetail','PostDetail',['applyLivePostState'],{
     browsingHistoryStore:{enrich:(_ctx,post)=>enriched.push(post)},getContext:()=>({}),postViewCounts:{remember(){}},
-    refreshedPostPresentation:()=>null
+    refreshedPostPresentation:()=>null,
+    refreshedPostMetrics:require('./post-card-fixture.cjs').load('utils/PostMetadata').refreshedPostMetrics
   });
   const live={id:'10',text:'Complete post',author:{name:'Actual'},createdAt:'2026-10-12',metrics:{viewCount:30}};
   const detail=Object.assign(new Detail(),{tweet:{...live,text:'Preview'},embedded:false,routeNeedsContent:true,syncActionStates(){}});

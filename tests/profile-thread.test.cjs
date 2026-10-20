@@ -21,6 +21,7 @@ function loadService(name, dependencies = {}) {
     if (id === './XSpaceOperations') return loadService('XSpaceOperations');
     if (id === './XChatConversationId') return loadService('XChatConversationId');
     if (id === '../models/AccountPrivacy') return loadService('../models/AccountPrivacy');
+    if (id === '../models/ComposerOptions') return loadService('../models/ComposerOptions');
     if (id === '@kit.ImageKit') return { image: {} };
     if (id === './JetfuelDecoder') return loadService('JetfuelDecoder', {
       '@ohos.util': {}, '@kit.AbilityKit': {}
@@ -282,7 +283,7 @@ test('pinned profile post wins a duplicate and article keeps its cover and previ
   assert.equal(parsed.tweets.length, 1);
   assert.equal(parsed.tweets[0].pinned, true);
   assert.deepEqual(parsed.tweets[0].article, { id: 'article1', title: 'Travel guide',
-    previewText: 'Packing list', coverUrl: 'https://img/cover' });
+    previewText: 'Packing list', coverUrl: 'https://img/cover', blocks: [], plainText: '' });
 });
 
 test('account information omits absent values and video rows use actual duration', () => {
@@ -298,4 +299,15 @@ test('account information omits absent values and video rows use actual duration
   const video = tweet('video', '', '', [{ type: 'video', durationMs: 4100 }]);
   assert.equal(ProfileAccountData.duration(ProfileAccountData.video(video)), '0:05');
   assert.equal(ProfileAccountData.video(tweet('photo', '', '', [{ type: 'photo' }])), null);
+});
+
+test('For You modules retain a friend reply and its original when items use direct camel-case content', () => {
+  const root = privatePost('root', '', 'Original');
+  const reply = privatePost('reply', 'root', 'Friend reply');
+  const payload = JSON.parse(conversationPayload([root, reply]));
+  const entry = payload.data.timeline_response.timeline.instructions[0].entries[0];
+  entry.content.items = [root, reply].map(result => ({ itemContent: { tweetResult: { result } } }));
+  const page = XTimelineParser.parse(JSON.stringify(payload));
+  assert.equal(page.tweets.length, 1); assert.equal(page.tweets[0].text, 'Friend reply');
+  assert.equal(page.tweets[0].replyContext[0].text, 'Original');
 });

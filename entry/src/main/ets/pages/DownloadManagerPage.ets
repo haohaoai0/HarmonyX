@@ -180,7 +180,9 @@ export struct DownloadManagerPage {
     if (task.status === DownloadTaskStatus.PAUSED || task.status === DownloadTaskStatus.FAILED) {
       return $r('app.string.download_resume');
     }
-    return this.saveToFolder ? $r('app.string.storage_save_to_downloads') : $r('app.string.download_save_to_gallery');
+    return this.saveToFolder ? (downloadLocationStore.supportsDirectory() ?
+      $r('app.string.storage_save_to_remembered') : $r('app.string.storage_save_to_downloads')) :
+      $r('app.string.download_save_to_gallery');
   }
 
   private hasAction(task: DownloadTask): boolean {

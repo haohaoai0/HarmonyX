@@ -126,7 +126,29 @@ test('light and dark accents resolve independently while legacy accents stay unc
   assert.equal(palette.accentUsesDarkMode('system', true), true);
 });
 
-test('every locale carries all twelve Chinese colour names', () => {
+test('launcher icon colors are available as stable theme choices', () => {
+  const palette = loadPalette();
+  const expectedIcons = [
+    ['icon_blue', '#0B77FD', '#075BC8', '#72B0FF'],
+    ['icon_red', '#F0243C', '#C3182D', '#FF788C'],
+    ['icon_orange', '#F88008', '#C85E00', '#FFB15A'],
+    ['icon_yellow', '#F8D040', '#A57200', '#FFE38A'],
+    ['icon_green', '#10B868', '#087D47', '#59E5A1'],
+    ['icon_pink', '#F86898', '#C53668', '#FFAAC7'],
+    ['icon_cyan', '#18B8D0', '#007E99', '#64D9EB'],
+    ['icon_navy', '#243878', '#1A2A5E', '#8EA8FF']
+  ];
+  assert.equal(palette.ICON_ACCENT_PALETTE.length, expectedIcons.length);
+  for (const row of expectedIcons) {
+    assert.equal(palette.isKnownAccentTheme(row[0]), true);
+    assert.equal(palette.canonicalAccentTheme(row[0]), row[0]);
+    assert.equal(palette.accentSwatchColor(row[0]), row[1]);
+    assert.equal(palette.resolveAccentColor(row[0], false), row[2]);
+    assert.equal(palette.resolveAccentColor(row[0], true), row[3]);
+  }
+});
+
+test('every locale carries all Chinese and launcher icon colour names', () => {
   const root = 'entry/src/main/resources';
   const locales = fs.readdirSync(root, { withFileTypes: true })
     .filter(entry => entry.isDirectory())
@@ -139,6 +161,10 @@ test('every locale carries all twelve Chinese colour names', () => {
     for (const row of expected) {
       assert.equal(typeof names.get(`settings_theme_${row[0]}`), 'string', `${locale}: ${row[0]}`);
       assert.notEqual(names.get(`settings_theme_${row[0]}`), '');
+    }
+    for (const id of ['icon_blue', 'icon_red', 'icon_orange', 'icon_yellow', 'icon_green', 'icon_pink', 'icon_cyan', 'icon_navy']) {
+      assert.equal(typeof names.get(`settings_theme_${id}`), 'string', `${locale}: ${id}`);
+      assert.notEqual(names.get(`settings_theme_${id}`), '');
     }
   }
 });

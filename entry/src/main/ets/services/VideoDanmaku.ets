@@ -24,14 +24,14 @@ export class VideoDanmaku {
       .replace(/\s+/g, ' ').trim();
   }
 
-  static comments(replies: Tweet[], rootId: string): VideoDanmakuComment[] {
+  static comments(replies: Tweet[], rootId: string, verifiedThreadReplies: boolean = false): VideoDanmakuComment[] {
     const result: VideoDanmakuComment[] = [];
     const ids: Set<string> = new Set<string>();
     for (const reply of replies) {
       const parent: string = reply.replyToTweetId ?? '';
       const conversation: string = reply.conversationId ?? '';
       if (reply.id === rootId || ids.has(reply.id) ||
-        (parent !== rootId && conversation !== rootId)) { continue; }
+        (!verifiedThreadReplies && parent !== rootId && conversation !== rootId)) { continue; }
       const text: string = VideoDanmaku.commentText(reply.text);
       if (text.length === 0) { continue; }
       ids.add(reply.id);

@@ -23,6 +23,7 @@ import { destinationTitleBarStyle } from '../utils/DestinationTitleBar';
 import { ResponsiveLayout } from '../utils/ResponsiveLayout';
 import { pageSurfaceColor } from '../utils/ThemeColors';
 import type { UserDetailRouteParam } from './UserDetail';
+import { materialModifier } from '../utils/SystemMaterial';
 
 const PAGE_SIZE = 20;
 
@@ -398,6 +399,6 @@ export struct UserList {
         this.themeDisplayMode, this.themeDarkSurface, this.titleBarStyleMode)
     })
     .backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue))
-    .systemMaterial(pageBackgroundActive(this.pageBackgroundValue) ? undefined : this.pageMaterial());
+    .attributeModifier(materialModifier(pageBackgroundActive(this.pageBackgroundValue) ? undefined : this.pageMaterial()));
   }
 }

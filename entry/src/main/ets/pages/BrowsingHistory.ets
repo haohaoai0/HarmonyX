@@ -20,6 +20,7 @@ import { SystemMaterialUtil } from '../utils/SystemMaterial';
 import { cardSurfaceColor, fieldSurfaceColor, pageSurfaceColor } from '../utils/ThemeColors';
 import { ResponsiveLayout } from '../utils/ResponsiveLayout';
 import type { PostDetailRouteParam } from './PostDetail';
+import { materialModifier } from '../utils/SystemMaterial';
 
 @Builder
 export function BrowsingHistoryBuilder(): void { BrowsingHistory(); }
@@ -258,7 +259,7 @@ struct BrowsingHistory {
         .keyboardAppearance(KeyboardAppearance.IMMERSIVE).fontColor($r('app.color.text_primary'))
         .backgroundColor(SystemMaterialUtil.isApi26OrAbove() ? Color.Transparent :
           fieldSurfaceColor(this.displayMode, this.darkSurface))
-        .systemMaterial(this.searchMaterial.material(this.accentColor))
+        .attributeModifier(materialModifier(this.searchMaterial.material(this.accentColor)))
         .onChange((value: string): void => {
           this.query = value; this.filter(); this.loadVisiblePreviews(0, 19);
         })

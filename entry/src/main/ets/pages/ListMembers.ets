@@ -19,6 +19,7 @@ import { destinationTitleBarStyle } from '../utils/DestinationTitleBar';
 import { pageSurfaceColor } from '../utils/ThemeColors';
 import type { ListMembersRouteParam, ListTimelineRouteParam, ListEditorRouteParam } from './Lists';
 import type { UserDetailRouteParam } from './UserDetail';
+import { materialModifier } from '../utils/SystemMaterial';
 
 @Builder
 export function ListMembersBuilder(): void { ListMembers(); }
@@ -309,7 +310,7 @@ export struct ListMembers {
         style: destinationTitleBarStyle(ScrollEffectType.IMMERSIVE_GRADIENT_BLUR,
           this.themeDisplayMode, this.themeDarkSurface, this.titleBarStyleMode) })
       .backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue))
-      .systemMaterial(deviceInfo.apiAvailable('26.0.0') ? new uiMaterial.ImmersiveMaterial({
-        style: uiMaterial.ImmersiveStyle.REGULAR, applyShadow: true, colorInvert: true }) : undefined);
+      .attributeModifier(materialModifier(deviceInfo.apiAvailable('26.0.0') ? new uiMaterial.ImmersiveMaterial({
+        style: uiMaterial.ImmersiveStyle.REGULAR, applyShadow: true, colorInvert: true }) : undefined));
   }
 }

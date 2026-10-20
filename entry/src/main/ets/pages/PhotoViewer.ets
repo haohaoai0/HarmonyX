@@ -1,3 +1,6 @@
+import { KeyCode } from '@kit.InputKit';
+import { backInputKey, plainInputKey, contextInputMouse } from '../utils/InputSupport';
+import { DesktopLayout } from '../utils/DesktopLayout';
 import { motionDuration, motionCurve } from '../utils/AppMotion';
 import { menuActionVisible } from '../models/MenuActionCatalog';
 import { STORAGE_KEY_HIDDEN_MENU_ACTIONS } from '../services/MenuSettingsStore';
@@ -20,6 +23,7 @@ import { STORAGE_KEY_DESKTOP_LAYOUT } from '../services/LayoutSettingsStore';
 import { MaterialButton } from '../components/MaterialButton';
 import { PhotoViewerAuthorBar } from '../components/PhotoViewerAuthorBar';
 import { SurfaceVideoPlayer } from '../components/PostMedia';
+import { gifVideoDownloadUrl } from '../services/GifDownloadChoice';
 import { GifPreviewImage } from '../components/GifPreviewImage';
 import type { UserDetailRouteParam } from './UserDetail';
 import { SystemMaterialUtil } from '../utils/SystemMaterial';
@@ -225,6 +229,8 @@ struct ZoomablePhoto {
   @State @Watch('reportTransform') private dismissY: number = 0;
   @State private viewportWidth: number = 360;
   @State private viewportHeight: number = 720;
+  @State private loading: boolean = true;
+  @State private loadFailed: boolean = false;
   @State private source: string = '';
   @State private fallbackPixelMap: image.PixelMap | null = null;
   private alive: boolean = true;
@@ -253,7 +259,7 @@ struct ZoomablePhoto {
     if (this.sourceId.length > 0) {
       const node: MediaPhotoNode | undefined = mediaPhotoNodeFor(this.sourceId);
       this.sharedOwner = createMediaSourcePrefix();
-      if (node !== undefined) {
+      if (node !== undefined && node.width > 0 && node.height > 0) {
         this.sharedPhoto = node;
         if (!this.presentImage) { return; }
         if (this.onAdoptNode(node, this.sharedOwner, this.url)) { return; }
@@ -275,8 +281,8 @@ struct ZoomablePhoto {
     if (this.gifMedia !== null) { return; }
     if (!this.alive || !this.canAdoptNode()) { return; }
     if (this.sharedPhoto !== null) {
-      if (this.presentImage) { this.onAdoptNode(this.sharedPhoto, this.sharedOwner, this.url); }
-      return;
+      if (!this.presentImage || this.onAdoptNode(this.sharedPhoto, this.sharedOwner, this.url)) { return; }
+      this.sharedPhoto = null;
     }
     this.resolveSource();
   }
@@ -285,7 +291,8 @@ struct ZoomablePhoto {
     // Keep the live image in the card until the overlay has committed that
     // exact card frame. Moving it during onAppear would leave a blank frame
     // while the destination is still measuring its full-size viewport.
-    if (!this.alive || !this.presentImage || this.sharedPhoto === null || !this.canAdoptNode()) { return; }
+    if (!this.alive || !this.presentImage || !this.canAdoptNode()) { return; }
+    if (this.sharedPhoto === null) { this.resolveSource(); return; }
     if (!this.onAdoptNode(this.sharedPhoto, this.sharedOwner, this.url)) {
       this.sharedPhoto = null;
       this.resolveSource();
@@ -300,6 +307,8 @@ struct ZoomablePhoto {
   private resolveSource(): void {
     if (this.gifMedia !== null) { return; }
     this.clearRetryTimer();
+    this.loading = true;
+    this.loadFailed = false;
     const serial: number = ++this.requestSerial;
     const sourceUrl: string = this.url;
     if (sourceUrl.length === 0) {
@@ -323,7 +332,7 @@ struct ZoomablePhoto {
 
   private onImageError(): void {
     if (this.alive && this.source === this.url && this.fallbackPixelMap === null && this.url.length > 0) {
-      this.onImageReady();
+      this.loading = true;
       this.beginProxyFetch(this.url, this.requestSerial, 0);
     }
   }
@@ -340,6 +349,8 @@ struct ZoomablePhoto {
       }
       const previous: image.PixelMap | null = this.fallbackPixelMap;
       this.fallbackPixelMap = pixelMap;
+      this.loading = false;
+      this.loadFailed = false;
       if (previous !== null) { this.releasePixelMap(previous); }
     }).catch((): void => {
       if (this.alive && serial === this.requestSerial) { this.retrySource(sourceUrl, serial, attempt); }
@@ -347,7 +358,9 @@ struct ZoomablePhoto {
   }
 
   private retrySource(sourceUrl: string, serial: number, attempt: number): void {
-    if (attempt >= 2) { this.onImageReady(); return; }
+    if (attempt >= 2) {
+      this.loading = false; this.loadFailed = true; this.onImageReady(); return;
+    }
     this.clearRetryTimer();
     this.retryTimer = setTimeout((): void => {
       this.retryTimer = -1;
@@ -473,8 +486,8 @@ struct ZoomablePhoto {
     this.pinchStartScale = this.zoomScale;
     this.pinchStartX = this.offsetX;
     this.pinchStartY = this.offsetY;
-    this.pinchCenterStartX = event.pinchCenterX;
-    this.pinchCenterStartY = event.pinchCenterY;
+    this.pinchCenterStartX = event.source === SourceType.Mouse ? this.viewportWidth / 2 : event.pinchCenterX;
+    this.pinchCenterStartY = event.source === SourceType.Mouse ? this.viewportHeight / 2 : event.pinchCenterY;
     this.reportZoom(true);
   }
 
@@ -482,8 +495,8 @@ struct ZoomablePhoto {
     const rawScale: number = this.pinchStartScale * event.scale;
     const nextScale: number = rawScale < 1 ? Math.max(0.85, 1 + (rawScale - 1) * 0.25) :
       (rawScale > 4 ? Math.min(4.5, 4 + (rawScale - 4) * 0.2) : rawScale);
-    const centerX: number = event.pinchCenterX - this.viewportWidth / 2;
-    const centerY: number = event.pinchCenterY - this.viewportHeight / 2;
+    const centerX: number = event.source === SourceType.Mouse ? 0 : event.pinchCenterX - this.viewportWidth / 2;
+    const centerY: number = event.source === SourceType.Mouse ? 0 : event.pinchCenterY - this.viewportHeight / 2;
     const startX: number = this.pinchCenterStartX - this.viewportWidth / 2;
     const startY: number = this.pinchCenterStartY - this.viewportHeight / 2;
     const ratio: number = nextScale / this.pinchStartScale;
@@ -512,6 +525,8 @@ struct ZoomablePhoto {
   }
 
   private panUpdate(event: GestureEvent): void {
+    // Wheel/touchpad scrolling may pan a zoomed image, but must never dismiss it.
+    if (event.source === SourceType.Mouse && this.zoomScale <= 1) { return; }
     if (this.pinching || this.activeFingers(event) > 1) {
       return;
     }
@@ -554,6 +569,7 @@ struct ZoomablePhoto {
   }
 
   private panEnd(event?: GestureEvent): void {
+    if (event?.source === SourceType.Mouse && this.zoomScale <= 1) { return; }
     if (this.pinching) { return; }
     if (this.zoomScale > 1) {
       const velocityX: number = event === undefined ? 0 : event.velocityX;
@@ -599,7 +615,7 @@ struct ZoomablePhoto {
             if (event !== undefined && event.width > 0 && event.height > 0) {
               this.decodedWidth = event.width;
               this.decodedHeight = event.height;
-              if (this.alive) { this.onImageReady(); }
+              if (this.alive) { this.loading = false; this.loadFailed = false; this.onImageReady(); }
             }
           })
       }
@@ -622,6 +638,15 @@ struct ZoomablePhoto {
     // The gesture surface stays fixed; only the image beneath it transforms.
     Stack() {
       this.PhotoImage()
+      if (this.gifMedia === null && this.sharedPhoto === null) {
+        if (this.loading) { LoadingProgress().width(32).height(32).color(Color.White).hitTestBehavior(HitTestMode.None) }
+        else if (this.loadFailed) {
+          Column({ space: 12 }) {
+            Text($r('app.string.image_edit_load_failed')).fontColor(Color.White).fontSize($r('sys.float.Body_M'))
+            Button($r('app.string.xxauth_retry')).onClick((): void => this.resolveSource())
+          }.padding(20)
+        }
+      }
     }
     .width('100%')
     .height('100%')
@@ -720,6 +745,8 @@ export struct PhotoViewer {
   @State private alt: string = '';
   @State private current: number = 0;
   @State private zoomed: boolean = false;
+  @State private pointerHover: boolean = false;
+  private inputPager: SwiperController = new SwiperController();
   @State private transitionPrefix: string = '';
   @State private controlsVisible: boolean = false;
   @State private originalShown: boolean = false;
@@ -747,6 +774,54 @@ export struct PhotoViewer {
     this.ocrRequestId += 1;
     this.subjectRequestId += 1;
     this.releaseSubjectPixelMap();
+  }
+
+  private inputBack(): boolean {
+      if (this.subjectVisible) {
+        this.closeSubjectPanel();
+        return true;
+      }
+      if (this.ocrVisible) {
+        this.closeOcrPanel();
+        return true;
+      }
+      if (this.showMoreSheet) { this.showMoreSheet = false; return true; }
+      if (this.showPostSheet) { this.closePostSheet(); return true; }
+      this.close();
+      return true;
+  }
+
+  private inputPhoto(direction: number): void {
+    if (this.closing || this.zoomed || this.showMoreSheet || this.showPostSheet || this.ocrVisible || this.subjectVisible) { return; }
+    const next: number = this.current + direction;
+    if (next < 0 || next >= this.items.length) { return; }
+    this.inputPager.changeIndex(next, true);
+  }
+
+  private photoInputKey(event: KeyEvent): boolean {
+    if (!plainInputKey(event) || this.zoomed || this.showMoreSheet || this.showPostSheet || this.ocrVisible || this.subjectVisible) { return false; }
+    if (event.keyCode !== KeyCode.KEYCODE_DPAD_LEFT && event.keyCode !== KeyCode.KEYCODE_DPAD_RIGHT) { return false; }
+    if (event.type === KeyType.Down) { this.inputPhoto(event.keyCode === KeyCode.KEYCODE_DPAD_LEFT ? -1 : 1); }
+    return true;
+  }
+
+  @Builder
+  private PointerPhotoNavigation(): void {
+    if ((this.desktop() || this.pointerHover) && this.items.length > 1 && !this.zoomed && !this.showPostSheet) {
+      Row() {
+        Button({ type: ButtonType.Circle }) {
+          SymbolGlyph($r('sys.symbol.chevron_left')).fontSize(24).fontColor([Color.White])
+        }.width(44).height(44).backgroundColor($r('app.color.photo_viewer_author_scrim'))
+          .enabled(this.current > 0).accessibilityText($r('app.string.input_previous'))
+          .onClick((): void => this.inputPhoto(-1))
+        Blank()
+        Button({ type: ButtonType.Circle }) {
+          SymbolGlyph($r('sys.symbol.chevron_right')).fontSize(24).fontColor([Color.White])
+        }.width(44).height(44).backgroundColor($r('app.color.photo_viewer_author_scrim'))
+          .enabled(this.current < this.items.length - 1).accessibilityText($r('app.string.input_next'))
+          .onClick((): void => this.inputPhoto(1))
+      }.width('100%').height('100%').alignItems(VerticalAlign.Center).padding(16).hitTestBehavior(HitTestMode.Transparent)
+    }
   }
 
   private text(resource: Resource): string {
@@ -793,8 +868,10 @@ export struct PhotoViewer {
     }
     this.items = next;
     const initialIndex: number = Math.max(0, Math.min(next.length - 1, param.index));
+    const sourceNode: MediaPhotoNode | undefined = param.source === undefined ? undefined :
+      mediaPhotoNodeFor(next[initialIndex]?.sourceId ?? '');
     this.initialPhotoReady = param.source === undefined || next[initialIndex]?.animation != null ||
-      mediaPhotoNodeFor(next[initialIndex]?.sourceId ?? '') !== undefined;
+      (sourceNode !== undefined && sourceNode.width > 0 && sourceNode.height > 0);
     this.alt = param.alt;
     this.current = initialIndex;
     this.transitionPrefix = param.transitionPrefix;
@@ -1531,6 +1608,29 @@ export struct PhotoViewer {
     }
   }
 
+  private currentGifVideoUrl(): string {
+    const item: PhotoViewerPhoto | undefined = this.items[this.current];
+    const animation: MediaAttachment | null = item?.animation ?? null;
+    return item !== undefined && animation !== null ? gifVideoDownloadUrl(animation, item.originalUrl) : '';
+  }
+
+  private downloadGifAsVideo(): void {
+    if (this.downloading) { return; }
+    const url: string = this.currentGifVideoUrl();
+    if (url.length === 0) { return; }
+    this.showMoreSheet = false;
+    this.downloading = true;
+    const mediaId: string = (this.tweet === null ? 'gif' : this.tweet.id) + '-' + this.current.toString();
+    promptAction.showToast({ message: this.text($r('app.string.media_download_started')) });
+    mediaDownloadService.download(getContext(this) as common.UIAbilityContext, url, mediaId, true,
+      (result: number): void => {
+        this.downloading = false;
+        const message: Resource = result === MEDIA_DOWNLOAD_SUCCESS ? $r('app.string.media_video_saved') :
+          result === MEDIA_DOWNLOAD_CANCELED ? $r('app.string.media_download_canceled') : $r('app.string.media_download_failed');
+        promptAction.showToast({ message: this.text(message), duration: 2200 });
+      });
+  }
+
   private async selectCurrentGif(): Promise<void> {
     const action: ((index: number) => Promise<void>) | null = this.gifSelectAction;
     if (action === null || this.selectingGif) { return; }
@@ -1705,6 +1805,10 @@ export struct PhotoViewer {
             })
           }
         }
+        if (this.currentGifVideoUrl().length > 0) {
+          this.MoreRow($r('sys.symbol.video'), $r('app.string.gif_action_save_video'), !this.downloading,
+            (): void => { this.downloadGifAsVideo(); })
+        }
         if (this.items.length > 1) {
           if (this.menuVisible('photo.save_all')) {
             this.MoreRow($r('sys.symbol.download'), $r('app.string.media_download_all_originals'), !this.downloading,
@@ -1731,7 +1835,7 @@ export struct PhotoViewer {
         this.ViewerBackdrop()
 
         if (this.items.length > 0) {
-          Swiper() {
+          Swiper(this.inputPager) {
             ForEach(this.items, (item: PhotoViewerPhoto, index: number) => {
               ZoomablePhoto({
                 sourceId: item.sourceId ?? '',
@@ -1805,6 +1909,7 @@ export struct PhotoViewer {
           })
         }
 
+        this.PointerPhotoNavigation()
         Stack({ alignContent: Alignment.Top }) {
           Column() {
             this.TopControls()
@@ -1902,10 +2007,6 @@ export struct PhotoViewer {
         backgroundColor: $r('app.color.media_viewer_sheet'),
         onDisappear: (): void => { this.showMoreSheet = false; }
       }, this.sheetMaterialEnabled, this.sheetMaterialLevel, this.sheetWindowBreakpoint, ResponsiveLayout.isCompactWindow(this.windowWidth, this.windowHeight));
-    if (sheetMaterialActive(this.sheetMaterialEnabled)) {
-      options.systemMaterial = SystemMaterialUtil.immersiveMaterial(this.sheetMaterialLevel,
-        false, true, true, undefined);
-    }
     return options;
   }
 
@@ -1917,6 +2018,12 @@ export struct PhotoViewer {
         mediaWidth: this.items[this.current]?.width ?? 0, mediaHeight: this.items[this.current]?.height ?? 0 }) {
       Row({ space: 0 }) {
         Column() { this.ViewerSurface() }.height('100%').layoutWeight(1).backgroundColor(Color.Black)
+          .focusable(true).defaultFocus(true)
+          .onKeyEvent((event: KeyEvent): boolean => this.photoInputKey(event))
+          .onHover((hover: boolean): void => { this.pointerHover = hover; })
+          .onMouse((event: MouseEvent): void => contextInputMouse(event, (): void => {
+            if (!this.closing && !this.showPostSheet && !this.ocrVisible && !this.subjectVisible) { this.showMoreSheet = true; }
+          }))
         if (this.desktop() && this.tweet !== null) {
           Column() { this.PostSheet() }.width('44%').height('100%')
             .backgroundColor(pageSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
@@ -1930,7 +2037,7 @@ export struct PhotoViewer {
     }
     .mode(NavDestinationMode.DIALOG)
     .systemTransition(pageSystemTransition(this.pageTransitionMode, this.motion.enabled() ? NavigationSystemTransitionType.NONE :
-      this.photoFullscreen && this.desktopLayoutEnabled && ResponsiveLayout.isLarge(this.breakpoint) ?
+      this.photoFullscreen && DesktopLayout.active(this.desktopLayoutEnabled, this.breakpoint) ?
       NavigationSystemTransitionType.FADE : NavigationSystemTransitionType.DEFAULT))
     .onReady((context: NavDestinationContext): void => {
       const param: PhotoViewerRouteParam = context.pathInfo?.param as PhotoViewerRouteParam;
@@ -1954,20 +2061,8 @@ export struct PhotoViewer {
     .onWillHide((): void => {
       if (this.screenBlocked) { setChatWindowPrivacy(this.getUIContext().getHostContext() as common.UIAbilityContext, false); }
     })
-    .onBackPressed((): boolean => {
-      if (this.subjectVisible) {
-        this.closeSubjectPanel();
-        return true;
-      }
-      if (this.ocrVisible) {
-        this.closeOcrPanel();
-        return true;
-      }
-      if (this.showMoreSheet) { this.showMoreSheet = false; return true; }
-      if (this.showPostSheet) { this.closePostSheet(); return true; }
-      this.close();
-      return true;
-    })
+    .onBackPressed((): boolean => this.inputBack())
+    .onKeyEvent((event: KeyEvent): boolean => backInputKey(event, (): void => { this.inputBack(); }))
     ;
   }
 }
