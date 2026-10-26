@@ -103,7 +103,7 @@ test('the drawer falls back to the active account while the network profile is u
 test('proxy avatar ignores stale cache completions after the URL changes or the page closes', async () => {
   const pending = [];
   const Subject = harness('components/ProxyAvatar', 'ProxyAvatar', ['resolveSource', 'aboutToDisappear'], {
-    XUserParser: { highResAvatarUrl: url => url }, proxyStore: { snapshot: () => ({ enabled: true }) },
+    XUserParser: { highResAvatarUrl: url => url }, proxyStore: { snapshot: () => ({ enabled: true }), requiresHttpTransport: () => true },
     getContext: () => ({}), avatarImageStore: { load: (_context, url) => new Promise(resolve => pending.push({ url, resolve })) }
   });
   const subject = Object.assign(new Subject(), { url: 'https://a', alive: true, requestGeneration: 0, tintBackground: false });
@@ -114,5 +114,5 @@ test('proxy avatar ignores stale cache completions after the URL changes or the 
   assert.equal(subject.source, 'file://cached-b');
   subject.url = 'https://c'; subject.resolveSource(); subject.aboutToDisappear();
   pending[2].resolve('file://cached-c'); await Promise.resolve();
-  assert.equal(subject.source, 'https://c');
+  assert.equal(subject.source, '', 'a failed or closed HTTP route must not fall back to a native remote Image');
 });

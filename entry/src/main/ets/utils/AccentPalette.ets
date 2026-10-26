@@ -58,7 +58,8 @@ export const MIXED_ACCENT_PALETTE: AccentPaletteEntry[] = [
   new AccentPaletteEntry('mix_sunset', '#7352AD', '#7352AD', '#C4A0F4', '#267352AD'),
   new AccentPaletteEntry('mix_forest', '#376A50', '#376A50', '#8DD1A5', '#26376A50'),
   new AccentPaletteEntry('mix_berry', '#A13E68', '#A13E68', '#F2A0C4', '#26A13E68'),
-  new AccentPaletteEntry('mix_morandi', '#596C86', '#596C86', '#B0C2DC', '#26596C86')
+  new AccentPaletteEntry('mix_morandi', '#596C86', '#596C86', '#B0C2DC', '#26596C86'),
+  new AccentPaletteEntry('mix_prism', '#2B71FD', '#1D4FC2', '#9FC4FF', '#262B71FD')
 ];
 
 export function isMixedAccentTheme(theme: string): boolean {
@@ -124,6 +125,13 @@ export function mixedAccentRoleColor(theme: string, role: string, fallback: Reso
     colors = [$r('app.color.mix_morandi_primary'), $r('app.color.mix_morandi_action'),
       $r('app.color.mix_morandi_home'), $r('app.color.mix_morandi_explore'),
       $r('app.color.mix_morandi_notifications'), $r('app.color.mix_morandi_messages'), $r('app.color.mix_morandi_profile')];
+  } else if (theme === 'mix_prism') {
+    colors = [
+      $r('app.color.mix_prism_primary'), $r('app.color.mix_prism_action'), $r('app.color.mix_prism_home'),
+      $r('app.color.mix_prism_explore'), $r('app.color.mix_prism_notifications'), $r('app.color.mix_prism_messages'),
+      $r('app.color.mix_prism_profile'), $r('app.color.mix_prism_on_action'), $r('app.color.mix_prism_control'),
+      $r('app.color.mix_prism_surface'), $r('app.color.mix_prism_ink'), $r('app.color.mix_prism_on_control')
+    ];
   }
   const roles: string[] = ['primary', 'action', 'home', 'explore', 'notifications', 'messages', 'profile',
     'on_action', 'control', 'surface', 'ink', 'on_control'];

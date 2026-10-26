@@ -175,17 +175,20 @@ function rootFixture(classic) {
   const source = fs.readFileSync('entry/src/main/ets/pages/Index.ets', 'utf8').replace('struct Index', 'class Index');
   const parsed = ts.createSourceFile('Index.ts', source, ts.ScriptTarget.Latest, true);
   const root = parsed.statements.find(node => ts.isClassDeclaration(node) && node.name.text === 'Index');
-  const names = ['usesFloatingTabBar', 'onChromeScroll', 'onChromeScrollStop', 'setTabBarHidden',
-    'onAutoHideTabBarChanged', 'onClassicBottomBarChanged', 'onClassicTabBarClick'];
+  const names = ['usesFloatingTabBar', 'onChromeScroll', 'onChromeScrollStop', 'setChromeHidden',
+    'setTitleBarHidden', 'setTabBarHidden', 'titleBarShouldHide', 'onAutoHideTabBarChanged',
+    'onClassicBottomBarChanged', 'onClassicTabBarClick'];
   const methods = names.map(name => root.members.find(node => node.name && node.name.getText(parsed) === name).getText(parsed));
   const code = ts.transpileModule('export class Root {\n' + methods.join('\n') + '\n}', {
     compilerOptions: { target: ts.ScriptTarget.ES2020, module: ts.ModuleKind.CommonJS }
   }).outputText;
   const api = {}, calls = [];
-  new Function('exports', 'HdsAnimationMode', 'TAB_BAR_HIDE_DEPTH', code)(api, { SCROLL_ANIMATION: 1 }, 36);
+  new Function('exports', 'HdsAnimationMode', 'TAB_BAR_HIDE_DEPTH', 'CHROME_TOP_REVEAL_DEPTH', 'ME_TAB_INDEX', code)(
+    api, { SCROLL_ANIMATION: 1 }, 10, 5, 4);
   const instance = new api.Root();
   Object.assign(instance, {
-    classicBottomBar: classic, autoHideTabBar: true, compactWindow: false, tabBarHidden: false,
+    classicBottomBar: classic, autoHideTitleBar: true, autoHideTabBar: true, compactWindow: false,
+    currentTab: 0, tabBarHidden: false, titleBarHidden: false, isDesktopLayout: () => false,
     supportsHdsFloatingMaterial: () => true, currentTabScrollOffset: () => 100,
     hdsTabsController: { applyHideAnimation: () => calls.push('hide'), applyShowAnimation: () => calls.push('show') }
   });
@@ -198,8 +201,10 @@ for (const classic of [true, false]) {
     assert.equal(instance.usesFloatingTabBar(), !classic);
     instance.onChromeScroll(20);
     assert.equal(instance.tabBarHidden, true);
+    assert.equal(instance.titleBarHidden, true);
     instance.onChromeScroll(-10);
     assert.equal(instance.tabBarHidden, false);
+    assert.equal(instance.titleBarHidden, false);
     instance.onChromeScroll(20);
     instance.autoHideTabBar = false;
     instance.onAutoHideTabBarChanged();
@@ -209,6 +214,16 @@ for (const classic of [true, false]) {
     assert.deepEqual(calls, classic ? [] : ['hide', 'show', 'hide', 'show']);
   });
 }
+
+test('root title bar follows the same scroll hide state as the floating tabs', () => {
+  const source = fs.readFileSync('entry/src/main/ets/pages/Index.ets', 'utf8');
+  assert.match(source, /\.dynamicHideTitleBar\(this\.titleBarDynamicHideParams\(\)\)/);
+  assert.match(source, /hideStatusBar: false/);
+  assert.match(source, /mode: HideMode\.SCROLL_UP/);
+  assert.match(source, /\.bindToScrollable\(this\.rootScrollableControllers\(\)\)/);
+  assert.match(source, /this\.setChromeHidden\(true\)/);
+  assert.match(source, /this\.setChromeHidden\(false\)/);
+});
 
 test('changing styles restores a previously hidden bar and clears the home double-tap window', () => {
   const { instance, calls } = rootFixture(true);

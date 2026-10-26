@@ -6,7 +6,6 @@ import { pageCanvasColor, pageReadingSurfaceColor } from '../utils/ThemeColors';
 import { STORAGE_KEY_PAGE_TRANSITION_MODE, DEFAULT_PAGE_TRANSITION_MODE } from '../services/PageTransitionSettingsStore';
 import { pageSystemTransition, PageTransitionMotion } from '../utils/PageTransition';
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
-import { SupporterActivationCard } from '../components/SupporterActivationCard';
 import promptAction from '@ohos.promptAction';
 import common from '@ohos.app.ability.common';
 import { uiMaterial } from '@kit.ArkUI';
@@ -28,37 +27,6 @@ const TELEGRAM_GROUP_URL: string = 'https://t.me/HarmonXH';
 @Builder
 export function HelpCenterBuilder(): void {
   HelpCenter();
-}
-
-@Component
-struct SupportQrCard {
-  @StorageProp('harmonyx.page_background') private pageBackgroundValue: string = '';
-  @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
-  @Prop title: Resource = $r('app.string.help_support_wechat');
-  @Prop image: Resource = $r('app.media.support_wechat');
-  @Prop imageHeight: number = 380;
-  @StorageProp('harmonyx.display_mode') private themeDisplayMode: string = '';
-  @StorageProp('harmonyx.dark_surface') private themeDarkSurface: string = '';
-
-  build(): void {
-    Column({ space: 12 }) {
-      Text(this.title).fontFamily(this.appFontFamily)
-        .fontSize($r('sys.float.Subtitle_L'))
-        .fontWeight(FontWeight.Medium)
-        .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, pageReadingSurfaceColor(cardSurfaceColor(this.themeDisplayMode, this.themeDarkSurface), this.pageBackgroundValue)))
-        .width('100%')
-      Image(this.image)
-        .width('100%')
-        .height(this.imageHeight)
-        .objectFit(ImageFit.Contain)
-        .borderRadius(16)
-        .clip(true)
-    }
-    .width('100%')
-    .padding(16)
-    .backgroundColor(pageReadingSurfaceColor(cardSurfaceColor(this.themeDisplayMode, this.themeDarkSurface), this.pageBackgroundValue))
-    .borderRadius(20)
-  }
 }
 
 @Component
@@ -255,41 +223,6 @@ struct HelpCenter {
           .backgroundColor(pageReadingSurfaceColor(cardSurfaceColor(this.themeDisplayMode, this.themeDarkSurface), this.pageBackgroundValue))
           .borderRadius(20)
 
-          Divider().color($r('app.color.divider'))
-
-          Column({ space: 8 }) {
-            Row({ space: 12 }) {
-              SymbolGlyph($r('sys.symbol.heart_fill'))
-                .fontSize(25)
-                .fontColor([$r('app.color.like')])
-              Text($r('app.string.help_support_title')).fontFamily(this.appFontFamily)
-                .fontSize($r('sys.float.Title_S'))
-                .fontWeight(FontWeight.Bold)
-                .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
-            }
-            Text($r('app.string.help_support_desc')).fontFamily(this.appFontFamily)
-              .fontSize($r('sys.float.Body_L'))
-              .lineHeight(22)
-              .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
-              .width('100%')
-            Text($r('app.string.help_support_scan')).fontFamily(this.appFontFamily)
-              .fontSize($r('sys.float.Body_M'))
-              .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
-              .width('100%')
-          }
-          .width('100%')
-
-          SupporterActivationCard()
-          SupportQrCard({
-            title: $r('app.string.help_support_wechat'),
-            image: $r('app.media.support_wechat'),
-            imageHeight: 380
-          })
-          SupportQrCard({
-            title: $r('app.string.help_support_alipay'),
-            image: $r('app.media.support_alipay'),
-            imageHeight: 460
-          })
         }
         .width('100%')
         .padding({ left: 20, right: 20, top: this.statusBarHeight + 88,

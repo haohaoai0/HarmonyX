@@ -77,9 +77,9 @@ Harmony X is more than a reskin. It is an API 26-oriented HarmonyOS adaptation o
 
 | Setting | Current value |
 |:--|:--|
-| Application | `Harmony X` · `com.haohaoai0.harmonx` · version `3.2.0` (`versionCode` 24) |
+| Application | `Harmony X` · `com.haohaoai0.harmonx` · version `3.5.0` (`versionCode` 28) |
 | Module | `entry` · Stage model · `modelVersion` 5.0.0 |
-| SDK profile | No explicit compile SDK (uses the installed DevEco SDK) · compatible SDK `6.1.0 (API 23)` · target SDK `26.0.0` |
+| SDK profile | No explicit compile SDK (uses the installed DevEco SDK) · compatible SDK `6.0.2 (API 22)` · target SDK `26.0.0` |
 | Devices | `phone`, `tablet`, `2in1` · fullscreen `EntryAbility` |
 | Permissions | `ohos.permission.INTERNET` (network), `ohos.permission.DETECT_GESTURE` (grip-hand posture), `ohos.permission.VIBRATE` (haptics), `ohos.permission.GET_NETWORK_INFO` (online state), `ohos.permission.GET_DONOTDISTURB_STATE` (silent under Do Not Disturb), `ohos.permission.KEEP_BACKGROUND_RUNNING` (background read-aloud), `ohos.permission.MICROPHONE` (voice input in Grok web and messages) |
 | Build tools | Hvigor `6.26.4` · `@ohos/hvigor-ohos-plugin` `6.26.4` · `@ohos/hypium` `1.0.19` (development dependency) |

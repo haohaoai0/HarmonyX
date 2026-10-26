@@ -1,3 +1,7 @@
+import { PostLinkMenu } from '../components/PostLinkMenu';
+import { PostTranslationInfo } from '../components/PostTranslationInfo';
+import { PostActionBar } from '../components/PostActionBar';
+import { DEFAULT_POST_ACTIONS_MASK, STORAGE_KEY_POST_ACTIONS_MASK, STORAGE_KEY_POST_ACTION_COUNTS } from '../services/PostDisplaySettingsStore';
 import { scrollFrame, scrollStarted, scrollStopped, stopScrollOnTouch } from '../utils/ScrollInteraction';
 import type { ThreadReaderRouteParam } from './ThreadReader';
 import { offlineReadingStore, OfflineSaveResult } from '../services/OfflineReadingStore';
@@ -40,7 +44,7 @@ import { harmonyShare, systemShare } from '@kit.ShareKit';
 import { TweetCard } from '../components/TweetCard';
 import { PromotionPostCard } from '../components/PromotionPostCard';
 import { XXAuthPromotionPlan, XXAuthPromotionPost } from '../services/XXAuthPromotionPost';
-import { XXAuthPromotionInjector, XXAuthPromotionSlot } from '../utils/XXAuthPromotionInjector';
+import { XXAuthCommentPromotionSession } from '../utils/XXAuthCommentPromotionSession';
 import { XXAUTH_PROMOTION_POST, xxAuthPopupStore } from '../services/XXAuthPopupStore';
 import { AvatarTintPalette, avatarTintIsDark, avatarTintSurface } from '../utils/AvatarTintColors';
 import { SpaceAwareAvatar } from '../components/SpaceAwareAvatar';
@@ -98,6 +102,7 @@ import { NavigationGuard } from '../utils/NavigationGuard';
 import { STORAGE_KEY_DESKTOP_LAYOUT } from '../services/LayoutSettingsStore';
 import { LIST_EXPAND_BACK_CURVE, LIST_EXPAND_PUSH_CURVE, SHARED_ELEMENT_DURATION } from '../utils/SharedElementMotion';
 import { MentionSegment, splitPostText } from '../utils/MentionText';
+import { PostLinkSpans } from '../components/PostLinkSpans';
 import { EmojiSpans } from '../components/EmojiSpans';
 import { EmojiCopyMenu } from '../utils/EmojiCopyMenu';
 import { openExternalLink, requestSearch } from '../utils/PostEntities';
@@ -153,6 +158,25 @@ export function PostDetailBuilder(param: Object): void {
 
 @Component
 export struct PostDetail {
+  @State private linkMenuVisible: boolean = false;
+  @State private translatedLinkMenuVisible: boolean = false;
+  @State private selectedLinkUrl: string = '';
+
+  private selectPostLink(url: string): void {
+    this.selectedLinkUrl = url;
+    this.translatedLinkMenuVisible = false;
+    this.linkMenuVisible = true;
+  }
+
+  private selectTranslatedPostLink(url: string): void {
+    this.selectedLinkUrl = url;
+    this.linkMenuVisible = false;
+    this.translatedLinkMenuVisible = true;
+  }
+
+  @Builder
+  private LinkMenu(): void { PostLinkMenu(this.getUIContext(), this.selectedLinkUrl) }
+
   private bodyTextController: TextController = new TextController();
   private translatedTextController: TextController = new TextController();
   @StorageProp(STORAGE_KEY_COMPONENT_HDR_ENABLED) private componentHdrEnabled: boolean = DEFAULT_COMPONENT_HDR_ENABLED;
@@ -168,6 +192,8 @@ export struct PostDetail {
 
   @StorageProp(STORAGE_KEY_PAGE_TRANSITION_MODE) private pageTransitionMode: string = DEFAULT_PAGE_TRANSITION_MODE;
   @StorageProp('harmonyx.compact_window') private sheetCompactWindow: boolean = false;
+  @StorageProp(STORAGE_KEY_POST_ACTIONS_MASK) private actionsMask: number = DEFAULT_POST_ACTIONS_MASK;
+  @StorageProp(STORAGE_KEY_POST_ACTION_COUNTS) private actionCountsVisible: boolean = true;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @StorageProp(STORAGE_KEY_SYSTEM_EMOJI_ENABLED) private systemEmojiEnabled: boolean = false;
   @StorageLink(STORAGE_KEY_FILTER_HIDE_ADS) private filterHideAds: boolean = true;
@@ -222,6 +248,7 @@ export struct PostDetail {
   @State private avatarPalette: AvatarTintPalette | null = null;
   @State private avatarThemeDark: boolean = false;
   @StorageProp(XXAUTH_PROMOTION_POST) @Watch('onPromotionChanged') private promotionPostJson: string = '';
+  private commentPromotions: XXAuthCommentPromotionSession = new XXAuthCommentPromotionSession();
   @State sharedElementId: string = '';
   @State private returnToMain: boolean = false;
   @State replies: Tweet[] = [];
@@ -247,6 +274,7 @@ export struct PostDetail {
   @State authorUserId: string = '';
   @State gestureSharing: boolean = false;
   @State heroTranslatedText: string = '';
+  @State private heroShowingOriginal: boolean = false;
   @State heroTranslating: boolean = false;
   @State private lastAutoTranslationRevision: number = -1;
   @State private lastAutoTranslationPostId: string = '';
@@ -365,6 +393,7 @@ export struct PostDetail {
 
   aboutToAppear(): void {
     this.alive = true;
+    this.commentPromotions = new XXAuthCommentPromotionSession();
     this.loadReplyQuality();
     this.detailVisible = true;
     // Bind the shared element before the destination's first layout. onReady
@@ -1158,31 +1187,19 @@ export struct PostDetail {
     const quality: Map<string, ReplyQualityAssessment> = this.replyQualityEnabled ?
       ReplyQuality.analyze(replies.map((row: ThreadReplyRow): Tweet => row.tweet),
         this.tweet?.author.id ?? '', this.qualityViewerId, this.qualityAllowedIds) : new Map<string, ReplyQualityAssessment>();
-    const anchors: number[] = [];
+    const anchors: string[] = [];
     for (let i: number = 1; i < replies.length; i++) {
-      if (!replies[i].isNestedReply) { anchors.push(i); }
+      if (!replies[i].isNestedReply) { anchors.push(replies[i].tweet.id); }
     }
-    const placement: Map<number, XXAuthPromotionPost> = new Map();
     // Embedded media viewers omit injected promotions, while the real reply
     // rows below must still be rendered for both photo and video comments.
-    if (!this.embedded) {
-      const plan: XXAuthPromotionPlan = this.promotionPlan();
-      if (anchors.length > 0 && plan.posts.length > 0 && plan.commentCount > 0) {
-        const count: number = Math.min(plan.commentCount, plan.posts.length, anchors.length);
-        const salt: string = 'comments:' + (this.tweet === null ? '' : this.tweet.id);
-        const slots: XXAuthPromotionSlot[] = XXAuthPromotionInjector.slots(anchors.length,
-          plan.posts, count, salt);
-        for (let i: number = 0; i < slots.length; i++) {
-          const at: number = Math.max(0, Math.min(anchors.length, slots[i].index) - 1);
-          placement.set(anchors[at], slots[i].post);
-        }
-      }
-    }
+    const placement: Map<string, XXAuthPromotionPost> = this.embedded ? new Map<string, XXAuthPromotionPost>() :
+      this.commentPromotions.placements(this.tweet?.id ?? '', anchors, this.promotionPlan());
     for (let i: number = 0; i < replies.length; i++) {
-      const injected: XXAuthPromotionPost | undefined = placement.get(i);
+      const injected: XXAuthPromotionPost | undefined = placement.get(replies[i].tweet.id);
       if (injected !== undefined) {
         const promotion: CommentTimelineRow = new CommentTimelineRow();
-        promotion.key = 'promo:' + injected.fingerprint + ':' + i.toString();
+        promotion.key = 'promo:' + injected.fingerprint + ':' + replies[i].tweet.id;
         promotion.promotion = injected;
         rows.push(promotion);
       }
@@ -1354,7 +1371,8 @@ export struct PostDetail {
 
   private postTimePrefix(): string {
     const time: string = formatPostDetailTime(this.tweet?.createdAt ?? '', this.postTimeNow);
-    return time.length > 0 ? time + ' · ' : '';
+    const viewsVisible: boolean = this.actionCountsVisible && (this.actionsMask & 8) !== 0;
+    return time.length > 0 ? time + (viewsVisible ? ' · ' : '') : '';
   }
 
   // The detail hero is not a TweetCard, so it owns the same translation
@@ -1391,6 +1409,7 @@ export struct PostDetail {
     this.heroTranslationRequestGeneration++;
     this.heroTranslating = false;
     this.heroTranslatedText = '';
+    this.heroShowingOriginal = false;
     this.heroTranslationWasAutomatic = false;
     this.lastAutoTranslationRevision = -1;
     this.lastAutoTranslationPostId = '';
@@ -1420,7 +1439,7 @@ export struct PostDetail {
       if (automatic) {
         return;
       }
-      this.heroTranslatedText = '';
+      this.heroShowingOriginal = !this.heroShowingOriginal;
       return;
     }
     const context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
@@ -2160,12 +2179,12 @@ export struct PostDetail {
 
   private postActionColor(color: ResourceColor): ResourceColor {
     return pageTextColor(color, this.embedded ? '' : this.pageBackgroundValue,
-      postCardSurfaceColor(cardSurfaceColor(this.themeDisplayMode, this.themeDarkSurface), this.pageBackgroundValue));
+      postCardSurfaceColor(cardSurfaceColor(this.themeDisplayMode, this.themeDarkSurface), this.pageBackgroundValue), 4.6, true);
   }
 
   @Builder
   private PostReplyButton(capsule: boolean): void {
-    if (this.tweet !== null) {
+    if (this.tweet !== null && (this.actionsMask & 1) !== 0) {
       Button({ type: ButtonType.Normal, stateEffect: true }) {
         Flex({ direction: capsule ? FlexDirection.Column : FlexDirection.Row,
           justifyContent: FlexAlign.Center, alignItems: ItemAlign.Center }) {
@@ -2173,11 +2192,13 @@ export struct PostDetail {
             .fontSize(capsule ? $r('app.float.reply_capsule_split_icon_size') : $r('app.float.post_detail_action_icon'))
             .fontWeight(capsule ? FontWeight.Medium : FontWeight.Normal)
             .fontColor([capsule ? $r('sys.color.font_secondary') : this.postActionColor($r('app.color.text_secondary'))])
+          if (this.actionCountsVisible) {
           Text(formatCount(this.tweet.metrics.replyCount)).fontFamily(this.appFontFamily)
             .fontSize(capsule ? $r('app.float.reply_capsule_split_caption_size') : $r('app.float.post_detail_action_text'))
             .margin({ left: capsule ? 0 : 5, top: capsule ? 2 : 0 })
             .maxLines(1).textOverflow({ overflow: TextOverflow.Ellipsis })
             .fontColor(capsule ? $r('sys.color.font_secondary') : this.postActionColor($r('app.color.text_secondary')))
+          }
         }
         .width('100%').height('100%')
       }
@@ -2193,7 +2214,7 @@ export struct PostDetail {
 
   @Builder
   private PostRepostButton(capsule: boolean): void {
-    if (this.tweet !== null) {
+    if (this.tweet !== null && (this.actionsMask & 2) !== 0) {
       Button({ type: ButtonType.Normal, stateEffect: true }) {
         Flex({ direction: capsule ? FlexDirection.Column : FlexDirection.Row,
           justifyContent: FlexAlign.Center, alignItems: ItemAlign.Center }) {
@@ -2206,12 +2227,14 @@ export struct PostDetail {
             .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.componentHdrEnabled && this.reposted, this.componentHdrRatio))
             .scale({ x: this.reposted ? 1.08 : 1, y: this.reposted ? 1.08 : 1 })
             .animation({ duration: 150, curve: Curve.EaseOut })
+          if (this.actionCountsVisible) {
           Text(formatCount(this.tweet.metrics.repostCount)).fontFamily(this.appFontFamily)
             .fontSize(capsule ? $r('app.float.reply_capsule_split_caption_size') : $r('app.float.post_detail_action_text'))
             .margin({ left: capsule ? 0 : 5, top: capsule ? 2 : 0 })
             .maxLines(1).textOverflow({ overflow: TextOverflow.Ellipsis })
             .fontColor(this.reposted ? this.postActionColor($r('app.color.repost')) : (capsule ? $r('sys.color.font_secondary') : this.postActionColor($r('app.color.text_secondary'))))
             .animation({ duration: 150, curve: Curve.EaseOut })
+          }
         }
         .width('100%').height('100%')
       }
@@ -2227,7 +2250,7 @@ export struct PostDetail {
 
   @Builder
   private PostLikeButton(capsule: boolean): void {
-    if (this.tweet !== null) {
+    if (this.tweet !== null && (this.actionsMask & 4) !== 0) {
       Button({ type: ButtonType.Normal, stateEffect: true }) {
         Flex({ direction: capsule ? FlexDirection.Column : FlexDirection.Row,
           justifyContent: FlexAlign.Center, alignItems: ItemAlign.Center }) {
@@ -2240,12 +2263,14 @@ export struct PostDetail {
             .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.componentHdrEnabled && this.liked, this.componentHdrRatio))
             .scale({ x: this.liked ? 1.08 : 1, y: this.liked ? 1.08 : 1 })
             .animation({ duration: 150, curve: Curve.EaseOut })
+          if (this.actionCountsVisible) {
           Text(formatCount(this.likeCount)).fontFamily(this.appFontFamily)
             .fontSize(capsule ? $r('app.float.reply_capsule_split_caption_size') : $r('app.float.post_detail_action_text'))
             .margin({ left: capsule ? 0 : 5, top: capsule ? 2 : 0 })
             .maxLines(1).textOverflow({ overflow: TextOverflow.Ellipsis })
             .fontColor(this.liked ? this.postActionColor($r('app.color.like')) : (capsule ? $r('sys.color.font_secondary') : this.postActionColor($r('app.color.text_secondary'))))
             .animation({ duration: 150, curve: Curve.EaseOut })
+          }
         }
         .width('100%').height('100%')
       }
@@ -2261,7 +2286,7 @@ export struct PostDetail {
 
   @Builder
   private PostBookmarkButton(capsule: boolean): void {
-    if (this.tweet !== null) {
+    if (this.tweet !== null && (this.actionsMask & 16) !== 0) {
       Button({ type: ButtonType.Normal, stateEffect: true }) {
         Flex({ direction: capsule ? FlexDirection.Column : FlexDirection.Row,
           justifyContent: FlexAlign.Center, alignItems: ItemAlign.Center }) {
@@ -2274,7 +2299,7 @@ export struct PostDetail {
             .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.componentHdrEnabled && this.bookmarked, this.componentHdrRatio))
             .scale({ x: this.bookmarked ? 1.08 : 1, y: this.bookmarked ? 1.08 : 1 })
             .animation({ duration: 150, curve: Curve.EaseOut })
-          if (capsule) {
+          if (capsule && this.actionCountsVisible) {
             Text(this.bookmarkCount >= 0 ? formatCount(this.bookmarkCount) : '')
               .fontFamily(this.appFontFamily).fontSize($r('app.float.reply_capsule_split_caption_size')).height(12).margin({ top: 2 }).maxLines(1)
               .textOverflow({ overflow: TextOverflow.Ellipsis })
@@ -2297,7 +2322,7 @@ export struct PostDetail {
 
   @Builder
   private PostShareButton(capsule: boolean): void {
-    if (this.tweet !== null) {
+    if (this.tweet !== null && (this.actionsMask & 32) !== 0) {
       Button({ type: ButtonType.Normal, stateEffect: true }) {
         Flex({ direction: capsule ? FlexDirection.Column : FlexDirection.Row,
           justifyContent: FlexAlign.Center, alignItems: ItemAlign.Center }) {
@@ -2305,7 +2330,7 @@ export struct PostDetail {
             .fontSize(capsule ? $r('app.float.reply_capsule_split_icon_size') : $r('app.float.post_detail_action_icon'))
             .fontWeight(capsule ? FontWeight.Medium : FontWeight.Normal)
             .fontColor([capsule ? $r('sys.color.font_secondary') : this.postActionColor($r('app.color.text_secondary'))])
-          if (capsule) {
+          if (capsule && this.actionCountsVisible) {
             Text($r('app.string.action_share')).fontFamily(this.appFontFamily)
               .fontSize($r('app.float.reply_capsule_split_caption_size')).height(12).margin({ top: 2 }).maxLines(1).textOverflow({ overflow: TextOverflow.Ellipsis })
               .fontColor($r('sys.color.font_secondary'))
@@ -2356,24 +2381,16 @@ export struct PostDetail {
   @Builder
   private PostActions(): void {
     if (this.tweet !== null) {
-      Flex({ wrap: FlexWrap.Wrap }) {
-        this.PostActionButtons(false);
-      }
-      .width('100%')
-      .padding({ left: 4, right: 4, top: 2, bottom: 2 })
-      .backgroundColor(this.transparentEmbeddedBackground() || this.usesCardMaterial() ? Color.Transparent :
-        postCardSurfaceColor(cardSurfaceColor(this.themeDisplayMode, this.themeDarkSurface), this.pageBackgroundValue))
-      .attributeModifier(materialModifier(this.cardMaterial()))
-      .borderRadius(this.postActionRadius())
-      .clip(true)
-      .visualEffect(new hdsEffect.HdsEffectBuilder()
-        .pointLight({
-          illuminatedType: hdsEffect.PointLightIlluminatedType.BORDER_CONTENT
-        })
-        .buildEffect())
-      .onAreaChange((_oldValue: Area, newValue: Area): void => {
-        this.captureActionBarWidth(newValue);
-      })
+      PostActionBar({ detail: true, surface: this.embeddedSectionBackground(), transparentBackground: this.transparentEmbeddedBackground(),
+        replyCount: this.tweet.metrics.replyCount, repostCount: this.tweet.metrics.repostCount, likeCount: this.likeCount,
+        bookmarkCount: this.bookmarkCount, liked: this.liked, reposted: this.reposted, bookmarked: this.bookmarked,
+        accentColor: this.accentColor,
+        onReply: (): void => this.openReplyComposer('', '', ''),
+        onRepost: (): void => { this.toggleRepost(); }, onLike: (): void => { this.toggleLike(); },
+        onBookmark: (): void => { this.toggleBookmark(); }, onShare: (): void => { void this.shareCurrentPost(); }
+      }).width('100%')
+        .padding({ top: 4, bottom: 8 })
+        .border({ width: { bottom: 0.5 }, color: $r('app.color.divider') })
     }
   }
 
@@ -2618,8 +2635,13 @@ export struct PostDetail {
           }
         }
         .width('100%')
-        if (this.translationReplaceOriginal && this.heroTranslatedText.length > 0 && this.tweet.presentation?.visibility?.hidden !== true) {
-          Text(undefined, { controller: this.translatedTextController }) { EmojiSpans(this.getUIContext(), this.heroTranslatedText, $r('sys.float.Title_S'), this.systemEmojiEnabled) }
+        if (this.heroTranslatedText.length > 0 && this.tweet.presentation?.visibility?.hidden !== true) {
+          PostTranslationInfo({ language: this.tweet.language ?? '', showingOriginal: this.heroShowingOriginal,
+            foreground: this.postActionColor($r('app.color.text_secondary')), accent: this.accentColor,
+            onToggle: (): void => { this.heroShowingOriginal = !this.heroShowingOriginal; } })
+        }
+        if (this.translationReplaceOriginal && this.heroTranslatedText.length > 0 && !this.heroShowingOriginal && this.tweet.presentation?.visibility?.hidden !== true) {
+          Text(undefined, { controller: this.translatedTextController }) { PostLinkSpans(this.getUIContext(), this.heroTranslatedText, $r('sys.float.Title_S'), this.systemEmojiEnabled, (url: string): void => this.selectTranslatedPostLink(url)) }
             .fontSize($r('sys.float.Title_S'))
             .fontFamily(this.appFontFamily === DEFAULT_APP_FONT_FAMILY ? this.contentFontFamily : this.appFontFamily)
             .fontColor(pageTextColor($r('app.color.text_primary'), this.embedded ? '' : this.pageBackgroundValue, postCardSurfaceColor(this.transparentEmbeddedBackground() ? Color.Transparent :
@@ -2629,6 +2651,7 @@ export struct PostDetail {
             .copyOption(CopyOptions.LocalDevice)
             .accessibilityText(this.heroTranslatedText)
             .editMenuOptions(new EmojiCopyMenu(this.getUIContext(), this.translatedTextController, this.heroTranslatedText, this.systemEmojiEnabled))
+              .bindMenu(this.translatedLinkMenuVisible, this.LinkMenu(), { onDisappear: (): void => { this.translatedLinkMenuVisible = false; } })
         } else {
           Text(undefined, { controller: this.bodyTextController }) {
             ForEach(splitPostText(this.tweet.text), (segment: MentionSegment) => {
@@ -2642,9 +2665,7 @@ export struct PostDetail {
                 })
               } else if (segment.url.length > 0) {
                 EmojiSpans(this.getUIContext(), segment.text, $r('sys.float.Title_S'), this.systemEmojiEnabled, (): void => {
-                    const context: common.UIAbilityContext =
-                      this.getUIContext().getHostContext() as common.UIAbilityContext;
-                    openExternalLink(context, segment.url);
+                    this.selectPostLink(segment.url);
                 })
               } else {
                 EmojiSpans(this.getUIContext(), segment.text, $r('sys.float.Title_S'), this.systemEmojiEnabled)
@@ -2660,6 +2681,7 @@ export struct PostDetail {
             .copyOption(CopyOptions.LocalDevice)
             .accessibilityText(this.tweet.text)
             .editMenuOptions(new EmojiCopyMenu(this.getUIContext(), this.bodyTextController, this.tweet.text, this.systemEmojiEnabled))
+              .bindMenu(this.linkMenuVisible, this.LinkMenu(), { onDisappear: (): void => { this.linkMenuVisible = false; } })
         }
         if (this.heroTranslating) {
           Row({ space: 6 }) {
@@ -2674,8 +2696,9 @@ export struct PostDetail {
         this.avatarTintEnabled, this.themeDisplayMode, this.themeDarkSurface, this.avatarThemeDark), this.pageBackgroundValue)))
           }
         }
-        if (this.heroTranslatedText.length > 0 && !this.translationReplaceOriginal && this.tweet.presentation?.visibility?.hidden !== true) {
-          Text() { EmojiSpans(this.getUIContext(), this.heroTranslatedText, $r('sys.float.Body_L'), this.systemEmojiEnabled) }
+        if (this.heroTranslatedText.length > 0 && !this.heroShowingOriginal && !this.translationReplaceOriginal && this.tweet.presentation?.visibility?.hidden !== true) {
+          Text() { PostLinkSpans(this.getUIContext(), this.heroTranslatedText, $r('sys.float.Body_L'), this.systemEmojiEnabled, (url: string): void => this.selectTranslatedPostLink(url)) }
+              .bindMenu(this.translatedLinkMenuVisible, this.LinkMenu(), { onDisappear: (): void => { this.translatedLinkMenuVisible = false; } })
             .fontSize($r('sys.float.Body_L'))
             .fontFamily(this.appFontFamily === DEFAULT_APP_FONT_FAMILY ? this.contentFontFamily : this.appFontFamily)
             .fontWeight(FontWeight.Medium)
@@ -2717,16 +2740,18 @@ export struct PostDetail {
         }
         Text() {
           Span(this.postTimePrefix())
+          if (this.actionCountsVisible && (this.actionsMask & 8) !== 0) {
           Span(formatCount(postViewCounts.countFor(this.tweet.id, this.tweet.metrics.viewCount, this.viewCountRevision)))
             .fontWeight(FontWeight.Bold)
             .fontColor(pageTextColor($r('app.color.text_primary'), this.embedded ? '' : this.pageBackgroundValue, postCardSurfaceColor(this.transparentEmbeddedBackground() ? Color.Transparent :
         avatarTintSurface(this.avatarPalette, this.tweet.author.avatarUrl ?? '',
         this.avatarTintEnabled, this.themeDisplayMode, this.themeDarkSurface, this.avatarThemeDark), this.pageBackgroundValue)))
           Span(' ' + this.text($r('app.string.post_detail_views')))
-          if (this.bookmarkCount >= 0) {
+          }
+          if (this.actionCountsVisible && (this.actionsMask & 16) !== 0 && this.bookmarkCount >= 0) {
             Span(' · ' + formatCount(this.bookmarkCount) + ' ' + this.text($r('app.string.post_metric_bookmarks')))
           }
-          if (this.tweet.metrics.quoteCount !== undefined) {
+          if (this.actionCountsVisible && (this.actionsMask & 2) !== 0 && this.tweet.metrics.quoteCount !== undefined) {
             Span(' · ' + formatCount(this.tweet.metrics.quoteCount ?? 0) + ' ' + this.text($r('app.string.post_metric_quotes')))
           }
           if (postIsEdited(this.tweet.editHistoryIds)) {
@@ -2756,7 +2781,7 @@ export struct PostDetail {
 
   @Builder
   private PrimaryPane(): void {
-    Column({ space: 16 }) {
+    Column({ space: 4 }) {
       if (this.tweet === null) {
         this.PostHeroPlaceholder()
         this.PostActionsPlaceholder()
@@ -2770,7 +2795,7 @@ export struct PostDetail {
 
   @Builder
   private RepliesListPane(): void {
-    Column({ space: 16 }) {
+    Column({ space: 4 }) {
       if (this.threadLoading || !this.transitionSettled) {
         this.ThreadPlaceholder()
       } else {
@@ -2884,7 +2909,7 @@ export struct PostDetail {
   @Builder
   private SingleThreadLayout(): void {
     Scroll(this.scroller) {
-      Column({ space: 16 }) {
+      Column({ space: 8 }) {
         this.PrimaryPane()
         this.RepliesPane()
       }
@@ -3176,7 +3201,7 @@ export struct PostDetail {
         title: { mainTitle: (this.tweet?.communityId ?? '').length > 0 ?
           $r('app.string.community_post_title') : $r('app.string.post_detail_title') },
         menu: {
-          value: this.translationEnabled ? [
+          value: this.translationEnabled && (this.actionsMask & 64) !== 0 ? [
             { content: { icon: $r('sys.symbol.bookmark'), label: this.text($r('app.string.reader_title')),
               action: (): void => { this.openThreadReader(); } } },
             {

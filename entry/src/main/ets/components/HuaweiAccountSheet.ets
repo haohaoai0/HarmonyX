@@ -7,6 +7,8 @@ import { HUAWEI_ACCOUNT_SIGNED_IN, HUAWEI_ACCOUNT_NAME, HUAWEI_ACCOUNT_AVATAR,
 import { CLOUD_SYNC_ENABLED, CLOUD_SYNC_MASK, CLOUD_SYNC_STATUS, CLOUD_SYNC_LAST,
   CLOUD_SYNC_ERROR, huaweiCloudSyncService } from '../services/HuaweiCloudSyncService';
 import { CLOUD_GROUP_APPEARANCE, CLOUD_GROUP_MEDIA, CLOUD_GROUP_FILTERS } from '../services/CloudSettingsRepository';
+import { CloudSettingRecord } from '../services/CloudSettingsRepository';
+import { settingsConfigService } from '../services/SettingsConfigService';
 
 @Component
 export struct HuaweiAccountSheet {
@@ -24,6 +26,8 @@ export struct HuaweiAccountSheet {
   @StorageProp('harmonyx.navigation_indicator_height') private bottomInset: number = 0;
   @State private avatarFailed: boolean = false;
   @State private errorMessage: Resource | null = null;
+  @State private configBusy: string = '';
+  @State private cloudActionBusy: boolean = false;
   onClose: () => void = (): void => {};
 
   private text(resource: Resource): string {
@@ -58,6 +62,28 @@ export struct HuaweiAccountSheet {
     if (result.index === 1) { huaweiAccountService.logout(); this.errorMessage = null; }
   }
 
+  private async manageCloud(clear: boolean): Promise<void> {
+    if (this.syncing() || this.cloudActionBusy) { return; }
+    this.cloudActionBusy = true;
+    huaweiCloudSyncService.setConfirmationPending(true);
+    try {
+      const result: promptAction.ShowDialogSuccessResponse = await this.getUIContext().getPromptAction().showDialog({
+        title: this.text(clear ? $r('app.string.huawei_cloud_clear') : $r('app.string.huawei_cloud_overwrite')),
+        message: this.text(clear ? $r('app.string.huawei_cloud_clear_message') : $r('app.string.huawei_cloud_overwrite_message')),
+        buttons: [
+          { text: this.text($r('app.string.compose_cancel')), color: this.accent },
+          { text: this.text(clear ? $r('app.string.huawei_cloud_clear') : $r('app.string.huawei_cloud_overwrite')),
+            color: clear ? $r('app.color.danger') : this.accent }
+        ]
+      });
+      huaweiCloudSyncService.setConfirmationPending(false);
+      if (result.index !== 1) { return; }
+      if (clear) { await huaweiCloudSyncService.clearCloud(); }
+      else { await huaweiCloudSyncService.overwriteCloud(); }
+    } catch (error) { this.errorMessage = $r('app.string.huawei_sync_failed'); }
+    finally { this.cloudActionBusy = false; huaweiCloudSyncService.setConfirmationPending(false); }
+  }
+
   private changeGroup(group: number, enabled: boolean): void {
     const mask: number = enabled ? this.groupsMask | group : this.groupsMask & ~group;
     if (mask === 0) {
@@ -68,8 +94,56 @@ export struct HuaweiAccountSheet {
     catch (error) { this.errorMessage = $r('app.string.huawei_save_error'); }
   }
 
+  private async importSettingsConfig(): Promise<void> {
+    if (this.configBusy.length > 0) { return; }
+    this.configBusy = 'import'; this.errorMessage = null;
+    try {
+      const context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
+      const records: CloudSettingRecord[] | null = await settingsConfigService.selectImportFile(context);
+      if (records === null) { return; }
+      const result: promptAction.ShowDialogSuccessResponse = await this.getUIContext().getPromptAction().showDialog({
+        title: this.text($r('app.string.huawei_config_import_title')),
+        message: this.text($r('app.string.huawei_config_import_message')),
+        buttons: [
+          { text: this.text($r('app.string.compose_cancel')), color: this.accent },
+          { text: this.text($r('app.string.huawei_config_import_confirm')), color: this.accent }
+        ]
+      });
+      if (result.index === 1) {
+        settingsConfigService.applyImport(context, records);
+        this.getUIContext().getPromptAction().showToast({
+          message: this.text($r('app.string.huawei_config_imported'))
+        });
+      }
+    } catch (error) {
+      this.errorMessage = $r('app.string.huawei_config_import_failed');
+    } finally {
+      this.configBusy = '';
+    }
+  }
+
+  private async exportSettingsConfig(): Promise<void> {
+    if (this.configBusy.length > 0) { return; }
+    this.configBusy = 'export'; this.errorMessage = null;
+    try {
+      const exported: boolean = await settingsConfigService.exportSettings(
+        getContext(this) as common.UIAbilityContext);
+      if (exported) {
+        this.getUIContext().getPromptAction().showToast({
+          message: this.text($r('app.string.huawei_config_exported'))
+        });
+      }
+    } catch (error) {
+      this.errorMessage = $r('app.string.huawei_config_export_failed');
+    } finally {
+      this.configBusy = '';
+    }
+  }
+
   private statusText(): Resource {
     if (this.status === 'account_changed') { return $r('app.string.huawei_account_changed'); }
+    if (this.status === 'cleared') { return $r('app.string.huawei_cloud_cleared'); }
+    if (this.status === 'failed' && !this.syncEnabled) { return $r('app.string.huawei_sync_failed'); }
     if (!this.syncEnabled) { return $r('app.string.huawei_sync_disabled'); }
     if (this.status === 'unavailable') { return $r('app.string.huawei_sync_unavailable'); }
     if (this.status === 'downloading') { return $r('app.string.huawei_sync_downloading'); }
@@ -93,7 +167,7 @@ export struct HuaweiAccountSheet {
           .fontColor($r('app.color.text_secondary')).width('100%')
       }.layoutWeight(1)
       Toggle({ type: ToggleType.Switch, isOn: (this.groupsMask & group) !== 0 }).selectedColor(this.accent)
-        .enabled(!this.syncing()).accessibilityText(title)
+        .enabled(!this.syncing() && !this.cloudActionBusy).accessibilityText(title)
         .onChange((enabled: boolean): void => this.changeGroup(group, enabled))
     }.width('100%').padding({ top: 12, bottom: 12 })
   }
@@ -135,7 +209,7 @@ export struct HuaweiAccountSheet {
               Text($r('app.string.huawei_cloud_sync')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L'))
                 .fontWeight(FontWeight.Medium).fontColor($r('app.color.text_primary')).layoutWeight(1)
               Toggle({ type: ToggleType.Switch, isOn: this.syncEnabled }).selectedColor(this.accent)
-                .id('huawei-cloud-toggle').accessibilityText($r('app.string.huawei_cloud_sync'))
+                .enabled(!this.cloudActionBusy).id('huawei-cloud-toggle').accessibilityText($r('app.string.huawei_cloud_sync'))
                 .onChange((enabled: boolean): void => {
                   try { huaweiCloudSyncService.setEnabled(enabled); }
                   catch (error) { this.errorMessage = $r('app.string.huawei_save_error'); }
@@ -158,14 +232,49 @@ export struct HuaweiAccountSheet {
             Button(this.syncing() ? $r('app.string.huawei_syncing') : $r('app.string.huawei_sync_now'))
               .width('100%').height($r('app.float.huawei_account_button_height')).fontFamily(this.appFontFamily)
               .fontSize($r('sys.float.Body_L')).backgroundColor(this.accent).fontColor($r('app.color.text_on_accent'))
-              .enabled(!this.syncing()).id('huawei-cloud-sync-now')
+              .enabled(!this.syncing() && !this.cloudActionBusy).id('huawei-cloud-sync-now')
               .onClick((): void => { huaweiCloudSyncService.sync(); })
+          }
+          Column({ space: 6 }) {
+            Button($r('app.string.huawei_cloud_overwrite'))
+              .width('100%').height($r('app.float.huawei_account_button_height')).fontFamily(this.appFontFamily)
+              .fontSize($r('sys.float.Body_L')).fontColor(this.accent).backgroundColor(Color.Transparent)
+              .enabled(!this.syncing() && !this.cloudActionBusy).id('huawei-cloud-overwrite')
+              .onClick((): void => { this.manageCloud(false); })
+            Button($r('app.string.huawei_cloud_clear'))
+              .width('100%').height($r('app.float.huawei_account_button_height')).fontFamily(this.appFontFamily)
+              .fontSize($r('sys.float.Body_L')).fontColor($r('app.color.danger')).backgroundColor(Color.Transparent)
+              .enabled(!this.syncing() && !this.cloudActionBusy).id('huawei-cloud-clear')
+              .onClick((): void => { this.manageCloud(true); })
+            Text($r('app.string.huawei_cloud_manage_description')).fontFamily(this.appFontFamily)
+              .fontSize($r('sys.float.Body_S')).fontColor($r('app.color.text_secondary')).width('100%')
           }
           Button($r('app.string.huawei_logout')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L'))
             .width('100%').height($r('app.float.huawei_account_button_height')).backgroundColor(Color.Transparent)
             .fontColor($r('app.color.danger')).id('huawei-account-logout')
             .onClick((): void => { this.logout().catch((): void => {}); })
         }
+        Column({ space: 8 }) {
+          Text($r('app.string.huawei_config_section')).fontFamily(this.appFontFamily)
+            .fontSize($r('sys.float.Body_L')).fontWeight(FontWeight.Medium)
+            .fontColor($r('app.color.text_primary')).width('100%')
+          Row({ space: 10 }) {
+            Button(this.configBusy === 'import' ? $r('app.string.huawei_config_importing') :
+              $r('app.string.huawei_config_import')).layoutWeight(1)
+              .height($r('app.float.huawei_account_button_height')).fontFamily(this.appFontFamily)
+              .fontSize($r('sys.float.Body_L')).fontColor(this.accent).backgroundColor(Color.Transparent)
+              .border({ width: 1, color: this.accent }).enabled(this.configBusy.length === 0)
+              .id('huawei-config-import').onClick((): void => { this.importSettingsConfig(); })
+            Button(this.configBusy === 'export' ? $r('app.string.huawei_config_exporting') :
+              $r('app.string.huawei_config_export')).layoutWeight(1)
+              .height($r('app.float.huawei_account_button_height')).fontFamily(this.appFontFamily)
+              .fontSize($r('sys.float.Body_L')).fontColor(this.accent).backgroundColor(Color.Transparent)
+              .border({ width: 1, color: this.accent }).enabled(this.configBusy.length === 0)
+              .id('huawei-config-export').onClick((): void => { this.exportSettingsConfig(); })
+          }.width('100%')
+          Text($r('app.string.huawei_config_description')).fontFamily(this.appFontFamily)
+            .fontSize($r('sys.float.Body_S')).fontColor($r('app.color.text_secondary')).width('100%')
+        }.width('100%')
         if (this.errorMessage !== null) {
           Text(this.errorMessage).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M'))
             .fontColor($r('app.color.danger')).width('100%')

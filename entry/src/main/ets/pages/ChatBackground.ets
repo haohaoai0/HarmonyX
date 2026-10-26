@@ -6,6 +6,7 @@ import { common } from '@kit.AbilityKit';
 import { photoAccessHelper } from '@kit.MediaLibraryKit';
 import { HdsNavDestination, HdsNavDestinationTitleMode, ScrollEffectType, TextStyleMode } from '@kit.UIDesignKit';
 import { ChatBackgroundLayer } from '../components/ChatBackgroundLayer';
+import { BackgroundPhotoTile, BackgroundSelectionMark } from '../components/BackgroundPhotoTile';
 import { ChatBackgroundState, ChatBackgroundPreset, chatBackgroundPresets, chatBackgroundStore,
   copyChatBackground } from '../services/ChatBackgroundStore';
 import { xPrivateStore } from '../services/XPrivateStore';
@@ -93,6 +94,12 @@ struct ChatBackgroundPage {
     next.path = this.photoPath;
     next.dim = this.selected.dim;
     this.selected = next;
+  }
+
+  private photoDeleted(path: string): void {
+    this.savedPhotos = backgroundImageStore.photos(this.context());
+    if (this.photoPath === path) { this.photoPath = ''; }
+    if (this.selected.path === path) { this.selectPreset('default'); }
   }
 
   private async pickPhoto(): Promise<void> {
@@ -213,8 +220,7 @@ struct ChatBackgroundPage {
 
   @Builder
   private SelectionMark(): void {
-    SymbolGlyph($r('sys.symbol.checkmark')).fontSize(14).fontColor([$r('app.color.text_on_accent')])
-      .width(26).height(26).borderRadius(13).backgroundColor(this.accentColor).margin(8)
+    BackgroundSelectionMark({ accentColor: this.accentColor }).margin(8)
   }
 
   @Builder
@@ -270,7 +276,12 @@ struct ChatBackgroundPage {
               .fontWeight(FontWeight.Medium).fontColor($r('app.color.text_primary'))
             GridRow({ columns: 3, gutter: { x: 12, y: 16 } }) {
               ForEach(this.savedPhotos, (photo: BackgroundImage) => {
-                GridCol() { this.PhotoTile(photo.path) }
+                GridCol() {
+                  BackgroundPhotoTile({ path: photo.path, selected: this.selected.path === photo.path,
+                    accentColor: this.accentColor, interactive: !this.picking && !this.saving,
+                    onSelect: (path: string): void => { this.photoPath = path; this.selectPhoto(); },
+                    onDeleted: (path: string): void => { this.photoDeleted(path); } })
+                }
               }, (photo: BackgroundImage): string => photo.path)
             }.id('chat-background-saved-photos')
           }

@@ -1,5 +1,21 @@
 {
   "color": [
+    {"name": "splash_ad_canvas","value": "#F5F5F0"},
+    {"name": "splash_ad_ink","value": "#1B251E"},
+    {"name": "splash_ad_muted","value": "#69736C"},
+    {"name": "splash_ad_control","value": "#E7E9DF"},
+    {"name": "splash_ad_hairline","value": "#241B251E"},
+    {"name": "splash_ad_poster","value": "#10251F"},
+    {"name": "splash_ad_poster_ink","value": "#F5F7ED"},
+    {"name": "splash_ad_poster_muted","value": "#D0DBCF"},
+    {"name": "splash_ad_lime","value": "#DCECBB"},
+    {"name": "splash_ad_action_ink","value": "#1C3527"},
+    {"name": "splash_ad_scrim_clear","value": "#0010251F"},
+    {"name": "splash_ad_scrim_middle","value": "#A610251F"},
+    {"name": "splash_ad_scrim_end","value": "#F510251F"},
+    {"name": "splash_ad_glass","value": "#3812201A"},
+    {"name": "splash_ad_glass_border","value": "#40F5F7ED"},
+
     {"name":"hdr_touch_light_center","value":"#52FFFFFF"},
     {"name":"hdr_touch_light_edge","value":"#14FFFFFF"},
     {"name":"hdr_touch_light_border","value":"#A6FFFFFF"},
@@ -90,7 +106,19 @@
     },
     {
       "name": "start_window_background",
-      "value": "#FFFFFF"
+      "value": "#FBFDFA"
+    },
+    {
+      "name": "startup_animation_light",
+      "value": "#FBFDFA"
+    },
+    {
+      "name": "startup_animation_dark",
+      "value": "#000000"
+    },
+    {
+      "name": "startup_animation_twitter_blue",
+      "value": "#00A7F0"
     },
     {
       "name": "brand",
@@ -838,6 +866,18 @@
     {"name":"mix_morandi_notifications","value":"#8B6841"},
     {"name":"mix_morandi_messages","value":"#587269"},
     {"name":"mix_morandi_profile","value":"#916470"},
+    {"name":"mix_prism_primary","value":"#1D4FC2"},
+    {"name":"mix_prism_action","value":"#FF8669"},
+    {"name":"mix_prism_home","value":"#2466D0"},
+    {"name":"mix_prism_explore","value":"#C73642"},
+    {"name":"mix_prism_notifications","value":"#8C6A00"},
+    {"name":"mix_prism_messages","value":"#6F45B2"},
+    {"name":"mix_prism_profile","value":"#A33F75"},
+    {"name":"mix_prism_on_action","value":"#231938"},
+    {"name":"mix_prism_control","value":"#3E87F5"},
+    {"name":"mix_prism_surface","value":"#FFF8E8"},
+    {"name":"mix_prism_ink","value":"#18264C"},
+    {"name":"mix_prism_on_control","value":"#10285C"},
     {"name":"mix_preview_on_action","value":"#FFFFFF"},
     {"name":"mix_confetti_on_action","value":"#183354"},
     {"name":"mix_confetti_control","value":"#58A4FF"},
@@ -896,6 +936,15 @@
     {"name":"appearance_preview_edge","value":"#D9FFFFFF"},
     {"name":"appearance_preview_stage_shadow","value":"#330C203A"},
     {"name":"appearance_preview_object_shadow","value":"#300C203A"},
-    {"name":"split_navigation_selection","value":"#14000000"}
+    {"name":"split_navigation_selection","value":"#14000000"},
+    {"name":"video_download_notice_track","value":"#40FFFFFF"},
+    {"name":"support_wechat","value":"#07864A"},
+    {"name":"support_alipay","value":"#1265D8"},
+    {"name":"support_afdian","value":"#8051C4"},
+    {"name":"support_wechat_surface","value":"#E8F7EE"},
+    {"name":"support_alipay_surface","value":"#EAF2FF"},
+    {"name":"support_afdian_surface","value":"#F1E9FC"},
+    {"name":"support_afdian_action","value":"#8051C4"},
+    {"name":"support_afdian_outline","value":"#338051C4"}
   ]
 }

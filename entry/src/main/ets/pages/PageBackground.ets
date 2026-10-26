@@ -2,6 +2,7 @@ import { common } from '@kit.AbilityKit';
 import { photoAccessHelper } from '@kit.MediaLibraryKit';
 import { HdsNavDestination, HdsNavDestinationTitleMode, ScrollEffectType, TextStyleMode } from '@kit.UIDesignKit';
 import { PageBackgroundLayer } from '../components/PageBackgroundLayer';
+import { BackgroundPhotoTile, BackgroundSelectionMark } from '../components/BackgroundPhotoTile';
 import { ChatBackgroundPreset, chatBackgroundPresets } from '../services/ChatBackgroundStore';
 import { PageBackgroundState, normalizePageBackground, pageBackgroundStore } from '../services/PageBackgroundStore';
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
@@ -91,8 +92,7 @@ struct PageBackgroundPage {
   }
   private setPattern(id: string): void {
     const next: PageBackgroundState = normalizePageBackground(this.selected);
-    next.patternIds = id === 'none' ? [] : next.patternIds.indexOf(id) >= 0 ?
-      next.patternIds.filter((item: string): boolean => item !== id) : [...next.patternIds, id];
+    next.patternIds = id === 'none' ? [] : [id];
     next.patternId = next.patternIds.length > 0 ? next.patternIds[0] : 'none';
     next.patternLayout = 'preset'; this.selected = next;
   }
@@ -194,6 +194,14 @@ struct PageBackgroundPage {
     this.selected = next;
     this.refreshSelectedTone();
   }
+  private photoDeleted(path: string): void {
+    this.savedPhotos = backgroundImageStore.photos(this.context());
+    if (this.selected.path === path) {
+      const next: PageBackgroundState = normalizePageBackground(this.selected);
+      next.mode = 'theme'; next.path = '';
+      this.selected = normalizePageBackground(next);
+    }
+  }
   private async refreshSelectedTone(): Promise<void> {
     const path: string = this.selected.path;
     const sampled: PageBackgroundState = await pageBackgroundStore.withPhotoTone(this.selected);
@@ -293,8 +301,7 @@ struct PageBackgroundPage {
   }
   @Builder
   private Mark(): void {
-    SymbolGlyph($r('sys.symbol.checkmark')).fontSize(14).fontColor([$r('app.color.text_on_accent')])
-      .width(26).height(26).borderRadius(13).backgroundColor(this.accentColor).margin(8)
+    BackgroundSelectionMark({ accentColor: this.accentColor }).margin(8)
   }
   @Builder
   private Preview(): void {
@@ -397,20 +404,10 @@ struct PageBackgroundPage {
 
   @Builder
   private SavedPhotoTile(photo: BackgroundImage): void {
-    Column({ space: 8 }) {
-      Button({ type: ButtonType.Normal }) {
-        Stack({ alignContent: Alignment.TopEnd }) {
-          Image('file://' + photo.path).width('100%').height('100%').autoResize(true).objectFit(ImageFit.Cover).draggable(false)
-          if (this.selected.path === photo.path) { this.Mark() }
-        }.width('100%').height('100%')
-      }.width('100%').height($r('app.float.chat_background_tile_height')).padding(0).borderRadius(16).clip(true)
-        .backgroundColor(Color.Transparent).border({ width: this.selected.path === photo.path ? 2 : 1,
-          color: this.selected.path === photo.path ? this.accentColor : $r('app.color.divider') })
-        .accessibilityText($r('app.string.chat_background_my_photo')).enabled(!this.picking && !this.saving)
-        .onClick((): void => { this.selectSavedPhoto(photo.path); })
-      Text($r('app.string.chat_background_my_photo')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_S'))
-        .fontColor($r('app.color.text_secondary'))
-    }.width('100%')
+    BackgroundPhotoTile({ path: photo.path, selected: this.selected.path === photo.path,
+      accentColor: this.accentColor, interactive: !this.picking && !this.saving && !this.enabledSaving,
+      onSelect: (path: string): void => { this.selectSavedPhoto(path); },
+      onDeleted: (path: string): void => { this.photoDeleted(path); } })
   }
   @Builder
   private Adjustment(title: Resource, maximum: number, kind: string): void {

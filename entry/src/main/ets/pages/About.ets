@@ -5,7 +5,6 @@ import { STORAGE_KEY_PAGE_TRANSITION_MODE, DEFAULT_PAGE_TRANSITION_MODE } from '
 import { pageSystemTransition, PageTransitionMotion } from '../utils/PageTransition';
 import { bundleManager, common } from '@kit.AbilityKit';
 import { requestXXAuthPopup } from '../services/XXAuthPopupStore';
-import { SupporterActivationCard } from '../components/SupporterActivationCard';
 import { SUPPORTER_ACTIVE_KEY } from '../services/XXAuthSupporterService';
 import { HdsNavDestination, HdsNavDestinationTitleMode, ScrollEffectType } from '@kit.UIDesignKit';
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
@@ -281,7 +280,14 @@ struct About {
           .id('about-version-info')
 
           this.AuthorAccounts()
-          SupporterActivationCard()
+          Column() {
+            this.ActionRow($r('sys.symbol.heart_fill'), $r('app.string.side_support'),
+              $r('app.string.help_support_scan'), (): void => { this.pageStack.pushPath({ name: 'Support' }); })
+            Divider().color($r('app.color.divider'))
+            this.ActionRow($r('sys.symbol.checkmark_shield'), $r('app.string.supporter_title'),
+              $r('app.string.supporter_redeem'), (): void => { this.pageStack.pushPath({ name: 'SupporterAccess' }); })
+          }.width('100%').backgroundColor(pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue))
+            .borderRadius($r('app.float.about_card_radius')).clip(true)
 
           Column() {
             if (!this.supporterActive) {

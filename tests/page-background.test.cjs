@@ -211,12 +211,12 @@ test('a large motif selection resolves the catalog once rather than rescanning f
   assert.equal(layer.imageFor({motifIndex:0}),'image-299');assert.equal(scans,2);
 });
 
-test('full-pattern mixtures and paper textures combine independently with colors, photos and motifs', () => {
+test('full patterns are single-select, with independent paper, color and individual motifs', () => {
   const f = fixture();
   const state = f.normalizePageBackground({ mode: 'color', color: '#CCAA77', texture: 'kraft', textureStrength: 0.72,
     patternLayout: 'preset', patternIds: ['petrel_cats', 'petrel_space', 'petrel_cats', 'invalid'],
     motifIds: ['petrel_cats_0'], density: 32 });
-  assert.deepEqual(state.patternIds, ['petrel_cats', 'petrel_space']);
+  assert.deepEqual(state.patternIds, ['petrel_cats']);
   assert.equal(state.patternId, 'petrel_cats'); assert.equal(state.texture, 'kraft');
   assert.equal(state.textureStrength, 0.72); assert.equal(state.color, '#CCAA77');
   assert.deepEqual(state.motifIds, ['petrel_cats_0']);
@@ -342,7 +342,7 @@ test('detail action material cannot cover transparent or translucent post surfac
 test('detail hero, history cards and child timelines use the shared wallpaper and post surface policy', () => {
   const detail = fs.readFileSync('entry/src/main/ets/pages/PostDetail.ets', 'utf8');
   assert.match(detail, /\.backgroundColor\(postCardSurfaceColor\(this\.transparentEmbeddedBackground\(\)/);
-  assert.match(detail, /this\.transparentEmbeddedBackground\(\) \|\| this\.usesCardMaterial\(\)/);
+  assert.match(detail, /PostActionBar\(\{ detail: true, surface: this\.embeddedSectionBackground\(\), transparentBackground: this\.transparentEmbeddedBackground\(\)/);
   const history = fs.readFileSync('entry/src/main/ets/pages/BrowsingHistory.ets', 'utf8');
   assert.match(history, /\.backgroundColor\(postCardSurfaceColor\(cardSurfaceColor\(/);
   for (const page of ['UserDetail', 'Bookmarks', 'ListTimeline', 'CommunityTimeline', 'Communities', 'NotificationPosts', 'PostInteractions', 'EditHistory']) {
@@ -441,8 +441,17 @@ test('foreground contrast follows the composited photo, paper and independent ca
         if(surface!=='transparent') assert.ok(Math.abs(backing.alpha/255-opacity)<.00001, 'requested opacity remains exact');
         for (const original of ['app.color.text_primary','app.color.text_secondary','app.color.like','app.color.repost','app.color.brand']) {
           const ink=metric(colors.pageTextColor(original,value,surface));
+          const vivid=metric(colors.pageTextColor(original,value,surface,3,true));
+          const saturation = color => {
+            const high=Math.max(color.red,color.green,color.blue)/255;
+            const low=Math.min(color.red,color.green,color.blue)/255;
+            return high===low ? 0 : (high-low)/(1-Math.abs(high+low-1));
+          };
+          assert.ok(saturation(vivid)>=saturation(metric(original))-.025,
+            `action saturation: ${JSON.stringify(config)} opacity=${opacity} surface=${surface} original=${original} vivid=${JSON.stringify(vivid)}`);
           for(const background of [tone.darkest,tone.lightest,tone.average]) {
             const effective=contrast.mixPageRgb(background,backing,backing.alpha/255);
+            assert.ok(contrast.pageContrastRatio(vivid,effective)>=2.95, 'vivid icons retain readable contrast');
             assert.ok(contrast.pageContrastRatio(ink,effective)>=4.49,
               `${JSON.stringify(config)} opacity=${opacity}: ${contrast.pageContrastRatio(ink,effective)}`);
           }
@@ -521,7 +530,13 @@ test('inline playback controls follow their backing surface, and immersive viewe
 test('post actions adapt selected and unselected icons, counts, bookmark accents and overflow on timeline and detail', () => {
   const timeline=fs.readFileSync('entry/src/main/ets/components/TweetCard.ets','utf8');
   const detail=fs.readFileSync('entry/src/main/ets/pages/PostDetail.ets','utf8');
-  for(const [source,helper] of [[timeline,'readingText'],[detail,'postActionColor']]) {
+  assert.ok(timeline.includes('PostActionBar({'));
+  assert.ok(detail.includes('PostActionBar({'));
+  const bar=fs.readFileSync('entry/src/main/ets/components/PostActionBar.ets','utf8');
+  assert.match(bar,/this\.surface, minimum, true/);
+  assert.match(bar,/\.fontColor\(\[this\.color\(id, 3\)\]\)/);
+  assert.match(bar,/\.fontColor\(this\.color\(id\)\)/);
+  for(const [source,helper] of [[detail,'postActionColor']]) {
     assert.ok(source.includes(`this.reposted ? this.${helper}($r('app.color.repost'))`));
     assert.ok(source.includes(`this.liked ? this.${helper}($r('app.color.like'))`));
     assert.ok(source.includes(`this.bookmarked ? this.${helper}(this.accentColor)`));
@@ -596,4 +611,43 @@ test('system theme changes republish foreground dependencies without modifying t
   assert.equal(after.appearanceRevision,2);assert.equal(after.color,'#102030');assert.equal(after.postOpacity,.35);
   assert.equal(after.transparentInbox,true);assert.equal(f.values.get('state'),durable);
   assert.ok(fs.readFileSync('entry/src/main/ets/entryability/EntryAbility.ets','utf8').includes('pageBackgroundStore.refreshAppearance();'));
+});
+
+
+test('selecting another full pattern replaces the old one and none explicitly clears it', () => {
+  const f=fixture(), source=fs.readFileSync('entry/src/main/ets/pages/PageBackground.ets','utf8');
+  const out=ts.transpileModule(`export class Editor { selected=new PageBackgroundState(); ${method(source,'setPattern')} }`,
+    {compilerOptions:{target:ts.ScriptTarget.ES2020,module:ts.ModuleKind.CommonJS}}).outputText;
+  const result={};
+  new Function('exports','PageBackgroundState','normalizePageBackground',out)(result,f.PageBackgroundState,f.normalizePageBackground);
+  const editor=new result.Editor();
+  editor.setPattern('petrel_cats'); editor.setPattern('petrel_space');
+  assert.deepEqual(editor.selected.patternIds,['petrel_space']);
+  editor.setPattern('petrel_space');
+  assert.deepEqual(editor.selected.patternIds,['petrel_space']);
+  editor.setPattern('none'); assert.deepEqual(editor.selected.patternIds,[]);
+  assert.deepEqual(f.normalizePageBackground({patternIds:['invalid','petrel_cats','petrel_space']}).patternIds,['petrel_cats']);
+});
+
+test('dimming and reading veil sit below motifs, so changing intensity never adds a canvas veil', () => {
+  const f=fixture(), contrast=compile('entry/src/main/ets/utils/PageBackgroundContrast.ets');
+  const metric=c=>({...contrast.rgbFromHex(c),alpha:255});
+  const colors=compile('entry/src/main/ets/utils/ThemeColors.ets',{
+    '../services/AppearanceStore':{},'../services/PageBackgroundStore':f,'./PageBackgroundContrast':contrast,
+    '@kit.ArkUI':{ColorMetrics:{resourceColor:metric}}
+  });
+  for(const dim of [0,.3,.6]) {
+    const base=f.normalizePageBackground({mode:'color',color:'#202020',dim});
+    const plain=colors.pageBackdropTone(base,'','');
+    for(const strength of [.1,.5,1]) {
+      const state=f.normalizePageBackground({...base,patternLayout:'icons',motifIds:['petrel_cats_0'],patternStrength:strength});
+      const tone=colors.pageBackdropTone(state,'','');
+      assert.equal(tone.veil,plain.veil);
+      assert.deepEqual(tone.average,plain.average);
+      const expected=contrast.mixPageRgb(plain.lightest,contrast.rgbFromHex('#FFFFFF'),contrast.pagePatternOpacity(strength,1));
+      assert.deepEqual(tone.lightest,expected,'dim changes the canvas beneath the same motif alpha');
+    }
+  }
+  const layer=fs.readFileSync('entry/src/main/ets/components/PageBackgroundLayer.ets','utf8');
+  assert.ok(layer.indexOf('this.wallpaper.dim > 0')<layer.indexOf('PageMotifLayer({'));
 });

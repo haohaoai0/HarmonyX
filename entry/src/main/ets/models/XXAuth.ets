@@ -53,12 +53,16 @@ export interface XXAuthPopupConfig {
   announcements_enabled?: boolean;
   banners_enabled?: boolean;
   articles_enabled?: boolean;
+  splash_enabled?: boolean;
+  splash_daily_limit?: number;
+  splash_interval_hours?: number;
   recommendation_title?: string;
   recommendation_description?: string;
   recommendation_icon?: string;
   post_enabled?: boolean;
   post_count?: number;
   post_comment_count?: number;
+  post_comment_probability?: number;
   // Bumping this makes every reader's "hide for 7 days" expire immediately,
   // without touching the copy.
   post_revision?: number;
@@ -67,6 +71,7 @@ export interface XXAuthPopupConfig {
   popup_dismissible?: boolean;
   popup_delay_seconds?: number;
   popup_interval_hours?: number;
+  popup_period_hours?: number;
   popup_daily_limit?: number;
   popup_total_limit?: number;
   popup_session_limit?: number;

@@ -1,6 +1,70 @@
 {
   "string": [
     {
+      "name": "startup_animation_none",
+      "value": "باز کردن مستقیم"
+    },
+    {
+      "name": "startup_animation_none_desc",
+      "value": "صفحهٔ اصلی را بدون نماد یا پویانمایی آغاز باز کن."
+    },
+    {
+      "name": "startup_animation_speed",
+      "value": "سرعت پخش"
+    },
+    {
+      "name": "startup_animation_speed_desc",
+      "value": "از اجرای بعدی برای آغاز پویا اعمال می‌شود."
+    },
+    {
+      "name": "startup_animation_speed_value",
+      "value": "%s×"
+    },
+    {
+      "name": "startup_animation_title",
+      "value": "پویانمایی آغاز"
+    },
+    {
+      "name": "startup_animation_desc",
+      "value": "برای اجرای بعدی اعمال می‌شود. خانه هنگام پخش تازه‌سازی می‌شود. کاهش حرکت از نماد ثابت استفاده می‌کند."
+    },
+    {
+      "name": "startup_animation_icon",
+      "value": "نگه‌داشتن نماد"
+    },
+    {
+      "name": "startup_animation_icon_desc",
+      "value": "نماد فعلی تا آماده‌شدن خانه باقی می‌ماند و سپس محو می‌شود."
+    },
+    {
+      "name": "startup_animation_ios",
+      "value": "سبک iOS"
+    },
+    {
+      "name": "startup_animation_ios_desc",
+      "value": "نماد کمی می‌جهد و سپس بزرگ می‌شود تا خانه تازه‌شده نمایان شود."
+    },
+    {
+      "name": "startup_animation_video",
+      "value": "آغاز پویا"
+    },
+    {
+      "name": "startup_animation_video_desc",
+      "value": "پویانمایی ویژهٔ نماد فعلی را پخش کن و سپس صفحهٔ اصلی را نشان بده."
+    },
+    {
+      "name": "splash_ad_label",
+      "value": "آگهی"
+    },
+    {
+      "name": "splash_ad_skip",
+      "value": "رد کردن"
+    },
+    {
+      "name": "splash_ad_signature",
+      "value": "با دنیای دلخواهتان آشنا شوید"
+    },
+    {
       "name": "supporter_config_error",
       "value": "پیوند حساب در فضای ابری تأیید نشد. لطفاً با توسعه‌دهنده تماس بگیرید."
     },
@@ -8,63 +72,234 @@
       "name": "supporter_restore_hint",
       "value": "با بازگشت به حساب، وضعیت ذخیره‌شده آن بازیابی می‌شود. در دستگاه جدید، پس از نصب مجدد یا در نسخه دیگر، وارد همان حساب X شوید و کد اصلی را برای بازیابی وارد کنید."
     },
-    {"name": "eye_reading_title", "value": "مطالعه با نگاه"},
-    {"name": "eye_reading_intro", "value": "برای پیمایش رشته‌ها، نسخه‌های آفلاین و مقاله‌ها به بالا یا پایین نگاه کنید و نگاه را نگه دارید."},
-    {"name": "eye_reading_enable", "value": "فعال‌سازی مطالعه با نگاه"},
-    {"name": "eye_reading_supported", "value": "ردیابی چهره پشتیبانی می‌شود. دوربین فقط پس از زدن شروع در صفحه مطالعه روشن می‌شود."},
-    {"name": "eye_reading_unsupported", "value": "این دستگاه از ردیابی چهره موردنیاز پشتیبانی نمی‌کند. از لمس یا صفحه‌کلید استفاده کنید."},
-    {"name": "eye_reading_dwell", "value": "مدت نگه‌داشتن نگاه"},
-    {"name": "eye_reading_threshold", "value": "آستانه جهت"},
-    {"name": "eye_reading_threshold_desc", "value": "آستانه بالاتر به حرکت بیشتر چشم نیاز دارد و پیمایش ناخواسته را کاهش می‌دهد."},
-    {"name": "eye_reading_help", "value": "برای کالیبراسیون سر را ثابت نگه دارید و به مرکز صفحه نگاه کنید. با نگه‌داشتن نگاه به بالا یا پایین حدود نیم صفحه پیمایش کنید. پس از هر حرکت به مرکز برگردید. لمس، چرخ ماوس و صفحه‌کلید اولویت دارند."},
-    {"name": "eye_reading_privacy", "value": "دوربین جلو فقط پس از شروع استفاده می‌شود. داده جهت در دستگاه پردازش می‌شود؛ تصاویر ذخیره یا بارگذاری نمی‌شوند. خروج از صفحه یا رفتن به پس‌زمینه جلسه را متوقف می‌کند. دوباره دستی شروع کنید."},
-    {"name": "eye_reading_save_failed", "value": "تنظیمات ذخیره نشد. دوباره تلاش کنید."},
-    {"name": "eye_reading_start", "value": "شروع کنترل با نگاه"},
-    {"name": "eye_reading_stop", "value": "توقف کنترل با نگاه"},
-    {"name": "eye_reading_recalibrate", "value": "کالیبراسیون دوباره"},
-    {"name": "eye_reading_starting", "value": "در حال راه‌اندازی دوربین جلو…"},
-    {"name": "eye_reading_permission", "value": "مجوز دوربین لازم است. در مجوزهای برنامه در سیستم اجازه دهید و دوباره تلاش کنید."},
-    {"name": "eye_reading_failed", "value": "دوربین در دسترس نیست. برنامه‌های دوربین دیگر را ببندید و دوباره تلاش کنید."},
-    {"name": "eye_reading_calibrating", "value": "برای کالیبراسیون به مرکز صفحه نگاه کنید و سر و نگاه را ثابت نگه دارید."},
-    {"name": "eye_reading_center", "value": "پیش از حرکت بعدی نگاه را به مرکز برگردانید."},
-    {"name": "eye_reading_ready", "value": "آماده: به بالا یا پایین نگاه کنید و نگاه را نگه دارید."},
-    {"name": "eye_reading_up", "value": "برای پیمایش رو به بالا، به بالا نگاه کنید."},
-    {"name": "eye_reading_down", "value": "برای پیمایش رو به پایین، به پایین نگاه کنید."},
-    {"name": "eye_reading_lost", "value": "چشم‌ها را باز کنید و در نور مناسب رو به صفحه باشید. اگر پاسخی نیست دوباره کالیبره کنید."},
-    {"name": "eye_reading_paused", "value": "ورودی دستی اولویت دارد. کنترل با نگاه موقتاً مکث شده است."},
-    {"name": "eye_reading_camera_reason", "value": "پس از شروع مطالعه با نگاه، از دوربین جلو برای تشخیص جهت چشم در دستگاه استفاده می‌کند."},
-    {"name": "compact_video_layout", "value": "چیدمان ویدیوی صفحه بیرونی"},
-    {"name": "settings_compact_video_layout_desc", "value": "برای صفحه‌های مربعی کوچک مانند Pura X، کنش‌های کناری یا ردیف پایین را انتخاب کنید. با باز کردن گوشی، چیدمان معمول برمی‌گردد."},
-    {"name": "compact_video_layout_rail", "value": "کنش‌های کناری"},
-    {"name": "compact_video_layout_bottom", "value": "ردیف پایین"},
-    {"name":"settings_component_hdr_enabled","value":"Component HDR effect"},
-    {"name":"settings_component_hdr_enabled_desc","value":"Off by default. Turn it on to use 1.25x brightening, then adjust the multiplier below."},
-    {"name":"settings_confirm_app_exit","value":"تأیید پیش از خروج"},
-    {"name":"settings_confirm_app_exit_desc","value":"هنگام بازگشت از صفحه اصلی تأیید خواسته شود. در حالت خاموش، مستقیماً خارج می‌شوید."},
-    {"name":"app_exit_title","value":"خروج از برنامه؟"},
-    {"name":"app_exit_message","value":"آیا مطمئنید که می‌خواهید از برنامه خارج شوید؟"},
-    {"name":"app_exit_action","value":"خروج"},
-    {"name":"settings_component_hdr_max","value":"حداکثر ضریب روشنایی نمایشگر فعلی"},
-    {"name":"settings_component_hdr_max_unavailable","value":"موقتاً در دسترس نیست"},
-    {"name":"settings_component_hdr_max_desc","value":"این مقدار را سیستم برای نمایشگر فعلی گزارش می‌کند و با تغییر روشنایی یا نمایشگر خودکار به‌روز می‌شود."},
-    {"name":"settings_component_hdr_ratio","value":"ضریب روشنایی HDR رابط"},
-    {"name":"settings_component_hdr_desc","value":"روشنایی دکمه‌ها، نمادها و موارد انتخاب‌شده را تنظیم کنید. پیش‌فرض 1.25 است؛ مقدار 1 افزایش روشنایی را غیرفعال می‌کند. روشنایی واقعی به دستگاه بستگی دارد. تغییرات خودکار ذخیره و اعمال می‌شوند."},
-    {"name":"settings_component_hdr_invalid","value":"عددی معتبر و بزرگ‌تر یا مساوی 1 وارد کنید."},
-    {"name":"settings_component_hdr_reset","value":"بازنشانی به 1.25"},
-    {"name":"settings_video_hdr_enhancement","value":"بهبود ویدیو با HDR"},
-    {"name":"settings_video_hdr_enhancement_desc","value":"کنتراست و رنگ ویدیوهای معمولی را بهبود می‌دهد. دستگاه‌های ناسازگار به‌طور خودکار از پخش معمولی استفاده می‌کنند."},
-    {"name": "settings_menu_post", "value": "عملیات منوی پست"},
-    {"name": "settings_menu_photo", "value": "عملیات منوی عکس"},
-    {"name": "settings_menu_video", "value": "عملیات منوی ویدیو"},
-    {"name": "settings_menu_item_desc", "value": "عملیات قابل نمایش در منوها را انتخاب کنید. در محتوای پشتیبانی‌شده ظاهر می‌شوند و امکان بازیابی پیش‌فرض‌ها وجود دارد."},
-    {"name": "settings_menu_show_action", "value": "نمایش در منوهای مرتبط"},
-    {"name": "settings_menu_empty", "value": "عملیات منو پنهان است. از دسته مربوط در تنظیمات بازیابی کنید."},
-    {"name": "settings_viewer_video_mute", "value": "بی‌صدا کردن پیش‌فرض نمایشگر ویدیو"},
-    {"name": "settings_viewer_video_mute_desc", "value": "صدای ویدیوی بازشده مستقل از پیش‌نمایش صفحه اصلی تنظیم می‌شود."},
-    {"name": "settings_video_auto_advance_desc", "value": "پس از پایان پخش، خودکار به ویدیوی بعد بروید."},
-    {"name": "settings_video_captions_desc", "value": "زیرنویس هوش مصنوعی سیستم در نمایشگر ویدیو به‌طور پیش‌فرض فعال شود."},
-    {"name": "settings_video_feed_layout_desc", "value": "چیدمان عمودی ویدیوی تلفن را انتخاب کنید. پنجره‌های عریض و افقی چیدمان مناسب خود را حفظ می‌کنند."},
-    {"name": "settings_chat_desc", "value": "Message requests, call permissions, PIN and chat auto-download"},
+    {
+      "name": "eye_reading_title",
+      "value": "مطالعه با نگاه"
+    },
+    {
+      "name": "eye_reading_intro",
+      "value": "برای پیمایش رشته‌ها، نسخه‌های آفلاین و مقاله‌ها به بالا یا پایین نگاه کنید و نگاه را نگه دارید."
+    },
+    {
+      "name": "eye_reading_enable",
+      "value": "فعال‌سازی مطالعه با نگاه"
+    },
+    {
+      "name": "eye_reading_supported",
+      "value": "ردیابی چهره پشتیبانی می‌شود. دوربین فقط پس از زدن شروع در صفحه مطالعه روشن می‌شود."
+    },
+    {
+      "name": "eye_reading_unsupported",
+      "value": "این دستگاه از ردیابی چهره موردنیاز پشتیبانی نمی‌کند. از لمس یا صفحه‌کلید استفاده کنید."
+    },
+    {
+      "name": "eye_reading_dwell",
+      "value": "مدت نگه‌داشتن نگاه"
+    },
+    {
+      "name": "eye_reading_threshold",
+      "value": "آستانه جهت"
+    },
+    {
+      "name": "eye_reading_threshold_desc",
+      "value": "آستانه بالاتر به حرکت بیشتر چشم نیاز دارد و پیمایش ناخواسته را کاهش می‌دهد."
+    },
+    {
+      "name": "eye_reading_help",
+      "value": "برای کالیبراسیون سر را ثابت نگه دارید و به مرکز صفحه نگاه کنید. با نگه‌داشتن نگاه به بالا یا پایین حدود نیم صفحه پیمایش کنید. پس از هر حرکت به مرکز برگردید. لمس، چرخ ماوس و صفحه‌کلید اولویت دارند."
+    },
+    {
+      "name": "eye_reading_privacy",
+      "value": "دوربین جلو فقط پس از شروع استفاده می‌شود. داده جهت در دستگاه پردازش می‌شود؛ تصاویر ذخیره یا بارگذاری نمی‌شوند. خروج از صفحه یا رفتن به پس‌زمینه جلسه را متوقف می‌کند. دوباره دستی شروع کنید."
+    },
+    {
+      "name": "eye_reading_save_failed",
+      "value": "تنظیمات ذخیره نشد. دوباره تلاش کنید."
+    },
+    {
+      "name": "eye_reading_start",
+      "value": "شروع کنترل با نگاه"
+    },
+    {
+      "name": "eye_reading_stop",
+      "value": "توقف کنترل با نگاه"
+    },
+    {
+      "name": "eye_reading_recalibrate",
+      "value": "کالیبراسیون دوباره"
+    },
+    {
+      "name": "eye_reading_starting",
+      "value": "در حال راه‌اندازی دوربین جلو…"
+    },
+    {
+      "name": "eye_reading_permission",
+      "value": "مجوز دوربین لازم است. در مجوزهای برنامه در سیستم اجازه دهید و دوباره تلاش کنید."
+    },
+    {
+      "name": "eye_reading_failed",
+      "value": "دوربین در دسترس نیست. برنامه‌های دوربین دیگر را ببندید و دوباره تلاش کنید."
+    },
+    {
+      "name": "eye_reading_calibrating",
+      "value": "برای کالیبراسیون به مرکز صفحه نگاه کنید و سر و نگاه را ثابت نگه دارید."
+    },
+    {
+      "name": "eye_reading_center",
+      "value": "پیش از حرکت بعدی نگاه را به مرکز برگردانید."
+    },
+    {
+      "name": "eye_reading_ready",
+      "value": "آماده: به بالا یا پایین نگاه کنید و نگاه را نگه دارید."
+    },
+    {
+      "name": "eye_reading_up",
+      "value": "برای پیمایش رو به بالا، به بالا نگاه کنید."
+    },
+    {
+      "name": "eye_reading_down",
+      "value": "برای پیمایش رو به پایین، به پایین نگاه کنید."
+    },
+    {
+      "name": "eye_reading_lost",
+      "value": "چشم‌ها را باز کنید و در نور مناسب رو به صفحه باشید. اگر پاسخی نیست دوباره کالیبره کنید."
+    },
+    {
+      "name": "eye_reading_paused",
+      "value": "ورودی دستی اولویت دارد. کنترل با نگاه موقتاً مکث شده است."
+    },
+    {
+      "name": "eye_reading_camera_reason",
+      "value": "پس از شروع مطالعه با نگاه، از دوربین جلو برای تشخیص جهت چشم در دستگاه استفاده می‌کند."
+    },
+    {
+      "name": "compact_video_layout",
+      "value": "چیدمان ویدیوی صفحه بیرونی"
+    },
+    {
+      "name": "settings_compact_video_layout_desc",
+      "value": "برای صفحه‌های مربعی کوچک مانند Pura X، کنش‌های کناری یا ردیف پایین را انتخاب کنید. با باز کردن گوشی، چیدمان معمول برمی‌گردد."
+    },
+    {
+      "name": "compact_video_layout_rail",
+      "value": "کنش‌های کناری"
+    },
+    {
+      "name": "compact_video_layout_bottom",
+      "value": "ردیف پایین"
+    },
+    {
+      "name": "settings_component_hdr_enabled",
+      "value": "Component HDR effect"
+    },
+    {
+      "name": "settings_component_hdr_enabled_desc",
+      "value": "Off by default. Turn it on to use 1.25x brightening, then adjust the multiplier below."
+    },
+    {
+      "name": "settings_confirm_app_exit",
+      "value": "تأیید پیش از خروج"
+    },
+    {
+      "name": "settings_confirm_app_exit_desc",
+      "value": "هنگام بازگشت از صفحه اصلی تأیید خواسته شود. در حالت خاموش، مستقیماً خارج می‌شوید."
+    },
+    {
+      "name": "app_exit_title",
+      "value": "خروج از برنامه؟"
+    },
+    {
+      "name": "app_exit_message",
+      "value": "آیا مطمئنید که می‌خواهید از برنامه خارج شوید؟"
+    },
+    {
+      "name": "app_exit_action",
+      "value": "خروج"
+    },
+    {
+      "name": "settings_component_hdr_max",
+      "value": "حداکثر ضریب روشنایی نمایشگر فعلی"
+    },
+    {
+      "name": "settings_component_hdr_max_unavailable",
+      "value": "موقتاً در دسترس نیست"
+    },
+    {
+      "name": "settings_component_hdr_max_desc",
+      "value": "این مقدار را سیستم برای نمایشگر فعلی گزارش می‌کند و با تغییر روشنایی یا نمایشگر خودکار به‌روز می‌شود."
+    },
+    {
+      "name": "settings_component_hdr_ratio",
+      "value": "ضریب روشنایی HDR رابط"
+    },
+    {
+      "name": "settings_component_hdr_desc",
+      "value": "روشنایی دکمه‌ها، نمادها و موارد انتخاب‌شده را تنظیم کنید. پیش‌فرض 1.25 است؛ مقدار 1 افزایش روشنایی را غیرفعال می‌کند. روشنایی واقعی به دستگاه بستگی دارد. تغییرات خودکار ذخیره و اعمال می‌شوند."
+    },
+    {
+      "name": "settings_component_hdr_invalid",
+      "value": "عددی معتبر و بزرگ‌تر یا مساوی 1 وارد کنید."
+    },
+    {
+      "name": "settings_component_hdr_reset",
+      "value": "بازنشانی به 1.25"
+    },
+    {
+      "name": "settings_video_hdr_enhancement",
+      "value": "بهبود ویدیو با HDR"
+    },
+    {
+      "name": "settings_video_hdr_enhancement_desc",
+      "value": "کنتراست و رنگ ویدیوهای معمولی را بهبود می‌دهد. دستگاه‌های ناسازگار به‌طور خودکار از پخش معمولی استفاده می‌کنند."
+    },
+    {
+      "name": "settings_menu_post",
+      "value": "عملیات منوی پست"
+    },
+    {
+      "name": "settings_menu_photo",
+      "value": "عملیات منوی عکس"
+    },
+    {
+      "name": "settings_menu_video",
+      "value": "عملیات منوی ویدیو"
+    },
+    {
+      "name": "settings_menu_item_desc",
+      "value": "عملیات قابل نمایش در منوها را انتخاب کنید. در محتوای پشتیبانی‌شده ظاهر می‌شوند و امکان بازیابی پیش‌فرض‌ها وجود دارد."
+    },
+    {
+      "name": "settings_menu_show_action",
+      "value": "نمایش در منوهای مرتبط"
+    },
+    {
+      "name": "settings_menu_empty",
+      "value": "عملیات منو پنهان است. از دسته مربوط در تنظیمات بازیابی کنید."
+    },
+    {
+      "name": "settings_viewer_video_mute",
+      "value": "بی‌صدا کردن پیش‌فرض نمایشگر ویدیو"
+    },
+    {
+      "name": "settings_viewer_video_mute_desc",
+      "value": "صدای ویدیوی بازشده مستقل از پیش‌نمایش صفحه اصلی تنظیم می‌شود."
+    },
+    {
+      "name": "settings_video_auto_advance_desc",
+      "value": "پس از پایان پخش، خودکار به ویدیوی بعد بروید."
+    },
+    {
+      "name": "settings_video_captions_desc",
+      "value": "زیرنویس هوش مصنوعی سیستم در نمایشگر ویدیو به‌طور پیش‌فرض فعال شود."
+    },
+    {
+      "name": "settings_video_feed_layout_desc",
+      "value": "چیدمان عمودی ویدیوی تلفن را انتخاب کنید. پنجره‌های عریض و افقی چیدمان مناسب خود را حفظ می‌کنند."
+    },
+    {
+      "name": "settings_chat_desc",
+      "value": "Message requests, call permissions, PIN and chat auto-download"
+    },
     {
       "name": "settings_video_double_tap_seek",
       "value": "دو ضربه برای جلو و عقب بردن"
@@ -1107,7 +1342,7 @@
     },
     {
       "name": "profile_version",
-      "value": "Harmony X 3.1.0 · HarmonyOS 6.1 ‏(API 23-26) · مدل Stage"
+      "value": "Harmony X 3.5.0 · HarmonyOS 6.0.2 ‏(API 22-26) · مدل Stage"
     },
     {
       "name": "profile_following",
@@ -1836,6 +2071,10 @@
     {
       "name": "settings_timeline_columns_auto",
       "value": "خودکار"
+    },
+    {
+      "name": "settings_timeline_columns_auto_two",
+      "value": "خودکار: ۲ ستون در دسکتاپ/افقی، ۱ در نمایشگر بیرونی"
     },
     {
       "name": "settings_timeline_columns_one",
@@ -4500,6 +4739,10 @@
     {
       "name": "onboarding_login_title",
       "value": "ورود به X"
+    },
+    {
+      "name": "onboarding_login_notice",
+      "value": "از ورود با Google استفاده نکنید؛ ایمیل خود را مستقیماً وارد کنید. اگر شبکه درست کار می‌کند اما صفحه سفید است، لطفاً منتظر بمانید."
     },
     {
       "name": "onboarding_login_hint",
@@ -10477,330 +10720,1346 @@
       "name": "settings_desktop_video_feed",
       "value": "خوراک ویدیویی به سبک تلفن"
     },
-    {"name":"settings_classic_bottom_bar","value":"ناوبری پایین کلاسیک"},
-    {"name":"settings_classic_bottom_bar_desc","value":"استفاده از نوار تمام‌عرض با نماد و متن در پایین، با امکان پنهان‌سازی خودکار. برای بازگشت به حالت شناور آن را خاموش کنید. تغییرات فوراً اعمال و ذخیره می‌شوند."},
-    {"name":"settings_root_liquid_tab_indicator","value":"نشانگر مایع"},
-    {"name":"settings_root_liquid_tab_indicator_desc","value":"کپسولی قابل کشیدن با بازگشت فنری روی نوار پیمایش شناور نشان می‌دهد. اندازه با نمایش برچسب‌های زبانه هماهنگ می‌شود."},
-    {"name":"settings_root_tab_labels","value":"نمایش برچسب‌های زبانه"},
-    {"name":"settings_root_tab_labels_desc","value":"برای هر دو نوار ناوبری پایین شناور و کلاسیک اعمال می‌شود. با خاموش شدن فقط نمادها و نشان‌های خوانده‌نشده می‌مانند."},
+    {
+      "name": "settings_classic_bottom_bar",
+      "value": "ناوبری پایین کلاسیک"
+    },
+    {
+      "name": "settings_classic_bottom_bar_desc",
+      "value": "استفاده از نوار تمام‌عرض با نماد و متن در پایین، با امکان پنهان‌سازی خودکار. برای بازگشت به حالت شناور آن را خاموش کنید. تغییرات فوراً اعمال و ذخیره می‌شوند."
+    },
+    {
+      "name": "settings_root_liquid_tab_indicator",
+      "value": "نشانگر مایع"
+    },
+    {
+      "name": "settings_root_liquid_tab_indicator_desc",
+      "value": "کپسولی قابل کشیدن با بازگشت فنری روی نوار پیمایش شناور نشان می‌دهد. اندازه با نمایش برچسب‌های زبانه هماهنگ می‌شود."
+    },
+    {
+      "name": "settings_root_tab_labels",
+      "value": "نمایش برچسب‌های زبانه"
+    },
+    {
+      "name": "settings_root_tab_labels_desc",
+      "value": "برای هر دو نوار ناوبری پایین شناور و کلاسیک اعمال می‌شود. با خاموش شدن فقط نمادها و نشان‌های خوانده‌نشده می‌مانند."
+    },
     {
       "name": "chat_post_preview",
       "value": "پست اشتراک‌گذاری‌شده"
     },
-    {"name": "account_overview_signed_out", "value": "وارد نشده‌اید"},
-    {"name": "account_overview_no_bio", "value": "هنوز زندگی‌نامه‌ای وجود ندارد"},
-    {"name": "account_overview_handle", "value": "نام کاربری"},
-    {"name": "account_overview_location", "value": "مکان"},
-    {"name": "account_overview_website", "value": "وب‌سایت"},
-    {"name": "account_overview_manage", "value": "مدیریت و جابه‌جایی حساب‌ها"},
-    {"name": "profile_editor_choose_banner", "value": "Change header photo"},
-    {"name": "profile_editor_choose_avatar", "value": "Change profile photo"},
-    {"name": "profile_editor_birthdate", "value": "Birth date"},
-    {"name": "profile_editor_birthdate_empty", "value": "Add birth date"},
-    {"name": "profile_editor_birthdate_manage", "value": "Edit birth date and visibility"},
-    {"name": "profile_editor_birthdate_privacy", "value": "Month and day: %s\nYear: %s"},
-    {"name": "profile_editor_account_changed", "value": "The signed-in account changed. Go back and reopen the editor."},
-    {"name": "profile_editor_unsaved_title", "value": "Discard unsaved changes?"},
-    {"name": "profile_editor_unsaved_message", "value": "Unsaved profile and photo changes will be lost when you leave."},
-    {"name": "profile_editor_keep_editing", "value": "Keep editing"},
-    {"name": "profile_editor_discard", "value": "Discard changes"},
-    {"name": "profile_editor_partial", "value": "Some changes were saved. Your remaining edits are still here. Try saving again."},
-    {"name": "profile_editor_confirm_failed", "value": "Changes were submitted, but the updated profile could not be loaded. Save again to refresh without uploading the photos again."},
-    {"name": "settings_page_transition", "value": "گذار صفحه‌ها"},
-    {"name": "settings_page_transition_desc", "value": "پویانمایی باز شدن صفحه و بازگشت را انتخاب کنید. تغییرات فوری اعمال و ذخیره می‌شوند."},
-    {"name": "settings_page_transition_classic", "value": "پویانمایی فعلی"},
-    {"name": "settings_page_transition_classic_desc", "value": "گذارهای فعلی پیمایش سیستم حفظ می‌شوند."},
-    {"name": "settings_page_transition_official", "value": "سبک رسمی"},
-    {"name": "settings_page_transition_official_desc", "value": "بزرگ‌نمایی مرکزی و محوشدن، با پویانمایی هماهنگ ورود و خروج."},
-    {"name":"settings_anti_peep","value":"محافظت در برابر نگاه دیگران"},
-    {"name":"settings_anti_peep_desc","value":"هنگام تشخیص نگاه فرد دیگر، پنجرهٔ برنامه با پوشش سیستم پنهان می‌شود."},
-    {"name":"settings_anti_peep_enable","value":"فعال‌سازی محافظت"},
-    {"name":"settings_anti_peep_setup","value":"تنظیم محافظت سیستم"},
-    {"name":"settings_anti_peep_recheck","value":"بررسی دوباره"},
-    {"name":"settings_anti_peep_note","value":"تشخیص چهره را تنظیم کنید و در حریم خصوصی و امنیت > محافظت در برابر نگاه دیگران به این برنامه اجازه دهید. برنامه فقط از وضعیت سیستم استفاده می‌کند و به تصاویر چهره دسترسی ندارد."},
-    {"name":"settings_anti_peep_disabled","value":"خاموش"},
-    {"name":"settings_anti_peep_unsupported","value":"این دستگاه از محافظت سیستم در برابر نگاه دیگران پشتیبانی نمی‌کند."},
-    {"name":"settings_anti_peep_permission","value":"در انتظار مجوز برنامه. پس از تنظیم، به برنامه برگردید یا دوباره بررسی کنید."},
-    {"name":"settings_anti_peep_system_off","value":"این برنامه را در محافظت سیستم در برابر نگاه دیگران فعال کنید."},
-    {"name":"settings_anti_peep_face","value":"ابتدا تشخیص چهره را در تنظیمات سیستم فعال کنید."},
-    {"name":"settings_anti_peep_ready","value":"فعال است. وضعیت نگاه دیگران بررسی می‌شود."},
-    {"name":"settings_anti_peep_protected","value":"نگاه فرد دیگر تشخیص داده شد و پوشش محافظ سیستم فعال شد."},
-    {"name":"settings_anti_peep_error","value":"محافظت فعلاً در دسترس نیست. دوباره بررسی کنید."},
-    {"name":"settings_anti_peep_checking","value":"در حال بررسی یا فعال‌سازی محافظت…"},
-    {"name":"settings_anti_peep_save_failed","value":"ذخیره نشد. دوباره تلاش کنید."},
-    {"name":"huawei_account_title","value":"HUAWEI ID and cloud sync"},
-    {"name":"huawei_account_name","value":"HUAWEI ID"},
-    {"name":"huawei_login","value":"Sign in with HUAWEI ID"},
-    {"name":"huawei_logout","value":"Sign out"},
-    {"name":"huawei_signed_in","value":"Signed in with HUAWEI ID"},
-    {"name":"huawei_logging_in","value":"Signing in…"},
-    {"name":"huawei_signed_out_description","value":"Sign in to bring your preferences with you"},
-    {"name":"huawei_cloud_sync","value":"Cloud sync"},
-    {"name":"huawei_sync_description","value":"Sign in to enable sync for appearance, reading, playback preferences and local content rules across your devices."},
-    {"name":"huawei_local_data_note","value":"X credentials, messages, drafts and caches stay on this device. Some appearance changes take effect after restarting."},
-    {"name":"huawei_logout_title","value":"Sign out of HUAWEI ID?"},
-    {"name":"huawei_logout_description","value":"Cloud sync will pause. Local settings and existing cloud data will be kept. Your X account remains available."},
-    {"name":"huawei_sync_disabled","value":"Off. Settings are saved on this device."},
-    {"name":"huawei_sync_unavailable","value":"Cloud storage is unavailable. Check the system cloud service and this app’s sync switch."},
-    {"name":"huawei_sync_downloading","value":"Reading and merging cloud settings…"},
-    {"name":"huawei_sync_uploading","value":"Uploading settings…"},
-    {"name":"huawei_sync_success","value":"Synced"},
-    {"name":"huawei_sync_pending","value":"Saved locally, waiting to sync"},
-    {"name":"huawei_sync_failed","value":"Sync did not finish. Your local data is safe. Check system cloud settings and try again."},
-    {"name":"huawei_network_error","value":"Network unavailable. Try again when connected."},
-    {"name":"huawei_storage_full","value":"Cloud or device storage is full. Free some space and try again."},
-    {"name":"huawei_login_error","value":"Sign-in did not finish. Check account service configuration or try again later."},
-    {"name":"huawei_authorization_error","value":"Nickname and avatar authorization failed. Check account permissions and try again."},
-    {"name":"huawei_save_error","value":"Could not save settings. Try again."},
-    {"name":"huawei_select_group","value":"Select at least one group to sync."},
-    {"name":"huawei_account_changed","value":"HUAWEI ID has changed. Enabling sync will merge the selected local settings into the current account."},
-    {"name":"huawei_last_sync","value":"Last successful sync:"},
-    {"name":"huawei_syncing","value":"Syncing…"},
-    {"name":"huawei_sync_now","value":"Sync now"},
-    {"name":"huawei_group_appearance","value":"Appearance and navigation"},
-    {"name":"huawei_group_appearance_description","value":"Theme, text size, title bar, tabs and sheet material"},
-    {"name":"huawei_group_media","value":"Reading and playback"},
-    {"name":"huawei_group_media_description","value":"Image and video quality, autoplay and mute preferences"},
-    {"name":"huawei_group_filters","value":"Local content rules"},
-    {"name":"huawei_group_filters_description","value":"Keyword and user filters, and content preferences"},
-    {"name":"post_photo_save_background","value":"ذخیره در کتابخانه پس‌زمینه"},
-    {"name":"chat_background_saving_photo","value":"در حال ذخیره تصویر پس‌زمینه…"},
-    {"name":"chat_background_saved_photo","value":"ذخیره شد. آن را از پس‌زمینه صفحه یا پس‌زمینه گفتگو انتخاب کنید."},
-    {"name":"chat_background_save_photo_failed","value":"ذخیره تصویر پس‌زمینه ناموفق بود. دوباره تلاش کنید."},
-    {"name":"chat_background_saved_photos","value":"تصاویر ذخیره‌شده از پست‌ها"},
-    {"name":"page_background_title","value":"پس‌زمینهٔ صفحه‌ها"},
-    {"name":"page_background_description","value":"Colors, photos and mixable patterns"},
-    {"name":"page_background_switch_title","value":"فعال‌سازی پس‌زمینه صفحه"},
-    {"name":"page_background_switch_desc","value":"برای استفاده فوری از پس‌زمینه پوسته، آن را خاموش کنید. سبک فعلی حفظ می‌شود."},
-    {"name":"page_background_base","value":"زمینه"},
-    {"name":"page_background_pattern","value":"لایهٔ طرح‌ها"},
-    {"name":"page_background_pattern_none","value":"بدون طرح"},
-    {"name":"page_background_content_opacity","value":"تیرگی سطح محتوا"},
-    {"name":"page_background_reset","value":"بازگردانی پیش‌فرض"},
-    {"name":"page_background_color_placeholder","value":"Custom color #RRGGBB"},
-    {"name":"page_background_preview","value":"پیش‌نمایش پس‌زمینه"},
-    {"name":"page_background_preview_text","value":"Bring your favorite colors and patterns to every visit."},
-    {"name":"page_background_preview_hint","value":"Text and content surfaces show how readable your background will be."},
-    {"name":"page_background_note","value":"Applies to regular pages. Chats have separate backgrounds; media viewers keep their immersive backgrounds. Tap Apply to save."},
-    {"name":"page_background_layout_preset","value":"طرح‌های کامل"},
-    {"name":"page_background_layout_icons","value":"نقش‌های تکی"},
-    {"name":"page_background_density","value":"تراکم نقش‌ها"},
-    {"name":"page_background_set_add","value":"انتخاب کل مجموعه"},
-    {"name":"page_background_set_remove","value":"لغو انتخاب مجموعه"},
-    {"name":"page_background_mix_hint","value":"Select motifs across sets to mix them, or repeat a single motif."},
-    {"name":"page_background_selected","value":"%d motifs selected"},
-    {"name":"page_background_icons_clear","value":"پاک کردن نقش‌ها"},
-    {"name":"page_background_paper","value":"بافت کاغذ"},
-    {"name":"page_background_paper_none","value":"بدون بافت"},
-    {"name":"page_background_kraft","value":"کاغذ کرافت"},
-    {"name":"page_background_parchment","value":"کاغذ پوستی"},
-    {"name":"page_background_texture_strength","value":"شدت بافت"},
-    {"name":"page_background_presets_mix","value":"Select multiple full patterns to combine them."},
-    {"name":"page_background_applied","value":"پس‌زمینهٔ صفحه اعمال شد"},
-    {"name":"page_background_apply_failed","value":"ذخیرهٔ پس‌زمینه ممکن نشد. دوباره تلاش کنید."},
-    {"name":"page_background_transparent_posts","value":"Transparent post cards"},
-    {"name":"page_background_transparent_posts_desc","value":"Hide the surface behind posts and quoted posts to reveal the page background."},
-    {"name":"page_background_transparent_inbox","value":"Transparent message list"},
-    {"name":"page_background_transparent_inbox_desc","value":"Hide conversation row surfaces while keeping text, avatars and unread indicators."},
-    {"name":"page_background_post_opacity","value":"Post surface opacity"},
-    {"name":"page_background_inbox_opacity","value":"Message list surface opacity"},
-    {"name":"page_background_scheme_import","value":"Import scheme"},
-    {"name":"page_background_scheme_share","value":"Share scheme"},
-    {"name":"page_background_scheme_title","value":"Page background scheme"},
-    {"name":"page_background_scheme_imported","value":"Scheme imported. Preview it, then tap Apply."},
-    {"name":"page_background_scheme_import_failed","value":"Unable to import. Choose a valid HarmonyX background scheme (up to 48 MB)."},
-    {"name":"page_background_scheme_share_failed","value":"Unable to share. Please try again; background photos must be under 32 MB."},
-    {"name":"page_background_set_signature_icons","value":"نمادهای جایگزین"},
-    {"name":"page_background_set_garden_defense","value":"Plants vs. Zombies"},
-    {"name":"page_background_motif_signature_icons_frog_face","value":"Frog face"},
-    {"name":"page_background_motif_signature_icons_frog_lily","value":"Frog on a lily pad"},
-    {"name":"page_background_motif_signature_icons_milk_frog","value":"Milk frog"},
-    {"name":"page_background_motif_signature_icons_milk_frog_wave","value":"Waving milk frog"},
-    {"name":"page_background_motif_signature_icons_bird","value":"Flying bird"},
-    {"name":"page_background_motif_signature_icons_bird_wings","value":"Bird with open wings"},
-    {"name":"page_background_motif_signature_icons_ribbon_x","value":"Ribbon X"},
-    {"name":"page_background_motif_signature_icons_blossom_x","value":"Blossom X"},
-    {"name":"page_background_motif_signature_icons_brush_x","value":"Brush X"},
-    {"name":"page_background_motif_signature_icons_prism_x","value":"Prism X"},
-    {"name":"page_background_motif_signature_icons_zombie_x","value":"Zombie X"},
-    {"name":"page_background_motif_signature_icons_lily_blossom","value":"Lily blossom"},
-    {"name":"page_background_motif_garden_defense_peashooter","value":"Peashooter"},
-    {"name":"page_background_motif_garden_defense_sunflower","value":"Sunflower"},
-    {"name":"page_background_motif_garden_defense_wallnut","value":"Wall-nut"},
-    {"name":"page_background_motif_garden_defense_cherry_bomb","value":"Cherry Bomb"},
-    {"name":"page_background_motif_garden_defense_snow_pea","value":"Snow Pea"},
-    {"name":"page_background_motif_garden_defense_potato_mine","value":"Potato Mine"},
-    {"name":"page_background_motif_garden_defense_chomper","value":"Chomper"},
-    {"name":"page_background_motif_garden_defense_squash","value":"Squash"},
-    {"name":"page_background_motif_garden_defense_zombie","value":"Zombie"},
-    {"name":"page_background_motif_garden_defense_conehead","value":"Conehead Zombie"},
-    {"name":"page_background_motif_garden_defense_buckethead","value":"Buckethead Zombie"},
-    {"name":"page_background_motif_garden_defense_lawnmower","value":"Lawn mower"},
-    {"name":"page_background_set_ai_assistants","value":"دستیارهای هوش مصنوعی"},
-    {"name":"page_background_motif_ai_assistants_gpt","value":"GPT"},
-    {"name":"page_background_motif_ai_assistants_claude","value":"Claude"},
-    {"name":"page_background_motif_ai_assistants_gemini","value":"Gemini"},
-    {"name":"page_background_motif_ai_assistants_deepseek","value":"DeepSeek"},
-    {"name":"page_background_motif_ai_assistants_grok","value":"Grok"},
-    {"name":"page_background_motif_ai_assistants_qwen","value":"Qwen"},
-    {"name":"page_background_motif_ai_assistants_kimi","value":"Kimi"},
-    {"name":"page_background_motif_ai_assistants_doubao","value":"Doubao"},
-    {"name":"page_background_motif_ai_assistants_copilot","value":"Copilot"},
-    {"name":"page_background_motif_ai_assistants_perplexity","value":"Perplexity"},
-    {"name":"page_background_motif_ai_assistants_mistral","value":"Mistral"},
-    {"name":"page_background_motif_ai_assistants_robot","value":"AI robot"},
-    {"name":"page_background_set_mobile_brands_systems","value":"برندها و سیستم‌های موبایل"},
-    {"name":"page_background_motif_mobile_brands_systems_apple","value":"Apple"},
-    {"name":"page_background_motif_mobile_brands_systems_huawei","value":"Huawei"},
-    {"name":"page_background_motif_mobile_brands_systems_xiaomi","value":"Xiaomi"},
-    {"name":"page_background_motif_mobile_brands_systems_samsung","value":"Samsung"},
-    {"name":"page_background_motif_mobile_brands_systems_oppo","value":"OPPO"},
-    {"name":"page_background_motif_mobile_brands_systems_vivo","value":"vivo"},
-    {"name":"page_background_motif_mobile_brands_systems_honor","value":"HONOR"},
-    {"name":"page_background_motif_mobile_brands_systems_oneplus","value":"OnePlus"},
-    {"name":"page_background_motif_mobile_brands_systems_meizu","value":"Meizu"},
-    {"name":"page_background_motif_mobile_brands_systems_harmonyos","value":"HarmonyOS"},
-    {"name":"page_background_motif_mobile_brands_systems_android","value":"Android"},
-    {"name":"page_background_motif_mobile_brands_systems_ios","value":"iOS"},
-    {"name":"page_background_motif_mobile_brands_systems_hyperos","value":"HyperOS"},
-    {"name":"page_background_motif_mobile_brands_systems_coloros","value":"ColorOS"},
-    {"name":"page_background_motif_mobile_brands_systems_originos","value":"OriginOS"},
-    {"name":"page_background_motif_mobile_brands_systems_oneui","value":"One UI"},
-    {"name":"motion_title","value":"Animation & haptics"},
-    {"name":"motion_intro","value":"Tune interaction animations and touch feedback. Changes are saved automatically. Tap the preview to try them."},
-    {"name":"motion_preview","value":"Tap to preview animation and haptics"},
-    {"name":"motion_reduce","value":"Reduce motion"},
-    {"name":"motion_reduce_desc","value":"Turn off decorative scaling, movement and Symbol effects, and skip page transitions. Your animation preferences are kept."},
-    {"name":"motion_duration","value":"Animation duration"},
-    {"name":"motion_duration_desc","value":"Reference duration for app animations. Button and page animations scale proportionally. System Symbol effects keep their native timing."},
-    {"name":"motion_amplitude","value":"Movement amplitude"},
-    {"name":"motion_amplitude_desc","value":"Adjust decorative scaling and rotation. At 0%, these effects stop. Gesture tracking and zoom keep their full range."},
-    {"name":"motion_damping","value":"Spring damping"},
-    {"name":"motion_damping_desc","value":"Lower values bounce more; higher values settle more gently."},
-    {"name":"motion_symbol","value":"Animated Symbols"},
-    {"name":"motion_symbol_desc","value":"Play a native Symbol effect once when selecting a tab or using an action button. Effects pause with Reduce motion."},
-    {"name":"motion_haptics","value":"Touch feedback"},
-    {"name":"motion_haptics_desc","value":"Use light feedback for navigation, buttons, switches and actions. Follows the system haptics setting."},
-    {"name":"motion_intensity","value":"Haptic intensity"},
-    {"name":"motion_intensity_desc","value":"Adjust preset effects on supported devices. Other motors use a short system touch vibration."},
-    {"name":"motion_presets","value":"Animation presets"},
-    {"name":"motion_preset_quick","value":"Quick"},
-    {"name":"motion_preset_quick_desc","value":"175 ms · 60% movement · firm settling. Short, crisp feedback."},
-    {"name":"motion_preset_standard","value":"Standard"},
-    {"name":"motion_preset_standard_desc","value":"300 ms · 100% movement · balanced spring. Recommended for everyday use."},
-    {"name":"motion_preset_spring","value":"Bouncy"},
-    {"name":"motion_preset_spring_desc","value":"450 ms · 120% movement · lower damping. Softer, more visible rebound."},
-    {"name":"motion_preset_reduced","value":"Low motion"},
-    {"name":"motion_preset_reduced_desc","value":"Skip page transitions and decorative effects. Keep your previous tuning."},
-    {"name":"motion_preset_custom","value":"Current preset: Custom. Choose a preset to restore its animation values."},
-    {"name":"chat_auto_download","value":"Chat auto-download"},
-    {"name":"storage_chat_retention","value":"Keep chat media"},
-    {"name":"storage_chat_retention_desc","value":"Set how long downloaded chat media stays cached. Chat history and manually saved files are kept."},
-    {"name":"settings_theme_mix","value":"پالت‌های ترکیبی"},
-    {"name":"settings_theme_mix_desc","value":"رنگ‌های هماهنگ برای کلیدها، پیمایش و دکمه‌های انتشار در حالت روشن و تیره."},
-    {"name":"settings_theme_mix_confetti","value":"رنگارنگ"},
-    {"name":"settings_theme_mix_coast","value":"نمک دریا و مرجان"},
-    {"name":"settings_theme_mix_sunset","value":"زنبق غروب"},
-    {"name":"settings_theme_mix_forest","value":"کهربای جنگل"},
-    {"name":"settings_theme_mix_berry","value":"توت و نعناع"},
-    {"name":"settings_theme_mix_morandi","value":"موراندی"},
-    {"name":"settings_theme_solid","value":"تک‌رنگ"},
-    {"name":"settings_theme_mix_candy","value":"آبنبات رنگی"},
-    {"name":"settings_theme_mix_sky","value":"آسمان و لیمو"},
-    {"name":"settings_theme_mix_peach","value":"هلو و نعناع"},
-    {"name":"settings_theme_mix_lilac","value":"یاسی و کرم"},
-    {"name":"page_background_set_popular_apps_cn","value":"برنامه‌های محبوب · چین"},
-    {"name":"page_background_motif_popular_apps_cn_wechat","value":"WeChat"},
-    {"name":"page_background_motif_popular_apps_cn_qq","value":"QQ"},
-    {"name":"page_background_motif_popular_apps_cn_weibo","value":"Weibo"},
-    {"name":"page_background_motif_popular_apps_cn_douyin","value":"Douyin"},
-    {"name":"page_background_motif_popular_apps_cn_kuaishou","value":"Kuaishou"},
-    {"name":"page_background_motif_popular_apps_cn_bilibili","value":"Bilibili"},
-    {"name":"page_background_motif_popular_apps_cn_xiaohongshu","value":"Xiaohongshu"},
-    {"name":"page_background_motif_popular_apps_cn_zhihu","value":"Zhihu"},
-    {"name":"page_background_motif_popular_apps_cn_baidu","value":"Baidu"},
-    {"name":"page_background_motif_popular_apps_cn_tieba","value":"Baidu Tieba"},
-    {"name":"page_background_motif_popular_apps_cn_alipay","value":"Alipay"},
-    {"name":"page_background_motif_popular_apps_cn_taobao","value":"Taobao"},
-    {"name":"page_background_motif_popular_apps_cn_jd","value":"JD"},
-    {"name":"page_background_motif_popular_apps_cn_pinduoduo","value":"Pinduoduo"},
-    {"name":"page_background_motif_popular_apps_cn_meituan","value":"Meituan"},
-    {"name":"page_background_motif_popular_apps_cn_eleme","value":"Ele.me"},
-    {"name":"page_background_motif_popular_apps_cn_dianping","value":"Dianping"},
-    {"name":"page_background_motif_popular_apps_cn_amap","value":"Amap"},
-    {"name":"page_background_motif_popular_apps_cn_baidu_maps","value":"Baidu Maps"},
-    {"name":"page_background_motif_popular_apps_cn_didi","value":"DiDi"},
-    {"name":"page_background_motif_popular_apps_cn_netease_music","value":"NetEase Cloud Music"},
-    {"name":"page_background_motif_popular_apps_cn_qq_music","value":"QQ Music"},
-    {"name":"page_background_motif_popular_apps_cn_kugou","value":"KuGou"},
-    {"name":"page_background_motif_popular_apps_cn_weread","value":"WeRead"},
-    {"name":"page_background_set_popular_apps_global","value":"برنامه‌های محبوب · جهانی"},
-    {"name":"page_background_motif_popular_apps_global_whatsapp","value":"WhatsApp"},
-    {"name":"page_background_motif_popular_apps_global_telegram","value":"Telegram"},
-    {"name":"page_background_motif_popular_apps_global_signal","value":"Signal"},
-    {"name":"page_background_motif_popular_apps_global_instagram","value":"Instagram"},
-    {"name":"page_background_motif_popular_apps_global_facebook","value":"Facebook"},
-    {"name":"page_background_motif_popular_apps_global_messenger","value":"Messenger"},
-    {"name":"page_background_motif_popular_apps_global_x","value":"X"},
-    {"name":"page_background_motif_popular_apps_global_threads","value":"Threads"},
-    {"name":"page_background_motif_popular_apps_global_youtube","value":"YouTube"},
-    {"name":"page_background_motif_popular_apps_global_tiktok","value":"TikTok"},
-    {"name":"page_background_motif_popular_apps_global_reddit","value":"Reddit"},
-    {"name":"page_background_motif_popular_apps_global_discord","value":"Discord"},
-    {"name":"page_background_motif_popular_apps_global_spotify","value":"Spotify"},
-    {"name":"page_background_motif_popular_apps_global_apple_music","value":"Apple Music"},
-    {"name":"page_background_motif_popular_apps_global_netflix","value":"Netflix"},
-    {"name":"page_background_motif_popular_apps_global_twitch","value":"Twitch"},
-    {"name":"page_background_motif_popular_apps_global_line","value":"LINE"},
-    {"name":"page_background_motif_popular_apps_global_snapchat","value":"Snapchat"},
-    {"name":"page_background_motif_popular_apps_global_pinterest","value":"Pinterest"},
-    {"name":"page_background_motif_popular_apps_global_chrome","value":"Chrome"},
-    {"name":"page_background_motif_popular_apps_global_firefox","value":"Firefox"},
-    {"name":"page_background_motif_popular_apps_global_edge","value":"Edge"},
-    {"name":"page_background_motif_popular_apps_global_gmail","value":"Gmail"},
-    {"name":"page_background_motif_popular_apps_global_google_maps","value":"Google Maps"},
-    {"name":"scene_title","value":"Scene modes"},
-    {"name":"scene_intro","value":"Apply a set of playback, quality, motion and background preferences. Restore returns to your settings from before the first mode was enabled."},
-    {"name":"scene_reading","value":"Clear reading"},
-    {"name":"scene_reading_desc","value":"Autoplay off · high quality images · low quality video · reduced motion · plain background"},
-    {"name":"scene_saver","value":"Power and data saver"},
-    {"name":"scene_saver_desc","value":"Autoplay off · small images · low quality video · reduced motion · plain background"},
-    {"name":"scene_media","value":"Media browsing"},
-    {"name":"scene_media_desc","value":"Autoplay on · original images · high quality video · motion on · your saved background"},
-    {"name":"scene_restore","value":"Restore original settings"},
-    {"name":"scene_restore_desc","value":"Keep your preferences from before scene mode. Switching between modes does not replace this backup."},
-    {"name":"scene_failed","value":"Some settings could not be saved. Your original settings are retained; retry or restore."},
-    {"name":"offline_title","value":"Offline & later"},
-    {"name":"offline_online","value":"Online bookmarks"},
-    {"name":"offline_intro","value":"New bookmarks save text and available articles automatically. Enable images before saving to include photos. Local copies stay separate from online bookmarks and ordinary cache cleanup."},
-    {"name":"offline_images","value":"Include photos in future saves"},
-    {"name":"offline_save","value":"Save offline"},
-    {"name":"offline_saving","value":"Saving…"},
-    {"name":"offline_saved","value":"Saved for offline reading"},
-    {"name":"offline_partial_saved","value":"Saved available content. Some article text or photos are missing; retry when online."},
-    {"name":"offline_save_failed","value":"Could not save locally. Please retry."},
-    {"name":"offline_partial","value":"Incomplete copy"},
-    {"name":"offline_unread","value":"Unread"},
-    {"name":"offline_unread_only","value":"Unread only"},
-    {"name":"offline_search","value":"Search titles, tags or notes"},
-    {"name":"offline_empty","value":"No matching offline items. Save a bookmark or use Save offline on a post."},
-    {"name":"offline_edit","value":"Tags & note"},
-    {"name":"offline_tags","value":"Tags"},
-    {"name":"offline_tags_hint","value":"Tags, separated by commas"},
-    {"name":"offline_note","value":"Private note"},
-    {"name":"offline_done","value":"Save"},
-    {"name":"offline_delete","value":"Delete local copy"},
-    {"name":"reader_title","value":"Thread reader"},
-    {"name":"reader_author_only","value":"Author only"},
-    {"name":"reader_translate","value":"Translate passages"},
-    {"name":"reader_font","value":"Text size"},
-    {"name":"reader_missing","value":"This offline item is missing or unavailable. Save it again while online."},
-    {"name":"reader_partial","value":"Only the available article content is shown. Continue loading or retry while online to get the complete text."},
-    {"name":"reader_load_failed","value":"Could not load more replies. Your current reading content is kept."},
-    {"name":"reader_translation_setup","value":"Enable translation and choose a target language in Settings first."},
-    {"name":"reader_translation_failed","value":"Some passages could not be translated. You can hide translations and retry."},
-    {"name":"reader_offline_note","value":"Saved local content. Translation requires a network connection."},
-    {"name":"reader_scope","value":"Replies loaded so far. Use Continue loading to include more of the discussion."},
+    {
+      "name": "account_overview_signed_out",
+      "value": "وارد نشده‌اید"
+    },
+    {
+      "name": "account_overview_no_bio",
+      "value": "هنوز زندگی‌نامه‌ای وجود ندارد"
+    },
+    {
+      "name": "account_overview_handle",
+      "value": "نام کاربری"
+    },
+    {
+      "name": "account_overview_location",
+      "value": "مکان"
+    },
+    {
+      "name": "account_overview_website",
+      "value": "وب‌سایت"
+    },
+    {
+      "name": "account_overview_manage",
+      "value": "مدیریت و جابه‌جایی حساب‌ها"
+    },
+    {
+      "name": "profile_editor_choose_banner",
+      "value": "Change header photo"
+    },
+    {
+      "name": "profile_editor_choose_avatar",
+      "value": "Change profile photo"
+    },
+    {
+      "name": "profile_editor_birthdate",
+      "value": "Birth date"
+    },
+    {
+      "name": "profile_editor_birthdate_empty",
+      "value": "Add birth date"
+    },
+    {
+      "name": "profile_editor_birthdate_manage",
+      "value": "Edit birth date and visibility"
+    },
+    {
+      "name": "profile_editor_birthdate_privacy",
+      "value": "Month and day: %s\nYear: %s"
+    },
+    {
+      "name": "profile_editor_account_changed",
+      "value": "The signed-in account changed. Go back and reopen the editor."
+    },
+    {
+      "name": "profile_editor_unsaved_title",
+      "value": "Discard unsaved changes?"
+    },
+    {
+      "name": "profile_editor_unsaved_message",
+      "value": "Unsaved profile and photo changes will be lost when you leave."
+    },
+    {
+      "name": "profile_editor_keep_editing",
+      "value": "Keep editing"
+    },
+    {
+      "name": "profile_editor_discard",
+      "value": "Discard changes"
+    },
+    {
+      "name": "profile_editor_partial",
+      "value": "Some changes were saved. Your remaining edits are still here. Try saving again."
+    },
+    {
+      "name": "profile_editor_confirm_failed",
+      "value": "Changes were submitted, but the updated profile could not be loaded. Save again to refresh without uploading the photos again."
+    },
+    {
+      "name": "settings_page_transition",
+      "value": "گذار صفحه‌ها"
+    },
+    {
+      "name": "settings_page_transition_desc",
+      "value": "پویانمایی باز شدن صفحه و بازگشت را انتخاب کنید. تغییرات فوری اعمال و ذخیره می‌شوند."
+    },
+    {
+      "name": "settings_page_transition_classic",
+      "value": "پویانمایی فعلی"
+    },
+    {
+      "name": "settings_page_transition_classic_desc",
+      "value": "گذارهای فعلی پیمایش سیستم حفظ می‌شوند."
+    },
+    {
+      "name": "settings_page_transition_official",
+      "value": "سبک رسمی"
+    },
+    {
+      "name": "settings_page_transition_official_desc",
+      "value": "بزرگ‌نمایی مرکزی و محوشدن، با پویانمایی هماهنگ ورود و خروج."
+    },
+    {
+      "name": "settings_anti_peep",
+      "value": "محافظت در برابر نگاه دیگران"
+    },
+    {
+      "name": "settings_anti_peep_desc",
+      "value": "هنگام تشخیص نگاه فرد دیگر، پنجرهٔ برنامه با پوشش سیستم پنهان می‌شود."
+    },
+    {
+      "name": "settings_anti_peep_enable",
+      "value": "فعال‌سازی محافظت"
+    },
+    {
+      "name": "settings_anti_peep_setup",
+      "value": "تنظیم محافظت سیستم"
+    },
+    {
+      "name": "settings_anti_peep_recheck",
+      "value": "بررسی دوباره"
+    },
+    {
+      "name": "settings_anti_peep_note",
+      "value": "تشخیص چهره را تنظیم کنید و در حریم خصوصی و امنیت > محافظت در برابر نگاه دیگران به این برنامه اجازه دهید. برنامه فقط از وضعیت سیستم استفاده می‌کند و به تصاویر چهره دسترسی ندارد."
+    },
+    {
+      "name": "settings_anti_peep_disabled",
+      "value": "خاموش"
+    },
+    {
+      "name": "settings_anti_peep_unsupported",
+      "value": "این دستگاه از محافظت سیستم در برابر نگاه دیگران پشتیبانی نمی‌کند."
+    },
+    {
+      "name": "settings_anti_peep_permission",
+      "value": "در انتظار مجوز برنامه. پس از تنظیم، به برنامه برگردید یا دوباره بررسی کنید."
+    },
+    {
+      "name": "settings_anti_peep_system_off",
+      "value": "این برنامه را در محافظت سیستم در برابر نگاه دیگران فعال کنید."
+    },
+    {
+      "name": "settings_anti_peep_face",
+      "value": "ابتدا تشخیص چهره را در تنظیمات سیستم فعال کنید."
+    },
+    {
+      "name": "settings_anti_peep_ready",
+      "value": "فعال است. وضعیت نگاه دیگران بررسی می‌شود."
+    },
+    {
+      "name": "settings_anti_peep_protected",
+      "value": "نگاه فرد دیگر تشخیص داده شد و پوشش محافظ سیستم فعال شد."
+    },
+    {
+      "name": "settings_anti_peep_error",
+      "value": "محافظت فعلاً در دسترس نیست. دوباره بررسی کنید."
+    },
+    {
+      "name": "settings_anti_peep_checking",
+      "value": "در حال بررسی یا فعال‌سازی محافظت…"
+    },
+    {
+      "name": "settings_anti_peep_save_failed",
+      "value": "ذخیره نشد. دوباره تلاش کنید."
+    },
+    {
+      "name": "huawei_account_title",
+      "value": "HUAWEI ID and cloud sync"
+    },
+    {
+      "name": "huawei_config_section",
+      "value": "Settings profile"
+    },
+    {
+      "name": "huawei_config_import",
+      "value": "Import"
+    },
+    {
+      "name": "huawei_config_export",
+      "value": "Export"
+    },
+    {
+      "name": "huawei_config_importing",
+      "value": "Importing…"
+    },
+    {
+      "name": "huawei_config_exporting",
+      "value": "Exporting…"
+    },
+    {
+      "name": "huawei_config_description",
+      "value": "Back up or restore appearance, media and filter settings with a JSON file. Account, token and proxy details are never included."
+    },
+    {
+      "name": "huawei_config_exported",
+      "value": "Settings profile exported"
+    },
+    {
+      "name": "huawei_config_export_failed",
+      "value": "Export failed. Try again."
+    },
+    {
+      "name": "huawei_config_imported",
+      "value": "Settings imported"
+    },
+    {
+      "name": "huawei_config_import_failed",
+      "value": "The settings profile could not be read or validated."
+    },
+    {
+      "name": "huawei_config_import_title",
+      "value": "Import settings profile?"
+    },
+    {
+      "name": "huawei_config_import_message",
+      "value": "Appearance, media and filter settings in this file will replace the matching settings on this device. Account and proxy details will not change."
+    },
+    {
+      "name": "huawei_config_import_confirm",
+      "value": "Import"
+    },
+    {
+      "name": "huawei_account_name",
+      "value": "HUAWEI ID"
+    },
+    {
+      "name": "huawei_login",
+      "value": "Sign in with HUAWEI ID"
+    },
+    {
+      "name": "huawei_logout",
+      "value": "Sign out"
+    },
+    {
+      "name": "huawei_signed_in",
+      "value": "Signed in with HUAWEI ID"
+    },
+    {
+      "name": "huawei_logging_in",
+      "value": "Signing in…"
+    },
+    {
+      "name": "huawei_signed_out_description",
+      "value": "Sign in to bring your preferences with you"
+    },
+    {
+      "name": "huawei_cloud_sync",
+      "value": "Cloud sync"
+    },
+    {
+      "name": "huawei_sync_description",
+      "value": "Sign in to enable sync for appearance, reading, playback preferences and local content rules across your devices."
+    },
+    {
+      "name": "huawei_local_data_note",
+      "value": "X credentials, messages, drafts and caches stay on this device. Some appearance changes take effect after restarting."
+    },
+    {
+      "name": "huawei_logout_title",
+      "value": "Sign out of HUAWEI ID?"
+    },
+    {
+      "name": "huawei_logout_description",
+      "value": "Cloud sync will pause. Local settings and existing cloud data will be kept. Your X account remains available."
+    },
+    {
+      "name": "huawei_sync_disabled",
+      "value": "Off. Settings are saved on this device."
+    },
+    {
+      "name": "huawei_sync_unavailable",
+      "value": "Cloud storage is unavailable. Check the system cloud service and this app’s sync switch."
+    },
+    {
+      "name": "huawei_sync_downloading",
+      "value": "Reading and merging cloud settings…"
+    },
+    {
+      "name": "huawei_sync_uploading",
+      "value": "Uploading settings…"
+    },
+    {
+      "name": "huawei_sync_success",
+      "value": "Synced"
+    },
+    {
+      "name": "huawei_sync_pending",
+      "value": "Saved locally, waiting to sync"
+    },
+    {
+      "name": "huawei_sync_failed",
+      "value": "Sync did not finish. Your local data is safe. Check system cloud settings and try again."
+    },
+    {
+      "name": "huawei_network_error",
+      "value": "Network unavailable. Try again when connected."
+    },
+    {
+      "name": "huawei_storage_full",
+      "value": "Cloud or device storage is full. Free some space and try again."
+    },
+    {
+      "name": "huawei_login_error",
+      "value": "Sign-in did not finish. Check account service configuration or try again later."
+    },
+    {
+      "name": "huawei_authorization_error",
+      "value": "Nickname and avatar authorization failed. Check account permissions and try again."
+    },
+    {
+      "name": "huawei_save_error",
+      "value": "Could not save settings. Try again."
+    },
+    {
+      "name": "huawei_select_group",
+      "value": "Select at least one group to sync."
+    },
+    {
+      "name": "huawei_account_changed",
+      "value": "HUAWEI ID has changed. Enabling sync will merge the selected local settings into the current account."
+    },
+    {
+      "name": "huawei_last_sync",
+      "value": "Last successful sync:"
+    },
+    {
+      "name": "huawei_syncing",
+      "value": "Syncing…"
+    },
+    {
+      "name": "huawei_sync_now",
+      "value": "Sync now"
+    },
+    {
+      "name": "huawei_group_appearance",
+      "value": "Appearance and navigation"
+    },
+    {
+      "name": "huawei_group_appearance_description",
+      "value": "Theme, text size, title bar, tabs and sheet material"
+    },
+    {
+      "name": "huawei_group_media",
+      "value": "Reading and playback"
+    },
+    {
+      "name": "huawei_group_media_description",
+      "value": "Image and video quality, autoplay and mute preferences"
+    },
+    {
+      "name": "huawei_group_filters",
+      "value": "Local content rules"
+    },
+    {
+      "name": "huawei_group_filters_description",
+      "value": "Keyword and user filters, and content preferences"
+    },
+    {
+      "name": "post_photo_save_background",
+      "value": "ذخیره در کتابخانه پس‌زمینه"
+    },
+    {
+      "name": "chat_background_saving_photo",
+      "value": "در حال ذخیره تصویر پس‌زمینه…"
+    },
+    {
+      "name": "chat_background_saved_photo",
+      "value": "ذخیره شد. آن را از پس‌زمینه صفحه یا پس‌زمینه گفتگو انتخاب کنید."
+    },
+    {
+      "name": "chat_background_save_photo_failed",
+      "value": "ذخیره تصویر پس‌زمینه ناموفق بود. دوباره تلاش کنید."
+    },
+    {
+      "name": "chat_background_saved_photos",
+      "value": "تصاویر ذخیره‌شده از پست‌ها"
+    },
+    {
+      "name": "page_background_title",
+      "value": "پس‌زمینهٔ صفحه‌ها"
+    },
+    {
+      "name": "page_background_description",
+      "value": "Colors, photos and mixable patterns"
+    },
+    {
+      "name": "page_background_switch_title",
+      "value": "فعال‌سازی پس‌زمینه صفحه"
+    },
+    {
+      "name": "page_background_switch_desc",
+      "value": "برای استفاده فوری از پس‌زمینه پوسته، آن را خاموش کنید. سبک فعلی حفظ می‌شود."
+    },
+    {
+      "name": "page_background_base",
+      "value": "زمینه"
+    },
+    {
+      "name": "page_background_pattern",
+      "value": "لایهٔ طرح‌ها"
+    },
+    {
+      "name": "page_background_pattern_none",
+      "value": "بدون طرح"
+    },
+    {
+      "name": "page_background_content_opacity",
+      "value": "تیرگی سطح محتوا"
+    },
+    {
+      "name": "page_background_reset",
+      "value": "بازگردانی پیش‌فرض"
+    },
+    {
+      "name": "page_background_color_placeholder",
+      "value": "Custom color #RRGGBB"
+    },
+    {
+      "name": "page_background_preview",
+      "value": "پیش‌نمایش پس‌زمینه"
+    },
+    {
+      "name": "page_background_preview_text",
+      "value": "Bring your favorite colors and patterns to every visit."
+    },
+    {
+      "name": "page_background_preview_hint",
+      "value": "Text and content surfaces show how readable your background will be."
+    },
+    {
+      "name": "page_background_note",
+      "value": "Applies to regular pages. Chats have separate backgrounds; media viewers keep their immersive backgrounds. Tap Apply to save."
+    },
+    {
+      "name": "page_background_layout_preset",
+      "value": "طرح‌های کامل"
+    },
+    {
+      "name": "page_background_layout_icons",
+      "value": "نقش‌های تکی"
+    },
+    {
+      "name": "page_background_density",
+      "value": "تراکم نقش‌ها"
+    },
+    {
+      "name": "page_background_set_add",
+      "value": "انتخاب کل مجموعه"
+    },
+    {
+      "name": "page_background_set_remove",
+      "value": "لغو انتخاب مجموعه"
+    },
+    {
+      "name": "page_background_mix_hint",
+      "value": "Select motifs across sets to mix them, or repeat a single motif."
+    },
+    {
+      "name": "page_background_selected",
+      "value": "%d motifs selected"
+    },
+    {
+      "name": "page_background_icons_clear",
+      "value": "پاک کردن نقش‌ها"
+    },
+    {
+      "name": "page_background_paper",
+      "value": "بافت کاغذ"
+    },
+    {
+      "name": "page_background_paper_none",
+      "value": "بدون بافت"
+    },
+    {
+      "name": "page_background_kraft",
+      "value": "کاغذ کرافت"
+    },
+    {
+      "name": "page_background_parchment",
+      "value": "کاغذ پوستی"
+    },
+    {
+      "name": "page_background_texture_strength",
+      "value": "شدت بافت"
+    },
+    {
+      "name": "page_background_presets_mix",
+      "value": "هر بار یک الگوی کامل انتخاب کنید."
+    },
+    {
+      "name": "page_background_applied",
+      "value": "پس‌زمینهٔ صفحه اعمال شد"
+    },
+    {
+      "name": "page_background_apply_failed",
+      "value": "ذخیرهٔ پس‌زمینه ممکن نشد. دوباره تلاش کنید."
+    },
+    {
+      "name": "page_background_transparent_posts",
+      "value": "Transparent post cards"
+    },
+    {
+      "name": "page_background_transparent_posts_desc",
+      "value": "Hide the surface behind posts and quoted posts to reveal the page background."
+    },
+    {
+      "name": "page_background_transparent_inbox",
+      "value": "Transparent message list"
+    },
+    {
+      "name": "page_background_transparent_inbox_desc",
+      "value": "Hide conversation row surfaces while keeping text, avatars and unread indicators."
+    },
+    {
+      "name": "page_background_post_opacity",
+      "value": "Post surface opacity"
+    },
+    {
+      "name": "page_background_inbox_opacity",
+      "value": "Message list surface opacity"
+    },
+    {
+      "name": "page_background_scheme_import",
+      "value": "Import scheme"
+    },
+    {
+      "name": "page_background_scheme_share",
+      "value": "Share scheme"
+    },
+    {
+      "name": "page_background_scheme_title",
+      "value": "Page background scheme"
+    },
+    {
+      "name": "page_background_scheme_imported",
+      "value": "Scheme imported. Preview it, then tap Apply."
+    },
+    {
+      "name": "page_background_scheme_import_failed",
+      "value": "Unable to import. Choose a valid HarmonyX background scheme (up to 48 MB)."
+    },
+    {
+      "name": "page_background_scheme_share_failed",
+      "value": "Unable to share. Please try again; background photos must be under 32 MB."
+    },
+    {
+      "name": "page_background_set_signature_icons",
+      "value": "نمادهای جایگزین"
+    },
+    {
+      "name": "page_background_set_garden_defense",
+      "value": "Plants vs. Zombies"
+    },
+    {
+      "name": "page_background_motif_signature_icons_frog_face",
+      "value": "Frog face"
+    },
+    {
+      "name": "page_background_motif_signature_icons_frog_lily",
+      "value": "Frog on a lily pad"
+    },
+    {
+      "name": "page_background_motif_signature_icons_milk_frog",
+      "value": "Milk frog"
+    },
+    {
+      "name": "page_background_motif_signature_icons_milk_frog_wave",
+      "value": "Waving milk frog"
+    },
+    {
+      "name": "page_background_motif_signature_icons_bird",
+      "value": "Flying bird"
+    },
+    {
+      "name": "page_background_motif_signature_icons_bird_wings",
+      "value": "Bird with open wings"
+    },
+    {
+      "name": "page_background_motif_signature_icons_ribbon_x",
+      "value": "Ribbon X"
+    },
+    {
+      "name": "page_background_motif_signature_icons_blossom_x",
+      "value": "Blossom X"
+    },
+    {
+      "name": "page_background_motif_signature_icons_brush_x",
+      "value": "Brush X"
+    },
+    {
+      "name": "page_background_motif_signature_icons_prism_x",
+      "value": "Prism X"
+    },
+    {
+      "name": "page_background_motif_signature_icons_zombie_x",
+      "value": "Zombie X"
+    },
+    {
+      "name": "page_background_motif_signature_icons_lily_blossom",
+      "value": "Lily blossom"
+    },
+    {
+      "name": "page_background_motif_garden_defense_peashooter",
+      "value": "Peashooter"
+    },
+    {
+      "name": "page_background_motif_garden_defense_sunflower",
+      "value": "Sunflower"
+    },
+    {
+      "name": "page_background_motif_garden_defense_wallnut",
+      "value": "Wall-nut"
+    },
+    {
+      "name": "page_background_motif_garden_defense_cherry_bomb",
+      "value": "Cherry Bomb"
+    },
+    {
+      "name": "page_background_motif_garden_defense_snow_pea",
+      "value": "Snow Pea"
+    },
+    {
+      "name": "page_background_motif_garden_defense_potato_mine",
+      "value": "Potato Mine"
+    },
+    {
+      "name": "page_background_motif_garden_defense_chomper",
+      "value": "Chomper"
+    },
+    {
+      "name": "page_background_motif_garden_defense_squash",
+      "value": "Squash"
+    },
+    {
+      "name": "page_background_motif_garden_defense_zombie",
+      "value": "Zombie"
+    },
+    {
+      "name": "page_background_motif_garden_defense_conehead",
+      "value": "Conehead Zombie"
+    },
+    {
+      "name": "page_background_motif_garden_defense_buckethead",
+      "value": "Buckethead Zombie"
+    },
+    {
+      "name": "page_background_motif_garden_defense_lawnmower",
+      "value": "Lawn mower"
+    },
+    {
+      "name": "page_background_set_ai_assistants",
+      "value": "دستیارهای هوش مصنوعی"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_gpt",
+      "value": "GPT"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_claude",
+      "value": "Claude"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_gemini",
+      "value": "Gemini"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_deepseek",
+      "value": "DeepSeek"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_grok",
+      "value": "Grok"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_qwen",
+      "value": "Qwen"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_kimi",
+      "value": "Kimi"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_doubao",
+      "value": "Doubao"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_copilot",
+      "value": "Copilot"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_perplexity",
+      "value": "Perplexity"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_mistral",
+      "value": "Mistral"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_robot",
+      "value": "AI robot"
+    },
+    {
+      "name": "page_background_set_mobile_brands_systems",
+      "value": "برندها و سیستم‌های موبایل"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_apple",
+      "value": "Apple"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_huawei",
+      "value": "Huawei"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_xiaomi",
+      "value": "Xiaomi"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_samsung",
+      "value": "Samsung"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_oppo",
+      "value": "OPPO"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_vivo",
+      "value": "vivo"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_honor",
+      "value": "HONOR"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_oneplus",
+      "value": "OnePlus"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_meizu",
+      "value": "Meizu"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_harmonyos",
+      "value": "HarmonyOS"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_android",
+      "value": "Android"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_ios",
+      "value": "iOS"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_hyperos",
+      "value": "HyperOS"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_coloros",
+      "value": "ColorOS"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_originos",
+      "value": "OriginOS"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_oneui",
+      "value": "One UI"
+    },
+    {
+      "name": "motion_title",
+      "value": "Animation & haptics"
+    },
+    {
+      "name": "motion_intro",
+      "value": "Tune interaction animations and touch feedback. Changes are saved automatically. Tap the preview to try them."
+    },
+    {
+      "name": "motion_preview",
+      "value": "Tap to preview animation and haptics"
+    },
+    {
+      "name": "motion_reduce",
+      "value": "Reduce motion"
+    },
+    {
+      "name": "motion_reduce_desc",
+      "value": "Turn off decorative scaling, movement and Symbol effects, and skip page transitions. Your animation preferences are kept."
+    },
+    {
+      "name": "motion_duration",
+      "value": "Animation duration"
+    },
+    {
+      "name": "motion_duration_desc",
+      "value": "Reference duration for app animations. Button and page animations scale proportionally. System Symbol effects keep their native timing."
+    },
+    {
+      "name": "motion_amplitude",
+      "value": "Movement amplitude"
+    },
+    {
+      "name": "motion_amplitude_desc",
+      "value": "Adjust decorative scaling and rotation. At 0%, these effects stop. Gesture tracking and zoom keep their full range."
+    },
+    {
+      "name": "motion_damping",
+      "value": "Spring damping"
+    },
+    {
+      "name": "motion_damping_desc",
+      "value": "Lower values bounce more; higher values settle more gently."
+    },
+    {
+      "name": "motion_symbol",
+      "value": "Animated Symbols"
+    },
+    {
+      "name": "motion_symbol_desc",
+      "value": "Play a native Symbol effect once when selecting a tab or using an action button. Effects pause with Reduce motion."
+    },
+    {
+      "name": "motion_haptics",
+      "value": "Touch feedback"
+    },
+    {
+      "name": "motion_haptics_desc",
+      "value": "Use light feedback for navigation, buttons, switches and actions. Follows the system haptics setting."
+    },
+    {
+      "name": "motion_intensity",
+      "value": "Haptic intensity"
+    },
+    {
+      "name": "motion_intensity_desc",
+      "value": "Adjust preset effects on supported devices. Other motors use a short system touch vibration."
+    },
+    {
+      "name": "motion_presets",
+      "value": "Animation presets"
+    },
+    {
+      "name": "motion_preset_quick",
+      "value": "Quick"
+    },
+    {
+      "name": "motion_preset_quick_desc",
+      "value": "175 ms · 60% movement · firm settling. Short, crisp feedback."
+    },
+    {
+      "name": "motion_preset_standard",
+      "value": "Standard"
+    },
+    {
+      "name": "motion_preset_standard_desc",
+      "value": "300 ms · 100% movement · balanced spring. Recommended for everyday use."
+    },
+    {
+      "name": "motion_preset_spring",
+      "value": "Bouncy"
+    },
+    {
+      "name": "motion_preset_spring_desc",
+      "value": "450 ms · 120% movement · lower damping. Softer, more visible rebound."
+    },
+    {
+      "name": "motion_preset_reduced",
+      "value": "Low motion"
+    },
+    {
+      "name": "motion_preset_reduced_desc",
+      "value": "Skip page transitions and decorative effects. Keep your previous tuning."
+    },
+    {
+      "name": "motion_preset_custom",
+      "value": "Current preset: Custom. Choose a preset to restore its animation values."
+    },
+    {
+      "name": "chat_auto_download",
+      "value": "Chat auto-download"
+    },
+    {
+      "name": "storage_chat_retention",
+      "value": "Keep chat media"
+    },
+    {
+      "name": "storage_chat_retention_desc",
+      "value": "Set how long downloaded chat media stays cached. Chat history and manually saved files are kept."
+    },
+    {
+      "name": "settings_theme_mix",
+      "value": "پالت‌های ترکیبی"
+    },
+    {
+      "name": "settings_theme_mix_desc",
+      "value": "رنگ‌های هماهنگ برای کلیدها، پیمایش و دکمه‌های انتشار در حالت روشن و تیره."
+    },
+    {
+      "name": "settings_theme_mix_confetti",
+      "value": "رنگارنگ"
+    },
+    {
+      "name": "settings_theme_mix_coast",
+      "value": "نمک دریا و مرجان"
+    },
+    {
+      "name": "settings_theme_mix_sunset",
+      "value": "زنبق غروب"
+    },
+    {
+      "name": "settings_theme_mix_forest",
+      "value": "کهربای جنگل"
+    },
+    {
+      "name": "settings_theme_mix_berry",
+      "value": "توت و نعناع"
+    },
+    {
+      "name": "settings_theme_mix_morandi",
+      "value": "موراندی"
+    },
+    {
+      "name": "settings_theme_mix_prism",
+      "value": "طیف سه‌رنگ"
+    },
+    {
+      "name": "settings_theme_solid",
+      "value": "تک‌رنگ"
+    },
+    {
+      "name": "settings_theme_mix_candy",
+      "value": "آبنبات رنگی"
+    },
+    {
+      "name": "settings_theme_mix_sky",
+      "value": "آسمان و لیمو"
+    },
+    {
+      "name": "settings_theme_mix_peach",
+      "value": "هلو و نعناع"
+    },
+    {
+      "name": "settings_theme_mix_lilac",
+      "value": "یاسی و کرم"
+    },
+    {
+      "name": "page_background_set_popular_apps_cn",
+      "value": "برنامه‌های محبوب · چین"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_wechat",
+      "value": "WeChat"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_qq",
+      "value": "QQ"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_weibo",
+      "value": "Weibo"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_douyin",
+      "value": "Douyin"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_kuaishou",
+      "value": "Kuaishou"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_bilibili",
+      "value": "Bilibili"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_xiaohongshu",
+      "value": "Xiaohongshu"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_zhihu",
+      "value": "Zhihu"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_baidu",
+      "value": "Baidu"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_tieba",
+      "value": "Baidu Tieba"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_alipay",
+      "value": "Alipay"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_taobao",
+      "value": "Taobao"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_jd",
+      "value": "JD"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_pinduoduo",
+      "value": "Pinduoduo"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_meituan",
+      "value": "Meituan"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_eleme",
+      "value": "Ele.me"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_dianping",
+      "value": "Dianping"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_amap",
+      "value": "Amap"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_baidu_maps",
+      "value": "Baidu Maps"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_didi",
+      "value": "DiDi"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_netease_music",
+      "value": "NetEase Cloud Music"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_qq_music",
+      "value": "QQ Music"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_kugou",
+      "value": "KuGou"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_weread",
+      "value": "WeRead"
+    },
+    {
+      "name": "page_background_set_popular_apps_global",
+      "value": "برنامه‌های محبوب · جهانی"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_whatsapp",
+      "value": "WhatsApp"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_telegram",
+      "value": "Telegram"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_signal",
+      "value": "Signal"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_instagram",
+      "value": "Instagram"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_facebook",
+      "value": "Facebook"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_messenger",
+      "value": "Messenger"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_x",
+      "value": "X"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_threads",
+      "value": "Threads"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_youtube",
+      "value": "YouTube"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_tiktok",
+      "value": "TikTok"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_reddit",
+      "value": "Reddit"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_discord",
+      "value": "Discord"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_spotify",
+      "value": "Spotify"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_apple_music",
+      "value": "Apple Music"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_netflix",
+      "value": "Netflix"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_twitch",
+      "value": "Twitch"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_line",
+      "value": "LINE"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_snapchat",
+      "value": "Snapchat"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_pinterest",
+      "value": "Pinterest"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_chrome",
+      "value": "Chrome"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_firefox",
+      "value": "Firefox"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_edge",
+      "value": "Edge"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_gmail",
+      "value": "Gmail"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_google_maps",
+      "value": "Google Maps"
+    },
+    {
+      "name": "scene_title",
+      "value": "Scene modes"
+    },
+    {
+      "name": "scene_intro",
+      "value": "Apply a set of playback, quality, motion and background preferences. Restore returns to your settings from before the first mode was enabled."
+    },
+    {
+      "name": "scene_reading",
+      "value": "Clear reading"
+    },
+    {
+      "name": "scene_reading_desc",
+      "value": "Autoplay off · high quality images · low quality video · reduced motion · plain background"
+    },
+    {
+      "name": "scene_saver",
+      "value": "Power and data saver"
+    },
+    {
+      "name": "scene_saver_desc",
+      "value": "Autoplay off · small images · low quality video · reduced motion · plain background"
+    },
+    {
+      "name": "scene_media",
+      "value": "Media browsing"
+    },
+    {
+      "name": "scene_media_desc",
+      "value": "Autoplay on · original images · high quality video · motion on · your saved background"
+    },
+    {
+      "name": "scene_restore",
+      "value": "Restore original settings"
+    },
+    {
+      "name": "scene_restore_desc",
+      "value": "Keep your preferences from before scene mode. Switching between modes does not replace this backup."
+    },
+    {
+      "name": "scene_failed",
+      "value": "Some settings could not be saved. Your original settings are retained; retry or restore."
+    },
+    {
+      "name": "offline_title",
+      "value": "Offline & later"
+    },
+    {
+      "name": "offline_online",
+      "value": "Online bookmarks"
+    },
+    {
+      "name": "offline_intro",
+      "value": "New bookmarks save text and available articles automatically. Enable images before saving to include photos. Local copies stay separate from online bookmarks and ordinary cache cleanup."
+    },
+    {
+      "name": "offline_images",
+      "value": "Include photos in future saves"
+    },
+    {
+      "name": "offline_save",
+      "value": "Save offline"
+    },
+    {
+      "name": "offline_saving",
+      "value": "Saving…"
+    },
+    {
+      "name": "offline_saved",
+      "value": "Saved for offline reading"
+    },
+    {
+      "name": "offline_partial_saved",
+      "value": "Saved available content. Some article text or photos are missing; retry when online."
+    },
+    {
+      "name": "offline_save_failed",
+      "value": "Could not save locally. Please retry."
+    },
+    {
+      "name": "offline_partial",
+      "value": "Incomplete copy"
+    },
+    {
+      "name": "offline_unread",
+      "value": "Unread"
+    },
+    {
+      "name": "offline_unread_only",
+      "value": "Unread only"
+    },
+    {
+      "name": "offline_search",
+      "value": "Search titles, tags or notes"
+    },
+    {
+      "name": "offline_empty",
+      "value": "No matching offline items. Save a bookmark or use Save offline on a post."
+    },
+    {
+      "name": "offline_edit",
+      "value": "Tags & note"
+    },
+    {
+      "name": "offline_tags",
+      "value": "Tags"
+    },
+    {
+      "name": "offline_tags_hint",
+      "value": "Tags, separated by commas"
+    },
+    {
+      "name": "offline_note",
+      "value": "Private note"
+    },
+    {
+      "name": "offline_done",
+      "value": "Save"
+    },
+    {
+      "name": "offline_delete",
+      "value": "Delete local copy"
+    },
+    {
+      "name": "reader_title",
+      "value": "Thread reader"
+    },
+    {
+      "name": "reader_author_only",
+      "value": "Author only"
+    },
+    {
+      "name": "reader_translate",
+      "value": "Translate passages"
+    },
+    {
+      "name": "reader_font",
+      "value": "Text size"
+    },
+    {
+      "name": "reader_missing",
+      "value": "This offline item is missing or unavailable. Save it again while online."
+    },
+    {
+      "name": "reader_partial",
+      "value": "Only the available article content is shown. Continue loading or retry while online to get the complete text."
+    },
+    {
+      "name": "reader_load_failed",
+      "value": "Could not load more replies. Your current reading content is kept."
+    },
+    {
+      "name": "reader_translation_setup",
+      "value": "Enable translation and choose a target language in Settings first."
+    },
+    {
+      "name": "reader_translation_failed",
+      "value": "Some passages could not be translated. You can hide translations and retry."
+    },
+    {
+      "name": "reader_offline_note",
+      "value": "Saved local content. Translation requires a network connection."
+    },
+    {
+      "name": "reader_scope",
+      "value": "Replies loaded so far. Use Continue loading to include more of the discussion."
+    },
     {
       "name": "input_help_title",
       "value": "ماوس، صفحه‌کلید و پد لمسی"
@@ -10945,26 +12204,86 @@
       "name": "input_key_playback",
       "value": "Space / Enter / ← / →"
     },
-    {"name":"settings_filter_languages","value":"زبان‌های پست مسدودشده"},
-    {"name":"settings_filter_languages_desc","value":"زبان‌های مورد نظر برای پنهان‌سازی را انتخاب کنید. زبان‌های نامشخص و پست‌های فقط رسانه نمایش داده می‌شوند."},
-    {"name":"appearance_preview_title","value":"پیش‌نمایش زنده"},
-    {"name":"appearance_preview_hint","value":"تغییرات فوری نمایش داده می‌شوند. برای گسترش نمونه پنل روی آن بزنید."},
-    {"name":"post_edited","value":"ویرایش‌شده"},
-    {"name":"post_metric_bookmarks","value":"نشانک"},
-    {"name":"post_metric_quotes","value":"نقل‌قول"},
-    {"name":"settings_reply_quality","value":"جمع‌کردن پاسخ‌های کم‌کیفیت"},
-    {"name":"settings_reply_quality_desc","value":"تبلیغات تکراری و دعوت‌های انبوه را جمع می‌کند. قواعد محلی ممکن است اشتباه کنند؛ پاسخ‌ها قابل بازکردن هستند."},
-    {"name":"reply_quality_folded","value":"پاسخ احتمالاً کم‌کیفیت"},
-    {"name":"reply_quality_reasons","value":"دیدن دلیل‌ها"},
-    {"name":"reply_quality_allow","value":"همیشه این نویسنده را نشان بده"},
-    {"name":"reply_quality_whitelist","value":"نویسندگان مجاز"},
-    {"name":"reply_quality_whitelist_desc","value":"پاسخ‌های شما، نویسنده پست، حساب‌های دنبال‌شده و نویسندگان مجاز نمایش داده می‌شوند. فهرست مخصوص حساب فعلی است."},
-    {"name":"reply_quality_empty","value":"هنوز نویسنده مجازی وجود ندارد"},
-    {"name":"reply_quality_reason_duplicate","value":"چند نویسنده یک الگوی تبلیغاتی را تکرار می‌کنند"},
-    {"name":"reply_quality_reason_author_repeat","value":"نویسنده محتوای یکسان را تکرار می‌کند"},
-    {"name":"reply_quality_reason_links","value":"شامل چند پیوند خارجی است"},
-    {"name":"reply_quality_reason_promotion","value":"شامل تبلیغ یا وعده سود است"},
-    {"name":"reply_quality_reason_contact","value":"شامل راه تماس برای جذب مخاطب است"},
+    {
+      "name": "settings_filter_languages",
+      "value": "زبان‌های پست مسدودشده"
+    },
+    {
+      "name": "settings_filter_languages_desc",
+      "value": "زبان‌های مورد نظر برای پنهان‌سازی را انتخاب کنید. زبان‌های نامشخص و پست‌های فقط رسانه نمایش داده می‌شوند."
+    },
+    {
+      "name": "appearance_preview_title",
+      "value": "پیش‌نمایش زنده"
+    },
+    {
+      "name": "appearance_preview_hint",
+      "value": "تغییرات فوری نمایش داده می‌شوند. برای گسترش نمونه پنل روی آن بزنید."
+    },
+    {
+      "name": "post_edited",
+      "value": "ویرایش‌شده"
+    },
+    {
+      "name": "post_metric_bookmarks",
+      "value": "نشانک"
+    },
+    {
+      "name": "post_metric_quotes",
+      "value": "نقل‌قول"
+    },
+    {
+      "name": "settings_reply_quality",
+      "value": "جمع‌کردن پاسخ‌های کم‌کیفیت"
+    },
+    {
+      "name": "settings_reply_quality_desc",
+      "value": "تبلیغات تکراری و دعوت‌های انبوه را جمع می‌کند. قواعد محلی ممکن است اشتباه کنند؛ پاسخ‌ها قابل بازکردن هستند."
+    },
+    {
+      "name": "reply_quality_folded",
+      "value": "پاسخ احتمالاً کم‌کیفیت"
+    },
+    {
+      "name": "reply_quality_reasons",
+      "value": "دیدن دلیل‌ها"
+    },
+    {
+      "name": "reply_quality_allow",
+      "value": "همیشه این نویسنده را نشان بده"
+    },
+    {
+      "name": "reply_quality_whitelist",
+      "value": "نویسندگان مجاز"
+    },
+    {
+      "name": "reply_quality_whitelist_desc",
+      "value": "پاسخ‌های شما، نویسنده پست، حساب‌های دنبال‌شده و نویسندگان مجاز نمایش داده می‌شوند. فهرست مخصوص حساب فعلی است."
+    },
+    {
+      "name": "reply_quality_empty",
+      "value": "هنوز نویسنده مجازی وجود ندارد"
+    },
+    {
+      "name": "reply_quality_reason_duplicate",
+      "value": "چند نویسنده یک الگوی تبلیغاتی را تکرار می‌کنند"
+    },
+    {
+      "name": "reply_quality_reason_author_repeat",
+      "value": "نویسنده محتوای یکسان را تکرار می‌کند"
+    },
+    {
+      "name": "reply_quality_reason_links",
+      "value": "شامل چند پیوند خارجی است"
+    },
+    {
+      "name": "reply_quality_reason_promotion",
+      "value": "شامل تبلیغ یا وعده سود است"
+    },
+    {
+      "name": "reply_quality_reason_contact",
+      "value": "شامل راه تماس برای جذب مخاطب است"
+    },
     {
       "name": "settings_floating_compose_material_tint",
       "value": "رنگ متریال دکمه شناور نوشتن"
@@ -11053,64 +12372,528 @@
       "name": "chat_decoration_sample_text",
       "value": "Have a lovely day."
     },
-    {"name": "sign_out_confirm_title", "value": "از حساب خارج می‌شوید؟"},
-    {"name": "sign_out_confirm_message", "value": "برای استفاده از این حساب باید دوباره وارد شوید."},
-    {"name": "settings_for_you_only_sensitive", "value": "فقط محتوای حساس در «برای شما»"},
-    {"name": "settings_for_you_only_sensitive_desc", "value": "فقط پست‌های حساس علامت‌گذاری‌شده توسط X، شامل نقل‌قول‌ها، نمایش داده شوند. دنبال‌شده‌ها و فهرست‌ها تغییر نمی‌کنند و رسانه‌ها پوشیده می‌مانند."},
-    {"name": "settings_grip_floating", "value": "دکمه شناور"},
-    {"name": "settings_grip_video", "value": "نوار کنش‌های ویدیو"},
-    {"name": "settings_grip_reply", "value": "دکمه پاسخ به پست"},
-    {"name": "settings_grip_component_desc", "value": "جای این جزء با دست نگهدارنده دستگاه تنظیم شود. در حالت خاموش از دست ترجیحی استفاده می‌شود."},
-    {"name": "settings_grip_hdstabs", "value": "نوار زبانه پایین HdsTabs"},
-    {"name": "settings_grip_hdstabs_desc", "value": "از سازگاری بومی با دست استفاده شود. در حالت خاموش نوار با دست نگهدارنده جابه‌جا نمی‌شود."},
-    {"name":"gif_action_save_video","value":"ذخیره به‌صورت ویدیوی باکیفیت (MP4)"},
-    {"name":"storage_save_remembered_note","value":"یک بار پوشه دانلود را انتخاب کنید تا فایل‌های بعدی خودکار در آن ذخیره شوند. برای ذخیره در گالری خاموش کنید."},
-    {"name":"storage_save_to_remembered","value":"ذخیره در پوشه دانلود"},
-    {"name": "storage_permission_reason", "value": "حفظ دسترسی به فایل‌ها و پوشه‌های انتخاب‌شده."},
-    {"name": "timeline_sources_lists", "value": "فهرست‌ها"},
-    {"name": "timeline_sources_communities", "value": "انجمن‌ها"},
-    {"name": "timeline_edit", "value": "ویرایش"},
-    {"name": "timeline_done", "value": "انجام شد"},
-    {"name": "timeline_move_up", "value": "انتقال به بالا"},
-    {"name": "timeline_move_down", "value": "انتقال به پایین"},
-    {"name": "timeline_remove_source", "value": "حذف %s"},
-    {"name": "timeline_add_to_home", "value": "افزودن به خط زمانی خانه"},
-    {"name": "timeline_remove_from_home", "value": "حذف از خط زمانی خانه"},
-    {"name": "timeline_sources_failed", "value": "برخی فهرست‌ها یا انجمن‌ها بارگیری نشدند. برای تلاش دوباره بزنید."},
-    {"name": "timeline_sources_pinned_empty", "value": "خط زمانی سنجاق‌شده‌ای نیست. در پایین فهرست، انجمن یا موضوع اضافه کنید."},
-    {"name":"video_controls_mirror","value":"قرینه کردن کنترل‌ها"},
-    {"name":"video_controls_speed","value":"سرعت"},
-    {"name":"video_controls_aspect","value":"نسبت"},
-    {"name":"video_controls_background","value":"پس‌زمینه"},
-    {"name":"video_controls_quality_hd","value":"HD"},
-    {"name":"video_controls_quality_sd","value":"SD"},
-    {"name":"video_controls_quality_ld","value":"LD"},
-    {"name":"video_controls_more","value":"بیشتر"},
-    {"name":"video_controls_download","value":"دانلود"},
-    {"name":"settings_navigation_style","value":"سبک پیمایش پایین"},
-    {"name":"settings_hds_bottom_bar","value":"HdsTabs شناور"},
-    {"name":"settings_split_bottom_bar","value":"پیمایش کپسولی جداگانه"},
-    {"name":"settings_split_bottom_bar_desc","value":"صفحه‌ها را از کپسول سمت چپ عوض کنید. دکمه جداگانه برای ارسال پست، گفتگوی جدید، تازه‌سازی یا بازگشت به بالا است. هر دو از جنس HDS استفاده می‌کنند؛ در سیستم‌های قدیمی پیمایش سازگار فعال می‌شود."},
-    {"name":"split_navigation_action_top","value":"بازگشت به بالا"},
-    {"name":"split_navigation_action_refresh","value":"تازه‌سازی خانه"},
-    {"name":"split_navigation_action_compose","value":"ایجاد پست"},
-    {"name": "settings_reply_capsule_split", "value": "کپسول‌های پاسخ جداگانه"},
-    {"name": "settings_reply_capsule_split_desc", "value": "ورودی پاسخ و اقدامات پست در حالت جمع‌شده جدا باشند"},
-    {"name": "reply_capsule_write_reply", "value": "پاسخ"},
-    {"name":"settings_native_bottom_bar","value":"پیمایش کپسولی با متریال 7.0"},
-    {"name":"settings_native_bottom_bar_desc","value":"از متریال فراگیر HarmonyOS 7.0 کپسول پاسخ، با نور لمسی، نشانگر مایع و تغییر سمت بر اساس نحوه گرفتن دستگاه استفاده می‌کند. در صورت عدم پشتیبانی، کپسول HDS استفاده می‌شود."},
-    {"name":"settings_native_navigation_material","value":"ضخامت متریال کپسول پیمایش"},
-    {"name":"settings_for_you_only_sensitive_age_title","value":"تأیید سن"},
-    {"name":"settings_for_you_only_sensitive_age_message","value":"«فقط محتوای حساس در ‹برای شما›» فقط برای افراد ۱۸ ساله یا بیشتر در دسترس است. آیا ۱۸ سال یا بیشتر دارید؟"},
-    {"name":"settings_for_you_only_sensitive_age_under","value":"کمتر از ۱۸ سال"},
-    {"name":"settings_for_you_only_sensitive_age_adult","value":"۱۸ سال یا بیشتر"},
-    {"name":"settings_theme_icon_blue","value":"آبی آیکون"},
-    {"name":"settings_theme_icon_red","value":"قرمز آیکون"},
-    {"name":"settings_theme_icon_orange","value":"نارنجی آیکون"},
-    {"name":"settings_theme_icon_yellow","value":"زرد آیکون"},
-    {"name":"settings_theme_icon_green","value":"سبز آیکون"},
-    {"name":"settings_theme_icon_pink","value":"صورتی آیکون"},
-    {"name":"settings_theme_icon_cyan","value":"فیروزه‌ای آیکون"},
-    {"name":"settings_theme_icon_navy","value":"سرمه‌ای آیکون"}
+    {
+      "name": "sign_out_confirm_title",
+      "value": "از حساب خارج می‌شوید؟"
+    },
+    {
+      "name": "sign_out_confirm_message",
+      "value": "برای استفاده از این حساب باید دوباره وارد شوید."
+    },
+    {
+      "name": "settings_for_you_only_sensitive",
+      "value": "فقط محتوای حساس در «برای شما»"
+    },
+    {
+      "name": "settings_for_you_only_sensitive_desc",
+      "value": "فقط پست‌های حساس علامت‌گذاری‌شده توسط X، شامل نقل‌قول‌ها، نمایش داده شوند. دنبال‌شده‌ها و فهرست‌ها تغییر نمی‌کنند و رسانه‌ها پوشیده می‌مانند."
+    },
+    {
+      "name": "settings_grip_floating",
+      "value": "دکمه شناور"
+    },
+    {
+      "name": "settings_grip_video",
+      "value": "نوار کنش‌های ویدیو"
+    },
+    {
+      "name": "settings_grip_reply",
+      "value": "دکمه پاسخ به پست"
+    },
+    {
+      "name": "settings_grip_component_desc",
+      "value": "جای این جزء با دست نگهدارنده دستگاه تنظیم شود. در حالت خاموش از دست ترجیحی استفاده می‌شود."
+    },
+    {
+      "name": "settings_grip_hdstabs",
+      "value": "نوار زبانه پایین HdsTabs"
+    },
+    {
+      "name": "settings_grip_hdstabs_desc",
+      "value": "از سازگاری بومی با دست استفاده شود. در حالت خاموش نوار با دست نگهدارنده جابه‌جا نمی‌شود."
+    },
+    {
+      "name": "gif_action_save_video",
+      "value": "ذخیره به‌صورت ویدیوی باکیفیت (MP4)"
+    },
+    {
+      "name": "storage_save_remembered_note",
+      "value": "یک بار پوشه دانلود را انتخاب کنید تا فایل‌های بعدی خودکار در آن ذخیره شوند. برای ذخیره در گالری خاموش کنید."
+    },
+    {
+      "name": "storage_save_to_remembered",
+      "value": "ذخیره در پوشه دانلود"
+    },
+    {
+      "name": "storage_permission_reason",
+      "value": "حفظ دسترسی به فایل‌ها و پوشه‌های انتخاب‌شده."
+    },
+    {
+      "name": "timeline_sources_lists",
+      "value": "فهرست‌ها"
+    },
+    {
+      "name": "timeline_sources_communities",
+      "value": "انجمن‌ها"
+    },
+    {
+      "name": "timeline_edit",
+      "value": "ویرایش"
+    },
+    {
+      "name": "timeline_done",
+      "value": "انجام شد"
+    },
+    {
+      "name": "timeline_move_up",
+      "value": "انتقال به بالا"
+    },
+    {
+      "name": "timeline_move_down",
+      "value": "انتقال به پایین"
+    },
+    {
+      "name": "timeline_remove_source",
+      "value": "حذف %s"
+    },
+    {
+      "name": "timeline_add_to_home",
+      "value": "افزودن به خط زمانی خانه"
+    },
+    {
+      "name": "timeline_remove_from_home",
+      "value": "حذف از خط زمانی خانه"
+    },
+    {
+      "name": "timeline_sources_failed",
+      "value": "برخی فهرست‌ها یا انجمن‌ها بارگیری نشدند. برای تلاش دوباره بزنید."
+    },
+    {
+      "name": "timeline_sources_pinned_empty",
+      "value": "خط زمانی سنجاق‌شده‌ای نیست. در پایین فهرست، انجمن یا موضوع اضافه کنید."
+    },
+    {
+      "name": "video_controls_mirror",
+      "value": "قرینه کردن کنترل‌ها"
+    },
+    {
+      "name": "video_controls_speed",
+      "value": "سرعت"
+    },
+    {
+      "name": "video_controls_aspect",
+      "value": "نسبت"
+    },
+    {
+      "name": "video_controls_background",
+      "value": "پس‌زمینه"
+    },
+    {
+      "name": "video_controls_quality_hd",
+      "value": "HD"
+    },
+    {
+      "name": "video_controls_quality_sd",
+      "value": "SD"
+    },
+    {
+      "name": "video_controls_quality_ld",
+      "value": "LD"
+    },
+    {
+      "name": "video_controls_more",
+      "value": "بیشتر"
+    },
+    {
+      "name": "video_controls_download",
+      "value": "دانلود"
+    },
+    {
+      "name": "settings_navigation_style",
+      "value": "سبک پیمایش پایین"
+    },
+    {
+      "name": "settings_hds_bottom_bar",
+      "value": "HdsTabs شناور"
+    },
+    {
+      "name": "settings_split_bottom_bar",
+      "value": "پیمایش کپسولی جداگانه"
+    },
+    {
+      "name": "settings_split_bottom_bar_desc",
+      "value": "صفحه‌ها را از کپسول سمت چپ عوض کنید. دکمه جداگانه برای ارسال پست، گفتگوی جدید، تازه‌سازی یا بازگشت به بالا است. هر دو از جنس HDS استفاده می‌کنند؛ در سیستم‌های قدیمی پیمایش سازگار فعال می‌شود."
+    },
+    {
+      "name": "settings_me_floating_action",
+      "value": "کپسول میانبر «من»"
+    },
+    {
+      "name": "settings_me_floating_action_desc",
+      "value": "عملکردی را انتخاب کنید که با ضربه روی کپسول جداگانه کنار تب «من» مستقیماً باز شود."
+    },
+    {
+      "name": "split_navigation_action_top",
+      "value": "بازگشت به بالا"
+    },
+    {
+      "name": "split_navigation_action_refresh",
+      "value": "تازه‌سازی خانه"
+    },
+    {
+      "name": "split_navigation_action_compose",
+      "value": "ایجاد پست"
+    },
+    {
+      "name": "settings_reply_capsule_split",
+      "value": "کپسول‌های پاسخ جداگانه"
+    },
+    {
+      "name": "settings_reply_capsule_split_desc",
+      "value": "ورودی پاسخ و اقدامات پست در حالت جمع‌شده جدا باشند"
+    },
+    {
+      "name": "reply_capsule_write_reply",
+      "value": "پاسخ"
+    },
+    {
+      "name": "settings_native_bottom_bar",
+      "value": "پیمایش کپسولی با متریال 7.0"
+    },
+    {
+      "name": "settings_native_bottom_bar_desc",
+      "value": "از متریال فراگیر HarmonyOS 7.0 کپسول پاسخ، با نور لمسی، نشانگر مایع و تغییر سمت بر اساس نحوه گرفتن دستگاه استفاده می‌کند. در صورت عدم پشتیبانی، کپسول HDS استفاده می‌شود."
+    },
+    {
+      "name": "settings_native_navigation_material",
+      "value": "ضخامت متریال کپسول پیمایش"
+    },
+    {
+      "name": "settings_for_you_only_sensitive_age_title",
+      "value": "تأیید سن"
+    },
+    {
+      "name": "settings_for_you_only_sensitive_age_message",
+      "value": "«فقط محتوای حساس در ‹برای شما›» فقط برای افراد ۱۸ ساله یا بیشتر در دسترس است. آیا ۱۸ سال یا بیشتر دارید؟"
+    },
+    {
+      "name": "settings_for_you_only_sensitive_age_under",
+      "value": "کمتر از ۱۸ سال"
+    },
+    {
+      "name": "settings_for_you_only_sensitive_age_adult",
+      "value": "۱۸ سال یا بیشتر"
+    },
+    {
+      "name": "settings_theme_icon_blue",
+      "value": "آبی آیکون"
+    },
+    {
+      "name": "settings_theme_icon_red",
+      "value": "قرمز آیکون"
+    },
+    {
+      "name": "settings_theme_icon_orange",
+      "value": "نارنجی آیکون"
+    },
+    {
+      "name": "settings_theme_icon_yellow",
+      "value": "زرد آیکون"
+    },
+    {
+      "name": "settings_theme_icon_green",
+      "value": "سبز آیکون"
+    },
+    {
+      "name": "settings_theme_icon_pink",
+      "value": "صورتی آیکون"
+    },
+    {
+      "name": "settings_theme_icon_cyan",
+      "value": "فیروزه‌ای آیکون"
+    },
+    {
+      "name": "settings_theme_icon_navy",
+      "value": "سرمه‌ای آیکون"
+    },
+    {
+      "name": "settings_bottom_tab_order",
+      "value": "Bottom tab order"
+    },
+    {
+      "name": "settings_home_tab_order",
+      "value": "Home tab order"
+    },
+    {
+      "name": "settings_tab_order_desc",
+      "value": "Use the arrows to reorder tabs. Changes apply immediately; new tabs are added at the end."
+    },
+    {
+      "name": "settings_tab_move_up",
+      "value": "Move earlier"
+    },
+    {
+      "name": "settings_tab_move_down",
+      "value": "Move later"
+    },
+    {
+      "name": "settings_tab_order_reset",
+      "value": "Reset order"
+    },
+    {
+      "name": "settings_post_actions",
+      "value": "Post action bar"
+    },
+    {
+      "name": "settings_post_actions_desc",
+      "value": "Choose the actions shown in feeds and post details. Turn off counts to keep only icons."
+    },
+    {
+      "name": "settings_post_action_counts",
+      "value": "Show interaction counts"
+    },
+    {
+      "name": "video_rotate",
+      "value": "Open landscape player"
+    },
+    {
+      "name": "video_download_notice_downloading",
+      "value": "در حال دانلود ویدیو"
+    },
+    {
+      "name": "video_download_notice_saving",
+      "value": "در حال ذخیره ویدیو"
+    },
+    {
+      "name": "video_download_notice_completed",
+      "value": "ویدیو دانلود شد"
+    },
+    {
+      "name": "settings_home_single_tap_top",
+      "value": "برای رفتن به بالا روی خانه بزنید"
+    },
+    {
+      "name": "settings_home_single_tap_top_desc",
+      "value": "با زدن برگهٔ خانه در پایین، به ابتدای خط زمانی فعلی برگردید. تازه‌سازی با دوبار زدن از تنظیم فعلی پیروی می‌کند."
+    },
+    {
+      "name": "background_photo_delete",
+      "value": "حذف پس‌زمینه"
+    },
+    {
+      "name": "background_photo_delete_confirm",
+      "value": "این تصویر حذف شود؟ از پس‌زمینهٔ صفحه‌ها و گفتگوهایی که از آن استفاده می‌کنند نیز حذف خواهد شد. این کار قابل بازگشت نیست."
+    },
+    {
+      "name": "background_photo_deleted",
+      "value": "تصویر پس‌زمینه حذف شد"
+    },
+    {
+      "name": "background_photo_delete_failed",
+      "value": "حذف انجام نشد. دوباره تلاش کنید."
+    },
+    {
+      "name": "search_refill_query",
+      "value": "درج در کادر جستجو"
+    },
+    {
+      "name": "search_history_delete_title",
+      "value": "این سابقه حذف شود؟"
+    },
+    {
+      "name": "global_trends_title",
+      "value": "موضوعات داغ جهانی"
+    },
+    {
+      "name": "global_trends_description",
+      "value": "محبوب‌ترین پست‌ها"
+    },
+    {
+      "name": "global_trends_explore",
+      "value": "کاوش"
+    },
+    {
+      "name": "global_trends_today",
+      "value": "محبوب امروز"
+    },
+    {
+      "name": "global_trends_worldwide",
+      "value": "سراسر جهان"
+    },
+    {
+      "name": "global_trends_countries",
+      "value": "کشورها"
+    },
+    {
+      "name": "global_trends_reset",
+      "value": "نمایش همه پست‌های محبوب"
+    },
+    {
+      "name": "post_video_publish",
+      "value": "انتشار ویدیو"
+    },
+    {
+      "name": "post_video_copy_link",
+      "value": "کپی پیوند ویدیو"
+    },
+    {
+      "name": "post_video_save",
+      "value": "ذخیره ویدیو"
+    },
+    {
+      "name": "post_video_link_copied",
+      "value": "پیوند ویدیو کپی شد"
+    },
+    {
+      "name": "post_video_link_copy_failed",
+      "value": "کپی پیوند ویدیو ممکن نشد"
+    },
+    {
+      "name": "offline_videos_title",
+      "value": "ویدیوهای آفلاین"
+    },
+    {
+      "name": "offline_videos_local",
+      "value": "فقط در این دستگاه ذخیره شده"
+    },
+    {
+      "name": "offline_videos_empty",
+      "value": "هنوز ویدیوی آفلاینی نیست"
+    },
+    {
+      "name": "offline_videos_search",
+      "value": "جست‌وجوی ویدیوهای آفلاین یا نویسندگان"
+    },
+    {
+      "name": "offline_videos_no_results",
+      "value": "ویدیوی آفلاین مطابقی وجود ندارد"
+    },
+    {
+      "name": "offline_videos_clear",
+      "value": "پاک کردن ویدیوهای آفلاین"
+    },
+    {
+      "name": "offline_videos_clear_confirm",
+      "value": "همه ویدیوهای دانلودشده حذف شوند؟"
+    },
+    {
+      "name": "offline_videos_delete",
+      "value": "حذف ویدیوی آفلاین"
+    },
+    {
+      "name": "offline_videos_added",
+      "value": "به ویدیوهای آفلاین افزوده شد"
+    },
+    {
+      "name": "offline_videos_already",
+      "value": "از قبل در ویدیوهای آفلاین است"
+    },
+    {
+      "name": "offline_videos_play",
+      "value": "پخش ویدیوی آفلاین"
+    },
+    {
+      "name": "offline_videos_missing",
+      "value": "فایل آفلاین موجود نیست. دوباره آن را اضافه کنید."
+    },
+    {
+      "name": "offline_video_title",
+      "value": "ویدیوی آفلاین"
+    },
+    {
+      "name": "post_translated_from",
+      "value": "ترجمه از %s"
+    },
+    {
+      "name": "post_translated",
+      "value": "ترجمه‌شده"
+    },
+    {
+      "name": "post_show_original",
+      "value": "نمایش متن اصلی"
+    },
+    {
+      "name": "post_show_translation",
+      "value": "نمایش ترجمه"
+    },
+    {
+      "name": "settings_cover_single_column",
+      "value": "یک ستون در صفحه بیرونی"
+    },
+    {
+      "name": "settings_cover_single_column_desc",
+      "value": "هنگام بسته بودن یک ستون و پس از باز شدن تعداد ستون‌های انتخاب‌شده حفظ می‌شود."
+    },
+    {
+      "name": "huawei_cloud_overwrite",
+      "value": "جایگزینی تنظیمات ابری با محلی"
+    },
+    {
+      "name": "huawei_cloud_overwrite_message",
+      "value": "گروه‌های انتخاب‌شده با تنظیمات این دستگاه جایگزین می‌شوند. دستگاه‌های دیگر در همگام‌سازی بعدی آن‌ها را دریافت می‌کنند."
+    },
+    {
+      "name": "huawei_cloud_clear",
+      "value": "پاک کردن تنظیمات ابری"
+    },
+    {
+      "name": "huawei_cloud_clear_message",
+      "value": "همه تنظیمات ابری برنامه برای این حساب Huawei حذف و همگام‌سازی خاموش می‌شود. تنظیمات محلی باقی می‌مانند. برای بارگذاری آن‌ها همگام‌سازی را دوباره روشن کنید."
+    },
+    {
+      "name": "huawei_cloud_cleared",
+      "value": "تنظیمات ابری پاک و همگام‌سازی خاموش شد."
+    },
+    {
+      "name": "huawei_cloud_manage_description",
+      "value": "جایگزینی فقط برای گروه‌های انتخاب‌شده است. پاک کردن همه گروه‌های ابری را حذف می‌کند و تنظیمات محلی را نگه می‌دارد."
+    },
+    {
+      "name": "post_translation_choose_languages",
+      "value": "انتخاب زبان‌ها"
+    },
+    {
+      "name": "post_translation_auto_language",
+      "value": "ترجمه خودکار %s"
+    },
+    {
+      "name": "post_translation_languages_description",
+      "value": "زبان‌های پست را برای ترجمه خودکار انتخاب کنید. زبان‌های دیگر را همچنان می‌توان دستی ترجمه کرد."
+    },
+    {"name": "post_link_copy", "value": "Copy link"},
+    {"name": "post_link_open", "value": "Open link"},
+    {"name": "settings_video_download_button", "value": "Video download button"},
+    {"name": "settings_video_download_button_desc", "value": "Show the download button in the top-right corner of videos"},
+    {"name": "video_source_from", "value": "From"},
+    {"name": "video_source_original", "value": "Original video"},
+    {"name": "video_source_open_failed", "value": "Unable to open the original video. Try again."},
+    {"name":"dns_title","value":"DNS over HTTPS (DoH)"},
+    {"name":"dns_enable","value":"Use DNS over HTTPS"},
+    {"name":"dns_enable_desc","value":"Encrypt DNS queries with a chosen HTTPS resolver"},
+    {"name":"dns_scope","value":"Applies to app API requests, downloaded images, video segments and built-in web pages. System players and external apps may use their own DNS. When a proxy resolves the destination, its DNS takes precedence. DoH does not replace a proxy or VPN."},
+    {"name":"dns_provider","value":"DNS provider"},
+    {"name":"dns_provider_ali","value":"AliDNS"},
+    {"name":"dns_provider_cloudflare","value":"Cloudflare"},
+    {"name":"dns_provider_google","value":"Google Public DNS"},
+    {"name":"dns_provider_custom","value":"Custom"},
+    {"name":"dns_endpoint","value":"DoH server URL"},
+    {"name":"dns_endpoint_hint","value":"https://example.com/dns-query"},
+    {"name":"dns_endpoint_desc","value":"Enter a complete RFC 8484 HTTPS endpoint, without credentials, fragments or URI templates such as {?dns}."},
+    {"name":"dns_invalid","value":"Enter a valid HTTPS DoH server URL"},
+    {"name":"dns_saved","value":"Saved. New requests use this setting; reload open web pages."},
+    {"name":"dns_test","value":"Test DNS resolution"},
+    {"name":"dns_test_desc","value":"Tests the current URL by resolving x.com directly, without saving or enabling it. The test bypasses the in-app proxy; a system VPN still applies."},
+    {"name":"dns_test_success","value":"x.com resolved successfully"},
+    {"name":"dns_test_failed","value":"Resolution failed. Check the URL, network or DNS service."},
+    {"name":"dns_failure_note","value":"After saving, DoH failures stop affected requests instead of falling back to system DNS. Turn DoH off and save to restore system DNS. Changes apply after saving."},
+    {"name":"help_support_afdian","value":"Afdian"},
+    {"name":"help_support_qr_summary","value":"برای حمایت از توسعه اسکن کنید"},
+    {"name":"help_support_afdian_summary","value":"بدون پیشنهاد برای همیشه · ¥16.6"},
+    {"name":"help_support_afdian_desc","value":"کد دائمی حذف پیشنهادها را از Afdian بخرید و برای فعال‌سازی به برنامه برگردید."},
+    {"name":"help_support_afdian_buy","value":"خرید در Afdian"},
+    {"name":"help_support_expand","value":"برای باز کردن بزنید"},
+    {"name":"help_support_collapse","value":"برای بستن بزنید"},
+    {"name":"help_support_scan_code","value":"این کد پرداخت را با برنامه پرداخت مربوطه اسکن کنید."},
+    {"name":"help_support_recommended","value":"پیشنهادی"}
   ]
 }

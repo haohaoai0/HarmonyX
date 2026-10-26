@@ -45,7 +45,8 @@ export class XXAuthPromotionInjector {
     if (total <= 0) { chosen.push(0); return chosen; }
     const span: number = Math.max(1, Math.min(total, SPREAD));
     for (let i: number = 0; i < count; i++) {
-      const raw: number = XXAuthPromotionInjector.hash(salt + '#' + i.toString());
+      const raw: number = XXAuthPromotionInjector.hash(salt + ':' +
+        XXAuthPromotionInjector.launchSeed().toString() + '#' + i.toString());
       let candidate: number = 1 + (raw % span);
       let guard: number = 0;
       while (chosen.indexOf(candidate) >= 0 && guard < span) {

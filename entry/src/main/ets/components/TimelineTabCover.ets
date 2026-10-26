@@ -1,6 +1,7 @@
 import { common } from '@kit.AbilityKit';
 import { avatarImageStore } from '../services/AvatarImageStore';
 import { STORAGE_KEY_PROXY_REVISION } from '../services/ProxyStore';
+import { STORAGE_KEY_DNS_REVISION } from '../services/DnsSettingsStore';
 
 // Timeline covers stay mounted across proxy changes and tab-header rebuilds.
 // Keep a file source, as avatars do, instead of leasing a shared media PixelMap.
@@ -8,6 +9,7 @@ import { STORAGE_KEY_PROXY_REVISION } from '../services/ProxyStore';
 export struct TimelineTabCover {
   @Prop @Watch('onUrlChanged') url: string = '';
   @StorageProp(STORAGE_KEY_PROXY_REVISION) @Watch('onProxyChanged') private proxyRevision: number = 0;
+  @StorageProp(STORAGE_KEY_DNS_REVISION) @Watch('onProxyChanged') private dnsRevision: number = 0;
   @State private source: string = '';
   private alive: boolean = false;
   private requestSerial: number = 0;

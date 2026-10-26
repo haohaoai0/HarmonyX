@@ -70,9 +70,10 @@ export class XXAuthRecommendationAssets {
     return this.context.filesDir + '/app_recommendation';
   }
 
-  private readIconRecord(): IconRecord | null {
+  private readIconRecord(slot: string = 'icon'): IconRecord | null {
     try {
-      const record: IconRecord = JSON.parse(this.getPreferences().getSync(ICON_RECORD_KEY, '{}') as string) as IconRecord;
+      const key: string = ICON_RECORD_KEY + (slot === 'icon' ? '' : '_' + slot);
+      const record: IconRecord = JSON.parse(this.getPreferences().getSync(key, '{}') as string) as IconRecord;
       if (typeof record.url === 'string' && typeof record.path === 'string' &&
         record.path.startsWith(this.iconDirectory() + '/icon_') && fileIo.accessSync(record.path) &&
         fileIo.statSync(record.path).size > 0) {
@@ -84,8 +85,10 @@ export class XXAuthRecommendationAssets {
     return null;
   }
 
-  async getLocalIcon(url: string): Promise<string> {
-    const cached: IconRecord | null = this.readIconRecord();
+  async getLocalIcon(url: string, slot: string = 'icon'): Promise<string> {
+    if (!/^[a-z][a-z_0-9]{0,31}$/.test(slot)) { return ''; }
+    const recordKey: string = ICON_RECORD_KEY + (slot === 'icon' ? '' : '_' + slot);
+    const cached: IconRecord | null = this.readIconRecord(slot);
     if (cached !== null && cached.url === url) {
       return fileUri.getUriFromPath(cached.path);
     }
@@ -109,7 +112,8 @@ export class XXAuthRecommendationAssets {
       const source: image.ImageSource = image.createImageSource(data);
       try {
         const info: image.ImageInfo = await source.getImageInfo();
-        if (info.size.width <= 0 || info.size.height <= 0) {
+        if (info.size.width <= 0 || info.size.height <= 0 ||
+          (slot !== 'icon' && info.size.width * info.size.height > 12000000)) {
           throw new Error('Invalid icon image');
         }
       } finally {
@@ -137,13 +141,13 @@ export class XXAuthRecommendationAssets {
       }
       const record: IconRecord = { url: url, path: newPath };
       const pref: preferences.Preferences = this.getPreferences();
-      const previousRecord: string = pref.getSync(ICON_RECORD_KEY, '{}') as string;
+      const previousRecord: string = pref.getSync(recordKey, '{}') as string;
       try {
-        pref.putSync(ICON_RECORD_KEY, JSON.stringify(record));
+        pref.putSync(recordKey, JSON.stringify(record));
         pref.flushSync();
       } catch (error) {
         // flush 失败时回退内存中的链接，避免错误命中新图标缓存。
-        pref.putSync(ICON_RECORD_KEY, previousRecord);
+        pref.putSync(recordKey, previousRecord);
         throw new Error('Save icon record failed: ' + JSON.stringify(error));
       }
       committed = true;

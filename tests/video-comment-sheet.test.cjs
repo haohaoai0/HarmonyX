@@ -127,6 +127,7 @@ const feedBody = realMethods('entry/src/main/ets/pages/VideoFeedViewer.ets', 'Vi
 const Feed = new Function('VIDEO_FEED_LAYOUT_BILIBILI', `${feedBody}; return Harness;`)(2);
 test('finishing a video keeps its comments in place instead of advancing to another post', () => {
   const component = Object.assign(new Feed(), { postSheetActive: true, autoAdvance: true,
+    pageShown: true, closing: false,
     current: 0, items: [{}, {}], pager: { showNext() { this.advanced = true; } } });
   component.onVideoCompleted(0);
   assert.equal(component.pager.advanced, undefined);

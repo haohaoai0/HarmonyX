@@ -41,6 +41,24 @@ class BackgroundImageStore {
     return photos;
   }
 
+  removePhoto(context: common.Context, path: string): boolean {
+    if (!this.owns(context, path)) { return false; }
+    const photos: BackgroundImage[] = this.photos(context);
+    if (!photos.some((photo: BackgroundImage): boolean => photo.path === path)) { return false; }
+    const previous: string = xChatActions.localString(context, 'background_photos', '[]');
+    const remaining: BackgroundImage[] = photos.filter((photo: BackgroundImage): boolean => photo.path !== path);
+    try {
+      // Commit the list first. A failed write must never remove an image file.
+      xChatActions.saveLocal(context, 'background_photos', JSON.stringify(remaining));
+      fileIo.unlinkSync(path);
+    } catch (error) {
+      try { xChatActions.saveLocal(context, 'background_photos', previous); } catch (rollbackError) {}
+      throw new Error('background_delete_failed');
+    }
+    // Page/chat loaders already discard preferences whose image no longer exists.
+    return true;
+  }
+
   // Store one durable file. Page and chat preferences both reference this path;
   // neither setting owns or deletes the reusable library image.
   async savePhoto(context: common.Context, url: string): Promise<void> {

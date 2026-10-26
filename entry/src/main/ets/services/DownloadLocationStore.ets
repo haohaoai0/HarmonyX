@@ -5,6 +5,8 @@ import { BusinessError } from '@kit.BasicServicesKit';
 
 const STORE: string = 'harmonyx_download_location';
 const DIRECTORY_KEY: string = 'directory_uri';
+// Restore the pre-3.5 Gallery default and the reader's original explicit choice.
+// The v2 key was introduced with the forced Downloads default.
 const SAVE_TO_FOLDER_KEY: string = 'save_to_folder';
 const DOWNLOAD_ROOT: string = 'file://docs/storage/Users/currentUser/Download';
 // 下载目录使用应用包名，文件管理器的“来源”按包名文件夹识别并显示入口。

@@ -1,3 +1,7 @@
+import { STORAGE_KEY_VIDEO_DOWNLOAD_BUTTON } from '../services/MediaSettingsStore';
+import { TabOrderSettings } from '../components/TabOrderSettings';
+import { PostDisplaySettings } from '../components/PostDisplaySettings';
+import { PageSearchField } from '../components/PageSearchField';
 import { scrollFrame, scrollStarted, scrollStopped, stopScrollOnTouch } from '../utils/ScrollInteraction';
 import { STORAGE_KEY_FOR_YOU_ONLY_SENSITIVE } from '../services/ContentFilterStore';
 import { SceneModeSettingsContent } from '../components/SceneModeSettingsContent';
@@ -40,9 +44,11 @@ import { STORAGE_KEY_SIDEBAR_MATERIAL_TYPE, SIDEBAR_MATERIAL_GLASS, SIDEBAR_MATE
 import { STORAGE_KEY_HOME_SPACE_CAPSULE_ENABLED, STORAGE_KEY_HOME_SPACE_CAPSULE_HIDDEN_FOR_SESSION,
   spacePreferencesStore } from '../services/SpacePreferencesStore';
 import { HOME_FLOATING_COMPOSE, HOME_FLOATING_REFRESH, HOME_FLOATING_TOP, HOME_FLOATING_HIDDEN,
-  STORAGE_KEY_HOME_FLOATING_ACTION, STORAGE_KEY_PHOTO_FULLSCREEN, STORAGE_KEY_REFRESH_ON_FOREGROUND,
+  ME_FLOATING_PROFILE, ME_FLOATING_ACCOUNTS, ME_FLOATING_SETTINGS, ME_FLOATING_HELP, ME_FLOATING_HIDDEN,
+  STORAGE_KEY_HOME_FLOATING_ACTION, STORAGE_KEY_ME_FLOATING_ACTION,
+  STORAGE_KEY_PHOTO_FULLSCREEN, STORAGE_KEY_REFRESH_ON_FOREGROUND,
   STORAGE_KEY_FLOATING_COMPOSE_MATERIAL_TINT,
-  STORAGE_KEY_REFRESH_ON_HOME_TAB, STORAGE_KEY_HOME_DOUBLE_TAP_LATEST, STORAGE_KEY_HOME_PULL_REFRESH_LATEST,
+  STORAGE_KEY_REFRESH_ON_HOME_TAB, STORAGE_KEY_HOME_SINGLE_TAP_TOP, STORAGE_KEY_HOME_DOUBLE_TAP_LATEST, STORAGE_KEY_HOME_PULL_REFRESH_LATEST,
   STORAGE_KEY_CONFIRM_APP_EXIT, interactionSettingsStore } from '../services/InteractionSettingsStore';
 import { deviceInfo } from '@kit.BasicServicesKit';
 import {
@@ -60,6 +66,7 @@ import { effectiveAppLocale, isAppRtl, publishAppLocale, STORAGE_KEY_APP_LOCALE 
 import {
   HdsNavDestination,
   HdsNavDestinationTitleMode,
+  BottomBuilderShowType,
   ScrollEffectType
 } from '@kit.UIDesignKit';
 import {
@@ -149,7 +156,7 @@ import {
   supportedAppLanguages
 } from '../services/LanguageStore';
 import { GripHandManager } from '../utils/GripHandManager';
-import { destinationTitleBarStyle } from '../utils/DestinationTitleBar';
+import { destinationTitleBarStyle, retainedTitleBarBuilder } from '../utils/DestinationTitleBar';
 import { layoutSettingsStore, STORAGE_KEY_DESKTOP_LAYOUT, STORAGE_KEY_DESKTOP_ASIDE,
   STORAGE_KEY_DESKTOP_RAIL_AUTO_HIDE, STORAGE_KEY_DESKTOP_RAIL_MATERIAL_LEVEL,
   DEFAULT_DESKTOP_RAIL_MATERIAL_LEVEL } from '../services/LayoutSettingsStore';
@@ -227,9 +234,12 @@ import {
   HOME_FEED_FOLLOWING,
   HOME_FEED_FOR_YOU,
   STORAGE_KEY_TIMELINE_COLUMNS,
+  STORAGE_KEY_COVER_SINGLE_COLUMN,
+  STORAGE_KEY_COVER_SCREEN_ACTIVE,
   TIMELINE_COLUMNS_AUTO,
   TIMELINE_COLUMNS_ONE,
   TIMELINE_COLUMNS_THREE,
+  TIMELINE_COLUMNS_AUTO_TWO,
   TIMELINE_COLUMNS_TWO,
   timelineSettingsStore
 } from '../services/TimelineSettingsStore';
@@ -397,19 +407,6 @@ export struct SettingsHome {
     });
   }
 
-  private inputMaterial(): uiMaterial.Material | undefined {
-    if (!deviceInfo.apiAvailable('26.0.0')) {
-      return undefined;
-    }
-    return new uiMaterial.ImmersiveMaterial({
-      style: uiMaterial.ImmersiveStyle.THIN,
-      interactive: true,
-      applyShadow: true,
-      colorInvert: true,
-      lightEffect: { color: this.accentColor }
-    });
-  }
-
   private openCategory(category: SettingsCategory): void {
     const info: NavPathInfo = { name: category.destination.length > 0 ? category.destination : 'SettingsSection' };
     let matches: (param: Object) => boolean = (_param: Object): boolean => false;
@@ -466,16 +463,17 @@ export struct SettingsHome {
   }
 
   @Builder
+  private SearchField(): void {
+    PageSearchField({ value: this.searchQuery, placeholder: $r('app.string.settings_search'),
+      onValueChange: (value: string): void => { this.searchQuery = value; } })
+  }
+
+  @Builder
   private ListContent(): void {
     Scroll(this.scroller) {
+      Column() {
+        if (this.embedded) { this.SearchField() }
       Column({ space: 12 }) {
-        Search({ value: this.searchQuery, placeholder: $r('app.string.settings_search') })
-          .keyboardAppearance(KeyboardAppearance.IMMERSIVE)
-          .width('100%').height(44)
-          .margin({ top: this.embedded ? 12 : this.statusBarHeight + 76, bottom: 4 })
-          .backgroundColor(fieldSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
-          .attributeModifier(materialModifier(this.inputMaterial()))
-          .onChange((value: string): void => { this.searchQuery = value; })
         if (this.searchQuery.trim().length === 0) {
           ForEach(SETTINGS_GROUPS, (group: SettingsGroup) => {
             Column({ space: 8 }) {
@@ -495,7 +493,7 @@ export struct SettingsHome {
             ForEach(this.results(), (category: SettingsCategory) => {
               this.CategoryRow(category, true)
             }, (category: SettingsCategory): string => category.id)
-          }.width('100%').borderRadius(20)
+          }.width('100%').margin({ top: $r('app.float.settings_search_results_gap') }).borderRadius(20)
             .backgroundColor(pageReadingSurfaceColor(cardSurfaceColor(this.themeDisplayMode, this.themeDarkSurface), this.pageBackgroundValue))
           if (this.results().length === 0) {
             Text($r('app.string.settings_search_no_results')).fontFamily(this.appFontFamily)
@@ -504,7 +502,9 @@ export struct SettingsHome {
           }
         }
       }.width('100%').padding({ left: $r('app.float.settings_page_horizontal_padding'),
-        right: $r('app.float.settings_page_horizontal_padding'), bottom: this.navigationIndicatorHeight + 28 })
+        right: $r('app.float.settings_page_horizontal_padding'), top: this.embedded ? 0 : this.statusBarHeight + 116,
+        bottom: this.navigationIndicatorHeight + 28 })
+      }.width('100%')
     }
     .onScrollStop((): void => scrollStopped(this.scroller))
     .onScrollStart((): void => scrollStarted(this.scroller))
@@ -532,7 +532,7 @@ export struct SettingsHome {
       }.width('100%').height('100%')
     }
     .bindSheet($$this.huaweiAccountOpen, this.HuaweiAccountContent(), sheetMaterialOptions({
-      height: this.huaweiSignedIn ? 560 : 380, preferType: SheetType.BOTTOM, showClose: true, dragBar: true,
+      height: this.huaweiSignedIn ? 820 : 560, preferType: SheetType.BOTTOM, showClose: true, dragBar: true,
       backgroundColor: pageSurfaceColor(this.themeDisplayMode, this.themeDarkSurface),
       onDisappear: (): void => { this.huaweiAccountOpen = false; }
     }, this.accountSheetMaterialEnabled, this.accountSheetMaterialLevel))
@@ -549,7 +549,11 @@ export struct SettingsHome {
     .bindToScrollable([this.scroller])
     .titleBar({
       avoidLayoutSafeArea: true,
-      content: { title: { mainTitle: $r('app.string.settings_title') }, menu: { value: [{ content: {
+      content: { title: { mainTitle: $r('app.string.settings_title') },
+        bottomBuilder: { builder: (): void => this.SearchField(),
+          builderContent: retainedTitleBarBuilder((): void => this.SearchField()),
+          height: 56, showType: BottomBuilderShowType.DIRECTLY_SHOW },
+        menu: { value: [{ content: {
         icon: this.huaweiSignedIn && this.huaweiAvatar.length > 0 ? this.huaweiAvatar : $r('sys.symbol.person_crop_circle_fill'),
         label: this.text($r('app.string.huawei_account_title')), componentId: 'settings-huawei-account',
         action: (): void => { this.huaweiAccountOpen = true; }
@@ -626,10 +630,12 @@ export struct SettingsSection {
   replyCapsuleSplitEnabled: boolean = DEFAULT_REPLY_CAPSULE_SPLIT_ENABLED;
   @StorageLink(STORAGE_KEY_COMPOSE_BUTTON_ENABLED) composeButtonEnabled: boolean = true;
   @StorageProp(STORAGE_KEY_HOME_FLOATING_ACTION) homeFloatingAction: string = HOME_FLOATING_COMPOSE;
+  @StorageProp(STORAGE_KEY_ME_FLOATING_ACTION) meFloatingAction: string = ME_FLOATING_PROFILE;
   @StorageProp(STORAGE_KEY_FLOATING_COMPOSE_MATERIAL_TINT) floatingComposeMaterialTint: boolean = true;
   @StorageProp(STORAGE_KEY_PHOTO_FULLSCREEN) photoFullscreen: boolean = true;
   @StorageProp(STORAGE_KEY_REFRESH_ON_FOREGROUND) refreshOnForeground: boolean = false;
   @StorageProp(STORAGE_KEY_REFRESH_ON_HOME_TAB) refreshOnHomeTab: boolean = false;
+  @StorageProp(STORAGE_KEY_HOME_SINGLE_TAP_TOP) homeSingleTapTop: boolean = true;
   @StorageProp(STORAGE_KEY_HOME_DOUBLE_TAP_LATEST) homeDoubleTapLatest: boolean = true;
   @StorageProp(STORAGE_KEY_HOME_PULL_REFRESH_LATEST) homePullRefreshLatest: boolean = true;
   @StorageProp(STORAGE_KEY_CONFIRM_APP_EXIT) confirmAppExit: boolean = true;
@@ -658,6 +664,7 @@ export struct SettingsSection {
   @StorageLink(STORAGE_KEY_HOME_VIDEO_MUTED) homeVideoMuted: boolean = true;
   @StorageProp(STORAGE_KEY_MEDIA_VIEWER_BLACK_BACKGROUND) mediaViewerBlackBackground: boolean = false;
   @StorageProp(STORAGE_KEY_MEDIA_COMMENT_BACKGROUND) mediaCommentBackground: boolean = true;
+  @StorageProp(STORAGE_KEY_VIDEO_DOWNLOAD_BUTTON) private videoDownloadButton: boolean = true;
   @StorageProp(STORAGE_KEY_VIDEO_COMMENT_PROGRESS_RING) videoCommentProgressRing: boolean = true;
   @StorageLink(STORAGE_KEY_VIDEO_AUTO_PIP) videoAutoPip: boolean = true;
   @StorageLink(STORAGE_KEY_VIDEO_IMMERSIVE_FILL) videoImmersiveFill: boolean = false;
@@ -676,6 +683,7 @@ export struct SettingsSection {
   @StorageLink(STORAGE_KEY_SYSTEM_NOTIFICATIONS) systemNotificationsEnabled: boolean = true;
   @StorageLink(STORAGE_KEY_NOTIFICATION_DND_SILENT) notificationDndSilent: boolean = true;
   @StorageLink('harmonyx.default_home_feed') defaultHomeFeedMode: number = HOME_FEED_FOR_YOU;
+  @StorageProp(STORAGE_KEY_COVER_SINGLE_COLUMN) private coverSingleColumn: boolean = true;
   @StorageLink(STORAGE_KEY_TIMELINE_COLUMNS) timelineColumnsMode: number = TIMELINE_COLUMNS_AUTO;
   @StorageLink(STORAGE_KEY_HOME_TAB_MATERIAL_LEVEL) homeTabMaterialLevel: number = DEFAULT_HOME_TAB_MATERIAL_LEVEL;
   @StorageLink(STORAGE_KEY_READ_ALOUD_ENTRY_ENABLED) readAloudEntryEnabled: boolean = false;
@@ -1360,6 +1368,7 @@ export struct SettingsSection {
   }
 
   private timelineColumnsIndex(): number {
+    if (this.timelineColumnsMode === TIMELINE_COLUMNS_AUTO_TWO) { return 4; }
     if (this.timelineColumnsMode === TIMELINE_COLUMNS_ONE) {
       return 1;
     }
@@ -1373,6 +1382,7 @@ export struct SettingsSection {
   }
 
   private timelineColumnsLabel(): Resource {
+    if (this.timelineColumnsMode === TIMELINE_COLUMNS_AUTO_TWO) { return $r('app.string.settings_timeline_columns_auto_two'); }
     if (this.timelineColumnsMode === TIMELINE_COLUMNS_ONE) {
       return $r('app.string.settings_timeline_columns_one');
     }
@@ -1393,6 +1403,8 @@ export struct SettingsSection {
       mode = TIMELINE_COLUMNS_TWO;
     } else if (index === 3) {
       mode = TIMELINE_COLUMNS_THREE;
+    } else if (index === 4) {
+      mode = TIMELINE_COLUMNS_AUTO_TWO;
     }
     this.setTimelineColumns(mode);
   }
@@ -2604,7 +2616,8 @@ export struct SettingsSection {
           { value: $r('app.string.settings_timeline_columns_auto') },
           { value: $r('app.string.settings_timeline_columns_one') },
           { value: $r('app.string.settings_timeline_columns_two') },
-          { value: $r('app.string.settings_timeline_columns_three') }
+          { value: $r('app.string.settings_timeline_columns_three') },
+          { value: $r('app.string.settings_timeline_columns_auto_two') }
         ])
           .selected(this.timelineColumnsIndex())
           .value(this.timelineColumnsLabel())
@@ -2614,6 +2627,11 @@ export struct SettingsSection {
       }
       .width('100%')
       .alignItems(VerticalAlign.Center)
+      this.AutoHideSwitchRow($r('app.string.settings_cover_single_column'),
+        $r('app.string.settings_cover_single_column_desc'), this.coverSingleColumn,
+        (enabled: boolean): void => {
+          timelineSettingsStore.saveCoverSingleColumn(getContext(this) as common.UIAbilityContext, enabled);
+        })
     }
     .width('100%')
   }
@@ -2853,6 +2871,10 @@ export struct SettingsSection {
         $r('app.string.settings_refresh_on_home_tab_desc'), this.refreshOnHomeTab,
         (value: boolean): void => { this.interactionSaved(interactionSettingsStore.saveRefreshOnHomeTab(
           getContext(this) as common.UIAbilityContext, value)); })
+      this.AutoHideSwitchRow($r('app.string.settings_home_single_tap_top'),
+        $r('app.string.settings_home_single_tap_top_desc'), this.homeSingleTapTop,
+        (value: boolean): void => { this.interactionSaved(interactionSettingsStore.saveHomeSingleTapTop(
+          getContext(this) as common.UIAbilityContext, value)); })
       this.AutoHideSwitchRow($r('app.string.settings_home_double_tap_latest'),
         $r('app.string.settings_home_double_tap_latest_desc'), this.homeDoubleTapLatest,
         (value: boolean): void => { this.interactionSaved(interactionSettingsStore.saveHomeDoubleTapLatest(
@@ -2868,6 +2890,7 @@ export struct SettingsSection {
             promptAction.showToast({ message: this.text($r('app.string.spaces_save_failed')) });
           }
         })
+      TabOrderSettings({ home: true })
       this.MenuActionsContent('post_menu', $r('app.string.settings_menu_post'))
     }.width('100%').alignItems(HorizontalAlign.Start)
   }
@@ -3231,6 +3254,9 @@ export struct SettingsSection {
       Row({ space: 12 }) {
         this.MixedAccentOption('mix_berry', $r('app.string.settings_theme_mix_berry'))
         this.MixedAccentOption('mix_morandi', $r('app.string.settings_theme_mix_morandi'))
+      }.width('100%').alignItems(VerticalAlign.Top)
+      Row({ space: 12 }) {
+        this.MixedAccentOption('mix_prism', $r('app.string.settings_theme_mix_prism'))
       }.width('100%').alignItems(VerticalAlign.Top)
       Text($r('app.string.settings_theme_solid')).fontFamily(this.appFontFamily)
         .fontSize($r('sys.float.Body_L')).fontWeight(FontWeight.Medium)
@@ -3645,6 +3671,59 @@ export struct SettingsSection {
     }.width('100%').padding({ left: 20, right: 20, top: 16, bottom: 28 })
   }
 
+  private meFloatingActionIndex(): number {
+    if (this.meFloatingAction === ME_FLOATING_ACCOUNTS) { return 1; }
+    if (this.meFloatingAction === ME_FLOATING_SETTINGS) { return 2; }
+    if (this.meFloatingAction === ME_FLOATING_HELP) { return 3; }
+    if (this.meFloatingAction === ME_FLOATING_HIDDEN) { return 4; }
+    return 0;
+  }
+
+  private meFloatingActionLabel(): Resource {
+    if (this.meFloatingAction === ME_FLOATING_ACCOUNTS) { return $r('app.string.account_overview_manage'); }
+    if (this.meFloatingAction === ME_FLOATING_SETTINGS) { return $r('app.string.settings_title'); }
+    if (this.meFloatingAction === ME_FLOATING_HELP) { return $r('app.string.side_help'); }
+    if (this.meFloatingAction === ME_FLOATING_HIDDEN) { return $r('app.string.settings_floating_hidden'); }
+    return $r('app.string.side_profile');
+  }
+
+  @Builder
+  private MeFloatingActionSection(): void {
+    Row({ space: 12 }) {
+      Column({ space: 4 }) {
+        Text($r('app.string.settings_me_floating_action')).fontFamily(this.appFontFamily)
+          .fontSize($r('sys.float.Subtitle_L'))
+          .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
+        Text($r('app.string.settings_me_floating_action_desc')).fontFamily(this.appFontFamily)
+          .fontSize($r('sys.float.Body_M'))
+          .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
+          .width('100%')
+      }
+      .layoutWeight(1)
+      .alignItems(HorizontalAlign.Start)
+      Select([
+        { value: $r('app.string.side_profile') },
+        { value: $r('app.string.account_overview_manage') },
+        { value: $r('app.string.settings_title') },
+        { value: $r('app.string.side_help') },
+        { value: $r('app.string.settings_floating_hidden') }
+      ])
+        .id('me-floating-action')
+        .selected(this.meFloatingActionIndex())
+        .value(this.meFloatingActionLabel())
+        .selectedOptionFontColor(this.accentColor)
+        .selectedOptionBgColor(fieldSurfaceColor(this.displayMode, this.darkSurface))
+        .onSelect((index: number): void => {
+          const actions: string[] = [ME_FLOATING_PROFILE, ME_FLOATING_ACCOUNTS, ME_FLOATING_SETTINGS,
+            ME_FLOATING_HELP, ME_FLOATING_HIDDEN];
+          this.interactionSaved(interactionSettingsStore.saveMeFloatingAction(
+            getContext(this) as common.UIAbilityContext, actions[index] ?? ME_FLOATING_PROFILE));
+        })
+    }
+    .width('100%')
+    .alignItems(VerticalAlign.Center)
+  }
+
   @Builder
   private NavigationContent(): void {
     Column({ space: 18 }) {
@@ -3686,6 +3765,9 @@ export struct SettingsSection {
             .onSelect((index: number): void => this.setNativeTabMaterialLevel(index))
         }.width('100%').alignItems(VerticalAlign.Center)
       }
+      if (this.splitBottomBar && !this.classicBottomBar) {
+        this.MeFloatingActionSection()
+      }
       this.AutoHideSwitchRow($r('app.string.settings_root_tab_labels'),
         $r('app.string.settings_root_tab_labels_desc'), this.rootTabLabelsVisible,
         (value: boolean): void => this.setRootTabLabelsVisible(value))
@@ -3694,6 +3776,7 @@ export struct SettingsSection {
         (value: boolean): void => this.setRootLiquidTabIndicatorEnabled(value), !this.classicBottomBar)
       Divider().color($r('app.color.divider'))
       this.CustomBottomBarSection()
+      TabOrderSettings({ home: false })
       Divider().color($r('app.color.divider'))
       this.AutoHideSwitchRow($r('app.string.settings_compose_button'),
         $r('app.string.settings_compose_button_desc'), this.composeButtonEnabled,
@@ -3749,6 +3832,7 @@ export struct SettingsSection {
   @Builder
   private LayoutContent(): void {
     Column({ space: 18 }) {
+      PostDisplaySettings()
       this.DesktopLayoutSection()
       Divider().color($r('app.color.divider'))
       this.TimelineColumnsSection()
@@ -3807,6 +3891,10 @@ export struct SettingsSection {
   private PlaybackContent(): void {
     Column() {
       Column() {
+      this.AutoHideSwitchRow($r('app.string.settings_video_download_button'),
+        $r('app.string.settings_video_download_button_desc'), this.videoDownloadButton,
+        (value: boolean): void => { this.interactionSaved(mediaSettingsStore.saveVideoDownloadButton(
+          getContext(this) as common.UIAbilityContext, value)); })
       this.AutoHideSwitchRow($r('app.string.settings_video_autoplay'),
         $r('app.string.settings_video_autoplay_desc'), this.videoAutoplay,
         (value: boolean): void => this.setVideoAutoplay(value))

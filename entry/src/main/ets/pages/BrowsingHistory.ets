@@ -1,4 +1,5 @@
 import { AdaptivePostFeed } from '../components/AdaptivePostFeed';
+import { PageSearchField } from '../components/PageSearchField';
 import { pageTextColor } from '../utils/ThemeColors';
 import { appPageBackground } from '../components/PageBackgroundLayer';
 import { pageCanvasColor, postCardSurfaceColor } from '../utils/ThemeColors';
@@ -11,16 +12,14 @@ import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFon
 import { STORAGE_KEY_SHOW_SENSITIVE_MEDIA } from '../services/MediaSettingsStore';
 import { ProxyAvatar } from '../components/ProxyAvatar';
 import { ProxyMediaImage } from '../components/ProxyMediaImage';
-import { BrowsingHistoryEntry, browsingHistoryStore } from '../services/BrowsingHistoryStore';
+import { BrowsingHistoryBatch, BrowsingHistoryEntry, browsingHistoryStore } from '../services/BrowsingHistoryStore';
 import { XPrivateResult, xPrivateClient } from '../services/XPrivateClient';
 import { XTimelineParser } from '../services/XTimelineParser';
 import type { Tweet } from '../models/Tweet';
-import { destinationTitleBarStyle, retainedTitleBarBuilder, TitleBarControlMaterialCache } from '../utils/DestinationTitleBar';
-import { SystemMaterialUtil } from '../utils/SystemMaterial';
-import { cardSurfaceColor, fieldSurfaceColor, pageSurfaceColor } from '../utils/ThemeColors';
+import { destinationTitleBarStyle, retainedTitleBarBuilder } from '../utils/DestinationTitleBar';
+import { cardSurfaceColor } from '../utils/ThemeColors';
 import { ResponsiveLayout } from '../utils/ResponsiveLayout';
 import type { PostDetailRouteParam } from './PostDetail';
-import { materialModifier } from '../utils/SystemMaterial';
 
 @Builder
 export function BrowsingHistoryBuilder(): void { BrowsingHistory(); }
@@ -31,6 +30,7 @@ struct BrowsingHistory {
   @State private pageMotion: PageTransitionMotion = new PageTransitionMotion();
   @StorageProp(STORAGE_KEY_PAGE_TRANSITION_MODE) private pageTransitionMode: string = DEFAULT_PAGE_TRANSITION_MODE;
   @Consume('pageStack') pageStack: NavPathStack;
+  private destinationStack: NavPathStack | null = null;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @StorageProp('harmonyx.status_bar_height') private statusBarHeight: number = 0;
   @StorageProp('harmonyx.navigation_indicator_height') private bottomInset: number = 0;
@@ -38,23 +38,65 @@ struct BrowsingHistory {
   @StorageProp('harmonyx.dark_surface') private darkSurface: string = '';
   @StorageProp('harmonyx.title_bar_style_mode') private titleBarStyleMode: number = 0;
   @StorageProp(STORAGE_KEY_SHOW_SENSITIVE_MEDIA) private showSensitive: boolean = false;
-  @StorageProp('harmonyx.accent_color') private accentColor: string = '#007DFF';
   @State private rows: BrowsingHistoryEntry[] = [];
   @State private visibleRows: BrowsingHistoryEntry[] = [];
   @State private query: string = '';
   @State private loadingIds: string[] = [];
   @State private failedIds: string[] = [];
+  @State private historyLoading: boolean = true;
+  private loadOffset: number = 0;
+  private hasMore: boolean = true;
+  private loadTimer: number = -1;
+  private previewTimer: number = -1;
+  private visibleStart: number = 0;
+  private visibleEnd: number = 3;
+  private clientReady: boolean = false;
   private scroller: Scroller = new Scroller();
   private previewQueue: string[] = [];
   private attemptedIds: Set<string> = new Set();
   private previewGeneration: number = 0;
   private activeRequests: number = 0;
   private visible: boolean = false;
-  private searchMaterial: TitleBarControlMaterialCache = new TitleBarControlMaterialCache();
   private context(): common.UIAbilityContext { return getContext(this) as common.UIAbilityContext; }
   private text(resource: Resource): string { return this.context().resourceManager.getStringSync(resource); }
 
-  private reload(): void { this.rows = browsingHistoryStore.load(this.context()); this.filter(); }
+  private gap(): number {
+    return this.getUIContext().px2vp(this.context().resourceManager.getNumber($r('app.float.history_card_gap').id));
+  }
+  private reload(): void {
+    if (this.loadTimer >= 0) { clearTimeout(this.loadTimer); this.loadTimer = -1; }
+    this.rows = [];
+    this.loadOffset = 0;
+    this.hasMore = true;
+    this.historyLoading = true;
+    this.filter();
+    this.scheduleLoad();
+  }
+  private scheduleLoad(): void {
+    if (!this.visible || !this.hasMore || this.loadTimer >= 0) { return; }
+    this.historyLoading = true;
+    const generation: number = this.previewGeneration;
+    this.loadTimer = setTimeout((): void => {
+      this.loadTimer = -1;
+      if (!this.visible || generation !== this.previewGeneration) { return; }
+      const batch: BrowsingHistoryBatch = browsingHistoryStore.loadBatch(this.context(), this.loadOffset);
+      this.loadOffset = batch.nextOffset;
+      this.hasMore = batch.hasMore;
+      this.rows = [...this.rows, ...batch.rows];
+      this.filter();
+      this.historyLoading = false;
+      this.loadVisiblePreviews(this.visibleStart, this.visibleEnd);
+      // Search covers the whole archive while yielding between bounded reads.
+      // Also skip corrupt/removed records that leave a page empty.
+      if (this.hasMore && (this.query.trim().length > 0 || batch.rows.length === 0)) { this.scheduleLoad(); }
+    }, 16);
+  }
+  private applyPreview(row: BrowsingHistoryEntry): void {
+    const index: number = this.rows.findIndex((value: BrowsingHistoryEntry): boolean => value.id === row.id);
+    if (index < 0) { return; }
+    this.rows[index] = row;
+    this.filter();
+  }
   private shown(): void {
     this.visible = true;
     this.previewGeneration++;
@@ -63,32 +105,42 @@ struct BrowsingHistory {
     this.attemptedIds.clear();
     this.loadingIds = [];
     this.failedIds = [];
-    xPrivateClient.load(this.context());
+    this.clientReady = false;
     this.reload();
-    this.loadVisiblePreviews(0, 19);
   }
   private hidden(): void {
     this.visible = false;
     this.previewGeneration++;
     this.previewQueue = [];
+    if (this.loadTimer >= 0) { clearTimeout(this.loadTimer); this.loadTimer = -1; }
+    if (this.previewTimer >= 0) { clearTimeout(this.previewTimer); this.previewTimer = -1; }
   }
+  aboutToDisappear(): void { this.hidden(); }
   private needsPreview(row: BrowsingHistoryEntry): boolean {
     return row.text.length === 0 && row.previewUrl.length === 0 && row.mediaCount === 0;
   }
-  // Old link-only records are filled on entry; subsequent rows are prefetched
-  // as the reader scrolls. Two requests at a time avoid flooding X with a long history.
+  // Limit legacy-preview work to the viewport and a small lookahead. Let the
+  // navigation and local cards render before starting network/parsing work.
   private loadVisiblePreviews(start: number, end: number): void {
     if (!this.visible) { return; }
-    const rows: BrowsingHistoryEntry[] = this.visibleRows.slice(Math.max(0, start), end + 9);
+    this.visibleStart = start;
+    this.visibleEnd = end;
+    const rows: BrowsingHistoryEntry[] = this.visibleRows.slice(Math.max(0, start), end + 4);
+    const queued: string[] = [];
     for (const row of rows) {
       if (!this.needsPreview(row) || this.attemptedIds.has(row.id)) { continue; }
       this.attemptedIds.add(row.id);
       this.previewQueue.push(row.id);
-      this.loadingIds = [...this.loadingIds, row.id];
+      queued.push(row.id);
     }
-    this.drainPreviews();
+    if (queued.length > 0) { this.loadingIds = [...this.loadingIds, ...queued]; }
+    if (this.previewQueue.length > 0 && this.previewTimer < 0) {
+      this.previewTimer = setTimeout((): void => { this.previewTimer = -1; this.drainPreviews(); }, 200);
+    }
   }
   private drainPreviews(): void {
+    if (!this.visible || this.previewQueue.length === 0) { return; }
+    if (!this.clientReady) { xPrivateClient.load(this.context()); this.clientReady = true; }
     while (this.visible && this.activeRequests < 2 && this.previewQueue.length > 0) {
       const id: string | undefined = this.previewQueue.shift();
       if (id === undefined) { return; }
@@ -108,8 +160,8 @@ struct BrowsingHistory {
       }
       if (!this.visible || generation !== this.previewGeneration || session !== xPrivateClient.sessionGeneration()) { return; }
       if (tweet !== null && tweet.id === id) {
-        browsingHistoryStore.enrich(this.context(), tweet);
-        this.reload();
+        const row: BrowsingHistoryEntry | null = browsingHistoryStore.enrich(this.context(), tweet);
+        if (row !== null) { this.applyPreview(row); }
       } else {
         this.failedIds = [...this.failedIds, id];
         if (result.status === 429 || result.status === 401 || result.status === 403) {
@@ -142,7 +194,11 @@ struct BrowsingHistory {
   }
   private day(row: BrowsingHistoryEntry): string { return new Date(row.viewedAt).toLocaleDateString(); }
   private newDay(index: number): boolean {
-    return index === 0 || this.day(this.visibleRows[index]) !== this.day(this.visibleRows[index - 1]);
+    // Retained lazy cards can update before the feed removes their old indexes.
+    const row: BrowsingHistoryEntry | undefined = this.visibleRows[index];
+    if (row === undefined) { return false; }
+    const previous: BrowsingHistoryEntry | undefined = this.visibleRows[index - 1];
+    return previous === undefined || this.day(row) !== this.day(previous);
   }
   private dayLabel(row: BrowsingHistoryEntry): string {
     return this.day(row) === new Date().toLocaleDateString() ? this.text($r('app.string.spaces_today')) : this.day(row);
@@ -160,10 +216,15 @@ struct BrowsingHistory {
       text: row.text, createdAt: '', metrics: { replyCount: 0, repostCount: 0, likeCount: 0, viewCount: 0 },
       liked: false, reposted: false };
     const param: PostDetailRouteParam = { tweet: tweet, refreshContent: true };
-    this.pageStack.pushPath({ name: 'PostDetail', param: param });
+    (this.destinationStack ?? this.pageStack).pushPath({ name: 'PostDetail', param: param });
   }
   private remove(row: BrowsingHistoryEntry): void {
-    if (browsingHistoryStore.remove(this.context(), row.id)) { this.reload(); }
+    if (browsingHistoryStore.remove(this.context(), row.id)) {
+      this.rows = this.rows.filter((value: BrowsingHistoryEntry): boolean => value.id !== row.id);
+      this.loadOffset = Math.max(0, this.loadOffset - 1);
+      this.filter();
+      if (this.hasMore && this.visibleRows.length === 0) { this.scheduleLoad(); }
+    }
   }
   private clear(): void {
     this.getUIContext().showAlertDialog({ title: $r('app.string.browsing_history_clear'),
@@ -246,24 +307,19 @@ struct BrowsingHistory {
         Blank()
         SymbolGlyph($r('sys.symbol.chevron_right')).fontSize(12).fontColor([pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, postCardSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue))])
       }.width('100%')
-    }.width('100%').padding(14).alignItems(HorizontalAlign.Start)
+    }.width('100%').padding($r('app.float.history_card_padding')).alignItems(HorizontalAlign.Start)
+      .id('history-card-' + row.id)
       .backgroundColor(postCardSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue)).borderRadius(20)
       .border({ width: 0.5, color: $r('app.color.divider') }).onClick((): void => this.open(row))
   }
 
   @Builder
   private SearchField(): void {
-    Column() {
-      Search({ value: this.query, placeholder: this.text($r('app.string.browsing_history_search')) })
-        .width('100%').textFont({ size: 16, family: this.appFontFamily }).height(44).borderRadius(22).clip(true)
-        .keyboardAppearance(KeyboardAppearance.IMMERSIVE).fontColor($r('app.color.text_primary'))
-        .backgroundColor(SystemMaterialUtil.isApi26OrAbove() ? Color.Transparent :
-          fieldSurfaceColor(this.displayMode, this.darkSurface))
-        .attributeModifier(materialModifier(this.searchMaterial.material(this.accentColor)))
-        .onChange((value: string): void => {
-          this.query = value; this.filter(); this.loadVisiblePreviews(0, 19);
-        })
-    }.width('100%').height(56).padding({ left: 14, right: 14, top: 4, bottom: 8 })
+    PageSearchField({ value: this.query, placeholder: $r('app.string.browsing_history_search'),
+      onValueChange: (value: string): void => {
+        this.query = value; this.filter(); this.loadVisiblePreviews(0, 3);
+        if (value.trim().length > 0) { this.scheduleLoad(); }
+      } })
   }
 
   @Builder
@@ -275,7 +331,7 @@ struct BrowsingHistory {
           .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
       }.width('100%').padding({ left: 18, right: 18, top: 8, bottom: 4 })
     }
-    if (this.visibleRows.length === 0) {
+    if (this.visibleRows.length === 0 && !this.historyLoading) {
       Column() {
         Column({ space: 16 }) {
           SymbolGlyph($r('sys.symbol.clock')).fontSize(48).fontColor([pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)])
@@ -287,33 +343,48 @@ struct BrowsingHistory {
   }
 
   @Builder
-  private HistoryRow(row: BrowsingHistoryEntry, index: number): void {
-    Column({ space: 10 }) {
-      if (this.newDay(index)) {
-        Text(this.dayLabel(row)).fontFamily(this.appFontFamily).fontSize(14).fontWeight(FontWeight.Medium)
-          .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).width('100%').padding({ left: 4, top: 10 })
-      }
-      this.HistoryCard(row)
-    }.width('100%').padding({ left: 14, right: 14 })
+  private HistoryFooter(): void {
+    if (this.historyLoading) {
+      Row({ space: 8 }) {
+        LoadingProgress().width(20).height(20).color($r('app.color.brand'))
+        Text($r('app.string.status_loading')).fontFamily(this.appFontFamily)
+          .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
+      }.width('100%').justifyContent(FlexAlign.Center).padding(16)
+    }
+  }
+
+  @Builder
+  private HistoryRow(row: BrowsingHistoryEntry | undefined, index: number): void {
+    if (row !== undefined) {
+      Column({ space: 10 }) {
+        if (this.newDay(index)) {
+          Text(this.dayLabel(row)).fontFamily(this.appFontFamily).fontSize(14).fontWeight(FontWeight.Medium)
+            .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).width('100%').padding({ left: 4, top: 10 })
+        }
+        this.HistoryCard(row)
+      }.width('100%').padding({ left: $r('app.float.history_page_inset'), right: $r('app.float.history_page_inset') })
+    }
   }
 
   build(): void {
     HdsNavDestination() {
       Stack({ alignContent: Alignment.TopStart }) {
         appPageBackground()
-      AdaptivePostFeed({ scroller: this.scroller,
+      AdaptivePostFeed({ scroller: this.scroller, lazyItems: true, singleColumnGap: this.gap(),
         itemKeys: this.visibleRows.map((row: BrowsingHistoryEntry): string => row.id + '-' + row.viewedAt + '-' +
           row.authorName + '-' + row.avatarUrl + '-' + row.verified + '-' + row.text + '-' + row.previewUrl),
         feedId: 'browsing-history-post-feed', startOffset: this.statusBarHeight + 116, endOffset: this.bottomInset + 20,
         header: (): void => this.HistoryHeader(),
+        footer: (): void => this.HistoryFooter(),
         item: (index: number): void => this.HistoryRow(this.visibleRows[index], index),
+        onLoadMore: (): void => this.scheduleLoad(),
         onVisibleItems: (start: number, end: number): void => this.loadVisiblePreviews(start, end) })
     
       }.width('100%').height('100%')
     }
     .scale({ x: this.pageMotion.scale, y: this.pageMotion.scale })
     .opacity(this.pageMotion.opacity)
-    .onReady((context: NavDestinationContext): void => { this.pageMotion.attach(context); })
+    .onReady((context: NavDestinationContext): void => { this.pageMotion.attach(context); this.destinationStack = context.pathStack; })
     .systemTransition(pageSystemTransition(this.pageTransitionMode)).onShown((): void => this.shown()).onHidden((): void => this.hidden())
       .titleMode(HdsNavDestinationTitleMode.MINI).bindToScrollable([this.scroller])
       .titleBar({ avoidLayoutSafeArea: true,
@@ -321,10 +392,14 @@ struct BrowsingHistory {
           bottomBuilder: { builder: (): void => this.SearchField(),
             builderContent: retainedTitleBarBuilder((): void => this.SearchField()),
             height: 56, showType: BottomBuilderShowType.DIRECTLY_SHOW },
-          menu: { value: [{ content: { label: $r('app.string.browsing_history_clear'), type: TextStyleMode.NORMAL,
-            isEnabled: this.rows.length > 0, action: (): void => this.clear() } }] } },
+          menu: { value: [
+            { content: { label: $r('app.string.offline_videos_title'), type: TextStyleMode.NORMAL,
+              isEnabled: true, action: (): void => { (this.destinationStack ?? this.pageStack).pushPath({ name: 'OfflineVideos' }); } } },
+            { content: { label: $r('app.string.browsing_history_clear'), type: TextStyleMode.NORMAL,
+              isEnabled: this.rows.length > 0, action: (): void => this.clear() } }
+          ] } },
         style: destinationTitleBarStyle(ScrollEffectType.GRADIENT_BLUR, this.displayMode, this.darkSurface, this.titleBarStyleMode) })
       .backgroundColor(pageCanvasColor(this.displayMode, this.darkSurface, this.pageBackgroundValue))
-      .onBackPressed((): boolean => { ResponsiveLayout.closeContentDestination(this.pageStack); return true; })
+      .onBackPressed((): boolean => false)
   }
 }

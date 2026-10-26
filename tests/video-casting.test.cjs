@@ -49,7 +49,10 @@ function fixture(options = {}) {
   const module = { exports: {} };
   new Function('require', 'module', 'exports', code)(name => {
     if (name === '@kit.AVSessionKit') return { avSession, AVCastPickerState: { STATE_APPEARING: 0, STATE_DISAPPEARING: 1 } };
-    if (name === '@ohos.hilog') return { default: { warn() {} } };
+    if (name === '@ohos.hilog') return { default: { warn() {}, info() {} } };
+    if (name === './VideoMediaArtwork') return { videoMediaArtwork: {
+      load: (...args) => options.artwork ? options.artwork(...args) : Promise.resolve(null)
+    } };
     if (name === '@kit.AbilityKit') return {};
     throw new Error(name);
   }, module, module.exports);
@@ -126,4 +129,39 @@ test('releasing while acquiring a receiver prevents stale callbacks and local in
   await f.service.release('video'); pending.resolve({}); await tick();
   assert.equal(f.events.some(event => event[0] === 'localPause'), false);
   assert.equal(f.service.isCasting('video'), false);
+});
+
+test('media center receives decoded cover pixels and duration refresh preserves them', async () => {
+  const pending = deferred();
+  const pixels = { name: 'video-cover' }; let released = 0;
+  const f = fixture({ artwork: () => pending.promise }); await f.claim();
+  pending.resolve({ pixelMap: pixels, release() { released++; } }); await tick();
+  assert.equal(f.events.filter(event => event[0] === 'metadata').at(-1)[1].mediaImage, pixels);
+  f.service.updateDuration('video', 50);
+  assert.equal(f.events.filter(event => event[0] === 'metadata').at(-1)[1].mediaImage, pixels);
+  assert.equal(released, 0);
+  await f.service.release('video'); assert.equal(released, 1);
+});
+
+test('late artwork from a released session cannot overwrite a new owner', async () => {
+  const pending = deferred(); let released = 0;
+  const f = fixture({ artwork: () => pending.promise }); await f.claim();
+  await f.service.release('video');
+  const count = f.events.filter(event => event[0] === 'metadata').length;
+  pending.resolve({ pixelMap: {}, release() { released++; } }); await tick();
+  assert.equal(f.events.filter(event => event[0] === 'metadata').length, count);
+  assert.equal(released, 1);
+});
+
+test('a changed cover on the same video rejects the older asynchronous cover', async () => {
+  const old = deferred(), next = deferred(); let released = 0;
+  const pixels = { name: 'new-cover' };
+  const f = fixture({ artwork: (_context, _id, cover) => cover === 'new' ? next.promise : old.promise });
+  await f.claim();
+  await f.service.claim({}, 'video', 'new', f.handle, 30, () => {});
+  next.resolve({ pixelMap: pixels, release() {} }); await tick();
+  old.resolve({ pixelMap: {}, release() { released++; } }); await tick();
+  assert.equal(f.events.filter(event => event[0] === 'metadata').at(-1)[1].mediaImage, pixels);
+  assert.equal(released, 1);
+  await f.service.release('video');
 });

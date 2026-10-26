@@ -99,7 +99,8 @@ test('system-picker fallback preserves preferences without reusing unsupported d
     assert.ok(h.trace.every(row=>!String(row[1]).includes('old-authorized-folder')));
     h.failWrite(true);await assert.rejects(h.location.downloadLocationStore.setUseDownloads(h.context,false),/disk unavailable/);
     assert.equal(h.location.downloadLocationStore.useDownloads(h.context),true);
-    assert.equal(fs.readFileSync('entry/src/main/module.json5','utf8').includes('ohos.permission.FILE_ACCESS_PERSIST'),
+    const moduleConfig=ts.parseConfigFileTextToJson('module.json5',fs.readFileSync('entry/src/main/module.json5','utf8')).config;
+    assert.equal(moduleConfig.module.requestPermissions.some(permission=>permission.name==='ohos.permission.FILE_ACCESS_PERSIST'),
       bundleName === 'com.haohaoai0.harmonx');
   }finally{h.close();}
 });
@@ -182,11 +183,61 @@ function mediaService(h, manager) {
     '@kit.CoreFileKit':{...h.kit,fileIo:{...h.kit.fileIo,accessSync:fs.existsSync}},
     '@kit.MediaLibraryKit':{photoAccessHelper:{getPhotoAccessHelper:()=>{throw Error('file saves must not open Gallery');}}},
     './DownloadLocationStore':h.location,
-    './DownloadManager':{downloadManager:manager,DownloadTaskStatus:{READY_TO_SAVE:3}},
+    './DownloadManager':{downloadManager:{savingVideo(){},beginLocalVideoSave(){return 'local';},finishLocalVideoSave(){},...manager},DownloadTaskStatus:{READY_TO_SAVE:3}},
     '@ohos.hilog':{default:{error(){}}}
   }).mediaDownloadService;
 }
 async function enableFiles(h) {await h.location.downloadLocationStore.setUseDownloads(h.context,true);}
+
+test('Gallery is restored for fresh and upgraded installs and saves single images and batches without a folder grant', async () => {
+  const h = harness(true);
+  try {
+    h.values.set('save_to_folder_v2', true);
+    const source = h.put('files/source.jpg', 'original-photo');
+    const dialogs = [];
+    const gallery = { PhotoType: { IMAGE: 1, VIDEO: 2 }, PhotoSubtype: { DEFAULT: 0 },
+      getPhotoAccessHelper: () => ({ async showAssetsCreationDialog(sources, configs) {
+        dialogs.push({ sources, configs });
+        return sources.map((_, index) => h.put('gallery/' + dialogs.length + '-' + index + '.jpg', ''));
+      } }) };
+    const service = load('entry/src/main/ets/services/MediaDownloadService.ets', {
+      '@kit.CoreFileKit': h.kit, '@kit.MediaLibraryKit': { photoAccessHelper: gallery },
+      './DownloadLocationStore': h.location, './DownloadManager': { downloadManager: {} },
+      '@ohos.hilog': { default: { error() {} } }
+    }).mediaDownloadService;
+    assert.equal(h.location.downloadLocationStore.useDownloads(h.context), false);
+    assert.equal(await new Promise(resolve => service.download(h.context, 'file://' + source, 'one', false, resolve)), 0);
+    assert.equal(await new Promise(resolve => service.downloadImages(h.context, ['file://' + source, 'file://' + source], 'batch', resolve)), 0);
+    assert.deepEqual(dialogs.map(dialog => dialog.sources.length), [1, 2]);
+    assert.ok(dialogs.every(dialog => dialog.configs.every(config => config.photoType === gallery.PhotoType.IMAGE)));
+    assert.equal(h.trace.filter(row => ['directory', 'picker', 'persist', 'activate'].includes(row[0])).length, 0);
+    assert.deepEqual(fs.readdirSync(path.join(h.root, 'gallery')).map(name =>
+      fs.readFileSync(path.join(h.root, 'gallery', name), 'utf8')), ['original-photo', 'original-photo', 'original-photo']);
+  } finally { h.close(); }
+});
+
+test('explicit X-new folder saves retain one grant across images, videos, batches and restarts',async()=>{
+  if(bundleName !== 'com.haohaoai0.harmonx')return;
+  const h=harness(true);try{
+    const folder=path.join(h.root,'downloads');fs.mkdirSync(folder);h.directory(folder);
+    h.values.set('save_to_folder_v2',true);
+    assert.equal(h.location.downloadLocationStore.useDownloads(h.context),false);
+    await h.location.downloadLocationStore.setUseDownloads(h.context,true);
+    assert.equal(h.location.downloadLocationStore.useDownloads(h.context),true);
+    const photo=h.put('files/photo.jpg','photo'),video=h.put('files/video.mp4','video');
+    const service=mediaService(h,{enqueue(){throw Error('local files do not need a network transfer');}});
+    assert.equal(await new Promise(resolve=>service.download(h.context,'file://'+photo,'photo',false,resolve)),0);
+    assert.equal(new h.location.DownloadLocationStore().useDownloads(h.context),true);
+    assert.equal(await new Promise(resolve=>service.download(h.context,'file://'+video,'video',true,resolve)),0);
+    assert.equal(await new Promise(resolve=>service.downloadImages(h.context,['file://'+photo,'file://'+photo],'batch',resolve)),0);
+    assert.equal(h.trace.filter(row=>row[0]==='directory').length,1);
+    assert.equal(h.trace.filter(row=>row[0]==='picker').length,0);
+    const saved=path.join(folder,'com.haohaoai0.harmonx');
+    assert.deepEqual(fs.readdirSync(saved).sort(),['HarmonyX-batch-0.jpg','HarmonyX-batch-1.jpg','HarmonyX-photo.jpg','HarmonyX-video.mp4']);
+    await h.location.downloadLocationStore.setUseDownloads(h.context,false);
+    assert.equal(new h.location.DownloadLocationStore().useDownloads(h.context),false);
+  }finally{h.close();}
+});
 
 test('video and multi-image file saves use the system picker without persistent file APIs',async()=>{
   const h=harness();try{

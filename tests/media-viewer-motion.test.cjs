@@ -357,6 +357,7 @@ function returnHandoffHarness() {
   const ui = { animateTo(options, update) { assert.equal(options.duration, 0); update(); },
     postFrameCallback(frame) { frames.push(frame); } };
   const viewer = Object.assign(new Harness(), { viewerSession: 1, viewerAlive: true, getUIContext: () => ui,
+    returnNavigation: { complete: () => false },
     photoSession: { restore() { assert.equal(state.visible, true); order.push('restore-node'); } }, motion: state });
   return { viewer, frames, order, state };
 }
@@ -457,6 +458,7 @@ function albumReturnHarness(current = 1) {
     { setOrCreate: () => order.push('align-source') }, 'return');
   const state = new motion.MediaViewerMotionState(); state.prepare(source()); state.visible = true;
   const viewer = Object.assign(new Harness(), { viewerSession: 1, viewerAlive: true, closing: false, current,
+    returnNavigation: { request: () => false, complete: () => false },
     transitionPrefix: 'album', motion: state, photoSession: h.session(), getUIContext: () => ui,
     animatePhotoReturn() { order.push('animate-current'); } });
   const photos = Array.from({ length: 4 }, (_, index) => {

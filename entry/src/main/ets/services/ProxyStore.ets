@@ -8,6 +8,7 @@ import { deviceInfo } from '@kit.BasicServicesKit';
 import { connection } from '@kit.NetworkKit';
 import http from '@ohos.net.http';
 import hilog from '@ohos.hilog';
+import { dnsSettingsStore } from './DnsSettingsStore';
 
 const DOMAIN: number = 0xFF00;
 const TAG: string = 'HarmonyX-Proxy';
@@ -172,6 +173,12 @@ export class ProxyStore {
     return this.settings.normalized();
   }
 
+  // ArkUI Image and AVPlayer URL sources cannot receive per-request DoH.
+  // Use the existing HTTP download path when either network setting needs it.
+  requiresHttpTransport(): boolean {
+    return this.settings.enabled || dnsSettingsStore.snapshot().enabled;
+  }
+
   save(settings: ProxySettings): boolean {
     this.settings = settings.normalized();
     let saved: boolean = false;
@@ -302,6 +309,7 @@ export class ProxyStore {
   }
 
   async apply(options: http.HttpRequestOptions): Promise<void> {
+    dnsSettingsStore.apply(options);
     if (await this.refreshSystemVpnState()) {
       // A system VPN already routes the process through the user's selected
       // tunnel. Do not layer the app-specific proxy on top of it.
@@ -345,6 +353,7 @@ export class ProxyStore {
   }
 
   async applyForMediaRequest(options: http.HttpRequestOptions, url: string): Promise<void> {
+    dnsSettingsStore.apply(options);
     if (!this.videoCdnProxyEnabledFor(url)) {
       await this.apply(options);
       return;
@@ -495,6 +504,7 @@ export class ProxyStore {
         readTimeout: PROXY_PROBE_TIMEOUT_MS
       };
       this.applyEntry(options, proxy);
+      dnsSettingsStore.apply(options);
       const startedAt: number = Date.now();
       const response: http.HttpResponse = await request.request(PROXY_PROBE_URL, options);
       if (response.responseCode <= 0) {

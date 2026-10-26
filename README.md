@@ -77,9 +77,9 @@ Harmony X 并非仅替换外观，而是面向 HarmonyOS API 26 的 OpenTwit 改
 
 | 项目 | 当前配置 |
 |:--|:--|
-| 应用 | `Harmony X` · `com.haohaoai0.harmonx` · 版本 `3.2.0`（`versionCode` 24） |
+| 应用 | `Harmony X` · `com.haohaoai0.harmonx` · 版本 `3.5.0`（`versionCode` 28） |
 | 模块 | `entry` · Stage 模型 · `modelVersion` 5.0.0 |
-| SDK 配置 | 未显式设置编译 SDK（使用本机 DevEco SDK）· 兼容 SDK `6.1.0 (API 23)` · 目标 SDK `26.0.0` |
+| SDK 配置 | 未显式设置编译 SDK（使用本机 DevEco SDK）· 兼容 SDK `6.0.2 (API 22)` · 目标 SDK `26.0.0` |
 | 设备 | `phone`、`tablet`、`2in1` · 全屏 `EntryAbility` |
 | 权限 | `ohos.permission.INTERNET`（网络）、`ohos.permission.DETECT_GESTURE`（智感握姿）、`ohos.permission.VIBRATE`（操作触觉）、`ohos.permission.GET_NETWORK_INFO`（在线状态）、`ohos.permission.GET_DONOTDISTURB_STATE`（免打扰静默）、`ohos.permission.KEEP_BACKGROUND_RUNNING`（后台朗读）、`ohos.permission.MICROPHONE`（Grok 网页与私信语音输入） |
 | 构建工具 | Hvigor `6.26.4` · `@ohos/hvigor-ohos-plugin` `6.26.4` · `@ohos/hypium` `1.0.19`（开发依赖） |

@@ -1,3 +1,12 @@
+import { SupportBuilder, SupporterAccessBuilder } from './Support';
+import { mediaViewerNavigationTransition } from '../utils/MediaViewerNavigation';
+import { PostTranslationOptionsHost } from '../components/PostTranslationOptionsHost';
+import { AboutAccountBuilder } from './AboutAccount';
+import { StartupLaunchCover } from '../components/StartupLaunchCover';
+import { SPLASH_OPEN_REQUEST } from '../services/XXAuthSplashStore';
+import { startupSession } from '../utils/StartupSession';
+import { orderedTabIds } from '../utils/TabOrder';
+import { STORAGE_KEY_BOTTOM_TAB_ORDER, STORAGE_KEY_HOME_TAB_ORDER } from '../services/TabOrderSettingsStore';
 import { scrollFrame, scrollStarted, scrollStopped, stopScrollOnTouch } from '../utils/ScrollInteraction';
 import { homeTimelineSourceStore } from '../services/HomeTimelineSourceStore';
 import { HomeSourceOptionsSheet } from '../components/HomeTimelineSheets';
@@ -31,8 +40,10 @@ import { XXAuthPopupHost } from '../components/XXAuthPopupHost';
 import { userAvatarRadius, userVerifiedType, userAvatarShape, verificationBadgeColor } from '../utils/UserIdentity';
 import { DEFAULT_SHEET_MATERIAL_ENABLED, DEFAULT_SHEET_MATERIAL_LEVEL, STORAGE_KEY_SHEET_MATERIAL_ENABLED, STORAGE_KEY_SHEET_MATERIAL_LEVEL } from '../services/SheetMaterialSettingsStore';
 import { sheetContentBackground, sheetMaterialOptions } from '../utils/SheetMaterial';
-import { HOME_FLOATING_COMPOSE, HOME_FLOATING_HIDDEN, STORAGE_KEY_HOME_FLOATING_ACTION, STORAGE_KEY_PHOTO_FULLSCREEN,
-  STORAGE_KEY_REFRESH_ON_FOREGROUND, STORAGE_KEY_REFRESH_ON_HOME_TAB,
+import { HOME_FLOATING_COMPOSE, HOME_FLOATING_HIDDEN, STORAGE_KEY_HOME_FLOATING_ACTION,
+  STORAGE_KEY_ME_FLOATING_ACTION, ME_FLOATING_PROFILE, ME_FLOATING_ACCOUNTS, ME_FLOATING_SETTINGS,
+  ME_FLOATING_HELP, ME_FLOATING_HIDDEN, STORAGE_KEY_PHOTO_FULLSCREEN,
+  STORAGE_KEY_REFRESH_ON_FOREGROUND, STORAGE_KEY_REFRESH_ON_HOME_TAB, STORAGE_KEY_HOME_SINGLE_TAP_TOP,
   STORAGE_KEY_HOME_DOUBLE_TAP_LATEST, STORAGE_KEY_HOME_PULL_REFRESH_LATEST,
   STORAGE_KEY_CONFIRM_APP_EXIT } from '../services/InteractionSettingsStore';
 // Harmony X main page. ArkUI renders the browsing surfaces and opens the
@@ -89,6 +100,7 @@ import { PostMedia } from '../components/PostMedia';
 import { ProxyAvatar } from '../components/ProxyAvatar';
 import { AnimatedIconTabs, IconTabItem } from '../components/AnimatedIconTabs';
 import { RootRefreshIndicator } from '../components/RootRefreshIndicator';
+import { VideoDownloadNotice } from '../components/VideoDownloadNotice';
 import { ProfileTabMotion } from '../utils/ProfileTabMotion';
 import { AccountOverview, AccountOverviewBanner } from '../components/AccountOverview';
 import { RootTitleBarLayout } from '../utils/RootTitleBarLayout';
@@ -179,6 +191,7 @@ import { STORAGE_KEY_DESKTOP_RAIL_SWIPE } from '../services/LayoutSettingsStore'
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY, appFontStore } from '../services/AppFontStore';
 import type { SettingsRouteParam } from './Settings';
 import { ProxySettingsBuilder } from './ProxySettings';
+import { DnsSettingsBuilder } from './DnsSettings';
 import { HelpCenterBuilder } from './HelpCenter';
 import { AboutBuilder } from './About';
 import { LogoUniverseBuilder } from './LogoUniverse';
@@ -210,11 +223,12 @@ import { ListMembersBuilder } from './ListMembers';
 import { ListEditorBuilder } from './ListEditor';
 import { CommunitiesBuilder } from './Communities';
 import { CommunitySearchBuilder } from './CommunitySearch';
+import { GlobalTrendsPageView } from './GlobalTrends';
+import { ProxyMediaImage } from '../components/ProxyMediaImage';
 import type { CommunityTimelineRouteParam } from './Communities';
 import { CommunityTimelineBuilder } from './CommunityTimeline';
 import { CommunityRulesBuilder } from './CommunityRules';
 import { PhotoViewerBuilder } from './PhotoViewer';
-import { PhotoViewerOverlay } from '../components/PhotoViewerOverlay';
 import { NotificationPostsBuilder } from './NotificationPosts';
 import { postModerationStore, STORAGE_KEY_POST_MODERATION_REVISION } from '../services/PostModerationStore';
 import { homeSeenTweetStore } from '../services/HomeSeenTweetStore';
@@ -227,6 +241,7 @@ import { PhotoRequest } from '../utils/PhotoViewerRequest';
 import { MediaViewerSource, pendingMediaViewerSource } from '../utils/MediaViewerMotion';
 import { STORAGE_KEY_VIDEO_REQUEST, VideoViewerRequest } from '../utils/VideoViewerRequest';
 import { BrowsingHistoryBuilder } from './BrowsingHistory';
+import { OfflineVideosBuilder } from './OfflineVideos';
 import { DiagnosticsBuilder } from './Diagnostics';
 import { DownloadManagerBuilder } from './DownloadManagerPage';
 import { DataStorageBuilder } from './DataStoragePage';
@@ -247,6 +262,7 @@ import { DmWebBuilder } from './DmWeb';
 import { XAccount, accountStore } from '../services/AccountStore';
 import { xWebCookieBridge } from '../services/XWebCookieBridge';
 import { searchHistoryStore } from '../services/SearchHistoryStore';
+import { XSearchSuggestionParser, SearchSuggestions } from '../services/XSearchSuggestionParser';
 import { ComposerDraft, composerDraftStore } from '../services/ComposerDraftStore';
 import {
   CONTINUATION_KIND_COMPOSER,
@@ -293,6 +309,7 @@ import { layoutSettingsStore, STORAGE_KEY_DESKTOP_LAYOUT, STORAGE_KEY_DESKTOP_AS
   DEFAULT_DESKTOP_RAIL_MATERIAL_LEVEL, STORAGE_KEY_SIDEBAR_MATERIAL_TYPE,
   SIDEBAR_MATERIAL_GLASS, SIDEBAR_MATERIAL_BLUR, SIDEBAR_MATERIAL_SYSTEM } from '../services/LayoutSettingsStore';
 import { RootContentNavigation } from '../utils/RootContentNavigation';
+import { ChatUnlockRequest } from '../services/ChatUnlockRequest';
 import { NavigationGuard } from '../utils/NavigationGuard';
 import { SideBarMaterialLayer } from '../components/SideBarMaterialLayer';
 import { ResponsiveLayout } from '../utils/ResponsiveLayout';
@@ -329,8 +346,11 @@ import {
 } from '../utils/DestinationTitleBar';
 import {
   STORAGE_KEY_TIMELINE_COLUMNS,
+  STORAGE_KEY_COVER_SINGLE_COLUMN,
+  STORAGE_KEY_COVER_SCREEN_ACTIVE,
   TIMELINE_COLUMNS_ONE,
   TIMELINE_COLUMNS_THREE,
+  TIMELINE_COLUMNS_AUTO_TWO,
   TIMELINE_COLUMNS_TWO,
   timelineSettingsStore
 } from '../services/TimelineSettingsStore';
@@ -377,6 +397,17 @@ class SearchTimelineRow {
   promotion: XXAuthPromotionPost | null = null;
 }
 
+// The WaterFlow key list and item builder may observe adjacent search-tab
+// states while a swipe is settling. Keep the row type with its payload so a
+// stale numeric index can never reinterpret a user row as a post or return an
+// empty slot to UserRowCard.
+class SearchResultRow {
+  key: string = '';
+  tweet: Tweet | null = null;
+  promotion: XXAuthPromotionPost | null = null;
+  user: UserRow | null = null;
+}
+
 // A notification timeline re-read is skipped for this long after a successful
 // fetch, so switching tabs does not hammer the endpoint.
 const NOTIFICATIONS_FRESH_MS = 30000;
@@ -392,8 +423,10 @@ const ME_TAB_INDEX: number = BOTTOM_BAR_ME_PAGE;
 const SEARCH_FIELD_TRANSITION_ID = 'SEARCH_ONE_SHOT_DEMO_TRANSITION_ID';
 // A DM inbox refresh is skipped for this long after a successful fetch.
 const MESSAGES_FRESH_MS = 30000;
-// 底部导航栏要等内容区离开顶部这么远才收起，避免刚滑动就抖动。
-const TAB_BAR_HIDE_DEPTH = 36;
+// 与“云上”保持一致：上下滑动累计超过这一距离就切换标题栏和底部栏，
+// 回到接近顶部时再强制恢复，避免慢速滚动时两套栏状态不同步。
+const TAB_BAR_HIDE_DEPTH = 10;
+const CHROME_TOP_REVEAL_DEPTH = 5;
 // How far the reader has to travel down a feed before the compose button
 // becomes "back to top".
 const FAB_SWITCH_DEPTH = 620;
@@ -646,6 +679,14 @@ struct Index {
   @State searchProduct: string = 'Latest';
   @State exploreUsers: UserRow[] = [];
   @State private searchHistory: string[] = [];
+  @State private searchRecentUsers: UserRow[] = [];
+  @State private searchSuggestionTopics: string[] = [];
+  @State private searchSuggestionUsers: UserRow[] = [];
+  @State private searchSuggestionLoading: boolean = false;
+  @State private searchSuggestionFailed: boolean = false;
+  @State private searchEntryText: string = '';
+  private searchSuggestionTimer: number = -1;
+  private searchSuggestionRevision: number = 0;
   // Set by hashtag taps anywhere in the app; this root consumes it, switches to
   // the explore tab and runs the search.
   @StorageLink('harmonyx.search_request') @Watch('onSearchRequested') searchRequest: string = '';
@@ -678,6 +719,9 @@ struct Index {
   @StorageLink('harmonyx.open_messages_request') @Watch('onMessageLaunchRequested')
   messageLaunchRequest: number = 0;
   @State private showLinkPreview: boolean = false;
+  @State private showStartupCover: boolean = startupSession.claimCover();
+  @State private startupFromForeground: boolean = false;
+  @StorageProp(SPLASH_OPEN_REQUEST) @Watch('onSplashOpenRequested') private splashOpenRequest: number = 0;
   @State private showOnboardingGuide: boolean = true;
   @State private onboardingLoginOnly: boolean = false;
   @State private onboardingAddAccount: boolean = false;
@@ -688,8 +732,10 @@ struct Index {
   // away from the newest post, and morphs back on any downward scroll.
   @State private fabMode: string = 'compose';
   @StorageProp(STORAGE_KEY_HOME_FLOATING_ACTION) homeFloatingAction: string = HOME_FLOATING_COMPOSE;
+  @StorageProp(STORAGE_KEY_ME_FLOATING_ACTION) meFloatingAction: string = ME_FLOATING_PROFILE;
   @StorageProp(STORAGE_KEY_REFRESH_ON_FOREGROUND) refreshOnForeground: boolean = false;
   @StorageProp(STORAGE_KEY_REFRESH_ON_HOME_TAB) refreshOnHomeTab: boolean = false;
+  @StorageProp(STORAGE_KEY_HOME_SINGLE_TAP_TOP) homeSingleTapTop: boolean = true;
   @StorageProp(STORAGE_KEY_HOME_DOUBLE_TAP_LATEST) homeDoubleTapLatest: boolean = true;
   @StorageProp(STORAGE_KEY_HOME_PULL_REFRESH_LATEST) homePullRefreshLatest: boolean = true;
   @StorageProp(STORAGE_KEY_POST_MODERATION_REVISION) @Watch('onPostModerationChanged') private moderationRevision: number = 0;
@@ -804,7 +850,7 @@ struct Index {
   @State showMidAutumnGreeting: boolean = false;
   @StorageProp('harmonyx.window_width') @Watch('onHomeViewportChanged') windowWidth: number =
     AppStorage.get<number>('harmonyx.window_width') ?? 0;
-  @StorageProp('harmonyx.window_height') windowHeight: number =
+  @StorageProp('harmonyx.window_height') @Watch('onHomeViewportChanged') windowHeight: number =
     AppStorage.get<number>('harmonyx.window_height') ?? 0;
   @StorageProp('harmonyx.compact_window') @Watch('onCompactWindowChanged') private compactWindow: boolean = false;
   @StorageLink('harmonyx.breakpoint') @Watch('onBreakpointChange') breakpoint: string = ResponsiveLayout.BREAKPOINT_SM;
@@ -814,6 +860,8 @@ struct Index {
   private videoLayoutReleaseTimer: number = -1;
   @StorageLink('harmonyx.content_destination_open') @Watch('onContentDestinationChange')
   contentDestinationOpen: boolean = false;
+  @StorageProp(STORAGE_KEY_COVER_SINGLE_COLUMN) @Watch('onTimelineLayoutChanged') private coverSingleColumn: boolean = true;
+  @StorageProp(STORAGE_KEY_COVER_SCREEN_ACTIVE) @Watch('onTimelineLayoutChanged') private coverScreenActive: boolean = false;
   @StorageLink(STORAGE_KEY_TIMELINE_COLUMNS) @Watch('onTimelineLayoutChanged') timelineColumnsMode: number = 0;
   @State private desktopContentWidth: number = 0;
   @State mainNavigationMode: NavigationMode = NavigationMode.Stack;
@@ -834,6 +882,8 @@ struct Index {
   autoHideTabBar: boolean = false;
   @StorageLink(STORAGE_KEY_BOTTOM_BAR_PAGES) @Watch('onBottomBarPagesChanged')
   bottomBarPagesMask: number = DEFAULT_BOTTOM_BAR_PAGES_MASK;
+  @StorageProp(STORAGE_KEY_BOTTOM_TAB_ORDER) @Watch('onBottomBarPagesChanged') private bottomTabOrder: string = '';
+  @StorageProp(STORAGE_KEY_HOME_TAB_ORDER) @Watch('onHomeTabOrderChanged') private homeTabOrder: string = '';
   @StorageLink(STORAGE_KEY_CLASSIC_BOTTOM_BAR) @Watch('onClassicBottomBarChanged')
   classicBottomBar: boolean = false;
   @StorageLink(STORAGE_KEY_SPLIT_BOTTOM_BAR) @Watch('onClassicBottomBarChanged')
@@ -848,6 +898,7 @@ struct Index {
   @StorageLink(STORAGE_KEY_COMPOSE_BUTTON_ENABLED) composeButtonEnabled: boolean = true;
   @StorageProp(STORAGE_KEY_PHOTO_FULLSCREEN) private photoFullscreen: boolean = true;
   @State private tabBarHidden: boolean = false;
+  @State private titleBarHidden: boolean = false;
   @State private liquidTabRequestedPage: number = 0;
   @State private liquidTabMotion: RootLiquidTabMotion = new RootLiquidTabMotion();
   @StorageProp(SPACE_PLAYBACK_REVISION) spacePlaybackRevision: number = 0;
@@ -881,6 +932,8 @@ struct Index {
   private hdsTabsController: HdsTabsController = new HdsTabsController();
   private lastHomeTabClickAt: number = 0;
   @Provide('pageStack') navPathStack: NavPathStack = new NavPathStack();
+  @Provide('chatUnlockRequest') chatUnlockRequest: ChatUnlockRequest =
+    new ChatUnlockRequest((action: () => void): void => { this.requestChatUnlock(action); });
   private photoOverlayStack: NavPathStack = new NavPathStack();
   @State private photoOverlayOpen: boolean = false;
   private exitConfirmationPending: boolean = false;
@@ -1034,6 +1087,7 @@ struct Index {
   }
 
   aboutToDisappear(): void {
+    this.cancelSearchSuggestions();
     this.homePageAlive = false;
     this.clearVideoLayoutReleaseTimer();
     this.homePresentationRevision++;
@@ -1150,12 +1204,16 @@ struct Index {
   }
 
   private rootSplitActionVisible(): boolean {
-    return this.composeButtonEnabled && this.currentTab !== ME_TAB_INDEX &&
+    if (this.currentTab === ME_TAB_INDEX) {
+      return this.composeButtonEnabled && this.meFloatingAction !== ME_FLOATING_HIDDEN;
+    }
+    return this.composeButtonEnabled &&
       (this.currentTab !== HOME_TAB_INDEX || this.homeFloatingAction !== HOME_FLOATING_HIDDEN);
   }
 
   private rootSplitActionMode(): string {
     if (this.currentTab === EXPLORE_TAB_INDEX) { return 'search'; }
+    if (this.currentTab === ME_TAB_INDEX) { return this.meFloatingAction; }
     return this.currentTab === HOME_TAB_INDEX ? this.homeFloatingAction : 'compose';
   }
 
@@ -1164,14 +1222,33 @@ struct Index {
     if (mode === 'search') { return this.text($r('app.string.search_action')); }
     if (mode === 'top') { return this.text($r('app.string.split_navigation_action_top')); }
     if (mode === 'refresh') { return this.text($r('app.string.split_navigation_action_refresh')); }
+    if (mode === ME_FLOATING_PROFILE) { return this.text($r('app.string.side_profile')); }
+    if (mode === ME_FLOATING_ACCOUNTS) { return this.text($r('app.string.account_overview_manage')); }
+    if (mode === ME_FLOATING_SETTINGS) { return this.text($r('app.string.settings_title')); }
+    if (mode === ME_FLOATING_HELP) { return this.text($r('app.string.side_help')); }
     return this.text(this.currentTab === MESSAGES_TAB_INDEX ? $r('app.string.chat_new') :
       $r('app.string.split_navigation_action_compose'));
+  }
+
+  private rootSplitActionIcon(): Resource {
+    if (this.currentTab === ME_TAB_INDEX) {
+      if (this.meFloatingAction === ME_FLOATING_ACCOUNTS) { return $r('sys.symbol.person_2_badge_arrow_2_circlepath'); }
+      if (this.meFloatingAction === ME_FLOATING_SETTINGS) { return $r('sys.symbol.gearshape'); }
+      if (this.meFloatingAction === ME_FLOATING_HELP) { return $r('sys.symbol.questionmark_circle'); }
+      return $r('sys.symbol.person_crop_circle_fill');
+    }
+    return this.currentTab === MESSAGES_TAB_INDEX ? $r('sys.symbol.message_badge_plus') :
+      $r('sys.symbol.square_and_pencil');
   }
 
   private onRootSplitAction(): void {
     if (this.rootSplitActionMode() === 'search') { this.showSearchPage(); return; }
     if (this.rootSplitActionMode() === 'top') { this.scrollCurrentToTop(); return; }
     if (this.rootSplitActionMode() === 'refresh') { this.onRefresh(); return; }
+    if (this.rootSplitActionMode() === ME_FLOATING_PROFILE) { this.openOwnProfile(); return; }
+    if (this.rootSplitActionMode() === ME_FLOATING_ACCOUNTS) { this.openAccounts(); return; }
+    if (this.rootSplitActionMode() === ME_FLOATING_SETTINGS) { this.openSettings(); return; }
+    if (this.rootSplitActionMode() === ME_FLOATING_HELP) { this.openHelpCenter(); return; }
     if (this.currentTab === MESSAGES_TAB_INDEX) { this.openChatComposer(); return; }
     this.replyToId = '';
     this.replyToUser = '';
@@ -1277,37 +1354,45 @@ struct Index {
     }, (shortcut: InputShortcut): string => shortcut.id)
   }
 
-  private showSearchPage(): void {
+  private showSearchPage(query: string = ''): void {
     this.selectRootTabPage(EXPLORE_TAB_INDEX);
-    this.resetExploreSearchState();
-    this.getUIContext().animateTo({
-      curve: curves.interpolatingSpring(0, 1, 342, 38)
-    }, (): void => {
-      this.navPathStack.pushPath({ name: 'SearchHistoryPage' }, false);
-    });
+    const names: string[] = this.navPathStack.getAllPathName();
+    if (names[names.length - 1] !== 'SearchResultsPage' && names[names.length - 1] !== 'SearchHistoryPage') {
+      this.resetExploreSearchState();
+    }
+    this.loadSearchHistory();
+    this.onSearchInputChanged(query);
+    if (names[names.length - 1] !== 'SearchHistoryPage') {
+      this.navPathStack.pushPath({ name: 'SearchHistoryPage' });
+    }
   }
 
   private showSearchResultsPage(): void {
     this.selectRootTabPage(EXPLORE_TAB_INDEX);
-    this.getUIContext().animateTo({
-      curve: curves.interpolatingSpring(0, 1, 342, 38)
-    }, (): void => {
-      this.navPathStack.pushPath({ name: 'SearchResultsPage' }, false);
-    });
+    this.getUIContext().getFocusController().clearFocus();
+    const names: string[] = this.navPathStack.getAllPathName();
+    // Editing an existing search opens a separate input destination. Submit
+    // returns to its result destination rather than stacking duplicate pages.
+    if (names[names.length - 1] === 'SearchHistoryPage' && names[names.length - 2] === 'SearchResultsPage') {
+      this.navPathStack.pop();
+    } else if (names[names.length - 1] !== 'SearchResultsPage') {
+      this.navPathStack.pushPath({ name: 'SearchResultsPage' });
+    }
   }
 
   private closeSearchPage(): void {
-    this.getUIContext().animateTo({
-      curve: curves.interpolatingSpring(0, 1, 342, 38)
-    }, (): void => {
-      this.navPathStack.pop(false);
-    });
+    this.getUIContext().getFocusController().clearFocus();
+    this.navPathStack.pop();
   }
 
   private closeSearchHistoryPage(): void {
-    this.resetExploreSearchState();
+    const names: string[] = this.navPathStack.getAllPathName();
+    const returnToResults: boolean = names[names.length - 2] === 'SearchResultsPage';
+    this.cancelSearchSuggestions();
+    this.searchEntryText = '';
+    if (!returnToResults) { this.resetExploreSearchState(); }
     this.closeSearchPage();
-    this.restoreExploreHomeTop();
+    if (!returnToResults) { this.restoreExploreHomeTop(); }
   }
 
   private closeSearchResultsPage(): void {
@@ -1327,6 +1412,8 @@ struct Index {
   }
 
   private resetExploreSearchState(): void {
+    this.cancelSearchSuggestions();
+    this.searchEntryText = '';
     this.searchText = '';
     this.activeExploreQuery = '';
     this.exploreResults = [];
@@ -1373,6 +1460,10 @@ struct Index {
     if (rawUrl.length === 0) {
       return;
     }
+    if (/^(https:\/\/(?:www\.)?(?:x|twitter)\.com\/i\/jf\/|twitter:\/\/jetfuel\/)?global-trending(?:[/?#]|$)/.test(rawUrl)) {
+      this.openRootContent({ name: 'GlobalTrends' });
+      return;
+    }
     const trendingPrefix: string = 'twitter://trending/';
     if (rawUrl.indexOf(trendingPrefix) === 0) {
       this.openIncomingXLink('https://x.com/i/trending/' + rawUrl.substring(trendingPrefix.length));
@@ -1386,14 +1477,12 @@ struct Index {
   }
 
   private submitSearchFromHeader(value: string, inResults: boolean): void {
+    const query: string = value.trim();
+    if (query.length === 0) { return; }
+    this.submitSearch(query, 'typed_query');
     if (inResults) {
-      this.submitSearch(value, 'typed_query');
+      this.getUIContext().getFocusController().clearFocus();
     } else {
-      const query: string = value.trim();
-      if (query.length === 0) {
-        return;
-      }
-      this.submitSearch(query, 'typed_query');
       this.showSearchResultsPage();
     }
   }
@@ -1402,11 +1491,27 @@ struct Index {
     return ResponsiveLayout.isLarge(this.videoLayoutBreakpoint || this.breakpoint);
   }
 
+  private startupAdAllowed(): boolean {
+    return !this.showOnboardingGuide && !this.showLoginSheet && !this.showChatUnlock &&
+      !this.showMidAutumnGreeting && !this.photoOverlayOpen && !this.showLinkPreview &&
+      !this.showSpacePreview && !this.showPauseTopics && !this.showFollowingOrder && !this.showHomeSourceOptions &&
+      !(this.showSideDrawer && !this.isLargeScreen()) && this.externalShareRequest.length === 0 &&
+      (this.startupFromForeground || (this.currentTab === HOME_TAB_INDEX &&
+        !this.contentDestinationOpen && this.navPathStack.size() === 0));
+  }
+
+  private onSplashOpenRequested(): void {
+    if (!this.homePageAlive || this.splashOpenRequest <= 0 || this.showStartupCover) { return; }
+    this.startupFromForeground = true;
+    if (!this.startupAdAllowed()) { this.startupFromForeground = false; return; }
+    this.showStartupCover = true;
+  }
+
   private popupHostBlocked(): boolean {
     // A large-screen rail is persistent navigation, not a modal surface. It
     // must not suppress the recommendation sheet while the narrow overlay
     // drawer still needs to keep the sheet behind it.
-    return !this.homeFeedPresented || this.showOnboardingGuide || this.showLoginSheet || this.showMidAutumnGreeting ||
+    return this.showStartupCover || !this.homeFeedPresented || this.showOnboardingGuide || this.showLoginSheet || this.showMidAutumnGreeting ||
       this.showChatUnlock || this.showLinkPreview || (this.showSideDrawer && !this.isLargeScreen()) ||
       this.contentDestinationOpen || this.photoOverlayOpen || this.showSpacePreview ||
       this.showPauseTopics || this.showFollowingOrder || this.showHomeSourceOptions;
@@ -1421,6 +1526,11 @@ struct Index {
   }
 
   onBackPress(): boolean {
+    if (this.showStartupCover) {
+      this.showStartupCover = false;
+      this.startupFromForeground = false;
+      return true;
+    }
     if (!this.isLargeScreen() && this.showSideDrawer) {
       this.showSideDrawer = false;
       return true;
@@ -1465,6 +1575,12 @@ struct Index {
   }
 
   private effectiveTimelineColumns(): number {
+    if (this.timelineColumnsMode === TIMELINE_COLUMNS_AUTO_TWO) {
+      if (this.coverScreenActive) { return 1; }
+      return this.isDesktopLayout() || this.isLargeScreen() ||
+        (this.windowWidth > 0 && this.windowHeight > 0 && this.windowWidth > this.windowHeight) ? 2 : 1;
+    }
+    if (this.coverSingleColumn && this.coverScreenActive) { return 1; }
     if (this.isDesktopLayout()) {
       return DesktopLayout.timelineColumns(this.timelineColumnsMode, this.desktopContentWidth);
     }
@@ -1504,10 +1620,15 @@ struct Index {
     return '1fr';
   }
 
+  private timelineWaterFlowLayoutMode(): WaterFlowLayoutMode {
+    return this.isDesktopLayout() ? WaterFlowLayoutMode.ALWAYS_TOP_DOWN : WaterFlowLayoutMode.SLIDING_WINDOW;
+  }
+
   private useTimelineWaterFlow(): boolean {
     // A split changes the column count, not the mounted scroll container.
     // Switching WaterFlow to List destroys the visible post/media subtree.
-    return this.isLargeScreen() || this.timelineColumnsMode === TIMELINE_COLUMNS_TWO;
+    return this.isLargeScreen() || this.timelineColumnsMode === TIMELINE_COLUMNS_TWO ||
+      this.timelineColumnsMode === TIMELINE_COLUMNS_AUTO_TWO;
   }
 
   private homeFlowItems(): number[] {
@@ -1844,8 +1965,8 @@ struct Index {
     const source: Tweet[] = index === this.homeTabIndex() ? this.timeline : this.homeSnapshotAt(index).timeline;
     const filtered: Tweet[] = contentFilterStore.filter(source, this.contentFilterSettings())
       .filter((tweet: Tweet): boolean => !postModerationStore.hidden(tweet) &&
-        (index !== 0 || !this.onlySensitiveForYou || isSensitivePost(tweet)));
-    return index >= 2 ? filtered : homeTimelineStore.present(filtered, index === 0);
+        (this.homeModeAt(index) !== 0 || !this.onlySensitiveForYou || isSensitivePost(tweet)));
+    return this.homeModeAt(index) >= 2 ? filtered : homeTimelineStore.present(filtered, this.homeModeAt(index) === 0);
   }
 
   private onHomeListsChanged(): void {
@@ -1917,9 +2038,10 @@ struct Index {
     this.homePager.changeIndex(this.homeTabIndex(), false);
   }
 
-  private openHomeTimelineOptions(mode: number): void {
+  private openHomeTimelineOptions(index: number): void {
+    const mode: number = this.homeModeAt(index);
     if (mode >= 2) {
-      this.selectedHomeSource = this.pinnedHomeTopics[mode - 2] ?? null;
+      this.selectedHomeSource = homeTimelineStore.topicById(this.tabKey(index));
       this.showHomeSourceOptions = this.selectedHomeSource !== null;
       return;
     }
@@ -2058,7 +2180,8 @@ struct Index {
       return 12;
     }
     return RootTitleBarLayout.contentTopInset(this.currentTab, this.useTitleBarLogo(),
-      this.statusBarHeight, false, 0, this.rootTitleBarContentClearance());
+      this.statusBarHeight, false, 0, this.rootTitleBarContentClearance(),
+      this.exploreLayoutDimension($r('app.float.explore_search_categories_gap')));
   }
 
   private useTitleBarLogo(): boolean {
@@ -2069,7 +2192,7 @@ struct Index {
     if (this.videoLayoutBreakpoint.length > 0) { return; }
     this.beginHomeViewportChange();
     this.homeHeaderCollapsed = false;
-    this.setTabBarHidden(false);
+    this.setChromeHidden(false);
     this.fabHidden = false;
   }
 
@@ -2163,7 +2286,8 @@ struct Index {
     }
     // Used only before the first intrinsic header measurement arrives.
     return RootTitleBarLayout.contentTopInset(EXPLORE_TAB_INDEX, this.useTitleBarLogo(),
-      this.statusBarHeight, false, 0, this.rootTitleBarContentClearance());
+      this.statusBarHeight, false, 0, this.rootTitleBarContentClearance(),
+      this.exploreLayoutDimension($r('app.float.explore_search_categories_gap')));
   }
 
   private messagesContentTopInset(): number {
@@ -2187,7 +2311,8 @@ struct Index {
         this.exploreNativeTitleHeight);
     }
     return RootTitleBarLayout.bottomHeight(this.chromeTab, this.useTitleBarLogo(),
-      this.homeHeaderCollapsed, this.homeSpaceHeight(), this.activeExploreQuery.length > 0);
+      this.homeHeaderCollapsed, this.homeSpaceHeight(), this.activeExploreQuery.length > 0,
+      this.exploreLayoutDimension($r('app.float.explore_search_categories_gap')));
   }
 
   // The floating tab bar is drawn on top of the feed instead of taking its own
@@ -2312,7 +2437,7 @@ struct Index {
     this.hdsTabsController.unbindScroller(this.messagesScroller);
     this.hdsTabsController.unbindScroller(this.profileScroller);
     let tabIndex: number = 0;
-    for (let pageIndex: number = 0; pageIndex < BOTTOM_BAR_PAGE_COUNT; pageIndex++) {
+    for (const pageIndex of this.classicBottomBarPages()) {
       if (!this.isBottomBarPageEnabled(pageIndex)) {
         continue;
       }
@@ -2350,51 +2475,16 @@ struct Index {
   }
 
   private bottomBarPageIndex(pageIndex: number): number {
-    let visibleIndex: number = 0;
-    for (let candidate: number = 0; candidate < BOTTOM_BAR_PAGE_COUNT; candidate++) {
-      if (!this.isBottomBarPageEnabled(candidate)) {
-        continue;
-      }
-      if (candidate === pageIndex) {
-        return visibleIndex;
-      }
-      visibleIndex++;
-    }
-    return 0;
+    return Math.max(0, this.classicBottomBarPages().indexOf(pageIndex));
   }
 
-  private countBottomBarPages(): number {
-    let count: number = 0;
-    for (let pageIndex: number = 0; pageIndex < BOTTOM_BAR_PAGE_COUNT; pageIndex++) {
-      if (this.isBottomBarPageEnabled(pageIndex)) {
-        count++;
-      }
-    }
-    return count;
-  }
+  private countBottomBarPages(): number { return this.classicBottomBarPages().length; }
 
   private bottomBarPageAt(visibleIndex: number): number {
-    let visiblePageIndex: number = 0;
-    for (let pageIndex: number = 0; pageIndex < BOTTOM_BAR_PAGE_COUNT; pageIndex++) {
-      if (!this.isBottomBarPageEnabled(pageIndex)) {
-        continue;
-      }
-      if (visiblePageIndex === visibleIndex) {
-        return pageIndex;
-      }
-      visiblePageIndex++;
-    }
-    return this.firstBottomBarPage();
+    return this.classicBottomBarPages()[visibleIndex] ?? this.firstBottomBarPage();
   }
 
-  private firstBottomBarPage(): number {
-    for (let pageIndex: number = 0; pageIndex < BOTTOM_BAR_PAGE_COUNT; pageIndex++) {
-      if (this.isBottomBarPageEnabled(pageIndex)) {
-        return pageIndex;
-      }
-    }
-    return HOME_TAB_INDEX;
-  }
+  private firstBottomBarPage(): number { return this.classicBottomBarPages()[0] ?? HOME_TAB_INDEX; }
 
   private selectRootTabPage(pageIndex: number): void {
     const targetPage: number = this.isDesktopLayout() || this.isBottomBarPageEnabled(pageIndex) ? pageIndex : this.firstBottomBarPage();
@@ -2409,28 +2499,35 @@ struct Index {
     if (!this.isBottomBarPageEnabled(this.currentTab)) {
       this.selectRootTabPage(this.firstBottomBarPage());
     }
+    this.getUIContext().postFrameCallback(new HomeViewportFrameCallback((): void => {
+      if (this.usesFloatingTabBar()) { this.hdsTabsController.changeIndex(this.bottomBarPageIndex(this.currentTab)); }
+      else { this.tabsController.changeIndex(this.bottomBarPageIndex(this.currentTab)); }
+    }));
   }
 
-  // 显示设置 → 自动隐藏顶部标题栏。HdsNavigation 已经通过 bindToScrollable
-  // 绑定了五个 tab 的滚动控制器，所以这里只需要给参数：开关关闭时所有字段都为
-  // false，等于保持原来的常显行为。
-  //
-  // HideMode.SCROLL_UP 是"方向"触发：内容向上滚动（往下看）就收起，手指反向
-  // 一滑就立刻展开。SCROLL_UP_TO 是按滚动位置的渐隐模式，那种模式要退回列表
-  // 顶部标题栏才会完整出现，和"自动隐藏"的预期相反。
-  private titleBarHideParams(): DynamicHideParams {
-    if (this.currentTab === ME_TAB_INDEX || this.isDesktopLayout() || (!this.autoHideTitleBar && !this.compactWindow)) {
-      return {
-        hideTitleArea: false,
-        hideBottomBuilder: false,
-        hideStatusBar: false
-      };
-    }
+  private onHomeTabOrderChanged(): void {
+    this.homeTabPosition = this.homeTabIndex();
+    this.syncHomeWaterFlowSections();
+    this.bindHdsTabScrollers();
+    this.getUIContext().postFrameCallback(new HomeViewportFrameCallback((): void => {
+      this.homePager.changeIndex(this.homeTabIndex(), false);
+    }));
+  }
+
+  // Same structure as the Yunshang reference: scrolling drives one shared
+  // chrome state, and HdsNavigation owns the title-bar inset animation.
+  private titleBarShouldHide(): boolean {
+    return this.currentTab === ME_TAB_INDEX ||
+      (this.titleBarHidden && (this.autoHideTitleBar || this.compactWindow) && !this.isDesktopLayout());
+  }
+
+  private titleBarDynamicHideParams(): DynamicHideParams {
+    const hidden: boolean = this.titleBarShouldHide() && this.currentTab !== ME_TAB_INDEX;
     return {
-      hideTitleArea: true,
-      // Keep the outgoing title-bar layout until the tab transition settles;
-      // otherwise HdsNavigation tears down and recreates this material bar.
-      hideBottomBuilder: !(this.chromeTabSettled === 1 && this.activeExploreQuery.length === 0),
+      hideTitleArea: hidden,
+      hideBottomBuilder: hidden,
+      // Keep the status-bar band mounted so HDS can render its immersive
+      // gradient blur after the title content has collapsed.
       hideStatusBar: false,
       mode: HideMode.SCROLL_UP
     };
@@ -2455,22 +2552,24 @@ struct Index {
   // scrollOffset is the per-frame delta used by the feed lists: positive while
   // the reader heads deeper, negative as soon as they scroll back up.
   private onChromeScroll(scrollOffset: number): void {
-    if (scrollOffset === 0 || (!this.autoHideTabBar && !this.compactWindow) || !this.supportsHdsFloatingMaterial()) {
+    if (scrollOffset === 0 || (!this.autoHideTitleBar && !this.autoHideTabBar && !this.compactWindow)) {
       return;
     }
-    if (scrollOffset < 0) {
-      this.setTabBarHidden(false);
+    if (scrollOffset <= -TAB_BAR_HIDE_DEPTH) {
+      this.setChromeHidden(false);
       return;
     }
-    this.setTabBarHidden(this.currentTabScrollOffset() > TAB_BAR_HIDE_DEPTH);
+    if (scrollOffset >= TAB_BAR_HIDE_DEPTH) {
+      this.setChromeHidden(true);
+    }
   }
 
   private onChromeScrollStop(): void {
-    if ((!this.autoHideTabBar && !this.compactWindow) || !this.supportsHdsFloatingMaterial()) {
+    if (!this.autoHideTitleBar && !this.autoHideTabBar && !this.compactWindow) {
       return;
     }
-    if (this.currentTabScrollOffset() <= TAB_BAR_HIDE_DEPTH) {
-      this.setTabBarHidden(false);
+    if (this.currentTabScrollOffset() <= CHROME_TOP_REVEAL_DEPTH) {
+      this.setChromeHidden(false);
     }
   }
 
@@ -2494,10 +2593,20 @@ struct Index {
     }
   }
 
+  private setChromeHidden(hidden: boolean): void {
+    this.setTitleBarHidden(hidden);
+    this.setTabBarHidden(hidden);
+  }
+
+  private setTitleBarHidden(hidden: boolean): void {
+    this.titleBarHidden = hidden && !this.isDesktopLayout() && (this.autoHideTitleBar || this.compactWindow);
+  }
+
   // 显示设置 → 自动隐藏底部导航栏。动效由 HdsTabsController 提供，页面只负责
   // 判断方向；隐藏状态同时驱动未读红点的显隐。
   private setTabBarHidden(hidden: boolean): void {
-    const wantHidden: boolean = hidden && (this.autoHideTabBar || this.compactWindow) && this.supportsHdsFloatingMaterial();
+    const floatingBarReady: boolean = !this.usesFloatingTabBar() || this.supportsHdsFloatingMaterial();
+    const wantHidden: boolean = hidden && (this.autoHideTabBar || this.compactWindow) && floatingBarReady;
     if (this.tabBarHidden === wantHidden) {
       return;
     }
@@ -2658,8 +2767,8 @@ struct Index {
   }
 
   private homeSnapshotAt(index: number): HomeFeedSnapshot {
-    const topicId: string = this.pinnedHomeTopics[index - 2]?.id ?? '';
-    if (index >= 2 && topicId.length > 0) {
+    const topicId: string = this.homeModeAt(index) >= 2 ? this.tabKey(index) : '';
+    if (topicId.length > 0) {
       const saved: HomeFeedSnapshot | undefined = this.topicSnapshots.get(topicId);
       if (saved !== undefined) {
         return saved;
@@ -2668,7 +2777,7 @@ struct Index {
       this.topicSnapshots.set(topicId, snapshot);
       return snapshot;
     }
-    return index === 0 ? this.forYouSnapshot : this.followingSnapshot;
+    return this.homeModeAt(index) === 0 ? this.forYouSnapshot : this.followingSnapshot;
   }
 
   private activeFeedSnapshot(): HomeFeedSnapshot { return this.homeSnapshotAt(this.homeTabIndex()); }
@@ -4895,15 +5004,9 @@ struct Index {
     if (step === 0) {
       return;
     }
-    const activeIndex: number = this.activeHomeTopicId.length === 0 ? this.homeFeedMode :
-      this.pinnedHomeTopics.findIndex((topic: TimelineTopic): boolean => topic.id === this.activeHomeTopicId) + 2;
-    const nextMode: number = activeIndex + step;
-    if (nextMode >= 0 && nextMode <= 1) {
-      this.changeHomeFeed(nextMode);
-      return;
-    }
-    if (nextMode >= 2 && nextMode < this.pinnedHomeTopics.length + 2) {
-      this.selectHomeTopic(this.pinnedHomeTopics[nextMode - 2]);
+    const nextIndex: number = this.homeTabIndex() + step;
+    if (nextIndex >= 0 && nextIndex < this.homeTabItems().length) {
+      this.selectHomeTabAt(nextIndex);
       return;
     }
     this.switchRootTabByStep(step);
@@ -4981,6 +5084,85 @@ struct Index {
     const param: UserDetailRouteParam = { author: author, posts: [] };
     this.openContentDestination();
     this.navPathStack.pushPath({ name: 'UserDetail', param: param });
+  }
+
+  private openSearchUser(row: UserRow, clearInput: boolean = false): void {
+    const context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
+    this.searchRecentUsers = searchHistoryStore.addUser(context, row);
+    if (clearInput) {
+      this.cancelSearchSuggestions();
+      this.searchEntryText = '';
+    }
+    this.getUIContext().getFocusController().clearFocus();
+    this.openUserRow(row);
+  }
+
+  private cancelSearchSuggestions(): void {
+    this.searchSuggestionRevision++;
+    if (this.searchSuggestionTimer >= 0) {
+      clearTimeout(this.searchSuggestionTimer);
+      this.searchSuggestionTimer = -1;
+    }
+    this.searchSuggestionLoading = false;
+    this.searchSuggestionFailed = false;
+    this.searchSuggestionTopics = [];
+    this.searchSuggestionUsers = [];
+  }
+
+  private onSearchInputChanged(value: string): void {
+    this.searchEntryText = value;
+    this.cancelSearchSuggestions();
+    const query: string = value.trim();
+    if (query.length === 0 || !this.xPrivate.isSignedIn()) { return; }
+    this.searchSuggestionLoading = true;
+    const revision: number = this.searchSuggestionRevision;
+    const session: number = this.xPrivate.sessionGeneration();
+    this.searchSuggestionTimer = setTimeout((): void => {
+      this.searchSuggestionTimer = -1;
+      void this.loadSearchSuggestions(query, revision, session);
+    }, 250);
+  }
+
+  private async loadSearchSuggestions(query: string, revision: number, session: number): Promise<void> {
+    try {
+      const result: XPrivateResult = await this.xPrivate.searchSuggestions(query);
+      if (!this.isCurrentSearchSuggestion(query, revision, session)) { return; }
+      if (result.ok) {
+        const page: SearchSuggestions = XSearchSuggestionParser.parse(result.body);
+        this.searchSuggestionTopics = page.topics;
+        this.searchSuggestionUsers = page.users;
+      } else {
+        // Older sessions can still use the existing People timeline operation.
+        const fallback: XPrivateResult = await this.xPrivate.searchTimeline(query, '', 10, 'People', 'typed_query');
+        if (!this.isCurrentSearchSuggestion(query, revision, session)) { return; }
+        const fallbackPage: UserListPage | null = fallback.ok ? XTimelineParser.parseUserList(fallback.body) : null;
+        this.searchSuggestionUsers = fallbackPage !== null ? fallbackPage.users.slice(0, 10) : [];
+        this.searchSuggestionFailed = !fallback.ok;
+      }
+    } catch (error) {
+      if (this.isCurrentSearchSuggestion(query, revision, session)) { this.searchSuggestionFailed = true; }
+    } finally {
+      if (this.isCurrentSearchSuggestion(query, revision, session)) { this.searchSuggestionLoading = false; }
+    }
+  }
+
+  private isCurrentSearchSuggestion(query: string, revision: number, session: number): boolean {
+    return revision === this.searchSuggestionRevision && session === this.xPrivate.sessionGeneration() &&
+      query === this.searchEntryText.trim();
+  }
+
+  private searchEntryTopics(): string[] {
+    const query: string = this.searchEntryText.trim().toLowerCase();
+    if (this.searchSuggestionTopics.length > 0) { return this.searchSuggestionTopics; }
+    return this.searchHistory.concat(this.trends).filter((term: string, index: number, terms: string[]): boolean =>
+      term.toLowerCase().includes(query) && terms.indexOf(term) === index).slice(0, 3);
+  }
+
+  private selectSearchEntryTerm(term: string, fromHistory: boolean): void {
+    const query: string = term.trim();
+    if (query.length === 0) { return; }
+    this.submitSearch(query, fromHistory ? 'recent_search_click' : 'typed_query');
+    this.showSearchResultsPage();
   }
 
   private async applyRowFollow(row: UserRow, next: boolean): Promise<boolean> {
@@ -5328,6 +5510,8 @@ struct Index {
     const source: MediaViewerSource | undefined = requestedSource ?? pendingMediaViewerSource.take(media.id);
     const param: VideoFeedRouteParam = {
       tweets: [tweet],
+      sourceProfileId: this.currentTab === ME_TAB_INDEX && this.navPathStack.size() === 0 ?
+        authStore.getUserId() : undefined,
       sourceTweetIds: [...this.timeline, ...this.exploreResults, ...this.ownPosts, ...this.likedPosts]
         .map((post: Tweet): string => post.id),
       index: 0,
@@ -5783,14 +5967,8 @@ struct Index {
         onRepost: (target: Tweet, reposted: boolean): Promise<boolean> => this.onRepost(target, reposted),
         onReply: (target: Tweet): void => this.onReply(target)
       };
-      if ((this.isDesktopLayout() && this.photoFullscreen) || this.photoOverlayOpen) {
-        param.windowOverlay = true;
-        this.photoOverlayOpen = true;
-        this.photoOverlayStack.pushPath({ name: 'PhotoViewer', param: param }, payload.source === undefined);
-      } else {
-        if (payload.source === undefined) { this.openContentDestination(); }
-        this.navPathStack.pushPath({ name: 'PhotoViewer', param: param }, payload.source === undefined);
-      }
+      if (payload.source === undefined) { this.openContentDestination(); }
+      this.navPathStack.pushPath({ name: 'PhotoViewer', param: param }, payload.source === undefined);
     } catch (error) {
       // A malformed request is not worth interrupting the reader for.
     }
@@ -5815,6 +5993,7 @@ struct Index {
   private loadSearchHistory(): void {
     const context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
     this.searchHistory = searchHistoryStore.load(context);
+    this.searchRecentUsers = searchHistoryStore.loadUsers(context);
   }
 
   private scrollCurrentToTop(): void {
@@ -6108,7 +6287,14 @@ struct Index {
       latestSequenceId: message.latestSequenceId ?? ''
     };
     if (this.isDesktopLayout()) {
-      while (this.navPathStack.size() > 0) { this.navPathStack.pop(false); }
+      // Establish split mode before navigating and replace just the detail
+      // branch. Emptying the stack switches back to Stack mid-selection.
+      this.desktopRoute = 'DmConversation';
+      this.updateNavigationMode();
+      RootContentNavigation.open(this.navPathStack, { name: 'DmConversation', param: param }, true,
+        (existing: Object): boolean => (existing as DmConversationRouteParam).conversationId === conversationId);
+      this.syncDesktopRoute();
+      return;
     }
     this.navPathStack.pushPath({ name: 'DmConversation', param: param });
   }
@@ -6215,9 +6401,8 @@ struct Index {
       if (!this.showChatUnlock || account !== xPrivateStore.load(context).cacheIdentity()) { return; }
       await xChatService.unlock(pin);
       if (!this.showChatUnlock || account !== xPrivateStore.load(context).cacheIdentity()) { return; }
-      // Hydrate verified conversation keys before the deferred read receipt.
-      await this.loadMessages();
-      if (!this.showChatUnlock || account !== xPrivateStore.load(context).cacheIdentity()) { return; }
+      // Identity recovery is enough to sign deletion. An inbox refresh can
+      // fail or be rate limited independently of a successful PIN recovery.
       this.chatUnlockSucceeded = true;
       this.showChatUnlock = false;
     } catch (error) {
@@ -6355,8 +6540,9 @@ struct Index {
     this.updateNavigationMode();
     this.scheduleChromeTab(index, changed);
     this.fabHidden = false;
-    // A tab switch lands on a fresh list, so the bar always comes back.
-    this.setTabBarHidden(false);
+    // A tab switch lands on a fresh list, so both scrolling chrome surfaces
+    // come back together.
+    this.setChromeHidden(false);
     if (changed && index === HOME_TAB_INDEX && this.refreshOnHomeTab && this.navPathStack.size() === 0) {
       this.onRefresh(true);
     }
@@ -6382,6 +6568,12 @@ struct Index {
     if (this.bottomBarPageAt(visibleIndex) !== HOME_TAB_INDEX) {
       this.lastHomeTabClickAt = 0;
       return;
+    }
+    if (this.homeSingleTapTop && this.navPathStack.size() === 0) {
+      this.getHomeScroller().scrollEdge(Edge.Top);
+      this.scrollDepth = 0;
+      this.fabHidden = false;
+      this.setChromeHidden(false);
     }
     const now: number = Date.now();
     if (this.lastHomeTabClickAt > 0 && now - this.lastHomeTabClickAt <= HOME_TAB_DOUBLE_TAP_INTERVAL_MS) {
@@ -6519,6 +6711,7 @@ struct Index {
   // otherwise the reader briefly sees the previous account's posts, mentions
   // and profile.
   private onAccountsChanged(): void {
+    this.cancelSearchSuggestions();
     this.homeFeedPresented = false;
     this.homePresentationPending = false;
     this.homePresentationRevision++;
@@ -6608,6 +6801,30 @@ struct Index {
     .position({ x: 0, y: this.homeContentTopInset() + 8 })
     .zIndex(12)
     .transition(TransitionEffect.OPACITY.animation({ duration: 180, curve: Curve.EaseOut }))
+  }
+
+  private videoDownloadNoticeTopInset(): number {
+    const rootVisible: boolean = this.navPathStack.size() === 0 && !this.photoOverlayOpen;
+    let top: number = this.statusBarHeight + 56;
+    if (rootVisible) {
+      if (this.currentTab === HOME_TAB_INDEX) { top = this.homeContentTopInset(); }
+      else if (this.currentTab === EXPLORE_TAB_INDEX) { top = this.exploreContentTopInset(); }
+      else if (this.currentTab === NOTIFICATIONS_TAB_INDEX) { top = this.notificationsContentTopInset(); }
+      else if (this.currentTab === MESSAGES_TAB_INDEX) { top = this.messagesContentTopInset(); }
+      if (this.isDesktopLayout()) { top = 64; }
+    }
+    return top + 8;
+  }
+
+  private videoDownloadNoticeRowOffset(): number {
+    if (this.navPathStack.size() > 0 || this.photoOverlayOpen) { return 0; }
+    const homeCapsule: boolean = this.isHomeChromeVisible() && this.pendingNewPosts.length > 0;
+    const refreshing: boolean = this.currentTab === HOME_TAB_INDEX ? this.refreshing || this.homeRefreshPullOffset > 0 :
+      this.currentTab === EXPLORE_TAB_INDEX ? this.exploreHomeRefreshing || this.exploreRefreshPullOffset > 0 :
+      this.currentTab === NOTIFICATIONS_TAB_INDEX ? this.notificationsRefreshing || this.notificationsRefreshPullOffset > 0 :
+      this.currentTab === MESSAGES_TAB_INDEX ? this.messagesRefreshing || this.messagesRefreshPullOffset > 0 :
+      this.meRefreshing || this.meRefreshPullOffset > 0;
+    return refreshing ? 72 : homeCapsule ? 52 : 0;
   }
 
   private isDesktopLayout(): boolean {
@@ -6912,6 +7129,8 @@ struct Index {
       } else if (this.currentTab === EXPLORE_TAB_INDEX) {
         Search({ value: this.searchText, placeholder: $r('app.string.search_placeholder') })
           .width('calc(100% - 32vp)').height(this.exploreSearchHeight()).margin({ top: 8, bottom: 8 })
+          .borderRadius(this.exploreSearchRadius()).clip(true)
+          .textFont({ size: $r('app.float.page_search_font_size'), family: this.appFontFamily })
           .backgroundColor(this.themedFieldSurface()).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, this.themedFieldSurface()))
           .onChange((value: string): void => { this.searchText = value; })
           .onSubmit((value: string): void => this.submitSearchFromHeader(value, false))
@@ -7188,17 +7407,19 @@ struct Index {
       }
       .customNavContentTransition((from: NavContentInfo, to: NavContentInfo,
         operation: NavigationOperation): NavigationAnimatedTransition | undefined =>
-        officialPageTransition(this.getUIContext(), this.rootPageMotion, this.pageTransitionMode, from, to, operation))
+        mediaViewerNavigationTransition(from, operation) ??
+        (this.mainNavigationMode === NavigationMode.Split ? undefined :
+          officialPageTransition(this.getUIContext(), this.rootPageMotion, this.pageTransitionMode, from, to, operation)))
       .direction(isAppRtl(this.appLocale) ? Direction.Rtl : Direction.Ltr)
       .titleBar(this.rootTitleBarOptions())
       .titleMode(HdsNavigationTitleMode.MINI)
       .hideTitleBar(this.currentTab === ME_TAB_INDEX)
       .mode(this.mainNavigationMode)
-      .enableModeChangeAnimation(true)
+      .enableModeChangeAnimation(!this.isDesktopLayout() || this.currentTab !== MESSAGES_TAB_INDEX)
       .navBarWidth(this.isDesktopLayout() ? 360 : 480)
       .minContentWidth(this.compactWindow ? 0 : 360)
       .hideBackButton(true)
-      .dynamicHideTitleBar(this.titleBarHideParams())
+      .dynamicHideTitleBar(this.titleBarDynamicHideParams())
       .bindToScrollable(this.rootScrollableControllers())
       // Named so the picture-in-picture controller can restore this page.
       .id(MAIN_NAVIGATION_ID)
@@ -7252,7 +7473,7 @@ struct Index {
       .backgroundColor(pageCanvasColor(this.displayMode, this.darkSurface, this.pageBackgroundValue))
       .title(this.RootNavigationTitle())
       .titleMode(NavigationTitleMode.Mini)
-      .hideTitleBar(this.currentTab === ME_TAB_INDEX)
+      .hideTitleBar(this.titleBarShouldHide())
       .mode(NavigationMode.Stack)
       .hideBackButton(true)
       .id(MAIN_NAVIGATION_ID)
@@ -7351,6 +7572,7 @@ struct Index {
       // 半模态以宿主节点 id 作为 key（引擎侧 SheetKey(targetId)），一个节点只能挂一个。
       // 同一节点上排在后面的 bindSheet(isShow = false) 会把前面刚拉起来的弹窗直接关掉，
       // 所以登录、引导与中秋弹窗各挂一个零尺寸宿主节点，根节点只保留链接预览。
+      PostTranslationOptionsHost()
       XXAuthPopupHost({ blocked: this.popupHostBlocked() })
       Column().width(0).height(0)
         .bindSheet($$this.showSpacePreview, this.SpacePreviewContent(), sheetMaterialOptions({
@@ -7390,6 +7612,7 @@ struct Index {
         .height(0)
         .bindSheet($$this.showMidAutumnGreeting, this.MidAutumnGreetingSheet(), sheetMaterialOptions(this.midAutumnGreetingSheetOptions(), this.sheetMaterialEnabled, this.sheetMaterialLevel, this.sheetWindowBreakpoint, this.compactWindow))
 
+      if (!this.showStartupCover) {
       Row().width(0).height(0)
         .bindSheet($$this.showOnboardingGuide, this.OnboardingSheetContent(), sheetMaterialOptions({
           width: 760,
@@ -7402,6 +7625,7 @@ struct Index {
           showClose: false,
           onDisappear: (): void => { this.showOnboardingGuide = false; }
         }, this.sheetMaterialEnabled, this.sheetMaterialLevel, this.sheetWindowBreakpoint, this.compactWindow))
+      }
 
       Column().width(0).height(0)
         .bindSheet($$this.showPauseTopics, this.PauseTopicsSheetContent(), sheetMaterialOptions({
@@ -7441,11 +7665,26 @@ struct Index {
 
       this.RootInputBindings()
 
-      PhotoViewerOverlay({ pageStack: this.photoOverlayStack, active: this.photoOverlayOpen,
-        destinationBuilder: this.NavigationBuilder })
-        .visibility(this.photoOverlayOpen ? Visibility.Visible : Visibility.Hidden)
-        .hitTestBehavior(this.photoOverlayOpen ? HitTestMode.Default : HitTestMode.None)
-        .zIndex(50)
+      // Position the page's direct child, just like NewPostsCapsule. Positioning
+      // inside a custom component leaves its outer common wrapper centered.
+      Row() {
+        VideoDownloadNotice({ rowOffset: this.videoDownloadNoticeRowOffset(), availableWidth: this.windowWidth })
+      }
+      .width('100%').justifyContent(FlexAlign.Center)
+      .height($r('app.float.video_download_notice_height'))
+      .position({ x: 0, y: this.videoDownloadNoticeTopInset() })
+      .hitTestBehavior(HitTestMode.Transparent).zIndex(60)
+
+      if (this.showStartupCover) {
+      ForEach([this.splashOpenRequest], (_opening: number): void => {
+        StartupLaunchCover({ allowAd: this.startupAdAllowed(), coldStart: !this.startupFromForeground,
+          contentReady: this.homeFeedPresented || !this.loading,
+          onFinished: (): void => { this.showStartupCover = false; this.startupFromForeground = false; } })
+          .width('100%').height('100%')
+          .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
+          .zIndex(100)
+      }, (opening: number): string => opening.toString())
+      }
     }
     .width('100%')
     .height('100%')
@@ -7485,8 +7724,10 @@ struct Index {
       onSettings: (): void => this.openSettings(),
       onAccounts: (): void => this.openAccounts(),
       onMenu: (feature: string): void => {
-        if (feature === 'help' || feature === 'support') {
-          this.openHelpCenter();
+        if (feature === 'help') { this.openHelpCenter(); return; }
+        if (feature === 'support') {
+          this.showSideDrawer = false;
+          this.openRootContent({ name: 'Support' });
           return;
         }
         this.showDrawerFeature(feature);
@@ -7509,15 +7750,15 @@ struct Index {
             materialLevel: this.homeTabMaterialLevel, hidden: this.tabBarHidden,
             showAction: this.rootSplitActionVisible(), actionMode: this.rootSplitActionMode(),
             actionHidden: this.currentTab === MESSAGES_TAB_INDEX ? false : this.fabHidden,
-            actionSymbol: this.currentTab === MESSAGES_TAB_INDEX ? $r('sys.symbol.message_badge_plus') :
-              $r('sys.symbol.square_and_pencil'), actionLabel: this.rootSplitActionLabel(), refreshing: this.refreshing,
+            actionSymbol: this.rootSplitActionIcon(), actionLabel: this.rootSplitActionLabel(),
+            refreshing: this.refreshing,
             onSelect: (page: number): void => this.tabsController.changeIndex(this.bottomBarPageIndex(page)),
             onTabClick: (page: number): void => this.onRootTabBarClick(this.bottomBarPageIndex(page)),
             onAction: (): void => this.onRootSplitAction() })
             .margin({ bottom: this.floatingTabBottomMargin() })
             .align(Alignment.Bottom)
         } else if (this.usesFloatingTabBar() && this.rootLiquidTabIndicatorEnabled) {
-          RootLiquidTabIndicator({ motion: this.liquidTabMotion, selectedPage: this.currentTab, pagesMask: this.bottomBarPagesMask,
+          RootLiquidTabIndicator({ motion: this.liquidTabMotion, selectedPage: this.currentTab, pagesMask: this.bottomBarPagesMask, pageOrder: this.bottomTabOrder,
             requestedPage: this.liquidTabRequestedPage,
             showLabel: this.rootTabLabelsVisible, hidden: this.tabBarHidden,
             onSelect: (visibleIndex: number): void => this.hdsTabsController.changeIndex(visibleIndex),
@@ -7657,6 +7898,8 @@ struct Index {
       SidebarHandleSettingsBuilder();
     } else if (name === 'ProxySettings') {
       ProxySettingsBuilder();
+    } else if (name === 'DnsSettings') {
+      DnsSettingsBuilder();
     } else if (name === 'DownloadManager') {
       DownloadManagerBuilder();
     } else if (name === 'DataStorage') {
@@ -7665,6 +7908,10 @@ struct Index {
       LogoUniverseBuilder();
     } else if (name === 'About') {
       AboutBuilder();
+    } else if (name === 'Support') {
+      SupportBuilder();
+    } else if (name === 'SupporterAccess') {
+      SupporterAccessBuilder();
     } else if (name === 'HelpCenter') {
       HelpCenterBuilder();
     } else if (name === 'InputHelp') {
@@ -7711,6 +7958,11 @@ struct Index {
       CommunitiesBuilder();
     } else if (name === 'CommunitySearch') {
       CommunitySearchBuilder();
+    } else if (name === 'GlobalTrends') {
+      GlobalTrendsPageView({
+        postBuilder: (tweet: Tweet): void => this.ExploreTweetCard(tweet),
+        onOpenDestination: (url: string): void => this.openExploreDestination(url)
+      });
     } else if (name === 'CommunityTimeline') {
       CommunityTimelineBuilder();
     } else if (name === 'CommunityRules') {
@@ -7721,6 +7973,8 @@ struct Index {
       NotificationPostsBuilder();
     } else if (name === 'BrowsingHistory') {
       BrowsingHistoryBuilder();
+    } else if (name === 'OfflineVideos') {
+      OfflineVideosBuilder();
     } else if (name === 'VideoFeedViewer') {
       VideoFeedViewerBuilder();
     } else if (name === 'ChatVideoViewer') {
@@ -7749,6 +8003,8 @@ struct Index {
       DmRequestsBuilder();
     } else if (name === 'DmWeb') {
       DmWebBuilder();
+    } else if (name === 'AboutAccount') {
+      AboutAccountBuilder();
     } else if (name === 'SearchHistoryPage') {
       this.SearchHistoryPage();
     } else if (name === 'SearchResultsPage') {
@@ -7757,125 +8013,46 @@ struct Index {
   }
 
   @Builder
-  private HdsTabContents(): void {
-    if (this.isBottomBarPageEnabled(HOME_TAB_INDEX)) {
-      TabContent() {
-        this.HomeTab()
-      }
-      .tabBar(this.HdsTabBar(HOME_TAB_INDEX, $r('sys.symbol.house_fill'), $r('app.string.home_title')))
-    }
-
-    if (this.isBottomBarPageEnabled(EXPLORE_TAB_INDEX)) {
-      TabContent() {
-        this.ExploreTab()
-      }
-      .tabBar(this.HdsTabBar(EXPLORE_TAB_INDEX, $r('sys.symbol.magnifyingglass'), $r('app.string.explore_title')))
-    }
-
-    if (this.isBottomBarPageEnabled(NOTIFICATIONS_TAB_INDEX)) {
-      TabContent() {
-        this.NotificationsTab()
-      }
-      .tabBar(this.HdsTabBar(NOTIFICATIONS_TAB_INDEX, $r('sys.symbol.bell_fill'), $r('app.string.tab_alerts')))
-    }
-
-    if (this.isBottomBarPageEnabled(MESSAGES_TAB_INDEX)) {
-      TabContent() {
-        this.MessagesTab()
-      }
-      .tabBar(this.HdsTabBar(MESSAGES_TAB_INDEX, $r('sys.symbol.message_fill'), $r('app.string.chat_title')))
-    }
-
-    if (this.isBottomBarPageEnabled(ME_TAB_INDEX)) {
-      TabContent() {
-        this.MeTab()
-      }
-      .tabBar(this.HdsTabBar(ME_TAB_INDEX, $r('sys.symbol.person_fill'), $r('app.string.tab_me')))
-    }
+  private RootPageContent(page: number): void {
+    if (page === HOME_TAB_INDEX) { this.HomeTab() }
+    else if (page === EXPLORE_TAB_INDEX) { this.ExploreTab() }
+    else if (page === NOTIFICATIONS_TAB_INDEX) { this.NotificationsTab() }
+    else if (page === MESSAGES_TAB_INDEX) { this.MessagesTab() }
+    else { this.MeTab() }
   }
 
+  private rootPageIcon(page: number): Resource {
+    const icons: Resource[] = [$r('sys.symbol.house_fill'), $r('sys.symbol.magnifyingglass'),
+      $r('sys.symbol.bell_fill'), $r('sys.symbol.message_fill'), $r('sys.symbol.person_fill')];
+    return icons[page];
+  }
+
+  private rootPageLabel(page: number): Resource {
+    const labels: Resource[] = [$r('app.string.home_title'), $r('app.string.explore_title'),
+      $r('app.string.tab_alerts'), $r('app.string.chat_title'), $r('app.string.tab_me')];
+    return labels[page];
+  }
+
+  @Builder
+  private HdsTabContents(): void {
+    ForEach(this.classicBottomBarPages(), (page: number) => {
+      TabContent() { this.RootPageContent(page) }
+        .tabBar(this.HdsTabBar(page, this.rootPageIcon(page), this.rootPageLabel(page)))
+    }, (page: number): string => page.toString())
+  }
   @Builder
   private ClassicTabContents(): void {
-    if (this.isBottomBarPageEnabled(HOME_TAB_INDEX)) {
-      TabContent() {
-        this.HomeTab()
-      }
-      .tabBar(this.ClassicTabBar(HOME_TAB_INDEX, $r('sys.symbol.house_fill'), $r('app.string.home_title')))
-    }
-
-    if (this.isBottomBarPageEnabled(EXPLORE_TAB_INDEX)) {
-      TabContent() {
-        this.ExploreTab()
-      }
-      .tabBar(this.ClassicTabBar(EXPLORE_TAB_INDEX, $r('sys.symbol.magnifyingglass'),
-        $r('app.string.explore_title')))
-    }
-
-    if (this.isBottomBarPageEnabled(NOTIFICATIONS_TAB_INDEX)) {
-      TabContent() {
-        this.NotificationsTab()
-      }
-      .tabBar(this.ClassicTabBar(NOTIFICATIONS_TAB_INDEX, $r('sys.symbol.bell_fill'),
-        $r('app.string.tab_alerts')))
-    }
-
-    if (this.isBottomBarPageEnabled(MESSAGES_TAB_INDEX)) {
-      TabContent() {
-        this.MessagesTab()
-      }
-      .tabBar(this.ClassicTabBar(MESSAGES_TAB_INDEX, $r('sys.symbol.message_fill'),
-        $r('app.string.chat_title')))
-    }
-
-    if (this.isBottomBarPageEnabled(ME_TAB_INDEX)) {
-      TabContent() {
-        this.MeTab()
-      }
-      .tabBar(this.ClassicTabBar(ME_TAB_INDEX, $r('sys.symbol.person_fill'), $r('app.string.tab_me')))
-    }
+    ForEach(this.classicBottomBarPages(), (page: number) => {
+      TabContent() { this.RootPageContent(page) }
+        .tabBar(this.ClassicTabBar(page, this.rootPageIcon(page), this.rootPageLabel(page)))
+    }, (page: number): string => page.toString())
   }
-
   @Builder
   private LegacyTabContents(): void {
-    if (this.isBottomBarPageEnabled(HOME_TAB_INDEX)) {
-      TabContent() {
-        this.HomeTab()
-      }
-      .tabBar(this.TabBar(HOME_TAB_INDEX, $r('sys.symbol.house'), $r('sys.symbol.house_fill'),
-        this.text($r('app.string.home_title'))))
-    }
-
-    if (this.isBottomBarPageEnabled(EXPLORE_TAB_INDEX)) {
-      TabContent() {
-        this.ExploreTab()
-      }
-      .tabBar(this.TabBar(EXPLORE_TAB_INDEX, $r('sys.symbol.magnifyingglass'),
-        $r('sys.symbol.magnifyingglass'), this.text($r('app.string.explore_title'))))
-    }
-
-    if (this.isBottomBarPageEnabled(NOTIFICATIONS_TAB_INDEX)) {
-      TabContent() {
-        this.NotificationsTab()
-      }
-      .tabBar(this.TabBar(NOTIFICATIONS_TAB_INDEX, $r('sys.symbol.bell'), $r('sys.symbol.bell_fill'),
-        this.text($r('app.string.tab_alerts'))))
-    }
-
-    if (this.isBottomBarPageEnabled(MESSAGES_TAB_INDEX)) {
-      TabContent() {
-        this.MessagesTab()
-      }
-      .tabBar(this.TabBar(MESSAGES_TAB_INDEX, $r('sys.symbol.envelope'), $r('sys.symbol.envelope'),
-        this.text($r('app.string.messages_title'))))
-    }
-
-    if (this.isBottomBarPageEnabled(ME_TAB_INDEX)) {
-      TabContent() {
-        this.MeTab()
-      }
-      .tabBar(this.TabBar(ME_TAB_INDEX, $r('sys.symbol.person'), $r('sys.symbol.person_fill'),
-        this.text($r('app.string.tab_me'))))
-    }
+    ForEach(this.classicBottomBarPages(), (page: number) => {
+      TabContent() { this.RootPageContent(page) }
+        .tabBar(this.TabBar(page, this.rootPageIcon(page), this.rootPageIcon(page), this.text(this.rootPageLabel(page))))
+    }, (page: number): string => page.toString())
   }
 
   @Builder
@@ -7899,13 +8076,8 @@ struct Index {
   }
 
   private classicBottomBarPages(): number[] {
-    const pages: number[] = [];
-    for (let page: number = 0; page < BOTTOM_BAR_PAGE_COUNT; page++) {
-      if (this.isBottomBarPageEnabled(page)) {
-        pages.push(page);
-      }
-    }
-    return pages;
+    return orderedTabIds(this.bottomTabOrder, ['0', '1', '2', '3', '4'])
+      .map((id: string): number => Number(id)).filter((page: number): boolean => this.isBottomBarPageEnabled(page));
   }
 
   @Builder
@@ -8030,16 +8202,34 @@ struct Index {
       if (this.useTitleBarLogo()) {
         Row() { this.ExploreTitleBarSearch() }
           .width('100%').justifyContent(FlexAlign.Center)
-          .padding({ top: $r('app.float.title_bar_compact_gap') }).flexShrink(0)
+          .height(this.exploreSearchHeight() + this.exploreLayoutDimension($r('app.float.explore_search_title_gap')))
+          .constraintSize({ minHeight: this.exploreSearchHeight() + this.exploreLayoutDimension($r('app.float.explore_search_title_gap')) })
+          .padding({ top: $r('app.float.explore_search_title_gap') }).flexShrink(0)
       }
       if (this.activeExploreQuery.length === 0) {
         Column() { this.ExploreCategoryTabs() }
-          .width('100%').padding({ top: $r('app.float.title_bar_compact_gap') }).flexShrink(0)
+          .height(this.exploreCategoriesHeight() + this.exploreLayoutDimension($r('app.float.explore_search_categories_gap')))
+          .constraintSize({ minHeight: this.exploreCategoriesHeight() + this.exploreLayoutDimension($r('app.float.explore_search_categories_gap')) })
+          .width('100%').padding({ top: $r('app.float.explore_search_categories_gap') }).flexShrink(0)
       }
-    }.width('100%').padding({ left: 12, right: 12 })
+    }.width('100%').padding({ left: $r('app.float.page_search_inset'), right: $r('app.float.page_search_inset') })
+      .height(this.exploreTitleContentHeight()).constraintSize({ minHeight: this.exploreTitleContentHeight() })
       .margin({ top: this.exploreTitleContentOffset() })
       .id('harmonyx-explore-title-content')
       .clip(false).hitTestBehavior(HitTestMode.Transparent)
+  }
+
+  private exploreLayoutDimension(resource: Resource): number {
+    const context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
+    return this.getUIContext().px2vp(context.resourceManager.getNumber(resource.id));
+  }
+
+  private exploreTitleContentHeight(): number {
+    const search: number = this.useTitleBarLogo() ? this.exploreSearchHeight() +
+      this.exploreLayoutDimension($r('app.float.explore_search_title_gap')) : 0;
+    const categories: number = this.activeExploreQuery.length === 0 ? this.exploreCategoriesHeight() +
+      this.exploreLayoutDimension($r('app.float.explore_search_categories_gap')) : 0;
+    return search + categories;
   }
 
   private exploreTitleContentOffset(): number {
@@ -8151,7 +8341,8 @@ struct Index {
 
   private titleBarLabelsHeight(): number {
     return RootTitleBarLayout.labelsHeight(this.chromeTab, this.useTitleBarLogo(),
-      this.homeSpaceHeight(), this.activeExploreQuery.length > 0);
+      this.homeSpaceHeight(), this.activeExploreQuery.length > 0,
+      this.exploreLayoutDimension($r('app.float.explore_search_categories_gap')));
   }
 
   private titleBarLabelsOffset(): number {
@@ -8244,13 +8435,27 @@ struct Index {
       const topic: TimelineTopic = this.pinnedHomeTopics[i];
       items.push({ key: topic.id, label: topic.displayTitle || topic.title, icon: topic.icon, imageUrl: topic.bannerUrl, chevron: true });
     }
-    return items;
+    const order: string[] = orderedTabIds(this.homeTabOrder, items.map((item: IconTabItem): string => item.key));
+    return order.map((id: string): IconTabItem => items.find((item: IconTabItem): boolean => item.key === id) as IconTabItem);
   }
 
   private homeTabIndex(): number {
-    if (this.activeHomeTopicId.length === 0) { return this.homeFeedMode; }
-    const index: number = this.pinnedHomeTopics.findIndex((topic: TimelineTopic): boolean => topic.id === this.activeHomeTopicId);
-    return index >= 0 ? index + 2 : this.homeFeedMode;
+    const key: string = this.activeHomeTopicId.length > 0 ? this.activeHomeTopicId : (this.homeFeedMode === 0 ? 'for-you' : 'following');
+    return Math.max(0, this.homeTabItems().findIndex((item: IconTabItem): boolean => item.key === key));
+  }
+
+  private homeModeAt(index: number): number {
+    const key: string = this.tabKey(index);
+    return key === 'for-you' ? 0 : key === 'following' ? 1 : 2;
+  }
+
+  private selectHomeTabAt(index: number): void {
+    const mode: number = this.homeModeAt(index);
+    if (mode < 2) { this.changeHomeFeed(mode); }
+    else {
+      const topic: TimelineTopic | null = homeTimelineStore.topicById(this.tabKey(index));
+      if (topic !== null) { this.selectHomeTopic(topic); }
+    }
   }
 
   private selectHomeIconTab(index: number): void {
@@ -8559,7 +8764,7 @@ struct Index {
       narrowColumn: this.useNarrowTimelineCards(),
       videoFeedEnabled: true,
       homeTimelineVideo: true,
-      recordRecommendationSeen: index === 0,
+      recordRecommendationSeen: this.homeModeAt(index) === 0,
       naturalVideoSize: true,
       onLikeChanged: (tt: Tweet, liked: boolean) => this.onLike(tt, liked),
       onRepostChanged: (tt: Tweet, reposted: boolean) => this.onRepost(tt, reposted),
@@ -8572,7 +8777,7 @@ struct Index {
     ForEach((index === this.homeTabIndex() ? this.homeSuggestionGroups : this.homeSnapshotAt(index).suggestions).filter((group: FollowSuggestionGroup): boolean => group.afterTweetId === tweet.id),
       (group: FollowSuggestionGroup) => { FollowSuggestions({ group: group }) },
       (group: FollowSuggestionGroup): string => group.id)
-    if (index === 1 && this.hasCookieSession && (index === this.homeTabIndex() ? this.homeSuggestionGroups : this.homeSnapshotAt(index).suggestions).length === 0 &&
+    if (this.homeModeAt(index) === 1 && this.hasCookieSession && (index === this.homeTabIndex() ? this.homeSuggestionGroups : this.homeSnapshotAt(index).suggestions).length === 0 &&
       postIndex === Math.min(2, postCount - 1)) {
       FollowSuggestions({ autoLoad: true })
     }
@@ -8678,7 +8883,7 @@ struct Index {
       WaterFlow({ scroller: this.contentPageScroller('home', this.homeTabItems()[index].key),
         sections: this.pageSections('home', this.homeTabItems()[index].key,
           this.homePageDataSource(index).contentCount()),
-        layoutMode: WaterFlowLayoutMode.SLIDING_WINDOW }) {
+        layoutMode: this.timelineWaterFlowLayoutMode() }) {
         LazyForEach(this.homePageDataSource(index), (item: TimelinePageItem) => {
           FlowItem() { this.HomePageItem(item, index) }.width('100%')
         }, (item: TimelinePageItem): string => item.key)
@@ -8747,8 +8952,7 @@ struct Index {
         .duration(280).curve(Curve.EaseOut).clip(true).disableSwipe(this.refreshing)
         .onAppear((): void => { this.homeTabPosition = this.homeTabIndex(); })
         .onChange((index: number): void => {
-          if (index < 2) { this.changeHomeFeed(index); }
-          else { this.selectHomeTopic(this.pinnedHomeTopics[index - 2]); }
+          this.selectHomeTabAt(index);
         })
         .onContentDidScroll((_selected: number, index: number, position: number, _length: number): void => {
           this.homeTabPosition = ProfileTabMotion.scrollPosition(index, position, this.homeTabItems().length);
@@ -8786,6 +8990,11 @@ struct Index {
         Column()
           .width('100%')
           .height(15)
+      }
+
+      if (EXPLORE_CATEGORY_IDS[index] === 'trending') {
+        ListItem() { this.GlobalTrendsEntryCard() }
+          .width('100%')
       }
 
       if (this.exploreCategoryPages[index].status.length > 0) {
@@ -8851,6 +9060,35 @@ struct Index {
       .nestedScroll({ scrollForward: NestedScrollMode.SELF_FIRST, scrollBackward: NestedScrollMode.SELF_FIRST })
       .cachedCount(8, this.isDesktopLayout())
 
+  }
+
+  @Builder
+  private GlobalTrendsEntryCard(): void {
+    Button({ type: ButtonType.Normal, stateEffect: true }) {
+      Stack({ alignContent: Alignment.Start }) {
+        ProxyMediaImage({ url: this.text($r('app.string.global_trends_cover_url')), fillParent: true })
+        Row() { Column() }
+          .width('100%').height('100%')
+          .linearGradient({ angle: 90, colors: [[$r('app.color.post_card_title_overlay'), 0], [Color.Transparent, 1]] })
+        Column({ space: 4 }) {
+          Text($r('app.string.global_trends_title')).fontFamily(this.appFontFamily)
+            .fontSize($r('sys.float.Title_S')).fontWeight(FontWeight.Bold)
+          Text($r('app.string.global_trends_description')).fontFamily(this.appFontFamily)
+            .fontSize($r('sys.float.Body_S'))
+          Text($r('app.string.global_trends_explore')).fontFamily(this.appFontFamily)
+            .fontSize($r('sys.float.Body_S'))
+            .padding({ left: 12, right: 12, top: 4, bottom: 4 })
+            .border({ width: 1, color: $r('app.color.post_card_overlay_text') })
+            .borderRadius(20).margin({ top: 6 })
+        }.alignItems(HorizontalAlign.Start).padding(16)
+          .foregroundColor($r('app.color.post_card_overlay_text'))
+      }.width('100%').height($r('app.float.global_trends_entry_height'))
+    }.width('92%').backgroundColor($r('app.color.media_viewer_black_background'))
+      .borderRadius($r('app.float.global_trends_card_radius')).clip(true)
+      .border({ width: 1, color: $r('app.color.divider') })
+      .margin({ bottom: 12 }).id('global-trends-entry')
+      .accessibilityText(this.text($r('app.string.global_trends_title')))
+      .onClick((): void => { this.openRootContent({ name: 'GlobalTrends' }); })
   }
 
   @Builder
@@ -9462,7 +9700,7 @@ struct Index {
     WaterFlow({
       scroller: this.getExploreScroller(),
       sections: this.exploreWaterFlowSections,
-      layoutMode: WaterFlowLayoutMode.SLIDING_WINDOW
+      layoutMode: this.timelineWaterFlowLayoutMode()
     }) {
       ForEach(this.pagedFlowItems(this.filteredExploreResults().length), (itemIndex: number) => {
         FlowItem() {
@@ -9582,7 +9820,7 @@ struct Index {
       if (this.supportsImmersiveMaterial()) {
         Stack() {
           Search({
-            value: this.searchText,
+            value: showFilter ? this.searchText : this.searchEntryText,
             placeholder: $r('app.string.search_placeholder')
           })
             .keyboardAppearance(KeyboardAppearance.IMMERSIVE)
@@ -9592,10 +9830,14 @@ struct Index {
             .fontColor($r('app.color.text_primary'))
             .placeholderColor($r('app.color.text_secondary'))
             .defaultFocus(autoFocus)
-            .focusOnTouch(true)
+            .focusOnTouch(!showFilter)
+            .focusable(!showFilter)
             .searchButton($r('app.string.search_action'))
+            .onClick((): void => {
+              if (showFilter) { this.showSearchPage(this.activeExploreQuery); }
+            })
             .onChange((value: string): void => {
-              this.searchText = value;
+              if (!showFilter) { this.onSearchInputChanged(value); }
             })
             .onSubmit((value: string): void => {
               this.submitSearchFromHeader(value, showFilter);
@@ -9614,7 +9856,7 @@ struct Index {
         })))
       } else {
         Search({
-          value: this.searchText,
+          value: showFilter ? this.searchText : this.searchEntryText,
           placeholder: $r('app.string.search_placeholder')
         })
           .keyboardAppearance(KeyboardAppearance.IMMERSIVE)
@@ -9625,10 +9867,14 @@ struct Index {
           .placeholderColor($r('app.color.text_secondary'))
           .borderRadius(20)
           .defaultFocus(autoFocus)
-          .focusOnTouch(true)
+          .focusOnTouch(!showFilter)
+          .focusable(!showFilter)
           .searchButton($r('app.string.search_action'))
+          .onClick((): void => {
+            if (showFilter) { this.showSearchPage(this.activeExploreQuery); }
+          })
           .onChange((value: string): void => {
-            this.searchText = value;
+            if (!showFilter) { this.onSearchInputChanged(value); }
           })
           .onSubmit((value: string): void => {
             this.submitSearchFromHeader(value, showFilter);
@@ -9645,130 +9891,173 @@ struct Index {
   }
 
   @Builder
+  private SearchRecentUsers(): void {
+    List({ space: this.exploreLayoutDimension($r('app.float.search_recent_user_gap')) }) {
+      ForEach(this.searchRecentUsers, (row: UserRow) => {
+        ListItem() {
+          Column({ space: 4 }) {
+            ProxyAvatar({ url: row.avatarUrl,
+              avatarSize: this.exploreLayoutDimension($r('app.float.search_recent_avatar_size')),
+              radius: this.exploreLayoutDimension($r('app.float.search_recent_avatar_size')) / 2,
+              verifiedType: row.verifiedType ?? '', avatarShape: row.avatarShape ?? '',
+              fallbackText: row.name.substring(0, 1), fallbackColor: row.avatarColor })
+            Row({ space: 3 }) {
+              Text(row.name).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M'))
+                .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
+                .maxLines(1).textOverflow({ overflow: TextOverflow.Ellipsis }).flexShrink(1)
+              if (row.verified) {
+                SymbolGlyph($r('sys.symbol.checkmark_circle_fill')).fontSize(14)
+                  .fontColor([verificationBadgeColor(row.verifiedType ?? '', this.accentColor)])
+                  .flexShrink(0)
+              }
+            }.width('100%').justifyContent(FlexAlign.Center).alignItems(VerticalAlign.Center)
+            Text('@' + row.username).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_S'))
+              .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
+              .maxLines(1).textOverflow({ overflow: TextOverflow.Ellipsis }).width('100%').textAlign(TextAlign.Center)
+          }.width($r('app.float.search_recent_user_width'))
+            .padding({ top: 4, bottom: 8 }).alignItems(HorizontalAlign.Center)
+            .accessibilityText(row.name + ' @' + row.username)
+            .gesture(GestureGroup(GestureMode.Exclusive,
+              LongPressGesture({ repeat: false }).onAction((): void => this.confirmRemoveSearchUser(row)),
+              TapGesture().onAction((): void => this.openSearchUser(row, true))))
+        }
+      }, (row: UserRow): string => 'search-recent-user-' + row.id)
+    }.listDirection(Axis.Horizontal).width('100%')
+      .height(this.exploreLayoutDimension($r('app.float.search_recent_avatar_size')) +
+        this.exploreLayoutDimension($r('app.float.search_recent_text_height')) * Math.max(1, this.fontScale))
+      .scrollBar(BarState.Off).edgeEffect(EdgeEffect.Spring)
+      .id('search-recent-users')
+  }
+
+  private confirmRemoveSearchHistoryItem(label: string, onConfirm: () => void): void {
+    this.getUIContext().getFocusController().clearFocus();
+    this.getUIContext().showAlertDialog({ title: $r('app.string.search_history_delete_title'), message: label,
+      primaryButton: { value: $r('app.string.compose_cancel'), action: (): void => {} },
+      secondaryButton: { value: $r('app.string.browsing_history_delete'), action: onConfirm } });
+  }
+
+  private confirmRemoveSearchUser(row: UserRow): void {
+    this.confirmRemoveSearchHistoryItem(row.name + '\n@' + row.username, (): void => {
+      this.searchRecentUsers = searchHistoryStore.removeUser(getContext(this) as common.UIAbilityContext, row.id);
+    });
+  }
+
+  private confirmRemoveSearchTerm(term: string): void {
+    this.confirmRemoveSearchHistoryItem(term, (): void => {
+      this.searchHistory = searchHistoryStore.remove(getContext(this) as common.UIAbilityContext, term);
+    });
+  }
+
+  @Builder
+  private SearchEntryTerm(term: string, fromHistory: boolean): void {
+    Row({ space: 12 }) {
+      Text(term).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontWeight(FontWeight.Medium)
+        .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
+        .layoutWeight(1).maxLines(2).textOverflow({ overflow: TextOverflow.Ellipsis })
+      Button({ type: ButtonType.Circle }) {
+        SymbolGlyph($r('sys.symbol.arrow_up_left')).fontSize(22).fontColor([this.accentColor])
+      }.width($r('app.float.search_entry_refill_size')).height($r('app.float.search_entry_refill_size'))
+        .backgroundColor(Color.Transparent)
+        .accessibilityText(this.text($r('app.string.search_refill_query')) + ' ' + term)
+        .onClick((): void => this.onSearchInputChanged(term))
+    }.width('100%').constraintSize({ minHeight: $r('app.float.search_entry_term_height') })
+      .padding({ top: 8, bottom: 8 })
+      .gesture(GestureGroup(GestureMode.Exclusive,
+        LongPressGesture({ repeat: false }).onAction((): void => {
+          if (fromHistory) { this.confirmRemoveSearchTerm(term); }
+        }),
+        TapGesture().onAction((): void => this.selectSearchEntryTerm(term, fromHistory))))
+  }
+
+  @Builder
+  private SearchEntryList(): void {
+    List({ scroller: this.searchHistoryScroller }) {
+      if (this.searchEntryText.trim().length === 0) {
+        ListItem() {
+          Row() {
+            Text($r('app.string.search_recent_title')).fontFamily(this.appFontFamily)
+              .fontSize($r('sys.float.Title_S')).fontWeight(FontWeight.Bold).layoutWeight(1)
+              .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
+            MaterialButton({ buttonWidth: 38, buttonHeight: 38, buttonRadius: 19,
+              surfaceColor: Color.Transparent, materialLevel: 0, applyShadow: false, lightColor: this.accentColor,
+              accessibilityLabel: this.text($r('app.string.search_history_clear')),
+              onButtonClick: (): void => {
+                searchHistoryStore.clear(getContext(this) as common.UIAbilityContext);
+                this.searchHistory = [];
+                this.searchRecentUsers = [];
+              }
+            }) {
+              SymbolGlyph($r('sys.symbol.xmark_circle_fill')).fontSize(23)
+                .fontColor([pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)])
+            }
+          }.width('100%').padding({ top: 12, bottom: 12 })
+        }
+        if (this.searchRecentUsers.length > 0) {
+          ListItem() { this.SearchRecentUsers() }
+        }
+        ForEach(this.searchHistory, (term: string) => {
+          ListItem() { this.SearchEntryTerm(term, true) }
+        }, (term: string): string => 'search-history-' + term)
+        if (this.searchHistory.length === 0 && this.searchRecentUsers.length === 0) {
+          ListItem() {
+            Text($r('app.string.search_history_empty')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M'))
+              .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
+              .width('100%').padding({ top: 2, bottom: 20 })
+          }
+          ForEach(this.trends.slice(0, 5), (term: string) => {
+            ListItem() { this.SearchEntryTerm(term, false) }
+          }, (term: string): string => 'search-trend-' + term)
+        }
+      } else {
+        ForEach(this.searchEntryTopics(), (term: string) => {
+          ListItem() { this.SearchEntryTerm(term, false) }
+        }, (term: string): string => 'search-typeahead-topic-' + term)
+        ForEach(this.searchSuggestionUsers, (row: UserRow) => {
+          ListItem() {
+            UserRowCard({ row: row, showFollow: false, horizontalPadding: 0,
+              onOpen: (user: UserRow): void => this.openSearchUser(user, true) })
+          }
+        }, (row: UserRow): string => 'search-typeahead-user-' + row.id)
+        if (this.searchSuggestionLoading) {
+          ListItem() {
+            Row() { LoadingProgress().width(24).height(24).color(this.accentColor) }
+              .width('100%').justifyContent(FlexAlign.Center).padding({ top: 12, bottom: 12 })
+          }
+        } else if (this.searchSuggestionFailed) {
+          ListItem() {
+            Text($r('app.string.status_live_data_unavailable')).fontFamily(this.appFontFamily)
+              .fontSize($r('sys.float.Body_S')).fontColor($r('app.color.text_secondary'))
+              .padding({ top: 12, bottom: 12 })
+          }
+        }
+        ListItem() {
+          Row({ space: 12 }) {
+            SymbolGlyph($r('sys.symbol.magnifyingglass')).fontSize(22).fontColor([this.accentColor])
+            Text(this.text($r('app.string.search_action')) + ' “' + this.searchEntryText.trim() + '”')
+              .fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontColor(this.accentColor)
+              .layoutWeight(1).maxLines(2).textOverflow({ overflow: TextOverflow.Ellipsis })
+          }.width('100%').padding({ top: 16, bottom: 16 })
+            .onClick((): void => this.selectSearchEntryTerm(this.searchEntryText, false))
+        }
+      }
+    }.width('100%').height('100%').padding({ left: 16, right: 16 })
+      .onScrollStop((): void => scrollStopped(this.searchHistoryScroller))
+      .onScrollStart((): void => scrollStarted(this.searchHistoryScroller))
+      .onScrollFrameBegin((offset: number, state: ScrollState): OnScrollFrameBeginHandlerResult =>
+        scrollFrame(this.searchHistoryScroller, offset, state))
+      .onTouchIntercept((event: TouchEvent): HitTestMode => stopScrollOnTouch(event, this.searchHistoryScroller))
+      .contentStartOffset(this.isDesktopLayout() ? 0 : this.statusBarHeight + 56)
+      .clip(!this.isDesktopLayout()).cachedCount(8, this.isDesktopLayout())
+      .scrollBar(BarState.Off).edgeEffect(EdgeEffect.Spring, { alwaysEnabled: true })
+  }
+
+  @Builder
   private SearchHistoryPage(): void {
     HdsNavDestination() {
       Stack({ alignContent: Alignment.TopStart }) {
         appPageBackground()
       Column({ space: 0 }) {
-        List({ scroller: this.searchHistoryScroller }) {
-          ListItem() {
-            Row() {
-              Text($r('app.string.search_history_title')).fontFamily(this.appFontFamily)
-                .fontSize($r('sys.float.Title_S'))
-                .fontWeight(FontWeight.Bold)
-                .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
-                .layoutWeight(1)
-              MaterialButton({
-                buttonWidth: 38,
-                buttonHeight: 38,
-                buttonRadius: 19,
-                surfaceColor: Color.Transparent,
-                materialLevel: 0,
-                applyShadow: false,
-                lightColor: this.accentColor,
-                accessibilityLabel: this.text($r('app.string.search_history_clear')),
-                onButtonClick: (): void => {
-                  const context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
-                  searchHistoryStore.clear(context);
-                  this.searchHistory = [];
-                }
-              }) {
-                SymbolGlyph($r('sys.symbol.trash'))
-                  .fontSize(23)
-                  .fontColor([pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)])
-              }
-            }
-            .width('100%')
-            .padding({ top: 12, bottom: 12 })
-          }
-
-          if (this.searchHistory.length > 0) {
-            ListItem() {
-              Flex({ wrap: FlexWrap.Wrap }) {
-                ForEach(this.searchHistory, (term: string) => {
-                  Text(term).fontFamily(this.appFontFamily)
-                    .fontSize($r('sys.float.Body_L'))
-                    .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, this.themedFieldSurface()))
-                    .maxLines(1)
-                    .textOverflow({ overflow: TextOverflow.Ellipsis })
-                    .constraintSize({ maxWidth: 260 })
-                    .padding({ left: 16, right: 16, top: 9, bottom: 9 })
-                    .margin({ right: 10, bottom: 10 })
-                    .backgroundColor(this.themedFieldSurface())
-                    .borderRadius(22)
-                    .onClick((): void => {
-                      this.submitSearchFromHistory(term);
-                    })
-                }, (term: string) => 'search-history-' + term)
-              }
-              .width('100%')
-              .padding({ bottom: 12 })
-            }
-          } else {
-            ListItem() {
-              Text($r('app.string.search_history_empty')).fontFamily(this.appFontFamily)
-                .fontSize($r('sys.float.Body_M'))
-                .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
-                .width('100%')
-                .padding({ top: 2, bottom: 20 })
-            }
-          }
-
-          ListItem() {
-            Text($r('app.string.search_suggestion_title')).fontFamily(this.appFontFamily)
-              .fontSize($r('sys.float.Title_S'))
-              .fontWeight(FontWeight.Bold)
-              .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
-              .width('100%')
-              .padding({ top: 18, bottom: 10 })
-          }
-
-          ForEach(this.trends.filter((trend: string) => {
-            return this.searchText.trim().length === 0 ||
-              trend.toLowerCase().includes(this.searchText.trim().toLowerCase());
-          }), (trend: string) => {
-            ListItem() {
-              Row({ space: 12 }) {
-                Stack({ alignContent: Alignment.Center }) {
-                  SymbolGlyph($r('sys.symbol.magnifyingglass'))
-                    .fontSize(22)
-                    .fontColor([pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, this.themedFieldSurface())])
-                }
-                .width(48)
-                .height(48)
-                .backgroundColor(this.themedFieldSurface())
-                .borderRadius(14)
-
-                Text(trend).fontFamily(this.appFontFamily)
-                  .fontSize($r('sys.float.Body_L'))
-                  .fontWeight(FontWeight.Medium)
-                  .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
-                  .layoutWeight(1)
-                  .maxLines(2)
-                  .textOverflow({ overflow: TextOverflow.Ellipsis })
-              }
-              .width('100%')
-              .padding({ top: 10, bottom: 10 })
-              .onClick((): void => {
-                this.submitSearchFromTrend(trend);
-              })
-            }
-          }, (trend: string) => 'search-suggestion-' + trend)
-        }
-        .onScrollStop((): void => scrollStopped(this.searchHistoryScroller))
-        .onScrollStart((): void => scrollStarted(this.searchHistoryScroller))
-        .onScrollFrameBegin((offset: number, state: ScrollState): OnScrollFrameBeginHandlerResult =>
-          scrollFrame(this.searchHistoryScroller, offset, state))
-        .onTouchIntercept((event: TouchEvent): HitTestMode => stopScrollOnTouch(event, this.searchHistoryScroller))
-        .width('100%')
-        .layoutWeight(1)
-        .padding({ left: 16, right: 16 })
-        // Keep the history and the suggestions scrollable *under* the blurred
-        // title bar instead of parking them in a band below it.
-        .contentStartOffset(this.isDesktopLayout() ? 0 : this.statusBarHeight + 56)
-        .clip(!this.isDesktopLayout()).cachedCount(8, this.isDesktopLayout())
-        .scrollBar(BarState.Off)
-        .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: true })
+        this.SearchEntryList()
       }
       .width('100%')
       .height('100%')
@@ -9794,6 +10083,7 @@ struct Index {
         this.displayMode, this.darkSurface, this.titleBarStyleMode)
     })
     .bindToScrollable([this.searchHistoryScroller])
+    .id('search-entry-page')
     .backgroundColor(pageCanvasColor(this.displayMode, this.darkSurface, this.pageBackgroundValue))
     .onBackPressed((): boolean => {
       this.closeSearchHistoryPage();
@@ -9802,20 +10092,59 @@ struct Index {
   }
 
   private searchResultKeys(index: number): string[] {
-    return this.searchTimelineRows(index).map((row: SearchTimelineRow): string => row.key)
-      .concat(this.searchPageUsers(index).map((row: UserRow): string => 'user-' + row.id));
+    return this.searchResultRows(index).map((row: SearchResultRow): string => row.key);
+  }
+
+  private searchResultRows(index: number): SearchResultRow[] {
+    const rows: SearchResultRow[] = [];
+    const timeline: SearchTimelineRow[] = this.searchTimelineRows(index);
+    for (let i: number = 0; i < timeline.length; i++) {
+      const row: SearchResultRow = new SearchResultRow();
+      row.key = timeline[i].key;
+      row.tweet = timeline[i].tweet;
+      row.promotion = timeline[i].promotion;
+      rows.push(row);
+    }
+    const users: UserRow[] = this.searchPageUsers(index);
+    for (let i: number = 0; i < users.length; i++) {
+      const row: SearchResultRow = new SearchResultRow();
+      row.key = 'user-' + users[i].id;
+      row.user = users[i];
+      rows.push(row);
+    }
+    return rows;
+  }
+
+  private searchResultRow(index: number, item: number): SearchResultRow | null {
+    const rows: SearchResultRow[] = this.searchResultRows(index);
+    return item >= 0 && item < rows.length ? rows[item] : null;
+  }
+
+  private searchResultUser(index: number, item: number): UserRow | null {
+    const row: SearchResultRow | null = this.searchResultRow(index, item);
+    return row === null ? null : row.user;
+  }
+
+  private searchResultPromotion(index: number, item: number): XXAuthPromotionPost | null {
+    const row: SearchResultRow | null = this.searchResultRow(index, item);
+    return row === null ? null : row.promotion;
+  }
+
+  private searchResultTweet(index: number, item: number): Tweet | null {
+    const row: SearchResultRow | null = this.searchResultRow(index, item);
+    return row === null ? null : row.tweet;
   }
 
   @Builder
   private SearchResultItem(page: number, item: number): void {
-    if (item < this.searchTimelineRows(page).length) {
-      if (this.searchTimelineRows(page)[item].promotion !== null) {
-        this.HomePromotion(this.searchTimelineRows(page)[item].promotion as XXAuthPromotionPost)
-      } else { this.ExploreTweetCard(this.searchTimelineRows(page)[item].tweet as Tweet) }
-    } else {
-      UserRowCard({ row: this.searchPageUsers(page)[item - this.searchTimelineRows(page).length],
-        onOpen: (row: UserRow): void => this.openUserRow(row),
+    if (this.searchResultUser(page, item) !== null) {
+      UserRowCard({ row: this.searchResultUser(page, item) as UserRow,
+        onOpen: (row: UserRow): void => this.openSearchUser(row),
         onFollowChanged: (row: UserRow, next: boolean): Promise<boolean> => this.applyRowFollow(row, next) })
+    } else if (this.searchResultPromotion(page, item) !== null) {
+      this.HomePromotion(this.searchResultPromotion(page, item) as XXAuthPromotionPost);
+    } else if (this.searchResultTweet(page, item) !== null) {
+      this.ExploreTweetCard(this.searchResultTweet(page, item) as Tweet);
     }
   }
 
@@ -9848,6 +10177,7 @@ struct Index {
   private SearchResultsContent(index: number): void {
     AdaptivePostFeed({ scroller: this.contentPageScroller('search', SEARCH_PRODUCT_IDS[index]),
       itemKeys: this.searchResultKeys(index), allowColumns: this.searchPagePosts(index).length > 0,
+      lazyItems: true,
       feedId: 'search-post-feed-' + SEARCH_PRODUCT_IDS[index],
       startOffset: this.isDesktopLayout() ? 0 : this.statusBarHeight + 104,
       clipContent: !this.isDesktopLayout(),
@@ -9920,9 +10250,7 @@ struct Index {
         // The product filter row is part of the title bar, so it keeps the
         // bar's material and the results slide underneath it.
         bottomBuilder: {
-          builder: (): void => {
-            this.SearchSurfaceTabs();
-          },
+          builder: (): void => this.SearchSurfaceTabs(),
           height: 48
         },
         divider: { showType: DividerShowType.OFF }
@@ -9931,6 +10259,7 @@ struct Index {
         this.displayMode, this.darkSurface, this.titleBarStyleMode)
     })
     .bindToScrollable([this.getSearchSurfaceScroller()])
+    .id('search-results-page')
     .backgroundColor(pageCanvasColor(this.displayMode, this.darkSurface, this.pageBackgroundValue))
     .onBackPressed((): boolean => {
       this.closeSearchResultsPage();
@@ -10155,10 +10484,10 @@ struct Index {
     Search({ value: this.chatSearch, placeholder: $r('app.string.chat_search') })
       .keyboardAppearance(KeyboardAppearance.IMMERSIVE)
       .width(this.useTitleBarLogo() || this.isDesktopLayout() ? '95%' : '100%')
-      .constraintSize({ maxWidth: 720 }).height(38)
+      .constraintSize({ maxWidth: 720 }).height($r('app.float.title_bar_search_height'))
       .backgroundColor(this.supportsImmersiveMaterial() ? Color.Transparent : this.themedFieldSurface())
       .fontColor($r('app.color.text_primary')).placeholderColor($r('app.color.text_secondary'))
-      .borderRadius(19).clip(true).defaultFocus(false)
+      .borderRadius($r('app.float.title_bar_search_radius')).clip(true).defaultFocus(false)
       .attributeModifier(materialModifier(this.chatSearchMaterialCache.material(this.accentColor)))
       .onChange((value: string): void => { this.chatSearch = value; })
   }
@@ -10174,6 +10503,8 @@ struct Index {
           .keyboardAppearance(KeyboardAppearance.IMMERSIVE)
           .width('100%')
           .height(this.exploreSearchHeight())
+          .borderRadius(this.exploreSearchRadius()).clip(true)
+          .textFont({ size: $r('app.float.page_search_font_size'), family: this.appFontFamily })
           .backgroundColor(Color.Transparent)
           .fontColor($r('app.color.text_primary'))
           .placeholderColor($r('app.color.text_secondary'))
@@ -10184,10 +10515,10 @@ struct Index {
             this.showSearchPage();
           })
       }
-      .width(this.useTitleBarLogo() ? '95%' : '100%')
+      .width('100%')
       .constraintSize({ maxWidth: 720 })
       .height(this.exploreSearchHeight())
-      .borderRadius(19)
+      .borderRadius(this.exploreSearchRadius())
       .clip(true)
       .attributeModifier(materialModifier(this.exploreSearchMaterialCache.material(this.accentColor, true)))
       .onAreaChange((_oldValue: Area, newValue: Area): void => {
@@ -10199,13 +10530,14 @@ struct Index {
         placeholder: $r('app.string.search_placeholder')
       })
         .keyboardAppearance(KeyboardAppearance.IMMERSIVE)
-        .width(this.useTitleBarLogo() ? '95%' : '100%')
+        .width('100%')
         .constraintSize({ maxWidth: 720 })
         .height(this.exploreSearchHeight())
         .backgroundColor(this.themedFieldSurface())
         .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, this.themedFieldSurface()))
         .placeholderColor($r('app.color.text_secondary'))
-        .borderRadius(19)
+        .borderRadius(this.exploreSearchRadius()).clip(true)
+        .textFont({ size: $r('app.float.page_search_font_size'), family: this.appFontFamily })
         .defaultFocus(false)
         .focusOnTouch(false)
         .focusable(false)
@@ -10219,7 +10551,11 @@ struct Index {
   }
 
   private exploreSearchHeight(): number {
-    return !this.useTitleBarLogo() && !this.isDesktopLayout() ? 38 : 38 * Math.max(1, this.fontScale);
+    return this.exploreLayoutDimension($r('app.float.title_bar_search_height'));
+  }
+
+  private exploreSearchRadius(): number {
+    return this.exploreLayoutDimension($r('app.float.title_bar_search_radius'));
   }
 
   private exploreCategoriesHeight(): number { return 52 * Math.max(1, this.fontScale); }
@@ -10231,13 +10567,14 @@ struct Index {
       placeholder: $r('app.string.search_placeholder')
     })
       .keyboardAppearance(KeyboardAppearance.IMMERSIVE)
-      .width('92%')
-      .height(44)
+      .width('calc(100% - 32vp)')
+      .height($r('app.float.page_search_height'))
       .margin({ top: this.contentTopInset(), bottom: 12 })
       .placeholderColor($r('app.color.text_secondary'))
       .backgroundColor(this.themedFieldSurface())
       .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, this.themedFieldSurface()))
-      .borderRadius(22)
+      .borderRadius($r('app.float.page_search_radius')).clip(true)
+      .textFont({ size: $r('app.float.page_search_font_size'), family: this.appFontFamily })
       .defaultFocus(false)
       .focusOnTouch(false)
       .focusable(false)
@@ -10249,6 +10586,7 @@ struct Index {
   }
 
   private submitSearch(value: string, querySource: string = 'typed_query'): void {
+    this.cancelSearchSuggestions();
     const query: string = value.trim();
     if (query !== this.activeExploreQuery) { this.searchTabSnapshots.clear(); }
     if (query.length > 0) {
@@ -10487,7 +10825,7 @@ struct Index {
     WaterFlow({
       scroller: this.contentPageScroller('notifications', index.toString()),
       sections: this.pageSections('notifications', index.toString(), this.visibleNotifications(index).length),
-      layoutMode: WaterFlowLayoutMode.SLIDING_WINDOW
+      layoutMode: this.timelineWaterFlowLayoutMode()
     }) {
       ForEach(this.pagedFlowItems(this.visibleNotifications(index).length), (itemIndex: number) => {
         FlowItem() {

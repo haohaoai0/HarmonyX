@@ -1,6 +1,70 @@
 {
   "string": [
     {
+      "name": "startup_animation_none",
+      "value": "فتح مباشر"
+    },
+    {
+      "name": "startup_animation_none_desc",
+      "value": "افتح الصفحة الرئيسية دون أيقونة أو حركة بدء."
+    },
+    {
+      "name": "startup_animation_speed",
+      "value": "سرعة التشغيل"
+    },
+    {
+      "name": "startup_animation_speed_desc",
+      "value": "تُطبّق على الافتتاحية المتحركة عند التشغيل التالي."
+    },
+    {
+      "name": "startup_animation_speed_value",
+      "value": "%s×"
+    },
+    {
+      "name": "startup_animation_title",
+      "value": "رسوم بدء التشغيل"
+    },
+    {
+      "name": "startup_animation_desc",
+      "value": "اختر حركة لبدء التشغيل التالي. يتم تحديث الرئيسية أثناء العرض. تقليل الحركة يستخدم أيقونة ثابتة."
+    },
+    {
+      "name": "startup_animation_icon",
+      "value": "إبقاء الأيقونة"
+    },
+    {
+      "name": "startup_animation_icon_desc",
+      "value": "تبقى الأيقونة الحالية حتى تجهز الرئيسية ثم تتلاشى."
+    },
+    {
+      "name": "startup_animation_ios",
+      "value": "نمط iOS"
+    },
+    {
+      "name": "startup_animation_ios_desc",
+      "value": "ترتد الأيقونة برفق ثم تتوسع لإظهار الرئيسية المحدّثة."
+    },
+    {
+      "name": "startup_animation_video",
+      "value": "افتتاحية متحركة"
+    },
+    {
+      "name": "startup_animation_video_desc",
+      "value": "اعرض حركة افتتاحية للأيقونة الحالية ثم الصفحة الرئيسية."
+    },
+    {
+      "name": "splash_ad_label",
+      "value": "إعلان"
+    },
+    {
+      "name": "splash_ad_skip",
+      "value": "تخطي"
+    },
+    {
+      "name": "splash_ad_signature",
+      "value": "التقِ بعالم تحبه"
+    },
+    {
       "name": "supporter_config_error",
       "value": "تعذر تأكيد ربط الحساب في السحابة. يرجى التواصل مع المطور."
     },
@@ -8,63 +72,234 @@
       "name": "supporter_restore_hint",
       "value": "تؤدي العودة إلى الحساب إلى استعادة حالته المحفوظة. على جهاز جديد أو بعد إعادة التثبيت أو في إصدار آخر، سجّل الدخول إلى حساب X نفسه وأدخل الرمز الأصلي لاستعادة الوصول."
     },
-    {"name": "eye_reading_title", "value": "القراءة بالنظر"},
-    {"name": "eye_reading_intro", "value": "انظر لأعلى أو لأسفل وثبّت نظرك لتمرير سلاسل المنشورات والنسخ دون اتصال والمقالات."},
-    {"name": "eye_reading_enable", "value": "تفعيل القراءة بالنظر"},
-    {"name": "eye_reading_supported", "value": "تتبّع الوجه مدعوم. لا تعمل الكاميرا إلا بعد الضغط على البدء في صفحة القراءة."},
-    {"name": "eye_reading_unsupported", "value": "هذا الجهاز لا يدعم تتبّع الوجه المطلوب. استخدم اللمس أو لوحة المفاتيح."},
-    {"name": "eye_reading_dwell", "value": "مدة تثبيت النظر"},
-    {"name": "eye_reading_threshold", "value": "حدّ اكتشاف الاتجاه"},
-    {"name": "eye_reading_threshold_desc", "value": "القيمة الأعلى تتطلب حركة عين أوضح وتقلّل التمرير غير المقصود."},
-    {"name": "eye_reading_help", "value": "ثبّت رأسك وانظر إلى وسط الشاشة للمعايرة. ثبّت النظر لأعلى أو لأسفل لتمرير نحو نصف الشاشة، ثم أعد النظر إلى الوسط بعد كل حركة. الأولوية للمس والعجلة ولوحة المفاتيح."},
-    {"name": "eye_reading_privacy", "value": "تُستخدم الكاميرا الأمامية فقط بعد البدء. تُعالج بيانات الاتجاه محليًا ولا تُحفظ الصور أو تُرفع. تتوقف الجلسة عند مغادرة الصفحة أو الانتقال للخلفية. أعد البدء يدويًا."},
-    {"name": "eye_reading_save_failed", "value": "تعذّر حفظ الإعدادات. حاول مجددًا."},
-    {"name": "eye_reading_start", "value": "بدء التحكم بالنظر"},
-    {"name": "eye_reading_stop", "value": "إيقاف التحكم بالنظر"},
-    {"name": "eye_reading_recalibrate", "value": "إعادة المعايرة"},
-    {"name": "eye_reading_starting", "value": "جارٍ تشغيل الكاميرا الأمامية…"},
-    {"name": "eye_reading_permission", "value": "يلزم إذن الكاميرا. اسمح بالوصول من أذونات التطبيق في النظام ثم حاول مجددًا."},
-    {"name": "eye_reading_failed", "value": "الكاميرا غير متاحة. أغلق تطبيقات الكاميرا الأخرى ثم حاول مجددًا."},
-    {"name": "eye_reading_calibrating", "value": "انظر إلى وسط الشاشة وثبّت الرأس والنظر لإتمام المعايرة."},
-    {"name": "eye_reading_center", "value": "أعد النظر إلى الوسط قبل الحركة التالية."},
-    {"name": "eye_reading_ready", "value": "جاهز: انظر لأعلى أو لأسفل وثبّت نظرك."},
-    {"name": "eye_reading_up", "value": "واصل النظر لأعلى للتمرير لأعلى."},
-    {"name": "eye_reading_down", "value": "واصل النظر لأسفل للتمرير لأسفل."},
-    {"name": "eye_reading_lost", "value": "افتح عينيك وواجه الشاشة في إضاءة جيدة. أعد المعايرة إذا لم يستجب."},
-    {"name": "eye_reading_paused", "value": "الأولوية للإدخال اليدوي. أُوقف التحكم بالنظر مؤقتًا."},
-    {"name": "eye_reading_camera_reason", "value": "تستخدم الكاميرا الأمامية للتعرّف على اتجاه العين محليًا عند بدء القراءة بالنظر."},
-    {"name": "compact_video_layout", "value": "تخطيط فيديو الشاشة الخارجية"},
-    {"name": "settings_compact_video_layout_desc", "value": "للشاشات المربعة الصغيرة مثل Pura X. اختر أزرار الجانب أو الصف السفلي. عند فتح الهاتف يعود تخطيط الفيديو المعتاد."},
-    {"name": "compact_video_layout_rail", "value": "أزرار جانبية"},
-    {"name": "compact_video_layout_bottom", "value": "صف سفلي"},
-    {"name":"settings_component_hdr_enabled","value":"Component HDR effect"},
-    {"name":"settings_component_hdr_enabled_desc","value":"Off by default. Turn it on to use 1.25x brightening, then adjust the multiplier below."},
-    {"name":"settings_confirm_app_exit","value":"التأكيد قبل الخروج"},
-    {"name":"settings_confirm_app_exit_desc","value":"طلب التأكيد عند الرجوع من الصفحة الرئيسية. عند الإيقاف، يتم الخروج مباشرة."},
-    {"name":"app_exit_title","value":"الخروج من التطبيق؟"},
-    {"name":"app_exit_message","value":"هل تريد بالتأكيد الخروج من التطبيق؟"},
-    {"name":"app_exit_action","value":"خروج"},
-    {"name":"settings_component_hdr_max","value":"أقصى معامل سطوع للشاشة الحالية"},
-    {"name":"settings_component_hdr_max_unavailable","value":"غير متاح مؤقتًا"},
-    {"name":"settings_component_hdr_max_desc","value":"يبلّغ النظام عن القيمة لهذه الشاشة، وتُحدّث تلقائيًا عند تغيّر السطوع أو الشاشة."},
-    {"name":"settings_component_hdr_ratio","value":"معامل سطوع HDR للواجهة"},
-    {"name":"settings_component_hdr_desc","value":"اضبط سطوع الأزرار والأيقونات والعناصر المحددة. القيمة الافتراضية 1.25؛ اضبطها على 1 لإيقاف التعزيز. يعتمد السطوع الفعلي على جهازك. تُحفظ التغييرات وتُطبّق تلقائيًا."},
-    {"name":"settings_component_hdr_invalid","value":"أدخل رقمًا صالحًا لا يقل عن 1."},
-    {"name":"settings_component_hdr_reset","value":"إعادة الضبط إلى 1.25"},
-    {"name":"settings_video_hdr_enhancement","value":"تحسين الفيديو بتقنية HDR"},
-    {"name":"settings_video_hdr_enhancement_desc","value":"تحسين التباين والألوان في مقاطع الفيديو العادية. تستخدم الأجهزة غير المدعومة التشغيل العادي تلقائيًا."},
-    {"name": "settings_menu_post", "value": "إجراءات قائمة المنشورات"},
-    {"name": "settings_menu_photo", "value": "إجراءات قائمة الصور"},
-    {"name": "settings_menu_video", "value": "إجراءات قائمة الفيديو"},
-    {"name": "settings_menu_item_desc", "value": "اختر الإجراءات الظاهرة في القوائم ذات الصلة. تظهر عند دعم المحتوى لها ويمكن استعادة الإعدادات الافتراضية."},
-    {"name": "settings_menu_show_action", "value": "إظهار في القوائم ذات الصلة"},
-    {"name": "settings_menu_empty", "value": "إجراءات القائمة مخفية. استعدها من الفئة المناسبة في الإعدادات."},
-    {"name": "settings_viewer_video_mute", "value": "كتم عارض الفيديو افتراضيًا"},
-    {"name": "settings_viewer_video_mute_desc", "value": "كتم الفيديو المفتوح بشكل مستقل عن معاينات الصفحة الرئيسية."},
-    {"name": "settings_video_auto_advance_desc", "value": "الانتقال تلقائيًا إلى الفيديو التالي عند انتهاء التشغيل."},
-    {"name": "settings_video_captions_desc", "value": "تفعيل تسميات الذكاء الاصطناعي للنظام افتراضيًا في عارض الفيديو."},
-    {"name": "settings_video_feed_layout_desc", "value": "اختر تخطيط الفيديو العمودي للهاتف. تحتفظ النوافذ الواسعة والأفقية بتخطيطها المناسب."},
-    {"name": "settings_chat_desc", "value": "Message requests, call permissions, PIN and chat auto-download"},
+    {
+      "name": "eye_reading_title",
+      "value": "القراءة بالنظر"
+    },
+    {
+      "name": "eye_reading_intro",
+      "value": "انظر لأعلى أو لأسفل وثبّت نظرك لتمرير سلاسل المنشورات والنسخ دون اتصال والمقالات."
+    },
+    {
+      "name": "eye_reading_enable",
+      "value": "تفعيل القراءة بالنظر"
+    },
+    {
+      "name": "eye_reading_supported",
+      "value": "تتبّع الوجه مدعوم. لا تعمل الكاميرا إلا بعد الضغط على البدء في صفحة القراءة."
+    },
+    {
+      "name": "eye_reading_unsupported",
+      "value": "هذا الجهاز لا يدعم تتبّع الوجه المطلوب. استخدم اللمس أو لوحة المفاتيح."
+    },
+    {
+      "name": "eye_reading_dwell",
+      "value": "مدة تثبيت النظر"
+    },
+    {
+      "name": "eye_reading_threshold",
+      "value": "حدّ اكتشاف الاتجاه"
+    },
+    {
+      "name": "eye_reading_threshold_desc",
+      "value": "القيمة الأعلى تتطلب حركة عين أوضح وتقلّل التمرير غير المقصود."
+    },
+    {
+      "name": "eye_reading_help",
+      "value": "ثبّت رأسك وانظر إلى وسط الشاشة للمعايرة. ثبّت النظر لأعلى أو لأسفل لتمرير نحو نصف الشاشة، ثم أعد النظر إلى الوسط بعد كل حركة. الأولوية للمس والعجلة ولوحة المفاتيح."
+    },
+    {
+      "name": "eye_reading_privacy",
+      "value": "تُستخدم الكاميرا الأمامية فقط بعد البدء. تُعالج بيانات الاتجاه محليًا ولا تُحفظ الصور أو تُرفع. تتوقف الجلسة عند مغادرة الصفحة أو الانتقال للخلفية. أعد البدء يدويًا."
+    },
+    {
+      "name": "eye_reading_save_failed",
+      "value": "تعذّر حفظ الإعدادات. حاول مجددًا."
+    },
+    {
+      "name": "eye_reading_start",
+      "value": "بدء التحكم بالنظر"
+    },
+    {
+      "name": "eye_reading_stop",
+      "value": "إيقاف التحكم بالنظر"
+    },
+    {
+      "name": "eye_reading_recalibrate",
+      "value": "إعادة المعايرة"
+    },
+    {
+      "name": "eye_reading_starting",
+      "value": "جارٍ تشغيل الكاميرا الأمامية…"
+    },
+    {
+      "name": "eye_reading_permission",
+      "value": "يلزم إذن الكاميرا. اسمح بالوصول من أذونات التطبيق في النظام ثم حاول مجددًا."
+    },
+    {
+      "name": "eye_reading_failed",
+      "value": "الكاميرا غير متاحة. أغلق تطبيقات الكاميرا الأخرى ثم حاول مجددًا."
+    },
+    {
+      "name": "eye_reading_calibrating",
+      "value": "انظر إلى وسط الشاشة وثبّت الرأس والنظر لإتمام المعايرة."
+    },
+    {
+      "name": "eye_reading_center",
+      "value": "أعد النظر إلى الوسط قبل الحركة التالية."
+    },
+    {
+      "name": "eye_reading_ready",
+      "value": "جاهز: انظر لأعلى أو لأسفل وثبّت نظرك."
+    },
+    {
+      "name": "eye_reading_up",
+      "value": "واصل النظر لأعلى للتمرير لأعلى."
+    },
+    {
+      "name": "eye_reading_down",
+      "value": "واصل النظر لأسفل للتمرير لأسفل."
+    },
+    {
+      "name": "eye_reading_lost",
+      "value": "افتح عينيك وواجه الشاشة في إضاءة جيدة. أعد المعايرة إذا لم يستجب."
+    },
+    {
+      "name": "eye_reading_paused",
+      "value": "الأولوية للإدخال اليدوي. أُوقف التحكم بالنظر مؤقتًا."
+    },
+    {
+      "name": "eye_reading_camera_reason",
+      "value": "تستخدم الكاميرا الأمامية للتعرّف على اتجاه العين محليًا عند بدء القراءة بالنظر."
+    },
+    {
+      "name": "compact_video_layout",
+      "value": "تخطيط فيديو الشاشة الخارجية"
+    },
+    {
+      "name": "settings_compact_video_layout_desc",
+      "value": "للشاشات المربعة الصغيرة مثل Pura X. اختر أزرار الجانب أو الصف السفلي. عند فتح الهاتف يعود تخطيط الفيديو المعتاد."
+    },
+    {
+      "name": "compact_video_layout_rail",
+      "value": "أزرار جانبية"
+    },
+    {
+      "name": "compact_video_layout_bottom",
+      "value": "صف سفلي"
+    },
+    {
+      "name": "settings_component_hdr_enabled",
+      "value": "Component HDR effect"
+    },
+    {
+      "name": "settings_component_hdr_enabled_desc",
+      "value": "Off by default. Turn it on to use 1.25x brightening, then adjust the multiplier below."
+    },
+    {
+      "name": "settings_confirm_app_exit",
+      "value": "التأكيد قبل الخروج"
+    },
+    {
+      "name": "settings_confirm_app_exit_desc",
+      "value": "طلب التأكيد عند الرجوع من الصفحة الرئيسية. عند الإيقاف، يتم الخروج مباشرة."
+    },
+    {
+      "name": "app_exit_title",
+      "value": "الخروج من التطبيق؟"
+    },
+    {
+      "name": "app_exit_message",
+      "value": "هل تريد بالتأكيد الخروج من التطبيق؟"
+    },
+    {
+      "name": "app_exit_action",
+      "value": "خروج"
+    },
+    {
+      "name": "settings_component_hdr_max",
+      "value": "أقصى معامل سطوع للشاشة الحالية"
+    },
+    {
+      "name": "settings_component_hdr_max_unavailable",
+      "value": "غير متاح مؤقتًا"
+    },
+    {
+      "name": "settings_component_hdr_max_desc",
+      "value": "يبلّغ النظام عن القيمة لهذه الشاشة، وتُحدّث تلقائيًا عند تغيّر السطوع أو الشاشة."
+    },
+    {
+      "name": "settings_component_hdr_ratio",
+      "value": "معامل سطوع HDR للواجهة"
+    },
+    {
+      "name": "settings_component_hdr_desc",
+      "value": "اضبط سطوع الأزرار والأيقونات والعناصر المحددة. القيمة الافتراضية 1.25؛ اضبطها على 1 لإيقاف التعزيز. يعتمد السطوع الفعلي على جهازك. تُحفظ التغييرات وتُطبّق تلقائيًا."
+    },
+    {
+      "name": "settings_component_hdr_invalid",
+      "value": "أدخل رقمًا صالحًا لا يقل عن 1."
+    },
+    {
+      "name": "settings_component_hdr_reset",
+      "value": "إعادة الضبط إلى 1.25"
+    },
+    {
+      "name": "settings_video_hdr_enhancement",
+      "value": "تحسين الفيديو بتقنية HDR"
+    },
+    {
+      "name": "settings_video_hdr_enhancement_desc",
+      "value": "تحسين التباين والألوان في مقاطع الفيديو العادية. تستخدم الأجهزة غير المدعومة التشغيل العادي تلقائيًا."
+    },
+    {
+      "name": "settings_menu_post",
+      "value": "إجراءات قائمة المنشورات"
+    },
+    {
+      "name": "settings_menu_photo",
+      "value": "إجراءات قائمة الصور"
+    },
+    {
+      "name": "settings_menu_video",
+      "value": "إجراءات قائمة الفيديو"
+    },
+    {
+      "name": "settings_menu_item_desc",
+      "value": "اختر الإجراءات الظاهرة في القوائم ذات الصلة. تظهر عند دعم المحتوى لها ويمكن استعادة الإعدادات الافتراضية."
+    },
+    {
+      "name": "settings_menu_show_action",
+      "value": "إظهار في القوائم ذات الصلة"
+    },
+    {
+      "name": "settings_menu_empty",
+      "value": "إجراءات القائمة مخفية. استعدها من الفئة المناسبة في الإعدادات."
+    },
+    {
+      "name": "settings_viewer_video_mute",
+      "value": "كتم عارض الفيديو افتراضيًا"
+    },
+    {
+      "name": "settings_viewer_video_mute_desc",
+      "value": "كتم الفيديو المفتوح بشكل مستقل عن معاينات الصفحة الرئيسية."
+    },
+    {
+      "name": "settings_video_auto_advance_desc",
+      "value": "الانتقال تلقائيًا إلى الفيديو التالي عند انتهاء التشغيل."
+    },
+    {
+      "name": "settings_video_captions_desc",
+      "value": "تفعيل تسميات الذكاء الاصطناعي للنظام افتراضيًا في عارض الفيديو."
+    },
+    {
+      "name": "settings_video_feed_layout_desc",
+      "value": "اختر تخطيط الفيديو العمودي للهاتف. تحتفظ النوافذ الواسعة والأفقية بتخطيطها المناسب."
+    },
+    {
+      "name": "settings_chat_desc",
+      "value": "Message requests, call permissions, PIN and chat auto-download"
+    },
     {
       "name": "settings_video_double_tap_seek",
       "value": "النقر المزدوج للتقديم والإرجاع"
@@ -1107,7 +1342,7 @@
     },
     {
       "name": "profile_version",
-      "value": "Harmony X 3.1.0 · HarmonyOS 6.1 ‏(API 23-26) · نموذج Stage"
+      "value": "Harmony X 3.5.0 · HarmonyOS 6.0.2 ‏(API 22-26) · نموذج Stage"
     },
     {
       "name": "profile_following",
@@ -1836,6 +2071,10 @@
     {
       "name": "settings_timeline_columns_auto",
       "value": "تلقائي"
+    },
+    {
+      "name": "settings_timeline_columns_auto_two",
+      "value": "تلقائي: عمودان لسطح المكتب/الأفقي، وعمود للشاشة الخارجية"
     },
     {
       "name": "settings_timeline_columns_one",
@@ -4500,6 +4739,10 @@
     {
       "name": "onboarding_login_title",
       "value": "تسجيل الدخول إلى X"
+    },
+    {
+      "name": "onboarding_login_notice",
+      "value": "لا تستخدم تسجيل الدخول عبر Google؛ أدخل بريدك الإلكتروني مباشرةً. إذا بقيت الصفحة بيضاء رغم عمل الشبكة، يُرجى الانتظار."
     },
     {
       "name": "onboarding_login_hint",
@@ -10477,330 +10720,1346 @@
       "name": "settings_desktop_video_feed",
       "value": "موجز فيديو بنمط الهاتف"
     },
-    {"name":"settings_classic_bottom_bar","value":"شريط التنقل السفلي الكلاسيكي"},
-    {"name":"settings_classic_bottom_bar_desc","value":"استخدام شريط بعرض الشاشة مع أيقونات وتسميات في الأسفل، مع إمكانية الإخفاء التلقائي. أوقفه لاستعادة النمط العائم. تُطبّق التغييرات فورًا وتُحفظ."},
-    {"name":"settings_root_liquid_tab_indicator","value":"مؤشر سائل"},
-    {"name":"settings_root_liquid_tab_indicator_desc","value":"إظهار كبسولة قابلة للسحب بارتداد مرن على شريط التنقل العائم. يتكيف حجمها مع إظهار تسميات علامات التبويب."},
-    {"name":"settings_root_tab_labels","value":"عرض تسميات علامات التبويب"},
-    {"name":"settings_root_tab_labels_desc","value":"ينطبق على شريطي التنقل السفليين العائم والكلاسيكي. عند الإيقاف تبقى الأيقونات وشارات غير المقروء فقط."},
+    {
+      "name": "settings_classic_bottom_bar",
+      "value": "شريط التنقل السفلي الكلاسيكي"
+    },
+    {
+      "name": "settings_classic_bottom_bar_desc",
+      "value": "استخدام شريط بعرض الشاشة مع أيقونات وتسميات في الأسفل، مع إمكانية الإخفاء التلقائي. أوقفه لاستعادة النمط العائم. تُطبّق التغييرات فورًا وتُحفظ."
+    },
+    {
+      "name": "settings_root_liquid_tab_indicator",
+      "value": "مؤشر سائل"
+    },
+    {
+      "name": "settings_root_liquid_tab_indicator_desc",
+      "value": "إظهار كبسولة قابلة للسحب بارتداد مرن على شريط التنقل العائم. يتكيف حجمها مع إظهار تسميات علامات التبويب."
+    },
+    {
+      "name": "settings_root_tab_labels",
+      "value": "عرض تسميات علامات التبويب"
+    },
+    {
+      "name": "settings_root_tab_labels_desc",
+      "value": "ينطبق على شريطي التنقل السفليين العائم والكلاسيكي. عند الإيقاف تبقى الأيقونات وشارات غير المقروء فقط."
+    },
     {
       "name": "chat_post_preview",
       "value": "منشور مشترك"
     },
-    {"name": "account_overview_signed_out", "value": "غير مسجل الدخول"},
-    {"name": "account_overview_no_bio", "value": "لا توجد نبذة بعد"},
-    {"name": "account_overview_handle", "value": "اسم المستخدم"},
-    {"name": "account_overview_location", "value": "الموقع"},
-    {"name": "account_overview_website", "value": "الموقع الإلكتروني"},
-    {"name": "account_overview_manage", "value": "إدارة الحسابات والتبديل بينها"},
-    {"name": "profile_editor_choose_banner", "value": "Change header photo"},
-    {"name": "profile_editor_choose_avatar", "value": "Change profile photo"},
-    {"name": "profile_editor_birthdate", "value": "Birth date"},
-    {"name": "profile_editor_birthdate_empty", "value": "Add birth date"},
-    {"name": "profile_editor_birthdate_manage", "value": "Edit birth date and visibility"},
-    {"name": "profile_editor_birthdate_privacy", "value": "Month and day: %s\nYear: %s"},
-    {"name": "profile_editor_account_changed", "value": "The signed-in account changed. Go back and reopen the editor."},
-    {"name": "profile_editor_unsaved_title", "value": "Discard unsaved changes?"},
-    {"name": "profile_editor_unsaved_message", "value": "Unsaved profile and photo changes will be lost when you leave."},
-    {"name": "profile_editor_keep_editing", "value": "Keep editing"},
-    {"name": "profile_editor_discard", "value": "Discard changes"},
-    {"name": "profile_editor_partial", "value": "Some changes were saved. Your remaining edits are still here. Try saving again."},
-    {"name": "profile_editor_confirm_failed", "value": "Changes were submitted, but the updated profile could not be loaded. Save again to refresh without uploading the photos again."},
-    {"name": "settings_page_transition", "value": "انتقالات الصفحات"},
-    {"name": "settings_page_transition_desc", "value": "اختر الرسوم المتحركة عند فتح الصفحات والرجوع. تُطبق التغييرات فورًا وتُحفظ."},
-    {"name": "settings_page_transition_classic", "value": "الحركة الحالية"},
-    {"name": "settings_page_transition_classic_desc", "value": "الإبقاء على انتقالات التنقل الحالية للنظام."},
-    {"name": "settings_page_transition_official", "value": "النمط الرسمي"},
-    {"name": "settings_page_transition_official_desc", "value": "تكبير من المركز وتلاشٍ، مع حركات دخول وخروج متناسقة."},
-    {"name":"settings_anti_peep","value":"الحماية من التطفل"},
-    {"name":"settings_anti_peep_desc","value":"تغطية نافذة التطبيق بقناع النظام عند رصد شخص آخر ينظر إلى الشاشة."},
-    {"name":"settings_anti_peep_enable","value":"تفعيل الحماية"},
-    {"name":"settings_anti_peep_setup","value":"إعداد حماية النظام"},
-    {"name":"settings_anti_peep_recheck","value":"التحقق مجددًا"},
-    {"name":"settings_anti_peep_note","value":"أعدّ التعرف على الوجه واسمح بهذا التطبيق في الخصوصية والأمان > الحماية من التطفل. يستخدم التطبيق حالة النظام فقط ولا يصل إلى صور الوجوه."},
-    {"name":"settings_anti_peep_disabled","value":"متوقفة"},
-    {"name":"settings_anti_peep_unsupported","value":"هذا الجهاز لا يدعم الحماية من التطفل في النظام."},
-    {"name":"settings_anti_peep_permission","value":"بانتظار تفويض التطبيق. بعد الإعداد، عد إلى التطبيق أو تحقق مجددًا لتفعيل الحماية."},
-    {"name":"settings_anti_peep_system_off","value":"فعّل هذا التطبيق في الحماية من التطفل في النظام."},
-    {"name":"settings_anti_peep_face","value":"فعّل التعرف على الوجه في إعدادات النظام أولًا."},
-    {"name":"settings_anti_peep_ready","value":"مفعّلة. تجري مراقبة حالة التطفل."},
-    {"name":"settings_anti_peep_protected","value":"تم رصد تطفل وتشغيل قناع الحماية الخاص بالنظام."},
-    {"name":"settings_anti_peep_error","value":"الحماية غير متاحة حاليًا. تحقق مجددًا."},
-    {"name":"settings_anti_peep_checking","value":"جارٍ التحقق من الحماية أو تفعيلها…"},
-    {"name":"settings_anti_peep_save_failed","value":"تعذر الحفظ. حاول مجددًا."},
-    {"name":"huawei_account_title","value":"HUAWEI ID and cloud sync"},
-    {"name":"huawei_account_name","value":"HUAWEI ID"},
-    {"name":"huawei_login","value":"Sign in with HUAWEI ID"},
-    {"name":"huawei_logout","value":"Sign out"},
-    {"name":"huawei_signed_in","value":"Signed in with HUAWEI ID"},
-    {"name":"huawei_logging_in","value":"Signing in…"},
-    {"name":"huawei_signed_out_description","value":"Sign in to bring your preferences with you"},
-    {"name":"huawei_cloud_sync","value":"Cloud sync"},
-    {"name":"huawei_sync_description","value":"Sign in to enable sync for appearance, reading, playback preferences and local content rules across your devices."},
-    {"name":"huawei_local_data_note","value":"X credentials, messages, drafts and caches stay on this device. Some appearance changes take effect after restarting."},
-    {"name":"huawei_logout_title","value":"Sign out of HUAWEI ID?"},
-    {"name":"huawei_logout_description","value":"Cloud sync will pause. Local settings and existing cloud data will be kept. Your X account remains available."},
-    {"name":"huawei_sync_disabled","value":"Off. Settings are saved on this device."},
-    {"name":"huawei_sync_unavailable","value":"Cloud storage is unavailable. Check the system cloud service and this app’s sync switch."},
-    {"name":"huawei_sync_downloading","value":"Reading and merging cloud settings…"},
-    {"name":"huawei_sync_uploading","value":"Uploading settings…"},
-    {"name":"huawei_sync_success","value":"Synced"},
-    {"name":"huawei_sync_pending","value":"Saved locally, waiting to sync"},
-    {"name":"huawei_sync_failed","value":"Sync did not finish. Your local data is safe. Check system cloud settings and try again."},
-    {"name":"huawei_network_error","value":"Network unavailable. Try again when connected."},
-    {"name":"huawei_storage_full","value":"Cloud or device storage is full. Free some space and try again."},
-    {"name":"huawei_login_error","value":"Sign-in did not finish. Check account service configuration or try again later."},
-    {"name":"huawei_authorization_error","value":"Nickname and avatar authorization failed. Check account permissions and try again."},
-    {"name":"huawei_save_error","value":"Could not save settings. Try again."},
-    {"name":"huawei_select_group","value":"Select at least one group to sync."},
-    {"name":"huawei_account_changed","value":"HUAWEI ID has changed. Enabling sync will merge the selected local settings into the current account."},
-    {"name":"huawei_last_sync","value":"Last successful sync:"},
-    {"name":"huawei_syncing","value":"Syncing…"},
-    {"name":"huawei_sync_now","value":"Sync now"},
-    {"name":"huawei_group_appearance","value":"Appearance and navigation"},
-    {"name":"huawei_group_appearance_description","value":"Theme, text size, title bar, tabs and sheet material"},
-    {"name":"huawei_group_media","value":"Reading and playback"},
-    {"name":"huawei_group_media_description","value":"Image and video quality, autoplay and mute preferences"},
-    {"name":"huawei_group_filters","value":"Local content rules"},
-    {"name":"huawei_group_filters_description","value":"Keyword and user filters, and content preferences"},
-    {"name":"post_photo_save_background","value":"حفظ في مكتبة الخلفيات"},
-    {"name":"chat_background_saving_photo","value":"جارٍ حفظ صورة الخلفية…"},
-    {"name":"chat_background_saved_photo","value":"تم الحفظ. اخترها من خلفية الصفحة أو خلفية المحادثة."},
-    {"name":"chat_background_save_photo_failed","value":"تعذّر حفظ صورة الخلفية. حاول مجددًا."},
-    {"name":"chat_background_saved_photos","value":"صور محفوظة من المنشورات"},
-    {"name":"page_background_title","value":"خلفية الصفحات"},
-    {"name":"page_background_description","value":"Colors, photos and mixable patterns"},
-    {"name":"page_background_switch_title","value":"تفعيل خلفية الصفحة"},
-    {"name":"page_background_switch_desc","value":"أوقفها لاستخدام خلفية السمة فورًا. سيتم الاحتفاظ بالنمط الحالي."},
-    {"name":"page_background_base","value":"الخلفية الأساسية"},
-    {"name":"page_background_pattern","value":"طبقة الأنماط"},
-    {"name":"page_background_pattern_none","value":"بلا نمط"},
-    {"name":"page_background_content_opacity","value":"عتامة خلفية المحتوى"},
-    {"name":"page_background_reset","value":"استعادة الافتراضي"},
-    {"name":"page_background_color_placeholder","value":"Custom color #RRGGBB"},
-    {"name":"page_background_preview","value":"معاينة الخلفية"},
-    {"name":"page_background_preview_text","value":"Bring your favorite colors and patterns to every visit."},
-    {"name":"page_background_preview_hint","value":"Text and content surfaces show how readable your background will be."},
-    {"name":"page_background_note","value":"Applies to regular pages. Chats have separate backgrounds; media viewers keep their immersive backgrounds. Tap Apply to save."},
-    {"name":"page_background_layout_preset","value":"أنماط كاملة"},
-    {"name":"page_background_layout_icons","value":"زخارف منفردة"},
-    {"name":"page_background_density","value":"كثافة الزخارف"},
-    {"name":"page_background_set_add","value":"تحديد المجموعة كاملة"},
-    {"name":"page_background_set_remove","value":"إلغاء تحديد المجموعة"},
-    {"name":"page_background_mix_hint","value":"Select motifs across sets to mix them, or repeat a single motif."},
-    {"name":"page_background_selected","value":"%d motifs selected"},
-    {"name":"page_background_icons_clear","value":"مسح الزخارف"},
-    {"name":"page_background_paper","value":"ملمس الورق"},
-    {"name":"page_background_paper_none","value":"بلا ملمس"},
-    {"name":"page_background_kraft","value":"ورق كرافت"},
-    {"name":"page_background_parchment","value":"ورق الرق"},
-    {"name":"page_background_texture_strength","value":"شدة الملمس"},
-    {"name":"page_background_presets_mix","value":"Select multiple full patterns to combine them."},
-    {"name":"page_background_applied","value":"تم تطبيق خلفية الصفحات"},
-    {"name":"page_background_apply_failed","value":"تعذر حفظ الخلفية. حاول مجددًا."},
-    {"name":"page_background_transparent_posts","value":"Transparent post cards"},
-    {"name":"page_background_transparent_posts_desc","value":"Hide the surface behind posts and quoted posts to reveal the page background."},
-    {"name":"page_background_transparent_inbox","value":"Transparent message list"},
-    {"name":"page_background_transparent_inbox_desc","value":"Hide conversation row surfaces while keeping text, avatars and unread indicators."},
-    {"name":"page_background_post_opacity","value":"Post surface opacity"},
-    {"name":"page_background_inbox_opacity","value":"Message list surface opacity"},
-    {"name":"page_background_scheme_import","value":"Import scheme"},
-    {"name":"page_background_scheme_share","value":"Share scheme"},
-    {"name":"page_background_scheme_title","value":"Page background scheme"},
-    {"name":"page_background_scheme_imported","value":"Scheme imported. Preview it, then tap Apply."},
-    {"name":"page_background_scheme_import_failed","value":"Unable to import. Choose a valid HarmonyX background scheme (up to 48 MB)."},
-    {"name":"page_background_scheme_share_failed","value":"Unable to share. Please try again; background photos must be under 32 MB."},
-    {"name":"page_background_set_signature_icons","value":"أيقونات بديلة"},
-    {"name":"page_background_set_garden_defense","value":"Plants vs. Zombies"},
-    {"name":"page_background_motif_signature_icons_frog_face","value":"Frog face"},
-    {"name":"page_background_motif_signature_icons_frog_lily","value":"Frog on a lily pad"},
-    {"name":"page_background_motif_signature_icons_milk_frog","value":"Milk frog"},
-    {"name":"page_background_motif_signature_icons_milk_frog_wave","value":"Waving milk frog"},
-    {"name":"page_background_motif_signature_icons_bird","value":"Flying bird"},
-    {"name":"page_background_motif_signature_icons_bird_wings","value":"Bird with open wings"},
-    {"name":"page_background_motif_signature_icons_ribbon_x","value":"Ribbon X"},
-    {"name":"page_background_motif_signature_icons_blossom_x","value":"Blossom X"},
-    {"name":"page_background_motif_signature_icons_brush_x","value":"Brush X"},
-    {"name":"page_background_motif_signature_icons_prism_x","value":"Prism X"},
-    {"name":"page_background_motif_signature_icons_zombie_x","value":"Zombie X"},
-    {"name":"page_background_motif_signature_icons_lily_blossom","value":"Lily blossom"},
-    {"name":"page_background_motif_garden_defense_peashooter","value":"Peashooter"},
-    {"name":"page_background_motif_garden_defense_sunflower","value":"Sunflower"},
-    {"name":"page_background_motif_garden_defense_wallnut","value":"Wall-nut"},
-    {"name":"page_background_motif_garden_defense_cherry_bomb","value":"Cherry Bomb"},
-    {"name":"page_background_motif_garden_defense_snow_pea","value":"Snow Pea"},
-    {"name":"page_background_motif_garden_defense_potato_mine","value":"Potato Mine"},
-    {"name":"page_background_motif_garden_defense_chomper","value":"Chomper"},
-    {"name":"page_background_motif_garden_defense_squash","value":"Squash"},
-    {"name":"page_background_motif_garden_defense_zombie","value":"Zombie"},
-    {"name":"page_background_motif_garden_defense_conehead","value":"Conehead Zombie"},
-    {"name":"page_background_motif_garden_defense_buckethead","value":"Buckethead Zombie"},
-    {"name":"page_background_motif_garden_defense_lawnmower","value":"Lawn mower"},
-    {"name":"page_background_set_ai_assistants","value":"مساعدو الذكاء الاصطناعي"},
-    {"name":"page_background_motif_ai_assistants_gpt","value":"GPT"},
-    {"name":"page_background_motif_ai_assistants_claude","value":"Claude"},
-    {"name":"page_background_motif_ai_assistants_gemini","value":"Gemini"},
-    {"name":"page_background_motif_ai_assistants_deepseek","value":"DeepSeek"},
-    {"name":"page_background_motif_ai_assistants_grok","value":"Grok"},
-    {"name":"page_background_motif_ai_assistants_qwen","value":"Qwen"},
-    {"name":"page_background_motif_ai_assistants_kimi","value":"Kimi"},
-    {"name":"page_background_motif_ai_assistants_doubao","value":"Doubao"},
-    {"name":"page_background_motif_ai_assistants_copilot","value":"Copilot"},
-    {"name":"page_background_motif_ai_assistants_perplexity","value":"Perplexity"},
-    {"name":"page_background_motif_ai_assistants_mistral","value":"Mistral"},
-    {"name":"page_background_motif_ai_assistants_robot","value":"AI robot"},
-    {"name":"page_background_set_mobile_brands_systems","value":"علامات الهواتف وأنظمتها"},
-    {"name":"page_background_motif_mobile_brands_systems_apple","value":"Apple"},
-    {"name":"page_background_motif_mobile_brands_systems_huawei","value":"Huawei"},
-    {"name":"page_background_motif_mobile_brands_systems_xiaomi","value":"Xiaomi"},
-    {"name":"page_background_motif_mobile_brands_systems_samsung","value":"Samsung"},
-    {"name":"page_background_motif_mobile_brands_systems_oppo","value":"OPPO"},
-    {"name":"page_background_motif_mobile_brands_systems_vivo","value":"vivo"},
-    {"name":"page_background_motif_mobile_brands_systems_honor","value":"HONOR"},
-    {"name":"page_background_motif_mobile_brands_systems_oneplus","value":"OnePlus"},
-    {"name":"page_background_motif_mobile_brands_systems_meizu","value":"Meizu"},
-    {"name":"page_background_motif_mobile_brands_systems_harmonyos","value":"HarmonyOS"},
-    {"name":"page_background_motif_mobile_brands_systems_android","value":"Android"},
-    {"name":"page_background_motif_mobile_brands_systems_ios","value":"iOS"},
-    {"name":"page_background_motif_mobile_brands_systems_hyperos","value":"HyperOS"},
-    {"name":"page_background_motif_mobile_brands_systems_coloros","value":"ColorOS"},
-    {"name":"page_background_motif_mobile_brands_systems_originos","value":"OriginOS"},
-    {"name":"page_background_motif_mobile_brands_systems_oneui","value":"One UI"},
-    {"name":"motion_title","value":"Animation & haptics"},
-    {"name":"motion_intro","value":"Tune interaction animations and touch feedback. Changes are saved automatically. Tap the preview to try them."},
-    {"name":"motion_preview","value":"Tap to preview animation and haptics"},
-    {"name":"motion_reduce","value":"Reduce motion"},
-    {"name":"motion_reduce_desc","value":"Turn off decorative scaling, movement and Symbol effects, and skip page transitions. Your animation preferences are kept."},
-    {"name":"motion_duration","value":"Animation duration"},
-    {"name":"motion_duration_desc","value":"Reference duration for app animations. Button and page animations scale proportionally. System Symbol effects keep their native timing."},
-    {"name":"motion_amplitude","value":"Movement amplitude"},
-    {"name":"motion_amplitude_desc","value":"Adjust decorative scaling and rotation. At 0%, these effects stop. Gesture tracking and zoom keep their full range."},
-    {"name":"motion_damping","value":"Spring damping"},
-    {"name":"motion_damping_desc","value":"Lower values bounce more; higher values settle more gently."},
-    {"name":"motion_symbol","value":"Animated Symbols"},
-    {"name":"motion_symbol_desc","value":"Play a native Symbol effect once when selecting a tab or using an action button. Effects pause with Reduce motion."},
-    {"name":"motion_haptics","value":"Touch feedback"},
-    {"name":"motion_haptics_desc","value":"Use light feedback for navigation, buttons, switches and actions. Follows the system haptics setting."},
-    {"name":"motion_intensity","value":"Haptic intensity"},
-    {"name":"motion_intensity_desc","value":"Adjust preset effects on supported devices. Other motors use a short system touch vibration."},
-    {"name":"motion_presets","value":"Animation presets"},
-    {"name":"motion_preset_quick","value":"Quick"},
-    {"name":"motion_preset_quick_desc","value":"175 ms · 60% movement · firm settling. Short, crisp feedback."},
-    {"name":"motion_preset_standard","value":"Standard"},
-    {"name":"motion_preset_standard_desc","value":"300 ms · 100% movement · balanced spring. Recommended for everyday use."},
-    {"name":"motion_preset_spring","value":"Bouncy"},
-    {"name":"motion_preset_spring_desc","value":"450 ms · 120% movement · lower damping. Softer, more visible rebound."},
-    {"name":"motion_preset_reduced","value":"Low motion"},
-    {"name":"motion_preset_reduced_desc","value":"Skip page transitions and decorative effects. Keep your previous tuning."},
-    {"name":"motion_preset_custom","value":"Current preset: Custom. Choose a preset to restore its animation values."},
-    {"name":"chat_auto_download","value":"Chat auto-download"},
-    {"name":"storage_chat_retention","value":"Keep chat media"},
-    {"name":"storage_chat_retention_desc","value":"Set how long downloaded chat media stays cached. Chat history and manually saved files are kept."},
-    {"name":"settings_theme_mix","value":"لوحات ألوان مختلطة"},
-    {"name":"settings_theme_mix_desc","value":"ألوان متناسقة للمفاتيح والتنقل وأزرار النشر في المظهرين الفاتح والداكن."},
-    {"name":"settings_theme_mix_confetti","value":"ألوان احتفالية"},
-    {"name":"settings_theme_mix_coast","value":"ملح البحر والمرجان"},
-    {"name":"settings_theme_mix_sunset","value":"سوسن الغروب"},
-    {"name":"settings_theme_mix_forest","value":"كهرمان الغابة"},
-    {"name":"settings_theme_mix_berry","value":"التوت والنعناع"},
-    {"name":"settings_theme_mix_morandi","value":"موراندي"},
-    {"name":"settings_theme_solid","value":"ألوان مفردة"},
-    {"name":"settings_theme_mix_candy","value":"حلوى ملونة"},
-    {"name":"settings_theme_mix_sky","value":"السماء والليمون"},
-    {"name":"settings_theme_mix_peach","value":"الخوخ والنعناع"},
-    {"name":"settings_theme_mix_lilac","value":"الليلك والكاسترد"},
-    {"name":"page_background_set_popular_apps_cn","value":"تطبيقات شائعة · الصين"},
-    {"name":"page_background_motif_popular_apps_cn_wechat","value":"WeChat"},
-    {"name":"page_background_motif_popular_apps_cn_qq","value":"QQ"},
-    {"name":"page_background_motif_popular_apps_cn_weibo","value":"Weibo"},
-    {"name":"page_background_motif_popular_apps_cn_douyin","value":"Douyin"},
-    {"name":"page_background_motif_popular_apps_cn_kuaishou","value":"Kuaishou"},
-    {"name":"page_background_motif_popular_apps_cn_bilibili","value":"Bilibili"},
-    {"name":"page_background_motif_popular_apps_cn_xiaohongshu","value":"Xiaohongshu"},
-    {"name":"page_background_motif_popular_apps_cn_zhihu","value":"Zhihu"},
-    {"name":"page_background_motif_popular_apps_cn_baidu","value":"Baidu"},
-    {"name":"page_background_motif_popular_apps_cn_tieba","value":"Baidu Tieba"},
-    {"name":"page_background_motif_popular_apps_cn_alipay","value":"Alipay"},
-    {"name":"page_background_motif_popular_apps_cn_taobao","value":"Taobao"},
-    {"name":"page_background_motif_popular_apps_cn_jd","value":"JD"},
-    {"name":"page_background_motif_popular_apps_cn_pinduoduo","value":"Pinduoduo"},
-    {"name":"page_background_motif_popular_apps_cn_meituan","value":"Meituan"},
-    {"name":"page_background_motif_popular_apps_cn_eleme","value":"Ele.me"},
-    {"name":"page_background_motif_popular_apps_cn_dianping","value":"Dianping"},
-    {"name":"page_background_motif_popular_apps_cn_amap","value":"Amap"},
-    {"name":"page_background_motif_popular_apps_cn_baidu_maps","value":"Baidu Maps"},
-    {"name":"page_background_motif_popular_apps_cn_didi","value":"DiDi"},
-    {"name":"page_background_motif_popular_apps_cn_netease_music","value":"NetEase Cloud Music"},
-    {"name":"page_background_motif_popular_apps_cn_qq_music","value":"QQ Music"},
-    {"name":"page_background_motif_popular_apps_cn_kugou","value":"KuGou"},
-    {"name":"page_background_motif_popular_apps_cn_weread","value":"WeRead"},
-    {"name":"page_background_set_popular_apps_global","value":"تطبيقات شائعة · العالم"},
-    {"name":"page_background_motif_popular_apps_global_whatsapp","value":"WhatsApp"},
-    {"name":"page_background_motif_popular_apps_global_telegram","value":"Telegram"},
-    {"name":"page_background_motif_popular_apps_global_signal","value":"Signal"},
-    {"name":"page_background_motif_popular_apps_global_instagram","value":"Instagram"},
-    {"name":"page_background_motif_popular_apps_global_facebook","value":"Facebook"},
-    {"name":"page_background_motif_popular_apps_global_messenger","value":"Messenger"},
-    {"name":"page_background_motif_popular_apps_global_x","value":"X"},
-    {"name":"page_background_motif_popular_apps_global_threads","value":"Threads"},
-    {"name":"page_background_motif_popular_apps_global_youtube","value":"YouTube"},
-    {"name":"page_background_motif_popular_apps_global_tiktok","value":"TikTok"},
-    {"name":"page_background_motif_popular_apps_global_reddit","value":"Reddit"},
-    {"name":"page_background_motif_popular_apps_global_discord","value":"Discord"},
-    {"name":"page_background_motif_popular_apps_global_spotify","value":"Spotify"},
-    {"name":"page_background_motif_popular_apps_global_apple_music","value":"Apple Music"},
-    {"name":"page_background_motif_popular_apps_global_netflix","value":"Netflix"},
-    {"name":"page_background_motif_popular_apps_global_twitch","value":"Twitch"},
-    {"name":"page_background_motif_popular_apps_global_line","value":"LINE"},
-    {"name":"page_background_motif_popular_apps_global_snapchat","value":"Snapchat"},
-    {"name":"page_background_motif_popular_apps_global_pinterest","value":"Pinterest"},
-    {"name":"page_background_motif_popular_apps_global_chrome","value":"Chrome"},
-    {"name":"page_background_motif_popular_apps_global_firefox","value":"Firefox"},
-    {"name":"page_background_motif_popular_apps_global_edge","value":"Edge"},
-    {"name":"page_background_motif_popular_apps_global_gmail","value":"Gmail"},
-    {"name":"page_background_motif_popular_apps_global_google_maps","value":"Google Maps"},
-    {"name":"scene_title","value":"Scene modes"},
-    {"name":"scene_intro","value":"Apply a set of playback, quality, motion and background preferences. Restore returns to your settings from before the first mode was enabled."},
-    {"name":"scene_reading","value":"Clear reading"},
-    {"name":"scene_reading_desc","value":"Autoplay off · high quality images · low quality video · reduced motion · plain background"},
-    {"name":"scene_saver","value":"Power and data saver"},
-    {"name":"scene_saver_desc","value":"Autoplay off · small images · low quality video · reduced motion · plain background"},
-    {"name":"scene_media","value":"Media browsing"},
-    {"name":"scene_media_desc","value":"Autoplay on · original images · high quality video · motion on · your saved background"},
-    {"name":"scene_restore","value":"Restore original settings"},
-    {"name":"scene_restore_desc","value":"Keep your preferences from before scene mode. Switching between modes does not replace this backup."},
-    {"name":"scene_failed","value":"Some settings could not be saved. Your original settings are retained; retry or restore."},
-    {"name":"offline_title","value":"Offline & later"},
-    {"name":"offline_online","value":"Online bookmarks"},
-    {"name":"offline_intro","value":"New bookmarks save text and available articles automatically. Enable images before saving to include photos. Local copies stay separate from online bookmarks and ordinary cache cleanup."},
-    {"name":"offline_images","value":"Include photos in future saves"},
-    {"name":"offline_save","value":"Save offline"},
-    {"name":"offline_saving","value":"Saving…"},
-    {"name":"offline_saved","value":"Saved for offline reading"},
-    {"name":"offline_partial_saved","value":"Saved available content. Some article text or photos are missing; retry when online."},
-    {"name":"offline_save_failed","value":"Could not save locally. Please retry."},
-    {"name":"offline_partial","value":"Incomplete copy"},
-    {"name":"offline_unread","value":"Unread"},
-    {"name":"offline_unread_only","value":"Unread only"},
-    {"name":"offline_search","value":"Search titles, tags or notes"},
-    {"name":"offline_empty","value":"No matching offline items. Save a bookmark or use Save offline on a post."},
-    {"name":"offline_edit","value":"Tags & note"},
-    {"name":"offline_tags","value":"Tags"},
-    {"name":"offline_tags_hint","value":"Tags, separated by commas"},
-    {"name":"offline_note","value":"Private note"},
-    {"name":"offline_done","value":"Save"},
-    {"name":"offline_delete","value":"Delete local copy"},
-    {"name":"reader_title","value":"Thread reader"},
-    {"name":"reader_author_only","value":"Author only"},
-    {"name":"reader_translate","value":"Translate passages"},
-    {"name":"reader_font","value":"Text size"},
-    {"name":"reader_missing","value":"This offline item is missing or unavailable. Save it again while online."},
-    {"name":"reader_partial","value":"Only the available article content is shown. Continue loading or retry while online to get the complete text."},
-    {"name":"reader_load_failed","value":"Could not load more replies. Your current reading content is kept."},
-    {"name":"reader_translation_setup","value":"Enable translation and choose a target language in Settings first."},
-    {"name":"reader_translation_failed","value":"Some passages could not be translated. You can hide translations and retry."},
-    {"name":"reader_offline_note","value":"Saved local content. Translation requires a network connection."},
-    {"name":"reader_scope","value":"Replies loaded so far. Use Continue loading to include more of the discussion."},
+    {
+      "name": "account_overview_signed_out",
+      "value": "غير مسجل الدخول"
+    },
+    {
+      "name": "account_overview_no_bio",
+      "value": "لا توجد نبذة بعد"
+    },
+    {
+      "name": "account_overview_handle",
+      "value": "اسم المستخدم"
+    },
+    {
+      "name": "account_overview_location",
+      "value": "الموقع"
+    },
+    {
+      "name": "account_overview_website",
+      "value": "الموقع الإلكتروني"
+    },
+    {
+      "name": "account_overview_manage",
+      "value": "إدارة الحسابات والتبديل بينها"
+    },
+    {
+      "name": "profile_editor_choose_banner",
+      "value": "Change header photo"
+    },
+    {
+      "name": "profile_editor_choose_avatar",
+      "value": "Change profile photo"
+    },
+    {
+      "name": "profile_editor_birthdate",
+      "value": "Birth date"
+    },
+    {
+      "name": "profile_editor_birthdate_empty",
+      "value": "Add birth date"
+    },
+    {
+      "name": "profile_editor_birthdate_manage",
+      "value": "Edit birth date and visibility"
+    },
+    {
+      "name": "profile_editor_birthdate_privacy",
+      "value": "Month and day: %s\nYear: %s"
+    },
+    {
+      "name": "profile_editor_account_changed",
+      "value": "The signed-in account changed. Go back and reopen the editor."
+    },
+    {
+      "name": "profile_editor_unsaved_title",
+      "value": "Discard unsaved changes?"
+    },
+    {
+      "name": "profile_editor_unsaved_message",
+      "value": "Unsaved profile and photo changes will be lost when you leave."
+    },
+    {
+      "name": "profile_editor_keep_editing",
+      "value": "Keep editing"
+    },
+    {
+      "name": "profile_editor_discard",
+      "value": "Discard changes"
+    },
+    {
+      "name": "profile_editor_partial",
+      "value": "Some changes were saved. Your remaining edits are still here. Try saving again."
+    },
+    {
+      "name": "profile_editor_confirm_failed",
+      "value": "Changes were submitted, but the updated profile could not be loaded. Save again to refresh without uploading the photos again."
+    },
+    {
+      "name": "settings_page_transition",
+      "value": "انتقالات الصفحات"
+    },
+    {
+      "name": "settings_page_transition_desc",
+      "value": "اختر الرسوم المتحركة عند فتح الصفحات والرجوع. تُطبق التغييرات فورًا وتُحفظ."
+    },
+    {
+      "name": "settings_page_transition_classic",
+      "value": "الحركة الحالية"
+    },
+    {
+      "name": "settings_page_transition_classic_desc",
+      "value": "الإبقاء على انتقالات التنقل الحالية للنظام."
+    },
+    {
+      "name": "settings_page_transition_official",
+      "value": "النمط الرسمي"
+    },
+    {
+      "name": "settings_page_transition_official_desc",
+      "value": "تكبير من المركز وتلاشٍ، مع حركات دخول وخروج متناسقة."
+    },
+    {
+      "name": "settings_anti_peep",
+      "value": "الحماية من التطفل"
+    },
+    {
+      "name": "settings_anti_peep_desc",
+      "value": "تغطية نافذة التطبيق بقناع النظام عند رصد شخص آخر ينظر إلى الشاشة."
+    },
+    {
+      "name": "settings_anti_peep_enable",
+      "value": "تفعيل الحماية"
+    },
+    {
+      "name": "settings_anti_peep_setup",
+      "value": "إعداد حماية النظام"
+    },
+    {
+      "name": "settings_anti_peep_recheck",
+      "value": "التحقق مجددًا"
+    },
+    {
+      "name": "settings_anti_peep_note",
+      "value": "أعدّ التعرف على الوجه واسمح بهذا التطبيق في الخصوصية والأمان > الحماية من التطفل. يستخدم التطبيق حالة النظام فقط ولا يصل إلى صور الوجوه."
+    },
+    {
+      "name": "settings_anti_peep_disabled",
+      "value": "متوقفة"
+    },
+    {
+      "name": "settings_anti_peep_unsupported",
+      "value": "هذا الجهاز لا يدعم الحماية من التطفل في النظام."
+    },
+    {
+      "name": "settings_anti_peep_permission",
+      "value": "بانتظار تفويض التطبيق. بعد الإعداد، عد إلى التطبيق أو تحقق مجددًا لتفعيل الحماية."
+    },
+    {
+      "name": "settings_anti_peep_system_off",
+      "value": "فعّل هذا التطبيق في الحماية من التطفل في النظام."
+    },
+    {
+      "name": "settings_anti_peep_face",
+      "value": "فعّل التعرف على الوجه في إعدادات النظام أولًا."
+    },
+    {
+      "name": "settings_anti_peep_ready",
+      "value": "مفعّلة. تجري مراقبة حالة التطفل."
+    },
+    {
+      "name": "settings_anti_peep_protected",
+      "value": "تم رصد تطفل وتشغيل قناع الحماية الخاص بالنظام."
+    },
+    {
+      "name": "settings_anti_peep_error",
+      "value": "الحماية غير متاحة حاليًا. تحقق مجددًا."
+    },
+    {
+      "name": "settings_anti_peep_checking",
+      "value": "جارٍ التحقق من الحماية أو تفعيلها…"
+    },
+    {
+      "name": "settings_anti_peep_save_failed",
+      "value": "تعذر الحفظ. حاول مجددًا."
+    },
+    {
+      "name": "huawei_account_title",
+      "value": "HUAWEI ID and cloud sync"
+    },
+    {
+      "name": "huawei_config_section",
+      "value": "Settings profile"
+    },
+    {
+      "name": "huawei_config_import",
+      "value": "Import"
+    },
+    {
+      "name": "huawei_config_export",
+      "value": "Export"
+    },
+    {
+      "name": "huawei_config_importing",
+      "value": "Importing…"
+    },
+    {
+      "name": "huawei_config_exporting",
+      "value": "Exporting…"
+    },
+    {
+      "name": "huawei_config_description",
+      "value": "Back up or restore appearance, media and filter settings with a JSON file. Account, token and proxy details are never included."
+    },
+    {
+      "name": "huawei_config_exported",
+      "value": "Settings profile exported"
+    },
+    {
+      "name": "huawei_config_export_failed",
+      "value": "Export failed. Try again."
+    },
+    {
+      "name": "huawei_config_imported",
+      "value": "Settings imported"
+    },
+    {
+      "name": "huawei_config_import_failed",
+      "value": "The settings profile could not be read or validated."
+    },
+    {
+      "name": "huawei_config_import_title",
+      "value": "Import settings profile?"
+    },
+    {
+      "name": "huawei_config_import_message",
+      "value": "Appearance, media and filter settings in this file will replace the matching settings on this device. Account and proxy details will not change."
+    },
+    {
+      "name": "huawei_config_import_confirm",
+      "value": "Import"
+    },
+    {
+      "name": "huawei_account_name",
+      "value": "HUAWEI ID"
+    },
+    {
+      "name": "huawei_login",
+      "value": "Sign in with HUAWEI ID"
+    },
+    {
+      "name": "huawei_logout",
+      "value": "Sign out"
+    },
+    {
+      "name": "huawei_signed_in",
+      "value": "Signed in with HUAWEI ID"
+    },
+    {
+      "name": "huawei_logging_in",
+      "value": "Signing in…"
+    },
+    {
+      "name": "huawei_signed_out_description",
+      "value": "Sign in to bring your preferences with you"
+    },
+    {
+      "name": "huawei_cloud_sync",
+      "value": "Cloud sync"
+    },
+    {
+      "name": "huawei_sync_description",
+      "value": "Sign in to enable sync for appearance, reading, playback preferences and local content rules across your devices."
+    },
+    {
+      "name": "huawei_local_data_note",
+      "value": "X credentials, messages, drafts and caches stay on this device. Some appearance changes take effect after restarting."
+    },
+    {
+      "name": "huawei_logout_title",
+      "value": "Sign out of HUAWEI ID?"
+    },
+    {
+      "name": "huawei_logout_description",
+      "value": "Cloud sync will pause. Local settings and existing cloud data will be kept. Your X account remains available."
+    },
+    {
+      "name": "huawei_sync_disabled",
+      "value": "Off. Settings are saved on this device."
+    },
+    {
+      "name": "huawei_sync_unavailable",
+      "value": "Cloud storage is unavailable. Check the system cloud service and this app’s sync switch."
+    },
+    {
+      "name": "huawei_sync_downloading",
+      "value": "Reading and merging cloud settings…"
+    },
+    {
+      "name": "huawei_sync_uploading",
+      "value": "Uploading settings…"
+    },
+    {
+      "name": "huawei_sync_success",
+      "value": "Synced"
+    },
+    {
+      "name": "huawei_sync_pending",
+      "value": "Saved locally, waiting to sync"
+    },
+    {
+      "name": "huawei_sync_failed",
+      "value": "Sync did not finish. Your local data is safe. Check system cloud settings and try again."
+    },
+    {
+      "name": "huawei_network_error",
+      "value": "Network unavailable. Try again when connected."
+    },
+    {
+      "name": "huawei_storage_full",
+      "value": "Cloud or device storage is full. Free some space and try again."
+    },
+    {
+      "name": "huawei_login_error",
+      "value": "Sign-in did not finish. Check account service configuration or try again later."
+    },
+    {
+      "name": "huawei_authorization_error",
+      "value": "Nickname and avatar authorization failed. Check account permissions and try again."
+    },
+    {
+      "name": "huawei_save_error",
+      "value": "Could not save settings. Try again."
+    },
+    {
+      "name": "huawei_select_group",
+      "value": "Select at least one group to sync."
+    },
+    {
+      "name": "huawei_account_changed",
+      "value": "HUAWEI ID has changed. Enabling sync will merge the selected local settings into the current account."
+    },
+    {
+      "name": "huawei_last_sync",
+      "value": "Last successful sync:"
+    },
+    {
+      "name": "huawei_syncing",
+      "value": "Syncing…"
+    },
+    {
+      "name": "huawei_sync_now",
+      "value": "Sync now"
+    },
+    {
+      "name": "huawei_group_appearance",
+      "value": "Appearance and navigation"
+    },
+    {
+      "name": "huawei_group_appearance_description",
+      "value": "Theme, text size, title bar, tabs and sheet material"
+    },
+    {
+      "name": "huawei_group_media",
+      "value": "Reading and playback"
+    },
+    {
+      "name": "huawei_group_media_description",
+      "value": "Image and video quality, autoplay and mute preferences"
+    },
+    {
+      "name": "huawei_group_filters",
+      "value": "Local content rules"
+    },
+    {
+      "name": "huawei_group_filters_description",
+      "value": "Keyword and user filters, and content preferences"
+    },
+    {
+      "name": "post_photo_save_background",
+      "value": "حفظ في مكتبة الخلفيات"
+    },
+    {
+      "name": "chat_background_saving_photo",
+      "value": "جارٍ حفظ صورة الخلفية…"
+    },
+    {
+      "name": "chat_background_saved_photo",
+      "value": "تم الحفظ. اخترها من خلفية الصفحة أو خلفية المحادثة."
+    },
+    {
+      "name": "chat_background_save_photo_failed",
+      "value": "تعذّر حفظ صورة الخلفية. حاول مجددًا."
+    },
+    {
+      "name": "chat_background_saved_photos",
+      "value": "صور محفوظة من المنشورات"
+    },
+    {
+      "name": "page_background_title",
+      "value": "خلفية الصفحات"
+    },
+    {
+      "name": "page_background_description",
+      "value": "Colors, photos and mixable patterns"
+    },
+    {
+      "name": "page_background_switch_title",
+      "value": "تفعيل خلفية الصفحة"
+    },
+    {
+      "name": "page_background_switch_desc",
+      "value": "أوقفها لاستخدام خلفية السمة فورًا. سيتم الاحتفاظ بالنمط الحالي."
+    },
+    {
+      "name": "page_background_base",
+      "value": "الخلفية الأساسية"
+    },
+    {
+      "name": "page_background_pattern",
+      "value": "طبقة الأنماط"
+    },
+    {
+      "name": "page_background_pattern_none",
+      "value": "بلا نمط"
+    },
+    {
+      "name": "page_background_content_opacity",
+      "value": "عتامة خلفية المحتوى"
+    },
+    {
+      "name": "page_background_reset",
+      "value": "استعادة الافتراضي"
+    },
+    {
+      "name": "page_background_color_placeholder",
+      "value": "Custom color #RRGGBB"
+    },
+    {
+      "name": "page_background_preview",
+      "value": "معاينة الخلفية"
+    },
+    {
+      "name": "page_background_preview_text",
+      "value": "Bring your favorite colors and patterns to every visit."
+    },
+    {
+      "name": "page_background_preview_hint",
+      "value": "Text and content surfaces show how readable your background will be."
+    },
+    {
+      "name": "page_background_note",
+      "value": "Applies to regular pages. Chats have separate backgrounds; media viewers keep their immersive backgrounds. Tap Apply to save."
+    },
+    {
+      "name": "page_background_layout_preset",
+      "value": "أنماط كاملة"
+    },
+    {
+      "name": "page_background_layout_icons",
+      "value": "زخارف منفردة"
+    },
+    {
+      "name": "page_background_density",
+      "value": "كثافة الزخارف"
+    },
+    {
+      "name": "page_background_set_add",
+      "value": "تحديد المجموعة كاملة"
+    },
+    {
+      "name": "page_background_set_remove",
+      "value": "إلغاء تحديد المجموعة"
+    },
+    {
+      "name": "page_background_mix_hint",
+      "value": "Select motifs across sets to mix them, or repeat a single motif."
+    },
+    {
+      "name": "page_background_selected",
+      "value": "%d motifs selected"
+    },
+    {
+      "name": "page_background_icons_clear",
+      "value": "مسح الزخارف"
+    },
+    {
+      "name": "page_background_paper",
+      "value": "ملمس الورق"
+    },
+    {
+      "name": "page_background_paper_none",
+      "value": "بلا ملمس"
+    },
+    {
+      "name": "page_background_kraft",
+      "value": "ورق كرافت"
+    },
+    {
+      "name": "page_background_parchment",
+      "value": "ورق الرق"
+    },
+    {
+      "name": "page_background_texture_strength",
+      "value": "شدة الملمس"
+    },
+    {
+      "name": "page_background_presets_mix",
+      "value": "اختر نمطًا كاملاً واحدًا في كل مرة."
+    },
+    {
+      "name": "page_background_applied",
+      "value": "تم تطبيق خلفية الصفحات"
+    },
+    {
+      "name": "page_background_apply_failed",
+      "value": "تعذر حفظ الخلفية. حاول مجددًا."
+    },
+    {
+      "name": "page_background_transparent_posts",
+      "value": "Transparent post cards"
+    },
+    {
+      "name": "page_background_transparent_posts_desc",
+      "value": "Hide the surface behind posts and quoted posts to reveal the page background."
+    },
+    {
+      "name": "page_background_transparent_inbox",
+      "value": "Transparent message list"
+    },
+    {
+      "name": "page_background_transparent_inbox_desc",
+      "value": "Hide conversation row surfaces while keeping text, avatars and unread indicators."
+    },
+    {
+      "name": "page_background_post_opacity",
+      "value": "Post surface opacity"
+    },
+    {
+      "name": "page_background_inbox_opacity",
+      "value": "Message list surface opacity"
+    },
+    {
+      "name": "page_background_scheme_import",
+      "value": "Import scheme"
+    },
+    {
+      "name": "page_background_scheme_share",
+      "value": "Share scheme"
+    },
+    {
+      "name": "page_background_scheme_title",
+      "value": "Page background scheme"
+    },
+    {
+      "name": "page_background_scheme_imported",
+      "value": "Scheme imported. Preview it, then tap Apply."
+    },
+    {
+      "name": "page_background_scheme_import_failed",
+      "value": "Unable to import. Choose a valid HarmonyX background scheme (up to 48 MB)."
+    },
+    {
+      "name": "page_background_scheme_share_failed",
+      "value": "Unable to share. Please try again; background photos must be under 32 MB."
+    },
+    {
+      "name": "page_background_set_signature_icons",
+      "value": "أيقونات بديلة"
+    },
+    {
+      "name": "page_background_set_garden_defense",
+      "value": "Plants vs. Zombies"
+    },
+    {
+      "name": "page_background_motif_signature_icons_frog_face",
+      "value": "Frog face"
+    },
+    {
+      "name": "page_background_motif_signature_icons_frog_lily",
+      "value": "Frog on a lily pad"
+    },
+    {
+      "name": "page_background_motif_signature_icons_milk_frog",
+      "value": "Milk frog"
+    },
+    {
+      "name": "page_background_motif_signature_icons_milk_frog_wave",
+      "value": "Waving milk frog"
+    },
+    {
+      "name": "page_background_motif_signature_icons_bird",
+      "value": "Flying bird"
+    },
+    {
+      "name": "page_background_motif_signature_icons_bird_wings",
+      "value": "Bird with open wings"
+    },
+    {
+      "name": "page_background_motif_signature_icons_ribbon_x",
+      "value": "Ribbon X"
+    },
+    {
+      "name": "page_background_motif_signature_icons_blossom_x",
+      "value": "Blossom X"
+    },
+    {
+      "name": "page_background_motif_signature_icons_brush_x",
+      "value": "Brush X"
+    },
+    {
+      "name": "page_background_motif_signature_icons_prism_x",
+      "value": "Prism X"
+    },
+    {
+      "name": "page_background_motif_signature_icons_zombie_x",
+      "value": "Zombie X"
+    },
+    {
+      "name": "page_background_motif_signature_icons_lily_blossom",
+      "value": "Lily blossom"
+    },
+    {
+      "name": "page_background_motif_garden_defense_peashooter",
+      "value": "Peashooter"
+    },
+    {
+      "name": "page_background_motif_garden_defense_sunflower",
+      "value": "Sunflower"
+    },
+    {
+      "name": "page_background_motif_garden_defense_wallnut",
+      "value": "Wall-nut"
+    },
+    {
+      "name": "page_background_motif_garden_defense_cherry_bomb",
+      "value": "Cherry Bomb"
+    },
+    {
+      "name": "page_background_motif_garden_defense_snow_pea",
+      "value": "Snow Pea"
+    },
+    {
+      "name": "page_background_motif_garden_defense_potato_mine",
+      "value": "Potato Mine"
+    },
+    {
+      "name": "page_background_motif_garden_defense_chomper",
+      "value": "Chomper"
+    },
+    {
+      "name": "page_background_motif_garden_defense_squash",
+      "value": "Squash"
+    },
+    {
+      "name": "page_background_motif_garden_defense_zombie",
+      "value": "Zombie"
+    },
+    {
+      "name": "page_background_motif_garden_defense_conehead",
+      "value": "Conehead Zombie"
+    },
+    {
+      "name": "page_background_motif_garden_defense_buckethead",
+      "value": "Buckethead Zombie"
+    },
+    {
+      "name": "page_background_motif_garden_defense_lawnmower",
+      "value": "Lawn mower"
+    },
+    {
+      "name": "page_background_set_ai_assistants",
+      "value": "مساعدو الذكاء الاصطناعي"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_gpt",
+      "value": "GPT"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_claude",
+      "value": "Claude"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_gemini",
+      "value": "Gemini"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_deepseek",
+      "value": "DeepSeek"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_grok",
+      "value": "Grok"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_qwen",
+      "value": "Qwen"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_kimi",
+      "value": "Kimi"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_doubao",
+      "value": "Doubao"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_copilot",
+      "value": "Copilot"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_perplexity",
+      "value": "Perplexity"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_mistral",
+      "value": "Mistral"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_robot",
+      "value": "AI robot"
+    },
+    {
+      "name": "page_background_set_mobile_brands_systems",
+      "value": "علامات الهواتف وأنظمتها"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_apple",
+      "value": "Apple"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_huawei",
+      "value": "Huawei"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_xiaomi",
+      "value": "Xiaomi"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_samsung",
+      "value": "Samsung"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_oppo",
+      "value": "OPPO"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_vivo",
+      "value": "vivo"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_honor",
+      "value": "HONOR"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_oneplus",
+      "value": "OnePlus"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_meizu",
+      "value": "Meizu"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_harmonyos",
+      "value": "HarmonyOS"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_android",
+      "value": "Android"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_ios",
+      "value": "iOS"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_hyperos",
+      "value": "HyperOS"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_coloros",
+      "value": "ColorOS"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_originos",
+      "value": "OriginOS"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_oneui",
+      "value": "One UI"
+    },
+    {
+      "name": "motion_title",
+      "value": "Animation & haptics"
+    },
+    {
+      "name": "motion_intro",
+      "value": "Tune interaction animations and touch feedback. Changes are saved automatically. Tap the preview to try them."
+    },
+    {
+      "name": "motion_preview",
+      "value": "Tap to preview animation and haptics"
+    },
+    {
+      "name": "motion_reduce",
+      "value": "Reduce motion"
+    },
+    {
+      "name": "motion_reduce_desc",
+      "value": "Turn off decorative scaling, movement and Symbol effects, and skip page transitions. Your animation preferences are kept."
+    },
+    {
+      "name": "motion_duration",
+      "value": "Animation duration"
+    },
+    {
+      "name": "motion_duration_desc",
+      "value": "Reference duration for app animations. Button and page animations scale proportionally. System Symbol effects keep their native timing."
+    },
+    {
+      "name": "motion_amplitude",
+      "value": "Movement amplitude"
+    },
+    {
+      "name": "motion_amplitude_desc",
+      "value": "Adjust decorative scaling and rotation. At 0%, these effects stop. Gesture tracking and zoom keep their full range."
+    },
+    {
+      "name": "motion_damping",
+      "value": "Spring damping"
+    },
+    {
+      "name": "motion_damping_desc",
+      "value": "Lower values bounce more; higher values settle more gently."
+    },
+    {
+      "name": "motion_symbol",
+      "value": "Animated Symbols"
+    },
+    {
+      "name": "motion_symbol_desc",
+      "value": "Play a native Symbol effect once when selecting a tab or using an action button. Effects pause with Reduce motion."
+    },
+    {
+      "name": "motion_haptics",
+      "value": "Touch feedback"
+    },
+    {
+      "name": "motion_haptics_desc",
+      "value": "Use light feedback for navigation, buttons, switches and actions. Follows the system haptics setting."
+    },
+    {
+      "name": "motion_intensity",
+      "value": "Haptic intensity"
+    },
+    {
+      "name": "motion_intensity_desc",
+      "value": "Adjust preset effects on supported devices. Other motors use a short system touch vibration."
+    },
+    {
+      "name": "motion_presets",
+      "value": "Animation presets"
+    },
+    {
+      "name": "motion_preset_quick",
+      "value": "Quick"
+    },
+    {
+      "name": "motion_preset_quick_desc",
+      "value": "175 ms · 60% movement · firm settling. Short, crisp feedback."
+    },
+    {
+      "name": "motion_preset_standard",
+      "value": "Standard"
+    },
+    {
+      "name": "motion_preset_standard_desc",
+      "value": "300 ms · 100% movement · balanced spring. Recommended for everyday use."
+    },
+    {
+      "name": "motion_preset_spring",
+      "value": "Bouncy"
+    },
+    {
+      "name": "motion_preset_spring_desc",
+      "value": "450 ms · 120% movement · lower damping. Softer, more visible rebound."
+    },
+    {
+      "name": "motion_preset_reduced",
+      "value": "Low motion"
+    },
+    {
+      "name": "motion_preset_reduced_desc",
+      "value": "Skip page transitions and decorative effects. Keep your previous tuning."
+    },
+    {
+      "name": "motion_preset_custom",
+      "value": "Current preset: Custom. Choose a preset to restore its animation values."
+    },
+    {
+      "name": "chat_auto_download",
+      "value": "Chat auto-download"
+    },
+    {
+      "name": "storage_chat_retention",
+      "value": "Keep chat media"
+    },
+    {
+      "name": "storage_chat_retention_desc",
+      "value": "Set how long downloaded chat media stays cached. Chat history and manually saved files are kept."
+    },
+    {
+      "name": "settings_theme_mix",
+      "value": "لوحات ألوان مختلطة"
+    },
+    {
+      "name": "settings_theme_mix_desc",
+      "value": "ألوان متناسقة للمفاتيح والتنقل وأزرار النشر في المظهرين الفاتح والداكن."
+    },
+    {
+      "name": "settings_theme_mix_confetti",
+      "value": "ألوان احتفالية"
+    },
+    {
+      "name": "settings_theme_mix_coast",
+      "value": "ملح البحر والمرجان"
+    },
+    {
+      "name": "settings_theme_mix_sunset",
+      "value": "سوسن الغروب"
+    },
+    {
+      "name": "settings_theme_mix_forest",
+      "value": "كهرمان الغابة"
+    },
+    {
+      "name": "settings_theme_mix_berry",
+      "value": "التوت والنعناع"
+    },
+    {
+      "name": "settings_theme_mix_morandi",
+      "value": "موراندي"
+    },
+    {
+      "name": "settings_theme_mix_prism",
+      "value": "طيف الألوان الأساسية"
+    },
+    {
+      "name": "settings_theme_solid",
+      "value": "ألوان مفردة"
+    },
+    {
+      "name": "settings_theme_mix_candy",
+      "value": "حلوى ملونة"
+    },
+    {
+      "name": "settings_theme_mix_sky",
+      "value": "السماء والليمون"
+    },
+    {
+      "name": "settings_theme_mix_peach",
+      "value": "الخوخ والنعناع"
+    },
+    {
+      "name": "settings_theme_mix_lilac",
+      "value": "الليلك والكاسترد"
+    },
+    {
+      "name": "page_background_set_popular_apps_cn",
+      "value": "تطبيقات شائعة · الصين"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_wechat",
+      "value": "WeChat"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_qq",
+      "value": "QQ"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_weibo",
+      "value": "Weibo"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_douyin",
+      "value": "Douyin"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_kuaishou",
+      "value": "Kuaishou"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_bilibili",
+      "value": "Bilibili"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_xiaohongshu",
+      "value": "Xiaohongshu"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_zhihu",
+      "value": "Zhihu"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_baidu",
+      "value": "Baidu"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_tieba",
+      "value": "Baidu Tieba"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_alipay",
+      "value": "Alipay"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_taobao",
+      "value": "Taobao"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_jd",
+      "value": "JD"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_pinduoduo",
+      "value": "Pinduoduo"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_meituan",
+      "value": "Meituan"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_eleme",
+      "value": "Ele.me"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_dianping",
+      "value": "Dianping"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_amap",
+      "value": "Amap"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_baidu_maps",
+      "value": "Baidu Maps"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_didi",
+      "value": "DiDi"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_netease_music",
+      "value": "NetEase Cloud Music"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_qq_music",
+      "value": "QQ Music"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_kugou",
+      "value": "KuGou"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_weread",
+      "value": "WeRead"
+    },
+    {
+      "name": "page_background_set_popular_apps_global",
+      "value": "تطبيقات شائعة · العالم"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_whatsapp",
+      "value": "WhatsApp"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_telegram",
+      "value": "Telegram"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_signal",
+      "value": "Signal"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_instagram",
+      "value": "Instagram"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_facebook",
+      "value": "Facebook"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_messenger",
+      "value": "Messenger"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_x",
+      "value": "X"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_threads",
+      "value": "Threads"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_youtube",
+      "value": "YouTube"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_tiktok",
+      "value": "TikTok"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_reddit",
+      "value": "Reddit"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_discord",
+      "value": "Discord"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_spotify",
+      "value": "Spotify"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_apple_music",
+      "value": "Apple Music"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_netflix",
+      "value": "Netflix"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_twitch",
+      "value": "Twitch"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_line",
+      "value": "LINE"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_snapchat",
+      "value": "Snapchat"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_pinterest",
+      "value": "Pinterest"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_chrome",
+      "value": "Chrome"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_firefox",
+      "value": "Firefox"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_edge",
+      "value": "Edge"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_gmail",
+      "value": "Gmail"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_google_maps",
+      "value": "Google Maps"
+    },
+    {
+      "name": "scene_title",
+      "value": "Scene modes"
+    },
+    {
+      "name": "scene_intro",
+      "value": "Apply a set of playback, quality, motion and background preferences. Restore returns to your settings from before the first mode was enabled."
+    },
+    {
+      "name": "scene_reading",
+      "value": "Clear reading"
+    },
+    {
+      "name": "scene_reading_desc",
+      "value": "Autoplay off · high quality images · low quality video · reduced motion · plain background"
+    },
+    {
+      "name": "scene_saver",
+      "value": "Power and data saver"
+    },
+    {
+      "name": "scene_saver_desc",
+      "value": "Autoplay off · small images · low quality video · reduced motion · plain background"
+    },
+    {
+      "name": "scene_media",
+      "value": "Media browsing"
+    },
+    {
+      "name": "scene_media_desc",
+      "value": "Autoplay on · original images · high quality video · motion on · your saved background"
+    },
+    {
+      "name": "scene_restore",
+      "value": "Restore original settings"
+    },
+    {
+      "name": "scene_restore_desc",
+      "value": "Keep your preferences from before scene mode. Switching between modes does not replace this backup."
+    },
+    {
+      "name": "scene_failed",
+      "value": "Some settings could not be saved. Your original settings are retained; retry or restore."
+    },
+    {
+      "name": "offline_title",
+      "value": "Offline & later"
+    },
+    {
+      "name": "offline_online",
+      "value": "Online bookmarks"
+    },
+    {
+      "name": "offline_intro",
+      "value": "New bookmarks save text and available articles automatically. Enable images before saving to include photos. Local copies stay separate from online bookmarks and ordinary cache cleanup."
+    },
+    {
+      "name": "offline_images",
+      "value": "Include photos in future saves"
+    },
+    {
+      "name": "offline_save",
+      "value": "Save offline"
+    },
+    {
+      "name": "offline_saving",
+      "value": "Saving…"
+    },
+    {
+      "name": "offline_saved",
+      "value": "Saved for offline reading"
+    },
+    {
+      "name": "offline_partial_saved",
+      "value": "Saved available content. Some article text or photos are missing; retry when online."
+    },
+    {
+      "name": "offline_save_failed",
+      "value": "Could not save locally. Please retry."
+    },
+    {
+      "name": "offline_partial",
+      "value": "Incomplete copy"
+    },
+    {
+      "name": "offline_unread",
+      "value": "Unread"
+    },
+    {
+      "name": "offline_unread_only",
+      "value": "Unread only"
+    },
+    {
+      "name": "offline_search",
+      "value": "Search titles, tags or notes"
+    },
+    {
+      "name": "offline_empty",
+      "value": "No matching offline items. Save a bookmark or use Save offline on a post."
+    },
+    {
+      "name": "offline_edit",
+      "value": "Tags & note"
+    },
+    {
+      "name": "offline_tags",
+      "value": "Tags"
+    },
+    {
+      "name": "offline_tags_hint",
+      "value": "Tags, separated by commas"
+    },
+    {
+      "name": "offline_note",
+      "value": "Private note"
+    },
+    {
+      "name": "offline_done",
+      "value": "Save"
+    },
+    {
+      "name": "offline_delete",
+      "value": "Delete local copy"
+    },
+    {
+      "name": "reader_title",
+      "value": "Thread reader"
+    },
+    {
+      "name": "reader_author_only",
+      "value": "Author only"
+    },
+    {
+      "name": "reader_translate",
+      "value": "Translate passages"
+    },
+    {
+      "name": "reader_font",
+      "value": "Text size"
+    },
+    {
+      "name": "reader_missing",
+      "value": "This offline item is missing or unavailable. Save it again while online."
+    },
+    {
+      "name": "reader_partial",
+      "value": "Only the available article content is shown. Continue loading or retry while online to get the complete text."
+    },
+    {
+      "name": "reader_load_failed",
+      "value": "Could not load more replies. Your current reading content is kept."
+    },
+    {
+      "name": "reader_translation_setup",
+      "value": "Enable translation and choose a target language in Settings first."
+    },
+    {
+      "name": "reader_translation_failed",
+      "value": "Some passages could not be translated. You can hide translations and retry."
+    },
+    {
+      "name": "reader_offline_note",
+      "value": "Saved local content. Translation requires a network connection."
+    },
+    {
+      "name": "reader_scope",
+      "value": "Replies loaded so far. Use Continue loading to include more of the discussion."
+    },
     {
       "name": "input_help_title",
       "value": "الماوس ولوحة المفاتيح ولوحة اللمس"
@@ -10945,26 +12204,86 @@
       "name": "input_key_playback",
       "value": "Space / Enter / ← / →"
     },
-    {"name":"settings_filter_languages","value":"لغات المنشورات المحظورة"},
-    {"name":"settings_filter_languages_desc","value":"اختر اللغات لإخفائها. تبقى اللغات غير المعروفة ومنشورات الوسائط فقط ظاهرة."},
-    {"name":"appearance_preview_title","value":"معاينة مباشرة"},
-    {"name":"appearance_preview_hint","value":"تظهر التغييرات فوراً. اضغط على نموذج اللوحة لتوسيعه."},
-    {"name":"post_edited","value":"تم التعديل"},
-    {"name":"post_metric_bookmarks","value":"إشارات مرجعية"},
-    {"name":"post_metric_quotes","value":"اقتباسات"},
-    {"name":"settings_reply_quality","value":"طي الردود منخفضة الجودة"},
-    {"name":"settings_reply_quality_desc","value":"طي الترويج المتكرر والاستدراج الجماعي. قد تخطئ القواعد المحلية، ويمكن توسيع الردود لمراجعتها."},
-    {"name":"reply_quality_folded","value":"رد يحتمل أن يكون منخفض الجودة"},
-    {"name":"reply_quality_reasons","value":"عرض الأسباب"},
-    {"name":"reply_quality_allow","value":"إظهار هذا الكاتب دائمًا"},
-    {"name":"reply_quality_whitelist","value":"قائمة الكتّاب المسموحين"},
-    {"name":"reply_quality_whitelist_desc","value":"تبقى ردودك وكاتب المنشور والحسابات المتابَعة والكتّاب المسموحون ظاهرين. القائمة خاصة بالحساب الحالي."},
-    {"name":"reply_quality_empty","value":"لا يوجد كتّاب مسموحون بعد"},
-    {"name":"reply_quality_reason_duplicate","value":"يكرر عدة كتّاب القالب الترويجي نفسه"},
-    {"name":"reply_quality_reason_author_repeat","value":"يكرر الكاتب المحتوى نفسه"},
-    {"name":"reply_quality_reason_links","value":"يحتوي على عدة روابط خارجية"},
-    {"name":"reply_quality_reason_promotion","value":"يحتوي على ترويج أو وعود بالأرباح"},
-    {"name":"reply_quality_reason_contact","value":"يحتوي على بيانات اتصال للاستدراج"},
+    {
+      "name": "settings_filter_languages",
+      "value": "لغات المنشورات المحظورة"
+    },
+    {
+      "name": "settings_filter_languages_desc",
+      "value": "اختر اللغات لإخفائها. تبقى اللغات غير المعروفة ومنشورات الوسائط فقط ظاهرة."
+    },
+    {
+      "name": "appearance_preview_title",
+      "value": "معاينة مباشرة"
+    },
+    {
+      "name": "appearance_preview_hint",
+      "value": "تظهر التغييرات فوراً. اضغط على نموذج اللوحة لتوسيعه."
+    },
+    {
+      "name": "post_edited",
+      "value": "تم التعديل"
+    },
+    {
+      "name": "post_metric_bookmarks",
+      "value": "إشارات مرجعية"
+    },
+    {
+      "name": "post_metric_quotes",
+      "value": "اقتباسات"
+    },
+    {
+      "name": "settings_reply_quality",
+      "value": "طي الردود منخفضة الجودة"
+    },
+    {
+      "name": "settings_reply_quality_desc",
+      "value": "طي الترويج المتكرر والاستدراج الجماعي. قد تخطئ القواعد المحلية، ويمكن توسيع الردود لمراجعتها."
+    },
+    {
+      "name": "reply_quality_folded",
+      "value": "رد يحتمل أن يكون منخفض الجودة"
+    },
+    {
+      "name": "reply_quality_reasons",
+      "value": "عرض الأسباب"
+    },
+    {
+      "name": "reply_quality_allow",
+      "value": "إظهار هذا الكاتب دائمًا"
+    },
+    {
+      "name": "reply_quality_whitelist",
+      "value": "قائمة الكتّاب المسموحين"
+    },
+    {
+      "name": "reply_quality_whitelist_desc",
+      "value": "تبقى ردودك وكاتب المنشور والحسابات المتابَعة والكتّاب المسموحون ظاهرين. القائمة خاصة بالحساب الحالي."
+    },
+    {
+      "name": "reply_quality_empty",
+      "value": "لا يوجد كتّاب مسموحون بعد"
+    },
+    {
+      "name": "reply_quality_reason_duplicate",
+      "value": "يكرر عدة كتّاب القالب الترويجي نفسه"
+    },
+    {
+      "name": "reply_quality_reason_author_repeat",
+      "value": "يكرر الكاتب المحتوى نفسه"
+    },
+    {
+      "name": "reply_quality_reason_links",
+      "value": "يحتوي على عدة روابط خارجية"
+    },
+    {
+      "name": "reply_quality_reason_promotion",
+      "value": "يحتوي على ترويج أو وعود بالأرباح"
+    },
+    {
+      "name": "reply_quality_reason_contact",
+      "value": "يحتوي على بيانات اتصال للاستدراج"
+    },
     {
       "name": "settings_floating_compose_material_tint",
       "value": "لون خامة زر النشر العائم"
@@ -11053,64 +12372,528 @@
       "name": "chat_decoration_sample_text",
       "value": "Have a lovely day."
     },
-    {"name": "sign_out_confirm_title", "value": "تسجيل الخروج؟"},
-    {"name": "sign_out_confirm_message", "value": "ستحتاج إلى تسجيل الدخول مجددًا لاستخدام هذا الحساب."},
-    {"name": "settings_for_you_only_sensitive", "value": "المحتوى الحساس فقط في «لك»"},
-    {"name": "settings_for_you_only_sensitive_desc", "value": "عرض المنشورات التي يصنفها X حساسة بما فيها الاقتباسات. لا يؤثر على المتابَعين والقوائم ولا يكشف الوسائط المحجوبة."},
-    {"name": "settings_grip_floating", "value": "زر الإجراءات العائم"},
-    {"name": "settings_grip_video", "value": "شريط إجراءات الفيديو"},
-    {"name": "settings_grip_reply", "value": "زر الرد على المنشور"},
-    {"name": "settings_grip_component_desc", "value": "تغيير موضع هذا المكون حسب اليد الممسكة بالجهاز. عند الإيقاف تُستخدم اليد المفضلة."},
-    {"name": "settings_grip_hdstabs", "value": "شريط تبويبات HdsTabs السفلي"},
-    {"name": "settings_grip_hdstabs_desc", "value": "استخدام التكيف الأصلي مع اليد. عند الإيقاف لا يتحرك الشريط مع اليد الممسكة بالجهاز."},
-    {"name":"gif_action_save_video","value":"حفظ كفيديو عالي الجودة (MP4)"},
-    {"name":"storage_save_remembered_note","value":"اختر مجلد التنزيل مرة واحدة لحفظ الملفات التالية تلقائيًا فيه. أوقف الخيار للحفظ في المعرض."},
-    {"name":"storage_save_to_remembered","value":"حفظ في مجلد التنزيل"},
-    {"name": "storage_permission_reason", "value": "الاحتفاظ بالوصول إلى الملفات والمجلدات التي تختارها."},
-    {"name": "timeline_sources_lists", "value": "القوائم"},
-    {"name": "timeline_sources_communities", "value": "المجتمعات"},
-    {"name": "timeline_edit", "value": "تعديل"},
-    {"name": "timeline_done", "value": "تم"},
-    {"name": "timeline_move_up", "value": "نقل لأعلى"},
-    {"name": "timeline_move_down", "value": "نقل لأسفل"},
-    {"name": "timeline_remove_source", "value": "إزالة %s"},
-    {"name": "timeline_add_to_home", "value": "إضافة إلى الخطوط الرئيسية"},
-    {"name": "timeline_remove_from_home", "value": "إزالة من الخطوط الرئيسية"},
-    {"name": "timeline_sources_failed", "value": "تعذر تحميل بعض القوائم أو المجتمعات. اضغط لإعادة المحاولة."},
-    {"name": "timeline_sources_pinned_empty", "value": "لا توجد خطوط زمنية مثبتة. أضف قوائم أو مجتمعات أو مواضيع أدناه."},
-    {"name":"video_controls_mirror","value":"عكس مواضع عناصر التحكم"},
-    {"name":"video_controls_speed","value":"السرعة"},
-    {"name":"video_controls_aspect","value":"الأبعاد"},
-    {"name":"video_controls_background","value":"الخلفية"},
-    {"name":"video_controls_quality_hd","value":"HD"},
-    {"name":"video_controls_quality_sd","value":"SD"},
-    {"name":"video_controls_quality_ld","value":"LD"},
-    {"name":"video_controls_more","value":"المزيد"},
-    {"name":"video_controls_download","value":"تنزيل"},
-    {"name":"settings_navigation_style","value":"نمط التنقل السفلي"},
-    {"name":"settings_hds_bottom_bar","value":"HdsTabs عائم"},
-    {"name":"settings_split_bottom_bar","value":"تنقل بكبسولة منفصلة"},
-    {"name":"settings_split_bottom_bar_desc","value":"بدّل الصفحات من الكبسولة اليسرى. يتيح الزر المنفصل النشر أو بدء محادثة أو التحديث أو العودة للأعلى. يستخدم كلاهما خامة HDS، مع تنقل متوافق على الأنظمة الأقدم."},
-    {"name":"split_navigation_action_top","value":"العودة للأعلى"},
-    {"name":"split_navigation_action_refresh","value":"تحديث الرئيسية"},
-    {"name":"split_navigation_action_compose","value":"إنشاء منشور"},
-    {"name": "settings_reply_capsule_split", "value": "كبسولات رد منفصلة"},
-    {"name": "settings_reply_capsule_split_desc", "value": "فصل مدخل الرد وإجراءات المنشور عند الطي"},
-    {"name": "reply_capsule_write_reply", "value": "رد"},
-    {"name":"settings_native_bottom_bar","value":"تنقل كبسولي بخامة 7.0"},
-    {"name":"settings_native_bottom_bar_desc","value":"استخدم خامة HarmonyOS 7.0 الغامرة لكبسولة الرد، مع إضاءة اللمس ومؤشر سائل وتبديل الجانب حسب القبضة. تُستخدم كبسولة HDS عند عدم توفرها."},
-    {"name":"settings_native_navigation_material","value":"سماكة خامة كبسولة التنقل"},
-    {"name":"settings_for_you_only_sensitive_age_title","value":"تأكيد العمر"},
-    {"name":"settings_for_you_only_sensitive_age_message","value":"ميزة «المحتوى الحساس فقط في ‹لك›» متاحة فقط لمن أعمارهم 18 عامًا أو أكثر. هل عمرك 18 عامًا أو أكثر؟"},
-    {"name":"settings_for_you_only_sensitive_age_under","value":"أقل من 18 عامًا"},
-    {"name":"settings_for_you_only_sensitive_age_adult","value":"18 عامًا أو أكثر"},
-    {"name":"settings_theme_icon_blue","value":"أزرق الأيقونات"},
-    {"name":"settings_theme_icon_red","value":"أحمر الأيقونات"},
-    {"name":"settings_theme_icon_orange","value":"برتقالي الأيقونات"},
-    {"name":"settings_theme_icon_yellow","value":"أصفر الأيقونات"},
-    {"name":"settings_theme_icon_green","value":"أخضر الأيقونات"},
-    {"name":"settings_theme_icon_pink","value":"وردي الأيقونات"},
-    {"name":"settings_theme_icon_cyan","value":"سماوي الأيقونات"},
-    {"name":"settings_theme_icon_navy","value":"كحلي الأيقونات"}
+    {
+      "name": "sign_out_confirm_title",
+      "value": "تسجيل الخروج؟"
+    },
+    {
+      "name": "sign_out_confirm_message",
+      "value": "ستحتاج إلى تسجيل الدخول مجددًا لاستخدام هذا الحساب."
+    },
+    {
+      "name": "settings_for_you_only_sensitive",
+      "value": "المحتوى الحساس فقط في «لك»"
+    },
+    {
+      "name": "settings_for_you_only_sensitive_desc",
+      "value": "عرض المنشورات التي يصنفها X حساسة بما فيها الاقتباسات. لا يؤثر على المتابَعين والقوائم ولا يكشف الوسائط المحجوبة."
+    },
+    {
+      "name": "settings_grip_floating",
+      "value": "زر الإجراءات العائم"
+    },
+    {
+      "name": "settings_grip_video",
+      "value": "شريط إجراءات الفيديو"
+    },
+    {
+      "name": "settings_grip_reply",
+      "value": "زر الرد على المنشور"
+    },
+    {
+      "name": "settings_grip_component_desc",
+      "value": "تغيير موضع هذا المكون حسب اليد الممسكة بالجهاز. عند الإيقاف تُستخدم اليد المفضلة."
+    },
+    {
+      "name": "settings_grip_hdstabs",
+      "value": "شريط تبويبات HdsTabs السفلي"
+    },
+    {
+      "name": "settings_grip_hdstabs_desc",
+      "value": "استخدام التكيف الأصلي مع اليد. عند الإيقاف لا يتحرك الشريط مع اليد الممسكة بالجهاز."
+    },
+    {
+      "name": "gif_action_save_video",
+      "value": "حفظ كفيديو عالي الجودة (MP4)"
+    },
+    {
+      "name": "storage_save_remembered_note",
+      "value": "اختر مجلد التنزيل مرة واحدة لحفظ الملفات التالية تلقائيًا فيه. أوقف الخيار للحفظ في المعرض."
+    },
+    {
+      "name": "storage_save_to_remembered",
+      "value": "حفظ في مجلد التنزيل"
+    },
+    {
+      "name": "storage_permission_reason",
+      "value": "الاحتفاظ بالوصول إلى الملفات والمجلدات التي تختارها."
+    },
+    {
+      "name": "timeline_sources_lists",
+      "value": "القوائم"
+    },
+    {
+      "name": "timeline_sources_communities",
+      "value": "المجتمعات"
+    },
+    {
+      "name": "timeline_edit",
+      "value": "تعديل"
+    },
+    {
+      "name": "timeline_done",
+      "value": "تم"
+    },
+    {
+      "name": "timeline_move_up",
+      "value": "نقل لأعلى"
+    },
+    {
+      "name": "timeline_move_down",
+      "value": "نقل لأسفل"
+    },
+    {
+      "name": "timeline_remove_source",
+      "value": "إزالة %s"
+    },
+    {
+      "name": "timeline_add_to_home",
+      "value": "إضافة إلى الخطوط الرئيسية"
+    },
+    {
+      "name": "timeline_remove_from_home",
+      "value": "إزالة من الخطوط الرئيسية"
+    },
+    {
+      "name": "timeline_sources_failed",
+      "value": "تعذر تحميل بعض القوائم أو المجتمعات. اضغط لإعادة المحاولة."
+    },
+    {
+      "name": "timeline_sources_pinned_empty",
+      "value": "لا توجد خطوط زمنية مثبتة. أضف قوائم أو مجتمعات أو مواضيع أدناه."
+    },
+    {
+      "name": "video_controls_mirror",
+      "value": "عكس مواضع عناصر التحكم"
+    },
+    {
+      "name": "video_controls_speed",
+      "value": "السرعة"
+    },
+    {
+      "name": "video_controls_aspect",
+      "value": "الأبعاد"
+    },
+    {
+      "name": "video_controls_background",
+      "value": "الخلفية"
+    },
+    {
+      "name": "video_controls_quality_hd",
+      "value": "HD"
+    },
+    {
+      "name": "video_controls_quality_sd",
+      "value": "SD"
+    },
+    {
+      "name": "video_controls_quality_ld",
+      "value": "LD"
+    },
+    {
+      "name": "video_controls_more",
+      "value": "المزيد"
+    },
+    {
+      "name": "video_controls_download",
+      "value": "تنزيل"
+    },
+    {
+      "name": "settings_navigation_style",
+      "value": "نمط التنقل السفلي"
+    },
+    {
+      "name": "settings_hds_bottom_bar",
+      "value": "HdsTabs عائم"
+    },
+    {
+      "name": "settings_split_bottom_bar",
+      "value": "تنقل بكبسولة منفصلة"
+    },
+    {
+      "name": "settings_split_bottom_bar_desc",
+      "value": "بدّل الصفحات من الكبسولة اليسرى. يتيح الزر المنفصل النشر أو بدء محادثة أو التحديث أو العودة للأعلى. يستخدم كلاهما خامة HDS، مع تنقل متوافق على الأنظمة الأقدم."
+    },
+    {
+      "name": "settings_me_floating_action",
+      "value": "كبسولة «أنا» السريعة"
+    },
+    {
+      "name": "settings_me_floating_action_desc",
+      "value": "اختر الوظيفة التي تُفتح مباشرة عند النقر على الكبسولة المنفصلة بجانب علامة التبويب «أنا»."
+    },
+    {
+      "name": "split_navigation_action_top",
+      "value": "العودة للأعلى"
+    },
+    {
+      "name": "split_navigation_action_refresh",
+      "value": "تحديث الرئيسية"
+    },
+    {
+      "name": "split_navigation_action_compose",
+      "value": "إنشاء منشور"
+    },
+    {
+      "name": "settings_reply_capsule_split",
+      "value": "كبسولات رد منفصلة"
+    },
+    {
+      "name": "settings_reply_capsule_split_desc",
+      "value": "فصل مدخل الرد وإجراءات المنشور عند الطي"
+    },
+    {
+      "name": "reply_capsule_write_reply",
+      "value": "رد"
+    },
+    {
+      "name": "settings_native_bottom_bar",
+      "value": "تنقل كبسولي بخامة 7.0"
+    },
+    {
+      "name": "settings_native_bottom_bar_desc",
+      "value": "استخدم خامة HarmonyOS 7.0 الغامرة لكبسولة الرد، مع إضاءة اللمس ومؤشر سائل وتبديل الجانب حسب القبضة. تُستخدم كبسولة HDS عند عدم توفرها."
+    },
+    {
+      "name": "settings_native_navigation_material",
+      "value": "سماكة خامة كبسولة التنقل"
+    },
+    {
+      "name": "settings_for_you_only_sensitive_age_title",
+      "value": "تأكيد العمر"
+    },
+    {
+      "name": "settings_for_you_only_sensitive_age_message",
+      "value": "ميزة «المحتوى الحساس فقط في ‹لك›» متاحة فقط لمن أعمارهم 18 عامًا أو أكثر. هل عمرك 18 عامًا أو أكثر؟"
+    },
+    {
+      "name": "settings_for_you_only_sensitive_age_under",
+      "value": "أقل من 18 عامًا"
+    },
+    {
+      "name": "settings_for_you_only_sensitive_age_adult",
+      "value": "18 عامًا أو أكثر"
+    },
+    {
+      "name": "settings_theme_icon_blue",
+      "value": "أزرق الأيقونات"
+    },
+    {
+      "name": "settings_theme_icon_red",
+      "value": "أحمر الأيقونات"
+    },
+    {
+      "name": "settings_theme_icon_orange",
+      "value": "برتقالي الأيقونات"
+    },
+    {
+      "name": "settings_theme_icon_yellow",
+      "value": "أصفر الأيقونات"
+    },
+    {
+      "name": "settings_theme_icon_green",
+      "value": "أخضر الأيقونات"
+    },
+    {
+      "name": "settings_theme_icon_pink",
+      "value": "وردي الأيقونات"
+    },
+    {
+      "name": "settings_theme_icon_cyan",
+      "value": "سماوي الأيقونات"
+    },
+    {
+      "name": "settings_theme_icon_navy",
+      "value": "كحلي الأيقونات"
+    },
+    {
+      "name": "settings_bottom_tab_order",
+      "value": "Bottom tab order"
+    },
+    {
+      "name": "settings_home_tab_order",
+      "value": "Home tab order"
+    },
+    {
+      "name": "settings_tab_order_desc",
+      "value": "Use the arrows to reorder tabs. Changes apply immediately; new tabs are added at the end."
+    },
+    {
+      "name": "settings_tab_move_up",
+      "value": "Move earlier"
+    },
+    {
+      "name": "settings_tab_move_down",
+      "value": "Move later"
+    },
+    {
+      "name": "settings_tab_order_reset",
+      "value": "Reset order"
+    },
+    {
+      "name": "settings_post_actions",
+      "value": "Post action bar"
+    },
+    {
+      "name": "settings_post_actions_desc",
+      "value": "Choose the actions shown in feeds and post details. Turn off counts to keep only icons."
+    },
+    {
+      "name": "settings_post_action_counts",
+      "value": "Show interaction counts"
+    },
+    {
+      "name": "video_rotate",
+      "value": "Open landscape player"
+    },
+    {
+      "name": "video_download_notice_downloading",
+      "value": "جارٍ تنزيل الفيديو"
+    },
+    {
+      "name": "video_download_notice_saving",
+      "value": "جارٍ حفظ الفيديو"
+    },
+    {
+      "name": "video_download_notice_completed",
+      "value": "تم تنزيل الفيديو"
+    },
+    {
+      "name": "settings_home_single_tap_top",
+      "value": "اضغط على الرئيسية للعودة إلى الأعلى"
+    },
+    {
+      "name": "settings_home_single_tap_top_desc",
+      "value": "اضغط على تبويب الرئيسية السفلي للعودة إلى أعلى الخط الزمني الحالي. يبقى التحديث بالنقر المزدوج وفق إعداده الحالي."
+    },
+    {
+      "name": "background_photo_delete",
+      "value": "حذف الخلفية"
+    },
+    {
+      "name": "background_photo_delete_confirm",
+      "value": "هل تريد حذف هذه الصورة؟ ستتم إزالتها أيضًا من خلفيات الصفحات والمحادثات التي تستخدمها. لا يمكن التراجع عن هذا الإجراء."
+    },
+    {
+      "name": "background_photo_deleted",
+      "value": "تم حذف صورة الخلفية"
+    },
+    {
+      "name": "background_photo_delete_failed",
+      "value": "تعذر الحذف. يرجى المحاولة مرة أخرى."
+    },
+    {
+      "name": "search_refill_query",
+      "value": "إدخال في حقل البحث"
+    },
+    {
+      "name": "search_history_delete_title",
+      "value": "حذف هذا السجل؟"
+    },
+    {
+      "name": "global_trends_title",
+      "value": "المتداول عالميًا"
+    },
+    {
+      "name": "global_trends_description",
+      "value": "المنشورات الأكثر رواجًا"
+    },
+    {
+      "name": "global_trends_explore",
+      "value": "استكشاف"
+    },
+    {
+      "name": "global_trends_today",
+      "value": "رائج اليوم"
+    },
+    {
+      "name": "global_trends_worldwide",
+      "value": "حول العالم"
+    },
+    {
+      "name": "global_trends_countries",
+      "value": "البلدان"
+    },
+    {
+      "name": "global_trends_reset",
+      "value": "عرض جميع المنشورات الرائجة"
+    },
+    {
+      "name": "post_video_publish",
+      "value": "نشر فيديو"
+    },
+    {
+      "name": "post_video_copy_link",
+      "value": "نسخ رابط الفيديو"
+    },
+    {
+      "name": "post_video_save",
+      "value": "حفظ الفيديو"
+    },
+    {
+      "name": "post_video_link_copied",
+      "value": "تم نسخ رابط الفيديو"
+    },
+    {
+      "name": "post_video_link_copy_failed",
+      "value": "تعذر نسخ رابط الفيديو"
+    },
+    {
+      "name": "offline_videos_title",
+      "value": "فيديوهات دون اتصال"
+    },
+    {
+      "name": "offline_videos_local",
+      "value": "محفوظ على هذا الجهاز فقط"
+    },
+    {
+      "name": "offline_videos_empty",
+      "value": "لا توجد فيديوهات دون اتصال بعد"
+    },
+    {
+      "name": "offline_videos_search",
+      "value": "البحث في الفيديوهات دون اتصال أو المؤلفين"
+    },
+    {
+      "name": "offline_videos_no_results",
+      "value": "لا توجد فيديوهات دون اتصال مطابقة"
+    },
+    {
+      "name": "offline_videos_clear",
+      "value": "مسح الفيديوهات دون اتصال"
+    },
+    {
+      "name": "offline_videos_clear_confirm",
+      "value": "حذف كل الفيديوهات التي تم تنزيلها؟"
+    },
+    {
+      "name": "offline_videos_delete",
+      "value": "حذف الفيديو دون اتصال"
+    },
+    {
+      "name": "offline_videos_added",
+      "value": "تمت الإضافة إلى الفيديوهات دون اتصال"
+    },
+    {
+      "name": "offline_videos_already",
+      "value": "موجود بالفعل في الفيديوهات دون اتصال"
+    },
+    {
+      "name": "offline_videos_play",
+      "value": "تشغيل الفيديو دون اتصال"
+    },
+    {
+      "name": "offline_videos_missing",
+      "value": "ملف الفيديو دون اتصال مفقود. أضفه مرة أخرى."
+    },
+    {
+      "name": "offline_video_title",
+      "value": "فيديو دون اتصال"
+    },
+    {
+      "name": "post_translated_from",
+      "value": "مترجم من %s"
+    },
+    {
+      "name": "post_translated",
+      "value": "تمت الترجمة"
+    },
+    {
+      "name": "post_show_original",
+      "value": "عرض الأصل"
+    },
+    {
+      "name": "post_show_translation",
+      "value": "عرض الترجمة"
+    },
+    {
+      "name": "settings_cover_single_column",
+      "value": "عمود واحد على الشاشة الخارجية"
+    },
+    {
+      "name": "settings_cover_single_column_desc",
+      "value": "استخدم عمودًا واحدًا عند الطي واحتفظ بالأعمدة المختارة عند الفتح."
+    },
+    {
+      "name": "huawei_cloud_overwrite",
+      "value": "استبدال إعدادات السحابة بالمحلية"
+    },
+    {
+      "name": "huawei_cloud_overwrite_message",
+      "value": "استبدل المجموعات المحددة بإعدادات هذا الجهاز. ستتلقاها الأجهزة الأخرى عند المزامنة التالية."
+    },
+    {
+      "name": "huawei_cloud_clear",
+      "value": "مسح إعدادات السحابة"
+    },
+    {
+      "name": "huawei_cloud_clear_message",
+      "value": "احذف جميع إعدادات التطبيق السحابية لحساب Huawei هذا وأوقف المزامنة. تبقى الإعدادات المحلية. أعد تشغيل المزامنة لرفعها."
+    },
+    {
+      "name": "huawei_cloud_cleared",
+      "value": "تم مسح إعدادات السحابة وإيقاف المزامنة."
+    },
+    {
+      "name": "huawei_cloud_manage_description",
+      "value": "الاستبدال للمجموعات المحددة فقط. المسح يحذف كل مجموعات السحابة ويحتفظ بالإعدادات المحلية."
+    },
+    {
+      "name": "post_translation_choose_languages",
+      "value": "اختيار اللغات"
+    },
+    {
+      "name": "post_translation_auto_language",
+      "value": "ترجمة %s تلقائيًا"
+    },
+    {
+      "name": "post_translation_languages_description",
+      "value": "حدد لغات المنشورات للترجمة التلقائية. يمكنك ترجمة اللغات الأخرى يدويًا."
+    },
+    {"name": "post_link_copy", "value": "Copy link"},
+    {"name": "post_link_open", "value": "Open link"},
+    {"name": "settings_video_download_button", "value": "Video download button"},
+    {"name": "settings_video_download_button_desc", "value": "Show the download button in the top-right corner of videos"},
+    {"name": "video_source_from", "value": "From"},
+    {"name": "video_source_original", "value": "Original video"},
+    {"name": "video_source_open_failed", "value": "Unable to open the original video. Try again."},
+    {"name":"dns_title","value":"DNS over HTTPS (DoH)"},
+    {"name":"dns_enable","value":"Use DNS over HTTPS"},
+    {"name":"dns_enable_desc","value":"Encrypt DNS queries with a chosen HTTPS resolver"},
+    {"name":"dns_scope","value":"Applies to app API requests, downloaded images, video segments and built-in web pages. System players and external apps may use their own DNS. When a proxy resolves the destination, its DNS takes precedence. DoH does not replace a proxy or VPN."},
+    {"name":"dns_provider","value":"DNS provider"},
+    {"name":"dns_provider_ali","value":"AliDNS"},
+    {"name":"dns_provider_cloudflare","value":"Cloudflare"},
+    {"name":"dns_provider_google","value":"Google Public DNS"},
+    {"name":"dns_provider_custom","value":"Custom"},
+    {"name":"dns_endpoint","value":"DoH server URL"},
+    {"name":"dns_endpoint_hint","value":"https://example.com/dns-query"},
+    {"name":"dns_endpoint_desc","value":"Enter a complete RFC 8484 HTTPS endpoint, without credentials, fragments or URI templates such as {?dns}."},
+    {"name":"dns_invalid","value":"Enter a valid HTTPS DoH server URL"},
+    {"name":"dns_saved","value":"Saved. New requests use this setting; reload open web pages."},
+    {"name":"dns_test","value":"Test DNS resolution"},
+    {"name":"dns_test_desc","value":"Tests the current URL by resolving x.com directly, without saving or enabling it. The test bypasses the in-app proxy; a system VPN still applies."},
+    {"name":"dns_test_success","value":"x.com resolved successfully"},
+    {"name":"dns_test_failed","value":"Resolution failed. Check the URL, network or DNS service."},
+    {"name":"dns_failure_note","value":"After saving, DoH failures stop affected requests instead of falling back to system DNS. Turn DoH off and save to restore system DNS. Changes apply after saving."},
+    {"name":"help_support_afdian","value":"Afdian"},
+    {"name":"help_support_qr_summary","value":"امسح لدعم التطوير"},
+    {"name":"help_support_afdian_summary","value":"بدون توصيات دائمًا · ¥16.6"},
+    {"name":"help_support_afdian_desc","value":"اشترِ رمزًا دائمًا لإزالة التوصيات من Afdian، ثم عُد إلى التطبيق لاسترداده."},
+    {"name":"help_support_afdian_buy","value":"الشراء عبر Afdian"},
+    {"name":"help_support_expand","value":"اضغط للتوسيع"},
+    {"name":"help_support_collapse","value":"اضغط للطي"},
+    {"name":"help_support_scan_code","value":"امسح رمز الدفع هذا باستخدام تطبيق الدفع المناسب."},
+    {"name":"help_support_recommended","value":"موصى به"}
   ]
 }

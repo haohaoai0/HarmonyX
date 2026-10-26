@@ -446,6 +446,7 @@ test('resuming live audio reconnects while replay resumes its paused player', as
 test('leaving while the system media session is being claimed cancels its pending owner', async () => {
   let creations = 0;
   const { videoMediaSession } = load('services/VideoMediaSession', {
+    './VideoMediaArtwork': { videoMediaArtwork: { load: async () => null } },
     '@kit.AbilityKit': {}, '@kit.AVSessionKit': { avSession: { createAVSession: async () => { creations++; return {}; } } }
   });
   const handle = { startPlayback() {}, pausePlayback() {}, seekPlayback() {} };

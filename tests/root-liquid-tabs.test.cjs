@@ -161,6 +161,9 @@ test('tap proxies resolve pages to local motion instead of feeding in window hit
   assert.deepEqual(selected, [2]);
 });
 
+const orderApi = {};
+new Function('exports', ts.transpileModule(fs.readFileSync('entry/src/main/ets/utils/TabOrder.ets', 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS } }).outputText)(orderApi);
+
 function visibilityFixture() {
   const source = fs.readFileSync('entry/src/main/ets/components/RootLiquidTabIndicator.ets', 'utf8')
     .replace('struct RootLiquidTabIndicator', 'class RootLiquidTabIndicator');
@@ -173,8 +176,8 @@ function visibilityFixture() {
     compilerOptions: { target: ts.ScriptTarget.ES2020, module: ts.ModuleKind.CommonJS }
   }).outputText;
   const exports = {}, cleared = [];
-  new Function('exports', 'clearTimeout', 'LiquidTabTarget', 'RootLiquidTabHitTarget', compiled)(
-    exports, id => cleared.push(id), api.LiquidTabTarget, motionApi.RootLiquidTabHitTarget);
+  new Function('exports', 'clearTimeout', 'LiquidTabTarget', 'RootLiquidTabHitTarget', 'orderedTabIds', compiled)(
+    exports, id => cleared.push(id), api.LiquidTabTarget, motionApi.RootLiquidTabHitTarget, orderApi.orderedTabIds);
   const bar = { x: 24, y: 644, offsetX: 0, offsetY: 0, available: true };
   const host = { getMeasuredSize: () => ({ width: 800 }),
     getPositionToWindowWithTransform: () => ({ x: 10, y: 600 }) };
@@ -189,7 +192,7 @@ function visibilityFixture() {
       (bar.available ? slots[[0, 3, 4].indexOf(Number(id.split('-').pop()))] : null)
   };
   const instance = new exports.Visibility();
-  Object.assign(instance, { selectedPage: 0, pagesMask: 25, hidden: false,
+  Object.assign(instance, { selectedPage: 0, pagesMask: 25, pageOrder: '', hidden: false,
     motion: { displayPage: 0, ready: false, dragging: false, centerX: 0, centerY: 0 },
     settling: false, settleTimer: -1, nativeOriginX: 0, nativeOriginY: 0, hitTargets: [], targets: [],
     updateSize: () => {}, getUIContext: () => ui });

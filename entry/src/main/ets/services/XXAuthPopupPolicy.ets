@@ -21,6 +21,7 @@ export const XXAUTH_VAR_RECOMMEND: string = 'harmonyx_recommend';
 export const XXAUTH_VAR_ANNOUNCEMENTS: string = 'harmonyx_announcements';
 export const XXAUTH_VAR_GUIDE: string = 'harmonyx_guide';
 export const XXAUTH_VAR_BANNER: string = 'harmonyx_banner';
+export const XXAUTH_VAR_SPLASH: string = 'harmonyx_splash';
 export const XXAUTH_VAR_POST_COUNT: string = 'harmonyx_post_count';
 export const XXAUTH_VAR_POST_COMMENT_COUNT: string = 'harmonyx_post_comment_count';
 export const XXAUTH_VAR_POST_REVISION: string = 'harmonyx_post_revision';
@@ -61,16 +62,24 @@ export class XXAuthPopupPolicy {
     const announcements: boolean | undefined = flag(XXAUTH_VAR_ANNOUNCEMENTS);
     const guide: boolean | undefined = flag(XXAUTH_VAR_GUIDE);
     const banner: boolean | undefined = flag(XXAUTH_VAR_BANNER);
+    const splash: boolean | undefined = flag(XXAUTH_VAR_SPLASH);
     if (master !== undefined) { config.enabled = master; }
     if (recommend !== undefined) { config.promotion_enabled = recommend; }
     if (announcements !== undefined) { config.announcements_enabled = announcements; }
     if (guide !== undefined) { config.articles_enabled = guide; }
     if (banner !== undefined) { config.banners_enabled = banner; }
+    if (splash !== undefined) { config.splash_enabled = splash; }
+    const splashDaily: number | undefined = number('harmonyx_splash_daily_limit');
+    const splashInterval: number | undefined = number('harmonyx_splash_interval_hours');
+    if (splashDaily !== undefined) { config.splash_daily_limit = splashDaily; }
+    if (splashInterval !== undefined) { config.splash_interval_hours = splashInterval; }
     const postCount: number | undefined = number(XXAUTH_VAR_POST_COUNT);
     const commentCount: number | undefined = number(XXAUTH_VAR_POST_COMMENT_COUNT);
+    const commentProbability: number | undefined = number('harmonyx_post_comment_probability');
     const revision: number | undefined = number(XXAUTH_VAR_POST_REVISION);
     if (postCount !== undefined) { config.post_count = postCount; }
     if (commentCount !== undefined) { config.post_comment_count = commentCount; }
+    if (commentProbability !== undefined) { config.post_comment_probability = commentProbability; }
     if (revision !== undefined) { config.post_revision = revision; }
     const dismissible: boolean | undefined = flag('harmonyx_post_dismissible');
     const force: boolean | undefined = flag('harmonyx_popup_force');
@@ -80,12 +89,14 @@ export class XXAuthPopupPolicy {
     if (popupDismissible !== undefined) { config.popup_dismissible = popupDismissible; }
     const delay: number | undefined = number('harmonyx_popup_delay_seconds');
     const interval: number | undefined = number('harmonyx_popup_interval_hours');
+    const period: number | undefined = number('harmonyx_popup_period_hours');
     const daily: number | undefined = number('harmonyx_popup_daily_limit');
     const total: number | undefined = number('harmonyx_popup_total_limit');
     const session: number | undefined = number('harmonyx_popup_session_limit');
     const popupRevision: number | undefined = number('harmonyx_popup_revision');
     if (delay !== undefined) { config.popup_delay_seconds = delay; }
     if (interval !== undefined) { config.popup_interval_hours = interval; }
+    if (period !== undefined) { config.popup_period_hours = period; }
     if (daily !== undefined) { config.popup_daily_limit = daily; }
     if (total !== undefined) { config.popup_total_limit = total; }
     if (session !== undefined) { config.popup_session_limit = session; }

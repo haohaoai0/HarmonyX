@@ -242,6 +242,12 @@ test('the feature is reachable through the shared settings catalog and has all l
   assert.match(ability, /antiPeepProtection\.attachWindow/);
   assert.match(ability, /antiPeepProtection\.setForeground\(false\)/);
   assert.match(fs.readFileSync('entry/src/main/module.json5', 'utf8'), /"name": "ohos.permission.DLP_GET_HIDE_STATUS"/);
+  const appConfig = ts.parseConfigFileTextToJson('app.json5', fs.readFileSync('AppScope/app.json5', 'utf8')).config;
+  if (appConfig.app.bundleName === 'com.haohaoai0.CroakX') {
+    const moduleConfig = ts.parseConfigFileTextToJson('module.json5', fs.readFileSync('entry/src/main/module.json5', 'utf8')).config;
+    assert.ok(moduleConfig.module.requestPermissions.some(permission => permission.name === 'ohos.permission.DLP_GET_HIDE_STATUS'),
+      'Croak-X must declare an active anti-peep permission, not a commented permission');
+  }
   const keys = [...new Set([...settings.matchAll(/app\.string\.(settings_anti_peep\w*)/g)].map(m => m[1]))];
   keys.push('settings_anti_peep');
   for (const locale of fs.readdirSync('entry/src/main/resources')) {

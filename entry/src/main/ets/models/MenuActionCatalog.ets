@@ -44,8 +44,10 @@ export const MENU_ACTION_OPTIONS: MenuActionOption[] = [
   new MenuActionOption('video.quality', 'video_menu', $r('app.string.video_feed_quality')),
   new MenuActionOption('video.advance', 'video_menu', $r('app.string.video_feed_auto_advance')),
   new MenuActionOption('video.post', 'video_menu', $r('app.string.video_feed_go_to_post')),
-  new MenuActionOption('video.download', 'video_menu', $r('app.string.video_feed_add_offline')),
-  new MenuActionOption('video.share', 'video_menu', $r('app.string.action_share')),
+  new MenuActionOption('video.publish', 'video_menu', $r('app.string.post_video_publish')),
+  new MenuActionOption('video.copy_link', 'video_menu', $r('app.string.post_video_copy_link')),
+  new MenuActionOption('video.save', 'video_menu', $r('app.string.post_video_save')),
+  new MenuActionOption('video.offline', 'video_menu', $r('app.string.video_feed_add_offline')),
   new MenuActionOption('video.report', 'video_menu', $r('app.string.video_feed_report_post'))
 ];
 

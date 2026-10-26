@@ -50,7 +50,8 @@ function feedHarness() {
     splice(start, count, rows) { splices.push({ start, count }); this.rows.splice(start, count, ...rows); }
     update(index, row) { updates.push(index); this.rows[index] = row; }
   }
-  const Feed = evaluate(source, { '../utils/PostFeedLayout': { PostFeedLayout: layout } }, {
+  const Feed = evaluate(source, { '../utils/PostFeedLayout': { PostFeedLayout: layout },
+    '../utils/PostFeedDataSource': evaluate(fs.readFileSync('entry/src/main/ets/utils/PostFeedDataSource.ets', 'utf8')) }, {
     WaterFlowSections: Sections, Scroller: class {}, NestedScrollMode: { SELF_ONLY: 0 }, $r: name => ({ id: name })
   }).AdaptivePostFeed;
   const feed = new Feed();
@@ -89,16 +90,59 @@ test('resize and empty-to-loaded transitions retain the flow and collapse cleanl
   assert.equal(splices.length, 1);
 });
 
-test('search keys keep injected posts and people in displayed order without losing selected-product state', () => {
+test('history can opt into lazy cards and a single-column gap without changing other feeds', () => {
+  const { feed, updates } = feedHarness();
+  feed.itemKeys = ['a', 'b']; feed.aboutToAppear();
+  assert.equal(feed.sections.values()[1].rowsGap, 0);
+  feed.lazyItems = true; feed.singleColumnGap = 12; feed.syncSections();
+  assert.deepEqual(updates, [1]);
+  assert.equal(feed.sections.values()[1].rowsGap, 12);
+  assert.equal(feed.lazySource.totalCount(), 4);
+  assert.deepEqual([0, 1, 2, 3].map(i => feed.lazySource.getData(i).index), [-1, 0, 1, -2]);
+});
+
+test('lazy feed enrichment invalidates only the changed card and keeps unchanged keys on append', () => {
+  const { PostFeedDataSource } = evaluate(fs.readFileSync('entry/src/main/ets/utils/PostFeedDataSource.ets', 'utf8'));
+  const source = new PostFeedDataSource(), changed = []; let reloads = 0;
+  source.replace(['10-preview', '11-preview']);
+  const firstKey = source.getData(1).key;
+  const listener = { onDataReloaded() { reloads++; }, onDataChanged(i) { changed.push(i); } };
+  source.registerDataChangeListener(listener); source.registerDataChangeListener(listener);
+  source.replace(['10-preview', '11-enriched']);
+  assert.deepEqual(changed, [2]); assert.equal(reloads, 0);
+  source.replace(['10-preview', '11-enriched', '12-preview']);
+  assert.equal(reloads, 1); assert.equal(source.getData(1).key, firstKey);
+  source.unregisterDataChangeListener(listener); source.replace([]); assert.equal(reloads, 1);
+});
+
+test('search rows preserve payload type and ignore stale indexes during tab changes', () => {
   const source = fs.readFileSync('entry/src/main/ets/pages/Index.ets', 'utf8').replace('struct Index', 'class Index');
   const tree = ts.createSourceFile('index.ts', source, ts.ScriptTarget.Latest, true);
   const root = tree.statements.find(node => ts.isClassDeclaration(node) && node.name?.text === 'Index');
-  const method = root.members.find(node => ts.isMethodDeclaration(node) && node.name.getText(tree) === 'searchResultKeys');
-  const Search = evaluate('export class Search {' + method.getText(tree) + '}').Search;
-  const search = Object.assign(new Search(), { searchTimelineRows: index => index === 0 ?
-    [{ key: 'post:a' }, { key: 'promo:b' }, { key: 'post:c' }] : [],
-    searchPageUsers: index => index === 1 ? [{ id: 'u' }] : [] });
-  assert.deepEqual(search.searchResultKeys(0), ['post:a', 'promo:b', 'post:c']);
-  assert.deepEqual(search.searchResultKeys(1), ['user-u']);
-  assert.deepEqual(search.searchResultKeys(2), []);
+  const methods = ['searchResultKeys', 'searchResultRows', 'searchResultRow'].map(name =>
+    root.members.find(node => ts.isMethodDeclaration(node) && node.name.getText(tree) === name).getText(tree));
+  const classes = ['SearchTimelineRow', 'SearchResultRow'].map(name =>
+    tree.statements.find(node => ts.isClassDeclaration(node) && node.name?.text === name).getText(tree));
+  const Search = evaluate(classes.join('\n') + '\nexport class Search {' + methods.join('\n') + '}').Search;
+  let timeline = [{ key: 'post:a', tweet: { id: 'a' }, promotion: null }];
+  let users = [{ id: 'u' }];
+  const search = Object.assign(new Search(), {
+    searchTimelineRows: () => timeline,
+    searchPageUsers: () => users
+  });
+  const rows = search.searchResultRows(0);
+  assert.deepEqual(search.searchResultKeys(0), ['post:a', 'user-u']);
+  assert.equal(rows[0].tweet.id, 'a');
+  assert.equal(rows[0].user, null);
+  assert.equal(rows[1].user.id, 'u');
+  assert.equal(rows[1].tweet, null);
+  assert.equal(search.searchResultRow(0, 1).user.id, 'u');
+
+  users = [];
+  assert.equal(search.searchResultRow(0, 1), null);
+  assert.equal(search.searchResultRow(0, -1), null);
+
+  timeline = [];
+  users = [];
+  assert.deepEqual(search.searchResultKeys(0), []);
 });

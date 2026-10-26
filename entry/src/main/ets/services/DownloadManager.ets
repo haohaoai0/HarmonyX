@@ -4,6 +4,7 @@ import { BusinessError } from '@kit.BasicServicesKit';
 import { fileIo } from '@kit.CoreFileKit';
 import { notificationManager } from '@kit.NotificationKit';
 import hilog from '@ohos.hilog';
+import { VideoDownloadNoticeState, videoDownloadNoticeStore } from './VideoDownloadNoticeStore';
 import {
   PROXY_DOWNLOAD_COMPLETE,
   PROXY_DOWNLOAD_FAILED,
@@ -76,6 +77,8 @@ export class DownloadManager {
   private taskSequence: number = 0;
   private revision: number = 0;
   private lastProgressPersistMs: number = 0;
+  private lastProgressPublishMs: number = 0;
+  private visibleVideoTasks: Set<string> = new Set<string>();
   private inBackground: boolean = false;
   private requestingBackgroundTask: boolean = false;
   private continuousTaskId: number = -1;
@@ -112,6 +115,7 @@ export class DownloadManager {
     const filePath: string = this.directory + '/' + id + '.' + extension + '.part';
     const task: DownloadTask = new DownloadTask(id, url, mediaId, title, extension, filePath, isVideo, onReady);
     this.tasks.push(task);
+    if (isVideo) { this.visibleVideoTasks.add(id); }
     this.trimHistory();
     this.persist();
     this.publishTasks();
@@ -127,6 +131,7 @@ export class DownloadManager {
       return;
     }
     task.status = DownloadTaskStatus.PAUSED;
+    this.visibleVideoTasks.delete(taskId);
     this.persist();
     this.publishTasks();
     if (this.activeTaskId === taskId && this.activeOperation !== null) {
@@ -143,6 +148,7 @@ export class DownloadManager {
       return;
     }
     task.status = DownloadTaskStatus.QUEUED;
+    if (task.isVideo) { this.visibleVideoTasks.add(taskId); }
     this.updateReceivedFromFile(task);
     this.persist();
     this.publishTasks();
@@ -156,6 +162,7 @@ export class DownloadManager {
       return;
     }
     const task: DownloadTask = this.tasks[index];
+    this.visibleVideoTasks.delete(taskId);
     this.tasks.splice(index, 1);
     const onReady: DownloadTaskReadyCallback | undefined = task.readyCallback();
     task.clearReadyCallback();
@@ -172,17 +179,47 @@ export class DownloadManager {
     this.startNext();
   }
 
+  cancelVideoDownload(taskId: string, context: common.UIAbilityContext): void {
+    this.ensureLoaded(context);
+    const task: DownloadTask | null = this.findTask(taskId);
+    // Saving has already opened a user-authorized destination; it is no longer a transfer.
+    if (task === null || !task.isVideo || (task.status !== DownloadTaskStatus.QUEUED &&
+      task.status !== DownloadTaskStatus.DOWNLOADING)) { return; }
+    this.delete(taskId, context);
+  }
+
+  savingVideo(taskId: string): void {
+    const task: DownloadTask | null = this.findTask(taskId);
+    if (task !== null && task.isVideo && task.status === DownloadTaskStatus.READY_TO_SAVE) {
+      this.visibleVideoTasks.add(taskId);
+      this.publishTasks();
+    }
+  }
+
+  beginLocalVideoSave(): string {
+    const id: string = 'local-' + Date.now().toString() + '-' + this.taskSequence.toString();
+    this.taskSequence++;
+    videoDownloadNoticeStore.savingLocal(id);
+    return id;
+  }
+
+  finishLocalVideoSave(taskId: string, saved: boolean): void {
+    videoDownloadNoticeStore.finishedLocal(taskId, saved, !this.inBackground);
+  }
+
   saveCompleted(taskId: string, context: common.UIAbilityContext): void {
     this.ensureLoaded(context);
     const task: DownloadTask | null = this.findTask(taskId);
-    if (task === null) {
+    if (task === null || task.status === DownloadTaskStatus.COMPLETED) {
       return;
     }
     task.status = DownloadTaskStatus.COMPLETED;
+    this.visibleVideoTasks.delete(taskId);
     task.clearReadyCallback();
     this.removeFile(task.filePath);
     this.persist();
     this.publishTasks();
+    if (task.isVideo) { videoDownloadNoticeStore.completed(taskId, !this.inBackground); }
   }
 
   leaveReadyToSave(taskId: string, context: common.UIAbilityContext): void {
@@ -192,6 +229,7 @@ export class DownloadManager {
       return;
     }
     task.status = DownloadTaskStatus.READY_TO_SAVE;
+    this.visibleVideoTasks.delete(taskId);
     this.persist();
     this.publishTasks();
   }
@@ -237,6 +275,7 @@ export class DownloadManager {
   private startTask(task: DownloadTask): void {
     this.activeTaskId = task.id;
     task.status = DownloadTaskStatus.DOWNLOADING;
+    if (task.isVideo) { this.visibleVideoTasks.add(task.id); }
     this.updateReceivedFromFile(task);
     this.persist();
     this.publishTasks();
@@ -257,6 +296,9 @@ export class DownloadManager {
         if (now - this.lastProgressPersistMs >= 700) {
           this.lastProgressPersistMs = now;
           this.persist();
+        }
+        if (now - this.lastProgressPublishMs >= 160) {
+          this.lastProgressPublishMs = now;
           this.publishTasks();
         }
         this.updateLiveView(current, false);
@@ -270,10 +312,13 @@ export class DownloadManager {
         this.updateReceivedFromFile(current);
         if (result === PROXY_DOWNLOAD_COMPLETE) {
           current.status = DownloadTaskStatus.READY_TO_SAVE;
-          this.persist();
-          this.publishTasks();
           const onReady: DownloadTaskReadyCallback | undefined = current.readyCallback();
           current.clearReadyCallback();
+          // A resumed historical task has no automatic export callback. Its
+          // ready file belongs to Download Manager, rather than a stuck notice.
+          if (onReady === undefined) { this.visibleVideoTasks.delete(current.id); }
+          this.persist();
+          this.publishTasks();
           if (onReady !== undefined) {
             onReady(current.id, true);
           }
@@ -514,6 +559,19 @@ export class DownloadManager {
   private publishTasks(): void {
     this.revision = this.revision + 1;
     AppStorage.setOrCreate<number>('harmonyx.download_revision', this.revision);
+    const transfers: VideoDownloadNoticeState[] = [];
+    for (let index: number = 0; index < this.tasks.length; index++) {
+      const task: DownloadTask = this.tasks[index];
+      if (!task.isVideo || !this.visibleVideoTasks.has(task.id)) { continue; }
+      let phase: string = '';
+      if (task.status === DownloadTaskStatus.DOWNLOADING) { phase = 'downloading'; }
+      else if (task.status === DownloadTaskStatus.QUEUED) { phase = 'queued'; }
+      else if (task.status === DownloadTaskStatus.READY_TO_SAVE) { phase = 'saving'; }
+      if (phase.length > 0) {
+        transfers.push(new VideoDownloadNoticeState(task.id, phase, task.receivedBytes, task.totalBytes));
+      }
+    }
+    videoDownloadNoticeStore.update(transfers);
   }
 
   private copyTask(task: DownloadTask): DownloadTask {

@@ -12,13 +12,16 @@ function fixture() {
     compilerOptions: { target: ts.ScriptTarget.ES2020, module: ts.ModuleKind.CommonJS }
   }).outputText;
   const context = { filesDir: '/app/files', account: 'one' };
-  const control = { failSave: false, failDecode: false, failDownload: false, copied: '', released: 0, serial: 0,
+  const control = { failSave: false, failDecode: false, failDownload: false, failRemove: false, copied: '', released: 0, serial: 0,
     downloaded: [], beforeDownload: null };
   const fileIo = {
     OpenMode: { READ_ONLY: 0 }, accessSync: path => files.has(path), mkdirSync: path => files.add(path),
     open: async () => ({ fd: 42 }), close: async fd => closed.push(fd),
     copyFile: async (fd, path) => { assert.equal(fd, 42); files.add(path); control.copied = path; },
-    unlinkSync: path => { removed.push(path); files.delete(path); }
+    unlinkSync: path => {
+      if (control.failRemove) throw Error('file busy');
+      removed.push(path); files.delete(path);
+    }
   };
   const image = { createImageSource: () => ({
     getImageInfo: async () => {
@@ -177,6 +180,85 @@ test('page and chat backgrounds share exactly one file and neither replacement d
   assert.ok(f.files.has(state.path));
   assert.equal(f.chatBackgroundStore.load(f.context, 'chat-b').path, state.path);
   assert.equal(f.backgroundImageStore.photos(f.context)[0].path, state.path);
+});
+
+test('deleting a gallery image removes its file and durable entry and allows saving the source again', async () => {
+  const f = fixture();
+  await f.backgroundImageStore.savePhoto(f.context, 'https://image/one');
+  await f.backgroundImageStore.savePhoto(f.context, 'https://image/two');
+  const [keep, remove] = f.backgroundImageStore.photos(f.context);
+  assert.equal(f.backgroundImageStore.removePhoto(f.context, remove.path), true);
+  assert.deepEqual(f.backgroundImageStore.photos(f.context), [keep]);
+  assert.deepEqual(JSON.parse(f.saved.get('one:background_photos')), [keep]);
+  assert.ok(!f.files.has(remove.path));
+  assert.ok(f.files.has(keep.path));
+  assert.equal(f.backgroundImageStore.removePhoto(f.context, remove.path), false);
+  await f.backgroundImageStore.savePhoto(f.context, 'https://image/one');
+  const again = f.backgroundImageStore.photos(f.context)[0];
+  assert.equal(again.sourceUrl, remove.sourceUrl);
+  assert.notEqual(again.path, remove.path);
+  assert.ok(f.files.has(again.path));
+});
+
+test('deleting a shared image makes page and all chat consumers fall back without touching other backgrounds', async () => {
+  const f = fixture();
+  await f.backgroundImageStore.savePhoto(f.context, 'https://image/shared');
+  const photo = f.backgroundImageStore.photos(f.context)[0];
+  const chat = new f.ChatBackgroundState(); chat.presetId = 'photo'; chat.path = photo.path;
+  f.chatBackgroundStore.save(f.context, 'chat-a', chat);
+  f.chatBackgroundStore.save(f.context, 'chat-b', chat);
+  const unrelated = new f.ChatBackgroundState(); unrelated.presetId = 'petrel_dream';
+  f.chatBackgroundStore.save(f.context, 'chat-c', unrelated);
+  const page = new f.PageBackgroundState(); page.mode = 'photo'; page.path = photo.path;
+  f.pageBackgroundStore.save(f.context, page);
+  f.backgroundImageStore.removePhoto(f.context, photo.path);
+  assert.equal(f.pageBackgroundStore.load(f.context).mode, 'theme');
+  assert.equal(f.pageBackgroundStore.load(f.context).path, '');
+  for (const id of ['chat-a', 'chat-b']) {
+    assert.equal(f.chatBackgroundStore.load(f.context, id).presetId, 'default');
+    assert.equal(f.chatBackgroundStore.load(f.context, id).path, '');
+  }
+  assert.equal(f.chatBackgroundStore.load(f.context, 'chat-c').presetId, 'petrel_dream');
+});
+
+test('gallery deletion requires active-account membership and never deletes private or staged files', async () => {
+  const f = fixture();
+  await f.backgroundImageStore.savePhoto(f.context, 'https://image/one');
+  const photo = f.backgroundImageStore.photos(f.context)[0];
+  const staged = await f.chatBackgroundStore.importPhoto(f.context, 'photo://local');
+  f.context.account = 'two';
+  assert.equal(f.backgroundImageStore.removePhoto(f.context, photo.path), false);
+  f.context.account = 'one';
+  for (const path of [staged, '/app/files/private.db', '/app/files/background_images/../private.db']) {
+    assert.equal(f.backgroundImageStore.removePhoto(f.context, path), false);
+  }
+  assert.ok(f.files.has(photo.path));
+  assert.ok(f.files.has(staged));
+  assert.deepEqual(f.removed, []);
+});
+
+test('failed gallery writes or file deletion preserve the image and original library registry', async () => {
+  for (const failure of ['failSave', 'failRemove']) {
+    const f = fixture();
+    await f.backgroundImageStore.savePhoto(f.context, 'https://image/one');
+    const before = f.saved.get('one:background_photos');
+    const photo = f.backgroundImageStore.photos(f.context)[0];
+    f.control[failure] = true;
+    assert.throws(() => f.backgroundImageStore.removePhoto(f.context, photo.path), /background_delete_failed/);
+    assert.equal(f.saved.get('one:background_photos'), before, failure);
+    assert.deepEqual(f.backgroundImageStore.photos(f.context), [photo], failure);
+    assert.ok(f.files.has(photo.path), failure);
+    assert.deepEqual(f.removed, [], failure);
+  }
+});
+
+test('legacy saved background images can also be deleted', () => {
+  const f = fixture(), path = '/app/files/chat_backgrounds_saved/aa.img';
+  f.files.add(path);
+  f.saved.set('one:background_photos', JSON.stringify([{ path, sourceUrl: 'https://image/old' }]));
+  assert.equal(f.backgroundImageStore.removePhoto(f.context, path), true);
+  assert.deepEqual(f.backgroundImageStore.photos(f.context), []);
+  assert.ok(!f.files.has(path));
 });
 
 test('previously saved chat-only library files appear and can be used as page backgrounds without copying', () => {

@@ -27,6 +27,8 @@ const AVATAR_STEP: number = 20;
 const MAX_AVATARS: number = 3;
 // Shown instead of a fourth face when more accounts posted than fit.
 const BADGE_SIZE: number = AVATAR_SIZE;
+export const NEW_POSTS_PILL_MAX_WIDTH: number =
+  PILL_PADDING_LEFT + ARROW_SIZE + ARROW_GAP + AVATAR_SIZE + PILL_PADDING_RIGHT + MAX_AVATARS * AVATAR_STEP;
 
 @Component
 export struct NewPostsPill {

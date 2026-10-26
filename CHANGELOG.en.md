@@ -4,6 +4,99 @@ User-facing changes in Harmony X. Unreleased entries describe the next version; 
 
 中文版见 [CHANGELOG.md](CHANGELOG.md)。
 
+## 3.5.0 — 2026-10-25
+
+This release adds an offline video library, global trends, search suggestions and recent profiles, expands launch animation options, and improves background photo management, post links, long images, and large-screen feed stability. The build number is 28.
+
+### New features
+
+- **Offline video library**: Save post videos inside the app, search and browse them by date, play local copies, inspect storage usage, delete individual items, or clear the library after confirmation. Files and records belong to their account, repeated saves are deduplicated, and cancelled or failed downloads do not appear as completed items.
+- **Global trends**: A dedicated page shows service-provided countries or regions, categories, topics, and related posts, with further loading. Account changes reload the page and stale requests cannot replace the current account's data.
+- **Search suggestions and recent profiles**: Typing shows related topics and suggested users. Search remembers recently visited profiles and supports confirmed removal of individual profiles or keywords with a long press. Results open in a separate page, retaining the original results when a query edit is cancelled.
+- **Launch animation options**: Choose Direct entry, Keep icon, iOS style, or Dynamic opening. Dynamic opening offers seven speeds from 0.5× to 2×. Home loads alongside the animation, preferences persist and join appearance cloud synchronization, and reduced motion or playback failure can exit safely.
+- **Prism mixed theme**: Added a Prism palette with distinct navigation and action colours for light and dark appearances.
+
+### Improvements and fixes
+
+- **Background photo management**: Page and chat backgrounds share gallery controls with confirmed deletion of saved images. Removing a selected photo falls back to a valid background, while failed writes or deletions retain recoverable records.
+- **Post links**: Post bodies, long notes, quotes, and reposts expand short links using original URLs supplied by the service. Opening a link retains its full path, query, and fragment instead of using an abbreviated display label, while preserving emoji, numbered lists, indentation, and body display ranges.
+- **Links in translations**: Translations preserve original URLs and numbered links, and translated links remain directly accessible. Responses with missing or rewritten addresses are not accepted as valid link results.
+- **Long images and media layout**: Horizontal photo strips preserve source aspect ratios to reduce cropping of long screenshots. Gallery dragging improves avatar and action feedback, with consistent layouts in feeds and post details.
+- **Large-screen feeds and video previews**: Preview and player heights stay consistent, and the preview remains visible until the native first frame. Search feeds render content lazily with stable columns to reduce movement during loading, playback, and scrolling.
+- **Home and search layout**: A separate preference controls scrolling to the top with a single Home tap; double taps and pull-to-refresh retain their own settings. Adjusted the Home indicator and Explore category spacing, and unified search fields in search, browsing history, and offline videos.
+- **Launch transitions**: Aligned video, final-frame, and surrounding background colours, and added video colour-matrix and range metadata to reduce background blocks across decoder paths. Completion, backgrounding, and page exit clean up covers and timers.
+- **Version information**: App metadata, bilingual documentation, and all 21 localized version strings use 3.5.0 (`versionCode` 28), with compatible API 22 and target API 26.
+
+### Build notes
+
+- This release provides unsigned Release App Pack and HAP files. Re-sign them with your own HarmonyOS certificate and Profile before installation.
+- All 390 focused tests and Release compilation passed. App Pack / HAP version, bundle, and API metadata are checked and the results accompany the artifacts. Device interaction and visual acceptance are outside this build; offline playback, trends, rotation, and API 22 devices still need separate verification.
+
+## 3.4.0 — 2026-10-22
+
+This release adds icon-specific launch animations, navigation and home-tab ordering, customizable post actions, horizontal mixed-media browsing, and settings file import and export. It also improves download feedback, picture-in-picture restoration, system media artwork, and profile scrolling. The build number is 26.
+
+### New features
+
+- **Icon-specific launch animations**: Cold launches play a local animation matching the current launcher icon and light or dark appearance, then fade its final frame into the home page. Existing alternate icons are covered. Reduced motion or playback failure opens the home page promptly, without waiting for network content.
+- **Navigation and home-tab ordering**: Reorder bottom navigation separately from For You, Following, list, community, and topic tabs, with immediate updates and a reset option. Hidden tabs, taps, swipes, and the liquid indicator follow the selected order, while each feed retains its content and reading position.
+- **Customizable post actions**: Independently show or hide reply, repost, like, views, bookmark, share, and translation actions, and toggle their counts. Feeds and details share the action bar; absent bookmark counts are not presented as a fabricated zero.
+- **Horizontal mixed media**: Multiple videos and mixed photo, video, and GIF attachments scroll horizontally in their original order, sharing a bounded row height while preserving individual aspect ratios. Feeds and details share the layout; photo-only posts retain their existing presentation.
+- **Settings file import and export**: The Huawei account panel can export and import a local JSON settings file for sharing or migrating supported preferences. Import validates the file and asks for confirmation. Files exclude sign-in credentials, and cloud synchronization remains a separate opt-in.
+- **Me shortcut**: Choose Profile, Account management, Settings, Help, or Hidden for the independent split-navigation action on the Me page. The choice survives restarts.
+- **Launch recommendations**: Eligible openings can show a recommendation made from cached app introduction images, with an advertising label, countdown, and immediately available Skip button. Only the action button opens the destination. Returning after more than ten minutes in the background can show another recommendation and then restore the current page. Supporters, onboarding, sign-in, and share entry paths bypass it; unavailable artwork or entitlement state opens content directly.
+
+### Improvements and fixes
+
+- **Video download feedback**: A compact in-app notice tracks actual transferred bytes, can cancel the current transfer, and advances through queued tasks. It continues through saving and shows completion and foreground haptic feedback only after a successful save. Cancellation and failure never report success, and retried historical tasks cannot leave a permanent saving notice.
+- **Picture-in-picture restoration**: Restoring PiP returns to its owning page and reuses the player, preserving position and playback state while respecting an explicit pause. Hidden pages cannot take its surface or pause it accidentally. Closing PiP after leaving the owning page releases the retained player.
+- **Landscape video transitions**: The video-feed rotation action opens the current video's fullscreen player. Landscape and inline surfaces reuse the decoder without resetting position. Exiting restores the application orientation policy and ignores obsolete requests.
+- **System media artwork**: Video sessions obtain artwork through the app image loader, falling back to an existing frame cache when available. Late artwork from a previous video is discarded, and unavailable artwork does not prevent a playback session from starting.
+- **Profile scrolling**: Fixed dragging becoming unresponsive after stopping the post feed, improving gesture handoff between the profile header and nested feed.
+- **About this account**: Account information now opens in a native navigation page with identity, join date, and service-provided region and source details, plus retry and normal back navigation.
+- **Sign-in guidance**: A notice above onboarding and subsequent sign-in asks users to enter their email directly instead of using Google sign-in, and to wait if a working connection still produces a blank page.
+- **Version information**: App metadata, bilingual documentation, and all 21 localized version strings use 3.4.0 (`versionCode` 26), with compatible API 22 and target API 26.
+
+### Notes
+
+- All 345 related focused tests passed. This release also runs Release compilation and checks embedded App Pack / HAP version, bundle, and API metadata; it does not claim a fully green complete regression suite.
+- Device interactions were not repeated for this release. Cross-device settings migration, system PiP and media cards, folding and rotation, real download-directory grants, and API 22 devices still need separate acceptance.
+- This release provides unsigned App Pack and HAP files. Re-sign them with your own HarmonyOS certificate and Profile before installation.
+
+## 3.3.0 — 2026-10-21
+
+This release adds split bottom navigation, a split reply capsule, home tabs for lists and communities, landscape video controls, and eight icon-inspired colour themes. It also improves saving downloads, stopping scrolling, account actions, and title-bar icons. The build number is 25.
+
+### New features
+
+- **Split bottom navigation**: Choose a split capsule or native HDS material style, with the main navigation and independent action in separate surfaces. Native material levels are adjustable. Handedness adaptation and the liquid indicator follow the actual visible tab positions for taps and dragging.
+- **Split reply capsule**: Post details can separate the reply entry from its action area while retaining reply and post actions and the transition into the expanded editor. Narrow windows scroll the action area horizontally to keep buttons usable.
+- **Home source management**: Add lists, joined communities, and topics to home tabs, reorder them together, and save a separate ranking for each community. Settings are retained per account across restarts. Removing a community tab leaves its membership intact.
+- **Landscape video controls**: Fullscreen landscape playback gains material controls for playback, mute, seeking, speed, locking, and related post actions. Tapping reveals controls; a dedicated unlock button releases the lock. Interrupted seeking still commits the selected position and restores playback control.
+- **GIF video export**: Video-based GIFs can be saved directly as the original MP4, preferring a higher-quality variant advertised by the service. Existing GIF export remains available, without another transcode when saving video.
+- **Eight icon-inspired themes**: New blue, red, orange, yellow, green, pink, cyan, and navy palettes provide separate control colours for light and dark appearance.
+- **Biography translation**: Translate profile biographies through the configured translation service and hide the result when finished. Changing profiles or translation preferences clears stale results.
+- **Recommendation filtering**: An optional sensitive-content-only setting starts disabled, requires adult confirmation, and applies only to the For You feed. Following, list, and community sources retain their existing content.
+
+### Improvements and fixes
+
+- **Downloads and saving**: Choose and remember a save directory, with a new selection when authorization expires. Concurrent saves avoid overwriting duplicate names. Cancelled selections no longer report success; downloaded tasks can retry Save As, and interrupted multi-image exports retain completed files and retryable tasks.
+- **Stopping scrolling**: The first press during inertial feed scrolling stops the list immediately and suppresses an accidental post action. Once stopped, posts open normally. Nested profile feeds stop together, queued inertia stays cancelled after release, and later drags retain normal speed.
+- **Home tabs and covers**: List pins, renames, and removals restore correctly after restart. List and community directories paginate and deduplicate separately, and old-account responses are discarded. Tab covers reuse local files, retry transient proxy failures, and reject outdated cover requests.
+- **Video rotation and return**: Fullscreen rotation retains the underlying navigation and feed, then restores the current window layout on exit. A previous exit callback cannot interrupt a newer fullscreen video.
+- **Floating compose button**: Drag the button to any window corner. Resizing only clamps its manual position to the visible area. Native navigation handedness follows both the master and individual switches.
+- **Account and follow actions**: Signing out requires confirmation and ignores duplicate taps or an account change during the dialog. Follow suggestions respond immediately, suppress duplicate requests, and roll back on failure.
+- **Title-bar icons**: Alternate icons now use individually prepared transparent foregrounds without background plates. Black and white X marks can adapt to light or dark appearance; milk frogs, frogs, birds, blossoms, brushes, and other special icons retain their original colours.
+- **Motion preview**: Repeated or rapid taps start a complete new preview without interference from older callbacks. Reduced motion and leaving the page stop active playback promptly.
+- **Supporter state**: Improved account-bound activation, credential migration, and secure-storage recovery prevent stale responses from crossing accounts. Transient network or service failures retain unexpired access; explicit cloud revocation affects only the corresponding account.
+- **Version information**: App metadata, bilingual documentation, and all 21 localized version strings now use 3.3.0 (`versionCode` 25), with compatible API 22 and target API 26.
+
+### Notes
+
+- This release runs Release compilation and App Pack / HAP metadata verification, with all 241 related focused tests passing. A successful build does not establish acceptance on every device.
+- Cross-device supporter recovery, real folder grants, landscape locking and fold transitions, physical input devices, and API 22 devices need separate acceptance. This release does not claim a completely green full regression suite.
+- This release provides unsigned App Pack and HAP files. Re-sign them with your own HarmonyOS certificate and Profile before installation.
+
 ## 3.2.0 — 2026-10-20
 
 This release adds offline bookmarks and continuous thread reading, scene modes, eye-controlled page turning, and mouse, keyboard, and touchpad support. It also introduces chat decorations, reply-quality folding, post-language filtering, and improvements for wide screens, compact foldables, and older systems. The build number is 24.

@@ -8,25 +8,33 @@ new Function('exports', ts.transpileModule(fs.readFileSync('entry/src/main/ets/u
   compilerOptions: { target: ts.ScriptTarget.ES2020, module: ts.ModuleKind.CommonJS }
 }).outputText)(layoutExports);
 const layout = layoutExports.RootTitleBarLayout;
+const dimensions = JSON.parse(fs.readFileSync('entry/src/main/resources/base/element/float.json', 'utf8')).float;
+const categoryGapResource = dimensions.find(item => item.name === 'explore_search_categories_gap').value;
+const categoryGapVp = Number.parseFloat(categoryGapResource) / (categoryGapResource.endsWith('px') ? 3.375 : 1);
+const titleSearchHeight = Number.parseFloat(dimensions.find(item => item.name === 'title_bar_search_height').value);
+const titleSearchRadius = Number.parseFloat(dimensions.find(item => item.name === 'title_bar_search_radius').value);
 const source = fs.readFileSync('entry/src/main/ets/pages/Index.ets', 'utf8').replace('struct Index', 'class Index');
 const tree = ts.createSourceFile('index.ts', source, ts.ScriptTarget.Latest, true);
 const root = tree.statements.find(node => ts.isClassDeclaration(node) && node.name.text === 'Index');
 const names = ['exploreContentTopInset', 'rootTitleBarBottomHeight', 'captureExploreTitleContent', 'captureExploreContentTop',
-  'captureTitleBarSurfaceBottom', 'exploreSearchHeight', 'exploreCategoriesHeight',
+  'captureTitleBarSurfaceBottom', 'exploreSearchHeight', 'exploreSearchRadius', 'exploreTitleContentHeight', 'exploreCategoriesHeight',
   'desktopTitleBarHeight', 'desktopHeaderHeight', 'exploreTitleContentOffset', 'captureExploreTitleIdentity', 'useTitleBarLogo'];
 const methods = names.map(name => root.members.find(node => node.name && node.name.getText(tree) === name).getText(tree));
 const output = ts.transpileModule(`class Root { ${methods.join('\n')} }`, {
   compilerOptions: { target: ts.ScriptTarget.ES2020 }
 }).outputText;
 const Root = new Function('RootTitleBarLayout', 'EXPLORE_TAB_INDEX', 'HOME_TAB_INDEX', 'MESSAGES_TAB_INDEX',
-  'NOTIFICATIONS_TAB_INDEX', 'ME_TAB_INDEX', `${output}; return Root;`)(layout, 1, 0, 3, 2, 4);
+  'NOTIFICATIONS_TAB_INDEX', 'ME_TAB_INDEX', '$r', `${output}; return Root;`)(layout, 1, 0, 3, 2, 4, value => value);
 function fixture() {
   const component = Object.assign(new Root(), { chromeTab: 1, currentTab: 1, titleBarLogoEnabled: true,
     exploreTitleContentBottom: 0, exploreTitleIdentityBottom: 0, exploreContentTop: 12,
     exploreNativeTitleHeight: 63, titleBarSurfaceTop: 44,
     titleBarSurfaceBottom: 0, statusBarHeight: 44, fontScale: 1, activeExploreQuery: '',
     isDesktopLayout: () => false, supportsHdsNavigation: () => true,
-    rootTitleBarContentClearance: () => 8, homeSpaceHeight: () => 0, titleBarIdentityOffset: () => 0 });
+    rootTitleBarContentClearance: () => 8, homeSpaceHeight: () => 0, titleBarIdentityOffset: () => 0,
+    exploreLayoutDimension: resource => resource === 'app.float.explore_search_title_gap' ? 16 :
+      resource === 'app.float.title_bar_search_height' ? titleSearchHeight :
+      resource === 'app.float.title_bar_search_radius' ? titleSearchRadius : categoryGapVp });
   return component;
 }
 
@@ -94,7 +102,7 @@ test('Explore shares the identity row height and follows its actual bottom acros
   component.captureExploreTitleIdentity({ globalPosition: { y: 60 }, height: 38 });
   assert.equal(component.exploreTitleContentBottom, 60 + 38);
   component.fontScale = 1.6;
-  assert.equal(component.exploreSearchHeight(), 38);
+  assert.equal(component.exploreSearchHeight(), titleSearchHeight);
   const identity = root.members.find(node => node.name && node.name.getText(tree) === 'TitleBarIdentityRow').getText(tree);
   assert.doesNotMatch(identity, /exploreSearchHeight/);
   assert.match(identity, /\.height\(this\.useTitleBarLogo\(\) \? 36 : \$r\('app\.float\.title_bar_compact_row_height'\)\)/);
@@ -126,4 +134,29 @@ test('content avoidance uses the viewport origin rather than the moving scroll h
   assert.doesNotMatch(spacer, /onAreaChange/);
   const page = root.members.find(node => node.name && node.name.getText(tree) === 'ExploreTab').getText(tree);
   assert.match(page, /this\.captureExploreContentTop\(newValue\)/);
+});
+
+test('Explore reserves full child heights and maintains capsule ends when the font scale changes', () => {
+  const component = fixture();
+  for (const scale of [0.85, 1, 1.1, 1.4, 1.6]) {
+    component.fontScale = scale;
+    assert.equal(component.exploreSearchRadius() * 2, component.exploreSearchHeight());
+    assert.ok(Math.abs(component.exploreTitleContentHeight() -
+      (16 + component.exploreSearchHeight() + categoryGapVp + component.exploreCategoriesHeight())) < 1e-8);
+  }
+  component.activeExploreQuery = 'text';
+  assert.equal(component.exploreTitleContentHeight(), 16 + component.exploreSearchHeight());
+  component.titleBarLogoEnabled = false;
+  assert.equal(component.exploreSearchRadius(), titleSearchRadius);
+  assert.equal(component.exploreTitleContentHeight(), 0);
+});
+
+test('Explore and direct-message title search fields share the same capsule dimensions', () => {
+  const chat = root.members.find(node => node.name && node.name.getText(tree) === 'ChatTitleBarSearch').getText(tree);
+  const explore = root.members.find(node => node.name && node.name.getText(tree) === 'ExploreTitleBarSearch').getText(tree);
+  assert.equal(titleSearchHeight, titleSearchRadius * 2);
+  assert.match(chat, /\.height\(\$r\('app\.float\.title_bar_search_height'\)\)/);
+  assert.match(chat, /\.borderRadius\(\$r\('app\.float\.title_bar_search_radius'\)\)/);
+  assert.match(explore, /\.height\(this\.exploreSearchHeight\(\)\)/);
+  assert.match(explore, /\.borderRadius\(this\.exploreSearchRadius\(\)\)/);
 });

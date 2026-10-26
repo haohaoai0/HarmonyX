@@ -17,6 +17,7 @@ export struct UserRowCard {
   // Read-only contexts such as a list's member directory should still open
   // profiles without exposing an account-changing action in the row.
   @Prop showFollow: boolean = true;
+  @Prop horizontalPadding: number = 16;
   @StorageProp('harmonyx.display_mode') private themeDisplayMode: string = '';
   @StorageProp('harmonyx.dark_surface') private themeDarkSurface: string = '';
   @StorageLink('harmonyx.accent_color') accentColor: string = '#007DFF';
@@ -69,16 +70,19 @@ export struct UserRowCard {
             .fontSize($r('sys.float.Subtitle_M'))
             .fontWeight(FontWeight.Bold)
             .fontColor($r('app.color.text_primary'))
-            .layoutWeight(1)
+            .flexShrink(1)
             .maxLines(1)
             .textOverflow({ overflow: TextOverflow.Ellipsis })
           if (this.row.verified) {
             SymbolGlyph($r('sys.symbol.checkmark_circle_fill'))
               .fontSize(16)
               .fontColor([verificationBadgeColor(this.row.verifiedType ?? '', this.accentColor)])
+              .flexShrink(0)
           }
         }
         .width('100%')
+        .justifyContent(FlexAlign.Start)
+        .alignItems(VerticalAlign.Center)
         Text('@' + this.row.username).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Body_M'))
           .fontColor($r('app.color.text_secondary'))
@@ -130,7 +134,7 @@ export struct UserRowCard {
       }
     }
     .width('100%')
-    .padding({ left: 16, right: 16, top: 12, bottom: 12 })
+    .padding({ left: this.horizontalPadding, right: this.horizontalPadding, top: 12, bottom: 12 })
     .alignItems(VerticalAlign.Top)
     .onClick((): void => this.onOpen(this.row))
   }

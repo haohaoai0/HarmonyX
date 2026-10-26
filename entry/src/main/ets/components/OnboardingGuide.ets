@@ -516,6 +516,10 @@ export struct OnboardingGuide {
         .layoutWeight(1)
         .alignItems(HorizontalAlign.Center)
       } else {
+        Text($r('app.string.onboarding_login_notice')).fontFamily(this.appFontFamily)
+          .fontSize($r('sys.float.Body_S'))
+          .fontColor($r('app.color.text_secondary'))
+          .width('100%')
         Web({ src: X_LOGIN_URL, controller: this.webController })
         .width('100%')
         .layoutWeight(1)

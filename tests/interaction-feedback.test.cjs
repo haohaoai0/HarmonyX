@@ -30,10 +30,11 @@ function settingsFixture() {
 test('photos open fullscreen by default while other interaction defaults stay unchanged', () => {
   const { api, storage } = settingsFixture();
   const settings = api.interactionSettingsStore.load({});
-  assert.deepEqual([settings.photoFullscreen, settings.homeFloatingAction, settings.refreshOnForeground, settings.refreshOnHomeTab],
-    [true, 'compose', false, false]);
+  assert.deepEqual([settings.photoFullscreen, settings.homeFloatingAction, settings.meFloatingAction,
+    settings.refreshOnForeground, settings.refreshOnHomeTab], [true, 'compose', 'profile', false, false]);
   api.interactionSettingsStore.publish(settings);
   assert.equal(storage.get(api.STORAGE_KEY_PHOTO_FULLSCREEN), true);
+  assert.equal(storage.get(api.STORAGE_KEY_ME_FLOATING_ACTION), 'profile');
 });
 
 test('an explicitly disabled fullscreen preference survives the new default', () => {
@@ -62,13 +63,14 @@ test('exit confirmation defaults on, persists when disabled, and keeps published
 
 test('independent interaction preferences survive a new store instance', () => {
   const { api, storage } = settingsFixture(), store = api.interactionSettingsStore;
-  store.savePhotoFullscreen({}, true); store.saveHomeFloatingAction({}, 'refresh');
+  store.savePhotoFullscreen({}, true); store.saveHomeFloatingAction({}, 'refresh'); store.saveMeFloatingAction({}, 'accounts');
   store.saveRefreshOnForeground({}, true); store.saveRefreshOnHomeTab({}, false);
   const restored = new api.InteractionSettingsStore().load({});
-  assert.deepEqual([restored.photoFullscreen, restored.homeFloatingAction, restored.refreshOnForeground, restored.refreshOnHomeTab],
-    [true, 'refresh', true, false]);
+  assert.deepEqual([restored.photoFullscreen, restored.homeFloatingAction, restored.meFloatingAction,
+    restored.refreshOnForeground, restored.refreshOnHomeTab], [true, 'refresh', 'accounts', true, false]);
   store.saveHomeFloatingAction({}, 'top'); assert.equal(storage.get(api.STORAGE_KEY_HOME_FLOATING_ACTION), 'top');
   store.saveHomeFloatingAction({}, 'hidden'); assert.equal(new api.InteractionSettingsStore().load({}).homeFloatingAction, 'hidden');
+  store.saveMeFloatingAction({}, 'unknown'); assert.equal(new api.InteractionSettingsStore().load({}).meFloatingAction, 'profile');
 });
 
 test('failed settings writes never publish a new visible preference', () => {
@@ -157,6 +159,52 @@ test('Home double tap and pull refresh choices persist independently, including 
   assert.equal(new f.api.InteractionSettingsStore().load({}).homePullRefreshLatest, true);
   f.fail(); assert.equal(store.saveHomeDoubleTapLatest({}, true), false);
   assert.equal(f.storage.get(f.api.STORAGE_KEY_HOME_DOUBLE_TAP_LATEST), false);
+});
+
+test('Home single tap scroll preference defaults on, persists and publishes independently of refresh choices', () => {
+  const f = settingsFixture(), store = f.api.interactionSettingsStore;
+  assert.equal(store.load({}).homeSingleTapTop, true);
+  store.publish(store.load({}));
+  assert.equal(f.storage.get(f.api.STORAGE_KEY_HOME_SINGLE_TAP_TOP), true);
+  assert.equal(store.saveHomeSingleTapTop({}, false), true);
+  assert.equal(new f.api.InteractionSettingsStore().load({}).homeSingleTapTop, false);
+  assert.equal(store.load({}).homeDoubleTapLatest, true);
+  assert.equal(store.load({}).homePullRefreshLatest, true);
+  f.fail();
+  assert.equal(store.saveHomeSingleTapTop({}, true), false);
+  assert.equal(f.storage.get(f.api.STORAGE_KEY_HOME_SINGLE_TAP_TOP), false);
+});
+
+test('single Home tap scrolls the current Home feed without a refresh; double tap retains its refresh choice', () => {
+  const code = compile(`class Harness { ${methods('pages/Index', 'Index', ['onRootTabBarClick'])} }`);
+  const Root = new Function('hapticTick', 'HOME_TAB_INDEX', 'HOME_TAB_DOUBLE_TAP_INTERVAL_MS', 'Edge',
+    `${code}; return Harness;`)(() => {}, 0, 350, { Top: 'top' });
+  const scrolls = [], refreshes = [];
+  const root = Object.assign(new Root(), { homeSingleTapTop: true, homeDoubleTapLatest: false,
+    lastHomeTabClickAt: 0, navPathStack: { size: () => 0 },
+    bottomBarPageAt: index => [4, 0, 3, 1, 2][index],
+    getHomeScroller: () => ({ scrollEdge: edge => scrolls.push(edge) }),
+    setChromeHidden: value => { root.tabBarHidden = value; },
+    setTabBarHidden: value => { root.tabBarHidden = value; },
+    onRefresh: latest => refreshes.push(latest) });
+  root.onRootTabBarClick(1);
+  assert.deepEqual(scrolls, ['top']);
+  assert.deepEqual(refreshes, []);
+  assert.equal(root.scrollDepth, 0);
+  assert.equal(root.fabHidden, false);
+  root.onRootTabBarClick(1);
+  assert.deepEqual(refreshes, [false]);
+  assert.equal(root.lastHomeTabClickAt, 0);
+  root.homeSingleTapTop = false;
+  root.onRootTabBarClick(1);
+  assert.equal(scrolls.length, 2);
+  root.onRootTabBarClick(0);
+  assert.equal(scrolls.length, 2);
+  assert.equal(root.lastHomeTabClickAt, 0);
+  root.homeSingleTapTop = true;
+  root.navPathStack.size = () => 1;
+  root.onRootTabBarClick(1);
+  assert.equal(scrolls.length, 2, 'a covered Home feed is not moved');
 });
 
 test('auth, rate-limit and transport failures preserve primary status and the retry cursor', async () => {

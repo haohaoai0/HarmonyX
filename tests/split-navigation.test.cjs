@@ -154,3 +154,34 @@ test('drag release selects the nearest visible page once and cancellation remove
   dock.cancelDrag();assert.equal(timers.size,0);assert.equal(dock.liquidMotion.dragging,false);
   assert.equal(dock.liquidMotion.scaleX,1);assert.equal(dock.liquidMotion.scaleY,1);
 });
+
+test('the Me tab routes its configured split action directly',()=>{
+  const source=fs.readFileSync('entry/src/main/ets/pages/Index.ets','utf8').replace('struct Index','class Index');
+  const parsed=ts.createSourceFile('index.ts',source,ts.ScriptTarget.Latest,true);
+  const root=parsed.statements.find(n=>ts.isClassDeclaration(n)&&n.name?.getText(parsed)==='Index');
+  const names=['rootSplitActionVisible','rootSplitActionMode','rootSplitActionLabel','rootSplitActionIcon','onRootSplitAction'];
+  const methods=names.map(name=>root.members.find(n=>n.name?.getText(parsed)===name).getText(parsed)).join('\n');
+  const js=ts.transpileModule('export class Index {\n'+methods+'\n}',{
+    compilerOptions:{target:ts.ScriptTarget.ES2020,module:ts.ModuleKind.CommonJS}
+  }).outputText;
+  const exports={};
+  new Function('exports','$r','HOME_TAB_INDEX','EXPLORE_TAB_INDEX','MESSAGES_TAB_INDEX','ME_TAB_INDEX',
+    'ME_FLOATING_PROFILE','ME_FLOATING_ACCOUNTS','ME_FLOATING_SETTINGS','ME_FLOATING_HELP','ME_FLOATING_HIDDEN',js)(
+    exports,key=>({key}),0,1,3,4,'profile','accounts','settings','help','hidden');
+  const index=new exports.Index();
+  const opened=[];
+  Object.assign(index,{composeButtonEnabled:true,currentTab:4,homeFloatingAction:'compose',meFloatingAction:'profile',
+    text:resource=>resource.key,openOwnProfile:()=>opened.push('profile'),openAccounts:()=>opened.push('accounts'),
+    openSettings:()=>opened.push('settings'),openHelpCenter:()=>opened.push('help')});
+
+  assert.equal(index.rootSplitActionVisible(),true);
+  assert.equal(index.rootSplitActionMode(),'profile');
+  assert.equal(index.rootSplitActionIcon().key,'sys.symbol.person_crop_circle_fill');
+  assert.equal(index.rootSplitActionLabel(),'app.string.side_profile');
+  index.onRootSplitAction();
+  index.meFloatingAction='accounts';index.onRootSplitAction();
+  index.meFloatingAction='settings';index.onRootSplitAction();
+  index.meFloatingAction='help';index.onRootSplitAction();
+  assert.deepEqual(opened,['profile','accounts','settings','help']);
+  index.meFloatingAction='hidden';assert.equal(index.rootSplitActionVisible(),false);
+});

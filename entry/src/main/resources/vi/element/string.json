@@ -1,6 +1,70 @@
 {
   "string": [
     {
+      "name": "startup_animation_none",
+      "value": "Mở trực tiếp"
+    },
+    {
+      "name": "startup_animation_none_desc",
+      "value": "Mở Trang chủ mà không hiện biểu tượng hay hoạt ảnh khởi động."
+    },
+    {
+      "name": "startup_animation_speed",
+      "value": "Tốc độ phát"
+    },
+    {
+      "name": "startup_animation_speed_desc",
+      "value": "Áp dụng cho Mở đầu sinh động vào lần khởi động tiếp theo."
+    },
+    {
+      "name": "startup_animation_speed_value",
+      "value": "%s×"
+    },
+    {
+      "name": "startup_animation_title",
+      "value": "Hiệu ứng khởi động"
+    },
+    {
+      "name": "startup_animation_desc",
+      "value": "Áp dụng vào lần khởi động mới tiếp theo. Trang chủ làm mới trong khi phát. Giảm chuyển động sẽ dùng biểu tượng tĩnh."
+    },
+    {
+      "name": "startup_animation_icon",
+      "value": "Giữ biểu tượng"
+    },
+    {
+      "name": "startup_animation_icon_desc",
+      "value": "Giữ biểu tượng hiện tại đến khi Trang chủ sẵn sàng, rồi mờ dần."
+    },
+    {
+      "name": "startup_animation_ios",
+      "value": "Kiểu iOS"
+    },
+    {
+      "name": "startup_animation_ios_desc",
+      "value": "Biểu tượng nảy nhẹ rồi phóng to để hiện Trang chủ đã làm mới."
+    },
+    {
+      "name": "startup_animation_video",
+      "value": "Mở đầu sinh động"
+    },
+    {
+      "name": "startup_animation_video_desc",
+      "value": "Phát hoạt ảnh riêng của biểu tượng hiện tại, rồi hiển thị Trang chủ."
+    },
+    {
+      "name": "splash_ad_label",
+      "value": "Quảng cáo"
+    },
+    {
+      "name": "splash_ad_skip",
+      "value": "Bỏ qua"
+    },
+    {
+      "name": "splash_ad_signature",
+      "value": "Gặp thế giới bạn yêu thích"
+    },
+    {
       "name": "supporter_config_error",
       "value": "Không thể xác nhận liên kết tài khoản trên đám mây. Vui lòng liên hệ tác giả."
     },
@@ -8,63 +72,234 @@
       "name": "supporter_restore_hint",
       "value": "Chuyển lại tài khoản sẽ khôi phục trạng thái đã lưu. Trên thiết bị mới, sau khi cài lại hoặc trong phiên bản khác, hãy đăng nhập cùng tài khoản X và nhập mã gốc để khôi phục quyền truy cập."
     },
-    {"name": "eye_reading_title", "value": "Đọc bằng ánh mắt"},
-    {"name": "eye_reading_intro", "value": "Nhìn lên hoặc xuống và giữ để cuộn chuỗi bài, bản ngoại tuyến và bài viết."},
-    {"name": "eye_reading_enable", "value": "Bật đọc bằng ánh mắt"},
-    {"name": "eye_reading_supported", "value": "Thiết bị hỗ trợ theo dõi khuôn mặt. Camera chỉ bật khi bạn nhấn Bắt đầu trên trang đọc."},
-    {"name": "eye_reading_unsupported", "value": "Thiết bị không hỗ trợ tính năng theo dõi khuôn mặt cần thiết. Hãy dùng cảm ứng hoặc bàn phím."},
-    {"name": "eye_reading_dwell", "value": "Thời gian giữ ánh mắt"},
-    {"name": "eye_reading_threshold", "value": "Ngưỡng hướng nhìn"},
-    {"name": "eye_reading_threshold_desc", "value": "Ngưỡng cao hơn yêu cầu chuyển động mắt rõ hơn và giúp giảm cuộn nhầm."},
-    {"name": "eye_reading_help", "value": "Giữ đầu yên và nhìn giữa màn hình để hiệu chỉnh. Nhìn lên hoặc xuống và giữ để cuộn khoảng nửa màn hình. Trở về giữa sau mỗi thao tác. Cảm ứng, con lăn và bàn phím được ưu tiên."},
-    {"name": "eye_reading_privacy", "value": "Camera trước chỉ được dùng sau khi bạn bắt đầu. Dữ liệu hướng nhìn được xử lý trên thiết bị, không lưu hay tải ảnh lên. Rời trang hoặc chuyển sang nền sẽ dừng phiên. Cần bắt đầu lại thủ công."},
-    {"name": "eye_reading_save_failed", "value": "Không lưu được cài đặt. Vui lòng thử lại."},
-    {"name": "eye_reading_start", "value": "Bắt đầu điều khiển mắt"},
-    {"name": "eye_reading_stop", "value": "Dừng điều khiển mắt"},
-    {"name": "eye_reading_recalibrate", "value": "Hiệu chỉnh lại"},
-    {"name": "eye_reading_starting", "value": "Đang bật camera trước…"},
-    {"name": "eye_reading_permission", "value": "Cần quyền camera. Hãy cho phép trong quyền ứng dụng của hệ thống rồi thử lại."},
-    {"name": "eye_reading_failed", "value": "Camera không khả dụng. Đóng ứng dụng camera khác rồi thử lại."},
-    {"name": "eye_reading_calibrating", "value": "Nhìn giữa màn hình, giữ đầu và ánh mắt ổn định để hiệu chỉnh."},
-    {"name": "eye_reading_center", "value": "Đưa ánh mắt về giữa trước thao tác tiếp theo."},
-    {"name": "eye_reading_ready", "value": "Sẵn sàng: nhìn lên hoặc xuống và giữ."},
-    {"name": "eye_reading_up", "value": "Tiếp tục nhìn lên để cuộn lên."},
-    {"name": "eye_reading_down", "value": "Tiếp tục nhìn xuống để cuộn xuống."},
-    {"name": "eye_reading_lost", "value": "Mở mắt và hướng mặt vào màn hình ở nơi đủ sáng. Hiệu chỉnh lại nếu vẫn không phản hồi."},
-    {"name": "eye_reading_paused", "value": "Thao tác thủ công được ưu tiên. Điều khiển mắt tạm dừng."},
-    {"name": "eye_reading_camera_reason", "value": "Dùng camera trước để nhận biết hướng mắt trên thiết bị khi bạn bắt đầu đọc bằng ánh mắt."},
-    {"name": "compact_video_layout", "value": "Bố cục video màn hình ngoài"},
-    {"name": "settings_compact_video_layout_desc", "value": "Dành cho màn hình vuông nhỏ như Pura X. Chọn nút bên cạnh hoặc hàng dưới. Khi mở máy, bố cục video thông thường được khôi phục."},
-    {"name": "compact_video_layout_rail", "value": "Nút bên cạnh"},
-    {"name": "compact_video_layout_bottom", "value": "Hàng dưới"},
-    {"name":"settings_component_hdr_enabled","value":"Component HDR effect"},
-    {"name":"settings_component_hdr_enabled_desc","value":"Off by default. Turn it on to use 1.25x brightening, then adjust the multiplier below."},
-    {"name":"settings_confirm_app_exit","value":"Xác nhận trước khi thoát"},
-    {"name":"settings_confirm_app_exit_desc","value":"Hỏi khi quay lại từ trang chính. Khi tắt, thoát trực tiếp."},
-    {"name":"app_exit_title","value":"Thoát ứng dụng?"},
-    {"name":"app_exit_message","value":"Bạn có chắc muốn thoát ứng dụng không?"},
-    {"name":"app_exit_action","value":"Thoát"},
-    {"name":"settings_component_hdr_max","value":"Hệ số độ sáng tối đa của màn hình hiện tại"},
-    {"name":"settings_component_hdr_max_unavailable","value":"Tạm thời không khả dụng"},
-    {"name":"settings_component_hdr_max_desc","value":"Giá trị do hệ thống báo cáo cho màn hình này. Tự động cập nhật khi độ sáng hoặc màn hình thay đổi."},
-    {"name":"settings_component_hdr_ratio","value":"Hệ số độ sáng HDR giao diện"},
-    {"name":"settings_component_hdr_desc","value":"Điều chỉnh vùng sáng của nút, biểu tượng và mục được chọn. Mặc định: 1.25; đặt 1 để tắt tăng sáng. Độ sáng thực tế tùy thuộc thiết bị. Thay đổi được tự động lưu và áp dụng."},
-    {"name":"settings_component_hdr_invalid","value":"Nhập số hợp lệ lớn hơn hoặc bằng 1."},
-    {"name":"settings_component_hdr_reset","value":"Đặt lại về 1.25"},
-    {"name":"settings_video_hdr_enhancement","value":"Tăng cường video HDR"},
-    {"name":"settings_video_hdr_enhancement_desc","value":"Cải thiện độ tương phản và màu sắc của video thông thường. Thiết bị không hỗ trợ sẽ tự động phát bình thường."},
-    {"name": "settings_menu_post", "value": "Thao tác menu bài đăng"},
-    {"name": "settings_menu_photo", "value": "Thao tác menu ảnh"},
-    {"name": "settings_menu_video", "value": "Thao tác menu video"},
-    {"name": "settings_menu_item_desc", "value": "Chọn thao tác hiển thị trong menu liên quan. Chỉ hiện khi nội dung hỗ trợ và có thể khôi phục mặc định."},
-    {"name": "settings_menu_show_action", "value": "Hiển thị trong menu liên quan"},
-    {"name": "settings_menu_empty", "value": "Các thao tác đã bị ẩn. Khôi phục trong mục Cài đặt tương ứng."},
-    {"name": "settings_viewer_video_mute", "value": "Tắt tiếng trình xem video"},
-    {"name": "settings_viewer_video_mute_desc", "value": "Tắt tiếng video đã mở riêng với bản xem trước trên trang chủ."},
-    {"name": "settings_video_auto_advance_desc", "value": "Tự động chuyển sang video tiếp theo khi phát xong."},
-    {"name": "settings_video_captions_desc", "value": "Mặc định bật phụ đề AI hệ thống trong trình xem video."},
-    {"name": "settings_video_feed_layout_desc", "value": "Chọn bố cục video dọc trên điện thoại. Cửa sổ rộng và ngang giữ bố cục tương ứng."},
-    {"name": "settings_chat_desc", "value": "Message requests, call permissions, PIN and chat auto-download"},
+    {
+      "name": "eye_reading_title",
+      "value": "Đọc bằng ánh mắt"
+    },
+    {
+      "name": "eye_reading_intro",
+      "value": "Nhìn lên hoặc xuống và giữ để cuộn chuỗi bài, bản ngoại tuyến và bài viết."
+    },
+    {
+      "name": "eye_reading_enable",
+      "value": "Bật đọc bằng ánh mắt"
+    },
+    {
+      "name": "eye_reading_supported",
+      "value": "Thiết bị hỗ trợ theo dõi khuôn mặt. Camera chỉ bật khi bạn nhấn Bắt đầu trên trang đọc."
+    },
+    {
+      "name": "eye_reading_unsupported",
+      "value": "Thiết bị không hỗ trợ tính năng theo dõi khuôn mặt cần thiết. Hãy dùng cảm ứng hoặc bàn phím."
+    },
+    {
+      "name": "eye_reading_dwell",
+      "value": "Thời gian giữ ánh mắt"
+    },
+    {
+      "name": "eye_reading_threshold",
+      "value": "Ngưỡng hướng nhìn"
+    },
+    {
+      "name": "eye_reading_threshold_desc",
+      "value": "Ngưỡng cao hơn yêu cầu chuyển động mắt rõ hơn và giúp giảm cuộn nhầm."
+    },
+    {
+      "name": "eye_reading_help",
+      "value": "Giữ đầu yên và nhìn giữa màn hình để hiệu chỉnh. Nhìn lên hoặc xuống và giữ để cuộn khoảng nửa màn hình. Trở về giữa sau mỗi thao tác. Cảm ứng, con lăn và bàn phím được ưu tiên."
+    },
+    {
+      "name": "eye_reading_privacy",
+      "value": "Camera trước chỉ được dùng sau khi bạn bắt đầu. Dữ liệu hướng nhìn được xử lý trên thiết bị, không lưu hay tải ảnh lên. Rời trang hoặc chuyển sang nền sẽ dừng phiên. Cần bắt đầu lại thủ công."
+    },
+    {
+      "name": "eye_reading_save_failed",
+      "value": "Không lưu được cài đặt. Vui lòng thử lại."
+    },
+    {
+      "name": "eye_reading_start",
+      "value": "Bắt đầu điều khiển mắt"
+    },
+    {
+      "name": "eye_reading_stop",
+      "value": "Dừng điều khiển mắt"
+    },
+    {
+      "name": "eye_reading_recalibrate",
+      "value": "Hiệu chỉnh lại"
+    },
+    {
+      "name": "eye_reading_starting",
+      "value": "Đang bật camera trước…"
+    },
+    {
+      "name": "eye_reading_permission",
+      "value": "Cần quyền camera. Hãy cho phép trong quyền ứng dụng của hệ thống rồi thử lại."
+    },
+    {
+      "name": "eye_reading_failed",
+      "value": "Camera không khả dụng. Đóng ứng dụng camera khác rồi thử lại."
+    },
+    {
+      "name": "eye_reading_calibrating",
+      "value": "Nhìn giữa màn hình, giữ đầu và ánh mắt ổn định để hiệu chỉnh."
+    },
+    {
+      "name": "eye_reading_center",
+      "value": "Đưa ánh mắt về giữa trước thao tác tiếp theo."
+    },
+    {
+      "name": "eye_reading_ready",
+      "value": "Sẵn sàng: nhìn lên hoặc xuống và giữ."
+    },
+    {
+      "name": "eye_reading_up",
+      "value": "Tiếp tục nhìn lên để cuộn lên."
+    },
+    {
+      "name": "eye_reading_down",
+      "value": "Tiếp tục nhìn xuống để cuộn xuống."
+    },
+    {
+      "name": "eye_reading_lost",
+      "value": "Mở mắt và hướng mặt vào màn hình ở nơi đủ sáng. Hiệu chỉnh lại nếu vẫn không phản hồi."
+    },
+    {
+      "name": "eye_reading_paused",
+      "value": "Thao tác thủ công được ưu tiên. Điều khiển mắt tạm dừng."
+    },
+    {
+      "name": "eye_reading_camera_reason",
+      "value": "Dùng camera trước để nhận biết hướng mắt trên thiết bị khi bạn bắt đầu đọc bằng ánh mắt."
+    },
+    {
+      "name": "compact_video_layout",
+      "value": "Bố cục video màn hình ngoài"
+    },
+    {
+      "name": "settings_compact_video_layout_desc",
+      "value": "Dành cho màn hình vuông nhỏ như Pura X. Chọn nút bên cạnh hoặc hàng dưới. Khi mở máy, bố cục video thông thường được khôi phục."
+    },
+    {
+      "name": "compact_video_layout_rail",
+      "value": "Nút bên cạnh"
+    },
+    {
+      "name": "compact_video_layout_bottom",
+      "value": "Hàng dưới"
+    },
+    {
+      "name": "settings_component_hdr_enabled",
+      "value": "Component HDR effect"
+    },
+    {
+      "name": "settings_component_hdr_enabled_desc",
+      "value": "Off by default. Turn it on to use 1.25x brightening, then adjust the multiplier below."
+    },
+    {
+      "name": "settings_confirm_app_exit",
+      "value": "Xác nhận trước khi thoát"
+    },
+    {
+      "name": "settings_confirm_app_exit_desc",
+      "value": "Hỏi khi quay lại từ trang chính. Khi tắt, thoát trực tiếp."
+    },
+    {
+      "name": "app_exit_title",
+      "value": "Thoát ứng dụng?"
+    },
+    {
+      "name": "app_exit_message",
+      "value": "Bạn có chắc muốn thoát ứng dụng không?"
+    },
+    {
+      "name": "app_exit_action",
+      "value": "Thoát"
+    },
+    {
+      "name": "settings_component_hdr_max",
+      "value": "Hệ số độ sáng tối đa của màn hình hiện tại"
+    },
+    {
+      "name": "settings_component_hdr_max_unavailable",
+      "value": "Tạm thời không khả dụng"
+    },
+    {
+      "name": "settings_component_hdr_max_desc",
+      "value": "Giá trị do hệ thống báo cáo cho màn hình này. Tự động cập nhật khi độ sáng hoặc màn hình thay đổi."
+    },
+    {
+      "name": "settings_component_hdr_ratio",
+      "value": "Hệ số độ sáng HDR giao diện"
+    },
+    {
+      "name": "settings_component_hdr_desc",
+      "value": "Điều chỉnh vùng sáng của nút, biểu tượng và mục được chọn. Mặc định: 1.25; đặt 1 để tắt tăng sáng. Độ sáng thực tế tùy thuộc thiết bị. Thay đổi được tự động lưu và áp dụng."
+    },
+    {
+      "name": "settings_component_hdr_invalid",
+      "value": "Nhập số hợp lệ lớn hơn hoặc bằng 1."
+    },
+    {
+      "name": "settings_component_hdr_reset",
+      "value": "Đặt lại về 1.25"
+    },
+    {
+      "name": "settings_video_hdr_enhancement",
+      "value": "Tăng cường video HDR"
+    },
+    {
+      "name": "settings_video_hdr_enhancement_desc",
+      "value": "Cải thiện độ tương phản và màu sắc của video thông thường. Thiết bị không hỗ trợ sẽ tự động phát bình thường."
+    },
+    {
+      "name": "settings_menu_post",
+      "value": "Thao tác menu bài đăng"
+    },
+    {
+      "name": "settings_menu_photo",
+      "value": "Thao tác menu ảnh"
+    },
+    {
+      "name": "settings_menu_video",
+      "value": "Thao tác menu video"
+    },
+    {
+      "name": "settings_menu_item_desc",
+      "value": "Chọn thao tác hiển thị trong menu liên quan. Chỉ hiện khi nội dung hỗ trợ và có thể khôi phục mặc định."
+    },
+    {
+      "name": "settings_menu_show_action",
+      "value": "Hiển thị trong menu liên quan"
+    },
+    {
+      "name": "settings_menu_empty",
+      "value": "Các thao tác đã bị ẩn. Khôi phục trong mục Cài đặt tương ứng."
+    },
+    {
+      "name": "settings_viewer_video_mute",
+      "value": "Tắt tiếng trình xem video"
+    },
+    {
+      "name": "settings_viewer_video_mute_desc",
+      "value": "Tắt tiếng video đã mở riêng với bản xem trước trên trang chủ."
+    },
+    {
+      "name": "settings_video_auto_advance_desc",
+      "value": "Tự động chuyển sang video tiếp theo khi phát xong."
+    },
+    {
+      "name": "settings_video_captions_desc",
+      "value": "Mặc định bật phụ đề AI hệ thống trong trình xem video."
+    },
+    {
+      "name": "settings_video_feed_layout_desc",
+      "value": "Chọn bố cục video dọc trên điện thoại. Cửa sổ rộng và ngang giữ bố cục tương ứng."
+    },
+    {
+      "name": "settings_chat_desc",
+      "value": "Message requests, call permissions, PIN and chat auto-download"
+    },
     {
       "name": "settings_video_double_tap_seek",
       "value": "Nhấn đúp để tua"
@@ -1107,7 +1342,7 @@
     },
     {
       "name": "profile_version",
-      "value": "Harmony X 3.1.0 · HarmonyOS 6.1 (API 23-26) · mô hình Stage"
+      "value": "Harmony X 3.5.0 · HarmonyOS 6.0.2 (API 22-26) · mô hình Stage"
     },
     {
       "name": "profile_following",
@@ -1836,6 +2071,10 @@
     {
       "name": "settings_timeline_columns_auto",
       "value": "Tự động"
+    },
+    {
+      "name": "settings_timeline_columns_auto_two",
+      "value": "Tự động: 2 cột máy tính/ngang, 1 cột màn hình ngoài"
     },
     {
       "name": "settings_timeline_columns_one",
@@ -4500,6 +4739,10 @@
     {
       "name": "onboarding_login_title",
       "value": "Đăng nhập X"
+    },
+    {
+      "name": "onboarding_login_notice",
+      "value": "Không đăng nhập bằng Google; hãy nhập trực tiếp email của bạn. Nếu mạng hoạt động bình thường nhưng trang vẫn trắng, vui lòng chờ."
     },
     {
       "name": "onboarding_login_hint",
@@ -10477,330 +10720,1346 @@
       "name": "settings_desktop_video_feed",
       "value": "Bảng tin video kiểu điện thoại"
     },
-    {"name":"settings_classic_bottom_bar","value":"Điều hướng dưới cổ điển"},
-    {"name":"settings_classic_bottom_bar_desc","value":"Dùng thanh biểu tượng và nhãn ở dưới, trải hết chiều rộng, có thể tự động ẩn. Tắt để khôi phục kiểu nổi. Thay đổi có hiệu lực ngay và được lưu."},
-    {"name":"settings_root_liquid_tab_indicator","value":"Chỉ báo lỏng"},
-    {"name":"settings_root_liquid_tab_indicator_desc","value":"Hiển thị viên nang có thể kéo và nảy đàn hồi trên thanh điều hướng nổi. Kích thước thay đổi theo cài đặt nhãn thẻ."},
-    {"name":"settings_root_tab_labels","value":"Hiển thị nhãn thẻ"},
-    {"name":"settings_root_tab_labels_desc","value":"Áp dụng cho cả điều hướng dưới nổi và cổ điển. Khi tắt chỉ còn biểu tượng và chấm chưa đọc."},
+    {
+      "name": "settings_classic_bottom_bar",
+      "value": "Điều hướng dưới cổ điển"
+    },
+    {
+      "name": "settings_classic_bottom_bar_desc",
+      "value": "Dùng thanh biểu tượng và nhãn ở dưới, trải hết chiều rộng, có thể tự động ẩn. Tắt để khôi phục kiểu nổi. Thay đổi có hiệu lực ngay và được lưu."
+    },
+    {
+      "name": "settings_root_liquid_tab_indicator",
+      "value": "Chỉ báo lỏng"
+    },
+    {
+      "name": "settings_root_liquid_tab_indicator_desc",
+      "value": "Hiển thị viên nang có thể kéo và nảy đàn hồi trên thanh điều hướng nổi. Kích thước thay đổi theo cài đặt nhãn thẻ."
+    },
+    {
+      "name": "settings_root_tab_labels",
+      "value": "Hiển thị nhãn thẻ"
+    },
+    {
+      "name": "settings_root_tab_labels_desc",
+      "value": "Áp dụng cho cả điều hướng dưới nổi và cổ điển. Khi tắt chỉ còn biểu tượng và chấm chưa đọc."
+    },
     {
       "name": "chat_post_preview",
       "value": "Bài đăng được chia sẻ"
     },
-    {"name": "account_overview_signed_out", "value": "Đã đăng xuất"},
-    {"name": "account_overview_no_bio", "value": "Chưa có tiểu sử"},
-    {"name": "account_overview_handle", "value": "Tên người dùng"},
-    {"name": "account_overview_location", "value": "Vị trí"},
-    {"name": "account_overview_website", "value": "Trang web"},
-    {"name": "account_overview_manage", "value": "Quản lý và chuyển tài khoản"},
-    {"name": "profile_editor_choose_banner", "value": "Change header photo"},
-    {"name": "profile_editor_choose_avatar", "value": "Change profile photo"},
-    {"name": "profile_editor_birthdate", "value": "Birth date"},
-    {"name": "profile_editor_birthdate_empty", "value": "Add birth date"},
-    {"name": "profile_editor_birthdate_manage", "value": "Edit birth date and visibility"},
-    {"name": "profile_editor_birthdate_privacy", "value": "Month and day: %s\nYear: %s"},
-    {"name": "profile_editor_account_changed", "value": "The signed-in account changed. Go back and reopen the editor."},
-    {"name": "profile_editor_unsaved_title", "value": "Discard unsaved changes?"},
-    {"name": "profile_editor_unsaved_message", "value": "Unsaved profile and photo changes will be lost when you leave."},
-    {"name": "profile_editor_keep_editing", "value": "Keep editing"},
-    {"name": "profile_editor_discard", "value": "Discard changes"},
-    {"name": "profile_editor_partial", "value": "Some changes were saved. Your remaining edits are still here. Try saving again."},
-    {"name": "profile_editor_confirm_failed", "value": "Changes were submitted, but the updated profile could not be loaded. Save again to refresh without uploading the photos again."},
-    {"name": "settings_page_transition", "value": "Chuyển trang"},
-    {"name": "settings_page_transition_desc", "value": "Chọn hiệu ứng khi mở trang và quay lại. Thay đổi có hiệu lực ngay và được lưu."},
-    {"name": "settings_page_transition_classic", "value": "Hiệu ứng hiện tại"},
-    {"name": "settings_page_transition_classic_desc", "value": "Giữ các hiệu ứng điều hướng hiện tại của hệ thống."},
-    {"name": "settings_page_transition_official", "value": "Phong cách chính thức"},
-    {"name": "settings_page_transition_official_desc", "value": "Thu phóng từ giữa và mờ dần, với hiệu ứng vào và ra đồng bộ."},
-    {"name":"settings_anti_peep","value":"Bảo vệ chống nhìn trộm"},
-    {"name":"settings_anti_peep_desc","value":"Che cửa sổ ứng dụng bằng lớp phủ hệ thống khi phát hiện người khác nhìn màn hình."},
-    {"name":"settings_anti_peep_enable","value":"Bật bảo vệ"},
-    {"name":"settings_anti_peep_setup","value":"Thiết lập bảo vệ hệ thống"},
-    {"name":"settings_anti_peep_recheck","value":"Kiểm tra lại"},
-    {"name":"settings_anti_peep_note","value":"Thiết lập nhận diện khuôn mặt và cho phép ứng dụng trong Quyền riêng tư và bảo mật > Bảo vệ chống nhìn trộm. Ứng dụng chỉ dùng trạng thái hệ thống, không truy cập ảnh khuôn mặt."},
-    {"name":"settings_anti_peep_disabled","value":"Đã tắt"},
-    {"name":"settings_anti_peep_unsupported","value":"Thiết bị này không hỗ trợ bảo vệ chống nhìn trộm của hệ thống."},
-    {"name":"settings_anti_peep_permission","value":"Đang chờ cấp quyền cho ứng dụng. Sau khi thiết lập, quay lại ứng dụng hoặc kiểm tra lại để kích hoạt."},
-    {"name":"settings_anti_peep_system_off","value":"Bật ứng dụng này trong bảo vệ chống nhìn trộm của hệ thống."},
-    {"name":"settings_anti_peep_face","value":"Hãy bật nhận diện khuôn mặt trong cài đặt hệ thống trước."},
-    {"name":"settings_anti_peep_ready","value":"Đã kích hoạt. Đang theo dõi trạng thái nhìn trộm."},
-    {"name":"settings_anti_peep_protected","value":"Phát hiện nhìn trộm. Đã kích hoạt lớp phủ bảo vệ hệ thống."},
-    {"name":"settings_anti_peep_error","value":"Hiện chưa thể bật bảo vệ. Hãy kiểm tra lại."},
-    {"name":"settings_anti_peep_checking","value":"Đang kiểm tra hoặc kích hoạt bảo vệ…"},
-    {"name":"settings_anti_peep_save_failed","value":"Không thể lưu. Vui lòng thử lại."},
-    {"name":"huawei_account_title","value":"HUAWEI ID and cloud sync"},
-    {"name":"huawei_account_name","value":"HUAWEI ID"},
-    {"name":"huawei_login","value":"Sign in with HUAWEI ID"},
-    {"name":"huawei_logout","value":"Sign out"},
-    {"name":"huawei_signed_in","value":"Signed in with HUAWEI ID"},
-    {"name":"huawei_logging_in","value":"Signing in…"},
-    {"name":"huawei_signed_out_description","value":"Sign in to bring your preferences with you"},
-    {"name":"huawei_cloud_sync","value":"Cloud sync"},
-    {"name":"huawei_sync_description","value":"Sign in to enable sync for appearance, reading, playback preferences and local content rules across your devices."},
-    {"name":"huawei_local_data_note","value":"X credentials, messages, drafts and caches stay on this device. Some appearance changes take effect after restarting."},
-    {"name":"huawei_logout_title","value":"Sign out of HUAWEI ID?"},
-    {"name":"huawei_logout_description","value":"Cloud sync will pause. Local settings and existing cloud data will be kept. Your X account remains available."},
-    {"name":"huawei_sync_disabled","value":"Off. Settings are saved on this device."},
-    {"name":"huawei_sync_unavailable","value":"Cloud storage is unavailable. Check the system cloud service and this app’s sync switch."},
-    {"name":"huawei_sync_downloading","value":"Reading and merging cloud settings…"},
-    {"name":"huawei_sync_uploading","value":"Uploading settings…"},
-    {"name":"huawei_sync_success","value":"Synced"},
-    {"name":"huawei_sync_pending","value":"Saved locally, waiting to sync"},
-    {"name":"huawei_sync_failed","value":"Sync did not finish. Your local data is safe. Check system cloud settings and try again."},
-    {"name":"huawei_network_error","value":"Network unavailable. Try again when connected."},
-    {"name":"huawei_storage_full","value":"Cloud or device storage is full. Free some space and try again."},
-    {"name":"huawei_login_error","value":"Sign-in did not finish. Check account service configuration or try again later."},
-    {"name":"huawei_authorization_error","value":"Nickname and avatar authorization failed. Check account permissions and try again."},
-    {"name":"huawei_save_error","value":"Could not save settings. Try again."},
-    {"name":"huawei_select_group","value":"Select at least one group to sync."},
-    {"name":"huawei_account_changed","value":"HUAWEI ID has changed. Enabling sync will merge the selected local settings into the current account."},
-    {"name":"huawei_last_sync","value":"Last successful sync:"},
-    {"name":"huawei_syncing","value":"Syncing…"},
-    {"name":"huawei_sync_now","value":"Sync now"},
-    {"name":"huawei_group_appearance","value":"Appearance and navigation"},
-    {"name":"huawei_group_appearance_description","value":"Theme, text size, title bar, tabs and sheet material"},
-    {"name":"huawei_group_media","value":"Reading and playback"},
-    {"name":"huawei_group_media_description","value":"Image and video quality, autoplay and mute preferences"},
-    {"name":"huawei_group_filters","value":"Local content rules"},
-    {"name":"huawei_group_filters_description","value":"Keyword and user filters, and content preferences"},
-    {"name":"post_photo_save_background","value":"Lưu vào thư viện hình nền"},
-    {"name":"chat_background_saving_photo","value":"Đang lưu ảnh nền…"},
-    {"name":"chat_background_saved_photo","value":"Đã lưu. Chọn ảnh trong Hình nền trang hoặc Hình nền trò chuyện."},
-    {"name":"chat_background_save_photo_failed","value":"Không thể lưu ảnh nền. Vui lòng thử lại."},
-    {"name":"chat_background_saved_photos","value":"Ảnh đã lưu từ bài đăng"},
-    {"name":"page_background_title","value":"Nền trang"},
-    {"name":"page_background_description","value":"Colors, photos and mixable patterns"},
-    {"name":"page_background_switch_title","value":"Bật nền trang"},
-    {"name":"page_background_switch_desc","value":"Tắt để dùng ngay nền của chủ đề. Kiểu hiện tại vẫn được giữ lại."},
-    {"name":"page_background_base","value":"Nền cơ sở"},
-    {"name":"page_background_pattern","value":"Lớp họa tiết"},
-    {"name":"page_background_pattern_none","value":"Không có họa tiết"},
-    {"name":"page_background_content_opacity","value":"Độ đục nền nội dung"},
-    {"name":"page_background_reset","value":"Khôi phục mặc định"},
-    {"name":"page_background_color_placeholder","value":"Custom color #RRGGBB"},
-    {"name":"page_background_preview","value":"Xem trước nền"},
-    {"name":"page_background_preview_text","value":"Bring your favorite colors and patterns to every visit."},
-    {"name":"page_background_preview_hint","value":"Text and content surfaces show how readable your background will be."},
-    {"name":"page_background_note","value":"Applies to regular pages. Chats have separate backgrounds; media viewers keep their immersive backgrounds. Tap Apply to save."},
-    {"name":"page_background_layout_preset","value":"Bộ họa tiết đầy đủ"},
-    {"name":"page_background_layout_icons","value":"Biểu tượng riêng lẻ"},
-    {"name":"page_background_density","value":"Mật độ biểu tượng"},
-    {"name":"page_background_set_add","value":"Chọn toàn bộ bộ biểu tượng"},
-    {"name":"page_background_set_remove","value":"Bỏ chọn toàn bộ bộ biểu tượng"},
-    {"name":"page_background_mix_hint","value":"Select motifs across sets to mix them, or repeat a single motif."},
-    {"name":"page_background_selected","value":"%d motifs selected"},
-    {"name":"page_background_icons_clear","value":"Xóa biểu tượng"},
-    {"name":"page_background_paper","value":"Chất liệu giấy"},
-    {"name":"page_background_paper_none","value":"Không có"},
-    {"name":"page_background_kraft","value":"Giấy kraft"},
-    {"name":"page_background_parchment","value":"Giấy da"},
-    {"name":"page_background_texture_strength","value":"Cường độ vân giấy"},
-    {"name":"page_background_presets_mix","value":"Select multiple full patterns to combine them."},
-    {"name":"page_background_applied","value":"Đã áp dụng nền trang"},
-    {"name":"page_background_apply_failed","value":"Không thể lưu nền. Vui lòng thử lại."},
-    {"name":"page_background_transparent_posts","value":"Transparent post cards"},
-    {"name":"page_background_transparent_posts_desc","value":"Hide the surface behind posts and quoted posts to reveal the page background."},
-    {"name":"page_background_transparent_inbox","value":"Transparent message list"},
-    {"name":"page_background_transparent_inbox_desc","value":"Hide conversation row surfaces while keeping text, avatars and unread indicators."},
-    {"name":"page_background_post_opacity","value":"Post surface opacity"},
-    {"name":"page_background_inbox_opacity","value":"Message list surface opacity"},
-    {"name":"page_background_scheme_import","value":"Import scheme"},
-    {"name":"page_background_scheme_share","value":"Share scheme"},
-    {"name":"page_background_scheme_title","value":"Page background scheme"},
-    {"name":"page_background_scheme_imported","value":"Scheme imported. Preview it, then tap Apply."},
-    {"name":"page_background_scheme_import_failed","value":"Unable to import. Choose a valid HarmonyX background scheme (up to 48 MB)."},
-    {"name":"page_background_scheme_share_failed","value":"Unable to share. Please try again; background photos must be under 32 MB."},
-    {"name":"page_background_set_signature_icons","value":"Biểu tượng thay thế"},
-    {"name":"page_background_set_garden_defense","value":"Plants vs. Zombies"},
-    {"name":"page_background_motif_signature_icons_frog_face","value":"Frog face"},
-    {"name":"page_background_motif_signature_icons_frog_lily","value":"Frog on a lily pad"},
-    {"name":"page_background_motif_signature_icons_milk_frog","value":"Milk frog"},
-    {"name":"page_background_motif_signature_icons_milk_frog_wave","value":"Waving milk frog"},
-    {"name":"page_background_motif_signature_icons_bird","value":"Flying bird"},
-    {"name":"page_background_motif_signature_icons_bird_wings","value":"Bird with open wings"},
-    {"name":"page_background_motif_signature_icons_ribbon_x","value":"Ribbon X"},
-    {"name":"page_background_motif_signature_icons_blossom_x","value":"Blossom X"},
-    {"name":"page_background_motif_signature_icons_brush_x","value":"Brush X"},
-    {"name":"page_background_motif_signature_icons_prism_x","value":"Prism X"},
-    {"name":"page_background_motif_signature_icons_zombie_x","value":"Zombie X"},
-    {"name":"page_background_motif_signature_icons_lily_blossom","value":"Lily blossom"},
-    {"name":"page_background_motif_garden_defense_peashooter","value":"Peashooter"},
-    {"name":"page_background_motif_garden_defense_sunflower","value":"Sunflower"},
-    {"name":"page_background_motif_garden_defense_wallnut","value":"Wall-nut"},
-    {"name":"page_background_motif_garden_defense_cherry_bomb","value":"Cherry Bomb"},
-    {"name":"page_background_motif_garden_defense_snow_pea","value":"Snow Pea"},
-    {"name":"page_background_motif_garden_defense_potato_mine","value":"Potato Mine"},
-    {"name":"page_background_motif_garden_defense_chomper","value":"Chomper"},
-    {"name":"page_background_motif_garden_defense_squash","value":"Squash"},
-    {"name":"page_background_motif_garden_defense_zombie","value":"Zombie"},
-    {"name":"page_background_motif_garden_defense_conehead","value":"Conehead Zombie"},
-    {"name":"page_background_motif_garden_defense_buckethead","value":"Buckethead Zombie"},
-    {"name":"page_background_motif_garden_defense_lawnmower","value":"Lawn mower"},
-    {"name":"page_background_set_ai_assistants","value":"Trợ lý AI"},
-    {"name":"page_background_motif_ai_assistants_gpt","value":"GPT"},
-    {"name":"page_background_motif_ai_assistants_claude","value":"Claude"},
-    {"name":"page_background_motif_ai_assistants_gemini","value":"Gemini"},
-    {"name":"page_background_motif_ai_assistants_deepseek","value":"DeepSeek"},
-    {"name":"page_background_motif_ai_assistants_grok","value":"Grok"},
-    {"name":"page_background_motif_ai_assistants_qwen","value":"Qwen"},
-    {"name":"page_background_motif_ai_assistants_kimi","value":"Kimi"},
-    {"name":"page_background_motif_ai_assistants_doubao","value":"Doubao"},
-    {"name":"page_background_motif_ai_assistants_copilot","value":"Copilot"},
-    {"name":"page_background_motif_ai_assistants_perplexity","value":"Perplexity"},
-    {"name":"page_background_motif_ai_assistants_mistral","value":"Mistral"},
-    {"name":"page_background_motif_ai_assistants_robot","value":"AI robot"},
-    {"name":"page_background_set_mobile_brands_systems","value":"Thương hiệu và hệ điều hành"},
-    {"name":"page_background_motif_mobile_brands_systems_apple","value":"Apple"},
-    {"name":"page_background_motif_mobile_brands_systems_huawei","value":"Huawei"},
-    {"name":"page_background_motif_mobile_brands_systems_xiaomi","value":"Xiaomi"},
-    {"name":"page_background_motif_mobile_brands_systems_samsung","value":"Samsung"},
-    {"name":"page_background_motif_mobile_brands_systems_oppo","value":"OPPO"},
-    {"name":"page_background_motif_mobile_brands_systems_vivo","value":"vivo"},
-    {"name":"page_background_motif_mobile_brands_systems_honor","value":"HONOR"},
-    {"name":"page_background_motif_mobile_brands_systems_oneplus","value":"OnePlus"},
-    {"name":"page_background_motif_mobile_brands_systems_meizu","value":"Meizu"},
-    {"name":"page_background_motif_mobile_brands_systems_harmonyos","value":"HarmonyOS"},
-    {"name":"page_background_motif_mobile_brands_systems_android","value":"Android"},
-    {"name":"page_background_motif_mobile_brands_systems_ios","value":"iOS"},
-    {"name":"page_background_motif_mobile_brands_systems_hyperos","value":"HyperOS"},
-    {"name":"page_background_motif_mobile_brands_systems_coloros","value":"ColorOS"},
-    {"name":"page_background_motif_mobile_brands_systems_originos","value":"OriginOS"},
-    {"name":"page_background_motif_mobile_brands_systems_oneui","value":"One UI"},
-    {"name":"motion_title","value":"Animation & haptics"},
-    {"name":"motion_intro","value":"Tune interaction animations and touch feedback. Changes are saved automatically. Tap the preview to try them."},
-    {"name":"motion_preview","value":"Tap to preview animation and haptics"},
-    {"name":"motion_reduce","value":"Reduce motion"},
-    {"name":"motion_reduce_desc","value":"Turn off decorative scaling, movement and Symbol effects, and skip page transitions. Your animation preferences are kept."},
-    {"name":"motion_duration","value":"Animation duration"},
-    {"name":"motion_duration_desc","value":"Reference duration for app animations. Button and page animations scale proportionally. System Symbol effects keep their native timing."},
-    {"name":"motion_amplitude","value":"Movement amplitude"},
-    {"name":"motion_amplitude_desc","value":"Adjust decorative scaling and rotation. At 0%, these effects stop. Gesture tracking and zoom keep their full range."},
-    {"name":"motion_damping","value":"Spring damping"},
-    {"name":"motion_damping_desc","value":"Lower values bounce more; higher values settle more gently."},
-    {"name":"motion_symbol","value":"Animated Symbols"},
-    {"name":"motion_symbol_desc","value":"Play a native Symbol effect once when selecting a tab or using an action button. Effects pause with Reduce motion."},
-    {"name":"motion_haptics","value":"Touch feedback"},
-    {"name":"motion_haptics_desc","value":"Use light feedback for navigation, buttons, switches and actions. Follows the system haptics setting."},
-    {"name":"motion_intensity","value":"Haptic intensity"},
-    {"name":"motion_intensity_desc","value":"Adjust preset effects on supported devices. Other motors use a short system touch vibration."},
-    {"name":"motion_presets","value":"Animation presets"},
-    {"name":"motion_preset_quick","value":"Quick"},
-    {"name":"motion_preset_quick_desc","value":"175 ms · 60% movement · firm settling. Short, crisp feedback."},
-    {"name":"motion_preset_standard","value":"Standard"},
-    {"name":"motion_preset_standard_desc","value":"300 ms · 100% movement · balanced spring. Recommended for everyday use."},
-    {"name":"motion_preset_spring","value":"Bouncy"},
-    {"name":"motion_preset_spring_desc","value":"450 ms · 120% movement · lower damping. Softer, more visible rebound."},
-    {"name":"motion_preset_reduced","value":"Low motion"},
-    {"name":"motion_preset_reduced_desc","value":"Skip page transitions and decorative effects. Keep your previous tuning."},
-    {"name":"motion_preset_custom","value":"Current preset: Custom. Choose a preset to restore its animation values."},
-    {"name":"chat_auto_download","value":"Chat auto-download"},
-    {"name":"storage_chat_retention","value":"Keep chat media"},
-    {"name":"storage_chat_retention_desc","value":"Set how long downloaded chat media stays cached. Chat history and manually saved files are kept."},
-    {"name":"settings_theme_mix","value":"Bảng màu phối"},
-    {"name":"settings_theme_mix_desc","value":"Màu sắc hài hòa cho công tắc, điều hướng và nút đăng ở chế độ sáng và tối."},
-    {"name":"settings_theme_mix_confetti","value":"Rực rỡ"},
-    {"name":"settings_theme_mix_coast","value":"Muối biển & San hô"},
-    {"name":"settings_theme_mix_sunset","value":"Diên vĩ hoàng hôn"},
-    {"name":"settings_theme_mix_forest","value":"Hổ phách rừng"},
-    {"name":"settings_theme_mix_berry","value":"Quả mọng & Bạc hà"},
-    {"name":"settings_theme_mix_morandi","value":"Morandi"},
-    {"name":"settings_theme_solid","value":"Đơn sắc"},
-    {"name":"settings_theme_mix_candy","value":"Kẹo sắc màu"},
-    {"name":"settings_theme_mix_sky","value":"Trời xanh & Chanh"},
-    {"name":"settings_theme_mix_peach","value":"Đào & Bạc hà"},
-    {"name":"settings_theme_mix_lilac","value":"Tử đinh hương & Kem"},
-    {"name":"page_background_set_popular_apps_cn","value":"Ứng dụng phổ biến · Trung Quốc"},
-    {"name":"page_background_motif_popular_apps_cn_wechat","value":"WeChat"},
-    {"name":"page_background_motif_popular_apps_cn_qq","value":"QQ"},
-    {"name":"page_background_motif_popular_apps_cn_weibo","value":"Weibo"},
-    {"name":"page_background_motif_popular_apps_cn_douyin","value":"Douyin"},
-    {"name":"page_background_motif_popular_apps_cn_kuaishou","value":"Kuaishou"},
-    {"name":"page_background_motif_popular_apps_cn_bilibili","value":"Bilibili"},
-    {"name":"page_background_motif_popular_apps_cn_xiaohongshu","value":"Xiaohongshu"},
-    {"name":"page_background_motif_popular_apps_cn_zhihu","value":"Zhihu"},
-    {"name":"page_background_motif_popular_apps_cn_baidu","value":"Baidu"},
-    {"name":"page_background_motif_popular_apps_cn_tieba","value":"Baidu Tieba"},
-    {"name":"page_background_motif_popular_apps_cn_alipay","value":"Alipay"},
-    {"name":"page_background_motif_popular_apps_cn_taobao","value":"Taobao"},
-    {"name":"page_background_motif_popular_apps_cn_jd","value":"JD"},
-    {"name":"page_background_motif_popular_apps_cn_pinduoduo","value":"Pinduoduo"},
-    {"name":"page_background_motif_popular_apps_cn_meituan","value":"Meituan"},
-    {"name":"page_background_motif_popular_apps_cn_eleme","value":"Ele.me"},
-    {"name":"page_background_motif_popular_apps_cn_dianping","value":"Dianping"},
-    {"name":"page_background_motif_popular_apps_cn_amap","value":"Amap"},
-    {"name":"page_background_motif_popular_apps_cn_baidu_maps","value":"Baidu Maps"},
-    {"name":"page_background_motif_popular_apps_cn_didi","value":"DiDi"},
-    {"name":"page_background_motif_popular_apps_cn_netease_music","value":"NetEase Cloud Music"},
-    {"name":"page_background_motif_popular_apps_cn_qq_music","value":"QQ Music"},
-    {"name":"page_background_motif_popular_apps_cn_kugou","value":"KuGou"},
-    {"name":"page_background_motif_popular_apps_cn_weread","value":"WeRead"},
-    {"name":"page_background_set_popular_apps_global","value":"Ứng dụng phổ biến · Toàn cầu"},
-    {"name":"page_background_motif_popular_apps_global_whatsapp","value":"WhatsApp"},
-    {"name":"page_background_motif_popular_apps_global_telegram","value":"Telegram"},
-    {"name":"page_background_motif_popular_apps_global_signal","value":"Signal"},
-    {"name":"page_background_motif_popular_apps_global_instagram","value":"Instagram"},
-    {"name":"page_background_motif_popular_apps_global_facebook","value":"Facebook"},
-    {"name":"page_background_motif_popular_apps_global_messenger","value":"Messenger"},
-    {"name":"page_background_motif_popular_apps_global_x","value":"X"},
-    {"name":"page_background_motif_popular_apps_global_threads","value":"Threads"},
-    {"name":"page_background_motif_popular_apps_global_youtube","value":"YouTube"},
-    {"name":"page_background_motif_popular_apps_global_tiktok","value":"TikTok"},
-    {"name":"page_background_motif_popular_apps_global_reddit","value":"Reddit"},
-    {"name":"page_background_motif_popular_apps_global_discord","value":"Discord"},
-    {"name":"page_background_motif_popular_apps_global_spotify","value":"Spotify"},
-    {"name":"page_background_motif_popular_apps_global_apple_music","value":"Apple Music"},
-    {"name":"page_background_motif_popular_apps_global_netflix","value":"Netflix"},
-    {"name":"page_background_motif_popular_apps_global_twitch","value":"Twitch"},
-    {"name":"page_background_motif_popular_apps_global_line","value":"LINE"},
-    {"name":"page_background_motif_popular_apps_global_snapchat","value":"Snapchat"},
-    {"name":"page_background_motif_popular_apps_global_pinterest","value":"Pinterest"},
-    {"name":"page_background_motif_popular_apps_global_chrome","value":"Chrome"},
-    {"name":"page_background_motif_popular_apps_global_firefox","value":"Firefox"},
-    {"name":"page_background_motif_popular_apps_global_edge","value":"Edge"},
-    {"name":"page_background_motif_popular_apps_global_gmail","value":"Gmail"},
-    {"name":"page_background_motif_popular_apps_global_google_maps","value":"Google Maps"},
-    {"name":"scene_title","value":"Scene modes"},
-    {"name":"scene_intro","value":"Apply a set of playback, quality, motion and background preferences. Restore returns to your settings from before the first mode was enabled."},
-    {"name":"scene_reading","value":"Clear reading"},
-    {"name":"scene_reading_desc","value":"Autoplay off · high quality images · low quality video · reduced motion · plain background"},
-    {"name":"scene_saver","value":"Power and data saver"},
-    {"name":"scene_saver_desc","value":"Autoplay off · small images · low quality video · reduced motion · plain background"},
-    {"name":"scene_media","value":"Media browsing"},
-    {"name":"scene_media_desc","value":"Autoplay on · original images · high quality video · motion on · your saved background"},
-    {"name":"scene_restore","value":"Restore original settings"},
-    {"name":"scene_restore_desc","value":"Keep your preferences from before scene mode. Switching between modes does not replace this backup."},
-    {"name":"scene_failed","value":"Some settings could not be saved. Your original settings are retained; retry or restore."},
-    {"name":"offline_title","value":"Offline & later"},
-    {"name":"offline_online","value":"Online bookmarks"},
-    {"name":"offline_intro","value":"New bookmarks save text and available articles automatically. Enable images before saving to include photos. Local copies stay separate from online bookmarks and ordinary cache cleanup."},
-    {"name":"offline_images","value":"Include photos in future saves"},
-    {"name":"offline_save","value":"Save offline"},
-    {"name":"offline_saving","value":"Saving…"},
-    {"name":"offline_saved","value":"Saved for offline reading"},
-    {"name":"offline_partial_saved","value":"Saved available content. Some article text or photos are missing; retry when online."},
-    {"name":"offline_save_failed","value":"Could not save locally. Please retry."},
-    {"name":"offline_partial","value":"Incomplete copy"},
-    {"name":"offline_unread","value":"Unread"},
-    {"name":"offline_unread_only","value":"Unread only"},
-    {"name":"offline_search","value":"Search titles, tags or notes"},
-    {"name":"offline_empty","value":"No matching offline items. Save a bookmark or use Save offline on a post."},
-    {"name":"offline_edit","value":"Tags & note"},
-    {"name":"offline_tags","value":"Tags"},
-    {"name":"offline_tags_hint","value":"Tags, separated by commas"},
-    {"name":"offline_note","value":"Private note"},
-    {"name":"offline_done","value":"Save"},
-    {"name":"offline_delete","value":"Delete local copy"},
-    {"name":"reader_title","value":"Thread reader"},
-    {"name":"reader_author_only","value":"Author only"},
-    {"name":"reader_translate","value":"Translate passages"},
-    {"name":"reader_font","value":"Text size"},
-    {"name":"reader_missing","value":"This offline item is missing or unavailable. Save it again while online."},
-    {"name":"reader_partial","value":"Only the available article content is shown. Continue loading or retry while online to get the complete text."},
-    {"name":"reader_load_failed","value":"Could not load more replies. Your current reading content is kept."},
-    {"name":"reader_translation_setup","value":"Enable translation and choose a target language in Settings first."},
-    {"name":"reader_translation_failed","value":"Some passages could not be translated. You can hide translations and retry."},
-    {"name":"reader_offline_note","value":"Saved local content. Translation requires a network connection."},
-    {"name":"reader_scope","value":"Replies loaded so far. Use Continue loading to include more of the discussion."},
+    {
+      "name": "account_overview_signed_out",
+      "value": "Đã đăng xuất"
+    },
+    {
+      "name": "account_overview_no_bio",
+      "value": "Chưa có tiểu sử"
+    },
+    {
+      "name": "account_overview_handle",
+      "value": "Tên người dùng"
+    },
+    {
+      "name": "account_overview_location",
+      "value": "Vị trí"
+    },
+    {
+      "name": "account_overview_website",
+      "value": "Trang web"
+    },
+    {
+      "name": "account_overview_manage",
+      "value": "Quản lý và chuyển tài khoản"
+    },
+    {
+      "name": "profile_editor_choose_banner",
+      "value": "Change header photo"
+    },
+    {
+      "name": "profile_editor_choose_avatar",
+      "value": "Change profile photo"
+    },
+    {
+      "name": "profile_editor_birthdate",
+      "value": "Birth date"
+    },
+    {
+      "name": "profile_editor_birthdate_empty",
+      "value": "Add birth date"
+    },
+    {
+      "name": "profile_editor_birthdate_manage",
+      "value": "Edit birth date and visibility"
+    },
+    {
+      "name": "profile_editor_birthdate_privacy",
+      "value": "Month and day: %s\nYear: %s"
+    },
+    {
+      "name": "profile_editor_account_changed",
+      "value": "The signed-in account changed. Go back and reopen the editor."
+    },
+    {
+      "name": "profile_editor_unsaved_title",
+      "value": "Discard unsaved changes?"
+    },
+    {
+      "name": "profile_editor_unsaved_message",
+      "value": "Unsaved profile and photo changes will be lost when you leave."
+    },
+    {
+      "name": "profile_editor_keep_editing",
+      "value": "Keep editing"
+    },
+    {
+      "name": "profile_editor_discard",
+      "value": "Discard changes"
+    },
+    {
+      "name": "profile_editor_partial",
+      "value": "Some changes were saved. Your remaining edits are still here. Try saving again."
+    },
+    {
+      "name": "profile_editor_confirm_failed",
+      "value": "Changes were submitted, but the updated profile could not be loaded. Save again to refresh without uploading the photos again."
+    },
+    {
+      "name": "settings_page_transition",
+      "value": "Chuyển trang"
+    },
+    {
+      "name": "settings_page_transition_desc",
+      "value": "Chọn hiệu ứng khi mở trang và quay lại. Thay đổi có hiệu lực ngay và được lưu."
+    },
+    {
+      "name": "settings_page_transition_classic",
+      "value": "Hiệu ứng hiện tại"
+    },
+    {
+      "name": "settings_page_transition_classic_desc",
+      "value": "Giữ các hiệu ứng điều hướng hiện tại của hệ thống."
+    },
+    {
+      "name": "settings_page_transition_official",
+      "value": "Phong cách chính thức"
+    },
+    {
+      "name": "settings_page_transition_official_desc",
+      "value": "Thu phóng từ giữa và mờ dần, với hiệu ứng vào và ra đồng bộ."
+    },
+    {
+      "name": "settings_anti_peep",
+      "value": "Bảo vệ chống nhìn trộm"
+    },
+    {
+      "name": "settings_anti_peep_desc",
+      "value": "Che cửa sổ ứng dụng bằng lớp phủ hệ thống khi phát hiện người khác nhìn màn hình."
+    },
+    {
+      "name": "settings_anti_peep_enable",
+      "value": "Bật bảo vệ"
+    },
+    {
+      "name": "settings_anti_peep_setup",
+      "value": "Thiết lập bảo vệ hệ thống"
+    },
+    {
+      "name": "settings_anti_peep_recheck",
+      "value": "Kiểm tra lại"
+    },
+    {
+      "name": "settings_anti_peep_note",
+      "value": "Thiết lập nhận diện khuôn mặt và cho phép ứng dụng trong Quyền riêng tư và bảo mật > Bảo vệ chống nhìn trộm. Ứng dụng chỉ dùng trạng thái hệ thống, không truy cập ảnh khuôn mặt."
+    },
+    {
+      "name": "settings_anti_peep_disabled",
+      "value": "Đã tắt"
+    },
+    {
+      "name": "settings_anti_peep_unsupported",
+      "value": "Thiết bị này không hỗ trợ bảo vệ chống nhìn trộm của hệ thống."
+    },
+    {
+      "name": "settings_anti_peep_permission",
+      "value": "Đang chờ cấp quyền cho ứng dụng. Sau khi thiết lập, quay lại ứng dụng hoặc kiểm tra lại để kích hoạt."
+    },
+    {
+      "name": "settings_anti_peep_system_off",
+      "value": "Bật ứng dụng này trong bảo vệ chống nhìn trộm của hệ thống."
+    },
+    {
+      "name": "settings_anti_peep_face",
+      "value": "Hãy bật nhận diện khuôn mặt trong cài đặt hệ thống trước."
+    },
+    {
+      "name": "settings_anti_peep_ready",
+      "value": "Đã kích hoạt. Đang theo dõi trạng thái nhìn trộm."
+    },
+    {
+      "name": "settings_anti_peep_protected",
+      "value": "Phát hiện nhìn trộm. Đã kích hoạt lớp phủ bảo vệ hệ thống."
+    },
+    {
+      "name": "settings_anti_peep_error",
+      "value": "Hiện chưa thể bật bảo vệ. Hãy kiểm tra lại."
+    },
+    {
+      "name": "settings_anti_peep_checking",
+      "value": "Đang kiểm tra hoặc kích hoạt bảo vệ…"
+    },
+    {
+      "name": "settings_anti_peep_save_failed",
+      "value": "Không thể lưu. Vui lòng thử lại."
+    },
+    {
+      "name": "huawei_account_title",
+      "value": "HUAWEI ID and cloud sync"
+    },
+    {
+      "name": "huawei_config_section",
+      "value": "Settings profile"
+    },
+    {
+      "name": "huawei_config_import",
+      "value": "Import"
+    },
+    {
+      "name": "huawei_config_export",
+      "value": "Export"
+    },
+    {
+      "name": "huawei_config_importing",
+      "value": "Importing…"
+    },
+    {
+      "name": "huawei_config_exporting",
+      "value": "Exporting…"
+    },
+    {
+      "name": "huawei_config_description",
+      "value": "Back up or restore appearance, media and filter settings with a JSON file. Account, token and proxy details are never included."
+    },
+    {
+      "name": "huawei_config_exported",
+      "value": "Settings profile exported"
+    },
+    {
+      "name": "huawei_config_export_failed",
+      "value": "Export failed. Try again."
+    },
+    {
+      "name": "huawei_config_imported",
+      "value": "Settings imported"
+    },
+    {
+      "name": "huawei_config_import_failed",
+      "value": "The settings profile could not be read or validated."
+    },
+    {
+      "name": "huawei_config_import_title",
+      "value": "Import settings profile?"
+    },
+    {
+      "name": "huawei_config_import_message",
+      "value": "Appearance, media and filter settings in this file will replace the matching settings on this device. Account and proxy details will not change."
+    },
+    {
+      "name": "huawei_config_import_confirm",
+      "value": "Import"
+    },
+    {
+      "name": "huawei_account_name",
+      "value": "HUAWEI ID"
+    },
+    {
+      "name": "huawei_login",
+      "value": "Sign in with HUAWEI ID"
+    },
+    {
+      "name": "huawei_logout",
+      "value": "Sign out"
+    },
+    {
+      "name": "huawei_signed_in",
+      "value": "Signed in with HUAWEI ID"
+    },
+    {
+      "name": "huawei_logging_in",
+      "value": "Signing in…"
+    },
+    {
+      "name": "huawei_signed_out_description",
+      "value": "Sign in to bring your preferences with you"
+    },
+    {
+      "name": "huawei_cloud_sync",
+      "value": "Cloud sync"
+    },
+    {
+      "name": "huawei_sync_description",
+      "value": "Sign in to enable sync for appearance, reading, playback preferences and local content rules across your devices."
+    },
+    {
+      "name": "huawei_local_data_note",
+      "value": "X credentials, messages, drafts and caches stay on this device. Some appearance changes take effect after restarting."
+    },
+    {
+      "name": "huawei_logout_title",
+      "value": "Sign out of HUAWEI ID?"
+    },
+    {
+      "name": "huawei_logout_description",
+      "value": "Cloud sync will pause. Local settings and existing cloud data will be kept. Your X account remains available."
+    },
+    {
+      "name": "huawei_sync_disabled",
+      "value": "Off. Settings are saved on this device."
+    },
+    {
+      "name": "huawei_sync_unavailable",
+      "value": "Cloud storage is unavailable. Check the system cloud service and this app’s sync switch."
+    },
+    {
+      "name": "huawei_sync_downloading",
+      "value": "Reading and merging cloud settings…"
+    },
+    {
+      "name": "huawei_sync_uploading",
+      "value": "Uploading settings…"
+    },
+    {
+      "name": "huawei_sync_success",
+      "value": "Synced"
+    },
+    {
+      "name": "huawei_sync_pending",
+      "value": "Saved locally, waiting to sync"
+    },
+    {
+      "name": "huawei_sync_failed",
+      "value": "Sync did not finish. Your local data is safe. Check system cloud settings and try again."
+    },
+    {
+      "name": "huawei_network_error",
+      "value": "Network unavailable. Try again when connected."
+    },
+    {
+      "name": "huawei_storage_full",
+      "value": "Cloud or device storage is full. Free some space and try again."
+    },
+    {
+      "name": "huawei_login_error",
+      "value": "Sign-in did not finish. Check account service configuration or try again later."
+    },
+    {
+      "name": "huawei_authorization_error",
+      "value": "Nickname and avatar authorization failed. Check account permissions and try again."
+    },
+    {
+      "name": "huawei_save_error",
+      "value": "Could not save settings. Try again."
+    },
+    {
+      "name": "huawei_select_group",
+      "value": "Select at least one group to sync."
+    },
+    {
+      "name": "huawei_account_changed",
+      "value": "HUAWEI ID has changed. Enabling sync will merge the selected local settings into the current account."
+    },
+    {
+      "name": "huawei_last_sync",
+      "value": "Last successful sync:"
+    },
+    {
+      "name": "huawei_syncing",
+      "value": "Syncing…"
+    },
+    {
+      "name": "huawei_sync_now",
+      "value": "Sync now"
+    },
+    {
+      "name": "huawei_group_appearance",
+      "value": "Appearance and navigation"
+    },
+    {
+      "name": "huawei_group_appearance_description",
+      "value": "Theme, text size, title bar, tabs and sheet material"
+    },
+    {
+      "name": "huawei_group_media",
+      "value": "Reading and playback"
+    },
+    {
+      "name": "huawei_group_media_description",
+      "value": "Image and video quality, autoplay and mute preferences"
+    },
+    {
+      "name": "huawei_group_filters",
+      "value": "Local content rules"
+    },
+    {
+      "name": "huawei_group_filters_description",
+      "value": "Keyword and user filters, and content preferences"
+    },
+    {
+      "name": "post_photo_save_background",
+      "value": "Lưu vào thư viện hình nền"
+    },
+    {
+      "name": "chat_background_saving_photo",
+      "value": "Đang lưu ảnh nền…"
+    },
+    {
+      "name": "chat_background_saved_photo",
+      "value": "Đã lưu. Chọn ảnh trong Hình nền trang hoặc Hình nền trò chuyện."
+    },
+    {
+      "name": "chat_background_save_photo_failed",
+      "value": "Không thể lưu ảnh nền. Vui lòng thử lại."
+    },
+    {
+      "name": "chat_background_saved_photos",
+      "value": "Ảnh đã lưu từ bài đăng"
+    },
+    {
+      "name": "page_background_title",
+      "value": "Nền trang"
+    },
+    {
+      "name": "page_background_description",
+      "value": "Colors, photos and mixable patterns"
+    },
+    {
+      "name": "page_background_switch_title",
+      "value": "Bật nền trang"
+    },
+    {
+      "name": "page_background_switch_desc",
+      "value": "Tắt để dùng ngay nền của chủ đề. Kiểu hiện tại vẫn được giữ lại."
+    },
+    {
+      "name": "page_background_base",
+      "value": "Nền cơ sở"
+    },
+    {
+      "name": "page_background_pattern",
+      "value": "Lớp họa tiết"
+    },
+    {
+      "name": "page_background_pattern_none",
+      "value": "Không có họa tiết"
+    },
+    {
+      "name": "page_background_content_opacity",
+      "value": "Độ đục nền nội dung"
+    },
+    {
+      "name": "page_background_reset",
+      "value": "Khôi phục mặc định"
+    },
+    {
+      "name": "page_background_color_placeholder",
+      "value": "Custom color #RRGGBB"
+    },
+    {
+      "name": "page_background_preview",
+      "value": "Xem trước nền"
+    },
+    {
+      "name": "page_background_preview_text",
+      "value": "Bring your favorite colors and patterns to every visit."
+    },
+    {
+      "name": "page_background_preview_hint",
+      "value": "Text and content surfaces show how readable your background will be."
+    },
+    {
+      "name": "page_background_note",
+      "value": "Applies to regular pages. Chats have separate backgrounds; media viewers keep their immersive backgrounds. Tap Apply to save."
+    },
+    {
+      "name": "page_background_layout_preset",
+      "value": "Bộ họa tiết đầy đủ"
+    },
+    {
+      "name": "page_background_layout_icons",
+      "value": "Biểu tượng riêng lẻ"
+    },
+    {
+      "name": "page_background_density",
+      "value": "Mật độ biểu tượng"
+    },
+    {
+      "name": "page_background_set_add",
+      "value": "Chọn toàn bộ bộ biểu tượng"
+    },
+    {
+      "name": "page_background_set_remove",
+      "value": "Bỏ chọn toàn bộ bộ biểu tượng"
+    },
+    {
+      "name": "page_background_mix_hint",
+      "value": "Select motifs across sets to mix them, or repeat a single motif."
+    },
+    {
+      "name": "page_background_selected",
+      "value": "%d motifs selected"
+    },
+    {
+      "name": "page_background_icons_clear",
+      "value": "Xóa biểu tượng"
+    },
+    {
+      "name": "page_background_paper",
+      "value": "Chất liệu giấy"
+    },
+    {
+      "name": "page_background_paper_none",
+      "value": "Không có"
+    },
+    {
+      "name": "page_background_kraft",
+      "value": "Giấy kraft"
+    },
+    {
+      "name": "page_background_parchment",
+      "value": "Giấy da"
+    },
+    {
+      "name": "page_background_texture_strength",
+      "value": "Cường độ vân giấy"
+    },
+    {
+      "name": "page_background_presets_mix",
+      "value": "Mỗi lần chỉ chọn một mẫu hoàn chỉnh."
+    },
+    {
+      "name": "page_background_applied",
+      "value": "Đã áp dụng nền trang"
+    },
+    {
+      "name": "page_background_apply_failed",
+      "value": "Không thể lưu nền. Vui lòng thử lại."
+    },
+    {
+      "name": "page_background_transparent_posts",
+      "value": "Transparent post cards"
+    },
+    {
+      "name": "page_background_transparent_posts_desc",
+      "value": "Hide the surface behind posts and quoted posts to reveal the page background."
+    },
+    {
+      "name": "page_background_transparent_inbox",
+      "value": "Transparent message list"
+    },
+    {
+      "name": "page_background_transparent_inbox_desc",
+      "value": "Hide conversation row surfaces while keeping text, avatars and unread indicators."
+    },
+    {
+      "name": "page_background_post_opacity",
+      "value": "Post surface opacity"
+    },
+    {
+      "name": "page_background_inbox_opacity",
+      "value": "Message list surface opacity"
+    },
+    {
+      "name": "page_background_scheme_import",
+      "value": "Import scheme"
+    },
+    {
+      "name": "page_background_scheme_share",
+      "value": "Share scheme"
+    },
+    {
+      "name": "page_background_scheme_title",
+      "value": "Page background scheme"
+    },
+    {
+      "name": "page_background_scheme_imported",
+      "value": "Scheme imported. Preview it, then tap Apply."
+    },
+    {
+      "name": "page_background_scheme_import_failed",
+      "value": "Unable to import. Choose a valid HarmonyX background scheme (up to 48 MB)."
+    },
+    {
+      "name": "page_background_scheme_share_failed",
+      "value": "Unable to share. Please try again; background photos must be under 32 MB."
+    },
+    {
+      "name": "page_background_set_signature_icons",
+      "value": "Biểu tượng thay thế"
+    },
+    {
+      "name": "page_background_set_garden_defense",
+      "value": "Plants vs. Zombies"
+    },
+    {
+      "name": "page_background_motif_signature_icons_frog_face",
+      "value": "Frog face"
+    },
+    {
+      "name": "page_background_motif_signature_icons_frog_lily",
+      "value": "Frog on a lily pad"
+    },
+    {
+      "name": "page_background_motif_signature_icons_milk_frog",
+      "value": "Milk frog"
+    },
+    {
+      "name": "page_background_motif_signature_icons_milk_frog_wave",
+      "value": "Waving milk frog"
+    },
+    {
+      "name": "page_background_motif_signature_icons_bird",
+      "value": "Flying bird"
+    },
+    {
+      "name": "page_background_motif_signature_icons_bird_wings",
+      "value": "Bird with open wings"
+    },
+    {
+      "name": "page_background_motif_signature_icons_ribbon_x",
+      "value": "Ribbon X"
+    },
+    {
+      "name": "page_background_motif_signature_icons_blossom_x",
+      "value": "Blossom X"
+    },
+    {
+      "name": "page_background_motif_signature_icons_brush_x",
+      "value": "Brush X"
+    },
+    {
+      "name": "page_background_motif_signature_icons_prism_x",
+      "value": "Prism X"
+    },
+    {
+      "name": "page_background_motif_signature_icons_zombie_x",
+      "value": "Zombie X"
+    },
+    {
+      "name": "page_background_motif_signature_icons_lily_blossom",
+      "value": "Lily blossom"
+    },
+    {
+      "name": "page_background_motif_garden_defense_peashooter",
+      "value": "Peashooter"
+    },
+    {
+      "name": "page_background_motif_garden_defense_sunflower",
+      "value": "Sunflower"
+    },
+    {
+      "name": "page_background_motif_garden_defense_wallnut",
+      "value": "Wall-nut"
+    },
+    {
+      "name": "page_background_motif_garden_defense_cherry_bomb",
+      "value": "Cherry Bomb"
+    },
+    {
+      "name": "page_background_motif_garden_defense_snow_pea",
+      "value": "Snow Pea"
+    },
+    {
+      "name": "page_background_motif_garden_defense_potato_mine",
+      "value": "Potato Mine"
+    },
+    {
+      "name": "page_background_motif_garden_defense_chomper",
+      "value": "Chomper"
+    },
+    {
+      "name": "page_background_motif_garden_defense_squash",
+      "value": "Squash"
+    },
+    {
+      "name": "page_background_motif_garden_defense_zombie",
+      "value": "Zombie"
+    },
+    {
+      "name": "page_background_motif_garden_defense_conehead",
+      "value": "Conehead Zombie"
+    },
+    {
+      "name": "page_background_motif_garden_defense_buckethead",
+      "value": "Buckethead Zombie"
+    },
+    {
+      "name": "page_background_motif_garden_defense_lawnmower",
+      "value": "Lawn mower"
+    },
+    {
+      "name": "page_background_set_ai_assistants",
+      "value": "Trợ lý AI"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_gpt",
+      "value": "GPT"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_claude",
+      "value": "Claude"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_gemini",
+      "value": "Gemini"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_deepseek",
+      "value": "DeepSeek"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_grok",
+      "value": "Grok"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_qwen",
+      "value": "Qwen"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_kimi",
+      "value": "Kimi"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_doubao",
+      "value": "Doubao"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_copilot",
+      "value": "Copilot"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_perplexity",
+      "value": "Perplexity"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_mistral",
+      "value": "Mistral"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_robot",
+      "value": "AI robot"
+    },
+    {
+      "name": "page_background_set_mobile_brands_systems",
+      "value": "Thương hiệu và hệ điều hành"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_apple",
+      "value": "Apple"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_huawei",
+      "value": "Huawei"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_xiaomi",
+      "value": "Xiaomi"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_samsung",
+      "value": "Samsung"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_oppo",
+      "value": "OPPO"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_vivo",
+      "value": "vivo"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_honor",
+      "value": "HONOR"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_oneplus",
+      "value": "OnePlus"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_meizu",
+      "value": "Meizu"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_harmonyos",
+      "value": "HarmonyOS"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_android",
+      "value": "Android"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_ios",
+      "value": "iOS"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_hyperos",
+      "value": "HyperOS"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_coloros",
+      "value": "ColorOS"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_originos",
+      "value": "OriginOS"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_oneui",
+      "value": "One UI"
+    },
+    {
+      "name": "motion_title",
+      "value": "Animation & haptics"
+    },
+    {
+      "name": "motion_intro",
+      "value": "Tune interaction animations and touch feedback. Changes are saved automatically. Tap the preview to try them."
+    },
+    {
+      "name": "motion_preview",
+      "value": "Tap to preview animation and haptics"
+    },
+    {
+      "name": "motion_reduce",
+      "value": "Reduce motion"
+    },
+    {
+      "name": "motion_reduce_desc",
+      "value": "Turn off decorative scaling, movement and Symbol effects, and skip page transitions. Your animation preferences are kept."
+    },
+    {
+      "name": "motion_duration",
+      "value": "Animation duration"
+    },
+    {
+      "name": "motion_duration_desc",
+      "value": "Reference duration for app animations. Button and page animations scale proportionally. System Symbol effects keep their native timing."
+    },
+    {
+      "name": "motion_amplitude",
+      "value": "Movement amplitude"
+    },
+    {
+      "name": "motion_amplitude_desc",
+      "value": "Adjust decorative scaling and rotation. At 0%, these effects stop. Gesture tracking and zoom keep their full range."
+    },
+    {
+      "name": "motion_damping",
+      "value": "Spring damping"
+    },
+    {
+      "name": "motion_damping_desc",
+      "value": "Lower values bounce more; higher values settle more gently."
+    },
+    {
+      "name": "motion_symbol",
+      "value": "Animated Symbols"
+    },
+    {
+      "name": "motion_symbol_desc",
+      "value": "Play a native Symbol effect once when selecting a tab or using an action button. Effects pause with Reduce motion."
+    },
+    {
+      "name": "motion_haptics",
+      "value": "Touch feedback"
+    },
+    {
+      "name": "motion_haptics_desc",
+      "value": "Use light feedback for navigation, buttons, switches and actions. Follows the system haptics setting."
+    },
+    {
+      "name": "motion_intensity",
+      "value": "Haptic intensity"
+    },
+    {
+      "name": "motion_intensity_desc",
+      "value": "Adjust preset effects on supported devices. Other motors use a short system touch vibration."
+    },
+    {
+      "name": "motion_presets",
+      "value": "Animation presets"
+    },
+    {
+      "name": "motion_preset_quick",
+      "value": "Quick"
+    },
+    {
+      "name": "motion_preset_quick_desc",
+      "value": "175 ms · 60% movement · firm settling. Short, crisp feedback."
+    },
+    {
+      "name": "motion_preset_standard",
+      "value": "Standard"
+    },
+    {
+      "name": "motion_preset_standard_desc",
+      "value": "300 ms · 100% movement · balanced spring. Recommended for everyday use."
+    },
+    {
+      "name": "motion_preset_spring",
+      "value": "Bouncy"
+    },
+    {
+      "name": "motion_preset_spring_desc",
+      "value": "450 ms · 120% movement · lower damping. Softer, more visible rebound."
+    },
+    {
+      "name": "motion_preset_reduced",
+      "value": "Low motion"
+    },
+    {
+      "name": "motion_preset_reduced_desc",
+      "value": "Skip page transitions and decorative effects. Keep your previous tuning."
+    },
+    {
+      "name": "motion_preset_custom",
+      "value": "Current preset: Custom. Choose a preset to restore its animation values."
+    },
+    {
+      "name": "chat_auto_download",
+      "value": "Chat auto-download"
+    },
+    {
+      "name": "storage_chat_retention",
+      "value": "Keep chat media"
+    },
+    {
+      "name": "storage_chat_retention_desc",
+      "value": "Set how long downloaded chat media stays cached. Chat history and manually saved files are kept."
+    },
+    {
+      "name": "settings_theme_mix",
+      "value": "Bảng màu phối"
+    },
+    {
+      "name": "settings_theme_mix_desc",
+      "value": "Màu sắc hài hòa cho công tắc, điều hướng và nút đăng ở chế độ sáng và tối."
+    },
+    {
+      "name": "settings_theme_mix_confetti",
+      "value": "Rực rỡ"
+    },
+    {
+      "name": "settings_theme_mix_coast",
+      "value": "Muối biển & San hô"
+    },
+    {
+      "name": "settings_theme_mix_sunset",
+      "value": "Diên vĩ hoàng hôn"
+    },
+    {
+      "name": "settings_theme_mix_forest",
+      "value": "Hổ phách rừng"
+    },
+    {
+      "name": "settings_theme_mix_berry",
+      "value": "Quả mọng & Bạc hà"
+    },
+    {
+      "name": "settings_theme_mix_morandi",
+      "value": "Morandi"
+    },
+    {
+      "name": "settings_theme_mix_prism",
+      "value": "Quang phổ cơ bản"
+    },
+    {
+      "name": "settings_theme_solid",
+      "value": "Đơn sắc"
+    },
+    {
+      "name": "settings_theme_mix_candy",
+      "value": "Kẹo sắc màu"
+    },
+    {
+      "name": "settings_theme_mix_sky",
+      "value": "Trời xanh & Chanh"
+    },
+    {
+      "name": "settings_theme_mix_peach",
+      "value": "Đào & Bạc hà"
+    },
+    {
+      "name": "settings_theme_mix_lilac",
+      "value": "Tử đinh hương & Kem"
+    },
+    {
+      "name": "page_background_set_popular_apps_cn",
+      "value": "Ứng dụng phổ biến · Trung Quốc"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_wechat",
+      "value": "WeChat"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_qq",
+      "value": "QQ"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_weibo",
+      "value": "Weibo"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_douyin",
+      "value": "Douyin"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_kuaishou",
+      "value": "Kuaishou"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_bilibili",
+      "value": "Bilibili"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_xiaohongshu",
+      "value": "Xiaohongshu"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_zhihu",
+      "value": "Zhihu"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_baidu",
+      "value": "Baidu"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_tieba",
+      "value": "Baidu Tieba"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_alipay",
+      "value": "Alipay"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_taobao",
+      "value": "Taobao"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_jd",
+      "value": "JD"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_pinduoduo",
+      "value": "Pinduoduo"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_meituan",
+      "value": "Meituan"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_eleme",
+      "value": "Ele.me"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_dianping",
+      "value": "Dianping"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_amap",
+      "value": "Amap"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_baidu_maps",
+      "value": "Baidu Maps"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_didi",
+      "value": "DiDi"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_netease_music",
+      "value": "NetEase Cloud Music"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_qq_music",
+      "value": "QQ Music"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_kugou",
+      "value": "KuGou"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_weread",
+      "value": "WeRead"
+    },
+    {
+      "name": "page_background_set_popular_apps_global",
+      "value": "Ứng dụng phổ biến · Toàn cầu"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_whatsapp",
+      "value": "WhatsApp"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_telegram",
+      "value": "Telegram"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_signal",
+      "value": "Signal"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_instagram",
+      "value": "Instagram"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_facebook",
+      "value": "Facebook"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_messenger",
+      "value": "Messenger"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_x",
+      "value": "X"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_threads",
+      "value": "Threads"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_youtube",
+      "value": "YouTube"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_tiktok",
+      "value": "TikTok"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_reddit",
+      "value": "Reddit"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_discord",
+      "value": "Discord"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_spotify",
+      "value": "Spotify"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_apple_music",
+      "value": "Apple Music"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_netflix",
+      "value": "Netflix"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_twitch",
+      "value": "Twitch"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_line",
+      "value": "LINE"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_snapchat",
+      "value": "Snapchat"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_pinterest",
+      "value": "Pinterest"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_chrome",
+      "value": "Chrome"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_firefox",
+      "value": "Firefox"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_edge",
+      "value": "Edge"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_gmail",
+      "value": "Gmail"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_google_maps",
+      "value": "Google Maps"
+    },
+    {
+      "name": "scene_title",
+      "value": "Scene modes"
+    },
+    {
+      "name": "scene_intro",
+      "value": "Apply a set of playback, quality, motion and background preferences. Restore returns to your settings from before the first mode was enabled."
+    },
+    {
+      "name": "scene_reading",
+      "value": "Clear reading"
+    },
+    {
+      "name": "scene_reading_desc",
+      "value": "Autoplay off · high quality images · low quality video · reduced motion · plain background"
+    },
+    {
+      "name": "scene_saver",
+      "value": "Power and data saver"
+    },
+    {
+      "name": "scene_saver_desc",
+      "value": "Autoplay off · small images · low quality video · reduced motion · plain background"
+    },
+    {
+      "name": "scene_media",
+      "value": "Media browsing"
+    },
+    {
+      "name": "scene_media_desc",
+      "value": "Autoplay on · original images · high quality video · motion on · your saved background"
+    },
+    {
+      "name": "scene_restore",
+      "value": "Restore original settings"
+    },
+    {
+      "name": "scene_restore_desc",
+      "value": "Keep your preferences from before scene mode. Switching between modes does not replace this backup."
+    },
+    {
+      "name": "scene_failed",
+      "value": "Some settings could not be saved. Your original settings are retained; retry or restore."
+    },
+    {
+      "name": "offline_title",
+      "value": "Offline & later"
+    },
+    {
+      "name": "offline_online",
+      "value": "Online bookmarks"
+    },
+    {
+      "name": "offline_intro",
+      "value": "New bookmarks save text and available articles automatically. Enable images before saving to include photos. Local copies stay separate from online bookmarks and ordinary cache cleanup."
+    },
+    {
+      "name": "offline_images",
+      "value": "Include photos in future saves"
+    },
+    {
+      "name": "offline_save",
+      "value": "Save offline"
+    },
+    {
+      "name": "offline_saving",
+      "value": "Saving…"
+    },
+    {
+      "name": "offline_saved",
+      "value": "Saved for offline reading"
+    },
+    {
+      "name": "offline_partial_saved",
+      "value": "Saved available content. Some article text or photos are missing; retry when online."
+    },
+    {
+      "name": "offline_save_failed",
+      "value": "Could not save locally. Please retry."
+    },
+    {
+      "name": "offline_partial",
+      "value": "Incomplete copy"
+    },
+    {
+      "name": "offline_unread",
+      "value": "Unread"
+    },
+    {
+      "name": "offline_unread_only",
+      "value": "Unread only"
+    },
+    {
+      "name": "offline_search",
+      "value": "Search titles, tags or notes"
+    },
+    {
+      "name": "offline_empty",
+      "value": "No matching offline items. Save a bookmark or use Save offline on a post."
+    },
+    {
+      "name": "offline_edit",
+      "value": "Tags & note"
+    },
+    {
+      "name": "offline_tags",
+      "value": "Tags"
+    },
+    {
+      "name": "offline_tags_hint",
+      "value": "Tags, separated by commas"
+    },
+    {
+      "name": "offline_note",
+      "value": "Private note"
+    },
+    {
+      "name": "offline_done",
+      "value": "Save"
+    },
+    {
+      "name": "offline_delete",
+      "value": "Delete local copy"
+    },
+    {
+      "name": "reader_title",
+      "value": "Thread reader"
+    },
+    {
+      "name": "reader_author_only",
+      "value": "Author only"
+    },
+    {
+      "name": "reader_translate",
+      "value": "Translate passages"
+    },
+    {
+      "name": "reader_font",
+      "value": "Text size"
+    },
+    {
+      "name": "reader_missing",
+      "value": "This offline item is missing or unavailable. Save it again while online."
+    },
+    {
+      "name": "reader_partial",
+      "value": "Only the available article content is shown. Continue loading or retry while online to get the complete text."
+    },
+    {
+      "name": "reader_load_failed",
+      "value": "Could not load more replies. Your current reading content is kept."
+    },
+    {
+      "name": "reader_translation_setup",
+      "value": "Enable translation and choose a target language in Settings first."
+    },
+    {
+      "name": "reader_translation_failed",
+      "value": "Some passages could not be translated. You can hide translations and retry."
+    },
+    {
+      "name": "reader_offline_note",
+      "value": "Saved local content. Translation requires a network connection."
+    },
+    {
+      "name": "reader_scope",
+      "value": "Replies loaded so far. Use Continue loading to include more of the discussion."
+    },
     {
       "name": "input_help_title",
       "value": "Chuột, bàn phím và bàn di chuột"
@@ -10945,26 +12204,86 @@
       "name": "input_key_playback",
       "value": "Space / Enter / ← / →"
     },
-    {"name":"settings_filter_languages","value":"Ngôn ngữ bài viết bị ẩn"},
-    {"name":"settings_filter_languages_desc","value":"Chọn ngôn ngữ muốn ẩn. Bài viết không rõ ngôn ngữ hoặc chỉ có phương tiện vẫn hiển thị."},
-    {"name":"appearance_preview_title","value":"Xem trước trực tiếp"},
-    {"name":"appearance_preview_hint","value":"Thay đổi được hiển thị ngay. Chạm vào mẫu bảng để mở rộng."},
-    {"name":"post_edited","value":"Đã chỉnh sửa"},
-    {"name":"post_metric_bookmarks","value":"dấu trang"},
-    {"name":"post_metric_quotes","value":"trích dẫn"},
-    {"name":"settings_reply_quality","value":"Thu gọn phản hồi chất lượng thấp"},
-    {"name":"settings_reply_quality_desc","value":"Thu gọn quảng bá lặp lại và lời mời hàng loạt. Quy tắc trên máy có thể nhầm; bạn có thể mở phản hồi để xem."},
-    {"name":"reply_quality_folded","value":"Phản hồi có thể có chất lượng thấp"},
-    {"name":"reply_quality_reasons","value":"Xem lý do"},
-    {"name":"reply_quality_allow","value":"Luôn hiện tác giả này"},
-    {"name":"reply_quality_whitelist","value":"Tác giả được phép"},
-    {"name":"reply_quality_whitelist_desc","value":"Phản hồi của bạn, tác giả bài đăng, tài khoản đang theo dõi và tác giả được phép luôn hiển thị. Danh sách dành riêng cho tài khoản hiện tại."},
-    {"name":"reply_quality_empty","value":"Chưa có tác giả được phép"},
-    {"name":"reply_quality_reason_duplicate","value":"Nhiều tác giả lặp lại cùng mẫu quảng bá"},
-    {"name":"reply_quality_reason_author_repeat","value":"Tác giả đăng lại cùng nội dung nhiều lần"},
-    {"name":"reply_quality_reason_links","value":"Có nhiều liên kết bên ngoài"},
-    {"name":"reply_quality_reason_promotion","value":"Có nội dung quảng bá hoặc hứa hẹn lợi nhuận"},
-    {"name":"reply_quality_reason_contact","value":"Có thông tin liên hệ để lôi kéo"},
+    {
+      "name": "settings_filter_languages",
+      "value": "Ngôn ngữ bài viết bị ẩn"
+    },
+    {
+      "name": "settings_filter_languages_desc",
+      "value": "Chọn ngôn ngữ muốn ẩn. Bài viết không rõ ngôn ngữ hoặc chỉ có phương tiện vẫn hiển thị."
+    },
+    {
+      "name": "appearance_preview_title",
+      "value": "Xem trước trực tiếp"
+    },
+    {
+      "name": "appearance_preview_hint",
+      "value": "Thay đổi được hiển thị ngay. Chạm vào mẫu bảng để mở rộng."
+    },
+    {
+      "name": "post_edited",
+      "value": "Đã chỉnh sửa"
+    },
+    {
+      "name": "post_metric_bookmarks",
+      "value": "dấu trang"
+    },
+    {
+      "name": "post_metric_quotes",
+      "value": "trích dẫn"
+    },
+    {
+      "name": "settings_reply_quality",
+      "value": "Thu gọn phản hồi chất lượng thấp"
+    },
+    {
+      "name": "settings_reply_quality_desc",
+      "value": "Thu gọn quảng bá lặp lại và lời mời hàng loạt. Quy tắc trên máy có thể nhầm; bạn có thể mở phản hồi để xem."
+    },
+    {
+      "name": "reply_quality_folded",
+      "value": "Phản hồi có thể có chất lượng thấp"
+    },
+    {
+      "name": "reply_quality_reasons",
+      "value": "Xem lý do"
+    },
+    {
+      "name": "reply_quality_allow",
+      "value": "Luôn hiện tác giả này"
+    },
+    {
+      "name": "reply_quality_whitelist",
+      "value": "Tác giả được phép"
+    },
+    {
+      "name": "reply_quality_whitelist_desc",
+      "value": "Phản hồi của bạn, tác giả bài đăng, tài khoản đang theo dõi và tác giả được phép luôn hiển thị. Danh sách dành riêng cho tài khoản hiện tại."
+    },
+    {
+      "name": "reply_quality_empty",
+      "value": "Chưa có tác giả được phép"
+    },
+    {
+      "name": "reply_quality_reason_duplicate",
+      "value": "Nhiều tác giả lặp lại cùng mẫu quảng bá"
+    },
+    {
+      "name": "reply_quality_reason_author_repeat",
+      "value": "Tác giả đăng lại cùng nội dung nhiều lần"
+    },
+    {
+      "name": "reply_quality_reason_links",
+      "value": "Có nhiều liên kết bên ngoài"
+    },
+    {
+      "name": "reply_quality_reason_promotion",
+      "value": "Có nội dung quảng bá hoặc hứa hẹn lợi nhuận"
+    },
+    {
+      "name": "reply_quality_reason_contact",
+      "value": "Có thông tin liên hệ để lôi kéo"
+    },
     {
       "name": "settings_floating_compose_material_tint",
       "value": "Màu chất liệu nút đăng bài nổi"
@@ -11053,64 +12372,528 @@
       "name": "chat_decoration_sample_text",
       "value": "Have a lovely day."
     },
-    {"name": "sign_out_confirm_title", "value": "Đăng xuất?"},
-    {"name": "sign_out_confirm_message", "value": "Bạn cần đăng nhập lại để dùng tài khoản này."},
-    {"name": "settings_for_you_only_sensitive", "value": "Chỉ nội dung nhạy cảm trong Dành cho bạn"},
-    {"name": "settings_for_you_only_sensitive_desc", "value": "Hiển thị bài đăng được X đánh dấu nhạy cảm, gồm cả trích dẫn. Đang theo dõi và Danh sách không đổi. Nội dung đa phương tiện vẫn được che."},
-    {"name": "settings_grip_floating", "value": "Nút thao tác nổi"},
-    {"name": "settings_grip_video", "value": "Thanh thao tác video"},
-    {"name": "settings_grip_reply", "value": "Nút trả lời bài đăng"},
-    {"name": "settings_grip_component_desc", "value": "Điều chỉnh vị trí theo tay cầm thiết bị. Khi tắt, dùng tay ưu tiên."},
-    {"name": "settings_grip_hdstabs", "value": "Thanh thẻ dưới HdsTabs"},
-    {"name": "settings_grip_hdstabs_desc", "value": "Dùng tính năng thích ứng tay gốc. Khi tắt, thanh thẻ không di chuyển theo tay cầm thiết bị."},
-    {"name":"gif_action_save_video","value":"Lưu dưới dạng video chất lượng cao (MP4)"},
-    {"name":"storage_save_remembered_note","value":"Chọn thư mục tải xuống một lần để tự động lưu các tệp tiếp theo vào đó. Tắt để lưu vào Thư viện."},
-    {"name":"storage_save_to_remembered","value":"Lưu vào thư mục tải xuống"},
-    {"name": "storage_permission_reason", "value": "Giữ quyền truy cập vào tệp và thư mục bạn chọn."},
-    {"name": "timeline_sources_lists", "value": "Danh sách"},
-    {"name": "timeline_sources_communities", "value": "Cộng đồng"},
-    {"name": "timeline_edit", "value": "Sửa"},
-    {"name": "timeline_done", "value": "Xong"},
-    {"name": "timeline_move_up", "value": "Chuyển lên"},
-    {"name": "timeline_move_down", "value": "Chuyển xuống"},
-    {"name": "timeline_remove_source", "value": "Xóa %s"},
-    {"name": "timeline_add_to_home", "value": "Thêm vào dòng thời gian Trang chủ"},
-    {"name": "timeline_remove_from_home", "value": "Xóa khỏi dòng thời gian Trang chủ"},
-    {"name": "timeline_sources_failed", "value": "Không tải được một số danh sách hoặc cộng đồng. Nhấn để thử lại."},
-    {"name": "timeline_sources_pinned_empty", "value": "Chưa có dòng thời gian được ghim. Thêm danh sách, cộng đồng hoặc chủ đề bên dưới."},
-    {"name":"video_controls_mirror","value":"Đảo vị trí điều khiển"},
-    {"name":"video_controls_speed","value":"Tốc độ"},
-    {"name":"video_controls_aspect","value":"Tỷ lệ"},
-    {"name":"video_controls_background","value":"Nền"},
-    {"name":"video_controls_quality_hd","value":"HD"},
-    {"name":"video_controls_quality_sd","value":"SD"},
-    {"name":"video_controls_quality_ld","value":"LD"},
-    {"name":"video_controls_more","value":"Thêm"},
-    {"name":"video_controls_download","value":"Tải xuống"},
-    {"name":"settings_navigation_style","value":"Kiểu điều hướng dưới cùng"},
-    {"name":"settings_hds_bottom_bar","value":"HdsTabs nổi"},
-    {"name":"settings_split_bottom_bar","value":"Điều hướng viên nang tách nút"},
-    {"name":"settings_split_bottom_bar_desc","value":"Chuyển trang trong viên nang bên trái. Nút riêng để đăng bài, tạo cuộc trò chuyện, làm mới hoặc về đầu trang. Cả hai dùng vật liệu HDS; hệ thống cũ dùng điều hướng tương thích."},
-    {"name":"split_navigation_action_top","value":"Về đầu trang"},
-    {"name":"split_navigation_action_refresh","value":"Làm mới Trang chủ"},
-    {"name":"split_navigation_action_compose","value":"Tạo bài đăng"},
-    {"name": "settings_reply_capsule_split", "value": "Tách viên nang trả lời"},
-    {"name": "settings_reply_capsule_split_desc", "value": "Tách ô trả lời và thao tác bài đăng khi thu gọn"},
-    {"name": "reply_capsule_write_reply", "value": "Trả lời"},
-    {"name":"settings_native_bottom_bar","value":"Điều hướng viên nang vật liệu 7.0"},
-    {"name":"settings_native_bottom_bar_desc","value":"Dùng vật liệu đắm chìm HarmonyOS 7.0 của viên nang trả lời, với ánh sáng chạm, chỉ báo lỏng và đổi bên theo cách cầm. Tự dùng viên nang HDS khi không được hỗ trợ."},
-    {"name":"settings_native_navigation_material","value":"Độ dày vật liệu viên nang điều hướng"},
-    {"name":"settings_for_you_only_sensitive_age_title","value":"Xác nhận tuổi"},
-    {"name":"settings_for_you_only_sensitive_age_message","value":"“Chỉ nội dung nhạy cảm trong Dành cho bạn” chỉ dành cho người từ 18 tuổi trở lên. Bạn đã đủ 18 tuổi chưa?"},
-    {"name":"settings_for_you_only_sensitive_age_under","value":"Dưới 18 tuổi"},
-    {"name":"settings_for_you_only_sensitive_age_adult","value":"Đủ 18 tuổi"},
-    {"name":"settings_theme_icon_blue","value":"Xanh biểu tượng"},
-    {"name":"settings_theme_icon_red","value":"Đỏ biểu tượng"},
-    {"name":"settings_theme_icon_orange","value":"Cam biểu tượng"},
-    {"name":"settings_theme_icon_yellow","value":"Vàng biểu tượng"},
-    {"name":"settings_theme_icon_green","value":"Xanh lá biểu tượng"},
-    {"name":"settings_theme_icon_pink","value":"Hồng biểu tượng"},
-    {"name":"settings_theme_icon_cyan","value":"Xanh lục lam biểu tượng"},
-    {"name":"settings_theme_icon_navy","value":"Xanh navy biểu tượng"}
+    {
+      "name": "sign_out_confirm_title",
+      "value": "Đăng xuất?"
+    },
+    {
+      "name": "sign_out_confirm_message",
+      "value": "Bạn cần đăng nhập lại để dùng tài khoản này."
+    },
+    {
+      "name": "settings_for_you_only_sensitive",
+      "value": "Chỉ nội dung nhạy cảm trong Dành cho bạn"
+    },
+    {
+      "name": "settings_for_you_only_sensitive_desc",
+      "value": "Hiển thị bài đăng được X đánh dấu nhạy cảm, gồm cả trích dẫn. Đang theo dõi và Danh sách không đổi. Nội dung đa phương tiện vẫn được che."
+    },
+    {
+      "name": "settings_grip_floating",
+      "value": "Nút thao tác nổi"
+    },
+    {
+      "name": "settings_grip_video",
+      "value": "Thanh thao tác video"
+    },
+    {
+      "name": "settings_grip_reply",
+      "value": "Nút trả lời bài đăng"
+    },
+    {
+      "name": "settings_grip_component_desc",
+      "value": "Điều chỉnh vị trí theo tay cầm thiết bị. Khi tắt, dùng tay ưu tiên."
+    },
+    {
+      "name": "settings_grip_hdstabs",
+      "value": "Thanh thẻ dưới HdsTabs"
+    },
+    {
+      "name": "settings_grip_hdstabs_desc",
+      "value": "Dùng tính năng thích ứng tay gốc. Khi tắt, thanh thẻ không di chuyển theo tay cầm thiết bị."
+    },
+    {
+      "name": "gif_action_save_video",
+      "value": "Lưu dưới dạng video chất lượng cao (MP4)"
+    },
+    {
+      "name": "storage_save_remembered_note",
+      "value": "Chọn thư mục tải xuống một lần để tự động lưu các tệp tiếp theo vào đó. Tắt để lưu vào Thư viện."
+    },
+    {
+      "name": "storage_save_to_remembered",
+      "value": "Lưu vào thư mục tải xuống"
+    },
+    {
+      "name": "storage_permission_reason",
+      "value": "Giữ quyền truy cập vào tệp và thư mục bạn chọn."
+    },
+    {
+      "name": "timeline_sources_lists",
+      "value": "Danh sách"
+    },
+    {
+      "name": "timeline_sources_communities",
+      "value": "Cộng đồng"
+    },
+    {
+      "name": "timeline_edit",
+      "value": "Sửa"
+    },
+    {
+      "name": "timeline_done",
+      "value": "Xong"
+    },
+    {
+      "name": "timeline_move_up",
+      "value": "Chuyển lên"
+    },
+    {
+      "name": "timeline_move_down",
+      "value": "Chuyển xuống"
+    },
+    {
+      "name": "timeline_remove_source",
+      "value": "Xóa %s"
+    },
+    {
+      "name": "timeline_add_to_home",
+      "value": "Thêm vào dòng thời gian Trang chủ"
+    },
+    {
+      "name": "timeline_remove_from_home",
+      "value": "Xóa khỏi dòng thời gian Trang chủ"
+    },
+    {
+      "name": "timeline_sources_failed",
+      "value": "Không tải được một số danh sách hoặc cộng đồng. Nhấn để thử lại."
+    },
+    {
+      "name": "timeline_sources_pinned_empty",
+      "value": "Chưa có dòng thời gian được ghim. Thêm danh sách, cộng đồng hoặc chủ đề bên dưới."
+    },
+    {
+      "name": "video_controls_mirror",
+      "value": "Đảo vị trí điều khiển"
+    },
+    {
+      "name": "video_controls_speed",
+      "value": "Tốc độ"
+    },
+    {
+      "name": "video_controls_aspect",
+      "value": "Tỷ lệ"
+    },
+    {
+      "name": "video_controls_background",
+      "value": "Nền"
+    },
+    {
+      "name": "video_controls_quality_hd",
+      "value": "HD"
+    },
+    {
+      "name": "video_controls_quality_sd",
+      "value": "SD"
+    },
+    {
+      "name": "video_controls_quality_ld",
+      "value": "LD"
+    },
+    {
+      "name": "video_controls_more",
+      "value": "Thêm"
+    },
+    {
+      "name": "video_controls_download",
+      "value": "Tải xuống"
+    },
+    {
+      "name": "settings_navigation_style",
+      "value": "Kiểu điều hướng dưới cùng"
+    },
+    {
+      "name": "settings_hds_bottom_bar",
+      "value": "HdsTabs nổi"
+    },
+    {
+      "name": "settings_split_bottom_bar",
+      "value": "Điều hướng viên nang tách nút"
+    },
+    {
+      "name": "settings_split_bottom_bar_desc",
+      "value": "Chuyển trang trong viên nang bên trái. Nút riêng để đăng bài, tạo cuộc trò chuyện, làm mới hoặc về đầu trang. Cả hai dùng vật liệu HDS; hệ thống cũ dùng điều hướng tương thích."
+    },
+    {
+      "name": "settings_me_floating_action",
+      "value": "Viên nang tắt “Tôi”"
+    },
+    {
+      "name": "settings_me_floating_action_desc",
+      "value": "Chọn chức năng mở trực tiếp khi nhấn viên nang riêng cạnh tab Tôi."
+    },
+    {
+      "name": "split_navigation_action_top",
+      "value": "Về đầu trang"
+    },
+    {
+      "name": "split_navigation_action_refresh",
+      "value": "Làm mới Trang chủ"
+    },
+    {
+      "name": "split_navigation_action_compose",
+      "value": "Tạo bài đăng"
+    },
+    {
+      "name": "settings_reply_capsule_split",
+      "value": "Tách viên nang trả lời"
+    },
+    {
+      "name": "settings_reply_capsule_split_desc",
+      "value": "Tách ô trả lời và thao tác bài đăng khi thu gọn"
+    },
+    {
+      "name": "reply_capsule_write_reply",
+      "value": "Trả lời"
+    },
+    {
+      "name": "settings_native_bottom_bar",
+      "value": "Điều hướng viên nang vật liệu 7.0"
+    },
+    {
+      "name": "settings_native_bottom_bar_desc",
+      "value": "Dùng vật liệu đắm chìm HarmonyOS 7.0 của viên nang trả lời, với ánh sáng chạm, chỉ báo lỏng và đổi bên theo cách cầm. Tự dùng viên nang HDS khi không được hỗ trợ."
+    },
+    {
+      "name": "settings_native_navigation_material",
+      "value": "Độ dày vật liệu viên nang điều hướng"
+    },
+    {
+      "name": "settings_for_you_only_sensitive_age_title",
+      "value": "Xác nhận tuổi"
+    },
+    {
+      "name": "settings_for_you_only_sensitive_age_message",
+      "value": "“Chỉ nội dung nhạy cảm trong Dành cho bạn” chỉ dành cho người từ 18 tuổi trở lên. Bạn đã đủ 18 tuổi chưa?"
+    },
+    {
+      "name": "settings_for_you_only_sensitive_age_under",
+      "value": "Dưới 18 tuổi"
+    },
+    {
+      "name": "settings_for_you_only_sensitive_age_adult",
+      "value": "Đủ 18 tuổi"
+    },
+    {
+      "name": "settings_theme_icon_blue",
+      "value": "Xanh biểu tượng"
+    },
+    {
+      "name": "settings_theme_icon_red",
+      "value": "Đỏ biểu tượng"
+    },
+    {
+      "name": "settings_theme_icon_orange",
+      "value": "Cam biểu tượng"
+    },
+    {
+      "name": "settings_theme_icon_yellow",
+      "value": "Vàng biểu tượng"
+    },
+    {
+      "name": "settings_theme_icon_green",
+      "value": "Xanh lá biểu tượng"
+    },
+    {
+      "name": "settings_theme_icon_pink",
+      "value": "Hồng biểu tượng"
+    },
+    {
+      "name": "settings_theme_icon_cyan",
+      "value": "Xanh lục lam biểu tượng"
+    },
+    {
+      "name": "settings_theme_icon_navy",
+      "value": "Xanh navy biểu tượng"
+    },
+    {
+      "name": "settings_bottom_tab_order",
+      "value": "Bottom tab order"
+    },
+    {
+      "name": "settings_home_tab_order",
+      "value": "Home tab order"
+    },
+    {
+      "name": "settings_tab_order_desc",
+      "value": "Use the arrows to reorder tabs. Changes apply immediately; new tabs are added at the end."
+    },
+    {
+      "name": "settings_tab_move_up",
+      "value": "Move earlier"
+    },
+    {
+      "name": "settings_tab_move_down",
+      "value": "Move later"
+    },
+    {
+      "name": "settings_tab_order_reset",
+      "value": "Reset order"
+    },
+    {
+      "name": "settings_post_actions",
+      "value": "Post action bar"
+    },
+    {
+      "name": "settings_post_actions_desc",
+      "value": "Choose the actions shown in feeds and post details. Turn off counts to keep only icons."
+    },
+    {
+      "name": "settings_post_action_counts",
+      "value": "Show interaction counts"
+    },
+    {
+      "name": "video_rotate",
+      "value": "Open landscape player"
+    },
+    {
+      "name": "video_download_notice_downloading",
+      "value": "Đang tải video"
+    },
+    {
+      "name": "video_download_notice_saving",
+      "value": "Đang lưu video"
+    },
+    {
+      "name": "video_download_notice_completed",
+      "value": "Đã tải video"
+    },
+    {
+      "name": "settings_home_single_tap_top",
+      "value": "Chạm Trang chủ để lên đầu"
+    },
+    {
+      "name": "settings_home_single_tap_top_desc",
+      "value": "Chạm vào tab Trang chủ phía dưới để trở về đầu dòng thời gian hiện tại. Cài đặt làm mới bằng chạm hai lần được giữ nguyên."
+    },
+    {
+      "name": "background_photo_delete",
+      "value": "Xóa nền"
+    },
+    {
+      "name": "background_photo_delete_confirm",
+      "value": "Xóa ảnh này? Ảnh cũng sẽ bị gỡ khỏi nền trang và cuộc trò chuyện đang sử dụng. Không thể hoàn tác thao tác này."
+    },
+    {
+      "name": "background_photo_deleted",
+      "value": "Đã xóa ảnh nền"
+    },
+    {
+      "name": "background_photo_delete_failed",
+      "value": "Không thể xóa. Vui lòng thử lại."
+    },
+    {
+      "name": "search_refill_query",
+      "value": "Điền vào ô tìm kiếm"
+    },
+    {
+      "name": "search_history_delete_title",
+      "value": "Xóa mục lịch sử này?"
+    },
+    {
+      "name": "global_trends_title",
+      "value": "Xu hướng toàn cầu"
+    },
+    {
+      "name": "global_trends_description",
+      "value": "Bài đăng phổ biến nhất"
+    },
+    {
+      "name": "global_trends_explore",
+      "value": "Khám phá"
+    },
+    {
+      "name": "global_trends_today",
+      "value": "Nổi bật hôm nay"
+    },
+    {
+      "name": "global_trends_worldwide",
+      "value": "Toàn thế giới"
+    },
+    {
+      "name": "global_trends_countries",
+      "value": "Quốc gia"
+    },
+    {
+      "name": "global_trends_reset",
+      "value": "Hiện tất cả bài đăng nổi bật"
+    },
+    {
+      "name": "post_video_publish",
+      "value": "Đăng video"
+    },
+    {
+      "name": "post_video_copy_link",
+      "value": "Sao chép liên kết video"
+    },
+    {
+      "name": "post_video_save",
+      "value": "Lưu video"
+    },
+    {
+      "name": "post_video_link_copied",
+      "value": "Đã sao chép liên kết video"
+    },
+    {
+      "name": "post_video_link_copy_failed",
+      "value": "Không thể sao chép liên kết video"
+    },
+    {
+      "name": "offline_videos_title",
+      "value": "Video ngoại tuyến"
+    },
+    {
+      "name": "offline_videos_local",
+      "value": "Chỉ lưu trên thiết bị này"
+    },
+    {
+      "name": "offline_videos_empty",
+      "value": "Chưa có video ngoại tuyến"
+    },
+    {
+      "name": "offline_videos_search",
+      "value": "Tìm video ngoại tuyến hoặc tác giả"
+    },
+    {
+      "name": "offline_videos_no_results",
+      "value": "Không có video ngoại tuyến phù hợp"
+    },
+    {
+      "name": "offline_videos_clear",
+      "value": "Xóa video ngoại tuyến"
+    },
+    {
+      "name": "offline_videos_clear_confirm",
+      "value": "Xóa tất cả video đã tải xuống?"
+    },
+    {
+      "name": "offline_videos_delete",
+      "value": "Xóa video ngoại tuyến"
+    },
+    {
+      "name": "offline_videos_added",
+      "value": "Đã thêm vào video ngoại tuyến"
+    },
+    {
+      "name": "offline_videos_already",
+      "value": "Đã có trong video ngoại tuyến"
+    },
+    {
+      "name": "offline_videos_play",
+      "value": "Phát video ngoại tuyến"
+    },
+    {
+      "name": "offline_videos_missing",
+      "value": "Tệp ngoại tuyến bị thiếu. Hãy thêm lại."
+    },
+    {
+      "name": "offline_video_title",
+      "value": "Video ngoại tuyến"
+    },
+    {
+      "name": "post_translated_from",
+      "value": "Được dịch từ %s"
+    },
+    {
+      "name": "post_translated",
+      "value": "Đã dịch"
+    },
+    {
+      "name": "post_show_original",
+      "value": "Hiện bản gốc"
+    },
+    {
+      "name": "post_show_translation",
+      "value": "Hiện bản dịch"
+    },
+    {
+      "name": "settings_cover_single_column",
+      "value": "Một cột trên màn hình ngoài"
+    },
+    {
+      "name": "settings_cover_single_column_desc",
+      "value": "Dùng một cột khi gập và giữ số cột đã chọn khi mở."
+    },
+    {
+      "name": "huawei_cloud_overwrite",
+      "value": "Thay cài đặt đám mây bằng cài đặt cục bộ"
+    },
+    {
+      "name": "huawei_cloud_overwrite_message",
+      "value": "Thay các nhóm đã chọn bằng cài đặt của thiết bị này. Thiết bị khác sẽ nhận chúng trong lần đồng bộ tiếp theo."
+    },
+    {
+      "name": "huawei_cloud_clear",
+      "value": "Xóa cài đặt đám mây"
+    },
+    {
+      "name": "huawei_cloud_clear_message",
+      "value": "Xóa toàn bộ cài đặt đám mây của ứng dụng cho tài khoản Huawei này và tắt đồng bộ. Giữ cài đặt cục bộ. Bật lại đồng bộ để tải chúng lên."
+    },
+    {
+      "name": "huawei_cloud_cleared",
+      "value": "Đã xóa cài đặt đám mây và tắt đồng bộ."
+    },
+    {
+      "name": "huawei_cloud_manage_description",
+      "value": "Thay thế chỉ áp dụng cho nhóm đã chọn. Xóa sẽ xóa mọi nhóm trên đám mây và giữ cài đặt cục bộ."
+    },
+    {
+      "name": "post_translation_choose_languages",
+      "value": "Chọn ngôn ngữ"
+    },
+    {
+      "name": "post_translation_auto_language",
+      "value": "Tự động dịch %s"
+    },
+    {
+      "name": "post_translation_languages_description",
+      "value": "Chọn ngôn ngữ bài đăng để tự động dịch. Các ngôn ngữ khác vẫn có thể dịch thủ công."
+    },
+    {"name": "post_link_copy", "value": "Copy link"},
+    {"name": "post_link_open", "value": "Open link"},
+    {"name": "settings_video_download_button", "value": "Video download button"},
+    {"name": "settings_video_download_button_desc", "value": "Show the download button in the top-right corner of videos"},
+    {"name": "video_source_from", "value": "From"},
+    {"name": "video_source_original", "value": "Original video"},
+    {"name": "video_source_open_failed", "value": "Unable to open the original video. Try again."},
+    {"name":"dns_title","value":"DNS over HTTPS (DoH)"},
+    {"name":"dns_enable","value":"Use DNS over HTTPS"},
+    {"name":"dns_enable_desc","value":"Encrypt DNS queries with a chosen HTTPS resolver"},
+    {"name":"dns_scope","value":"Applies to app API requests, downloaded images, video segments and built-in web pages. System players and external apps may use their own DNS. When a proxy resolves the destination, its DNS takes precedence. DoH does not replace a proxy or VPN."},
+    {"name":"dns_provider","value":"DNS provider"},
+    {"name":"dns_provider_ali","value":"AliDNS"},
+    {"name":"dns_provider_cloudflare","value":"Cloudflare"},
+    {"name":"dns_provider_google","value":"Google Public DNS"},
+    {"name":"dns_provider_custom","value":"Custom"},
+    {"name":"dns_endpoint","value":"DoH server URL"},
+    {"name":"dns_endpoint_hint","value":"https://example.com/dns-query"},
+    {"name":"dns_endpoint_desc","value":"Enter a complete RFC 8484 HTTPS endpoint, without credentials, fragments or URI templates such as {?dns}."},
+    {"name":"dns_invalid","value":"Enter a valid HTTPS DoH server URL"},
+    {"name":"dns_saved","value":"Saved. New requests use this setting; reload open web pages."},
+    {"name":"dns_test","value":"Test DNS resolution"},
+    {"name":"dns_test_desc","value":"Tests the current URL by resolving x.com directly, without saving or enabling it. The test bypasses the in-app proxy; a system VPN still applies."},
+    {"name":"dns_test_success","value":"x.com resolved successfully"},
+    {"name":"dns_test_failed","value":"Resolution failed. Check the URL, network or DNS service."},
+    {"name":"dns_failure_note","value":"After saving, DoH failures stop affected requests instead of falling back to system DNS. Turn DoH off and save to restore system DNS. Changes apply after saving."},
+    {"name":"help_support_afdian","value":"Afdian"},
+    {"name":"help_support_qr_summary","value":"Quét mã để hỗ trợ phát triển"},
+    {"name":"help_support_afdian_summary","value":"Tắt đề xuất vĩnh viễn · ¥16.6"},
+    {"name":"help_support_afdian_desc","value":"Mua mã tắt đề xuất vĩnh viễn trên Afdian, sau đó quay lại ứng dụng để đổi mã."},
+    {"name":"help_support_afdian_buy","value":"Mua trên Afdian"},
+    {"name":"help_support_expand","value":"Nhấn để mở rộng"},
+    {"name":"help_support_collapse","value":"Nhấn để thu gọn"},
+    {"name":"help_support_scan_code","value":"Quét mã này bằng ứng dụng thanh toán tương ứng."},
+    {"name":"help_support_recommended","value":"Đề xuất"}
   ]
 }

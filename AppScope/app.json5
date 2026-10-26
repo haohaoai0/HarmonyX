@@ -7,8 +7,8 @@
     },
     "bundleName": "com.haohaoai0.harmonx",
     "vendor": "haohaoai0",
-    "versionCode": 24,
-    "versionName": "3.2.0",
+    "versionCode": 29,
+    "versionName": "3.5.3",
     "icon": "$media:app_layered_image",
     // 备用图标在应用包内声明，7.0（API 26）起可由应用自己切换，
     // 不再依赖 AppGallery Connect 的动态图标服务与审核。

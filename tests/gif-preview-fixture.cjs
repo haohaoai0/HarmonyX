@@ -22,7 +22,7 @@ function loadGifPreview({ loadPreview, downloadGif = async () => false, proxyEna
     '../services/ProxyImageResolver': { proxyImageResolver: {
       load: loadPreview, release: pixelMap => released.push(pixelMap)
     } },
-    '../services/ProxyStore': { proxyStore: { snapshot: () => ({ enabled: proxyEnabled }) } }
+    '../services/ProxyStore': { proxyStore: { snapshot: () => ({ enabled: proxyEnabled }), requiresHttpTransport: () => proxyEnabled } }
   };
   const module = { exports: {} };
   new Function('require', 'module', 'exports', 'getContext', 'ImageFit', output)(

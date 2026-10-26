@@ -10,11 +10,12 @@ import { fileUri } from '@kit.CoreFileKit';
 import { uniformTypeDescriptor as utd } from '@kit.ArkData';
 import { systemShare } from '@kit.ShareKit';
 import promptAction from '@ohos.promptAction';
-import type { MediaAttachment } from '../models/Tweet';
+import type { MediaAttachment, Tweet } from '../models/Tweet';
 import type { ReplyComposerRouteParam } from './ReplyComposer';
 import { imageUrlForQuality, IMAGE_QUALITY_ORIGINAL } from '../services/MediaSettingsStore';
 import { MEDIA_DOWNLOAD_CANCELED, MEDIA_DOWNLOAD_SUCCESS, mediaDownloadService } from '../services/MediaDownloadService';
 import { chooseVideoDownloadUrl } from '../services/VideoDownloadChoice';
+import { OfflineVideoSaveStatus, offlineVideoStore } from '../services/OfflineVideoStore';
 import { proxyDownloadService } from '../services/ProxyDownloadService';
 import { proxyImageResolver } from '../services/ProxyImageResolver';
 import { backgroundImageStore } from '../services/BackgroundImageStore';
@@ -22,6 +23,7 @@ import { chatPageMaterial } from '../utils/ChatMaterial';
 import { SystemMaterialUtil } from '../utils/SystemMaterial';
 import { ResponsiveLayout } from '../utils/ResponsiveLayout';
 import { materialModifier } from '../utils/SystemMaterial';
+import { postShareUrl } from '../utils/SharePost';
 
 @Builder
 function EmptyMediaActionContent(_onLongPress: () => void): void { Column() {} }
@@ -36,6 +38,7 @@ export struct PostMediaActions {
   @StorageProp(STORAGE_KEY_HIDDEN_MENU_ACTIONS) private hiddenMenuActions: string = '';
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @Prop media: MediaAttachment;
+  @Prop tweet: Tweet | null = null;
   @BuilderParam content: (onLongPress: () => void) => void = EmptyMediaActionContent;
   @Consume('pageStack') pageStack: NavPathStack;
   @StorageProp('harmonyx.accent_color') private accentColor: string = '#007DFF';
@@ -44,7 +47,8 @@ export struct PostMediaActions {
   private afterDismiss: (() => void) | null = null;
   private requestActions: () => void = (): void => {
     const ids: string[] = this.media.type === 'photo' ?
-      ['photo.publish', 'photo.copy', 'photo.save', 'photo.background', 'photo.share'] : ['video.download', 'video.share'];
+      ['photo.publish', 'photo.copy', 'photo.save', 'photo.background', 'photo.share'] :
+      ['video.publish', 'video.copy_link', 'video.save', 'video.offline'];
     if (!this.busy && ids.some((id: string): boolean => this.menuVisible(id))) { this.menuShown = true; }
   };
 
@@ -86,9 +90,10 @@ export struct PostMediaActions {
     const url: string = isVideo ? await chooseVideoDownloadUrl(this.getUIContext(), this.media) : this.sourceUrl();
     if (url.length === 0) { return; }
     const context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
-    promptAction.showToast({ message: this.text($r('app.string.media_download_started')) });
+    if (!isVideo) { promptAction.showToast({ message: this.text($r('app.string.media_download_started')) }); }
     await new Promise<void>((resolve: () => void): void => {
       mediaDownloadService.download(context, url, this.media.id, isVideo, (result: number): void => {
+        if (isVideo && result === MEDIA_DOWNLOAD_SUCCESS) { resolve(); return; }
         const message: Resource = result === MEDIA_DOWNLOAD_SUCCESS ?
           (isVideo ? $r('app.string.media_video_saved') : $r('app.string.media_image_saved')) :
           result === MEDIA_DOWNLOAD_CANCELED ? $r('app.string.media_download_canceled') : $r('app.string.media_download_failed');
@@ -154,6 +159,120 @@ export struct PostMediaActions {
     } catch (error) {
       promptAction.showToast({ message: this.text($r('app.string.media_download_failed')) });
     } finally { this.busy = false; }
+  }
+
+  private targetTweet(): Tweet {
+    if (this.tweet !== null) {
+      return this.tweet;
+    }
+    return {
+      id: this.media.id,
+      author: {
+        id: '',
+        name: 'X',
+        username: '',
+        avatarColor: this.accentColor,
+        verified: false
+      },
+      text: '',
+      createdAt: '',
+      metrics: { replyCount: 0, repostCount: 0, likeCount: 0, viewCount: 0 },
+      liked: false,
+      reposted: false,
+      attachments: [this.media]
+    };
+  }
+
+  private async localVideo(): Promise<string> {
+    const url: string = await chooseVideoDownloadUrl(this.getUIContext(), this.media);
+    if (url.length === 0 || url.startsWith('file://')) {
+      return url;
+    }
+    const context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
+    const path: string = context.cacheDir + '/post-video-publish-' + Date.now().toString() + '.mp4';
+    return await proxyDownloadService.downloadWithRetry(url, path, 1) ? fileUri.getUriFromPath(path) : '';
+  }
+
+  private async publishVideo(): Promise<void> {
+    if (this.busy) {
+      return;
+    }
+    this.busy = true;
+    try {
+      const uri: string = await this.localVideo();
+      if (uri.length === 0) {
+        throw new Error('Video unavailable');
+      }
+      const param: ReplyComposerRouteParam = {
+        replyToId: '',
+        replyToUser: '',
+        avatarUrl: '',
+        avatarName: '',
+        avatarColor: this.accentColor,
+        initialText: '',
+        imageUri: '',
+        gifUri: '',
+        videoUri: uri,
+        communityId: '',
+        communityName: '',
+        parentTweet: null
+      };
+      ResponsiveLayout.openContentDestination();
+      this.pageStack.pushPath({ name: 'ReplyComposer', param: param });
+    } catch (error) {
+      promptAction.showToast({ message: this.text($r('app.string.media_download_failed')) });
+    } finally {
+      this.busy = false;
+    }
+  }
+
+  private async copyVideoLink(): Promise<void> {
+    if (this.busy) {
+      return;
+    }
+    this.busy = true;
+    try {
+      const link: string = this.tweet !== null ? postShareUrl(this.tweet) : this.sourceUrl();
+      if (link.length === 0) {
+        throw new Error('Video link unavailable');
+      }
+      await pasteboard.getSystemPasteboard().setData(
+        pasteboard.createData(pasteboard.MIMETYPE_TEXT_PLAIN, link));
+      promptAction.showToast({ message: this.text($r('app.string.post_video_link_copied')) });
+    } catch (error) {
+      promptAction.showToast({ message: this.text($r('app.string.post_video_link_copy_failed')) });
+    } finally {
+      this.busy = false;
+    }
+  }
+
+  private async addOffline(): Promise<void> {
+    if (this.busy) {
+      return;
+    }
+    this.busy = true;
+    try {
+      const url: string = await chooseVideoDownloadUrl(this.getUIContext(), this.media);
+      if (url.length === 0) {
+        return;
+      }
+      const context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
+      const status: OfflineVideoSaveStatus = await offlineVideoStore.save(
+        context, this.targetTweet(), this.media, url);
+      if (status === OfflineVideoSaveStatus.SAVED) {
+        promptAction.showToast({ message: this.text($r('app.string.offline_videos_added')) });
+      } else if (status === OfflineVideoSaveStatus.ALREADY_SAVED) {
+        promptAction.showToast({ message: this.text($r('app.string.offline_videos_already')) });
+      } else if (status === OfflineVideoSaveStatus.CANCELED) {
+        promptAction.showToast({ message: this.text($r('app.string.media_download_canceled')) });
+      } else {
+        promptAction.showToast({ message: this.text($r('app.string.media_download_failed')) });
+      }
+    } catch (error) {
+      promptAction.showToast({ message: this.text($r('app.string.media_download_failed')) });
+    } finally {
+      this.busy = false;
+    }
   }
 
   private async share(): Promise<void> {
@@ -224,17 +343,29 @@ export struct PostMediaActions {
         if (this.menuVisible('photo.copy')) {
           this.ActionRow($r('app.string.post_photo_copy'), $r('sys.symbol.plus_square_on_square'), (): void => { void this.copyPhoto(); })
         }
+      } else {
+        if (this.menuVisible('video.publish')) {
+          this.ActionRow($r('app.string.post_video_publish'), $r('sys.symbol.square_and_pencil'),
+            (): void => { void this.publishVideo(); })
+        }
+        if (this.menuVisible('video.copy_link')) {
+          this.ActionRow($r('app.string.post_video_copy_link'), $r('sys.symbol.link'),
+            (): void => { void this.copyVideoLink(); })
+        }
       }
-      if (this.menuVisible(this.media.type === 'photo' ? 'photo.save' : 'video.download')) {
-        this.ActionRow(this.media.type === 'photo' ? $r('app.string.post_photo_save_original') : $r('app.string.media_download'),
+      if (this.menuVisible(this.media.type === 'photo' ? 'photo.save' : 'video.save')) {
+        this.ActionRow(this.media.type === 'photo' ? $r('app.string.post_photo_save_original') : $r('app.string.post_video_save'),
           $r('sys.symbol.download'), (): void => this.save())
       }
       if (this.media.type === 'photo') {
         if (this.menuVisible('photo.background')) {
           this.ActionRow($r('app.string.post_photo_save_background'), $r('sys.symbol.picture'), (): void => { void this.saveBackground(); })
         }
+      } else if (this.menuVisible('video.offline')) {
+        this.ActionRow($r('app.string.video_feed_add_offline'), $r('sys.symbol.plus'),
+          (): void => { void this.addOffline(); })
       }
-      if (this.menuVisible(this.media.type === 'photo' ? 'photo.share' : 'video.share')) {
+      if (this.media.type === 'photo' && this.menuVisible('photo.share')) {
         this.ActionRow($r('app.string.action_share'), $r('sys.symbol.share'), (): void => { void this.share(); })
       }
     }.width(300).padding({ top: 8, bottom: 8 }).borderRadius(18).clip(true)
@@ -245,12 +376,10 @@ export struct PostMediaActions {
   build(): void {
     Column() { this.content(this.requestActions); }
       .width('100%')
-      .gesture(LongPressGesture({ repeat: false, duration: 500 }).onAction((): void => {
-        this.requestActions();
-      }))
       .onMouse((event: MouseEvent): void => contextInputMouse(event, (): void => this.requestActions()))
       .bindContextMenu(this.menuShown, this.Actions(), {
-        preview: MenuPreviewMode.IMAGE, previewBorderRadius: 14,
+        preview: this.media.type === 'photo' ? MenuPreviewMode.IMAGE : MenuPreviewMode.NONE,
+        previewBorderRadius: 14,
         previewAnimationOptions: { scale: [0.98, 1.035] }, borderRadius: 18,
         backgroundColor: Color.Transparent, backgroundBlurStyle: BlurStyle.COMPONENT_THICK,
         mask: { color: $r('app.color.chat_message_menu_mask'), backgroundBlurStyle: BlurStyle.BACKGROUND_THIN },

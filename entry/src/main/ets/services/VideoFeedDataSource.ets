@@ -53,8 +53,11 @@ export class VideoFeedDataSource implements IDataSource {
 
   remove(index: number): void {
     if (index < 0 || index >= this.items.length) { return; }
-    this.ids.delete(this.items[index].tweet.id);
+    const removedId: string = this.items[index].tweet.id;
     this.items.splice(index, 1);
+    if (!this.items.some((item: VideoFeedItem): boolean => item.tweet.id === removedId)) {
+      this.ids.delete(removedId);
+    }
     for (let next: number = index; next < this.items.length; next++) {
       this.items[next].index = next;
     }

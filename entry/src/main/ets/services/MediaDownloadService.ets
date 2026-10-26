@@ -148,13 +148,20 @@ export class MediaDownloadService {
       return;
     }
     if (url.startsWith('file://')) {
+      const localVideoId: string = isVideo ? downloadManager.beginLocalVideoSave() : '';
       this.copyToDestination(context, url, mediaId, isVideo ? 'mp4' : this.localImageExtension(url), isVideo)
-        .then(callback).catch((): void => { callback(MEDIA_DOWNLOAD_FAILED); });
+        .then((result: number): void => {
+          if (isVideo) { downloadManager.finishLocalVideoSave(localVideoId, result === MEDIA_DOWNLOAD_SUCCESS); }
+          callback(result);
+        }).catch((): void => {
+          if (isVideo) { downloadManager.finishLocalVideoSave(localVideoId, false); }
+          callback(MEDIA_DOWNLOAD_FAILED);
+        });
       return;
     }
     const onReady: DownloadTaskReadyCallback = (taskId: string, ready: boolean): void => {
       if (!ready) {
-        callback(MEDIA_DOWNLOAD_FAILED);
+        callback(downloadManager.getTask(taskId, context) === null ? MEDIA_DOWNLOAD_CANCELED : MEDIA_DOWNLOAD_FAILED);
         return;
       }
       this.saveTask(context, taskId, callback);
@@ -266,6 +273,7 @@ export class MediaDownloadService {
       return;
     }
     this.savingTasks.add(taskId);
+    downloadManager.savingVideo(taskId);
     const operation: Promise<number> = forceDownloads ?
       downloadLocationStore.save(context, task.filePath, task.title + '.' + task.extension) :
       this.copyToDestination(context, task.filePath, task.title, task.extension, task.isVideo);

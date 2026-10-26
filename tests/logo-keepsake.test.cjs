@@ -1,6 +1,8 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
+const bundleName = /"bundleName"\s*:\s*"([^"]+)"/.exec(fs.readFileSync('AppScope/app.json5', 'utf8'))[1];
+const keepsakePrefix = bundleName === 'com.haohaoai0.CroakX' ? 'CroakX' : 'HarmonyX';
 const ts = require(process.env.HARMONYX_TYPESCRIPT || 'D:/DevEco Studio/tools/ohpm/node_modules/typescript/lib/typescript.js');
 const code = ts.transpileModule(fs.readFileSync('entry/src/main/ets/services/LogoKeepsake.ets', 'utf8'), {
   compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020 }
@@ -55,7 +57,7 @@ test('a confirmed gallery save copies the generated PNG and closes both descript
 });
 test('PNG packing releases its native packer on success and failure; sharing uses the image URI',async()=>{
   const f=fixture();const path=await f.api.writeLogoKeepsake({cacheDir:'/cache'},{});
-  assert.match(path,/\/cache\/HarmonyX-keepsake-\d+\.png$/);
+  assert.match(path,new RegExp('/cache/'+keepsakePrefix+'-keepsake-\\d+\\.png$'));
   assert.equal(f.calls.filter(c=>c[0]==='release-packer').length,1);
   await f.api.shareLogoKeepsake({},path,'keepsake');
   const shared=f.calls.find(c=>c[0]==='share')[1];

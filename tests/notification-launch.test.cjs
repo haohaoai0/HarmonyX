@@ -47,7 +47,8 @@ function fixture({ wide = false, large = false } = {}) {
   const { Root } = load('export class Root {\n' + methods('entry/src/main/ets/pages/Index.ets', 'Index', names) + '\n}', {
     ResponsiveLayout, NOTIFICATIONS_TAB_INDEX: 2, MESSAGES_TAB_INDEX: 4, NavigationMode: { Split: 'split', Stack: 'stack' },
     getContext: () => ({}), $r: value => value,
-    xPrivateClient: { load() {} }, appFontStore: { restore() {} }, postModerationStore: { load() {} },
+    xPrivateClient: { load() {}, viewerId: () => 'viewer' }, appFontStore: { restore() {} }, postModerationStore: { load() {} },
+    pinnedHomeListStore: { load() {} }, homeTimelineSourceStore: { load() {}, refresh() {} },
     homeSeenTweetStore: { load() {} }, accountPrivacyService: { syncSensitiveMedia: async () => {} },
     xWebCookieBridge: { syncActive() {} }, contentFilterStore: { load() {} }, homeTimelineStore: { load() {} },
     meowPushService: { checkin: async () => {} }, accountStore: { activeId: () => 'viewer' }

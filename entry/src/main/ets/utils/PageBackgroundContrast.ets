@@ -23,6 +23,22 @@ export function mixPageRgb(base: PageRgb, overlay: PageRgb, opacity: number): Pa
     green: base.green * (1 - alpha) + overlay.green * alpha, blue: base.blue * (1 - alpha) + overlay.blue * alpha };
 }
 
+// Change HSL lightness while retaining the action's hue and saturation.
+// Mixing with white washes out active likes, reposts and bookmarks.
+export function pageRgbAtLightness(color: PageRgb, lightness: number): PageRgb {
+  const high: number = Math.max(color.red, color.green, color.blue) / 255;
+  const low: number = Math.min(color.red, color.green, color.blue) / 255;
+  const span: number = high - low;
+  const originalLightness: number = (high + low) / 2;
+  const saturation: number = span === 0 ? 0 : span / (1 - Math.abs(2 * originalLightness - 1));
+  const chroma: number = (1 - Math.abs(2 * lightness - 1)) * saturation;
+  const floor: number = lightness - chroma / 2;
+  if (span === 0) { return { red: lightness * 255, green: lightness * 255, blue: lightness * 255 }; }
+  return { red: (floor + (color.red / 255 - low) / span * chroma) * 255,
+    green: (floor + (color.green / 255 - low) / span * chroma) * 255,
+    blue: (floor + (color.blue / 255 - low) / span * chroma) * 255 };
+}
+
 function linearChannel(value: number): number {
   const channel: number = value / 255;
   return channel <= 0.04045 ? channel / 12.92 : Math.pow((channel + 0.055) / 1.055, 2.4);

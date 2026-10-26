@@ -62,11 +62,11 @@ function rootFixture() {
   let api26 = true;
   new Function('exports', 'ResponsiveLayout', 'NavigationMode', 'MESSAGES_TAB_INDEX', 'AppStorage', 'SystemMaterialUtil',
     'BottomBuilderShowType', 'DividerShowType', 'retainedTitleBarBuilder', 'DesktopLayout',
-    'TIMELINE_COLUMNS_ONE', 'TIMELINE_COLUMNS_TWO', 'TIMELINE_COLUMNS_THREE', output)(
+    'TIMELINE_COLUMNS_ONE', 'TIMELINE_COLUMNS_TWO', 'TIMELINE_COLUMNS_THREE', 'TIMELINE_COLUMNS_AUTO_TWO', output)(
     exports, f.responsive, { Stack: 'stack', Split: 'split' }, 3,
     { setOrCreate: (key, value) => f.storage.set(key, value) }, { isApi26OrAbove: () => api26 },
     { DIRECTLY_SHOW: 'show' }, { OFF: 'off' },
-    builder => ({ builder, updated: false }), f.desktop, 1, 2, 3);
+    builder => ({ builder, updated: false }), f.desktop, 1, 2, 3, 4);
   const root = new exports.Root();
   Object.assign(root, {
     breakpoint: 'sm', desktopLayoutEnabled: false, desktopAsideEnabled: true,
@@ -692,4 +692,59 @@ test('phone-style video controls do not override explicit fullscreen landscape b
   assert.equal(player.isWindowLandscape(), true);
   player.windowHeight = 1800;
   assert.equal(player.isWindowLandscape(), false);
+});
+
+test('folded cover single-column preference preserves the unfolded two-column choice and phone opt-in',()=>{
+  const {root}=rootFixture();
+  root.timelineColumnsMode=2;root.desktopLayoutEnabled=true;root.breakpoint='md';root.coverSingleColumn=true;
+  for(const folded of [false,true,false,true,false]){
+    root.coverScreenActive=folded;
+    assert.equal(root.effectiveTimelineColumns(),folded?1:2);
+    assert.equal(root.timelineColumnsMode,2);
+  }
+  root.coverScreenActive=true;root.coverSingleColumn=false;
+  assert.equal(root.effectiveTimelineColumns(),2);
+  root.coverScreenActive=false;root.coverSingleColumn=true;root.breakpoint='sm';
+  assert.equal(root.effectiveTimelineColumns(),2,'a normal phone retains its two-column preference');
+});
+
+
+test('automatic two-column mode stays stable on desktop, landscape and cover transitions', () => {
+  const { root, desktop } = rootFixture();
+  root.timelineColumnsMode = 4;
+  root.coverSingleColumn = false;
+  root.windowWidth = 420; root.windowHeight = 900;
+  root.coverScreenActive = false;
+  assert.equal(root.effectiveTimelineColumns(), 1);
+  assert.equal(root.useTimelineWaterFlow(), true);
+  root.windowWidth = 900; root.windowHeight = 420; root.breakpoint = 'md';
+  assert.equal(root.effectiveTimelineColumns(), 2);
+  root.desktopLayoutEnabled = true;
+  for (const width of [620, 839, 840, 1199, 1200, 1800]) {
+    root.desktopContentWidth = width;
+    assert.equal(root.effectiveTimelineColumns(), 2);
+    assert.equal(desktop.timelineColumns(4, width), 2);
+  }
+  root.coverScreenActive = true;
+  assert.equal(root.effectiveTimelineColumns(), 1, 'cover always wins for this combined mode');
+  assert.equal(root.timelineColumnsMode, 4);
+  assert.equal(root.useTimelineWaterFlow(), true, 'folding retains the scroll container');
+  root.coverScreenActive = false;
+  assert.equal(root.effectiveTimelineColumns(), 2);
+});
+
+
+test('combined automatic column preference survives restart without replacing older choices', () => {
+  const disk=new Map(), published=new Map();
+  const preferences={getPreferencesSync:()=>({getSync:(key,fallback)=>disk.get(key)??fallback,
+    putSync:(key,value)=>disk.set(key,value),flushSync(){}})};
+  const api=load('services/TimelineSettingsStore',{'@kit.ArkData':{preferences}},published);
+  const store=new api.TimelineSettingsStore();
+  assert.equal(store.saveTimelineColumns({},4),true);
+  assert.equal(new api.TimelineSettingsStore().loadTimelineColumns({}),4);
+  assert.equal(published.get(api.STORAGE_KEY_TIMELINE_COLUMNS),4);
+  for(const mode of [0,1,2,3]) {
+    store.saveTimelineColumns({},mode);
+    assert.equal(new api.TimelineSettingsStore().loadTimelineColumns({}),mode);
+  }
 });

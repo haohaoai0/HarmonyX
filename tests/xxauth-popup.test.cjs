@@ -275,7 +275,7 @@ test('campaign boundaries are timezone explicit and force never bypasses them', 
 
 test('multiple recommended apps share a daily budget; only the actually presented panel is counted', () => {
   const {store,restart}=storeFixture();
-  const config={popup_revision:1,popup_daily_limit:1,popup_session_limit:0,popup_force:true};
+  const config={popup_revision:1,popup_daily_limit:1,popup_session_limit:0,popup_interval_hours:0,popup_force:true};
   const now=new Date(2026,9,18,23,59,0).getTime();
   const a=policy.startup([announcement()],[],[],config)[0];
   const b=Object.assign(new XXAuthPanel(),a,{id:'second',recommendationAppId:'second'});
@@ -284,6 +284,43 @@ test('multiple recommended apps share a daily budget; only the actually presente
   store.markRecommendationShown({},config,now);
   assert.equal(restart().shouldShow({},b,now,config),false);
   assert.equal(restart().shouldShow({},b,now+120000,config),true,'new local calendar day resets daily count');
+});
+
+test('legacy empty cloud config persists default popup limits across repeated launches', () => {
+  const {store,restart} = storeFixture();
+  const panel = policy.startup([announcement()], [], [], {})[0];
+  const now = new Date(2026,9,26,7,0,0).getTime();
+  assert.equal(store.shouldShow({},panel,now), true);
+  assert.equal(store.markRecommendationShown({}, {}, now), true);
+  assert.equal(restart().shouldShow({},panel,now+1000), false);
+  assert.equal(restart().shouldShow({},panel,now+5*3600000), false, 'crossing noon still respects the six-hour interval');
+  assert.equal(restart().shouldShow({},panel,now+6*3600000), true);
+  const second = restart();
+  assert.equal(second.markRecommendationShown({}, {}, now+6*3600000), true);
+  assert.equal(restart().shouldShow({},panel,now+12*3600000), false, 'default daily limit is two');
+});
+
+test('even unlimited remote budgets allow only one automatic recommendation in each local period', () => {
+  const {store,restart} = storeFixture();
+  const config = {popup_daily_limit:0,popup_session_limit:0,popup_interval_hours:0};
+  const panel = policy.startup([announcement()], [], [], config)[0];
+  panel.forced = true;
+  const now = new Date(2026,9,26,7,0,0).getTime();
+  assert.equal(store.markRecommendationShown({},config,now), true);
+  assert.equal(restart().shouldShow({},panel,now+4*3600000,config), false);
+  assert.equal(restart().shouldShow({},panel,now+5*3600000,config), true);
+  assert.equal(restart().shouldShow({},panel,now+2*3600000,{...config,popup_period_hours:2}), true);
+  assert.equal(restart().shouldShow({},panel,now+3600000,{...config,popup_period_hours:24}), false);
+});
+
+test('random comment probability and popup period are independent cloud variables', () => {
+  const config = {post_comment_count:2, popup_daily_limit:1};
+  policy.applyVariables(config, [{key:'harmonyx_post_comment_probability',value:'0.2'},
+    {key:'harmonyx_popup_period_hours',value:'4'}]);
+  assert.equal(config.post_comment_probability, 0.2);
+  assert.equal(config.popup_period_hours, 4);
+  assert.equal(config.post_comment_count, 2);
+  assert.equal(config.popup_daily_limit, 1);
 });
 
 function hostMethods(names, dependencies) {
@@ -340,6 +377,7 @@ test('missing cloud switch data pauses recommendations even if the legacy JSON e
     const Host=hostMethods(['refresh'],{
       XXAuthPopupPolicy:policy,XXAUTH_POPUP_CONFIG:'harmonyx_popup',
       xxAuthSupporterService:{refresh:async()=>{},active:()=>false},
+      xxAuthSplashStore:{refresh:async()=>{},wasShown:()=>false},
       xxAuthPopupStore:{deviceId:()=> 'id'},XXAuthSupporterPolicy:{promotional:kind=>kind==='recommendation'},
       xxAuthService:{announcements:async()=>({ok:true,data:[announcement()]}),
         banners:async()=>({ok:true,data:[]}),articles:async()=>({ok:true,data:[]}),

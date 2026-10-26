@@ -4,12 +4,14 @@
 import { image } from '@kit.ImageKit';
 import { proxyImageResolver } from '../services/ProxyImageResolver';
 import { proxyStore } from '../services/ProxyStore';
+import { STORAGE_KEY_DNS_REVISION } from '../services/DnsSettingsStore';
 import { MediaImageLifetime } from '../utils/MediaImageLifetime';
 
 @Component
 export struct ProxyMediaImage {
   lifetime: MediaImageLifetime | null = null;
   @Prop @Watch('onUrlChanged') url: string = '';
+  @StorageProp(STORAGE_KEY_DNS_REVISION) @Watch('onUrlChanged') private dnsRevision: number = 0;
   @Prop displayHeight: number = 228;
   @Prop contain: boolean = false;
   @Prop fillParent: boolean = false;
@@ -66,11 +68,12 @@ export struct ProxyMediaImage {
     // Picker/file URIs belong to the local image decoder. Sending them to the
     // HTTP proxy resolver leaves a selected cover stuck on its placeholder.
     if ((!sourceUrl.startsWith('https://') && !sourceUrl.startsWith('http://')) ||
-      !proxyStore.snapshot().enabled) {
+      !proxyStore.requiresHttpTransport()) {
       this.releaseFallback();
       this.source = sourceUrl;
       return;
     }
+    this.source = '';
     this.beginProxyFetch(sourceUrl);
   }
 

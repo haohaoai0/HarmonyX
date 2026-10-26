@@ -5,7 +5,7 @@ import { cloudSync, fileIo, fileUri } from '@kit.CoreFileKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { huaweiAccountService } from './HuaweiAccountService';
 import { CLOUD_GROUP_ALL, CLOUD_SETTING_FIELDS, CloudSettingsRepository, CloudSettingsPayload,
-  CloudSettingRecord, parseCloudSettings, mergeCloudSettings } from './CloudSettingsRepository';
+  CloudSettingRecord, parseCloudSettings, mergeCloudSettings, preferLocalCloudChanges } from './CloudSettingsRepository';
 
 export const CLOUD_SYNC_ENABLED: string = 'harmonyx.cloud.enabled';
 export const CLOUD_SYNC_MASK: string = 'harmonyx.cloud.mask';
@@ -32,6 +32,10 @@ export class HuaweiCloudSyncService {
   private poll: number = -1;
   private running: boolean = false;
   private pendingChanges: boolean = false;
+  private pendingIds: string[] = [];
+  private applyingRemote: boolean = false;
+  private confirmationPending: boolean = false;
+  private operationMode: string = 'merge';
   private generation: number = 0;
   private fileSync: cloudSync.FileSync | null = null;
   private pendingTransfer: ((success: boolean) => void) | null = null;
@@ -73,6 +77,7 @@ export class HuaweiCloudSyncService {
     this.cancel();
     this.owner = owner;
     this.records = [];
+    this.pendingIds = []; this.pendingChanges = false;
     this.enabled = false;
     this.mask = CLOUD_GROUP_ALL;
     AppStorage.setOrCreate<number>(CLOUD_SYNC_LAST, 0);
@@ -85,6 +90,12 @@ export class HuaweiCloudSyncService {
       this.enabled = store.getSync('enabled_' + owner, false) === true;
       const raw: string = store.getSync('records_' + owner, '') as string;
       if (raw.length > 0) { this.records = parseCloudSettings(raw, owner).records; }
+      const pending: string[] = JSON.parse(store.getSync('pending_' + owner, '[]') as string) as string[];
+      if (Array.isArray(pending)) {
+        this.pendingIds = pending.filter((id: string): boolean => typeof id === 'string' &&
+          CLOUD_SETTING_FIELDS.some((field): boolean => field.id() === id));
+      }
+      this.pendingChanges = this.pendingIds.length > 0;
       AppStorage.setOrCreate<number>(CLOUD_SYNC_LAST, store.getSync('last_' + owner, 0) as number);
       this.publish(this.enabled ? 'pending' : 'disabled');
       if (this.enabled) { this.schedule(); }
@@ -117,12 +128,24 @@ export class HuaweiCloudSyncService {
     if (enabled) { this.changed(); this.schedule(0); }
   }
 
+  private captureLocal(repository: CloudSettingsRepository): void {
+    const next: CloudSettingRecord[] = repository.capture(this.records, this.device, this.mask);
+    for (const record of next) {
+      const previous: CloudSettingRecord | undefined = this.records.find((item: CloudSettingRecord): boolean => item.id === record.id);
+      if (record.revision > 0 && (previous === undefined || previous.value !== record.value) &&
+        this.pendingIds.indexOf(record.id) < 0) { this.pendingIds.push(record.id); }
+    }
+    this.records = next;
+    this.pendingChanges = this.pendingIds.length > 0;
+  }
+
   private changed(): void {
-    if (!this.enabled || this.context === null || !this.current()) { return; }
+    if (this.applyingRemote || !this.enabled || this.context === null || !this.current()) { return; }
     try {
-      const next: CloudSettingRecord[] = new CloudSettingsRepository(this.context).capture(this.records, this.device, this.mask);
-      if (JSON.stringify(next) === JSON.stringify(this.records)) { return; }
-      this.records = next; this.pendingChanges = true; this.persist();
+      const previous: string = JSON.stringify(this.records);
+      this.captureLocal(new CloudSettingsRepository(this.context));
+      if (JSON.stringify(this.records) === previous) { return; }
+      this.persist();
       if (!this.running) { this.publish('pending'); }
       this.schedule();
     } catch (error) { this.publish('failed'); }
@@ -139,19 +162,31 @@ export class HuaweiCloudSyncService {
     const payload: CloudSettingsPayload = new CloudSettingsPayload();
     payload.owner = this.owner; payload.records = this.records;
     const store: preferences.Preferences = this.store();
-    store.putSync('records_' + this.owner, JSON.stringify(payload)); store.flushSync();
+    store.putSync('records_' + this.owner, JSON.stringify(payload));
+    store.putSync('pending_' + this.owner, JSON.stringify(this.pendingIds)); store.flushSync();
+  }
+
+  setConfirmationPending(pending: boolean): void {
+    this.confirmationPending = pending;
+    if (this.timer >= 0) { clearTimeout(this.timer); this.timer = -1; }
+    if (!pending && this.enabled) { this.schedule(); }
   }
 
   private schedule(delay: number = 5000): void {
+    if (this.confirmationPending) { return; }
     if (this.timer >= 0) { clearTimeout(this.timer); }
     this.timer = setTimeout((): void => { this.timer = -1; this.sync(); }, delay);
   }
 
-  async sync(): Promise<void> {
-    if (this.running || !this.enabled || this.context === null || !this.current()) { return; }
+  async overwriteCloud(): Promise<void> { await this.sync('overwrite'); }
+  async clearCloud(): Promise<void> { await this.sync('clear'); }
+
+  async sync(mode: string = 'merge'): Promise<void> {
+    if (this.confirmationPending || this.running || (!this.enabled && mode === 'merge') || this.context === null || !this.current()) { return; }
     const elapsed: number = Date.now() - this.lastAttempt;
-    if (elapsed < 15000) { this.publish('pending'); this.schedule(15000 - elapsed); return; }
+    if (elapsed < 15000 && mode === 'merge') { this.publish('pending'); this.schedule(15000 - elapsed); return; }
     this.lastAttempt = Date.now();
+    this.operationMode = mode;
     this.running = true;
     const generation: number = this.generation;
     const context: common.UIAbilityContext = this.context;
@@ -159,6 +194,7 @@ export class HuaweiCloudSyncService {
     try {
       if (!(await huaweiAccountService.revalidate()) || !this.active(generation)) { return; }
       if (!context.cloudFileDir) { this.publish('unavailable'); return; }
+      this.captureLocal(new CloudSettingsRepository(context)); this.persist();
       this.publish('downloading');
       AppStorage.setOrCreate<number>(CLOUD_SYNC_ERROR, 0);
       const engine: cloudSync.FileSync = new cloudSync.FileSync();
@@ -182,8 +218,23 @@ export class HuaweiCloudSyncService {
         if ((error as BusinessError).code !== 13900002) { throw error as Error; }
         fileIo.mkdirSync(directory);
       }
+      if (!this.active(generation)) { return; }
+      if (mode === 'clear') {
+        for (const name of names) {
+          if (!/^device-[a-zA-Z0-9-]+\.json$/.test(name)) { continue; }
+          if (!this.active(generation)) { return; }
+          await fileIo.unlink(directory + '/' + name);
+        }
+        this.publish('uploading');
+        if (!(await this.transfer()) || !this.active(generation)) { throw new Error('Cloud deletion incomplete'); }
+        this.records = []; this.pendingIds = []; this.pendingChanges = false; this.persist();
+        this.store().putSync('last_' + owner, 0); this.store().flushSync();
+        AppStorage.setOrCreate<number>(CLOUD_SYNC_LAST, 0);
+        this.setEnabled(false); this.publish('cleared');
+        return;
+      }
       const repository: CloudSettingsRepository = new CloudSettingsRepository(context);
-      this.records = repository.capture(this.records, this.device, this.mask);
+      this.captureLocal(repository);
       let merged: CloudSettingRecord[] = this.records.slice();
       for (const name of names) {
         if (!/^device-[a-zA-Z0-9-]+\.json$/.test(name)) { continue; }
@@ -198,9 +249,10 @@ export class HuaweiCloudSyncService {
       }
       if (!this.active(generation)) { return; }
       // Capture edits made during download before applying remote values.
-      this.records = repository.capture(this.records, this.device, this.mask);
-      this.records = mergeCloudSettings(this.records, merged, this.mask);
-      repository.apply(this.records, this.mask);
+      this.captureLocal(repository);
+      this.records = preferLocalCloudChanges(this.records, merged, this.pendingIds, this.device, this.mask, mode === 'overwrite');
+      this.applyingRemote = true;
+      try { repository.apply(this.records, this.mask); } finally { this.applyingRemote = false; }
       this.persist();
       const payload: CloudSettingsPayload = new CloudSettingsPayload();
       payload.owner = owner;
@@ -219,21 +271,32 @@ export class HuaweiCloudSyncService {
       if (fileState !== cloudSync.FileState.UPLOAD_SUCCESS && fileState !== cloudSync.FileState.INITIAL_AFTER_DOWNLOAD) {
         throw new Error('Cloud file upload not confirmed');
       }
+      // An edit during upload belongs to the next round, even if its field was
+      // also present in the snapshot just uploaded.
+      this.pendingIds = this.pendingIds.filter((id: string): boolean => {
+        const sent: CloudSettingRecord | undefined = payload.records.find((item: CloudSettingRecord): boolean => item.id === id);
+        const current: CloudSettingRecord | undefined = this.records.find((item: CloudSettingRecord): boolean => item.id === id);
+        return sent === undefined || current === undefined || sent.revision !== current.revision || sent.value !== current.value;
+      });
+      this.pendingChanges = this.pendingIds.length > 0; this.persist();
       const last: number = Date.now();
       const store: preferences.Preferences = this.store(); store.putSync('last_' + owner, last); store.flushSync();
       AppStorage.setOrCreate<number>(CLOUD_SYNC_LAST, last);
       this.publish(this.pendingChanges ? 'pending' : 'synced');
     } catch (error) {
-      if (this.active(generation)) { this.publish('failed'); this.schedule(60000); }
+      if (this.active(generation)) {
+        if (mode === 'clear') { this.setEnabled(false); this.publish('failed'); }
+        else { this.publish('failed'); this.schedule(60000); }
+      }
     } finally {
       if (generation === this.generation) {
-        this.releaseEngine(); this.running = false;
+        this.releaseEngine(); this.running = false; this.operationMode = 'merge';
         if (this.pendingChanges && this.enabled) { this.schedule(15000); }
       }
     }
   }
 
-  private active(generation: number): boolean { return generation === this.generation && this.enabled && this.current(); }
+  private active(generation: number): boolean { return generation === this.generation && (this.enabled || this.operationMode !== 'merge') && this.current(); }
 
   private transfer(): Promise<boolean> {
     return new Promise<boolean>((resolve): void => {
@@ -293,7 +356,7 @@ export class HuaweiCloudSyncService {
     this.pendingTransfer?.(false); this.pendingTransfer = null;
     this.cancelDownload?.(); this.cancelDownload = null;
     if (this.timer >= 0) { clearTimeout(this.timer); this.timer = -1; }
-    this.releaseEngine(); this.running = false;
+    this.releaseEngine(); this.running = false; this.operationMode = 'merge';
   }
 
   onForeground(): void {

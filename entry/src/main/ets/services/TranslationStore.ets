@@ -24,6 +24,9 @@ import { effectiveAppLocale } from '../utils/AppLocale';
 
 // Published so any post card can react to the toggle without re-reading
 // preferences on every render.
+export const STORAGE_KEY_TRANSLATION_OPTIONS_REQUEST: string = 'harmonyx.translation_options_request';
+export const STORAGE_KEY_TRANSLATION_OPTIONS_LANGUAGE: string = 'harmonyx.translation_options_language';
+
 export const STORAGE_KEY_TRANSLATION_ENABLED: string = 'harmonyx.translation_enabled';
 export const STORAGE_KEY_TRANSLATION_REPLACE_ORIGINAL: string = 'harmonyx.translation_replace_original';
 export const STORAGE_KEY_TRANSLATION_AUTO_ENABLED: string = 'harmonyx.translation_auto_enabled';

@@ -3,9 +3,11 @@ import { preferences } from '@kit.ArkData';
 
 export const STORAGE_KEY_PHOTO_FULLSCREEN: string = 'harmonyx.photo_fullscreen';
 export const STORAGE_KEY_HOME_FLOATING_ACTION: string = 'harmonyx.home_floating_action';
+export const STORAGE_KEY_ME_FLOATING_ACTION: string = 'harmonyx.me_floating_action';
 export const STORAGE_KEY_FLOATING_COMPOSE_MATERIAL_TINT: string = 'harmonyx.floating_compose_material_tint';
 export const STORAGE_KEY_REFRESH_ON_FOREGROUND: string = 'harmonyx.refresh_on_foreground';
 export const STORAGE_KEY_REFRESH_ON_HOME_TAB: string = 'harmonyx.refresh_on_home_tab';
+export const STORAGE_KEY_HOME_SINGLE_TAP_TOP: string = 'harmonyx.home_single_tap_top';
 export const STORAGE_KEY_HOME_DOUBLE_TAP_LATEST: string = 'harmonyx.home_double_tap_latest';
 export const STORAGE_KEY_HOME_PULL_REFRESH_LATEST: string = 'harmonyx.home_pull_refresh_latest';
 export const STORAGE_KEY_CONFIRM_APP_EXIT: string = 'harmonyx.confirm_app_exit';
@@ -13,13 +15,20 @@ export const HOME_FLOATING_COMPOSE: string = 'compose';
 export const HOME_FLOATING_REFRESH: string = 'refresh';
 export const HOME_FLOATING_TOP: string = 'top';
 export const HOME_FLOATING_HIDDEN: string = 'hidden';
+export const ME_FLOATING_PROFILE: string = 'profile';
+export const ME_FLOATING_ACCOUNTS: string = 'accounts';
+export const ME_FLOATING_SETTINGS: string = 'settings';
+export const ME_FLOATING_HELP: string = 'help';
+export const ME_FLOATING_HIDDEN: string = 'hidden';
 
 export class InteractionSettings {
   photoFullscreen: boolean = true;
   homeFloatingAction: string = HOME_FLOATING_COMPOSE;
+  meFloatingAction: string = ME_FLOATING_PROFILE;
   floatingComposeMaterialTint: boolean = true;
   refreshOnForeground: boolean = false;
   refreshOnHomeTab: boolean = false;
+  homeSingleTapTop: boolean = true;
   homeDoubleTapLatest: boolean = true;
   homePullRefreshLatest: boolean = true;
   confirmAppExit: boolean = true;
@@ -37,15 +46,26 @@ export class InteractionSettingsStore {
     return HOME_FLOATING_COMPOSE;
   }
 
+  private normaliseMeAction(value: string): string {
+    if (value === ME_FLOATING_ACCOUNTS || value === ME_FLOATING_SETTINGS ||
+      value === ME_FLOATING_HELP || value === ME_FLOATING_HIDDEN) {
+      return value;
+    }
+    return ME_FLOATING_PROFILE;
+  }
+
   load(context: common.Context): InteractionSettings {
     const settings: InteractionSettings = new InteractionSettings();
     try {
       const store: preferences.Preferences = this.store(context);
       settings.photoFullscreen = store.getSync('photo_fullscreen', true) as boolean;
       settings.homeFloatingAction = this.normaliseAction(store.getSync('home_floating_action', HOME_FLOATING_COMPOSE) as string);
+      settings.meFloatingAction = this.normaliseMeAction(
+        store.getSync('me_floating_action', ME_FLOATING_PROFILE) as string);
       settings.floatingComposeMaterialTint = store.getSync('floating_compose_material_tint', true) as boolean;
       settings.refreshOnForeground = store.getSync('refresh_on_foreground', false) as boolean;
       settings.refreshOnHomeTab = store.getSync('refresh_on_home_tab', false) as boolean;
+      settings.homeSingleTapTop = store.getSync('home_single_tap_top', true) as boolean;
       settings.homeDoubleTapLatest = store.getSync('home_double_tap_latest', true) as boolean;
       settings.homePullRefreshLatest = store.getSync('home_pull_refresh_latest', true) as boolean;
       settings.confirmAppExit = store.getSync('confirm_app_exit', true) as boolean;
@@ -56,9 +76,11 @@ export class InteractionSettingsStore {
   publish(settings: InteractionSettings): void {
     AppStorage.setOrCreate<boolean>(STORAGE_KEY_PHOTO_FULLSCREEN, settings.photoFullscreen);
     AppStorage.setOrCreate<string>(STORAGE_KEY_HOME_FLOATING_ACTION, this.normaliseAction(settings.homeFloatingAction));
+    AppStorage.setOrCreate<string>(STORAGE_KEY_ME_FLOATING_ACTION, this.normaliseMeAction(settings.meFloatingAction));
     AppStorage.setOrCreate<boolean>(STORAGE_KEY_FLOATING_COMPOSE_MATERIAL_TINT, settings.floatingComposeMaterialTint);
     AppStorage.setOrCreate<boolean>(STORAGE_KEY_REFRESH_ON_FOREGROUND, settings.refreshOnForeground);
     AppStorage.setOrCreate<boolean>(STORAGE_KEY_REFRESH_ON_HOME_TAB, settings.refreshOnHomeTab);
+    AppStorage.setOrCreate<boolean>(STORAGE_KEY_HOME_SINGLE_TAP_TOP, settings.homeSingleTapTop);
     AppStorage.setOrCreate<boolean>(STORAGE_KEY_HOME_DOUBLE_TAP_LATEST, settings.homeDoubleTapLatest);
     AppStorage.setOrCreate<boolean>(STORAGE_KEY_HOME_PULL_REFRESH_LATEST, settings.homePullRefreshLatest);
     AppStorage.setOrCreate<boolean>(STORAGE_KEY_CONFIRM_APP_EXIT, settings.confirmAppExit);
@@ -94,6 +116,10 @@ export class InteractionSettingsStore {
     return this.saveBoolean(context, 'home_double_tap_latest', STORAGE_KEY_HOME_DOUBLE_TAP_LATEST, value);
   }
 
+  saveHomeSingleTapTop(context: common.Context, value: boolean): boolean {
+    return this.saveBoolean(context, 'home_single_tap_top', STORAGE_KEY_HOME_SINGLE_TAP_TOP, value);
+  }
+
   saveHomePullRefreshLatest(context: common.Context, value: boolean): boolean {
     return this.saveBoolean(context, 'home_pull_refresh_latest', STORAGE_KEY_HOME_PULL_REFRESH_LATEST, value);
   }
@@ -105,6 +131,17 @@ export class InteractionSettingsStore {
       store.putSync('home_floating_action', value);
       store.flushSync();
       AppStorage.setOrCreate<string>(STORAGE_KEY_HOME_FLOATING_ACTION, value);
+      return true;
+    } catch (error) { return false; }
+  }
+
+  saveMeFloatingAction(context: common.Context, action: string): boolean {
+    const value: string = this.normaliseMeAction(action);
+    try {
+      const store: preferences.Preferences = this.store(context);
+      store.putSync('me_floating_action', value);
+      store.flushSync();
+      AppStorage.setOrCreate<string>(STORAGE_KEY_ME_FLOATING_ACTION, value);
       return true;
     } catch (error) { return false; }
   }

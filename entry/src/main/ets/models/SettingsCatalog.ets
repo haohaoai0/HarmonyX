@@ -140,6 +140,11 @@ export const SETTINGS_CATEGORIES: SettingsCategory[] = [
       $r('app.string.proxy_video_cdn'),
       $r('app.string.proxy_video_cdn_desc')
     ]),
+  new SettingsCategory('dns', 'data', '', $r('app.string.dns_title'),
+    $r('app.string.dns_enable_desc'), $r('sys.symbol.network_acceleration'), 'DnsSettings', [
+      $r('app.string.dns_enable'), $r('app.string.dns_provider'),
+      $r('app.string.dns_endpoint'), $r('app.string.dns_provider_custom')
+    ]),
   new SettingsCategory('storage', 'data', '', $r('app.string.storage_title'),
     $r('app.string.storage_settings_desc'), $r('sys.symbol.folder'), 'DataStorage', [
       $r('app.string.download_manager_title'),
@@ -155,6 +160,11 @@ export const SETTINGS_CATEGORIES: SettingsCategory[] = [
       $r('app.string.help_intro'),
       $r('app.string.settings_diagnostics'),
       $r('app.string.diagnostics_desc')
+    ]),
+  new SettingsCategory('supportauthor', 'support', '', $r('app.string.side_support'),
+    $r('app.string.help_support_scan'), $r('sys.symbol.heart_fill'), 'Support', [
+      $r('app.string.help_support_wechat'), $r('app.string.help_support_alipay'),
+      $r('app.string.supporter_title'), $r('app.string.supporter_redeem')
     ]),
   new SettingsCategory('about', 'support', '', $r('app.string.about_title'),
     $r('app.string.about_tagline'), $r('sys.symbol.info_circle'), 'About', [
@@ -187,6 +197,7 @@ export const SETTINGS_CATEGORIES: SettingsCategory[] = [
       $r('app.string.settings_theme_mix_forest'),
       $r('app.string.settings_theme_mix_berry'),
       $r('app.string.settings_theme_mix_morandi'),
+      $r('app.string.settings_theme_mix_prism'),
       $r('app.string.settings_theme_system_blue'),
       $r('app.string.settings_theme_x_blue'),
       $r('app.string.settings_theme_yellow'),
@@ -219,6 +230,12 @@ export const SETTINGS_CATEGORIES: SettingsCategory[] = [
     ]),
   new SettingsCategory('motion', 'experience', 'display', $r('app.string.motion_title'),
     $r('app.string.motion_intro'), $r('sys.symbol.wand_and_stars'), '', [
+      $r('app.string.startup_animation_title'), $r('app.string.startup_animation_desc'),
+      $r('app.string.startup_animation_icon'), $r('app.string.startup_animation_icon_desc'),
+      $r('app.string.startup_animation_ios'), $r('app.string.startup_animation_ios_desc'),
+      $r('app.string.startup_animation_video'), $r('app.string.startup_animation_video_desc'),
+      $r('app.string.startup_animation_none'), $r('app.string.startup_animation_none_desc'),
+      $r('app.string.startup_animation_speed'), $r('app.string.startup_animation_speed_desc'),
       $r('app.string.motion_duration'), $r('app.string.motion_amplitude'), $r('app.string.motion_damping'),
       $r('app.string.motion_reduce'), $r('app.string.motion_symbol'), $r('app.string.motion_haptics'),
       $r('app.string.motion_presets'), $r('app.string.motion_preset_quick'),
@@ -386,6 +403,12 @@ export const SETTINGS_CATEGORIES: SettingsCategory[] = [
       $r('app.string.settings_native_bottom_bar'),
       $r('app.string.settings_native_bottom_bar_desc'),
       $r('app.string.settings_native_navigation_material'),
+      $r('app.string.settings_me_floating_action'),
+      $r('app.string.settings_me_floating_action_desc'),
+      $r('app.string.side_profile'),
+      $r('app.string.account_overview_manage'),
+      $r('app.string.settings_title'),
+      $r('app.string.side_help'),
       $r('app.string.settings_classic_bottom_bar'),
       $r('app.string.settings_classic_bottom_bar_desc'),
       $r('app.string.settings_root_tab_labels'),
@@ -394,6 +417,8 @@ export const SETTINGS_CATEGORIES: SettingsCategory[] = [
       $r('app.string.settings_root_liquid_tab_indicator_desc'),
       $r('app.string.settings_compose_button'),
       $r('app.string.settings_compose_button_desc'),
+      $r('app.string.settings_bottom_tab_order'),
+      $r('app.string.settings_tab_order_desc'),
       $r('app.string.settings_custom_bottom_bar_title'),
       $r('app.string.settings_custom_bottom_bar_desc'),
       $r('app.string.home_title'),
@@ -420,6 +445,8 @@ export const SETTINGS_CATEGORIES: SettingsCategory[] = [
     ]),
   new SettingsCategory('home_interaction', 'experience', 'home', $r('app.string.settings_home_interaction'),
     $r('app.string.settings_category_home_interaction_desc'), $r('sys.symbol.arrow_clockwise'), '', [
+      $r('app.string.settings_home_tab_order'),
+      $r('app.string.settings_tab_order_desc'),
       $r('app.string.settings_home_interaction'),
       $r('app.string.settings_confirm_app_exit'),
       $r('app.string.settings_confirm_app_exit_desc'),
@@ -436,6 +463,8 @@ export const SETTINGS_CATEGORIES: SettingsCategory[] = [
       $r('app.string.settings_refresh_on_home_tab'),
       $r('app.string.settings_refresh_on_home_tab_desc'),
       $r('app.string.settings_home_double_tap_latest'),
+      $r('app.string.settings_home_single_tap_top'),
+      $r('app.string.settings_home_single_tap_top_desc'),
       $r('app.string.settings_home_double_tap_latest_desc'),
       $r('app.string.settings_home_pull_refresh_latest'),
       $r('app.string.settings_home_pull_refresh_latest_desc'),
@@ -446,6 +475,11 @@ export const SETTINGS_CATEGORIES: SettingsCategory[] = [
     ].concat(menuActionsForGroup('post_menu').map((option: MenuActionOption): Resource => option.title))),
   new SettingsCategory('layout', 'experience', 'home', $r('app.string.settings_category_layout'),
     $r('app.string.settings_category_layout_desc'), $r('sys.symbol.rectangle'), '', [
+      $r('app.string.settings_post_actions'),
+      $r('app.string.settings_post_actions_desc'),
+      $r('app.string.settings_post_action_counts'),
+      $r('app.string.action_reply'), $r('app.string.action_repost'), $r('app.string.action_like'),
+      $r('app.string.post_detail_views'), $r('app.string.action_bookmark'), $r('app.string.action_share'), $r('app.string.post_translate'),
       $r('app.string.settings_desktop_layout'),
       $r('app.string.settings_desktop_layout_desc'),
       $r('app.string.settings_layout_current'),
@@ -467,6 +501,7 @@ export const SETTINGS_CATEGORIES: SettingsCategory[] = [
       $r('app.string.settings_timeline_columns_desc'),
       $r('app.string.settings_timeline_columns_label'),
       $r('app.string.settings_timeline_columns_auto'),
+      $r('app.string.settings_timeline_columns_auto_two'),
       $r('app.string.settings_timeline_columns_one'),
       $r('app.string.settings_timeline_columns_two'),
       $r('app.string.settings_timeline_columns_three')
@@ -485,6 +520,7 @@ export const SETTINGS_CATEGORIES: SettingsCategory[] = [
     $r('app.string.settings_category_playback_desc'), $r('sys.symbol.play_circle'), '', [
       $r('app.string.settings_video_autoplay'),
       $r('app.string.settings_video_autoplay_desc'),
+      $r('app.string.settings_video_download_button'), $r('app.string.settings_video_download_button_desc'),
       $r('app.string.settings_video_hdr_enhancement'),
       $r('app.string.settings_video_hdr_enhancement_desc'),
       $r('app.string.settings_home_video_mute'),

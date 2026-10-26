@@ -4,6 +4,7 @@ const fs = require('node:fs');
 const ts = require(process.env.HARMONYX_TYPESCRIPT ||
   'D:/DevEco Studio/tools/ohpm/node_modules/typescript/lib/typescript.js');
 const { normalizedPostMediaType, postGifHeight } = require('./post-gif-fixture.cjs');
+const { postUsesHorizontalMediaStrip } = require('./post-media-strip-fixture.cjs');
 
 function evaluate(source, dependencies = {}) {
   const code = ts.transpileModule(source, {
@@ -38,11 +39,11 @@ const attachment = (id, type = 'photo', overrides = {}) => ({ id, type,
 
 function mediaHarness(attachments) {
   const Media = methods('components/PostMedia', 'PostMedia', ['photoItems', 'photoIndex', 'viewerPhotoMedia',
-    'gifActionUrl', 'isHlsUrl', 'isGifFileUrl', 'mediaSourceId', 'onPhotoReturn', 'isUsablePhoto'], {
-    PhotoViewerPhoto, isAnimatedGif: animated, isVideoLike: videoLike,
+    'gifActionUrl', 'isHlsUrl', 'isGifFileUrl', 'mediaSourceId', 'onPhotoReturn', 'isUsablePhoto', 'isHorizontalMediaStrip'], {
+    PhotoViewerPhoto, isAnimatedGif: animated, isVideoLike: videoLike, postUsesHorizontalMediaStrip,
     imageUrlForQuality: url => url, IMAGE_QUALITY_ORIGINAL: 2, mediaPhotoNodeFor: () => undefined
   });
-  return Object.assign(new Media(), { attachments, photoViewerAttachments: [], mediaSourcePrefix: 'card-',
+  return Object.assign(new Media(), { attachments, photoViewerAttachments: [], mediaSourcePrefix: 'card-', mediaViewerLayout: false,
     isMediaHidden: media => media.sensitive === true });
 }
 
@@ -155,11 +156,13 @@ test('rendition-only animations carry their playable URL and retain fallback ren
   assert.equal(h.photoIndex(h.attachments[0]), 0);
 });
 
-test('native GIF photo payloads stay animated and returning to a GIF never scrolls a photo strip', () => {
+test('native GIF payloads stay animated and returning to a visible GIF preserves the mixed strip offset', () => {
   const h = mediaHarness([attachment('gif', 'photo', { mediaUrl: 'https://x/image?format=gif' }),
     attachment('loop', 'animated_gif')]);
   assert.ok(h.photoItems()[0].animation);
   h.photoTransitionPrefix = 'visit'; h.photoReturn = 'visit|1|1';
+  h.photoReturnVisible = () => true;
+  h.mediaStripScroller = { scrollToIndex: () => { throw Error('visible GIF must retain its offset'); } };
   h.photoScrollerFor = () => { throw Error('GIF is not a photo strip'); };
   h.onPhotoReturn();
 });

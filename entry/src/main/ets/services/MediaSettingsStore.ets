@@ -14,6 +14,7 @@ export const STORAGE_KEY_VIEWER_VIDEO_MUTED: string = 'harmonyx.viewer_video_mut
 export const STORAGE_KEY_IMAGE_QUALITY: string = 'harmonyx.image_quality';
 export const STORAGE_KEY_MEDIA_VIEWER_BLACK_BACKGROUND: string = 'harmonyx.media_viewer_black_background';
 export const STORAGE_KEY_MEDIA_COMMENT_BACKGROUND: string = 'harmonyx.media_comment_background';
+export const STORAGE_KEY_VIDEO_DOWNLOAD_BUTTON: string = 'harmonyx.video_download_button';
 export const STORAGE_KEY_VIDEO_COMMENT_PROGRESS_RING: string = 'harmonyx.video_comment_progress_ring';
 export const STORAGE_KEY_VIDEO_QUALITY: string = 'harmonyx.video_quality';
 export const STORAGE_KEY_VIDEO_AUTO_BITRATE_CAP: string = 'harmonyx.video_auto_bitrate_cap';
@@ -135,6 +136,7 @@ export class MediaSettingsStore {
   private static readonly IMAGE_QUALITY_KEY: string = 'image_quality';
   private static readonly MEDIA_VIEWER_BLACK_BACKGROUND_KEY: string = 'media_viewer_black_background';
   private static readonly MEDIA_COMMENT_BACKGROUND_KEY: string = 'media_comment_background';
+  private static readonly VIDEO_DOWNLOAD_BUTTON_KEY: string = 'video_download_button';
   private static readonly VIDEO_COMMENT_PROGRESS_RING_KEY: string = 'video_comment_progress_ring';
   private static readonly VIDEO_QUALITY_KEY: string = 'video_quality';
   private static readonly VIDEO_AUTO_PIP_KEY: string = 'video_auto_pip';
@@ -167,6 +169,29 @@ export class MediaSettingsStore {
       store.putSync(MediaSettingsStore.MEDIA_VIEWER_BLACK_BACKGROUND_KEY, enabled);
       store.flushSync();
       AppStorage.setOrCreate<boolean>(STORAGE_KEY_MEDIA_VIEWER_BLACK_BACKGROUND, enabled);
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  loadVideoDownloadButton(context: common.Context): boolean {
+    try {
+      const options: preferences.Options = { name: MediaSettingsStore.STORE_NAME };
+      const store: preferences.Preferences = preferences.getPreferencesSync(context, options);
+      return store.getSync(MediaSettingsStore.VIDEO_DOWNLOAD_BUTTON_KEY, true) as boolean;
+    } catch (error) {
+      return true;
+    }
+  }
+
+  saveVideoDownloadButton(context: common.Context, enabled: boolean): boolean {
+    try {
+      const options: preferences.Options = { name: MediaSettingsStore.STORE_NAME };
+      const store: preferences.Preferences = preferences.getPreferencesSync(context, options);
+      store.putSync(MediaSettingsStore.VIDEO_DOWNLOAD_BUTTON_KEY, enabled);
+      store.flushSync();
+      AppStorage.setOrCreate<boolean>(STORAGE_KEY_VIDEO_DOWNLOAD_BUTTON, enabled);
       return true;
     } catch (error) {
       return false;

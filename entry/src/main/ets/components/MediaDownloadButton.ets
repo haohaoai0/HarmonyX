@@ -44,10 +44,11 @@ export struct MediaDownloadButton {
       }
     }
     this.downloading = true;
-    promptAction.showToast({ message: this.text($r('app.string.media_download_started')), duration: 1600 });
+    if (!isVideo) { promptAction.showToast({ message: this.text($r('app.string.media_download_started')), duration: 1600 }); }
     const context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
     mediaDownloadService.download(context, source, mediaId, isVideo, (result: number): void => {
       this.downloading = false;
+      if (isVideo && result === MEDIA_DOWNLOAD_SUCCESS) { return; }
       if (result === MEDIA_DOWNLOAD_SUCCESS) {
         promptAction.showToast({
           message: this.text(isVideo ? $r('app.string.media_video_saved') :

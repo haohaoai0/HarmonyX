@@ -29,6 +29,7 @@ export struct PostOverflowButton {
   @Prop tweet: Tweet;
   @Prop @Watch('onInputMenuRequest') inputMenuRequest: number = 0;
   @Prop hideTrigger: boolean = false;
+  @Prop compactHeader: boolean = false;
 
   private onInputMenuRequest(): void {
     if (this.inputMenuRequest <= 0) { return; }
@@ -280,9 +281,11 @@ export struct PostOverflowButton {
 
   build(): void {
     Button({ type: ButtonType.Circle }) {
-      SymbolGlyph($r('sys.symbol.line_3_horizontal'))
+      SymbolGlyph(this.compactHeader ? $r('sys.symbol.ellipsis_circle') : $r('sys.symbol.line_3_horizontal'))
         .fontSize($r('app.float.post_menu_button_icon')).fontColor([this.foreground])
-    }.width(this.hideTrigger ? 0 : $r('app.float.post_menu_button_size')).height(this.hideTrigger ? 0 : $r('app.float.post_menu_button_size')).backgroundColor(Color.Transparent)
+    }.width(this.hideTrigger ? 0 : this.compactHeader ? 28 : $r('app.float.post_menu_button_size'))
+      .height(this.hideTrigger ? 0 : this.compactHeader ? 24 : $r('app.float.post_menu_button_size')).backgroundColor(Color.Transparent)
+      .responseRegion({ x: -6, y: -8, width: this.hideTrigger ? 0 : 40, height: this.hideTrigger ? 0 : 40 })
       .focusable(!this.hideTrigger).accessibilityLevel(this.hideTrigger ? 'no' : 'auto')
       .id('post-overflow-' + this.tweet.id)
       .accessibilityText($r('app.string.post_menu_more')).monopolizeEvents(true)

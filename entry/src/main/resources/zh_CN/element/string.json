@@ -1,6 +1,70 @@
 {
   "string": [
     {
+      "name": "startup_animation_none",
+      "value": "直接进入"
+    },
+    {
+      "name": "startup_animation_none_desc",
+      "value": "不显示图标或启动动画，直接打开首页。"
+    },
+    {
+      "name": "startup_animation_speed",
+      "value": "播放速度"
+    },
+    {
+      "name": "startup_animation_speed_desc",
+      "value": "仅用于灵动开场，下次启动生效。"
+    },
+    {
+      "name": "startup_animation_speed_value",
+      "value": "%s×"
+    },
+    {
+      "name": "startup_animation_title",
+      "value": "启动动画"
+    },
+    {
+      "name": "startup_animation_desc",
+      "value": "选择冷启动时的展示方式，下次启动生效。动画期间同步刷新首页；开启“减少动态效果”时显示静态图标。"
+    },
+    {
+      "name": "startup_animation_icon",
+      "value": "保持图标"
+    },
+    {
+      "name": "startup_animation_icon_desc",
+      "value": "保持当前图标，首页准备好后淡出。"
+    },
+    {
+      "name": "startup_animation_ios",
+      "value": "iOS 风格"
+    },
+    {
+      "name": "startup_animation_ios_desc",
+      "value": "图标轻轻回弹后放大退场，露出刷新的首页。"
+    },
+    {
+      "name": "startup_animation_video",
+      "value": "灵动开场"
+    },
+    {
+      "name": "startup_animation_video_desc",
+      "value": "随当前图标播放专属开场动画，结束后显示首页。"
+    },
+    {
+      "name": "splash_ad_label",
+      "value": "广告"
+    },
+    {
+      "name": "splash_ad_skip",
+      "value": "跳过"
+    },
+    {
+      "name": "splash_ad_signature",
+      "value": "与你喜欢的世界相遇"
+    },
+    {
       "name": "supporter_config_error",
       "value": "云端账号绑定配置异常，请联系作者核对。"
     },
@@ -8,63 +72,234 @@
       "name": "supporter_restore_hint",
       "value": "应用内切回原账号会恢复已保存的状态。换设备、重装或切换应用版本后，请登录同一 X 账号并输入原兑换码恢复。"
     },
-    {"name": "eye_reading_title", "value": "眼动翻页"},
-    {"name": "eye_reading_intro", "value": "在长线程、离线副本和文章中，用眼睛上下看并停留来滚动阅读。"},
-    {"name": "eye_reading_enable", "value": "启用眼动阅读"},
-    {"name": "eye_reading_supported", "value": "此设备支持人脸跟踪。进入阅读页后，点“开始眼动”才会开启摄像头。"},
-    {"name": "eye_reading_unsupported", "value": "此设备不支持所需的人脸跟踪能力，请继续使用触摸或键盘阅读。"},
-    {"name": "eye_reading_dwell", "value": "注视停留时间"},
-    {"name": "eye_reading_threshold", "value": "方向触发幅度"},
-    {"name": "eye_reading_threshold_desc", "value": "幅度越大，眼睛需要转动得越明显，可减少误触。"},
-    {"name": "eye_reading_help", "value": "开始后保持头部稳定，正视屏幕中心完成校准。向下或向上看并停留，滚动约半屏；每次触发后先回到正视位置。触摸、滚轮和键盘操作优先。"},
-    {"name": "eye_reading_privacy", "value": "仅在主动开始后使用前置摄像头，本地处理方向参数，不保存或上传画面。离开页面或切到后台会停止，再次使用需手动开始。"},
-    {"name": "eye_reading_save_failed", "value": "设置保存失败，请重试。"},
-    {"name": "eye_reading_start", "value": "开始眼动"},
-    {"name": "eye_reading_stop", "value": "停止眼动"},
-    {"name": "eye_reading_recalibrate", "value": "重新校准"},
-    {"name": "eye_reading_starting", "value": "正在启动前置摄像头…"},
-    {"name": "eye_reading_permission", "value": "需要相机权限。请在系统应用权限中允许相机后重试。"},
-    {"name": "eye_reading_failed", "value": "摄像头暂不可用，请关闭其他相机应用后重试。"},
-    {"name": "eye_reading_calibrating", "value": "请正视屏幕中心，保持头部和视线稳定，完成校准。"},
-    {"name": "eye_reading_center", "value": "请先回到正视位置，再进行下一次翻页。"},
-    {"name": "eye_reading_ready", "value": "已就绪：向上或向下看并停留。"},
-    {"name": "eye_reading_up", "value": "保持向上看，即将向上滚动。"},
-    {"name": "eye_reading_down", "value": "保持向下看，即将向下滚动。"},
-    {"name": "eye_reading_lost", "value": "请睁眼并面向屏幕，确保光线充足；持续无响应时可重新校准。"},
-    {"name": "eye_reading_paused", "value": "手动操作优先，眼动已暂缓。"},
-    {"name": "eye_reading_camera_reason", "value": "用于您主动开启眼动翻页时，通过前置摄像头在本地识别眼球方向。"},
-    {"name": "compact_video_layout", "value": "外屏视频布局"},
-    {"name": "settings_compact_video_layout_desc", "value": "适用于 Pura X 等小方屏，可选侧边操作栏或底部横排；展开后仍使用原来的视频布局。"},
-    {"name": "compact_video_layout_rail", "value": "侧边操作栏"},
-    {"name": "compact_video_layout_bottom", "value": "底部横排"},
-    {"name":"settings_component_hdr_enabled","value":"组件 HDR 效果"},
-    {"name":"settings_component_hdr_enabled_desc","value":"默认关闭；打开后使用 1.25 倍提亮，可在下方调整。"},
-    {"name":"settings_confirm_app_exit","value":"退出前确认"},
-    {"name":"settings_confirm_app_exit_desc","value":"主页面返回时先询问是否退出，关闭后直接退出。"},
-    {"name":"app_exit_title","value":"确认退出"},
-    {"name":"app_exit_message","value":"确定要退出应用吗？"},
-    {"name":"app_exit_action","value":"退出"},
-    {"name":"settings_component_hdr_max","value":"当前屏幕最大提亮倍数"},
-    {"name":"settings_component_hdr_max_unavailable","value":"暂时无法获取"},
-    {"name":"settings_component_hdr_max_desc","value":"由系统按当前屏幕报告，亮度或屏幕变化时自动更新。"},
-    {"name":"settings_component_hdr_ratio","value":"组件 HDR 提亮倍数"},
-    {"name":"settings_component_hdr_desc","value":"调整按钮、图标和选中态的高光亮度。默认 1.25；设为 1 可关闭提亮。实际亮度取决于设备，修改后自动保存并生效。"},
-    {"name":"settings_component_hdr_invalid","value":"请输入不小于 1 的有效数字。"},
-    {"name":"settings_component_hdr_reset","value":"恢复默认 1.25"},
-    {"name":"settings_video_hdr_enhancement","value":"HDR 视频增强"},
-    {"name":"settings_video_hdr_enhancement_desc","value":"增强普通视频的明暗层次与色彩，不支持的设备自动使用普通播放。"},
-    {"name": "settings_menu_post", "value": "帖子菜单操作"},
-    {"name": "settings_menu_photo", "value": "图片菜单操作"},
-    {"name": "settings_menu_video", "value": "视频菜单操作"},
-    {"name": "settings_menu_item_desc", "value": "选择相关菜单中显示的操作项。操作仅在当前内容支持时出现，可随时恢复默认。"},
-    {"name": "settings_menu_show_action", "value": "在相关菜单中显示"},
-    {"name": "settings_menu_empty", "value": "菜单操作已隐藏，可在设置的对应分类中恢复。"},
-    {"name": "settings_viewer_video_mute", "value": "媒体查看器默认静音"},
-    {"name": "settings_viewer_video_mute_desc", "value": "打开视频查看器时默认静音，独立于首页视频。"},
-    {"name": "settings_video_auto_advance_desc", "value": "视频播放结束后自动切换到下一条。"},
-    {"name": "settings_video_captions_desc", "value": "在视频查看器中默认开启系统 AI 字幕。"},
-    {"name": "settings_video_feed_layout_desc", "value": "设置手机竖屏视频查看器的布局，大屏和横屏沿用对应布局。"},
-    {"name": "settings_chat_desc", "value": "消息请求、通话权限、PIN 码与聊天自动下载"},
+    {
+      "name": "eye_reading_title",
+      "value": "眼动翻页"
+    },
+    {
+      "name": "eye_reading_intro",
+      "value": "在长线程、离线副本和文章中，用眼睛上下看并停留来滚动阅读。"
+    },
+    {
+      "name": "eye_reading_enable",
+      "value": "启用眼动阅读"
+    },
+    {
+      "name": "eye_reading_supported",
+      "value": "此设备支持人脸跟踪。进入阅读页后，点“开始眼动”才会开启摄像头。"
+    },
+    {
+      "name": "eye_reading_unsupported",
+      "value": "此设备不支持所需的人脸跟踪能力，请继续使用触摸或键盘阅读。"
+    },
+    {
+      "name": "eye_reading_dwell",
+      "value": "注视停留时间"
+    },
+    {
+      "name": "eye_reading_threshold",
+      "value": "方向触发幅度"
+    },
+    {
+      "name": "eye_reading_threshold_desc",
+      "value": "幅度越大，眼睛需要转动得越明显，可减少误触。"
+    },
+    {
+      "name": "eye_reading_help",
+      "value": "开始后保持头部稳定，正视屏幕中心完成校准。向下或向上看并停留，滚动约半屏；每次触发后先回到正视位置。触摸、滚轮和键盘操作优先。"
+    },
+    {
+      "name": "eye_reading_privacy",
+      "value": "仅在主动开始后使用前置摄像头，本地处理方向参数，不保存或上传画面。离开页面或切到后台会停止，再次使用需手动开始。"
+    },
+    {
+      "name": "eye_reading_save_failed",
+      "value": "设置保存失败，请重试。"
+    },
+    {
+      "name": "eye_reading_start",
+      "value": "开始眼动"
+    },
+    {
+      "name": "eye_reading_stop",
+      "value": "停止眼动"
+    },
+    {
+      "name": "eye_reading_recalibrate",
+      "value": "重新校准"
+    },
+    {
+      "name": "eye_reading_starting",
+      "value": "正在启动前置摄像头…"
+    },
+    {
+      "name": "eye_reading_permission",
+      "value": "需要相机权限。请在系统应用权限中允许相机后重试。"
+    },
+    {
+      "name": "eye_reading_failed",
+      "value": "摄像头暂不可用，请关闭其他相机应用后重试。"
+    },
+    {
+      "name": "eye_reading_calibrating",
+      "value": "请正视屏幕中心，保持头部和视线稳定，完成校准。"
+    },
+    {
+      "name": "eye_reading_center",
+      "value": "请先回到正视位置，再进行下一次翻页。"
+    },
+    {
+      "name": "eye_reading_ready",
+      "value": "已就绪：向上或向下看并停留。"
+    },
+    {
+      "name": "eye_reading_up",
+      "value": "保持向上看，即将向上滚动。"
+    },
+    {
+      "name": "eye_reading_down",
+      "value": "保持向下看，即将向下滚动。"
+    },
+    {
+      "name": "eye_reading_lost",
+      "value": "请睁眼并面向屏幕，确保光线充足；持续无响应时可重新校准。"
+    },
+    {
+      "name": "eye_reading_paused",
+      "value": "手动操作优先，眼动已暂缓。"
+    },
+    {
+      "name": "eye_reading_camera_reason",
+      "value": "用于您主动开启眼动翻页时，通过前置摄像头在本地识别眼球方向。"
+    },
+    {
+      "name": "compact_video_layout",
+      "value": "外屏视频布局"
+    },
+    {
+      "name": "settings_compact_video_layout_desc",
+      "value": "适用于 Pura X 等小方屏，可选侧边操作栏或底部横排；展开后仍使用原来的视频布局。"
+    },
+    {
+      "name": "compact_video_layout_rail",
+      "value": "侧边操作栏"
+    },
+    {
+      "name": "compact_video_layout_bottom",
+      "value": "底部横排"
+    },
+    {
+      "name": "settings_component_hdr_enabled",
+      "value": "组件 HDR 效果"
+    },
+    {
+      "name": "settings_component_hdr_enabled_desc",
+      "value": "默认关闭；打开后使用 1.25 倍提亮，可在下方调整。"
+    },
+    {
+      "name": "settings_confirm_app_exit",
+      "value": "退出前确认"
+    },
+    {
+      "name": "settings_confirm_app_exit_desc",
+      "value": "主页面返回时先询问是否退出，关闭后直接退出。"
+    },
+    {
+      "name": "app_exit_title",
+      "value": "确认退出"
+    },
+    {
+      "name": "app_exit_message",
+      "value": "确定要退出应用吗？"
+    },
+    {
+      "name": "app_exit_action",
+      "value": "退出"
+    },
+    {
+      "name": "settings_component_hdr_max",
+      "value": "当前屏幕最大提亮倍数"
+    },
+    {
+      "name": "settings_component_hdr_max_unavailable",
+      "value": "暂时无法获取"
+    },
+    {
+      "name": "settings_component_hdr_max_desc",
+      "value": "由系统按当前屏幕报告，亮度或屏幕变化时自动更新。"
+    },
+    {
+      "name": "settings_component_hdr_ratio",
+      "value": "组件 HDR 提亮倍数"
+    },
+    {
+      "name": "settings_component_hdr_desc",
+      "value": "调整按钮、图标和选中态的高光亮度。默认 1.25；设为 1 可关闭提亮。实际亮度取决于设备，修改后自动保存并生效。"
+    },
+    {
+      "name": "settings_component_hdr_invalid",
+      "value": "请输入不小于 1 的有效数字。"
+    },
+    {
+      "name": "settings_component_hdr_reset",
+      "value": "恢复默认 1.25"
+    },
+    {
+      "name": "settings_video_hdr_enhancement",
+      "value": "HDR 视频增强"
+    },
+    {
+      "name": "settings_video_hdr_enhancement_desc",
+      "value": "增强普通视频的明暗层次与色彩，不支持的设备自动使用普通播放。"
+    },
+    {
+      "name": "settings_menu_post",
+      "value": "帖子菜单操作"
+    },
+    {
+      "name": "settings_menu_photo",
+      "value": "图片菜单操作"
+    },
+    {
+      "name": "settings_menu_video",
+      "value": "视频菜单操作"
+    },
+    {
+      "name": "settings_menu_item_desc",
+      "value": "选择相关菜单中显示的操作项。操作仅在当前内容支持时出现，可随时恢复默认。"
+    },
+    {
+      "name": "settings_menu_show_action",
+      "value": "在相关菜单中显示"
+    },
+    {
+      "name": "settings_menu_empty",
+      "value": "菜单操作已隐藏，可在设置的对应分类中恢复。"
+    },
+    {
+      "name": "settings_viewer_video_mute",
+      "value": "媒体查看器默认静音"
+    },
+    {
+      "name": "settings_viewer_video_mute_desc",
+      "value": "打开视频查看器时默认静音，独立于首页视频。"
+    },
+    {
+      "name": "settings_video_auto_advance_desc",
+      "value": "视频播放结束后自动切换到下一条。"
+    },
+    {
+      "name": "settings_video_captions_desc",
+      "value": "在视频查看器中默认开启系统 AI 字幕。"
+    },
+    {
+      "name": "settings_video_feed_layout_desc",
+      "value": "设置手机竖屏视频查看器的布局，大屏和横屏沿用对应布局。"
+    },
+    {
+      "name": "settings_chat_desc",
+      "value": "消息请求、通话权限、PIN 码与聊天自动下载"
+    },
     {
       "name": "settings_video_double_tap_seek",
       "value": "双击快进/快退"
@@ -1107,7 +1342,7 @@
     },
     {
       "name": "profile_version",
-      "value": "Harmony X 3.1.0 · HarmonyOS 6.1（API 23-26）· Stage 模型"
+      "value": "Harmony X 3.5.0 · HarmonyOS 6.0.2（API 22-26）· Stage 模型"
     },
     {
       "name": "profile_following",
@@ -1836,6 +2071,10 @@
     {
       "name": "settings_timeline_columns_auto",
       "value": "自动"
+    },
+    {
+      "name": "settings_timeline_columns_auto_two",
+      "value": "自动（桌面/横屏两列，外屏一列）"
     },
     {
       "name": "settings_timeline_columns_one",
@@ -4500,6 +4739,10 @@
     {
       "name": "onboarding_login_title",
       "value": "登录 X"
+    },
+    {
+      "name": "onboarding_login_notice",
+      "value": "请勿使用 Google 登录，请直接输入邮箱；网络正常时若出现白屏，请耐心等待。"
     },
     {
       "name": "onboarding_login_hint",
@@ -10481,326 +10724,1342 @@
       "name": "settings_desktop_video_feed",
       "value": "手机式视频信息流"
     },
-    {"name":"settings_classic_bottom_bar","value":"经典底部导航栏"},
-    {"name":"settings_classic_bottom_bar_desc","value":"使用贴底铺满的图标与文字导航栏，也可配合自动隐藏。关闭后恢复悬浮样式，选择立即生效并自动保存。"},
-    {"name":"settings_root_liquid_tab_indicator","value":"液态指示器"},
-    {"name":"settings_root_liquid_tab_indicator_desc","value":"在悬浮导航栏上显示可拖动并弹性回弹的胶囊，大小随 Tab 文字开关变化。"},
-    {"name":"settings_root_tab_labels","value":"显示 Tab 文字"},
-    {"name":"settings_root_tab_labels_desc","value":"悬浮与经典底部导航栏同时生效；关闭后仅显示图标和未读角标。"},
-    {"name": "account_overview_signed_out", "value": "未登录"},
-    {"name": "account_overview_no_bio", "value": "暂无签名"},
-    {"name": "account_overview_handle", "value": "用户名"},
-    {"name": "account_overview_location", "value": "所在地"},
-    {"name": "account_overview_website", "value": "网站"},
-    {"name": "account_overview_manage", "value": "账号管理与切换"},
-    {"name": "profile_editor_choose_banner", "value": "更换背景图"},
-    {"name": "profile_editor_choose_avatar", "value": "更换头像"},
-    {"name": "profile_editor_birthdate", "value": "出生日期"},
-    {"name": "profile_editor_birthdate_empty", "value": "添加出生日期"},
-    {"name": "profile_editor_birthdate_manage", "value": "编辑出生日期与可见范围"},
-    {"name": "profile_editor_birthdate_privacy", "value": "月和日：%s\n年：%s"},
-    {"name": "profile_editor_account_changed", "value": "当前登录账号已改变，请返回后重新打开编辑页面。"},
-    {"name": "profile_editor_unsaved_title", "value": "放弃未保存的修改？"},
-    {"name": "profile_editor_unsaved_message", "value": "离开后，尚未保存的资料和图片修改将不会保留。"},
-    {"name": "profile_editor_keep_editing", "value": "继续编辑"},
-    {"name": "profile_editor_discard", "value": "放弃修改"},
-    {"name": "profile_editor_partial", "value": "部分修改已保存，剩余修改仍保留在此页面。请重试保存。"},
-    {"name": "profile_editor_confirm_failed", "value": "修改已提交，暂时无法读取最新资料。可重试保存以刷新，不会重复上传图片。"},
-    {"name": "settings_page_transition", "value": "页面转场"},
-    {"name": "settings_page_transition_desc", "value": "选择页面进入和返回时的动画。立即生效，下次打开仍会保留。"},
-    {"name": "settings_page_transition_classic", "value": "原有动画"},
-    {"name": "settings_page_transition_classic_desc", "value": "保留当前的系统导航转场效果。"},
-    {"name": "settings_page_transition_official", "value": "官方风格"},
-    {"name": "settings_page_transition_official_desc", "value": "中心缩放与淡入淡出，进入和返回使用配套动效。"},
-    {"name":"settings_anti_peep","value":"防窥保护"},
-    {"name":"settings_anti_peep_desc","value":"检测到他人窥视屏幕时，使用系统蒙层遮盖应用窗口。"},
-    {"name":"settings_anti_peep_enable","value":"启用防窥保护"},
-    {"name":"settings_anti_peep_setup","value":"配置系统防窥保护"},
-    {"name":"settings_anti_peep_recheck","value":"重新检测"},
-    {"name":"settings_anti_peep_note","value":"需先设置人脸识别，并在系统“隐私与安全 > 防窥保护”中允许此应用。应用仅使用系统窥视状态，不获取人脸图像。"},
-    {"name":"settings_anti_peep_disabled","value":"未启用"},
-    {"name":"settings_anti_peep_unsupported","value":"当前设备不支持系统防窥保护。"},
-    {"name":"settings_anti_peep_permission","value":"等待应用防窥授权。授权配置完成后，返回应用或点击重新检测即可激活。"},
-    {"name":"settings_anti_peep_system_off","value":"请在系统防窥保护中开启此应用的开关。"},
-    {"name":"settings_anti_peep_face","value":"请先在系统设置中启用人脸识别。"},
-    {"name":"settings_anti_peep_ready","value":"已激活，正在监测窥视状态。"},
-    {"name":"settings_anti_peep_protected","value":"检测到窥视，已触发系统保护蒙层。"},
-    {"name":"settings_anti_peep_error","value":"暂时无法启用保护，请重新检测。"},
-    {"name":"settings_anti_peep_checking","value":"正在检测或启用保护…"},
-    {"name":"settings_anti_peep_save_failed","value":"保存失败，请重试。"},
-    {"name":"huawei_account_title","value":"华为账号与云同步"},
-    {"name":"huawei_account_name","value":"华为账号"},
-    {"name":"huawei_login","value":"华为账号登录"},
-    {"name":"huawei_logout","value":"退出登录"},
-    {"name":"huawei_signed_in","value":"已登录华为账号"},
-    {"name":"huawei_logging_in","value":"正在登录…"},
-    {"name":"huawei_signed_out_description","value":"登录后，让偏好设置跟随你"},
-    {"name":"huawei_cloud_sync","value":"云同步"},
-    {"name":"huawei_sync_description","value":"登录后可开启云同步，在你的设备间同步应用外观、阅读与播放偏好和本地内容规则。"},
-    {"name":"huawei_local_data_note","value":"X 登录凭据、私信、草稿和缓存保留在本机。部分外观设置重启后生效。"},
-    {"name":"huawei_logout_title","value":"退出华为账号？"},
-    {"name":"huawei_logout_description","value":"退出后暂停本应用云同步，保留本机设置和云端已有数据。X 账号可继续使用。"},
-    {"name":"huawei_sync_disabled","value":"尚未开启，设置保存在本机"},
-    {"name":"huawei_sync_unavailable","value":"当前无法使用云空间，请检查系统云空间服务及本应用的同步开关。"},
-    {"name":"huawei_sync_downloading","value":"正在读取并合并云端设置…"},
-    {"name":"huawei_sync_uploading","value":"正在上传设置…"},
-    {"name":"huawei_sync_success","value":"已同步"},
-    {"name":"huawei_sync_pending","value":"本机已保存，等待同步"},
-    {"name":"huawei_sync_failed","value":"同步未完成，数据仍保存在本机。请检查系统云空间设置后重试。"},
-    {"name":"huawei_network_error","value":"网络不可用，连接恢复后请重试"},
-    {"name":"huawei_storage_full","value":"云空间或本机存储空间不足，请清理后重试"},
-    {"name":"huawei_login_error","value":"登录未完成，请检查账号服务配置或稍后重试"},
-    {"name":"huawei_authorization_error","value":"未能获取昵称和头像授权，请检查账号权限配置后重试"},
-    {"name":"huawei_save_error","value":"设置未能保存，请重试"},
-    {"name":"huawei_select_group","value":"请至少选择一项同步内容"},
-    {"name":"huawei_account_changed","value":"华为账号已更换。开启同步将把本机所选配置合并到当前账号，请确认后再开启。"},
-    {"name":"huawei_last_sync","value":"上次成功同步："},
-    {"name":"huawei_syncing","value":"正在同步…"},
-    {"name":"huawei_sync_now","value":"立即同步"},
-    {"name":"huawei_group_appearance","value":"外观与导航"},
-    {"name":"huawei_group_appearance_description","value":"主题、字号、标题栏、底栏和弹窗材质"},
-    {"name":"huawei_group_media","value":"阅读与播放"},
-    {"name":"huawei_group_media_description","value":"图片质量、视频质量、自动播放和静音等偏好"},
-    {"name":"huawei_group_filters","value":"本地内容规则"},
-    {"name":"huawei_group_filters_description","value":"关键词、用户过滤和内容显示偏好"},
-    {"name":"post_photo_save_background","value":"保存到背景图库"},
-    {"name":"chat_background_saving_photo","value":"正在保存背景图片…"},
-    {"name":"chat_background_saved_photo","value":"已保存，可在“页面背景”或私信的“聊天背景”中选择"},
-    {"name":"chat_background_save_photo_failed","value":"保存背景图片失败，请重试"},
-    {"name":"chat_background_saved_photos","value":"从帖子保存的图片"},
-    {"name":"page_background_title","value":"页面背景"},
-    {"name":"page_background_description","value":"底色、图片与可混搭的图案"},
-    {"name":"page_background_switch_title","value":"启用页面背景"},
-    {"name":"page_background_switch_desc","value":"关闭后立即使用主题背景，当前样式会保留。"},
-    {"name":"page_background_base","value":"背景底层"},
-    {"name":"page_background_pattern","value":"叠加图案"},
-    {"name":"page_background_pattern_none","value":"无图案"},
-    {"name":"page_background_content_opacity","value":"其他内容底板不透明度"},
-    {"name":"page_background_reset","value":"恢复默认"},
-    {"name":"page_background_color_placeholder","value":"自定义底色 #RRGGBB"},
-    {"name":"page_background_preview","value":"页面背景预览"},
-    {"name":"page_background_preview_text","value":"让喜欢的颜色与图案，陪伴每一次浏览。"},
-    {"name":"page_background_preview_hint","value":"预览包含文字与内容底板，方便调整阅读效果。"},
-    {"name":"page_background_note","value":"应用于普通页面。聊天背景单独设置，图片和视频查看器保留沉浸背景。点击应用后生效。"},
-    {"name":"page_background_layout_preset","value":"整套图案"},
-    {"name":"page_background_layout_icons","value":"图标铺排"},
-    {"name":"page_background_density","value":"图标密度"},
-    {"name":"page_background_set_add","value":"选中整套图标"},
-    {"name":"page_background_set_remove","value":"取消整套图标"},
-    {"name":"page_background_mix_hint","value":"可跨套系多选图标，混合排列；也可以只选一个图标重复铺排。"},
-    {"name":"page_background_selected","value":"已选 %d 个图标"},
-    {"name":"page_background_icons_clear","value":"清空图标"},
-    {"name":"page_background_paper","value":"纸张质感"},
-    {"name":"page_background_paper_none","value":"无质感"},
-    {"name":"page_background_kraft","value":"牛皮纸"},
-    {"name":"page_background_parchment","value":"羊皮纸"},
-    {"name":"page_background_texture_strength","value":"纸张纹理强度"},
-    {"name":"page_background_presets_mix","value":"可多选整套图案，叠加混搭。"},
-    {"name":"page_background_applied","value":"页面背景已应用"},
-    {"name":"page_background_apply_failed","value":"无法保存页面背景，请重试"},
-    {"name":"page_background_transparent_posts","value":"帖子卡片透明"},
-    {"name":"page_background_transparent_posts_desc","value":"隐藏帖子与引用卡片底板，让页面背景直接透出。"},
-    {"name":"page_background_transparent_inbox","value":"私信列表透明"},
-    {"name":"page_background_transparent_inbox_desc","value":"隐藏私信会话列表的底板，保留文字、头像和未读标记。"},
-    {"name":"page_background_post_opacity","value":"帖子底板不透明度"},
-    {"name":"page_background_inbox_opacity","value":"私信列表底板不透明度"},
-    {"name":"page_background_scheme_import","value":"导入搭配方案"},
-    {"name":"page_background_scheme_share","value":"分享搭配方案"},
-    {"name":"page_background_scheme_title","value":"页面背景搭配方案"},
-    {"name":"page_background_scheme_imported","value":"方案已导入，预览满意后点应用"},
-    {"name":"page_background_scheme_import_failed","value":"导入失败，请选择有效的 HarmonyX 背景方案（不超过 48 MB）"},
-    {"name":"page_background_scheme_share_failed","value":"分享失败，请重试；背景图片需小于 32 MB"},
-    {"name":"page_background_set_signature_icons","value":"备用图标"},
-    {"name":"page_background_set_garden_defense","value":"植物大战僵尸"},
-    {"name":"page_background_motif_signature_icons_frog_face","value":"青蛙笑脸"},
-    {"name":"page_background_motif_signature_icons_frog_lily","value":"荷叶青蛙"},
-    {"name":"page_background_motif_signature_icons_milk_frog","value":"牛奶蛙"},
-    {"name":"page_background_motif_signature_icons_milk_frog_wave","value":"招手牛奶蛙"},
-    {"name":"page_background_motif_signature_icons_bird","value":"飞鸟"},
-    {"name":"page_background_motif_signature_icons_bird_wings","value":"展翅小鸟"},
-    {"name":"page_background_motif_signature_icons_ribbon_x","value":"缎带 X"},
-    {"name":"page_background_motif_signature_icons_blossom_x","value":"花枝 X"},
-    {"name":"page_background_motif_signature_icons_brush_x","value":"笔触 X"},
-    {"name":"page_background_motif_signature_icons_prism_x","value":"棱镜 X"},
-    {"name":"page_background_motif_signature_icons_zombie_x","value":"僵尸 X"},
-    {"name":"page_background_motif_signature_icons_lily_blossom","value":"荷叶小花"},
-    {"name":"page_background_motif_garden_defense_peashooter","value":"豌豆射手"},
-    {"name":"page_background_motif_garden_defense_sunflower","value":"向日葵"},
-    {"name":"page_background_motif_garden_defense_wallnut","value":"坚果墙"},
-    {"name":"page_background_motif_garden_defense_cherry_bomb","value":"樱桃炸弹"},
-    {"name":"page_background_motif_garden_defense_snow_pea","value":"寒冰射手"},
-    {"name":"page_background_motif_garden_defense_potato_mine","value":"土豆地雷"},
-    {"name":"page_background_motif_garden_defense_chomper","value":"大嘴花"},
-    {"name":"page_background_motif_garden_defense_squash","value":"窝瓜"},
-    {"name":"page_background_motif_garden_defense_zombie","value":"僵尸"},
-    {"name":"page_background_motif_garden_defense_conehead","value":"路障僵尸"},
-    {"name":"page_background_motif_garden_defense_buckethead","value":"铁桶僵尸"},
-    {"name":"page_background_motif_garden_defense_lawnmower","value":"小推车"},
-    {"name":"page_background_set_ai_assistants","value":"AI 智能体"},
-    {"name":"page_background_motif_ai_assistants_gpt","value":"GPT"},
-    {"name":"page_background_motif_ai_assistants_claude","value":"Claude"},
-    {"name":"page_background_motif_ai_assistants_gemini","value":"Gemini"},
-    {"name":"page_background_motif_ai_assistants_deepseek","value":"DeepSeek"},
-    {"name":"page_background_motif_ai_assistants_grok","value":"Grok"},
-    {"name":"page_background_motif_ai_assistants_qwen","value":"Qwen"},
-    {"name":"page_background_motif_ai_assistants_kimi","value":"Kimi"},
-    {"name":"page_background_motif_ai_assistants_doubao","value":"豆包"},
-    {"name":"page_background_motif_ai_assistants_copilot","value":"Copilot"},
-    {"name":"page_background_motif_ai_assistants_perplexity","value":"Perplexity"},
-    {"name":"page_background_motif_ai_assistants_mistral","value":"Mistral"},
-    {"name":"page_background_motif_ai_assistants_robot","value":"AI 机器人"},
-    {"name":"page_background_set_mobile_brands_systems","value":"手机品牌与系统"},
-    {"name":"page_background_motif_mobile_brands_systems_apple","value":"苹果"},
-    {"name":"page_background_motif_mobile_brands_systems_huawei","value":"华为"},
-    {"name":"page_background_motif_mobile_brands_systems_xiaomi","value":"小米"},
-    {"name":"page_background_motif_mobile_brands_systems_samsung","value":"三星"},
-    {"name":"page_background_motif_mobile_brands_systems_oppo","value":"OPPO"},
-    {"name":"page_background_motif_mobile_brands_systems_vivo","value":"vivo"},
-    {"name":"page_background_motif_mobile_brands_systems_honor","value":"荣耀"},
-    {"name":"page_background_motif_mobile_brands_systems_oneplus","value":"一加"},
-    {"name":"page_background_motif_mobile_brands_systems_meizu","value":"魅族"},
-    {"name":"page_background_motif_mobile_brands_systems_harmonyos","value":"鸿蒙 HarmonyOS"},
-    {"name":"page_background_motif_mobile_brands_systems_android","value":"Android"},
-    {"name":"page_background_motif_mobile_brands_systems_ios","value":"iOS"},
-    {"name":"page_background_motif_mobile_brands_systems_hyperos","value":"HyperOS"},
-    {"name":"page_background_motif_mobile_brands_systems_coloros","value":"ColorOS"},
-    {"name":"page_background_motif_mobile_brands_systems_originos","value":"OriginOS"},
-    {"name":"page_background_motif_mobile_brands_systems_oneui","value":"One UI"},
-    {"name":"motion_title","value":"动画与触感"},
-    {"name":"motion_intro","value":"调整交互动效与触感反馈，修改后自动保存。点击预览即可体验当前效果。"},
-    {"name":"motion_preview","value":"点击体验动画与触感"},
-    {"name":"motion_reduce","value":"降低动画效果"},
-    {"name":"motion_reduce_desc","value":"关闭装饰性缩放、位移和 Symbol 动效，跳过页面转场。保留你的动画参数，关闭后恢复。"},
-    {"name":"motion_duration","value":"动画持续时间"},
-    {"name":"motion_duration_desc","value":"应用动效的基准时长，按钮与页面动画按比例调整。原生 Symbol 动效保留系统节奏。"},
-    {"name":"motion_amplitude","value":"动画运动幅度"},
-    {"name":"motion_amplitude_desc","value":"调整装饰性缩放与旋转，0% 时关闭这类效果。手势跟随、图片缩放等操作保持完整范围。"},
-    {"name":"motion_damping","value":"动画弹性阻尼"},
-    {"name":"motion_damping_desc","value":"数值越低，回弹越明显；数值越高，回位越平稳。"},
-    {"name":"motion_symbol","value":"Symbol 图标动效"},
-    {"name":"motion_symbol_desc","value":"切换标签、点击操作按钮时播放一次原生图标动效。开启降低动画效果后暂停。"},
-    {"name":"motion_haptics","value":"触感反馈"},
-    {"name":"motion_haptics_desc","value":"为导航、按钮、开关和操作提供轻触反馈，遵循系统触感开关。"},
-    {"name":"motion_intensity","value":"触感反馈强度"},
-    {"name":"motion_intensity_desc","value":"支持调节的设备使用对应强度的系统预置效果，其他马达使用短促的系统触摸振动。"},
-    {"name":"motion_presets","value":"预置动画方案"},
-    {"name":"motion_preset_quick","value":"轻快"},
-    {"name":"motion_preset_quick_desc","value":"175 ms · 60% 幅度 · 平稳回位。操作反馈短促利落。"},
-    {"name":"motion_preset_standard","value":"标准"},
-    {"name":"motion_preset_standard_desc","value":"300 ms · 100% 幅度 · 均衡弹性。适合日常使用。"},
-    {"name":"motion_preset_spring","value":"柔弹"},
-    {"name":"motion_preset_spring_desc","value":"450 ms · 120% 幅度 · 较低阻尼。回弹更柔和、明显。"},
-    {"name":"motion_preset_reduced","value":"低动态"},
-    {"name":"motion_preset_reduced_desc","value":"跳过页面转场和装饰动效，保留之前的动画参数。"},
-    {"name":"motion_preset_custom","value":"当前方案：自定义。选择预置方案可恢复该方案的动画参数。"},
-    {"name":"chat_auto_download","value":"聊天自动下载"},
-    {"name":"storage_chat_retention","value":"聊天媒体保留时间"},
-    {"name":"storage_chat_retention_desc","value":"管理聊天下载缓存的保留时长，不删除聊天记录或已手动保存的文件。"},
-    {"name":"settings_theme_mix","value":"混搭配色"},
-    {"name":"settings_theme_mix_desc","value":"开关、导航和发布按钮采用呼应的多色组合，支持浅色与深色外观。"},
-    {"name":"settings_theme_mix_confetti","value":"缤纷"},
-    {"name":"settings_theme_mix_coast","value":"海盐珊瑚"},
-    {"name":"settings_theme_mix_sunset","value":"落日鸢尾"},
-    {"name":"settings_theme_mix_forest","value":"森林琥珀"},
-    {"name":"settings_theme_mix_berry","value":"莓果薄荷"},
-    {"name":"settings_theme_mix_morandi","value":"莫兰迪"},
-    {"name":"settings_theme_solid","value":"单色配色"},
-    {"name":"settings_theme_mix_candy","value":"糖果缤纷"},
-    {"name":"settings_theme_mix_sky","value":"晴空柠檬"},
-    {"name":"settings_theme_mix_peach","value":"蜜桃薄荷"},
-    {"name":"settings_theme_mix_lilac","value":"香芋奶黄"},
-    {"name":"page_background_set_popular_apps_cn","value":"热门 App · 国内"},
-    {"name":"page_background_motif_popular_apps_cn_wechat","value":"微信"},
-    {"name":"page_background_motif_popular_apps_cn_qq","value":"QQ"},
-    {"name":"page_background_motif_popular_apps_cn_weibo","value":"微博"},
-    {"name":"page_background_motif_popular_apps_cn_douyin","value":"抖音"},
-    {"name":"page_background_motif_popular_apps_cn_kuaishou","value":"快手"},
-    {"name":"page_background_motif_popular_apps_cn_bilibili","value":"哔哩哔哩"},
-    {"name":"page_background_motif_popular_apps_cn_xiaohongshu","value":"小红书"},
-    {"name":"page_background_motif_popular_apps_cn_zhihu","value":"知乎"},
-    {"name":"page_background_motif_popular_apps_cn_baidu","value":"百度"},
-    {"name":"page_background_motif_popular_apps_cn_tieba","value":"百度贴吧"},
-    {"name":"page_background_motif_popular_apps_cn_alipay","value":"支付宝"},
-    {"name":"page_background_motif_popular_apps_cn_taobao","value":"淘宝"},
-    {"name":"page_background_motif_popular_apps_cn_jd","value":"京东"},
-    {"name":"page_background_motif_popular_apps_cn_pinduoduo","value":"拼多多"},
-    {"name":"page_background_motif_popular_apps_cn_meituan","value":"美团"},
-    {"name":"page_background_motif_popular_apps_cn_eleme","value":"饿了么"},
-    {"name":"page_background_motif_popular_apps_cn_dianping","value":"大众点评"},
-    {"name":"page_background_motif_popular_apps_cn_amap","value":"高德地图"},
-    {"name":"page_background_motif_popular_apps_cn_baidu_maps","value":"百度地图"},
-    {"name":"page_background_motif_popular_apps_cn_didi","value":"滴滴"},
-    {"name":"page_background_motif_popular_apps_cn_netease_music","value":"网易云音乐"},
-    {"name":"page_background_motif_popular_apps_cn_qq_music","value":"QQ 音乐"},
-    {"name":"page_background_motif_popular_apps_cn_kugou","value":"酷狗音乐"},
-    {"name":"page_background_motif_popular_apps_cn_weread","value":"微信读书"},
-    {"name":"page_background_set_popular_apps_global","value":"热门 App · 海外"},
-    {"name":"page_background_motif_popular_apps_global_whatsapp","value":"WhatsApp"},
-    {"name":"page_background_motif_popular_apps_global_telegram","value":"Telegram"},
-    {"name":"page_background_motif_popular_apps_global_signal","value":"Signal"},
-    {"name":"page_background_motif_popular_apps_global_instagram","value":"Instagram"},
-    {"name":"page_background_motif_popular_apps_global_facebook","value":"Facebook"},
-    {"name":"page_background_motif_popular_apps_global_messenger","value":"Messenger"},
-    {"name":"page_background_motif_popular_apps_global_x","value":"X"},
-    {"name":"page_background_motif_popular_apps_global_threads","value":"Threads"},
-    {"name":"page_background_motif_popular_apps_global_youtube","value":"YouTube"},
-    {"name":"page_background_motif_popular_apps_global_tiktok","value":"TikTok"},
-    {"name":"page_background_motif_popular_apps_global_reddit","value":"Reddit"},
-    {"name":"page_background_motif_popular_apps_global_discord","value":"Discord"},
-    {"name":"page_background_motif_popular_apps_global_spotify","value":"Spotify"},
-    {"name":"page_background_motif_popular_apps_global_apple_music","value":"Apple Music"},
-    {"name":"page_background_motif_popular_apps_global_netflix","value":"Netflix"},
-    {"name":"page_background_motif_popular_apps_global_twitch","value":"Twitch"},
-    {"name":"page_background_motif_popular_apps_global_line","value":"LINE"},
-    {"name":"page_background_motif_popular_apps_global_snapchat","value":"Snapchat"},
-    {"name":"page_background_motif_popular_apps_global_pinterest","value":"Pinterest"},
-    {"name":"page_background_motif_popular_apps_global_chrome","value":"Chrome"},
-    {"name":"page_background_motif_popular_apps_global_firefox","value":"Firefox"},
-    {"name":"page_background_motif_popular_apps_global_edge","value":"Edge"},
-    {"name":"page_background_motif_popular_apps_global_gmail","value":"Gmail"},
-    {"name":"page_background_motif_popular_apps_global_google_maps","value":"Google 地图"},
-    {"name":"scene_title","value":"场景模式"},
-    {"name":"scene_intro","value":"组合调整自动播放、画质、动效和背景。恢复时将找回首次启用场景前的个人配置。"},
-    {"name":"scene_reading","value":"清爽阅读"},
-    {"name":"scene_reading_desc","value":"关闭自动播放 · 高清图片 · 低清视频 · 减少动效 · 纯净背景"},
-    {"name":"scene_saver","value":"节能省流"},
-    {"name":"scene_saver_desc","value":"关闭自动播放 · 小图 · 低清视频 · 减少动效 · 纯净背景"},
-    {"name":"scene_media","value":"媒体浏览"},
-    {"name":"scene_media_desc","value":"开启自动播放 · 原图 · 高清视频 · 开启动效 · 保留个人背景"},
-    {"name":"scene_restore","value":"恢复原配置"},
-    {"name":"scene_restore_desc","value":"恢复首次启用场景前的配置；连续切换场景不会覆盖这份备份。"},
-    {"name":"scene_failed","value":"部分设置未能保存。原配置仍保留，可重试或恢复。"},
-    {"name":"offline_title","value":"离线与稍后读"},
-    {"name":"offline_online","value":"在线书签"},
-    {"name":"offline_intro","value":"新增收藏自动保存正文和可获取的长文。保存前开启配图可一并下载图片。本地副本独立于在线书签，清理普通缓存不会删除。"},
-    {"name":"offline_images","value":"后续保存包含配图"},
-    {"name":"offline_save","value":"保存离线副本"},
-    {"name":"offline_saving","value":"正在保存…"},
-    {"name":"offline_saved","value":"已保存，可离线阅读"},
-    {"name":"offline_partial_saved","value":"已保存可用内容，部分长文或图片未保存完整，可联网后重试。"},
-    {"name":"offline_save_failed","value":"本地保存失败，请重试。"},
-    {"name":"offline_partial","value":"内容不完整"},
-    {"name":"offline_unread","value":"未读"},
-    {"name":"offline_unread_only","value":"只看未读"},
-    {"name":"offline_search","value":"搜索标题、标签或备注"},
-    {"name":"offline_empty","value":"暂无匹配的离线内容。收藏帖子，或在帖子中保存离线副本。"},
-    {"name":"offline_edit","value":"标签与备注"},
-    {"name":"offline_tags","value":"本地标签"},
-    {"name":"offline_tags_hint","value":"输入标签，多个标签用逗号分隔"},
-    {"name":"offline_note","value":"私人备注"},
-    {"name":"offline_done","value":"保存"},
-    {"name":"offline_delete","value":"删除本地副本"},
-    {"name":"reader_title","value":"长线程阅读"},
-    {"name":"reader_author_only","value":"只看作者"},
-    {"name":"reader_translate","value":"整段翻译"},
-    {"name":"reader_font","value":"字号"},
-    {"name":"reader_missing","value":"离线内容不存在或无法读取，请联网重新保存。"},
-    {"name":"reader_partial","value":"当前仅显示可获取的长文内容。请联网后继续加载或重试以获取完整正文。"},
-    {"name":"reader_load_failed","value":"后续回复加载失败，已保留当前阅读内容。"},
-    {"name":"reader_translation_setup","value":"请先在设置中开启翻译并选择目标语言。"},
-    {"name":"reader_translation_failed","value":"部分段落未能翻译，可隐藏译文后重试。"},
-    {"name":"reader_offline_note","value":"正在阅读本地副本，翻译需要联网。"},
-    {"name":"reader_scope","value":"当前为已加载的讨论内容，可继续加载更多回复。"},
+    {
+      "name": "settings_classic_bottom_bar",
+      "value": "经典底部导航栏"
+    },
+    {
+      "name": "settings_classic_bottom_bar_desc",
+      "value": "使用贴底铺满的图标与文字导航栏，也可配合自动隐藏。关闭后恢复悬浮样式，选择立即生效并自动保存。"
+    },
+    {
+      "name": "settings_root_liquid_tab_indicator",
+      "value": "液态指示器"
+    },
+    {
+      "name": "settings_root_liquid_tab_indicator_desc",
+      "value": "在悬浮导航栏上显示可拖动并弹性回弹的胶囊，大小随 Tab 文字开关变化。"
+    },
+    {
+      "name": "settings_root_tab_labels",
+      "value": "显示 Tab 文字"
+    },
+    {
+      "name": "settings_root_tab_labels_desc",
+      "value": "悬浮与经典底部导航栏同时生效；关闭后仅显示图标和未读角标。"
+    },
+    {
+      "name": "account_overview_signed_out",
+      "value": "未登录"
+    },
+    {
+      "name": "account_overview_no_bio",
+      "value": "暂无签名"
+    },
+    {
+      "name": "account_overview_handle",
+      "value": "用户名"
+    },
+    {
+      "name": "account_overview_location",
+      "value": "所在地"
+    },
+    {
+      "name": "account_overview_website",
+      "value": "网站"
+    },
+    {
+      "name": "account_overview_manage",
+      "value": "账号管理与切换"
+    },
+    {
+      "name": "profile_editor_choose_banner",
+      "value": "更换背景图"
+    },
+    {
+      "name": "profile_editor_choose_avatar",
+      "value": "更换头像"
+    },
+    {
+      "name": "profile_editor_birthdate",
+      "value": "出生日期"
+    },
+    {
+      "name": "profile_editor_birthdate_empty",
+      "value": "添加出生日期"
+    },
+    {
+      "name": "profile_editor_birthdate_manage",
+      "value": "编辑出生日期与可见范围"
+    },
+    {
+      "name": "profile_editor_birthdate_privacy",
+      "value": "月和日：%s\n年：%s"
+    },
+    {
+      "name": "profile_editor_account_changed",
+      "value": "当前登录账号已改变，请返回后重新打开编辑页面。"
+    },
+    {
+      "name": "profile_editor_unsaved_title",
+      "value": "放弃未保存的修改？"
+    },
+    {
+      "name": "profile_editor_unsaved_message",
+      "value": "离开后，尚未保存的资料和图片修改将不会保留。"
+    },
+    {
+      "name": "profile_editor_keep_editing",
+      "value": "继续编辑"
+    },
+    {
+      "name": "profile_editor_discard",
+      "value": "放弃修改"
+    },
+    {
+      "name": "profile_editor_partial",
+      "value": "部分修改已保存，剩余修改仍保留在此页面。请重试保存。"
+    },
+    {
+      "name": "profile_editor_confirm_failed",
+      "value": "修改已提交，暂时无法读取最新资料。可重试保存以刷新，不会重复上传图片。"
+    },
+    {
+      "name": "settings_page_transition",
+      "value": "页面转场"
+    },
+    {
+      "name": "settings_page_transition_desc",
+      "value": "选择页面进入和返回时的动画。立即生效，下次打开仍会保留。"
+    },
+    {
+      "name": "settings_page_transition_classic",
+      "value": "原有动画"
+    },
+    {
+      "name": "settings_page_transition_classic_desc",
+      "value": "保留当前的系统导航转场效果。"
+    },
+    {
+      "name": "settings_page_transition_official",
+      "value": "官方风格"
+    },
+    {
+      "name": "settings_page_transition_official_desc",
+      "value": "中心缩放与淡入淡出，进入和返回使用配套动效。"
+    },
+    {
+      "name": "settings_anti_peep",
+      "value": "防窥保护"
+    },
+    {
+      "name": "settings_anti_peep_desc",
+      "value": "检测到他人窥视屏幕时，使用系统蒙层遮盖应用窗口。"
+    },
+    {
+      "name": "settings_anti_peep_enable",
+      "value": "启用防窥保护"
+    },
+    {
+      "name": "settings_anti_peep_setup",
+      "value": "配置系统防窥保护"
+    },
+    {
+      "name": "settings_anti_peep_recheck",
+      "value": "重新检测"
+    },
+    {
+      "name": "settings_anti_peep_note",
+      "value": "需先设置人脸识别，并在系统“隐私与安全 > 防窥保护”中允许此应用。应用仅使用系统窥视状态，不获取人脸图像。"
+    },
+    {
+      "name": "settings_anti_peep_disabled",
+      "value": "未启用"
+    },
+    {
+      "name": "settings_anti_peep_unsupported",
+      "value": "当前设备不支持系统防窥保护。"
+    },
+    {
+      "name": "settings_anti_peep_permission",
+      "value": "等待应用防窥授权。授权配置完成后，返回应用或点击重新检测即可激活。"
+    },
+    {
+      "name": "settings_anti_peep_system_off",
+      "value": "请在系统防窥保护中开启此应用的开关。"
+    },
+    {
+      "name": "settings_anti_peep_face",
+      "value": "请先在系统设置中启用人脸识别。"
+    },
+    {
+      "name": "settings_anti_peep_ready",
+      "value": "已激活，正在监测窥视状态。"
+    },
+    {
+      "name": "settings_anti_peep_protected",
+      "value": "检测到窥视，已触发系统保护蒙层。"
+    },
+    {
+      "name": "settings_anti_peep_error",
+      "value": "暂时无法启用保护，请重新检测。"
+    },
+    {
+      "name": "settings_anti_peep_checking",
+      "value": "正在检测或启用保护…"
+    },
+    {
+      "name": "settings_anti_peep_save_failed",
+      "value": "保存失败，请重试。"
+    },
+    {
+      "name": "huawei_account_title",
+      "value": "华为账号与云同步"
+    },
+    {
+      "name": "huawei_config_section",
+      "value": "设置配置文件"
+    },
+    {
+      "name": "huawei_config_import",
+      "value": "导入"
+    },
+    {
+      "name": "huawei_config_export",
+      "value": "导出"
+    },
+    {
+      "name": "huawei_config_importing",
+      "value": "正在导入…"
+    },
+    {
+      "name": "huawei_config_exporting",
+      "value": "正在导出…"
+    },
+    {
+      "name": "huawei_config_description",
+      "value": "通过 JSON 文件备份或恢复应用外观、媒体与过滤设置；不包含账号、令牌或代理信息。"
+    },
+    {
+      "name": "huawei_config_exported",
+      "value": "配置文件已导出"
+    },
+    {
+      "name": "huawei_config_export_failed",
+      "value": "导出失败，请重试。"
+    },
+    {
+      "name": "huawei_config_imported",
+      "value": "设置已导入"
+    },
+    {
+      "name": "huawei_config_import_failed",
+      "value": "无法读取或校验该配置文件。"
+    },
+    {
+      "name": "huawei_config_import_title",
+      "value": "导入设置配置文件？"
+    },
+    {
+      "name": "huawei_config_import_message",
+      "value": "将用文件中的外观、媒体与过滤设置覆盖本机对应配置。账号与代理信息不会改变。"
+    },
+    {
+      "name": "huawei_config_import_confirm",
+      "value": "导入"
+    },
+    {
+      "name": "huawei_account_name",
+      "value": "华为账号"
+    },
+    {
+      "name": "huawei_login",
+      "value": "华为账号登录"
+    },
+    {
+      "name": "huawei_logout",
+      "value": "退出登录"
+    },
+    {
+      "name": "huawei_signed_in",
+      "value": "已登录华为账号"
+    },
+    {
+      "name": "huawei_logging_in",
+      "value": "正在登录…"
+    },
+    {
+      "name": "huawei_signed_out_description",
+      "value": "登录后，让偏好设置跟随你"
+    },
+    {
+      "name": "huawei_cloud_sync",
+      "value": "云同步"
+    },
+    {
+      "name": "huawei_sync_description",
+      "value": "登录后可开启云同步，在你的设备间同步应用外观、阅读与播放偏好和本地内容规则。"
+    },
+    {
+      "name": "huawei_local_data_note",
+      "value": "X 登录凭据、私信、草稿和缓存保留在本机。部分外观设置重启后生效。"
+    },
+    {
+      "name": "huawei_logout_title",
+      "value": "退出华为账号？"
+    },
+    {
+      "name": "huawei_logout_description",
+      "value": "退出后暂停本应用云同步，保留本机设置和云端已有数据。X 账号可继续使用。"
+    },
+    {
+      "name": "huawei_sync_disabled",
+      "value": "尚未开启，设置保存在本机"
+    },
+    {
+      "name": "huawei_sync_unavailable",
+      "value": "当前无法使用云空间，请检查系统云空间服务及本应用的同步开关。"
+    },
+    {
+      "name": "huawei_sync_downloading",
+      "value": "正在读取并合并云端设置…"
+    },
+    {
+      "name": "huawei_sync_uploading",
+      "value": "正在上传设置…"
+    },
+    {
+      "name": "huawei_sync_success",
+      "value": "已同步"
+    },
+    {
+      "name": "huawei_sync_pending",
+      "value": "本机已保存，等待同步"
+    },
+    {
+      "name": "huawei_sync_failed",
+      "value": "同步未完成，数据仍保存在本机。请检查系统云空间设置后重试。"
+    },
+    {
+      "name": "huawei_network_error",
+      "value": "网络不可用，连接恢复后请重试"
+    },
+    {
+      "name": "huawei_storage_full",
+      "value": "云空间或本机存储空间不足，请清理后重试"
+    },
+    {
+      "name": "huawei_login_error",
+      "value": "登录未完成，请检查账号服务配置或稍后重试"
+    },
+    {
+      "name": "huawei_authorization_error",
+      "value": "未能获取昵称和头像授权，请检查账号权限配置后重试"
+    },
+    {
+      "name": "huawei_save_error",
+      "value": "设置未能保存，请重试"
+    },
+    {
+      "name": "huawei_select_group",
+      "value": "请至少选择一项同步内容"
+    },
+    {
+      "name": "huawei_account_changed",
+      "value": "华为账号已更换。开启同步将把本机所选配置合并到当前账号，请确认后再开启。"
+    },
+    {
+      "name": "huawei_last_sync",
+      "value": "上次成功同步："
+    },
+    {
+      "name": "huawei_syncing",
+      "value": "正在同步…"
+    },
+    {
+      "name": "huawei_sync_now",
+      "value": "立即同步"
+    },
+    {
+      "name": "huawei_group_appearance",
+      "value": "外观与导航"
+    },
+    {
+      "name": "huawei_group_appearance_description",
+      "value": "主题、字号、标题栏、底栏和弹窗材质"
+    },
+    {
+      "name": "huawei_group_media",
+      "value": "阅读与播放"
+    },
+    {
+      "name": "huawei_group_media_description",
+      "value": "图片质量、视频质量、自动播放和静音等偏好"
+    },
+    {
+      "name": "huawei_group_filters",
+      "value": "本地内容规则"
+    },
+    {
+      "name": "huawei_group_filters_description",
+      "value": "关键词、用户过滤和内容显示偏好"
+    },
+    {
+      "name": "post_photo_save_background",
+      "value": "保存到背景图库"
+    },
+    {
+      "name": "chat_background_saving_photo",
+      "value": "正在保存背景图片…"
+    },
+    {
+      "name": "chat_background_saved_photo",
+      "value": "已保存，可在“页面背景”或私信的“聊天背景”中选择"
+    },
+    {
+      "name": "chat_background_save_photo_failed",
+      "value": "保存背景图片失败，请重试"
+    },
+    {
+      "name": "chat_background_saved_photos",
+      "value": "从帖子保存的图片"
+    },
+    {
+      "name": "page_background_title",
+      "value": "页面背景"
+    },
+    {
+      "name": "page_background_description",
+      "value": "底色、图片与可混搭的图案"
+    },
+    {
+      "name": "page_background_switch_title",
+      "value": "启用页面背景"
+    },
+    {
+      "name": "page_background_switch_desc",
+      "value": "关闭后立即使用主题背景，当前样式会保留。"
+    },
+    {
+      "name": "page_background_base",
+      "value": "背景底层"
+    },
+    {
+      "name": "page_background_pattern",
+      "value": "叠加图案"
+    },
+    {
+      "name": "page_background_pattern_none",
+      "value": "无图案"
+    },
+    {
+      "name": "page_background_content_opacity",
+      "value": "其他内容底板不透明度"
+    },
+    {
+      "name": "page_background_reset",
+      "value": "恢复默认"
+    },
+    {
+      "name": "page_background_color_placeholder",
+      "value": "自定义底色 #RRGGBB"
+    },
+    {
+      "name": "page_background_preview",
+      "value": "页面背景预览"
+    },
+    {
+      "name": "page_background_preview_text",
+      "value": "让喜欢的颜色与图案，陪伴每一次浏览。"
+    },
+    {
+      "name": "page_background_preview_hint",
+      "value": "预览包含文字与内容底板，方便调整阅读效果。"
+    },
+    {
+      "name": "page_background_note",
+      "value": "应用于普通页面。聊天背景单独设置，图片和视频查看器保留沉浸背景。点击应用后生效。"
+    },
+    {
+      "name": "page_background_layout_preset",
+      "value": "整套图案"
+    },
+    {
+      "name": "page_background_layout_icons",
+      "value": "图标铺排"
+    },
+    {
+      "name": "page_background_density",
+      "value": "图标密度"
+    },
+    {
+      "name": "page_background_set_add",
+      "value": "选中整套图标"
+    },
+    {
+      "name": "page_background_set_remove",
+      "value": "取消整套图标"
+    },
+    {
+      "name": "page_background_mix_hint",
+      "value": "可跨套系多选图标，混合排列；也可以只选一个图标重复铺排。"
+    },
+    {
+      "name": "page_background_selected",
+      "value": "已选 %d 个图标"
+    },
+    {
+      "name": "page_background_icons_clear",
+      "value": "清空图标"
+    },
+    {
+      "name": "page_background_paper",
+      "value": "纸张质感"
+    },
+    {
+      "name": "page_background_paper_none",
+      "value": "无质感"
+    },
+    {
+      "name": "page_background_kraft",
+      "value": "牛皮纸"
+    },
+    {
+      "name": "page_background_parchment",
+      "value": "羊皮纸"
+    },
+    {
+      "name": "page_background_texture_strength",
+      "value": "纸张纹理强度"
+    },
+    {
+      "name": "page_background_presets_mix",
+      "value": "整套图案每次只能选择一套。"
+    },
+    {
+      "name": "page_background_applied",
+      "value": "页面背景已应用"
+    },
+    {
+      "name": "page_background_apply_failed",
+      "value": "无法保存页面背景，请重试"
+    },
+    {
+      "name": "page_background_transparent_posts",
+      "value": "帖子卡片透明"
+    },
+    {
+      "name": "page_background_transparent_posts_desc",
+      "value": "隐藏帖子与引用卡片底板，让页面背景直接透出。"
+    },
+    {
+      "name": "page_background_transparent_inbox",
+      "value": "私信列表透明"
+    },
+    {
+      "name": "page_background_transparent_inbox_desc",
+      "value": "隐藏私信会话列表的底板，保留文字、头像和未读标记。"
+    },
+    {
+      "name": "page_background_post_opacity",
+      "value": "帖子底板不透明度"
+    },
+    {
+      "name": "page_background_inbox_opacity",
+      "value": "私信列表底板不透明度"
+    },
+    {
+      "name": "page_background_scheme_import",
+      "value": "导入搭配方案"
+    },
+    {
+      "name": "page_background_scheme_share",
+      "value": "分享搭配方案"
+    },
+    {
+      "name": "page_background_scheme_title",
+      "value": "页面背景搭配方案"
+    },
+    {
+      "name": "page_background_scheme_imported",
+      "value": "方案已导入，预览满意后点应用"
+    },
+    {
+      "name": "page_background_scheme_import_failed",
+      "value": "导入失败，请选择有效的 HarmonyX 背景方案（不超过 48 MB）"
+    },
+    {
+      "name": "page_background_scheme_share_failed",
+      "value": "分享失败，请重试；背景图片需小于 32 MB"
+    },
+    {
+      "name": "page_background_set_signature_icons",
+      "value": "备用图标"
+    },
+    {
+      "name": "page_background_set_garden_defense",
+      "value": "植物大战僵尸"
+    },
+    {
+      "name": "page_background_motif_signature_icons_frog_face",
+      "value": "青蛙笑脸"
+    },
+    {
+      "name": "page_background_motif_signature_icons_frog_lily",
+      "value": "荷叶青蛙"
+    },
+    {
+      "name": "page_background_motif_signature_icons_milk_frog",
+      "value": "牛奶蛙"
+    },
+    {
+      "name": "page_background_motif_signature_icons_milk_frog_wave",
+      "value": "招手牛奶蛙"
+    },
+    {
+      "name": "page_background_motif_signature_icons_bird",
+      "value": "飞鸟"
+    },
+    {
+      "name": "page_background_motif_signature_icons_bird_wings",
+      "value": "展翅小鸟"
+    },
+    {
+      "name": "page_background_motif_signature_icons_ribbon_x",
+      "value": "缎带 X"
+    },
+    {
+      "name": "page_background_motif_signature_icons_blossom_x",
+      "value": "花枝 X"
+    },
+    {
+      "name": "page_background_motif_signature_icons_brush_x",
+      "value": "笔触 X"
+    },
+    {
+      "name": "page_background_motif_signature_icons_prism_x",
+      "value": "棱镜 X"
+    },
+    {
+      "name": "page_background_motif_signature_icons_zombie_x",
+      "value": "僵尸 X"
+    },
+    {
+      "name": "page_background_motif_signature_icons_lily_blossom",
+      "value": "荷叶小花"
+    },
+    {
+      "name": "page_background_motif_garden_defense_peashooter",
+      "value": "豌豆射手"
+    },
+    {
+      "name": "page_background_motif_garden_defense_sunflower",
+      "value": "向日葵"
+    },
+    {
+      "name": "page_background_motif_garden_defense_wallnut",
+      "value": "坚果墙"
+    },
+    {
+      "name": "page_background_motif_garden_defense_cherry_bomb",
+      "value": "樱桃炸弹"
+    },
+    {
+      "name": "page_background_motif_garden_defense_snow_pea",
+      "value": "寒冰射手"
+    },
+    {
+      "name": "page_background_motif_garden_defense_potato_mine",
+      "value": "土豆地雷"
+    },
+    {
+      "name": "page_background_motif_garden_defense_chomper",
+      "value": "大嘴花"
+    },
+    {
+      "name": "page_background_motif_garden_defense_squash",
+      "value": "窝瓜"
+    },
+    {
+      "name": "page_background_motif_garden_defense_zombie",
+      "value": "僵尸"
+    },
+    {
+      "name": "page_background_motif_garden_defense_conehead",
+      "value": "路障僵尸"
+    },
+    {
+      "name": "page_background_motif_garden_defense_buckethead",
+      "value": "铁桶僵尸"
+    },
+    {
+      "name": "page_background_motif_garden_defense_lawnmower",
+      "value": "小推车"
+    },
+    {
+      "name": "page_background_set_ai_assistants",
+      "value": "AI 智能体"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_gpt",
+      "value": "GPT"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_claude",
+      "value": "Claude"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_gemini",
+      "value": "Gemini"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_deepseek",
+      "value": "DeepSeek"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_grok",
+      "value": "Grok"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_qwen",
+      "value": "Qwen"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_kimi",
+      "value": "Kimi"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_doubao",
+      "value": "豆包"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_copilot",
+      "value": "Copilot"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_perplexity",
+      "value": "Perplexity"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_mistral",
+      "value": "Mistral"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_robot",
+      "value": "AI 机器人"
+    },
+    {
+      "name": "page_background_set_mobile_brands_systems",
+      "value": "手机品牌与系统"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_apple",
+      "value": "苹果"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_huawei",
+      "value": "华为"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_xiaomi",
+      "value": "小米"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_samsung",
+      "value": "三星"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_oppo",
+      "value": "OPPO"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_vivo",
+      "value": "vivo"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_honor",
+      "value": "荣耀"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_oneplus",
+      "value": "一加"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_meizu",
+      "value": "魅族"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_harmonyos",
+      "value": "鸿蒙 HarmonyOS"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_android",
+      "value": "Android"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_ios",
+      "value": "iOS"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_hyperos",
+      "value": "HyperOS"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_coloros",
+      "value": "ColorOS"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_originos",
+      "value": "OriginOS"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_oneui",
+      "value": "One UI"
+    },
+    {
+      "name": "motion_title",
+      "value": "动画与触感"
+    },
+    {
+      "name": "motion_intro",
+      "value": "调整交互动效与触感反馈，修改后自动保存。点击预览即可体验当前效果。"
+    },
+    {
+      "name": "motion_preview",
+      "value": "点击体验动画与触感"
+    },
+    {
+      "name": "motion_reduce",
+      "value": "降低动画效果"
+    },
+    {
+      "name": "motion_reduce_desc",
+      "value": "关闭装饰性缩放、位移和 Symbol 动效，跳过页面转场。保留你的动画参数，关闭后恢复。"
+    },
+    {
+      "name": "motion_duration",
+      "value": "动画持续时间"
+    },
+    {
+      "name": "motion_duration_desc",
+      "value": "应用动效的基准时长，按钮与页面动画按比例调整。原生 Symbol 动效保留系统节奏。"
+    },
+    {
+      "name": "motion_amplitude",
+      "value": "动画运动幅度"
+    },
+    {
+      "name": "motion_amplitude_desc",
+      "value": "调整装饰性缩放与旋转，0% 时关闭这类效果。手势跟随、图片缩放等操作保持完整范围。"
+    },
+    {
+      "name": "motion_damping",
+      "value": "动画弹性阻尼"
+    },
+    {
+      "name": "motion_damping_desc",
+      "value": "数值越低，回弹越明显；数值越高，回位越平稳。"
+    },
+    {
+      "name": "motion_symbol",
+      "value": "Symbol 图标动效"
+    },
+    {
+      "name": "motion_symbol_desc",
+      "value": "切换标签、点击操作按钮时播放一次原生图标动效。开启降低动画效果后暂停。"
+    },
+    {
+      "name": "motion_haptics",
+      "value": "触感反馈"
+    },
+    {
+      "name": "motion_haptics_desc",
+      "value": "为导航、按钮、开关和操作提供轻触反馈，遵循系统触感开关。"
+    },
+    {
+      "name": "motion_intensity",
+      "value": "触感反馈强度"
+    },
+    {
+      "name": "motion_intensity_desc",
+      "value": "支持调节的设备使用对应强度的系统预置效果，其他马达使用短促的系统触摸振动。"
+    },
+    {
+      "name": "motion_presets",
+      "value": "预置动画方案"
+    },
+    {
+      "name": "motion_preset_quick",
+      "value": "轻快"
+    },
+    {
+      "name": "motion_preset_quick_desc",
+      "value": "175 ms · 60% 幅度 · 平稳回位。操作反馈短促利落。"
+    },
+    {
+      "name": "motion_preset_standard",
+      "value": "标准"
+    },
+    {
+      "name": "motion_preset_standard_desc",
+      "value": "300 ms · 100% 幅度 · 均衡弹性。适合日常使用。"
+    },
+    {
+      "name": "motion_preset_spring",
+      "value": "柔弹"
+    },
+    {
+      "name": "motion_preset_spring_desc",
+      "value": "450 ms · 120% 幅度 · 较低阻尼。回弹更柔和、明显。"
+    },
+    {
+      "name": "motion_preset_reduced",
+      "value": "低动态"
+    },
+    {
+      "name": "motion_preset_reduced_desc",
+      "value": "跳过页面转场和装饰动效，保留之前的动画参数。"
+    },
+    {
+      "name": "motion_preset_custom",
+      "value": "当前方案：自定义。选择预置方案可恢复该方案的动画参数。"
+    },
+    {
+      "name": "chat_auto_download",
+      "value": "聊天自动下载"
+    },
+    {
+      "name": "storage_chat_retention",
+      "value": "聊天媒体保留时间"
+    },
+    {
+      "name": "storage_chat_retention_desc",
+      "value": "管理聊天下载缓存的保留时长，不删除聊天记录或已手动保存的文件。"
+    },
+    {
+      "name": "settings_theme_mix",
+      "value": "混搭配色"
+    },
+    {
+      "name": "settings_theme_mix_desc",
+      "value": "开关、导航和发布按钮采用呼应的多色组合，支持浅色与深色外观。"
+    },
+    {
+      "name": "settings_theme_mix_confetti",
+      "value": "缤纷"
+    },
+    {
+      "name": "settings_theme_mix_coast",
+      "value": "海盐珊瑚"
+    },
+    {
+      "name": "settings_theme_mix_sunset",
+      "value": "落日鸢尾"
+    },
+    {
+      "name": "settings_theme_mix_forest",
+      "value": "森林琥珀"
+    },
+    {
+      "name": "settings_theme_mix_berry",
+      "value": "莓果薄荷"
+    },
+    {
+      "name": "settings_theme_mix_morandi",
+      "value": "莫兰迪"
+    },
+    {
+      "name": "settings_theme_mix_prism",
+      "value": "三原光谱"
+    },
+    {
+      "name": "settings_theme_solid",
+      "value": "单色配色"
+    },
+    {
+      "name": "settings_theme_mix_candy",
+      "value": "糖果缤纷"
+    },
+    {
+      "name": "settings_theme_mix_sky",
+      "value": "晴空柠檬"
+    },
+    {
+      "name": "settings_theme_mix_peach",
+      "value": "蜜桃薄荷"
+    },
+    {
+      "name": "settings_theme_mix_lilac",
+      "value": "香芋奶黄"
+    },
+    {
+      "name": "page_background_set_popular_apps_cn",
+      "value": "热门 App · 国内"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_wechat",
+      "value": "微信"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_qq",
+      "value": "QQ"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_weibo",
+      "value": "微博"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_douyin",
+      "value": "抖音"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_kuaishou",
+      "value": "快手"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_bilibili",
+      "value": "哔哩哔哩"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_xiaohongshu",
+      "value": "小红书"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_zhihu",
+      "value": "知乎"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_baidu",
+      "value": "百度"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_tieba",
+      "value": "百度贴吧"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_alipay",
+      "value": "支付宝"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_taobao",
+      "value": "淘宝"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_jd",
+      "value": "京东"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_pinduoduo",
+      "value": "拼多多"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_meituan",
+      "value": "美团"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_eleme",
+      "value": "饿了么"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_dianping",
+      "value": "大众点评"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_amap",
+      "value": "高德地图"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_baidu_maps",
+      "value": "百度地图"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_didi",
+      "value": "滴滴"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_netease_music",
+      "value": "网易云音乐"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_qq_music",
+      "value": "QQ 音乐"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_kugou",
+      "value": "酷狗音乐"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_weread",
+      "value": "微信读书"
+    },
+    {
+      "name": "page_background_set_popular_apps_global",
+      "value": "热门 App · 海外"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_whatsapp",
+      "value": "WhatsApp"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_telegram",
+      "value": "Telegram"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_signal",
+      "value": "Signal"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_instagram",
+      "value": "Instagram"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_facebook",
+      "value": "Facebook"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_messenger",
+      "value": "Messenger"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_x",
+      "value": "X"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_threads",
+      "value": "Threads"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_youtube",
+      "value": "YouTube"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_tiktok",
+      "value": "TikTok"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_reddit",
+      "value": "Reddit"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_discord",
+      "value": "Discord"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_spotify",
+      "value": "Spotify"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_apple_music",
+      "value": "Apple Music"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_netflix",
+      "value": "Netflix"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_twitch",
+      "value": "Twitch"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_line",
+      "value": "LINE"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_snapchat",
+      "value": "Snapchat"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_pinterest",
+      "value": "Pinterest"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_chrome",
+      "value": "Chrome"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_firefox",
+      "value": "Firefox"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_edge",
+      "value": "Edge"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_gmail",
+      "value": "Gmail"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_google_maps",
+      "value": "Google 地图"
+    },
+    {
+      "name": "scene_title",
+      "value": "场景模式"
+    },
+    {
+      "name": "scene_intro",
+      "value": "组合调整自动播放、画质、动效和背景。恢复时将找回首次启用场景前的个人配置。"
+    },
+    {
+      "name": "scene_reading",
+      "value": "清爽阅读"
+    },
+    {
+      "name": "scene_reading_desc",
+      "value": "关闭自动播放 · 高清图片 · 低清视频 · 减少动效 · 纯净背景"
+    },
+    {
+      "name": "scene_saver",
+      "value": "节能省流"
+    },
+    {
+      "name": "scene_saver_desc",
+      "value": "关闭自动播放 · 小图 · 低清视频 · 减少动效 · 纯净背景"
+    },
+    {
+      "name": "scene_media",
+      "value": "媒体浏览"
+    },
+    {
+      "name": "scene_media_desc",
+      "value": "开启自动播放 · 原图 · 高清视频 · 开启动效 · 保留个人背景"
+    },
+    {
+      "name": "scene_restore",
+      "value": "恢复原配置"
+    },
+    {
+      "name": "scene_restore_desc",
+      "value": "恢复首次启用场景前的配置；连续切换场景不会覆盖这份备份。"
+    },
+    {
+      "name": "scene_failed",
+      "value": "部分设置未能保存。原配置仍保留，可重试或恢复。"
+    },
+    {
+      "name": "offline_title",
+      "value": "离线与稍后读"
+    },
+    {
+      "name": "offline_online",
+      "value": "在线书签"
+    },
+    {
+      "name": "offline_intro",
+      "value": "新增收藏自动保存正文和可获取的长文。保存前开启配图可一并下载图片。本地副本独立于在线书签，清理普通缓存不会删除。"
+    },
+    {
+      "name": "offline_images",
+      "value": "后续保存包含配图"
+    },
+    {
+      "name": "offline_save",
+      "value": "保存离线副本"
+    },
+    {
+      "name": "offline_saving",
+      "value": "正在保存…"
+    },
+    {
+      "name": "offline_saved",
+      "value": "已保存，可离线阅读"
+    },
+    {
+      "name": "offline_partial_saved",
+      "value": "已保存可用内容，部分长文或图片未保存完整，可联网后重试。"
+    },
+    {
+      "name": "offline_save_failed",
+      "value": "本地保存失败，请重试。"
+    },
+    {
+      "name": "offline_partial",
+      "value": "内容不完整"
+    },
+    {
+      "name": "offline_unread",
+      "value": "未读"
+    },
+    {
+      "name": "offline_unread_only",
+      "value": "只看未读"
+    },
+    {
+      "name": "offline_search",
+      "value": "搜索标题、标签或备注"
+    },
+    {
+      "name": "offline_empty",
+      "value": "暂无匹配的离线内容。收藏帖子，或在帖子中保存离线副本。"
+    },
+    {
+      "name": "offline_edit",
+      "value": "标签与备注"
+    },
+    {
+      "name": "offline_tags",
+      "value": "本地标签"
+    },
+    {
+      "name": "offline_tags_hint",
+      "value": "输入标签，多个标签用逗号分隔"
+    },
+    {
+      "name": "offline_note",
+      "value": "私人备注"
+    },
+    {
+      "name": "offline_done",
+      "value": "保存"
+    },
+    {
+      "name": "offline_delete",
+      "value": "删除本地副本"
+    },
+    {
+      "name": "reader_title",
+      "value": "长线程阅读"
+    },
+    {
+      "name": "reader_author_only",
+      "value": "只看作者"
+    },
+    {
+      "name": "reader_translate",
+      "value": "整段翻译"
+    },
+    {
+      "name": "reader_font",
+      "value": "字号"
+    },
+    {
+      "name": "reader_missing",
+      "value": "离线内容不存在或无法读取，请联网重新保存。"
+    },
+    {
+      "name": "reader_partial",
+      "value": "当前仅显示可获取的长文内容。请联网后继续加载或重试以获取完整正文。"
+    },
+    {
+      "name": "reader_load_failed",
+      "value": "后续回复加载失败，已保留当前阅读内容。"
+    },
+    {
+      "name": "reader_translation_setup",
+      "value": "请先在设置中开启翻译并选择目标语言。"
+    },
+    {
+      "name": "reader_translation_failed",
+      "value": "部分段落未能翻译，可隐藏译文后重试。"
+    },
+    {
+      "name": "reader_offline_note",
+      "value": "正在阅读本地副本，翻译需要联网。"
+    },
+    {
+      "name": "reader_scope",
+      "value": "当前为已加载的讨论内容，可继续加载更多回复。"
+    },
     {
       "name": "input_help_title",
       "value": "鼠标、键盘与触控板"
@@ -10945,26 +12204,86 @@
       "name": "input_key_playback",
       "value": "Space / Enter / ← / →"
     },
-    {"name":"settings_filter_languages","value":"屏蔽帖子语言"},
-    {"name":"settings_filter_languages_desc","value":"多选要屏蔽的语言；未识别语言及纯媒体帖子仍会显示。"},
-    {"name":"appearance_preview_title","value":"效果预览"},
-    {"name":"appearance_preview_hint","value":"修改设置后立即更新。弹窗材质示例可点按展开。"},
-    {"name":"post_edited","value":"已编辑"},
-    {"name":"post_metric_bookmarks","value":"收藏"},
-    {"name":"post_metric_quotes","value":"引用"},
-    {"name":"settings_reply_quality","value":"折叠低质量评论"},
-    {"name":"settings_reply_quality_desc","value":"折叠重复推广和批量引流。仅本机判断，可能误判，可展开查看原因。"},
-    {"name":"reply_quality_folded","value":"疑似低质量评论"},
-    {"name":"reply_quality_reasons","value":"查看原因"},
-    {"name":"reply_quality_allow","value":"始终显示此作者"},
-    {"name":"reply_quality_whitelist","value":"评论白名单"},
-    {"name":"reply_quality_whitelist_desc","value":"始终显示你自己、帖子作者、已关注及白名单作者。白名单仅对当前账号生效。"},
-    {"name":"reply_quality_empty","value":"还没有白名单作者"},
-    {"name":"reply_quality_reason_duplicate","value":"多位作者重复发布相同推广模板"},
-    {"name":"reply_quality_reason_author_repeat","value":"同一作者反复发布相同内容"},
-    {"name":"reply_quality_reason_links","value":"包含多条外部链接"},
-    {"name":"reply_quality_reason_promotion","value":"包含推广或利益诱导内容"},
-    {"name":"reply_quality_reason_contact","value":"包含引流联系方式"},
+    {
+      "name": "settings_filter_languages",
+      "value": "屏蔽帖子语言"
+    },
+    {
+      "name": "settings_filter_languages_desc",
+      "value": "多选要屏蔽的语言；未识别语言及纯媒体帖子仍会显示。"
+    },
+    {
+      "name": "appearance_preview_title",
+      "value": "效果预览"
+    },
+    {
+      "name": "appearance_preview_hint",
+      "value": "修改设置后立即更新。弹窗材质示例可点按展开。"
+    },
+    {
+      "name": "post_edited",
+      "value": "已编辑"
+    },
+    {
+      "name": "post_metric_bookmarks",
+      "value": "收藏"
+    },
+    {
+      "name": "post_metric_quotes",
+      "value": "引用"
+    },
+    {
+      "name": "settings_reply_quality",
+      "value": "折叠低质量评论"
+    },
+    {
+      "name": "settings_reply_quality_desc",
+      "value": "折叠重复推广和批量引流。仅本机判断，可能误判，可展开查看原因。"
+    },
+    {
+      "name": "reply_quality_folded",
+      "value": "疑似低质量评论"
+    },
+    {
+      "name": "reply_quality_reasons",
+      "value": "查看原因"
+    },
+    {
+      "name": "reply_quality_allow",
+      "value": "始终显示此作者"
+    },
+    {
+      "name": "reply_quality_whitelist",
+      "value": "评论白名单"
+    },
+    {
+      "name": "reply_quality_whitelist_desc",
+      "value": "始终显示你自己、帖子作者、已关注及白名单作者。白名单仅对当前账号生效。"
+    },
+    {
+      "name": "reply_quality_empty",
+      "value": "还没有白名单作者"
+    },
+    {
+      "name": "reply_quality_reason_duplicate",
+      "value": "多位作者重复发布相同推广模板"
+    },
+    {
+      "name": "reply_quality_reason_author_repeat",
+      "value": "同一作者反复发布相同内容"
+    },
+    {
+      "name": "reply_quality_reason_links",
+      "value": "包含多条外部链接"
+    },
+    {
+      "name": "reply_quality_reason_promotion",
+      "value": "包含推广或利益诱导内容"
+    },
+    {
+      "name": "reply_quality_reason_contact",
+      "value": "包含引流联系方式"
+    },
     {
       "name": "settings_floating_compose_material_tint",
       "value": "悬浮发帖按钮材质颜色"
@@ -11053,64 +12372,528 @@
       "name": "chat_decoration_sample_text",
       "value": "今天也要开心呀。"
     },
-    {"name": "sign_out_confirm_title", "value": "确认退出登录？"},
-    {"name": "sign_out_confirm_message", "value": "退出当前账号后，需要重新登录才能继续使用该账号。"},
-    {"name": "settings_for_you_only_sensitive", "value": "推荐只显示敏感内容"},
-    {"name": "settings_for_you_only_sensitive_desc", "value": "仅筛选“为你推荐”中 X 标记为敏感的帖子，含引用内容；不影响正在关注和列表，也不会自动揭开敏感媒体。"},
-    {"name": "settings_grip_floating", "value": "悬浮操作按钮"},
-    {"name": "settings_grip_video", "value": "视频操作栏"},
-    {"name": "settings_grip_reply", "value": "帖子回复胶囊"},
-    {"name": "settings_grip_component_desc", "value": "根据握持手自动调整此组件的位置；关闭后使用偏好手。"},
-    {"name": "settings_grip_hdstabs", "value": "HdsTabs 底部标签栏"},
-    {"name": "settings_grip_hdstabs_desc", "value": "使用系统原生左右跟手；关闭后标签栏不随握持手移动。"},
-    {"name":"gif_action_save_video","value":"保存为高清视频（MP4）"},
-    {"name":"storage_save_remembered_note","value":"开启后，选择一次下载目录，后续文件自动保存到该目录；关闭后保存到相册。"},
-    {"name":"storage_save_to_remembered","value":"保存到下载目录"},
-    {"name": "storage_permission_reason", "value": "保留您选择的文件和文件夹的访问权限。"},
-    {"name": "timeline_sources_lists", "value": "列表"},
-    {"name": "timeline_sources_communities", "value": "社群"},
-    {"name": "timeline_edit", "value": "编辑"},
-    {"name": "timeline_done", "value": "完成"},
-    {"name": "timeline_move_up", "value": "上移"},
-    {"name": "timeline_move_down", "value": "下移"},
-    {"name": "timeline_remove_source", "value": "移除 %s"},
-    {"name": "timeline_add_to_home", "value": "添加到首页时间线"},
-    {"name": "timeline_remove_from_home", "value": "从首页时间线移除"},
-    {"name": "timeline_sources_failed", "value": "部分列表或社群未能加载，轻点重试"},
-    {"name": "timeline_sources_pinned_empty", "value": "暂无置顶时间线，可在下方添加列表、社群或话题。"},
-    {"name":"video_controls_mirror","value":"切换左右布局"},
-    {"name":"video_controls_speed","value":"倍速"},
-    {"name":"video_controls_aspect","value":"比例"},
-    {"name":"video_controls_background","value":"后台"},
-    {"name":"video_controls_quality_hd","value":"HD"},
-    {"name":"video_controls_quality_sd","value":"SD"},
-    {"name":"video_controls_quality_ld","value":"LD"},
-    {"name":"video_controls_more","value":"更多"},
-    {"name":"video_controls_download","value":"下载"},
-    {"name":"settings_navigation_style","value":"底部导航样式"},
-    {"name":"settings_hds_bottom_bar","value":"HdsTabs 悬浮导航"},
-    {"name":"settings_split_bottom_bar","value":"分离式胶囊导航"},
-    {"name":"settings_split_bottom_bar_desc","value":"左侧胶囊用于切换页面，右侧独立按钮承接发布、新建私信、刷新或回到顶部。两侧使用相同的 HDS 材质；低版本系统自动使用兼容导航。"},
-    {"name":"split_navigation_action_top","value":"回到顶部"},
-    {"name":"split_navigation_action_refresh","value":"刷新首页"},
-    {"name":"split_navigation_action_compose","value":"发布帖子"},
-    {"name": "settings_reply_capsule_split", "value": "分离式回复胶囊"},
-    {"name": "settings_reply_capsule_split_desc", "value": "收起时将回复入口与帖子操作分成两个胶囊"},
-    {"name": "reply_capsule_write_reply", "value": "写回复"},
-    {"name":"settings_native_bottom_bar","value":"7.0 材质胶囊导航"},
-    {"name":"settings_native_bottom_bar_desc","value":"使用与回复胶囊相同的 HarmonyOS 7.0 沉浸材质，支持触摸光、液态指示器和智感握姿换边；不支持时自动使用 HDS 胶囊导航。"},
-    {"name":"settings_native_navigation_material","value":"导航胶囊材质厚度"},
-    {"name":"settings_for_you_only_sensitive_age_title","value":"确认年龄"},
-    {"name":"settings_for_you_only_sensitive_age_message","value":"“推荐只显示敏感内容”仅适用于已满 18 周岁的用户。你是否已满 18 周岁？"},
-    {"name":"settings_for_you_only_sensitive_age_under","value":"未满 18 岁"},
-    {"name":"settings_for_you_only_sensitive_age_adult","value":"已满 18 岁"},
-    {"name":"settings_theme_icon_blue","value":"图标蓝"},
-    {"name":"settings_theme_icon_red","value":"图标红"},
-    {"name":"settings_theme_icon_orange","value":"图标橙"},
-    {"name":"settings_theme_icon_yellow","value":"图标黄"},
-    {"name":"settings_theme_icon_green","value":"图标绿"},
-    {"name":"settings_theme_icon_pink","value":"图标粉"},
-    {"name":"settings_theme_icon_cyan","value":"图标青"},
-    {"name":"settings_theme_icon_navy","value":"图标靛蓝"}
+    {
+      "name": "sign_out_confirm_title",
+      "value": "确认退出登录？"
+    },
+    {
+      "name": "sign_out_confirm_message",
+      "value": "退出当前账号后，需要重新登录才能继续使用该账号。"
+    },
+    {
+      "name": "settings_for_you_only_sensitive",
+      "value": "推荐只显示敏感内容"
+    },
+    {
+      "name": "settings_for_you_only_sensitive_desc",
+      "value": "仅筛选“为你推荐”中 X 标记为敏感的帖子，含引用内容；不影响正在关注和列表，也不会自动揭开敏感媒体。"
+    },
+    {
+      "name": "settings_grip_floating",
+      "value": "悬浮操作按钮"
+    },
+    {
+      "name": "settings_grip_video",
+      "value": "视频操作栏"
+    },
+    {
+      "name": "settings_grip_reply",
+      "value": "帖子回复胶囊"
+    },
+    {
+      "name": "settings_grip_component_desc",
+      "value": "根据握持手自动调整此组件的位置；关闭后使用偏好手。"
+    },
+    {
+      "name": "settings_grip_hdstabs",
+      "value": "HdsTabs 底部标签栏"
+    },
+    {
+      "name": "settings_grip_hdstabs_desc",
+      "value": "使用系统原生左右跟手；关闭后标签栏不随握持手移动。"
+    },
+    {
+      "name": "gif_action_save_video",
+      "value": "保存为高清视频（MP4）"
+    },
+    {
+      "name": "storage_save_remembered_note",
+      "value": "开启后，选择一次下载目录，后续文件自动保存到该目录；关闭后保存到相册。"
+    },
+    {
+      "name": "storage_save_to_remembered",
+      "value": "保存到下载目录"
+    },
+    {
+      "name": "storage_permission_reason",
+      "value": "保留您选择的文件和文件夹的访问权限。"
+    },
+    {
+      "name": "timeline_sources_lists",
+      "value": "列表"
+    },
+    {
+      "name": "timeline_sources_communities",
+      "value": "社群"
+    },
+    {
+      "name": "timeline_edit",
+      "value": "编辑"
+    },
+    {
+      "name": "timeline_done",
+      "value": "完成"
+    },
+    {
+      "name": "timeline_move_up",
+      "value": "上移"
+    },
+    {
+      "name": "timeline_move_down",
+      "value": "下移"
+    },
+    {
+      "name": "timeline_remove_source",
+      "value": "移除 %s"
+    },
+    {
+      "name": "timeline_add_to_home",
+      "value": "添加到首页时间线"
+    },
+    {
+      "name": "timeline_remove_from_home",
+      "value": "从首页时间线移除"
+    },
+    {
+      "name": "timeline_sources_failed",
+      "value": "部分列表或社群未能加载，轻点重试"
+    },
+    {
+      "name": "timeline_sources_pinned_empty",
+      "value": "暂无置顶时间线，可在下方添加列表、社群或话题。"
+    },
+    {
+      "name": "video_controls_mirror",
+      "value": "切换左右布局"
+    },
+    {
+      "name": "video_controls_speed",
+      "value": "倍速"
+    },
+    {
+      "name": "video_controls_aspect",
+      "value": "比例"
+    },
+    {
+      "name": "video_controls_background",
+      "value": "后台"
+    },
+    {
+      "name": "video_controls_quality_hd",
+      "value": "HD"
+    },
+    {
+      "name": "video_controls_quality_sd",
+      "value": "SD"
+    },
+    {
+      "name": "video_controls_quality_ld",
+      "value": "LD"
+    },
+    {
+      "name": "video_controls_more",
+      "value": "更多"
+    },
+    {
+      "name": "video_controls_download",
+      "value": "下载"
+    },
+    {
+      "name": "settings_navigation_style",
+      "value": "底部导航样式"
+    },
+    {
+      "name": "settings_hds_bottom_bar",
+      "value": "HdsTabs 悬浮导航"
+    },
+    {
+      "name": "settings_split_bottom_bar",
+      "value": "分离式胶囊导航"
+    },
+    {
+      "name": "settings_split_bottom_bar_desc",
+      "value": "左侧胶囊用于切换页面，右侧独立按钮承接发布、新建私信、刷新或回到顶部。两侧使用相同的 HDS 材质；低版本系统自动使用兼容导航。"
+    },
+    {
+      "name": "settings_me_floating_action",
+      "value": "“我”页快捷胶囊"
+    },
+    {
+      "name": "settings_me_floating_action_desc",
+      "value": "选择点击“我”页导航旁独立胶囊时直接打开的功能。"
+    },
+    {
+      "name": "split_navigation_action_top",
+      "value": "回到顶部"
+    },
+    {
+      "name": "split_navigation_action_refresh",
+      "value": "刷新首页"
+    },
+    {
+      "name": "split_navigation_action_compose",
+      "value": "发布帖子"
+    },
+    {
+      "name": "settings_reply_capsule_split",
+      "value": "分离式回复胶囊"
+    },
+    {
+      "name": "settings_reply_capsule_split_desc",
+      "value": "收起时将回复入口与帖子操作分成两个胶囊"
+    },
+    {
+      "name": "reply_capsule_write_reply",
+      "value": "写回复"
+    },
+    {
+      "name": "settings_native_bottom_bar",
+      "value": "7.0 材质胶囊导航"
+    },
+    {
+      "name": "settings_native_bottom_bar_desc",
+      "value": "使用与回复胶囊相同的 HarmonyOS 7.0 沉浸材质，支持触摸光、液态指示器和智感握姿换边；不支持时自动使用 HDS 胶囊导航。"
+    },
+    {
+      "name": "settings_native_navigation_material",
+      "value": "导航胶囊材质厚度"
+    },
+    {
+      "name": "settings_for_you_only_sensitive_age_title",
+      "value": "确认年龄"
+    },
+    {
+      "name": "settings_for_you_only_sensitive_age_message",
+      "value": "“推荐只显示敏感内容”仅适用于已满 18 周岁的用户。你是否已满 18 周岁？"
+    },
+    {
+      "name": "settings_for_you_only_sensitive_age_under",
+      "value": "未满 18 岁"
+    },
+    {
+      "name": "settings_for_you_only_sensitive_age_adult",
+      "value": "已满 18 岁"
+    },
+    {
+      "name": "settings_theme_icon_blue",
+      "value": "图标蓝"
+    },
+    {
+      "name": "settings_theme_icon_red",
+      "value": "图标红"
+    },
+    {
+      "name": "settings_theme_icon_orange",
+      "value": "图标橙"
+    },
+    {
+      "name": "settings_theme_icon_yellow",
+      "value": "图标黄"
+    },
+    {
+      "name": "settings_theme_icon_green",
+      "value": "图标绿"
+    },
+    {
+      "name": "settings_theme_icon_pink",
+      "value": "图标粉"
+    },
+    {
+      "name": "settings_theme_icon_cyan",
+      "value": "图标青"
+    },
+    {
+      "name": "settings_theme_icon_navy",
+      "value": "图标靛蓝"
+    },
+    {
+      "name": "settings_bottom_tab_order",
+      "value": "底部 Tab 顺序"
+    },
+    {
+      "name": "settings_home_tab_order",
+      "value": "首页顶部 Tab 顺序"
+    },
+    {
+      "name": "settings_tab_order_desc",
+      "value": "使用上下按钮调整顺序，立即生效。新添加的页签会自动追加。"
+    },
+    {
+      "name": "settings_tab_move_up",
+      "value": "向前移动"
+    },
+    {
+      "name": "settings_tab_move_down",
+      "value": "向后移动"
+    },
+    {
+      "name": "settings_tab_order_reset",
+      "value": "恢复默认"
+    },
+    {
+      "name": "settings_post_actions",
+      "value": "帖子操作栏"
+    },
+    {
+      "name": "settings_post_actions_desc",
+      "value": "选择信息流和帖子详情中显示的操作项。关闭数字显示可只保留图标。"
+    },
+    {
+      "name": "settings_post_action_counts",
+      "value": "显示互动数字"
+    },
+    {
+      "name": "video_rotate",
+      "value": "横屏全屏播放"
+    },
+    {
+      "name": "video_download_notice_downloading",
+      "value": "正在下载视频"
+    },
+    {
+      "name": "video_download_notice_saving",
+      "value": "正在保存视频"
+    },
+    {
+      "name": "video_download_notice_completed",
+      "value": "视频下载完成"
+    },
+    {
+      "name": "settings_home_single_tap_top",
+      "value": "单击首页回到顶部"
+    },
+    {
+      "name": "settings_home_single_tap_top_desc",
+      "value": "开启后，单击底部“首页”标签即可回到当前时间线顶部；双击刷新保持原有设置。"
+    },
+    {
+      "name": "background_photo_delete",
+      "value": "删除背景"
+    },
+    {
+      "name": "background_photo_delete_confirm",
+      "value": "删除这张图片？页面和聊天中使用这张图片的背景也会移除这张图片。此操作无法撤销。"
+    },
+    {
+      "name": "background_photo_deleted",
+      "value": "背景图片已删除"
+    },
+    {
+      "name": "background_photo_delete_failed",
+      "value": "删除失败，请重试"
+    },
+    {
+      "name": "search_refill_query",
+      "value": "填入搜索框"
+    },
+    {
+      "name": "search_history_delete_title",
+      "value": "删除这条记录？"
+    },
+    {
+      "name": "global_trends_title",
+      "value": "全球趋势"
+    },
+    {
+      "name": "global_trends_description",
+      "value": "最受欢迎的帖子"
+    },
+    {
+      "name": "global_trends_explore",
+      "value": "探索"
+    },
+    {
+      "name": "global_trends_today",
+      "value": "今日热门"
+    },
+    {
+      "name": "global_trends_worldwide",
+      "value": "全球"
+    },
+    {
+      "name": "global_trends_countries",
+      "value": "国家"
+    },
+    {
+      "name": "global_trends_reset",
+      "value": "显示全部热门帖子"
+    },
+    {
+      "name": "post_video_publish",
+      "value": "发布视频"
+    },
+    {
+      "name": "post_video_copy_link",
+      "value": "复制视频链接"
+    },
+    {
+      "name": "post_video_save",
+      "value": "保存视频"
+    },
+    {
+      "name": "post_video_link_copied",
+      "value": "已复制视频链接"
+    },
+    {
+      "name": "post_video_link_copy_failed",
+      "value": "无法复制视频链接"
+    },
+    {
+      "name": "offline_videos_title",
+      "value": "离线视频"
+    },
+    {
+      "name": "offline_videos_local",
+      "value": "仅保存在此设备"
+    },
+    {
+      "name": "offline_videos_empty",
+      "value": "还没有离线视频"
+    },
+    {
+      "name": "offline_videos_search",
+      "value": "搜索离线视频或作者"
+    },
+    {
+      "name": "offline_videos_no_results",
+      "value": "没有匹配的离线视频"
+    },
+    {
+      "name": "offline_videos_clear",
+      "value": "清空离线视频"
+    },
+    {
+      "name": "offline_videos_clear_confirm",
+      "value": "删除所有已下载的视频？"
+    },
+    {
+      "name": "offline_videos_delete",
+      "value": "删除离线视频"
+    },
+    {
+      "name": "offline_videos_added",
+      "value": "已添加到离线视频"
+    },
+    {
+      "name": "offline_videos_already",
+      "value": "已在离线视频中"
+    },
+    {
+      "name": "offline_videos_play",
+      "value": "播放离线视频"
+    },
+    {
+      "name": "offline_videos_missing",
+      "value": "离线文件已丢失，请重新添加"
+    },
+    {
+      "name": "offline_video_title",
+      "value": "离线视频"
+    },
+    {
+      "name": "post_translated_from",
+      "value": "翻译自%s"
+    },
+    {
+      "name": "post_translated",
+      "value": "已翻译"
+    },
+    {
+      "name": "post_show_original",
+      "value": "显示原文"
+    },
+    {
+      "name": "post_show_translation",
+      "value": "显示译文"
+    },
+    {
+      "name": "settings_cover_single_column",
+      "value": "折叠外屏使用单列"
+    },
+    {
+      "name": "settings_cover_single_column_desc",
+      "value": "折叠后首页使用单列，展开后保留原来的帖子列数。"
+    },
+    {
+      "name": "huawei_cloud_overwrite",
+      "value": "本地设置覆盖云端"
+    },
+    {
+      "name": "huawei_cloud_overwrite_message",
+      "value": "将本机当前设置上传并覆盖已选择分组的云端设置，其他设备下次同步时会使用这些设置。"
+    },
+    {
+      "name": "huawei_cloud_clear",
+      "value": "清空云端设置"
+    },
+    {
+      "name": "huawei_cloud_clear_message",
+      "value": "删除当前华为账号下本应用的全部云端设置，并关闭云同步。本机设置会保留；重新开启同步可上传本机设置。"
+    },
+    {
+      "name": "huawei_cloud_cleared",
+      "value": "云端设置已清空，云同步已关闭。"
+    },
+    {
+      "name": "huawei_cloud_manage_description",
+      "value": "本地覆盖仅作用于已选择的分组；清空云端会删除全部分组，保留本机设置。"
+    },
+    {
+      "name": "post_translation_choose_languages",
+      "value": "选择语言"
+    },
+    {
+      "name": "post_translation_auto_language",
+      "value": "自动翻译%s"
+    },
+    {
+      "name": "post_translation_languages_description",
+      "value": "勾选需要自动翻译的帖子语言，未勾选的语言仍可手动翻译。"
+    },
+    {"name": "post_link_copy", "value": "复制链接"},
+    {"name": "post_link_open", "value": "打开链接"},
+    {"name": "settings_video_download_button", "value": "视频下载按钮"},
+    {"name": "settings_video_download_button_desc", "value": "显示视频右上角的下载按钮"},
+    {"name": "video_source_from", "value": "来自"},
+    {"name": "video_source_original", "value": "原视频"},
+    {"name": "video_source_open_failed", "value": "暂时无法打开原视频，请重试"},
+    {"name":"dns_title","value":"DNS over HTTPS（DoH）"},
+    {"name":"dns_enable","value":"启用 DoH 加密解析"},
+    {"name":"dns_enable_desc","value":"通过指定的 HTTPS 服务加密查询域名"},
+    {"name":"dns_scope","value":"用于应用接口、图片下载、视频分段请求和内置网页。系统播放器和外部应用可能使用各自的 DNS。代理服务器代解析目标域名时，以代理的 DNS 为准。DoH 不能替代代理或 VPN。"},
+    {"name":"dns_provider","value":"DNS 服务商"},
+    {"name":"dns_provider_ali","value":"阿里云公共 DNS"},
+    {"name":"dns_provider_cloudflare","value":"Cloudflare"},
+    {"name":"dns_provider_google","value":"Google Public DNS"},
+    {"name":"dns_provider_custom","value":"自定义"},
+    {"name":"dns_endpoint","value":"DoH 服务地址"},
+    {"name":"dns_endpoint_hint","value":"https://example.com/dns-query"},
+    {"name":"dns_endpoint_desc","value":"填写完整的 RFC 8484 HTTPS 地址，不支持用户名密码、片段或 {?dns} 等地址模板。"},
+    {"name":"dns_invalid","value":"请输入有效的 HTTPS DoH 服务地址"},
+    {"name":"dns_saved","value":"已保存，新请求生效；已打开的网页请重新加载"},
+    {"name":"dns_test","value":"测试 DNS 解析"},
+    {"name":"dns_test_desc","value":"使用当前地址直接解析 x.com，不会保存或开启设置。测试绕过应用内代理，仍受系统 VPN 影响。"},
+    {"name":"dns_test_success","value":"x.com 解析成功"},
+    {"name":"dns_test_failed","value":"解析失败，请检查服务地址、网络或 DNS 服务"},
+    {"name":"dns_failure_note","value":"保存后，DoH 解析失败会停止相应请求，不会自动回退到系统 DNS。关闭 DoH 并保存可恢复系统解析。所有更改均在保存后生效。"},
+    {"name":"help_support_afdian","value":"爱发电"},
+    {"name":"help_support_qr_summary","value":"扫码支持开发"},
+    {"name":"help_support_afdian_summary","value":"永久免推荐 · ¥16.6"},
+    {"name":"help_support_afdian_desc","value":"在爱发电购买永久免推荐卡密，购买后返回应用兑换即可。"},
+    {"name":"help_support_afdian_buy","value":"前往爱发电购买"},
+    {"name":"help_support_expand","value":"点击展开"},
+    {"name":"help_support_collapse","value":"点击收起"},
+    {"name":"help_support_scan_code","value":"使用对应的支付应用扫描收款码。"},
+    {"name":"help_support_recommended","value":"推荐"}
   ]
 }

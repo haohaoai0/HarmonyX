@@ -1,6 +1,70 @@
 {
   "string": [
     {
+      "name": "startup_animation_none",
+      "value": "直接開く"
+    },
+    {
+      "name": "startup_animation_none_desc",
+      "value": "アイコンや起動アニメーションを表示せずホームを開きます。"
+    },
+    {
+      "name": "startup_animation_speed",
+      "value": "再生速度"
+    },
+    {
+      "name": "startup_animation_speed_desc",
+      "value": "次回起動時のアニメーション起動に適用します。"
+    },
+    {
+      "name": "startup_animation_speed_value",
+      "value": "%s×"
+    },
+    {
+      "name": "startup_animation_title",
+      "value": "起動アニメーション"
+    },
+    {
+      "name": "startup_animation_desc",
+      "value": "次回のコールドスタートから適用されます。再生中にホームを更新します。「視差効果を減らす」が有効な場合は静止アイコンを表示します。"
+    },
+    {
+      "name": "startup_animation_icon",
+      "value": "アイコンを保持"
+    },
+    {
+      "name": "startup_animation_icon_desc",
+      "value": "ホームの準備ができるまで現在のアイコンを表示し、その後フェードアウトします。"
+    },
+    {
+      "name": "startup_animation_ios",
+      "value": "iOS スタイル"
+    },
+    {
+      "name": "startup_animation_ios_desc",
+      "value": "アイコンが軽く弾んでから拡大し、更新されたホームを表示します。"
+    },
+    {
+      "name": "startup_animation_video",
+      "value": "アニメーション起動"
+    },
+    {
+      "name": "startup_animation_video_desc",
+      "value": "現在のアイコンに合わせた専用アニメーションの後にホームを表示します。"
+    },
+    {
+      "name": "splash_ad_label",
+      "value": "広告"
+    },
+    {
+      "name": "splash_ad_skip",
+      "value": "スキップ"
+    },
+    {
+      "name": "splash_ad_signature",
+      "value": "好きな世界と出会う"
+    },
+    {
       "name": "supporter_config_error",
       "value": "クラウドのアカウント連携を確認できません。開発者にお問い合わせください。"
     },
@@ -8,63 +72,234 @@
       "name": "supporter_restore_hint",
       "value": "元のアカウントに切り替えると保存済みの状態が復元されます。機種変更、再インストール、別バージョンへの切り替え後は、同じ X アカウントにログインし、元のコードを入力して復元してください。"
     },
-    {"name": "eye_reading_title", "value": "視線でページ送り"},
-    {"name": "eye_reading_intro", "value": "上下を見つめて、スレッド、オフラインのコピー、記事をスクロールします。"},
-    {"name": "eye_reading_enable", "value": "視線操作を有効にする"},
-    {"name": "eye_reading_supported", "value": "顔の追跡に対応しています。閲覧ページで開始を押すとカメラが起動します。"},
-    {"name": "eye_reading_unsupported", "value": "この端末は必要な顔の追跡に対応していません。タッチまたはキーボードをご利用ください。"},
-    {"name": "eye_reading_dwell", "value": "視線を保持する時間"},
-    {"name": "eye_reading_threshold", "value": "方向の判定しきい値"},
-    {"name": "eye_reading_threshold_desc", "value": "値を上げると、より大きな目の動きが必要になり、誤操作を減らせます。"},
-    {"name": "eye_reading_help", "value": "頭を動かさず画面中央を見て調整します。上下を見つめると約半画面スクロールします。操作後は中央に視線を戻してください。タッチ、ホイール、キーボードを優先します。"},
-    {"name": "eye_reading_privacy", "value": "開始後のみ前面カメラを使います。方向データは端末内で処理し、画像を保存・送信しません。ページを離れるかバックグラウンドに移ると停止します。再開は手動です。"},
-    {"name": "eye_reading_save_failed", "value": "設定を保存できませんでした。再試行してください。"},
-    {"name": "eye_reading_start", "value": "視線操作を開始"},
-    {"name": "eye_reading_stop", "value": "視線操作を停止"},
-    {"name": "eye_reading_recalibrate", "value": "再調整"},
-    {"name": "eye_reading_starting", "value": "前面カメラを起動中…"},
-    {"name": "eye_reading_permission", "value": "カメラの権限が必要です。システムのアプリ権限で許可してから再試行してください。"},
-    {"name": "eye_reading_failed", "value": "カメラを使用できません。他のカメラアプリを閉じて再試行してください。"},
-    {"name": "eye_reading_calibrating", "value": "画面中央を見て、頭と視線を動かさずに調整してください。"},
-    {"name": "eye_reading_center", "value": "次の操作の前に視線を中央に戻してください。"},
-    {"name": "eye_reading_ready", "value": "準備完了：上または下を見つめてください。"},
-    {"name": "eye_reading_up", "value": "上を見続けると上にスクロールします。"},
-    {"name": "eye_reading_down", "value": "下を見続けると下にスクロールします。"},
-    {"name": "eye_reading_lost", "value": "明るい場所で目を開けて画面に顔を向けてください。反応しない場合は再調整してください。"},
-    {"name": "eye_reading_paused", "value": "手動操作を優先し、視線操作を一時停止しています。"},
-    {"name": "eye_reading_camera_reason", "value": "視線操作を開始した際に、前面カメラを使って目の方向を端末内で認識します。"},
-    {"name": "compact_video_layout", "value": "カバー画面の動画レイアウト"},
-    {"name": "settings_compact_video_layout_desc", "value": "Pura X などの小型正方形画面で、操作を横または下部に配置します。開くと通常の動画レイアウトに戻ります。"},
-    {"name": "compact_video_layout_rail", "value": "サイド操作"},
-    {"name": "compact_video_layout_bottom", "value": "下部横並び"},
-    {"name":"settings_component_hdr_enabled","value":"Component HDR effect"},
-    {"name":"settings_component_hdr_enabled_desc","value":"Off by default. Turn it on to use 1.25x brightening, then adjust the multiplier below."},
-    {"name":"settings_confirm_app_exit","value":"終了前に確認"},
-    {"name":"settings_confirm_app_exit_desc","value":"メイン画面で戻る操作をしたときに確認します。オフにすると直接終了します。"},
-    {"name":"app_exit_title","value":"アプリを終了"},
-    {"name":"app_exit_message","value":"アプリを終了しますか？"},
-    {"name":"app_exit_action","value":"終了"},
-    {"name":"settings_component_hdr_max","value":"現在の画面の最大輝度倍率"},
-    {"name":"settings_component_hdr_max_unavailable","value":"現在取得できません"},
-    {"name":"settings_component_hdr_max_desc","value":"この画面についてシステムが報告する値です。明るさや画面の変更時に自動更新されます。"},
-    {"name":"settings_component_hdr_ratio","value":"UI の HDR 輝度倍率"},
-    {"name":"settings_component_hdr_desc","value":"ボタン、アイコン、選択項目のハイライトを調整します。既定値は 1.25、1 にすると輝度の強調を無効にします。実際の明るさはデバイスによって異なります。変更は自動で保存・適用されます。"},
-    {"name":"settings_component_hdr_invalid","value":"1 以上の有効な数値を入力してください。"},
-    {"name":"settings_component_hdr_reset","value":"既定の 1.25 に戻す"},
-    {"name":"settings_video_hdr_enhancement","value":"HDR動画補正"},
-    {"name":"settings_video_hdr_enhancement_desc","value":"通常の動画の明暗と色彩を補正します。非対応のデバイスでは自動的に通常再生を使用します。"},
-    {"name": "settings_menu_post", "value": "ポストメニューの操作"},
-    {"name": "settings_menu_photo", "value": "画像メニューの操作"},
-    {"name": "settings_menu_video", "value": "動画メニューの操作"},
-    {"name": "settings_menu_item_desc", "value": "関連メニューに表示する操作を選びます。対応するコンテンツでのみ表示され、いつでも初期設定に戻せます。"},
-    {"name": "settings_menu_show_action", "value": "関連メニューに表示"},
-    {"name": "settings_menu_empty", "value": "メニューの操作は非表示です。設定の対応カテゴリで復元できます。"},
-    {"name": "settings_viewer_video_mute", "value": "動画ビューアを標準でミュート"},
-    {"name": "settings_viewer_video_mute_desc", "value": "開いた動画の音声をホームのプレビューとは別に設定します。"},
-    {"name": "settings_video_auto_advance_desc", "value": "再生終了後、自動で次の動画に切り替えます。"},
-    {"name": "settings_video_captions_desc", "value": "動画ビューアでシステムの AI 字幕を標準で有効にします。"},
-    {"name": "settings_video_feed_layout_desc", "value": "スマートフォン縦画面の動画レイアウトを選びます。大画面や横画面では対応するレイアウトを使用します。"},
-    {"name": "settings_chat_desc", "value": "Message requests, call permissions, PIN and chat auto-download"},
+    {
+      "name": "eye_reading_title",
+      "value": "視線でページ送り"
+    },
+    {
+      "name": "eye_reading_intro",
+      "value": "上下を見つめて、スレッド、オフラインのコピー、記事をスクロールします。"
+    },
+    {
+      "name": "eye_reading_enable",
+      "value": "視線操作を有効にする"
+    },
+    {
+      "name": "eye_reading_supported",
+      "value": "顔の追跡に対応しています。閲覧ページで開始を押すとカメラが起動します。"
+    },
+    {
+      "name": "eye_reading_unsupported",
+      "value": "この端末は必要な顔の追跡に対応していません。タッチまたはキーボードをご利用ください。"
+    },
+    {
+      "name": "eye_reading_dwell",
+      "value": "視線を保持する時間"
+    },
+    {
+      "name": "eye_reading_threshold",
+      "value": "方向の判定しきい値"
+    },
+    {
+      "name": "eye_reading_threshold_desc",
+      "value": "値を上げると、より大きな目の動きが必要になり、誤操作を減らせます。"
+    },
+    {
+      "name": "eye_reading_help",
+      "value": "頭を動かさず画面中央を見て調整します。上下を見つめると約半画面スクロールします。操作後は中央に視線を戻してください。タッチ、ホイール、キーボードを優先します。"
+    },
+    {
+      "name": "eye_reading_privacy",
+      "value": "開始後のみ前面カメラを使います。方向データは端末内で処理し、画像を保存・送信しません。ページを離れるかバックグラウンドに移ると停止します。再開は手動です。"
+    },
+    {
+      "name": "eye_reading_save_failed",
+      "value": "設定を保存できませんでした。再試行してください。"
+    },
+    {
+      "name": "eye_reading_start",
+      "value": "視線操作を開始"
+    },
+    {
+      "name": "eye_reading_stop",
+      "value": "視線操作を停止"
+    },
+    {
+      "name": "eye_reading_recalibrate",
+      "value": "再調整"
+    },
+    {
+      "name": "eye_reading_starting",
+      "value": "前面カメラを起動中…"
+    },
+    {
+      "name": "eye_reading_permission",
+      "value": "カメラの権限が必要です。システムのアプリ権限で許可してから再試行してください。"
+    },
+    {
+      "name": "eye_reading_failed",
+      "value": "カメラを使用できません。他のカメラアプリを閉じて再試行してください。"
+    },
+    {
+      "name": "eye_reading_calibrating",
+      "value": "画面中央を見て、頭と視線を動かさずに調整してください。"
+    },
+    {
+      "name": "eye_reading_center",
+      "value": "次の操作の前に視線を中央に戻してください。"
+    },
+    {
+      "name": "eye_reading_ready",
+      "value": "準備完了：上または下を見つめてください。"
+    },
+    {
+      "name": "eye_reading_up",
+      "value": "上を見続けると上にスクロールします。"
+    },
+    {
+      "name": "eye_reading_down",
+      "value": "下を見続けると下にスクロールします。"
+    },
+    {
+      "name": "eye_reading_lost",
+      "value": "明るい場所で目を開けて画面に顔を向けてください。反応しない場合は再調整してください。"
+    },
+    {
+      "name": "eye_reading_paused",
+      "value": "手動操作を優先し、視線操作を一時停止しています。"
+    },
+    {
+      "name": "eye_reading_camera_reason",
+      "value": "視線操作を開始した際に、前面カメラを使って目の方向を端末内で認識します。"
+    },
+    {
+      "name": "compact_video_layout",
+      "value": "カバー画面の動画レイアウト"
+    },
+    {
+      "name": "settings_compact_video_layout_desc",
+      "value": "Pura X などの小型正方形画面で、操作を横または下部に配置します。開くと通常の動画レイアウトに戻ります。"
+    },
+    {
+      "name": "compact_video_layout_rail",
+      "value": "サイド操作"
+    },
+    {
+      "name": "compact_video_layout_bottom",
+      "value": "下部横並び"
+    },
+    {
+      "name": "settings_component_hdr_enabled",
+      "value": "Component HDR effect"
+    },
+    {
+      "name": "settings_component_hdr_enabled_desc",
+      "value": "Off by default. Turn it on to use 1.25x brightening, then adjust the multiplier below."
+    },
+    {
+      "name": "settings_confirm_app_exit",
+      "value": "終了前に確認"
+    },
+    {
+      "name": "settings_confirm_app_exit_desc",
+      "value": "メイン画面で戻る操作をしたときに確認します。オフにすると直接終了します。"
+    },
+    {
+      "name": "app_exit_title",
+      "value": "アプリを終了"
+    },
+    {
+      "name": "app_exit_message",
+      "value": "アプリを終了しますか？"
+    },
+    {
+      "name": "app_exit_action",
+      "value": "終了"
+    },
+    {
+      "name": "settings_component_hdr_max",
+      "value": "現在の画面の最大輝度倍率"
+    },
+    {
+      "name": "settings_component_hdr_max_unavailable",
+      "value": "現在取得できません"
+    },
+    {
+      "name": "settings_component_hdr_max_desc",
+      "value": "この画面についてシステムが報告する値です。明るさや画面の変更時に自動更新されます。"
+    },
+    {
+      "name": "settings_component_hdr_ratio",
+      "value": "UI の HDR 輝度倍率"
+    },
+    {
+      "name": "settings_component_hdr_desc",
+      "value": "ボタン、アイコン、選択項目のハイライトを調整します。既定値は 1.25、1 にすると輝度の強調を無効にします。実際の明るさはデバイスによって異なります。変更は自動で保存・適用されます。"
+    },
+    {
+      "name": "settings_component_hdr_invalid",
+      "value": "1 以上の有効な数値を入力してください。"
+    },
+    {
+      "name": "settings_component_hdr_reset",
+      "value": "既定の 1.25 に戻す"
+    },
+    {
+      "name": "settings_video_hdr_enhancement",
+      "value": "HDR動画補正"
+    },
+    {
+      "name": "settings_video_hdr_enhancement_desc",
+      "value": "通常の動画の明暗と色彩を補正します。非対応のデバイスでは自動的に通常再生を使用します。"
+    },
+    {
+      "name": "settings_menu_post",
+      "value": "ポストメニューの操作"
+    },
+    {
+      "name": "settings_menu_photo",
+      "value": "画像メニューの操作"
+    },
+    {
+      "name": "settings_menu_video",
+      "value": "動画メニューの操作"
+    },
+    {
+      "name": "settings_menu_item_desc",
+      "value": "関連メニューに表示する操作を選びます。対応するコンテンツでのみ表示され、いつでも初期設定に戻せます。"
+    },
+    {
+      "name": "settings_menu_show_action",
+      "value": "関連メニューに表示"
+    },
+    {
+      "name": "settings_menu_empty",
+      "value": "メニューの操作は非表示です。設定の対応カテゴリで復元できます。"
+    },
+    {
+      "name": "settings_viewer_video_mute",
+      "value": "動画ビューアを標準でミュート"
+    },
+    {
+      "name": "settings_viewer_video_mute_desc",
+      "value": "開いた動画の音声をホームのプレビューとは別に設定します。"
+    },
+    {
+      "name": "settings_video_auto_advance_desc",
+      "value": "再生終了後、自動で次の動画に切り替えます。"
+    },
+    {
+      "name": "settings_video_captions_desc",
+      "value": "動画ビューアでシステムの AI 字幕を標準で有効にします。"
+    },
+    {
+      "name": "settings_video_feed_layout_desc",
+      "value": "スマートフォン縦画面の動画レイアウトを選びます。大画面や横画面では対応するレイアウトを使用します。"
+    },
+    {
+      "name": "settings_chat_desc",
+      "value": "Message requests, call permissions, PIN and chat auto-download"
+    },
     {
       "name": "settings_video_double_tap_seek",
       "value": "ダブルタップで早送り・巻き戻し"
@@ -1107,7 +1342,7 @@
     },
     {
       "name": "profile_version",
-      "value": "Harmony X 3.1.0 · HarmonyOS 6.1（API 23-26）· Stageモデル"
+      "value": "Harmony X 3.5.0 · HarmonyOS 6.0.2（API 22-26）· Stageモデル"
     },
     {
       "name": "profile_following",
@@ -1836,6 +2071,10 @@
     {
       "name": "settings_timeline_columns_auto",
       "value": "自動"
+    },
+    {
+      "name": "settings_timeline_columns_auto_two",
+      "value": "自動（デスクトップ/横向き2列、外画面1列）"
     },
     {
       "name": "settings_timeline_columns_one",
@@ -4500,6 +4739,10 @@
     {
       "name": "onboarding_login_title",
       "value": "Xにログイン"
+    },
+    {
+      "name": "onboarding_login_notice",
+      "value": "Google ログインは使わず、メールアドレスを直接入力してください。通信に問題がなくても画面が真っ白な場合は、しばらくお待ちください。"
     },
     {
       "name": "onboarding_login_hint",
@@ -10477,330 +10720,1346 @@
       "name": "settings_desktop_video_feed",
       "value": "スマートフォン形式の動画フィード"
     },
-    {"name":"settings_classic_bottom_bar","value":"クラシックな下部ナビゲーション"},
-    {"name":"settings_classic_bottom_bar_desc","value":"アイコンと文字のバーを画面下部に全幅で表示します。自動非表示も利用できます。オフにするとフローティング表示に戻ります。変更はすぐに反映され、保存されます。"},
-    {"name":"settings_root_liquid_tab_indicator","value":"リキッドインジケーター"},
-    {"name":"settings_root_liquid_tab_indicator_desc","value":"フローティングナビゲーションに、ドラッグできる弾力のあるカプセルを表示します。大きさはタブラベルの設定に連動します。"},
-    {"name":"settings_root_tab_labels","value":"タブのラベルを表示"},
-    {"name":"settings_root_tab_labels_desc","value":"フローティングとクラシックの下部ナビゲーションの両方に適用されます。オフにするとアイコンと未読バッジのみ表示されます。"},
+    {
+      "name": "settings_classic_bottom_bar",
+      "value": "クラシックな下部ナビゲーション"
+    },
+    {
+      "name": "settings_classic_bottom_bar_desc",
+      "value": "アイコンと文字のバーを画面下部に全幅で表示します。自動非表示も利用できます。オフにするとフローティング表示に戻ります。変更はすぐに反映され、保存されます。"
+    },
+    {
+      "name": "settings_root_liquid_tab_indicator",
+      "value": "リキッドインジケーター"
+    },
+    {
+      "name": "settings_root_liquid_tab_indicator_desc",
+      "value": "フローティングナビゲーションに、ドラッグできる弾力のあるカプセルを表示します。大きさはタブラベルの設定に連動します。"
+    },
+    {
+      "name": "settings_root_tab_labels",
+      "value": "タブのラベルを表示"
+    },
+    {
+      "name": "settings_root_tab_labels_desc",
+      "value": "フローティングとクラシックの下部ナビゲーションの両方に適用されます。オフにするとアイコンと未読バッジのみ表示されます。"
+    },
     {
       "name": "chat_post_preview",
       "value": "共有されたポスト"
     },
-    {"name": "account_overview_signed_out", "value": "ログアウト中"},
-    {"name": "account_overview_no_bio", "value": "自己紹介はありません"},
-    {"name": "account_overview_handle", "value": "ユーザー名"},
-    {"name": "account_overview_location", "value": "所在地"},
-    {"name": "account_overview_website", "value": "ウェブサイト"},
-    {"name": "account_overview_manage", "value": "アカウントの管理と切り替え"},
-    {"name": "profile_editor_choose_banner", "value": "Change header photo"},
-    {"name": "profile_editor_choose_avatar", "value": "Change profile photo"},
-    {"name": "profile_editor_birthdate", "value": "Birth date"},
-    {"name": "profile_editor_birthdate_empty", "value": "Add birth date"},
-    {"name": "profile_editor_birthdate_manage", "value": "Edit birth date and visibility"},
-    {"name": "profile_editor_birthdate_privacy", "value": "Month and day: %s\nYear: %s"},
-    {"name": "profile_editor_account_changed", "value": "The signed-in account changed. Go back and reopen the editor."},
-    {"name": "profile_editor_unsaved_title", "value": "Discard unsaved changes?"},
-    {"name": "profile_editor_unsaved_message", "value": "Unsaved profile and photo changes will be lost when you leave."},
-    {"name": "profile_editor_keep_editing", "value": "Keep editing"},
-    {"name": "profile_editor_discard", "value": "Discard changes"},
-    {"name": "profile_editor_partial", "value": "Some changes were saved. Your remaining edits are still here. Try saving again."},
-    {"name": "profile_editor_confirm_failed", "value": "Changes were submitted, but the updated profile could not be loaded. Save again to refresh without uploading the photos again."},
-    {"name": "settings_page_transition", "value": "ページ遷移"},
-    {"name": "settings_page_transition_desc", "value": "ページを開くときと戻るときのアニメーションを選択します。すぐに反映され、設定は保存されます。"},
-    {"name": "settings_page_transition_classic", "value": "従来のアニメーション"},
-    {"name": "settings_page_transition_classic_desc", "value": "現在のシステムナビゲーションの効果を使用します。"},
-    {"name": "settings_page_transition_official", "value": "公式風"},
-    {"name": "settings_page_transition_official_desc", "value": "中央からの拡大縮小とフェードで、入場と退場を表現します。"},
-    {"name":"settings_anti_peep","value":"のぞき見防止"},
-    {"name":"settings_anti_peep_desc","value":"他の人の視線を検出すると、システムのマスクでアプリのウィンドウを覆います。"},
-    {"name":"settings_anti_peep_enable","value":"のぞき見防止を有効にする"},
-    {"name":"settings_anti_peep_setup","value":"システムの保護を設定"},
-    {"name":"settings_anti_peep_recheck","value":"再確認"},
-    {"name":"settings_anti_peep_note","value":"顔認証を設定し、システムの「プライバシーとセキュリティ > のぞき見防止」でこのアプリを許可してください。アプリはシステムの状態のみを使用し、顔画像にはアクセスしません。"},
-    {"name":"settings_anti_peep_disabled","value":"無効"},
-    {"name":"settings_anti_peep_unsupported","value":"この端末はシステムののぞき見防止に対応していません。"},
-    {"name":"settings_anti_peep_permission","value":"アプリの承認を待っています。設定後、アプリに戻るか再確認すると有効になります。"},
-    {"name":"settings_anti_peep_system_off","value":"システムののぞき見防止でこのアプリを有効にしてください。"},
-    {"name":"settings_anti_peep_face","value":"先にシステム設定で顔認証を有効にしてください。"},
-    {"name":"settings_anti_peep_ready","value":"有効。のぞき見を監視中です。"},
-    {"name":"settings_anti_peep_protected","value":"のぞき見を検出し、システムの保護マスクを起動しました。"},
-    {"name":"settings_anti_peep_error","value":"現在、保護を有効にできません。再確認してください。"},
-    {"name":"settings_anti_peep_checking","value":"保護を確認または有効化しています…"},
-    {"name":"settings_anti_peep_save_failed","value":"保存できませんでした。もう一度お試しください。"},
-    {"name":"huawei_account_title","value":"HUAWEI ID and cloud sync"},
-    {"name":"huawei_account_name","value":"HUAWEI ID"},
-    {"name":"huawei_login","value":"Sign in with HUAWEI ID"},
-    {"name":"huawei_logout","value":"Sign out"},
-    {"name":"huawei_signed_in","value":"Signed in with HUAWEI ID"},
-    {"name":"huawei_logging_in","value":"Signing in…"},
-    {"name":"huawei_signed_out_description","value":"Sign in to bring your preferences with you"},
-    {"name":"huawei_cloud_sync","value":"Cloud sync"},
-    {"name":"huawei_sync_description","value":"Sign in to enable sync for appearance, reading, playback preferences and local content rules across your devices."},
-    {"name":"huawei_local_data_note","value":"X credentials, messages, drafts and caches stay on this device. Some appearance changes take effect after restarting."},
-    {"name":"huawei_logout_title","value":"Sign out of HUAWEI ID?"},
-    {"name":"huawei_logout_description","value":"Cloud sync will pause. Local settings and existing cloud data will be kept. Your X account remains available."},
-    {"name":"huawei_sync_disabled","value":"Off. Settings are saved on this device."},
-    {"name":"huawei_sync_unavailable","value":"Cloud storage is unavailable. Check the system cloud service and this app’s sync switch."},
-    {"name":"huawei_sync_downloading","value":"Reading and merging cloud settings…"},
-    {"name":"huawei_sync_uploading","value":"Uploading settings…"},
-    {"name":"huawei_sync_success","value":"Synced"},
-    {"name":"huawei_sync_pending","value":"Saved locally, waiting to sync"},
-    {"name":"huawei_sync_failed","value":"Sync did not finish. Your local data is safe. Check system cloud settings and try again."},
-    {"name":"huawei_network_error","value":"Network unavailable. Try again when connected."},
-    {"name":"huawei_storage_full","value":"Cloud or device storage is full. Free some space and try again."},
-    {"name":"huawei_login_error","value":"Sign-in did not finish. Check account service configuration or try again later."},
-    {"name":"huawei_authorization_error","value":"Nickname and avatar authorization failed. Check account permissions and try again."},
-    {"name":"huawei_save_error","value":"Could not save settings. Try again."},
-    {"name":"huawei_select_group","value":"Select at least one group to sync."},
-    {"name":"huawei_account_changed","value":"HUAWEI ID has changed. Enabling sync will merge the selected local settings into the current account."},
-    {"name":"huawei_last_sync","value":"Last successful sync:"},
-    {"name":"huawei_syncing","value":"Syncing…"},
-    {"name":"huawei_sync_now","value":"Sync now"},
-    {"name":"huawei_group_appearance","value":"Appearance and navigation"},
-    {"name":"huawei_group_appearance_description","value":"Theme, text size, title bar, tabs and sheet material"},
-    {"name":"huawei_group_media","value":"Reading and playback"},
-    {"name":"huawei_group_media_description","value":"Image and video quality, autoplay and mute preferences"},
-    {"name":"huawei_group_filters","value":"Local content rules"},
-    {"name":"huawei_group_filters_description","value":"Keyword and user filters, and content preferences"},
-    {"name":"post_photo_save_background","value":"背景ライブラリに保存"},
-    {"name":"chat_background_saving_photo","value":"背景画像を保存中…"},
-    {"name":"chat_background_saved_photo","value":"保存しました。「ページ背景」または「チャット背景」で選択できます。"},
-    {"name":"chat_background_save_photo_failed","value":"背景画像を保存できませんでした。もう一度お試しください。"},
-    {"name":"chat_background_saved_photos","value":"ポストから保存した画像"},
-    {"name":"page_background_title","value":"ページの背景"},
-    {"name":"page_background_description","value":"Colors, photos and mixable patterns"},
-    {"name":"page_background_switch_title","value":"ページ背景を有効にする"},
-    {"name":"page_background_switch_desc","value":"オフにするとテーマの背景にすぐ戻ります。現在のスタイルは保持されます。"},
-    {"name":"page_background_base","value":"背景"},
-    {"name":"page_background_pattern","value":"パターンの重ね合わせ"},
-    {"name":"page_background_pattern_none","value":"パターンなし"},
-    {"name":"page_background_content_opacity","value":"コンテンツ面の不透明度"},
-    {"name":"page_background_reset","value":"初期設定に戻す"},
-    {"name":"page_background_color_placeholder","value":"Custom color #RRGGBB"},
-    {"name":"page_background_preview","value":"背景プレビュー"},
-    {"name":"page_background_preview_text","value":"Bring your favorite colors and patterns to every visit."},
-    {"name":"page_background_preview_hint","value":"Text and content surfaces show how readable your background will be."},
-    {"name":"page_background_note","value":"Applies to regular pages. Chats have separate backgrounds; media viewers keep their immersive backgrounds. Tap Apply to save."},
-    {"name":"page_background_layout_preset","value":"パターン全体"},
-    {"name":"page_background_layout_icons","value":"個別モチーフ"},
-    {"name":"page_background_density","value":"モチーフの密度"},
-    {"name":"page_background_set_add","value":"セット全体を選択"},
-    {"name":"page_background_set_remove","value":"セット全体の選択を解除"},
-    {"name":"page_background_mix_hint","value":"Select motifs across sets to mix them, or repeat a single motif."},
-    {"name":"page_background_selected","value":"%d motifs selected"},
-    {"name":"page_background_icons_clear","value":"モチーフをクリア"},
-    {"name":"page_background_paper","value":"紙の質感"},
-    {"name":"page_background_paper_none","value":"なし"},
-    {"name":"page_background_kraft","value":"クラフト紙"},
-    {"name":"page_background_parchment","value":"羊皮紙"},
-    {"name":"page_background_texture_strength","value":"質感の強さ"},
-    {"name":"page_background_presets_mix","value":"Select multiple full patterns to combine them."},
-    {"name":"page_background_applied","value":"ページの背景を適用しました"},
-    {"name":"page_background_apply_failed","value":"背景を保存できませんでした。もう一度お試しください。"},
-    {"name":"page_background_transparent_posts","value":"Transparent post cards"},
-    {"name":"page_background_transparent_posts_desc","value":"Hide the surface behind posts and quoted posts to reveal the page background."},
-    {"name":"page_background_transparent_inbox","value":"Transparent message list"},
-    {"name":"page_background_transparent_inbox_desc","value":"Hide conversation row surfaces while keeping text, avatars and unread indicators."},
-    {"name":"page_background_post_opacity","value":"Post surface opacity"},
-    {"name":"page_background_inbox_opacity","value":"Message list surface opacity"},
-    {"name":"page_background_scheme_import","value":"Import scheme"},
-    {"name":"page_background_scheme_share","value":"Share scheme"},
-    {"name":"page_background_scheme_title","value":"Page background scheme"},
-    {"name":"page_background_scheme_imported","value":"Scheme imported. Preview it, then tap Apply."},
-    {"name":"page_background_scheme_import_failed","value":"Unable to import. Choose a valid HarmonyX background scheme (up to 48 MB)."},
-    {"name":"page_background_scheme_share_failed","value":"Unable to share. Please try again; background photos must be under 32 MB."},
-    {"name":"page_background_set_signature_icons","value":"別のアイコン"},
-    {"name":"page_background_set_garden_defense","value":"プラント vs. ゾンビ"},
-    {"name":"page_background_motif_signature_icons_frog_face","value":"Frog face"},
-    {"name":"page_background_motif_signature_icons_frog_lily","value":"Frog on a lily pad"},
-    {"name":"page_background_motif_signature_icons_milk_frog","value":"Milk frog"},
-    {"name":"page_background_motif_signature_icons_milk_frog_wave","value":"Waving milk frog"},
-    {"name":"page_background_motif_signature_icons_bird","value":"Flying bird"},
-    {"name":"page_background_motif_signature_icons_bird_wings","value":"Bird with open wings"},
-    {"name":"page_background_motif_signature_icons_ribbon_x","value":"Ribbon X"},
-    {"name":"page_background_motif_signature_icons_blossom_x","value":"Blossom X"},
-    {"name":"page_background_motif_signature_icons_brush_x","value":"Brush X"},
-    {"name":"page_background_motif_signature_icons_prism_x","value":"Prism X"},
-    {"name":"page_background_motif_signature_icons_zombie_x","value":"Zombie X"},
-    {"name":"page_background_motif_signature_icons_lily_blossom","value":"Lily blossom"},
-    {"name":"page_background_motif_garden_defense_peashooter","value":"Peashooter"},
-    {"name":"page_background_motif_garden_defense_sunflower","value":"Sunflower"},
-    {"name":"page_background_motif_garden_defense_wallnut","value":"Wall-nut"},
-    {"name":"page_background_motif_garden_defense_cherry_bomb","value":"Cherry Bomb"},
-    {"name":"page_background_motif_garden_defense_snow_pea","value":"Snow Pea"},
-    {"name":"page_background_motif_garden_defense_potato_mine","value":"Potato Mine"},
-    {"name":"page_background_motif_garden_defense_chomper","value":"Chomper"},
-    {"name":"page_background_motif_garden_defense_squash","value":"Squash"},
-    {"name":"page_background_motif_garden_defense_zombie","value":"Zombie"},
-    {"name":"page_background_motif_garden_defense_conehead","value":"Conehead Zombie"},
-    {"name":"page_background_motif_garden_defense_buckethead","value":"Buckethead Zombie"},
-    {"name":"page_background_motif_garden_defense_lawnmower","value":"Lawn mower"},
-    {"name":"page_background_set_ai_assistants","value":"AI アシスタント"},
-    {"name":"page_background_motif_ai_assistants_gpt","value":"GPT"},
-    {"name":"page_background_motif_ai_assistants_claude","value":"Claude"},
-    {"name":"page_background_motif_ai_assistants_gemini","value":"Gemini"},
-    {"name":"page_background_motif_ai_assistants_deepseek","value":"DeepSeek"},
-    {"name":"page_background_motif_ai_assistants_grok","value":"Grok"},
-    {"name":"page_background_motif_ai_assistants_qwen","value":"Qwen"},
-    {"name":"page_background_motif_ai_assistants_kimi","value":"Kimi"},
-    {"name":"page_background_motif_ai_assistants_doubao","value":"Doubao"},
-    {"name":"page_background_motif_ai_assistants_copilot","value":"Copilot"},
-    {"name":"page_background_motif_ai_assistants_perplexity","value":"Perplexity"},
-    {"name":"page_background_motif_ai_assistants_mistral","value":"Mistral"},
-    {"name":"page_background_motif_ai_assistants_robot","value":"AI robot"},
-    {"name":"page_background_set_mobile_brands_systems","value":"スマートフォン・OS"},
-    {"name":"page_background_motif_mobile_brands_systems_apple","value":"Apple"},
-    {"name":"page_background_motif_mobile_brands_systems_huawei","value":"Huawei"},
-    {"name":"page_background_motif_mobile_brands_systems_xiaomi","value":"Xiaomi"},
-    {"name":"page_background_motif_mobile_brands_systems_samsung","value":"Samsung"},
-    {"name":"page_background_motif_mobile_brands_systems_oppo","value":"OPPO"},
-    {"name":"page_background_motif_mobile_brands_systems_vivo","value":"vivo"},
-    {"name":"page_background_motif_mobile_brands_systems_honor","value":"HONOR"},
-    {"name":"page_background_motif_mobile_brands_systems_oneplus","value":"OnePlus"},
-    {"name":"page_background_motif_mobile_brands_systems_meizu","value":"Meizu"},
-    {"name":"page_background_motif_mobile_brands_systems_harmonyos","value":"HarmonyOS"},
-    {"name":"page_background_motif_mobile_brands_systems_android","value":"Android"},
-    {"name":"page_background_motif_mobile_brands_systems_ios","value":"iOS"},
-    {"name":"page_background_motif_mobile_brands_systems_hyperos","value":"HyperOS"},
-    {"name":"page_background_motif_mobile_brands_systems_coloros","value":"ColorOS"},
-    {"name":"page_background_motif_mobile_brands_systems_originos","value":"OriginOS"},
-    {"name":"page_background_motif_mobile_brands_systems_oneui","value":"One UI"},
-    {"name":"motion_title","value":"Animation & haptics"},
-    {"name":"motion_intro","value":"Tune interaction animations and touch feedback. Changes are saved automatically. Tap the preview to try them."},
-    {"name":"motion_preview","value":"Tap to preview animation and haptics"},
-    {"name":"motion_reduce","value":"Reduce motion"},
-    {"name":"motion_reduce_desc","value":"Turn off decorative scaling, movement and Symbol effects, and skip page transitions. Your animation preferences are kept."},
-    {"name":"motion_duration","value":"Animation duration"},
-    {"name":"motion_duration_desc","value":"Reference duration for app animations. Button and page animations scale proportionally. System Symbol effects keep their native timing."},
-    {"name":"motion_amplitude","value":"Movement amplitude"},
-    {"name":"motion_amplitude_desc","value":"Adjust decorative scaling and rotation. At 0%, these effects stop. Gesture tracking and zoom keep their full range."},
-    {"name":"motion_damping","value":"Spring damping"},
-    {"name":"motion_damping_desc","value":"Lower values bounce more; higher values settle more gently."},
-    {"name":"motion_symbol","value":"Animated Symbols"},
-    {"name":"motion_symbol_desc","value":"Play a native Symbol effect once when selecting a tab or using an action button. Effects pause with Reduce motion."},
-    {"name":"motion_haptics","value":"Touch feedback"},
-    {"name":"motion_haptics_desc","value":"Use light feedback for navigation, buttons, switches and actions. Follows the system haptics setting."},
-    {"name":"motion_intensity","value":"Haptic intensity"},
-    {"name":"motion_intensity_desc","value":"Adjust preset effects on supported devices. Other motors use a short system touch vibration."},
-    {"name":"motion_presets","value":"Animation presets"},
-    {"name":"motion_preset_quick","value":"Quick"},
-    {"name":"motion_preset_quick_desc","value":"175 ms · 60% movement · firm settling. Short, crisp feedback."},
-    {"name":"motion_preset_standard","value":"Standard"},
-    {"name":"motion_preset_standard_desc","value":"300 ms · 100% movement · balanced spring. Recommended for everyday use."},
-    {"name":"motion_preset_spring","value":"Bouncy"},
-    {"name":"motion_preset_spring_desc","value":"450 ms · 120% movement · lower damping. Softer, more visible rebound."},
-    {"name":"motion_preset_reduced","value":"Low motion"},
-    {"name":"motion_preset_reduced_desc","value":"Skip page transitions and decorative effects. Keep your previous tuning."},
-    {"name":"motion_preset_custom","value":"Current preset: Custom. Choose a preset to restore its animation values."},
-    {"name":"chat_auto_download","value":"Chat auto-download"},
-    {"name":"storage_chat_retention","value":"Keep chat media"},
-    {"name":"storage_chat_retention_desc","value":"Set how long downloaded chat media stays cached. Chat history and manually saved files are kept."},
-    {"name":"settings_theme_mix","value":"ミックス配色"},
-    {"name":"settings_theme_mix_desc","value":"スイッチ、ナビゲーション、投稿ボタンに調和する色を使用。ライト・ダーク表示に対応。"},
-    {"name":"settings_theme_mix_confetti","value":"カラフル"},
-    {"name":"settings_theme_mix_coast","value":"シーソルト・コーラル"},
-    {"name":"settings_theme_mix_sunset","value":"夕映えのアイリス"},
-    {"name":"settings_theme_mix_forest","value":"森のアンバー"},
-    {"name":"settings_theme_mix_berry","value":"ベリー・ミント"},
-    {"name":"settings_theme_mix_morandi","value":"モランディ"},
-    {"name":"settings_theme_solid","value":"単色"},
-    {"name":"settings_theme_mix_candy","value":"キャンディ"},
-    {"name":"settings_theme_mix_sky","value":"青空レモン"},
-    {"name":"settings_theme_mix_peach","value":"ピーチ・ミント"},
-    {"name":"settings_theme_mix_lilac","value":"ライラック・カスタード"},
-    {"name":"page_background_set_popular_apps_cn","value":"人気アプリ · 中国"},
-    {"name":"page_background_motif_popular_apps_cn_wechat","value":"WeChat"},
-    {"name":"page_background_motif_popular_apps_cn_qq","value":"QQ"},
-    {"name":"page_background_motif_popular_apps_cn_weibo","value":"Weibo"},
-    {"name":"page_background_motif_popular_apps_cn_douyin","value":"Douyin"},
-    {"name":"page_background_motif_popular_apps_cn_kuaishou","value":"Kuaishou"},
-    {"name":"page_background_motif_popular_apps_cn_bilibili","value":"Bilibili"},
-    {"name":"page_background_motif_popular_apps_cn_xiaohongshu","value":"Xiaohongshu"},
-    {"name":"page_background_motif_popular_apps_cn_zhihu","value":"Zhihu"},
-    {"name":"page_background_motif_popular_apps_cn_baidu","value":"Baidu"},
-    {"name":"page_background_motif_popular_apps_cn_tieba","value":"Baidu Tieba"},
-    {"name":"page_background_motif_popular_apps_cn_alipay","value":"Alipay"},
-    {"name":"page_background_motif_popular_apps_cn_taobao","value":"Taobao"},
-    {"name":"page_background_motif_popular_apps_cn_jd","value":"JD"},
-    {"name":"page_background_motif_popular_apps_cn_pinduoduo","value":"Pinduoduo"},
-    {"name":"page_background_motif_popular_apps_cn_meituan","value":"Meituan"},
-    {"name":"page_background_motif_popular_apps_cn_eleme","value":"Ele.me"},
-    {"name":"page_background_motif_popular_apps_cn_dianping","value":"Dianping"},
-    {"name":"page_background_motif_popular_apps_cn_amap","value":"Amap"},
-    {"name":"page_background_motif_popular_apps_cn_baidu_maps","value":"Baidu Maps"},
-    {"name":"page_background_motif_popular_apps_cn_didi","value":"DiDi"},
-    {"name":"page_background_motif_popular_apps_cn_netease_music","value":"NetEase Cloud Music"},
-    {"name":"page_background_motif_popular_apps_cn_qq_music","value":"QQ Music"},
-    {"name":"page_background_motif_popular_apps_cn_kugou","value":"KuGou"},
-    {"name":"page_background_motif_popular_apps_cn_weread","value":"WeRead"},
-    {"name":"page_background_set_popular_apps_global","value":"人気アプリ · 世界"},
-    {"name":"page_background_motif_popular_apps_global_whatsapp","value":"WhatsApp"},
-    {"name":"page_background_motif_popular_apps_global_telegram","value":"Telegram"},
-    {"name":"page_background_motif_popular_apps_global_signal","value":"Signal"},
-    {"name":"page_background_motif_popular_apps_global_instagram","value":"Instagram"},
-    {"name":"page_background_motif_popular_apps_global_facebook","value":"Facebook"},
-    {"name":"page_background_motif_popular_apps_global_messenger","value":"Messenger"},
-    {"name":"page_background_motif_popular_apps_global_x","value":"X"},
-    {"name":"page_background_motif_popular_apps_global_threads","value":"Threads"},
-    {"name":"page_background_motif_popular_apps_global_youtube","value":"YouTube"},
-    {"name":"page_background_motif_popular_apps_global_tiktok","value":"TikTok"},
-    {"name":"page_background_motif_popular_apps_global_reddit","value":"Reddit"},
-    {"name":"page_background_motif_popular_apps_global_discord","value":"Discord"},
-    {"name":"page_background_motif_popular_apps_global_spotify","value":"Spotify"},
-    {"name":"page_background_motif_popular_apps_global_apple_music","value":"Apple Music"},
-    {"name":"page_background_motif_popular_apps_global_netflix","value":"Netflix"},
-    {"name":"page_background_motif_popular_apps_global_twitch","value":"Twitch"},
-    {"name":"page_background_motif_popular_apps_global_line","value":"LINE"},
-    {"name":"page_background_motif_popular_apps_global_snapchat","value":"Snapchat"},
-    {"name":"page_background_motif_popular_apps_global_pinterest","value":"Pinterest"},
-    {"name":"page_background_motif_popular_apps_global_chrome","value":"Chrome"},
-    {"name":"page_background_motif_popular_apps_global_firefox","value":"Firefox"},
-    {"name":"page_background_motif_popular_apps_global_edge","value":"Edge"},
-    {"name":"page_background_motif_popular_apps_global_gmail","value":"Gmail"},
-    {"name":"page_background_motif_popular_apps_global_google_maps","value":"Google Maps"},
-    {"name":"scene_title","value":"Scene modes"},
-    {"name":"scene_intro","value":"Apply a set of playback, quality, motion and background preferences. Restore returns to your settings from before the first mode was enabled."},
-    {"name":"scene_reading","value":"Clear reading"},
-    {"name":"scene_reading_desc","value":"Autoplay off · high quality images · low quality video · reduced motion · plain background"},
-    {"name":"scene_saver","value":"Power and data saver"},
-    {"name":"scene_saver_desc","value":"Autoplay off · small images · low quality video · reduced motion · plain background"},
-    {"name":"scene_media","value":"Media browsing"},
-    {"name":"scene_media_desc","value":"Autoplay on · original images · high quality video · motion on · your saved background"},
-    {"name":"scene_restore","value":"Restore original settings"},
-    {"name":"scene_restore_desc","value":"Keep your preferences from before scene mode. Switching between modes does not replace this backup."},
-    {"name":"scene_failed","value":"Some settings could not be saved. Your original settings are retained; retry or restore."},
-    {"name":"offline_title","value":"Offline & later"},
-    {"name":"offline_online","value":"Online bookmarks"},
-    {"name":"offline_intro","value":"New bookmarks save text and available articles automatically. Enable images before saving to include photos. Local copies stay separate from online bookmarks and ordinary cache cleanup."},
-    {"name":"offline_images","value":"Include photos in future saves"},
-    {"name":"offline_save","value":"Save offline"},
-    {"name":"offline_saving","value":"Saving…"},
-    {"name":"offline_saved","value":"Saved for offline reading"},
-    {"name":"offline_partial_saved","value":"Saved available content. Some article text or photos are missing; retry when online."},
-    {"name":"offline_save_failed","value":"Could not save locally. Please retry."},
-    {"name":"offline_partial","value":"Incomplete copy"},
-    {"name":"offline_unread","value":"Unread"},
-    {"name":"offline_unread_only","value":"Unread only"},
-    {"name":"offline_search","value":"Search titles, tags or notes"},
-    {"name":"offline_empty","value":"No matching offline items. Save a bookmark or use Save offline on a post."},
-    {"name":"offline_edit","value":"Tags & note"},
-    {"name":"offline_tags","value":"Tags"},
-    {"name":"offline_tags_hint","value":"Tags, separated by commas"},
-    {"name":"offline_note","value":"Private note"},
-    {"name":"offline_done","value":"Save"},
-    {"name":"offline_delete","value":"Delete local copy"},
-    {"name":"reader_title","value":"Thread reader"},
-    {"name":"reader_author_only","value":"Author only"},
-    {"name":"reader_translate","value":"Translate passages"},
-    {"name":"reader_font","value":"Text size"},
-    {"name":"reader_missing","value":"This offline item is missing or unavailable. Save it again while online."},
-    {"name":"reader_partial","value":"Only the available article content is shown. Continue loading or retry while online to get the complete text."},
-    {"name":"reader_load_failed","value":"Could not load more replies. Your current reading content is kept."},
-    {"name":"reader_translation_setup","value":"Enable translation and choose a target language in Settings first."},
-    {"name":"reader_translation_failed","value":"Some passages could not be translated. You can hide translations and retry."},
-    {"name":"reader_offline_note","value":"Saved local content. Translation requires a network connection."},
-    {"name":"reader_scope","value":"Replies loaded so far. Use Continue loading to include more of the discussion."},
+    {
+      "name": "account_overview_signed_out",
+      "value": "ログアウト中"
+    },
+    {
+      "name": "account_overview_no_bio",
+      "value": "自己紹介はありません"
+    },
+    {
+      "name": "account_overview_handle",
+      "value": "ユーザー名"
+    },
+    {
+      "name": "account_overview_location",
+      "value": "所在地"
+    },
+    {
+      "name": "account_overview_website",
+      "value": "ウェブサイト"
+    },
+    {
+      "name": "account_overview_manage",
+      "value": "アカウントの管理と切り替え"
+    },
+    {
+      "name": "profile_editor_choose_banner",
+      "value": "Change header photo"
+    },
+    {
+      "name": "profile_editor_choose_avatar",
+      "value": "Change profile photo"
+    },
+    {
+      "name": "profile_editor_birthdate",
+      "value": "Birth date"
+    },
+    {
+      "name": "profile_editor_birthdate_empty",
+      "value": "Add birth date"
+    },
+    {
+      "name": "profile_editor_birthdate_manage",
+      "value": "Edit birth date and visibility"
+    },
+    {
+      "name": "profile_editor_birthdate_privacy",
+      "value": "Month and day: %s\nYear: %s"
+    },
+    {
+      "name": "profile_editor_account_changed",
+      "value": "The signed-in account changed. Go back and reopen the editor."
+    },
+    {
+      "name": "profile_editor_unsaved_title",
+      "value": "Discard unsaved changes?"
+    },
+    {
+      "name": "profile_editor_unsaved_message",
+      "value": "Unsaved profile and photo changes will be lost when you leave."
+    },
+    {
+      "name": "profile_editor_keep_editing",
+      "value": "Keep editing"
+    },
+    {
+      "name": "profile_editor_discard",
+      "value": "Discard changes"
+    },
+    {
+      "name": "profile_editor_partial",
+      "value": "Some changes were saved. Your remaining edits are still here. Try saving again."
+    },
+    {
+      "name": "profile_editor_confirm_failed",
+      "value": "Changes were submitted, but the updated profile could not be loaded. Save again to refresh without uploading the photos again."
+    },
+    {
+      "name": "settings_page_transition",
+      "value": "ページ遷移"
+    },
+    {
+      "name": "settings_page_transition_desc",
+      "value": "ページを開くときと戻るときのアニメーションを選択します。すぐに反映され、設定は保存されます。"
+    },
+    {
+      "name": "settings_page_transition_classic",
+      "value": "従来のアニメーション"
+    },
+    {
+      "name": "settings_page_transition_classic_desc",
+      "value": "現在のシステムナビゲーションの効果を使用します。"
+    },
+    {
+      "name": "settings_page_transition_official",
+      "value": "公式風"
+    },
+    {
+      "name": "settings_page_transition_official_desc",
+      "value": "中央からの拡大縮小とフェードで、入場と退場を表現します。"
+    },
+    {
+      "name": "settings_anti_peep",
+      "value": "のぞき見防止"
+    },
+    {
+      "name": "settings_anti_peep_desc",
+      "value": "他の人の視線を検出すると、システムのマスクでアプリのウィンドウを覆います。"
+    },
+    {
+      "name": "settings_anti_peep_enable",
+      "value": "のぞき見防止を有効にする"
+    },
+    {
+      "name": "settings_anti_peep_setup",
+      "value": "システムの保護を設定"
+    },
+    {
+      "name": "settings_anti_peep_recheck",
+      "value": "再確認"
+    },
+    {
+      "name": "settings_anti_peep_note",
+      "value": "顔認証を設定し、システムの「プライバシーとセキュリティ > のぞき見防止」でこのアプリを許可してください。アプリはシステムの状態のみを使用し、顔画像にはアクセスしません。"
+    },
+    {
+      "name": "settings_anti_peep_disabled",
+      "value": "無効"
+    },
+    {
+      "name": "settings_anti_peep_unsupported",
+      "value": "この端末はシステムののぞき見防止に対応していません。"
+    },
+    {
+      "name": "settings_anti_peep_permission",
+      "value": "アプリの承認を待っています。設定後、アプリに戻るか再確認すると有効になります。"
+    },
+    {
+      "name": "settings_anti_peep_system_off",
+      "value": "システムののぞき見防止でこのアプリを有効にしてください。"
+    },
+    {
+      "name": "settings_anti_peep_face",
+      "value": "先にシステム設定で顔認証を有効にしてください。"
+    },
+    {
+      "name": "settings_anti_peep_ready",
+      "value": "有効。のぞき見を監視中です。"
+    },
+    {
+      "name": "settings_anti_peep_protected",
+      "value": "のぞき見を検出し、システムの保護マスクを起動しました。"
+    },
+    {
+      "name": "settings_anti_peep_error",
+      "value": "現在、保護を有効にできません。再確認してください。"
+    },
+    {
+      "name": "settings_anti_peep_checking",
+      "value": "保護を確認または有効化しています…"
+    },
+    {
+      "name": "settings_anti_peep_save_failed",
+      "value": "保存できませんでした。もう一度お試しください。"
+    },
+    {
+      "name": "huawei_account_title",
+      "value": "HUAWEI ID and cloud sync"
+    },
+    {
+      "name": "huawei_config_section",
+      "value": "Settings profile"
+    },
+    {
+      "name": "huawei_config_import",
+      "value": "Import"
+    },
+    {
+      "name": "huawei_config_export",
+      "value": "Export"
+    },
+    {
+      "name": "huawei_config_importing",
+      "value": "Importing…"
+    },
+    {
+      "name": "huawei_config_exporting",
+      "value": "Exporting…"
+    },
+    {
+      "name": "huawei_config_description",
+      "value": "Back up or restore appearance, media and filter settings with a JSON file. Account, token and proxy details are never included."
+    },
+    {
+      "name": "huawei_config_exported",
+      "value": "Settings profile exported"
+    },
+    {
+      "name": "huawei_config_export_failed",
+      "value": "Export failed. Try again."
+    },
+    {
+      "name": "huawei_config_imported",
+      "value": "Settings imported"
+    },
+    {
+      "name": "huawei_config_import_failed",
+      "value": "The settings profile could not be read or validated."
+    },
+    {
+      "name": "huawei_config_import_title",
+      "value": "Import settings profile?"
+    },
+    {
+      "name": "huawei_config_import_message",
+      "value": "Appearance, media and filter settings in this file will replace the matching settings on this device. Account and proxy details will not change."
+    },
+    {
+      "name": "huawei_config_import_confirm",
+      "value": "Import"
+    },
+    {
+      "name": "huawei_account_name",
+      "value": "HUAWEI ID"
+    },
+    {
+      "name": "huawei_login",
+      "value": "Sign in with HUAWEI ID"
+    },
+    {
+      "name": "huawei_logout",
+      "value": "Sign out"
+    },
+    {
+      "name": "huawei_signed_in",
+      "value": "Signed in with HUAWEI ID"
+    },
+    {
+      "name": "huawei_logging_in",
+      "value": "Signing in…"
+    },
+    {
+      "name": "huawei_signed_out_description",
+      "value": "Sign in to bring your preferences with you"
+    },
+    {
+      "name": "huawei_cloud_sync",
+      "value": "Cloud sync"
+    },
+    {
+      "name": "huawei_sync_description",
+      "value": "Sign in to enable sync for appearance, reading, playback preferences and local content rules across your devices."
+    },
+    {
+      "name": "huawei_local_data_note",
+      "value": "X credentials, messages, drafts and caches stay on this device. Some appearance changes take effect after restarting."
+    },
+    {
+      "name": "huawei_logout_title",
+      "value": "Sign out of HUAWEI ID?"
+    },
+    {
+      "name": "huawei_logout_description",
+      "value": "Cloud sync will pause. Local settings and existing cloud data will be kept. Your X account remains available."
+    },
+    {
+      "name": "huawei_sync_disabled",
+      "value": "Off. Settings are saved on this device."
+    },
+    {
+      "name": "huawei_sync_unavailable",
+      "value": "Cloud storage is unavailable. Check the system cloud service and this app’s sync switch."
+    },
+    {
+      "name": "huawei_sync_downloading",
+      "value": "Reading and merging cloud settings…"
+    },
+    {
+      "name": "huawei_sync_uploading",
+      "value": "Uploading settings…"
+    },
+    {
+      "name": "huawei_sync_success",
+      "value": "Synced"
+    },
+    {
+      "name": "huawei_sync_pending",
+      "value": "Saved locally, waiting to sync"
+    },
+    {
+      "name": "huawei_sync_failed",
+      "value": "Sync did not finish. Your local data is safe. Check system cloud settings and try again."
+    },
+    {
+      "name": "huawei_network_error",
+      "value": "Network unavailable. Try again when connected."
+    },
+    {
+      "name": "huawei_storage_full",
+      "value": "Cloud or device storage is full. Free some space and try again."
+    },
+    {
+      "name": "huawei_login_error",
+      "value": "Sign-in did not finish. Check account service configuration or try again later."
+    },
+    {
+      "name": "huawei_authorization_error",
+      "value": "Nickname and avatar authorization failed. Check account permissions and try again."
+    },
+    {
+      "name": "huawei_save_error",
+      "value": "Could not save settings. Try again."
+    },
+    {
+      "name": "huawei_select_group",
+      "value": "Select at least one group to sync."
+    },
+    {
+      "name": "huawei_account_changed",
+      "value": "HUAWEI ID has changed. Enabling sync will merge the selected local settings into the current account."
+    },
+    {
+      "name": "huawei_last_sync",
+      "value": "Last successful sync:"
+    },
+    {
+      "name": "huawei_syncing",
+      "value": "Syncing…"
+    },
+    {
+      "name": "huawei_sync_now",
+      "value": "Sync now"
+    },
+    {
+      "name": "huawei_group_appearance",
+      "value": "Appearance and navigation"
+    },
+    {
+      "name": "huawei_group_appearance_description",
+      "value": "Theme, text size, title bar, tabs and sheet material"
+    },
+    {
+      "name": "huawei_group_media",
+      "value": "Reading and playback"
+    },
+    {
+      "name": "huawei_group_media_description",
+      "value": "Image and video quality, autoplay and mute preferences"
+    },
+    {
+      "name": "huawei_group_filters",
+      "value": "Local content rules"
+    },
+    {
+      "name": "huawei_group_filters_description",
+      "value": "Keyword and user filters, and content preferences"
+    },
+    {
+      "name": "post_photo_save_background",
+      "value": "背景ライブラリに保存"
+    },
+    {
+      "name": "chat_background_saving_photo",
+      "value": "背景画像を保存中…"
+    },
+    {
+      "name": "chat_background_saved_photo",
+      "value": "保存しました。「ページ背景」または「チャット背景」で選択できます。"
+    },
+    {
+      "name": "chat_background_save_photo_failed",
+      "value": "背景画像を保存できませんでした。もう一度お試しください。"
+    },
+    {
+      "name": "chat_background_saved_photos",
+      "value": "ポストから保存した画像"
+    },
+    {
+      "name": "page_background_title",
+      "value": "ページの背景"
+    },
+    {
+      "name": "page_background_description",
+      "value": "Colors, photos and mixable patterns"
+    },
+    {
+      "name": "page_background_switch_title",
+      "value": "ページ背景を有効にする"
+    },
+    {
+      "name": "page_background_switch_desc",
+      "value": "オフにするとテーマの背景にすぐ戻ります。現在のスタイルは保持されます。"
+    },
+    {
+      "name": "page_background_base",
+      "value": "背景"
+    },
+    {
+      "name": "page_background_pattern",
+      "value": "パターンの重ね合わせ"
+    },
+    {
+      "name": "page_background_pattern_none",
+      "value": "パターンなし"
+    },
+    {
+      "name": "page_background_content_opacity",
+      "value": "コンテンツ面の不透明度"
+    },
+    {
+      "name": "page_background_reset",
+      "value": "初期設定に戻す"
+    },
+    {
+      "name": "page_background_color_placeholder",
+      "value": "Custom color #RRGGBB"
+    },
+    {
+      "name": "page_background_preview",
+      "value": "背景プレビュー"
+    },
+    {
+      "name": "page_background_preview_text",
+      "value": "Bring your favorite colors and patterns to every visit."
+    },
+    {
+      "name": "page_background_preview_hint",
+      "value": "Text and content surfaces show how readable your background will be."
+    },
+    {
+      "name": "page_background_note",
+      "value": "Applies to regular pages. Chats have separate backgrounds; media viewers keep their immersive backgrounds. Tap Apply to save."
+    },
+    {
+      "name": "page_background_layout_preset",
+      "value": "パターン全体"
+    },
+    {
+      "name": "page_background_layout_icons",
+      "value": "個別モチーフ"
+    },
+    {
+      "name": "page_background_density",
+      "value": "モチーフの密度"
+    },
+    {
+      "name": "page_background_set_add",
+      "value": "セット全体を選択"
+    },
+    {
+      "name": "page_background_set_remove",
+      "value": "セット全体の選択を解除"
+    },
+    {
+      "name": "page_background_mix_hint",
+      "value": "Select motifs across sets to mix them, or repeat a single motif."
+    },
+    {
+      "name": "page_background_selected",
+      "value": "%d motifs selected"
+    },
+    {
+      "name": "page_background_icons_clear",
+      "value": "モチーフをクリア"
+    },
+    {
+      "name": "page_background_paper",
+      "value": "紙の質感"
+    },
+    {
+      "name": "page_background_paper_none",
+      "value": "なし"
+    },
+    {
+      "name": "page_background_kraft",
+      "value": "クラフト紙"
+    },
+    {
+      "name": "page_background_parchment",
+      "value": "羊皮紙"
+    },
+    {
+      "name": "page_background_texture_strength",
+      "value": "質感の強さ"
+    },
+    {
+      "name": "page_background_presets_mix",
+      "value": "全体パターンは一度に1つ選択できます。"
+    },
+    {
+      "name": "page_background_applied",
+      "value": "ページの背景を適用しました"
+    },
+    {
+      "name": "page_background_apply_failed",
+      "value": "背景を保存できませんでした。もう一度お試しください。"
+    },
+    {
+      "name": "page_background_transparent_posts",
+      "value": "Transparent post cards"
+    },
+    {
+      "name": "page_background_transparent_posts_desc",
+      "value": "Hide the surface behind posts and quoted posts to reveal the page background."
+    },
+    {
+      "name": "page_background_transparent_inbox",
+      "value": "Transparent message list"
+    },
+    {
+      "name": "page_background_transparent_inbox_desc",
+      "value": "Hide conversation row surfaces while keeping text, avatars and unread indicators."
+    },
+    {
+      "name": "page_background_post_opacity",
+      "value": "Post surface opacity"
+    },
+    {
+      "name": "page_background_inbox_opacity",
+      "value": "Message list surface opacity"
+    },
+    {
+      "name": "page_background_scheme_import",
+      "value": "Import scheme"
+    },
+    {
+      "name": "page_background_scheme_share",
+      "value": "Share scheme"
+    },
+    {
+      "name": "page_background_scheme_title",
+      "value": "Page background scheme"
+    },
+    {
+      "name": "page_background_scheme_imported",
+      "value": "Scheme imported. Preview it, then tap Apply."
+    },
+    {
+      "name": "page_background_scheme_import_failed",
+      "value": "Unable to import. Choose a valid HarmonyX background scheme (up to 48 MB)."
+    },
+    {
+      "name": "page_background_scheme_share_failed",
+      "value": "Unable to share. Please try again; background photos must be under 32 MB."
+    },
+    {
+      "name": "page_background_set_signature_icons",
+      "value": "別のアイコン"
+    },
+    {
+      "name": "page_background_set_garden_defense",
+      "value": "プラント vs. ゾンビ"
+    },
+    {
+      "name": "page_background_motif_signature_icons_frog_face",
+      "value": "Frog face"
+    },
+    {
+      "name": "page_background_motif_signature_icons_frog_lily",
+      "value": "Frog on a lily pad"
+    },
+    {
+      "name": "page_background_motif_signature_icons_milk_frog",
+      "value": "Milk frog"
+    },
+    {
+      "name": "page_background_motif_signature_icons_milk_frog_wave",
+      "value": "Waving milk frog"
+    },
+    {
+      "name": "page_background_motif_signature_icons_bird",
+      "value": "Flying bird"
+    },
+    {
+      "name": "page_background_motif_signature_icons_bird_wings",
+      "value": "Bird with open wings"
+    },
+    {
+      "name": "page_background_motif_signature_icons_ribbon_x",
+      "value": "Ribbon X"
+    },
+    {
+      "name": "page_background_motif_signature_icons_blossom_x",
+      "value": "Blossom X"
+    },
+    {
+      "name": "page_background_motif_signature_icons_brush_x",
+      "value": "Brush X"
+    },
+    {
+      "name": "page_background_motif_signature_icons_prism_x",
+      "value": "Prism X"
+    },
+    {
+      "name": "page_background_motif_signature_icons_zombie_x",
+      "value": "Zombie X"
+    },
+    {
+      "name": "page_background_motif_signature_icons_lily_blossom",
+      "value": "Lily blossom"
+    },
+    {
+      "name": "page_background_motif_garden_defense_peashooter",
+      "value": "Peashooter"
+    },
+    {
+      "name": "page_background_motif_garden_defense_sunflower",
+      "value": "Sunflower"
+    },
+    {
+      "name": "page_background_motif_garden_defense_wallnut",
+      "value": "Wall-nut"
+    },
+    {
+      "name": "page_background_motif_garden_defense_cherry_bomb",
+      "value": "Cherry Bomb"
+    },
+    {
+      "name": "page_background_motif_garden_defense_snow_pea",
+      "value": "Snow Pea"
+    },
+    {
+      "name": "page_background_motif_garden_defense_potato_mine",
+      "value": "Potato Mine"
+    },
+    {
+      "name": "page_background_motif_garden_defense_chomper",
+      "value": "Chomper"
+    },
+    {
+      "name": "page_background_motif_garden_defense_squash",
+      "value": "Squash"
+    },
+    {
+      "name": "page_background_motif_garden_defense_zombie",
+      "value": "Zombie"
+    },
+    {
+      "name": "page_background_motif_garden_defense_conehead",
+      "value": "Conehead Zombie"
+    },
+    {
+      "name": "page_background_motif_garden_defense_buckethead",
+      "value": "Buckethead Zombie"
+    },
+    {
+      "name": "page_background_motif_garden_defense_lawnmower",
+      "value": "Lawn mower"
+    },
+    {
+      "name": "page_background_set_ai_assistants",
+      "value": "AI アシスタント"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_gpt",
+      "value": "GPT"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_claude",
+      "value": "Claude"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_gemini",
+      "value": "Gemini"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_deepseek",
+      "value": "DeepSeek"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_grok",
+      "value": "Grok"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_qwen",
+      "value": "Qwen"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_kimi",
+      "value": "Kimi"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_doubao",
+      "value": "Doubao"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_copilot",
+      "value": "Copilot"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_perplexity",
+      "value": "Perplexity"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_mistral",
+      "value": "Mistral"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_robot",
+      "value": "AI robot"
+    },
+    {
+      "name": "page_background_set_mobile_brands_systems",
+      "value": "スマートフォン・OS"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_apple",
+      "value": "Apple"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_huawei",
+      "value": "Huawei"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_xiaomi",
+      "value": "Xiaomi"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_samsung",
+      "value": "Samsung"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_oppo",
+      "value": "OPPO"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_vivo",
+      "value": "vivo"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_honor",
+      "value": "HONOR"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_oneplus",
+      "value": "OnePlus"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_meizu",
+      "value": "Meizu"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_harmonyos",
+      "value": "HarmonyOS"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_android",
+      "value": "Android"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_ios",
+      "value": "iOS"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_hyperos",
+      "value": "HyperOS"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_coloros",
+      "value": "ColorOS"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_originos",
+      "value": "OriginOS"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_oneui",
+      "value": "One UI"
+    },
+    {
+      "name": "motion_title",
+      "value": "Animation & haptics"
+    },
+    {
+      "name": "motion_intro",
+      "value": "Tune interaction animations and touch feedback. Changes are saved automatically. Tap the preview to try them."
+    },
+    {
+      "name": "motion_preview",
+      "value": "Tap to preview animation and haptics"
+    },
+    {
+      "name": "motion_reduce",
+      "value": "Reduce motion"
+    },
+    {
+      "name": "motion_reduce_desc",
+      "value": "Turn off decorative scaling, movement and Symbol effects, and skip page transitions. Your animation preferences are kept."
+    },
+    {
+      "name": "motion_duration",
+      "value": "Animation duration"
+    },
+    {
+      "name": "motion_duration_desc",
+      "value": "Reference duration for app animations. Button and page animations scale proportionally. System Symbol effects keep their native timing."
+    },
+    {
+      "name": "motion_amplitude",
+      "value": "Movement amplitude"
+    },
+    {
+      "name": "motion_amplitude_desc",
+      "value": "Adjust decorative scaling and rotation. At 0%, these effects stop. Gesture tracking and zoom keep their full range."
+    },
+    {
+      "name": "motion_damping",
+      "value": "Spring damping"
+    },
+    {
+      "name": "motion_damping_desc",
+      "value": "Lower values bounce more; higher values settle more gently."
+    },
+    {
+      "name": "motion_symbol",
+      "value": "Animated Symbols"
+    },
+    {
+      "name": "motion_symbol_desc",
+      "value": "Play a native Symbol effect once when selecting a tab or using an action button. Effects pause with Reduce motion."
+    },
+    {
+      "name": "motion_haptics",
+      "value": "Touch feedback"
+    },
+    {
+      "name": "motion_haptics_desc",
+      "value": "Use light feedback for navigation, buttons, switches and actions. Follows the system haptics setting."
+    },
+    {
+      "name": "motion_intensity",
+      "value": "Haptic intensity"
+    },
+    {
+      "name": "motion_intensity_desc",
+      "value": "Adjust preset effects on supported devices. Other motors use a short system touch vibration."
+    },
+    {
+      "name": "motion_presets",
+      "value": "Animation presets"
+    },
+    {
+      "name": "motion_preset_quick",
+      "value": "Quick"
+    },
+    {
+      "name": "motion_preset_quick_desc",
+      "value": "175 ms · 60% movement · firm settling. Short, crisp feedback."
+    },
+    {
+      "name": "motion_preset_standard",
+      "value": "Standard"
+    },
+    {
+      "name": "motion_preset_standard_desc",
+      "value": "300 ms · 100% movement · balanced spring. Recommended for everyday use."
+    },
+    {
+      "name": "motion_preset_spring",
+      "value": "Bouncy"
+    },
+    {
+      "name": "motion_preset_spring_desc",
+      "value": "450 ms · 120% movement · lower damping. Softer, more visible rebound."
+    },
+    {
+      "name": "motion_preset_reduced",
+      "value": "Low motion"
+    },
+    {
+      "name": "motion_preset_reduced_desc",
+      "value": "Skip page transitions and decorative effects. Keep your previous tuning."
+    },
+    {
+      "name": "motion_preset_custom",
+      "value": "Current preset: Custom. Choose a preset to restore its animation values."
+    },
+    {
+      "name": "chat_auto_download",
+      "value": "Chat auto-download"
+    },
+    {
+      "name": "storage_chat_retention",
+      "value": "Keep chat media"
+    },
+    {
+      "name": "storage_chat_retention_desc",
+      "value": "Set how long downloaded chat media stays cached. Chat history and manually saved files are kept."
+    },
+    {
+      "name": "settings_theme_mix",
+      "value": "ミックス配色"
+    },
+    {
+      "name": "settings_theme_mix_desc",
+      "value": "スイッチ、ナビゲーション、投稿ボタンに調和する色を使用。ライト・ダーク表示に対応。"
+    },
+    {
+      "name": "settings_theme_mix_confetti",
+      "value": "カラフル"
+    },
+    {
+      "name": "settings_theme_mix_coast",
+      "value": "シーソルト・コーラル"
+    },
+    {
+      "name": "settings_theme_mix_sunset",
+      "value": "夕映えのアイリス"
+    },
+    {
+      "name": "settings_theme_mix_forest",
+      "value": "森のアンバー"
+    },
+    {
+      "name": "settings_theme_mix_berry",
+      "value": "ベリー・ミント"
+    },
+    {
+      "name": "settings_theme_mix_morandi",
+      "value": "モランディ"
+    },
+    {
+      "name": "settings_theme_mix_prism",
+      "value": "プライマリー・スペクトル"
+    },
+    {
+      "name": "settings_theme_solid",
+      "value": "単色"
+    },
+    {
+      "name": "settings_theme_mix_candy",
+      "value": "キャンディ"
+    },
+    {
+      "name": "settings_theme_mix_sky",
+      "value": "青空レモン"
+    },
+    {
+      "name": "settings_theme_mix_peach",
+      "value": "ピーチ・ミント"
+    },
+    {
+      "name": "settings_theme_mix_lilac",
+      "value": "ライラック・カスタード"
+    },
+    {
+      "name": "page_background_set_popular_apps_cn",
+      "value": "人気アプリ · 中国"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_wechat",
+      "value": "WeChat"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_qq",
+      "value": "QQ"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_weibo",
+      "value": "Weibo"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_douyin",
+      "value": "Douyin"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_kuaishou",
+      "value": "Kuaishou"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_bilibili",
+      "value": "Bilibili"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_xiaohongshu",
+      "value": "Xiaohongshu"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_zhihu",
+      "value": "Zhihu"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_baidu",
+      "value": "Baidu"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_tieba",
+      "value": "Baidu Tieba"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_alipay",
+      "value": "Alipay"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_taobao",
+      "value": "Taobao"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_jd",
+      "value": "JD"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_pinduoduo",
+      "value": "Pinduoduo"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_meituan",
+      "value": "Meituan"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_eleme",
+      "value": "Ele.me"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_dianping",
+      "value": "Dianping"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_amap",
+      "value": "Amap"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_baidu_maps",
+      "value": "Baidu Maps"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_didi",
+      "value": "DiDi"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_netease_music",
+      "value": "NetEase Cloud Music"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_qq_music",
+      "value": "QQ Music"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_kugou",
+      "value": "KuGou"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_weread",
+      "value": "WeRead"
+    },
+    {
+      "name": "page_background_set_popular_apps_global",
+      "value": "人気アプリ · 世界"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_whatsapp",
+      "value": "WhatsApp"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_telegram",
+      "value": "Telegram"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_signal",
+      "value": "Signal"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_instagram",
+      "value": "Instagram"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_facebook",
+      "value": "Facebook"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_messenger",
+      "value": "Messenger"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_x",
+      "value": "X"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_threads",
+      "value": "Threads"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_youtube",
+      "value": "YouTube"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_tiktok",
+      "value": "TikTok"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_reddit",
+      "value": "Reddit"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_discord",
+      "value": "Discord"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_spotify",
+      "value": "Spotify"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_apple_music",
+      "value": "Apple Music"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_netflix",
+      "value": "Netflix"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_twitch",
+      "value": "Twitch"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_line",
+      "value": "LINE"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_snapchat",
+      "value": "Snapchat"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_pinterest",
+      "value": "Pinterest"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_chrome",
+      "value": "Chrome"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_firefox",
+      "value": "Firefox"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_edge",
+      "value": "Edge"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_gmail",
+      "value": "Gmail"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_google_maps",
+      "value": "Google Maps"
+    },
+    {
+      "name": "scene_title",
+      "value": "Scene modes"
+    },
+    {
+      "name": "scene_intro",
+      "value": "Apply a set of playback, quality, motion and background preferences. Restore returns to your settings from before the first mode was enabled."
+    },
+    {
+      "name": "scene_reading",
+      "value": "Clear reading"
+    },
+    {
+      "name": "scene_reading_desc",
+      "value": "Autoplay off · high quality images · low quality video · reduced motion · plain background"
+    },
+    {
+      "name": "scene_saver",
+      "value": "Power and data saver"
+    },
+    {
+      "name": "scene_saver_desc",
+      "value": "Autoplay off · small images · low quality video · reduced motion · plain background"
+    },
+    {
+      "name": "scene_media",
+      "value": "Media browsing"
+    },
+    {
+      "name": "scene_media_desc",
+      "value": "Autoplay on · original images · high quality video · motion on · your saved background"
+    },
+    {
+      "name": "scene_restore",
+      "value": "Restore original settings"
+    },
+    {
+      "name": "scene_restore_desc",
+      "value": "Keep your preferences from before scene mode. Switching between modes does not replace this backup."
+    },
+    {
+      "name": "scene_failed",
+      "value": "Some settings could not be saved. Your original settings are retained; retry or restore."
+    },
+    {
+      "name": "offline_title",
+      "value": "Offline & later"
+    },
+    {
+      "name": "offline_online",
+      "value": "Online bookmarks"
+    },
+    {
+      "name": "offline_intro",
+      "value": "New bookmarks save text and available articles automatically. Enable images before saving to include photos. Local copies stay separate from online bookmarks and ordinary cache cleanup."
+    },
+    {
+      "name": "offline_images",
+      "value": "Include photos in future saves"
+    },
+    {
+      "name": "offline_save",
+      "value": "Save offline"
+    },
+    {
+      "name": "offline_saving",
+      "value": "Saving…"
+    },
+    {
+      "name": "offline_saved",
+      "value": "Saved for offline reading"
+    },
+    {
+      "name": "offline_partial_saved",
+      "value": "Saved available content. Some article text or photos are missing; retry when online."
+    },
+    {
+      "name": "offline_save_failed",
+      "value": "Could not save locally. Please retry."
+    },
+    {
+      "name": "offline_partial",
+      "value": "Incomplete copy"
+    },
+    {
+      "name": "offline_unread",
+      "value": "Unread"
+    },
+    {
+      "name": "offline_unread_only",
+      "value": "Unread only"
+    },
+    {
+      "name": "offline_search",
+      "value": "Search titles, tags or notes"
+    },
+    {
+      "name": "offline_empty",
+      "value": "No matching offline items. Save a bookmark or use Save offline on a post."
+    },
+    {
+      "name": "offline_edit",
+      "value": "Tags & note"
+    },
+    {
+      "name": "offline_tags",
+      "value": "Tags"
+    },
+    {
+      "name": "offline_tags_hint",
+      "value": "Tags, separated by commas"
+    },
+    {
+      "name": "offline_note",
+      "value": "Private note"
+    },
+    {
+      "name": "offline_done",
+      "value": "Save"
+    },
+    {
+      "name": "offline_delete",
+      "value": "Delete local copy"
+    },
+    {
+      "name": "reader_title",
+      "value": "Thread reader"
+    },
+    {
+      "name": "reader_author_only",
+      "value": "Author only"
+    },
+    {
+      "name": "reader_translate",
+      "value": "Translate passages"
+    },
+    {
+      "name": "reader_font",
+      "value": "Text size"
+    },
+    {
+      "name": "reader_missing",
+      "value": "This offline item is missing or unavailable. Save it again while online."
+    },
+    {
+      "name": "reader_partial",
+      "value": "Only the available article content is shown. Continue loading or retry while online to get the complete text."
+    },
+    {
+      "name": "reader_load_failed",
+      "value": "Could not load more replies. Your current reading content is kept."
+    },
+    {
+      "name": "reader_translation_setup",
+      "value": "Enable translation and choose a target language in Settings first."
+    },
+    {
+      "name": "reader_translation_failed",
+      "value": "Some passages could not be translated. You can hide translations and retry."
+    },
+    {
+      "name": "reader_offline_note",
+      "value": "Saved local content. Translation requires a network connection."
+    },
+    {
+      "name": "reader_scope",
+      "value": "Replies loaded so far. Use Continue loading to include more of the discussion."
+    },
     {
       "name": "input_help_title",
       "value": "マウス・キーボード・タッチパッド"
@@ -10945,26 +12204,86 @@
       "name": "input_key_playback",
       "value": "Space / Enter / ← / →"
     },
-    {"name":"settings_filter_languages","value":"非表示にする投稿の言語"},
-    {"name":"settings_filter_languages_desc","value":"非表示にする言語を選択。言語不明やメディアのみの投稿は表示されます。"},
-    {"name":"appearance_preview_title","value":"プレビュー"},
-    {"name":"appearance_preview_hint","value":"設定の変更がすぐに反映されます。シートの例をタップすると展開します。"},
-    {"name":"post_edited","value":"編集済み"},
-    {"name":"post_metric_bookmarks","value":"ブックマーク"},
-    {"name":"post_metric_quotes","value":"引用"},
-    {"name":"settings_reply_quality","value":"低品質の返信を折りたたむ"},
-    {"name":"settings_reply_quality_desc","value":"繰り返しの宣伝や大量の勧誘を折りたたみます。端末内の判定には誤りがあり、返信を展開して確認できます。"},
-    {"name":"reply_quality_folded","value":"低品質の可能性がある返信"},
-    {"name":"reply_quality_reasons","value":"理由を表示"},
-    {"name":"reply_quality_allow","value":"この投稿者を常に表示"},
-    {"name":"reply_quality_whitelist","value":"返信の許可リスト"},
-    {"name":"reply_quality_whitelist_desc","value":"自分、元の投稿者、フォロー中のアカウントと許可した投稿者の返信は表示します。リストは現在のアカウント専用です。"},
-    {"name":"reply_quality_empty","value":"許可した投稿者はいません"},
-    {"name":"reply_quality_reason_duplicate","value":"複数の投稿者が同じ宣伝文を繰り返しています"},
-    {"name":"reply_quality_reason_author_repeat","value":"同じ投稿者が同じ内容を繰り返しています"},
-    {"name":"reply_quality_reason_links","value":"複数の外部リンクが含まれています"},
-    {"name":"reply_quality_reason_promotion","value":"宣伝や利益をうたう内容が含まれています"},
-    {"name":"reply_quality_reason_contact","value":"勧誘用の連絡先が含まれています"},
+    {
+      "name": "settings_filter_languages",
+      "value": "非表示にする投稿の言語"
+    },
+    {
+      "name": "settings_filter_languages_desc",
+      "value": "非表示にする言語を選択。言語不明やメディアのみの投稿は表示されます。"
+    },
+    {
+      "name": "appearance_preview_title",
+      "value": "プレビュー"
+    },
+    {
+      "name": "appearance_preview_hint",
+      "value": "設定の変更がすぐに反映されます。シートの例をタップすると展開します。"
+    },
+    {
+      "name": "post_edited",
+      "value": "編集済み"
+    },
+    {
+      "name": "post_metric_bookmarks",
+      "value": "ブックマーク"
+    },
+    {
+      "name": "post_metric_quotes",
+      "value": "引用"
+    },
+    {
+      "name": "settings_reply_quality",
+      "value": "低品質の返信を折りたたむ"
+    },
+    {
+      "name": "settings_reply_quality_desc",
+      "value": "繰り返しの宣伝や大量の勧誘を折りたたみます。端末内の判定には誤りがあり、返信を展開して確認できます。"
+    },
+    {
+      "name": "reply_quality_folded",
+      "value": "低品質の可能性がある返信"
+    },
+    {
+      "name": "reply_quality_reasons",
+      "value": "理由を表示"
+    },
+    {
+      "name": "reply_quality_allow",
+      "value": "この投稿者を常に表示"
+    },
+    {
+      "name": "reply_quality_whitelist",
+      "value": "返信の許可リスト"
+    },
+    {
+      "name": "reply_quality_whitelist_desc",
+      "value": "自分、元の投稿者、フォロー中のアカウントと許可した投稿者の返信は表示します。リストは現在のアカウント専用です。"
+    },
+    {
+      "name": "reply_quality_empty",
+      "value": "許可した投稿者はいません"
+    },
+    {
+      "name": "reply_quality_reason_duplicate",
+      "value": "複数の投稿者が同じ宣伝文を繰り返しています"
+    },
+    {
+      "name": "reply_quality_reason_author_repeat",
+      "value": "同じ投稿者が同じ内容を繰り返しています"
+    },
+    {
+      "name": "reply_quality_reason_links",
+      "value": "複数の外部リンクが含まれています"
+    },
+    {
+      "name": "reply_quality_reason_promotion",
+      "value": "宣伝や利益をうたう内容が含まれています"
+    },
+    {
+      "name": "reply_quality_reason_contact",
+      "value": "勧誘用の連絡先が含まれています"
+    },
     {
       "name": "settings_floating_compose_material_tint",
       "value": "フローティング投稿ボタンのマテリアルカラー"
@@ -11053,64 +12372,528 @@
       "name": "chat_decoration_sample_text",
       "value": "Have a lovely day."
     },
-    {"name": "sign_out_confirm_title", "value": "ログアウトしますか？"},
-    {"name": "sign_out_confirm_message", "value": "このアカウントを使うには再度ログインが必要です。"},
-    {"name": "settings_for_you_only_sensitive", "value": "おすすめでセンシティブな内容のみ表示"},
-    {"name": "settings_for_you_only_sensitive_desc", "value": "引用を含め、X がセンシティブと判定した投稿のみをおすすめに表示します。フォロー中やリストには影響せず、メディアの覆いも維持します。"},
-    {"name": "settings_grip_floating", "value": "フローティング操作ボタン"},
-    {"name": "settings_grip_video", "value": "動画操作バー"},
-    {"name": "settings_grip_reply", "value": "投稿返信ボタン"},
-    {"name": "settings_grip_component_desc", "value": "持つ手に合わせて配置します。オフの場合は優先する手を使用します。"},
-    {"name": "settings_grip_hdstabs", "value": "HdsTabs 下部タブバー"},
-    {"name": "settings_grip_hdstabs_desc", "value": "システム標準の左右追従を使用します。オフにすると持つ手に追従しません。"},
-    {"name":"gif_action_save_video","value":"高画質の動画として保存（MP4）"},
-    {"name":"storage_save_remembered_note","value":"ダウンロード先を一度選ぶと、以降のファイルはそのフォルダに自動保存されます。オフにするとギャラリーに保存します。"},
-    {"name":"storage_save_to_remembered","value":"ダウンロードフォルダに保存"},
-    {"name": "storage_permission_reason", "value": "選択したファイルやフォルダへのアクセスを保持します。"},
-    {"name": "timeline_sources_lists", "value": "リスト"},
-    {"name": "timeline_sources_communities", "value": "コミュニティ"},
-    {"name": "timeline_edit", "value": "編集"},
-    {"name": "timeline_done", "value": "完了"},
-    {"name": "timeline_move_up", "value": "上へ移動"},
-    {"name": "timeline_move_down", "value": "下へ移動"},
-    {"name": "timeline_remove_source", "value": "%s を削除"},
-    {"name": "timeline_add_to_home", "value": "ホームのタイムラインに追加"},
-    {"name": "timeline_remove_from_home", "value": "ホームのタイムラインから削除"},
-    {"name": "timeline_sources_failed", "value": "一部のリストやコミュニティを読み込めませんでした。タップして再試行。"},
-    {"name": "timeline_sources_pinned_empty", "value": "固定したタイムラインはありません。下から追加できます。"},
-    {"name":"video_controls_mirror","value":"操作ボタンを左右反転"},
-    {"name":"video_controls_speed","value":"速度"},
-    {"name":"video_controls_aspect","value":"比率"},
-    {"name":"video_controls_background","value":"バック"},
-    {"name":"video_controls_quality_hd","value":"HD"},
-    {"name":"video_controls_quality_sd","value":"SD"},
-    {"name":"video_controls_quality_ld","value":"LD"},
-    {"name":"video_controls_more","value":"その他"},
-    {"name":"video_controls_download","value":"保存"},
-    {"name":"settings_navigation_style","value":"下部ナビゲーションのスタイル"},
-    {"name":"settings_hds_bottom_bar","value":"フローティング HdsTabs"},
-    {"name":"settings_split_bottom_bar","value":"分離カプセルナビゲーション"},
-    {"name":"settings_split_bottom_bar_desc","value":"左のカプセルでページを切り替え、右の独立ボタンで投稿、新規チャット、更新、先頭への移動を行います。両方に HDS マテリアルを使用し、古いシステムでは互換ナビゲーションを使用します。"},
-    {"name":"split_navigation_action_top","value":"先頭へ"},
-    {"name":"split_navigation_action_refresh","value":"ホームを更新"},
-    {"name":"split_navigation_action_compose","value":"投稿を作成"},
-    {"name": "settings_reply_capsule_split", "value": "返信カプセルを分離"},
-    {"name": "settings_reply_capsule_split_desc", "value": "折りたたみ時に返信欄と投稿の操作を別々に表示"},
-    {"name": "reply_capsule_write_reply", "value": "返信"},
-    {"name":"settings_native_bottom_bar","value":"7.0 マテリアルのカプセルナビ"},
-    {"name":"settings_native_bottom_bar_desc","value":"返信カプセルと同じ HarmonyOS 7.0 の没入型マテリアルを使用します。タッチ光、液体インジケーター、持ち手に応じた左右切り替えに対応。利用できない場合は HDS カプセルを使用します。"},
-    {"name":"settings_native_navigation_material","value":"ナビカプセルのマテリアルの厚さ"},
-    {"name":"settings_for_you_only_sensitive_age_title","value":"年齢の確認"},
-    {"name":"settings_for_you_only_sensitive_age_message","value":"「おすすめでセンシティブな内容のみ表示」は18歳以上の方のみ利用できます。18歳以上ですか？"},
-    {"name":"settings_for_you_only_sensitive_age_under","value":"18歳未満"},
-    {"name":"settings_for_you_only_sensitive_age_adult","value":"18歳以上"},
-    {"name":"settings_theme_icon_blue","value":"アイコンブルー"},
-    {"name":"settings_theme_icon_red","value":"アイコンレッド"},
-    {"name":"settings_theme_icon_orange","value":"アイコンオレンジ"},
-    {"name":"settings_theme_icon_yellow","value":"アイコンイエロー"},
-    {"name":"settings_theme_icon_green","value":"アイコングリーン"},
-    {"name":"settings_theme_icon_pink","value":"アイコンピンク"},
-    {"name":"settings_theme_icon_cyan","value":"アイコンシアン"},
-    {"name":"settings_theme_icon_navy","value":"アイコンネイビー"}
+    {
+      "name": "sign_out_confirm_title",
+      "value": "ログアウトしますか？"
+    },
+    {
+      "name": "sign_out_confirm_message",
+      "value": "このアカウントを使うには再度ログインが必要です。"
+    },
+    {
+      "name": "settings_for_you_only_sensitive",
+      "value": "おすすめでセンシティブな内容のみ表示"
+    },
+    {
+      "name": "settings_for_you_only_sensitive_desc",
+      "value": "引用を含め、X がセンシティブと判定した投稿のみをおすすめに表示します。フォロー中やリストには影響せず、メディアの覆いも維持します。"
+    },
+    {
+      "name": "settings_grip_floating",
+      "value": "フローティング操作ボタン"
+    },
+    {
+      "name": "settings_grip_video",
+      "value": "動画操作バー"
+    },
+    {
+      "name": "settings_grip_reply",
+      "value": "投稿返信ボタン"
+    },
+    {
+      "name": "settings_grip_component_desc",
+      "value": "持つ手に合わせて配置します。オフの場合は優先する手を使用します。"
+    },
+    {
+      "name": "settings_grip_hdstabs",
+      "value": "HdsTabs 下部タブバー"
+    },
+    {
+      "name": "settings_grip_hdstabs_desc",
+      "value": "システム標準の左右追従を使用します。オフにすると持つ手に追従しません。"
+    },
+    {
+      "name": "gif_action_save_video",
+      "value": "高画質の動画として保存（MP4）"
+    },
+    {
+      "name": "storage_save_remembered_note",
+      "value": "ダウンロード先を一度選ぶと、以降のファイルはそのフォルダに自動保存されます。オフにするとギャラリーに保存します。"
+    },
+    {
+      "name": "storage_save_to_remembered",
+      "value": "ダウンロードフォルダに保存"
+    },
+    {
+      "name": "storage_permission_reason",
+      "value": "選択したファイルやフォルダへのアクセスを保持します。"
+    },
+    {
+      "name": "timeline_sources_lists",
+      "value": "リスト"
+    },
+    {
+      "name": "timeline_sources_communities",
+      "value": "コミュニティ"
+    },
+    {
+      "name": "timeline_edit",
+      "value": "編集"
+    },
+    {
+      "name": "timeline_done",
+      "value": "完了"
+    },
+    {
+      "name": "timeline_move_up",
+      "value": "上へ移動"
+    },
+    {
+      "name": "timeline_move_down",
+      "value": "下へ移動"
+    },
+    {
+      "name": "timeline_remove_source",
+      "value": "%s を削除"
+    },
+    {
+      "name": "timeline_add_to_home",
+      "value": "ホームのタイムラインに追加"
+    },
+    {
+      "name": "timeline_remove_from_home",
+      "value": "ホームのタイムラインから削除"
+    },
+    {
+      "name": "timeline_sources_failed",
+      "value": "一部のリストやコミュニティを読み込めませんでした。タップして再試行。"
+    },
+    {
+      "name": "timeline_sources_pinned_empty",
+      "value": "固定したタイムラインはありません。下から追加できます。"
+    },
+    {
+      "name": "video_controls_mirror",
+      "value": "操作ボタンを左右反転"
+    },
+    {
+      "name": "video_controls_speed",
+      "value": "速度"
+    },
+    {
+      "name": "video_controls_aspect",
+      "value": "比率"
+    },
+    {
+      "name": "video_controls_background",
+      "value": "バック"
+    },
+    {
+      "name": "video_controls_quality_hd",
+      "value": "HD"
+    },
+    {
+      "name": "video_controls_quality_sd",
+      "value": "SD"
+    },
+    {
+      "name": "video_controls_quality_ld",
+      "value": "LD"
+    },
+    {
+      "name": "video_controls_more",
+      "value": "その他"
+    },
+    {
+      "name": "video_controls_download",
+      "value": "保存"
+    },
+    {
+      "name": "settings_navigation_style",
+      "value": "下部ナビゲーションのスタイル"
+    },
+    {
+      "name": "settings_hds_bottom_bar",
+      "value": "フローティング HdsTabs"
+    },
+    {
+      "name": "settings_split_bottom_bar",
+      "value": "分離カプセルナビゲーション"
+    },
+    {
+      "name": "settings_split_bottom_bar_desc",
+      "value": "左のカプセルでページを切り替え、右の独立ボタンで投稿、新規チャット、更新、先頭への移動を行います。両方に HDS マテリアルを使用し、古いシステムでは互換ナビゲーションを使用します。"
+    },
+    {
+      "name": "settings_me_floating_action",
+      "value": "「自分」のショートカットカプセル"
+    },
+    {
+      "name": "settings_me_floating_action_desc",
+      "value": "「自分」タブ横の独立したカプセルをタップしたときに直接開く機能を選択します。"
+    },
+    {
+      "name": "split_navigation_action_top",
+      "value": "先頭へ"
+    },
+    {
+      "name": "split_navigation_action_refresh",
+      "value": "ホームを更新"
+    },
+    {
+      "name": "split_navigation_action_compose",
+      "value": "投稿を作成"
+    },
+    {
+      "name": "settings_reply_capsule_split",
+      "value": "返信カプセルを分離"
+    },
+    {
+      "name": "settings_reply_capsule_split_desc",
+      "value": "折りたたみ時に返信欄と投稿の操作を別々に表示"
+    },
+    {
+      "name": "reply_capsule_write_reply",
+      "value": "返信"
+    },
+    {
+      "name": "settings_native_bottom_bar",
+      "value": "7.0 マテリアルのカプセルナビ"
+    },
+    {
+      "name": "settings_native_bottom_bar_desc",
+      "value": "返信カプセルと同じ HarmonyOS 7.0 の没入型マテリアルを使用します。タッチ光、液体インジケーター、持ち手に応じた左右切り替えに対応。利用できない場合は HDS カプセルを使用します。"
+    },
+    {
+      "name": "settings_native_navigation_material",
+      "value": "ナビカプセルのマテリアルの厚さ"
+    },
+    {
+      "name": "settings_for_you_only_sensitive_age_title",
+      "value": "年齢の確認"
+    },
+    {
+      "name": "settings_for_you_only_sensitive_age_message",
+      "value": "「おすすめでセンシティブな内容のみ表示」は18歳以上の方のみ利用できます。18歳以上ですか？"
+    },
+    {
+      "name": "settings_for_you_only_sensitive_age_under",
+      "value": "18歳未満"
+    },
+    {
+      "name": "settings_for_you_only_sensitive_age_adult",
+      "value": "18歳以上"
+    },
+    {
+      "name": "settings_theme_icon_blue",
+      "value": "アイコンブルー"
+    },
+    {
+      "name": "settings_theme_icon_red",
+      "value": "アイコンレッド"
+    },
+    {
+      "name": "settings_theme_icon_orange",
+      "value": "アイコンオレンジ"
+    },
+    {
+      "name": "settings_theme_icon_yellow",
+      "value": "アイコンイエロー"
+    },
+    {
+      "name": "settings_theme_icon_green",
+      "value": "アイコングリーン"
+    },
+    {
+      "name": "settings_theme_icon_pink",
+      "value": "アイコンピンク"
+    },
+    {
+      "name": "settings_theme_icon_cyan",
+      "value": "アイコンシアン"
+    },
+    {
+      "name": "settings_theme_icon_navy",
+      "value": "アイコンネイビー"
+    },
+    {
+      "name": "settings_bottom_tab_order",
+      "value": "Bottom tab order"
+    },
+    {
+      "name": "settings_home_tab_order",
+      "value": "Home tab order"
+    },
+    {
+      "name": "settings_tab_order_desc",
+      "value": "Use the arrows to reorder tabs. Changes apply immediately; new tabs are added at the end."
+    },
+    {
+      "name": "settings_tab_move_up",
+      "value": "Move earlier"
+    },
+    {
+      "name": "settings_tab_move_down",
+      "value": "Move later"
+    },
+    {
+      "name": "settings_tab_order_reset",
+      "value": "Reset order"
+    },
+    {
+      "name": "settings_post_actions",
+      "value": "Post action bar"
+    },
+    {
+      "name": "settings_post_actions_desc",
+      "value": "Choose the actions shown in feeds and post details. Turn off counts to keep only icons."
+    },
+    {
+      "name": "settings_post_action_counts",
+      "value": "Show interaction counts"
+    },
+    {
+      "name": "video_rotate",
+      "value": "Open landscape player"
+    },
+    {
+      "name": "video_download_notice_downloading",
+      "value": "動画をダウンロード中"
+    },
+    {
+      "name": "video_download_notice_saving",
+      "value": "動画を保存中"
+    },
+    {
+      "name": "video_download_notice_completed",
+      "value": "動画をダウンロードしました"
+    },
+    {
+      "name": "settings_home_single_tap_top",
+      "value": "ホームをタップして先頭に戻る"
+    },
+    {
+      "name": "settings_home_single_tap_top_desc",
+      "value": "下部のホームタブをタップすると、現在のタイムラインの先頭に戻ります。ダブルタップでの更新は既存の設定に従います。"
+    },
+    {
+      "name": "background_photo_delete",
+      "value": "背景を削除"
+    },
+    {
+      "name": "background_photo_delete_confirm",
+      "value": "この画像を削除しますか？この画像を使用しているページとチャットの背景からも削除されます。この操作は取り消せません。"
+    },
+    {
+      "name": "background_photo_deleted",
+      "value": "背景画像を削除しました"
+    },
+    {
+      "name": "background_photo_delete_failed",
+      "value": "削除できませんでした。もう一度お試しください。"
+    },
+    {
+      "name": "search_refill_query",
+      "value": "検索欄に入力"
+    },
+    {
+      "name": "search_history_delete_title",
+      "value": "この履歴を削除しますか？"
+    },
+    {
+      "name": "global_trends_title",
+      "value": "世界のトレンド"
+    },
+    {
+      "name": "global_trends_description",
+      "value": "人気のポスト"
+    },
+    {
+      "name": "global_trends_explore",
+      "value": "見る"
+    },
+    {
+      "name": "global_trends_today",
+      "value": "今日の人気"
+    },
+    {
+      "name": "global_trends_worldwide",
+      "value": "全世界"
+    },
+    {
+      "name": "global_trends_countries",
+      "value": "国"
+    },
+    {
+      "name": "global_trends_reset",
+      "value": "人気のポストをすべて表示"
+    },
+    {
+      "name": "post_video_publish",
+      "value": "動画をポスト"
+    },
+    {
+      "name": "post_video_copy_link",
+      "value": "動画リンクをコピー"
+    },
+    {
+      "name": "post_video_save",
+      "value": "動画を保存"
+    },
+    {
+      "name": "post_video_link_copied",
+      "value": "動画リンクをコピーしました"
+    },
+    {
+      "name": "post_video_link_copy_failed",
+      "value": "動画リンクをコピーできませんでした"
+    },
+    {
+      "name": "offline_videos_title",
+      "value": "オフライン動画"
+    },
+    {
+      "name": "offline_videos_local",
+      "value": "このデバイスにのみ保存"
+    },
+    {
+      "name": "offline_videos_empty",
+      "value": "オフライン動画はまだありません"
+    },
+    {
+      "name": "offline_videos_search",
+      "value": "オフライン動画または投稿者を検索"
+    },
+    {
+      "name": "offline_videos_no_results",
+      "value": "一致するオフライン動画はありません"
+    },
+    {
+      "name": "offline_videos_clear",
+      "value": "オフライン動画を消去"
+    },
+    {
+      "name": "offline_videos_clear_confirm",
+      "value": "ダウンロードした動画をすべて削除しますか？"
+    },
+    {
+      "name": "offline_videos_delete",
+      "value": "オフライン動画を削除"
+    },
+    {
+      "name": "offline_videos_added",
+      "value": "オフライン動画に追加しました"
+    },
+    {
+      "name": "offline_videos_already",
+      "value": "すでにオフライン動画にあります"
+    },
+    {
+      "name": "offline_videos_play",
+      "value": "オフライン動画を再生"
+    },
+    {
+      "name": "offline_videos_missing",
+      "value": "オフライン動画ファイルが見つかりません。もう一度追加してください。"
+    },
+    {
+      "name": "offline_video_title",
+      "value": "オフライン動画"
+    },
+    {
+      "name": "post_translated_from",
+      "value": "%sから翻訳"
+    },
+    {
+      "name": "post_translated",
+      "value": "翻訳済み"
+    },
+    {
+      "name": "post_show_original",
+      "value": "原文を表示"
+    },
+    {
+      "name": "post_show_translation",
+      "value": "翻訳を表示"
+    },
+    {
+      "name": "settings_cover_single_column",
+      "value": "カバー画面では1列"
+    },
+    {
+      "name": "settings_cover_single_column_desc",
+      "value": "折りたたみ時はホームを1列にし、展開時は選択した列数を維持します。"
+    },
+    {
+      "name": "huawei_cloud_overwrite",
+      "value": "ローカル設定でクラウドを上書き"
+    },
+    {
+      "name": "huawei_cloud_overwrite_message",
+      "value": "選択したグループをこの端末の設定で上書きします。他の端末は次回の同期で反映されます。"
+    },
+    {
+      "name": "huawei_cloud_clear",
+      "value": "クラウド設定を削除"
+    },
+    {
+      "name": "huawei_cloud_clear_message",
+      "value": "このHuaweiアカウントの全クラウド設定を削除し、同期をオフにします。端末の設定は保持され、同期を再度オンにするとアップロードされます。"
+    },
+    {
+      "name": "huawei_cloud_cleared",
+      "value": "クラウド設定を削除し、同期をオフにしました。"
+    },
+    {
+      "name": "huawei_cloud_manage_description",
+      "value": "上書きは選択したグループのみ対象です。削除は全クラウドグループが対象で、端末の設定は残ります。"
+    },
+    {
+      "name": "post_translation_choose_languages",
+      "value": "言語を選択"
+    },
+    {
+      "name": "post_translation_auto_language",
+      "value": "%sを自動翻訳"
+    },
+    {
+      "name": "post_translation_languages_description",
+      "value": "投稿を自動翻訳する言語を選択します。未選択の言語も手動で翻訳できます。"
+    },
+    {"name": "post_link_copy", "value": "Copy link"},
+    {"name": "post_link_open", "value": "Open link"},
+    {"name": "settings_video_download_button", "value": "Video download button"},
+    {"name": "settings_video_download_button_desc", "value": "Show the download button in the top-right corner of videos"},
+    {"name": "video_source_from", "value": "From"},
+    {"name": "video_source_original", "value": "Original video"},
+    {"name": "video_source_open_failed", "value": "Unable to open the original video. Try again."},
+    {"name":"dns_title","value":"DNS over HTTPS (DoH)"},
+    {"name":"dns_enable","value":"Use DNS over HTTPS"},
+    {"name":"dns_enable_desc","value":"Encrypt DNS queries with a chosen HTTPS resolver"},
+    {"name":"dns_scope","value":"Applies to app API requests, downloaded images, video segments and built-in web pages. System players and external apps may use their own DNS. When a proxy resolves the destination, its DNS takes precedence. DoH does not replace a proxy or VPN."},
+    {"name":"dns_provider","value":"DNS provider"},
+    {"name":"dns_provider_ali","value":"AliDNS"},
+    {"name":"dns_provider_cloudflare","value":"Cloudflare"},
+    {"name":"dns_provider_google","value":"Google Public DNS"},
+    {"name":"dns_provider_custom","value":"Custom"},
+    {"name":"dns_endpoint","value":"DoH server URL"},
+    {"name":"dns_endpoint_hint","value":"https://example.com/dns-query"},
+    {"name":"dns_endpoint_desc","value":"Enter a complete RFC 8484 HTTPS endpoint, without credentials, fragments or URI templates such as {?dns}."},
+    {"name":"dns_invalid","value":"Enter a valid HTTPS DoH server URL"},
+    {"name":"dns_saved","value":"Saved. New requests use this setting; reload open web pages."},
+    {"name":"dns_test","value":"Test DNS resolution"},
+    {"name":"dns_test_desc","value":"Tests the current URL by resolving x.com directly, without saving or enabling it. The test bypasses the in-app proxy; a system VPN still applies."},
+    {"name":"dns_test_success","value":"x.com resolved successfully"},
+    {"name":"dns_test_failed","value":"Resolution failed. Check the URL, network or DNS service."},
+    {"name":"dns_failure_note","value":"After saving, DoH failures stop affected requests instead of falling back to system DNS. Turn DoH off and save to restore system DNS. Changes apply after saving."},
+    {"name":"help_support_afdian","value":"Afdian"},
+    {"name":"help_support_qr_summary","value":"コードを読み取って開発を支援"},
+    {"name":"help_support_afdian_summary","value":"おすすめを永久に非表示 · ¥16.6"},
+    {"name":"help_support_afdian_desc","value":"Afdianでおすすめを永久に非表示にするコードを購入し、アプリに戻って有効化してください。"},
+    {"name":"help_support_afdian_buy","value":"Afdianで購入"},
+    {"name":"help_support_expand","value":"タップして展開"},
+    {"name":"help_support_collapse","value":"タップして折りたたむ"},
+    {"name":"help_support_scan_code","value":"対応する決済アプリでこのコードを読み取ってください。"},
+    {"name":"help_support_recommended","value":"おすすめ"}
   ]
 }

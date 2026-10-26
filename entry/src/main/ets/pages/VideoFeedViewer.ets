@@ -1,3 +1,9 @@
+import { MediaViewerNavigationReturn } from '../utils/MediaViewerNavigation';
+import { ProfileVideoStream } from '../services/ProfileVideoStream';
+import { VideoSourceAttribution } from '../components/VideoSourceAttribution';
+import { mediaViewerTitleBarStyle } from '../utils/MediaViewerTitleBar';
+import { STORAGE_KEY_VIDEO_DOWNLOAD_BUTTON } from '../services/MediaSettingsStore';
+import { HdsNavigationMenuItemOptions } from '@kit.UIDesignKit';
 import { offlineReadingStore, OfflineSaveResult } from '../services/OfflineReadingStore';
 import { KeyCode } from '@kit.InputKit';
 import { backInputKey, plainInputKey, contextInputMouse } from '../utils/InputSupport';
@@ -36,6 +42,7 @@ import type { MediaAttachment, Tweet, UserProfile } from '../models/Tweet';
 import { authStore } from '../services/AuthStore';
 import { postLikeStore, STORAGE_KEY_POST_LIKES_REVISION } from '../services/PostLikeStore';
 import { videoPlayerHandoff } from '../services/VideoPlayerHandoff';
+import { videoPipGate } from '../services/VideoPipGate';
 import { MediaViewerMotion, MediaViewerMotionFrame } from '../components/MediaViewerMotion';
 import { captureMediaViewerSource, createMediaSourcePrefix, measureMediaViewerGeometry,
   MediaViewerGeometry, MediaViewerMotionState, MediaViewerSource } from '../utils/MediaViewerMotion';
@@ -91,6 +98,7 @@ import { PostDetail } from './PostDetail';
 import type { PostDetailRouteParam } from './PostDetail';
 import type { UserDetailRouteParam } from './UserDetail';
 import { browsingHistoryStore } from '../services/BrowsingHistoryStore';
+import { OfflineVideoSaveStatus, offlineVideoStore } from '../services/OfflineVideoStore';
 import { VideoDanmakuOverlay } from '../components/VideoDanmakuOverlay';
 import { VideoFullscreenCapsule } from '../components/VideoFullscreenCapsule';
 import { VideoFeedActionButton } from '../components/VideoFeedActionButton';
@@ -106,11 +114,13 @@ import { materialModifier } from '../utils/SystemMaterial';
 export interface VideoFeedRouteParam {
   source?: MediaViewerSource;
   sourceTweetIds?: string[];
+  sourceProfileId?: string;
   tweets: Tweet[];
   index: number;
   startPlaying?: boolean;
   startMediaId?: string;
   startPositionSeconds?: number;
+  offline?: boolean;
   onLike: (target: Tweet, liked: boolean) => Promise<boolean>;
   onRepost: (target: Tweet, reposted: boolean) => Promise<boolean>;
   onReply: (target: Tweet) => void;
@@ -159,6 +169,7 @@ export struct VideoFeedViewer {
   @State private motion: MediaViewerMotionState = new MediaViewerMotionState();
   @State private initialVideoSurfaceReady: boolean = false;
   private motionSurfaceId: string = createMediaSourcePrefix() + 'video-viewer';
+  private returnNavigation: MediaViewerNavigationReturn = new MediaViewerNavigationReturn();
   private routeLoaded: boolean = false;
   @StorageProp('reduceMotionEnabled') private reduceMotion: boolean = false;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
@@ -268,7 +279,7 @@ export struct VideoFeedViewer {
   @State private likePending: boolean = false;
   @State private repostPending: boolean = false;
   @State private bookmarkPending: boolean = false;
-  private closing: boolean = false;
+  @State private closing: boolean = false;
   private viewerAlive: boolean = true;
   private returningMediaId: string = '';
   private fullscreenAdvanceFrom: number = -1;
@@ -283,6 +294,9 @@ export struct VideoFeedViewer {
   @State private recommendationRetryNeeded: boolean = false;
   private recommendationStream: VideoRecommendationStream = new VideoRecommendationStream();
   private videoFeedExhausted: boolean = false;
+  private profileStream: ProfileVideoStream | null = null;
+  @State private openingSourceVideo: boolean = false;
+  @StorageProp(STORAGE_KEY_VIDEO_DOWNLOAD_BUTTON) private videoDownloadButton: boolean = true;
   private preloadPolicyEpoch: number = 0;
   private networkPolicyConnection: connection.NetConnection | null = null;
   private pagerShown: boolean = false;
@@ -365,15 +379,21 @@ export struct VideoFeedViewer {
       this.recommendationStream.noteViewed(selected.tweet.id);
       browsingHistoryStore.record(getContext(this) as common.UIAbilityContext, selected.tweet);
     }
+    this.profileStream = (param.sourceProfileId ?? '').length > 0 ?
+      new ProfileVideoStream(param.sourceProfileId ?? '', this.recommendationStream) : null;
     this.loadMoreAction = (): Promise<VideoFeedPage> => this.loadRecommendedVideos();
+    if (this.profileStream !== null && selected !== undefined) {
+      this.appendVideoPage([selected.tweet]);
+    }
     this.initialIndex = this.current;
     this.manualStartPending = param.startPlaying === true;
     this.startMediaId = param.startMediaId === undefined ? '' : param.startMediaId;
     this.startPositionSeconds = param.startPositionSeconds === undefined ? 0 : param.startPositionSeconds;
     this.startPositionPending = this.startMediaId.length > 0 && this.startPositionSeconds > 0;
+    this.videoFeedExhausted = param.offline === true;
     this.updatePreloadPolicy();
     this.syncCurrentPostState();
-    if (this.current >= this.items.length - 3) {
+    if (!this.videoFeedExhausted && this.current >= this.items.length - 3) {
       this.loadMoreVideos();
     }
   }
@@ -483,13 +503,27 @@ export struct VideoFeedViewer {
     return viewerId.length > 0 && viewerId === tweet.author.id;
   }
 
+  private toggleVideoOrientation(): void {
+    if (this.currentVideo() === null) { return; }
+    // This title-bar request starts the active player's fullscreen cover in
+    // landscape; its bottom fullscreen button keeps the portrait entry.
+    this.fullscreenRequest++;
+  }
+
   private close(): void {
     if (this.closing) {
       return;
     }
+    if (this.returnNavigation.request((): void => this.close(), (): void => ResponsiveLayout.closeContentDestination(this.pageStack, true))) { return; }
     this.closing = true;
     this.recommendationStream.close();
     const media: MediaAttachment | null = this.currentVideo();
+    // PiP owns the real surface. A normal dismiss would animate the whole
+    // viewer into the card and hand its decoder away from the floating window.
+    if (media !== null && videoPipGate.isHeld(media.id)) {
+      this.finishNavigationReturn();
+      return;
+    }
     const finish: () => void = (): void => {
       const sourceId: string = media !== null && this.motion.source?.mediaId === media.id ? this.motion.source.id : '';
       const ui = this.getUIContext();
@@ -502,7 +536,7 @@ export struct VideoFeedViewer {
       }
       if (!returned || media === null) {
         if (media !== null) { videoPlayerHandoff.request(media.id); }
-        ResponsiveLayout.closeContentDestination(this.pageStack, false);
+        this.finishNavigationReturn();
         return;
       }
       this.returningMediaId = media.id;
@@ -511,7 +545,7 @@ export struct VideoFeedViewer {
       ui.postFrameCallback(new MediaViewerMotionFrame((): void => {
         if (!this.viewerAlive) { return; }
         ui.postFrameCallback(new MediaViewerMotionFrame((): void => {
-          if (this.viewerAlive) { ResponsiveLayout.closeContentDestination(this.pageStack, false); }
+          if (this.viewerAlive) { this.finishNavigationReturn(); }
         }));
       }));
     };
@@ -526,7 +560,12 @@ export struct VideoFeedViewer {
     this.motion.dismiss(this.getUIContext(), source, geometry.viewport, geometry.target, this.reduceMotion, finish);
   }
 
+  private finishNavigationReturn(): void {
+    if (!this.returnNavigation.complete()) { ResponsiveLayout.closeContentDestination(this.pageStack, false); }
+  }
+
   aboutToDisappear(): void {
+    this.returnNavigation.detach();
     this.stopDanmakuKeyboardObserver();
     ++this.danmakuGeneration;
     this.viewerAlive = false;
@@ -616,7 +655,6 @@ export struct VideoFeedViewer {
         // Preserve attachment references so updated counts do not reload the player.
         this.items[index].tweet = post;
         if (index === this.current) { this.syncCurrentPostState(); }
-        break;
       }
     }
     if (this.postSheetTweet !== null && this.postSheetTweet.id === post.id) {
@@ -874,7 +912,8 @@ export struct VideoFeedViewer {
   }
 
   private async loadRecommendedVideos(): Promise<VideoFeedPage> {
-    const page: VideoRecommendationPage = await this.recommendationStream.nextPage();
+    const page: VideoRecommendationPage = this.profileStream === null ?
+      await this.recommendationStream.nextPage() : await this.profileStream.nextPage();
     if (this.closing) { return { tweets: [], hasMore: false }; }
     if (page.error.length > 0) {
       promptAction.showToast({ message: this.text($r('app.string.video_recommendations_failed')) + ' · ' + page.error });
@@ -886,16 +925,15 @@ export struct VideoFeedViewer {
   private appendVideoPage(tweets: Tweet[]): number {
     const added: VideoFeedItem[] = [];
     const batchIds: Set<string> = new Set<string>();
-    for (let i: number = 0; i < tweets.length; i++) {
-      const tweet: Tweet = tweets[i];
-      if (postModerationStore.hidden(tweet)) { continue; }
-      if (this.filterHideAds && isAdPost(tweet.presentation)) { continue; }
-      const videos: MediaAttachment[] = this.videoAttachments(tweet);
-      if (videos.length === 0 || this.videoDataSource.has(tweet.id) || batchIds.has(tweet.id)) {
-        continue;
+    for (const tweet of tweets) {
+      if (postModerationStore.hidden(tweet) || this.filterHideAds && isAdPost(tweet.presentation)) { continue; }
+      for (const media of this.videoAttachments(tweet)) {
+        if (this.items.some((item: VideoFeedItem): boolean =>
+          item.attachments.some((existing: MediaAttachment): boolean => existing.id === media.id)) ||
+          batchIds.has(media.id)) { continue; }
+        batchIds.add(media.id);
+        added.push(new VideoFeedItem(tweet, [media], this.items.length + added.length));
       }
-      batchIds.add(tweet.id);
-      added.push(new VideoFeedItem(tweet, videos, this.items.length + added.length));
     }
     if (added.length > 0) {
       this.items.push(...added);
@@ -906,7 +944,7 @@ export struct VideoFeedViewer {
   }
 
   private onVideoCompleted(index: number): void {
-    if (this.postSheetActive || !this.autoAdvance || index !== this.current) {
+    if (!this.pageShown || this.closing || this.postSheetActive || !this.autoAdvance || index !== this.current) {
       return;
     }
     if (this.videoFeedLayout === VIDEO_FEED_LAYOUT_BILIBILI) {
@@ -1084,13 +1122,17 @@ export struct VideoFeedViewer {
       return;
     }
     if (this.currentTweet()?.id !== tweet.id || this.closing) { return; }
-    const removedIndex: number = this.current;
-    this.items.splice(removedIndex, 1);
+    // A profile post can own several consecutive video cells.
+    for (let index: number = this.items.length - 1; index >= 0; index--) {
+      if (this.items[index].tweet.id === tweet.id) {
+        this.items.splice(index, 1);
+        this.videoDataSource.remove(index);
+      }
+    }
     this.showMoreSheet = false;
     this.videoViewportHeights = [];
     this.videoChromeVisible = [];
     this.current = this.clampIndex(this.current, this.items.length);
-    this.videoDataSource.remove(removedIndex);
     this.preloadNextPage();
     promptAction.showToast({
       message: this.text(submitted ? $r('app.string.post_menu_feedback_sent') : $r('app.string.post_menu_hidden_local')),
@@ -1317,18 +1359,52 @@ export struct VideoFeedViewer {
       return;
     }
     this.downloading = true;
-    promptAction.showToast({ message: this.text($r('app.string.media_download_started')), duration: 1600 });
     const context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
     mediaDownloadService.download(context, source, media.id, true, (result: number): void => {
       this.downloading = false;
       if (result === MEDIA_DOWNLOAD_SUCCESS) {
-        promptAction.showToast({ message: this.text($r('app.string.media_video_saved')), duration: 2200 });
+        return;
       } else if (result === MEDIA_DOWNLOAD_CANCELED) {
         promptAction.showToast({ message: this.text($r('app.string.media_download_canceled')), duration: 1800 });
       } else {
         promptAction.showToast({ message: this.text($r('app.string.media_download_failed')), duration: 2400 });
       }
     });
+  }
+
+  private async addCurrentVideoOffline(): Promise<void> {
+    const media: MediaAttachment | null = this.currentVideo();
+    const tweet: Tweet | null = this.currentTweet();
+    if (media === null || tweet === null || this.downloading || this.choosingDownloadQuality) {
+      return;
+    }
+    this.showMoreSheet = false;
+    this.choosingDownloadQuality = true;
+    let source: string = '';
+    try {
+      source = await chooseVideoDownloadUrl(this.getUIContext(), media);
+    } finally {
+      this.choosingDownloadQuality = false;
+    }
+    if (source.length === 0 || this.closing) {
+      return;
+    }
+    this.downloading = true;
+    const context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
+    try {
+      const status: OfflineVideoSaveStatus = await offlineVideoStore.save(context, tweet, media, source);
+      if (status === OfflineVideoSaveStatus.SAVED) {
+        promptAction.showToast({ message: this.text($r('app.string.offline_videos_added')), duration: 1800 });
+      } else if (status === OfflineVideoSaveStatus.ALREADY_SAVED) {
+        promptAction.showToast({ message: this.text($r('app.string.offline_videos_already')), duration: 1800 });
+      } else if (status === OfflineVideoSaveStatus.FAILED) {
+        promptAction.showToast({ message: this.text($r('app.string.media_download_failed')), duration: 1800 });
+      }
+    } catch (error) {
+      promptAction.showToast({ message: this.text($r('app.string.media_download_failed')), duration: 1800 });
+    } finally {
+      this.downloading = false;
+    }
   }
 
   private reportCurrentPost(): void {
@@ -1347,6 +1423,56 @@ export struct VideoFeedViewer {
 
   private text(resource: Resource): string {
     return getContext(this).resourceManager.getStringSync(resource);
+  }
+
+  private nativeViewerMenus(): HdsNavigationMenuItemOptions[] {
+    const entries: HdsNavigationMenuItemOptions[] = [];
+    if (this.videoDownloadButton) {
+      entries.push({ content: { icon: $r('sys.symbol.download'), label: $r('app.string.media_download'),
+        isEnabled: !this.downloading && !this.choosingDownloadQuality,
+        action: (): void => { void this.downloadCurrentVideo(); } } });
+    }
+    entries.push({ content: { icon: $r('sys.symbol.rectangle_portrait_rotate'), label: $r('app.string.video_rotate'),
+      action: (): void => { void this.toggleVideoOrientation(); } } });
+    entries.push({ content: { icon: $r('sys.symbol.more'), label: $r('app.string.video_feed_more'),
+      action: (): void => { this.showMoreSheet = true; } } });
+    return entries;
+  }
+
+  private async openSourceVideo(postId: string): Promise<void> {
+    if (postId.length === 0 || this.openingSourceVideo || this.closing) { return; }
+    this.openingSourceVideo = true;
+    const mediaId: string = this.currentVideo()?.id ?? '';
+    const generation: number = xPrivateClient.sessionGeneration();
+    try {
+      const result: XPrivateResult = await xPrivateClient.tweetDetail(postId);
+      if (this.closing || !this.pageShown || this.currentVideo()?.id !== mediaId ||
+        generation !== xPrivateClient.sessionGeneration()) { return; }
+      const page: TweetDetailPage | null = result.ok ? XTimelineParser.parseTweetDetail(result.body, postId) : null;
+      const post: Tweet | null = page?.focal ?? null;
+      if (post === null) { throw new Error('source_video_unavailable'); }
+      const media: MediaAttachment | undefined = post.attachments?.find((item: MediaAttachment): boolean => item.id === mediaId) ??
+        post.attachments?.find((item: MediaAttachment): boolean => item.type === 'video' && item.mediaUrl.length > 0);
+      if (media === undefined) { throw new Error('source_video_unavailable'); }
+      const param: VideoFeedRouteParam = {
+        tweets: [post], index: 0, startPlaying: true, startMediaId: media.id,
+        onLike: this.likeAction, onRepost: this.repostAction,
+        onReply: (target: Tweet): void => this.openPostSheet(target)
+      };
+      this.pageStack.pushPath({ name: 'VideoFeedViewer', param: param });
+    } catch (error) {
+      if (!this.closing && this.pageShown) {
+        promptAction.showToast({ message: this.text($r('app.string.video_source_open_failed')) });
+      }
+    } finally { this.openingSourceVideo = false; }
+  }
+
+  @Builder
+  private SourceAttribution(tweet: Tweet): void {
+    if (this.currentVideo() !== null) {
+      VideoSourceAttribution({ media: this.currentVideo() as MediaAttachment, postId: tweet.id,
+        onOpen: (postId: string): void => { void this.openSourceVideo(postId); } })
+    }
   }
 
   @Builder
@@ -1652,7 +1778,7 @@ export struct VideoFeedViewer {
   private MoreSheet(): void {
     Scroll() {
       Column() {
-        if (menuActionsForGroup('video_menu').filter((option: MenuActionOption): boolean => option.id !== 'video.share')
+        if (menuActionsForGroup('video_menu')
           .every((option: MenuActionOption): boolean => !this.menuVisible(option.id))) {
           Text($r('app.string.settings_menu_empty')).fontFamily(this.appFontFamily)
             .fontColor($r('app.color.text_secondary')).padding(20)
@@ -1758,10 +1884,10 @@ export struct VideoFeedViewer {
                   this.openCurrentPost();
                 })
             }
-            if (this.menuVisible('video.download')) {
+            if (this.menuVisible('video.offline')) {
               this.MoreMenuRow($r('sys.symbol.plus'), $r('app.string.video_feed_add_offline'), '',
                 (): void => {
-                  this.downloadCurrentVideo();
+                  void this.addCurrentVideoOffline();
                 })
             }
             if (this.menuVisible('video.report')) {
@@ -1846,9 +1972,11 @@ export struct VideoFeedViewer {
       onViewerDanmakuToggle: (): void => { this.danmakuEnabled = !this.danmakuEnabled; },
       onViewerDanmakuSend: (): void => { this.showDanmakuSheet = true; },
       mediaViewerLayout: true,
+
       viewerFullscreenRequest: this.feedItem(item).index === this.current ? this.fullscreenRequest : 0,
       viewerDanmakuContent: (): void => this.FullscreenDanmaku(this.feedItem(item)),
-      viewerPlayerRetained: this.shouldRetainVideoPlayer(item),
+      viewerPlayerRetained: this.shouldRetainVideoPlayer(item) ||
+        videoPipGate.isHeld(this.feedItem(item).attachments[0].id),
       viewerUsesSideComments: this.useSideComments(),
       viewerPhoneFeedLayout: this.usesPhoneFeedLayout(),
       viewerCommentProgress: this.feedItem(item).index === this.current ? this.commentPreviewProgress : 0,
@@ -1874,10 +2002,12 @@ export struct VideoFeedViewer {
       landscapePostContent: (): void => this.LandscapePostOverlay(this.feedItem(item).tweet),
       onViewerBack: (): void => this.close(),
       onViewerMore: (): void => { this.showMoreSheet = true; },
+
       onViewerControlsChanged: (visible: boolean): void => {
         this.updateVideoChromeVisible(this.feedItem(item).index, visible);
       },
-      playbackEnabled: (this.pageShown || this.castPickerShowing || this.castingMediaId === this.feedItem(item).attachments[0].id) &&
+      playbackEnabled: videoPipGate.isHeld(this.feedItem(item).attachments[0].id) ||
+        (this.pageShown || this.castPickerShowing || this.castingMediaId === this.feedItem(item).attachments[0].id) &&
         this.feedItem(item).index === this.current,
       preloadMediaId: this.preloadMediaIdForItem(item),
       initialPositionMediaId: this.startPositionPending && this.feedItem(item).index === this.initialIndex ? this.startMediaId : '',
@@ -1888,6 +2018,7 @@ export struct VideoFeedViewer {
       videoFeedEnabled: false,
       captionEnabled: this.captionsEnabled,
       pipEnabled: true,
+      pipNavigationHandleId: this.getUniqueId(),
       showDownloadButton: false,
       naturalVideoSize: true,
       limitNaturalHeight: false,
@@ -2038,7 +2169,7 @@ export struct VideoFeedViewer {
         Stack({ alignContent: Alignment.Top }) {
           Column() {
             if (this.isVideoChromeVisible(this.feedItem(item).index)) {
-              this.TopControls()
+              Row().height(0)
             }
           }
           .opacity(this.isVideoChromeVisible(this.feedItem(item).index) ? 1 - this.commentPreviewProgress : 0)
@@ -2131,68 +2262,13 @@ export struct VideoFeedViewer {
     }
   }
 
-  @Builder
-  private TopControls(): void {
-    Row({ space: 10 }) {
-      MaterialButton({
-        buttonWidth: 44,
-        buttonPressFeedback: this.usesBiliLayout(),
-        buttonHeight: 44,
-        buttonRadius: 22,
-        surfaceColor: '#66000000',
-        materialLevel: 1,
-        applyShadow: true,
-        lightColor: this.accentColor,
-        accessibilityLabel: this.text($r('app.string.video_exit_fullscreen')),
-        buttonMonopolizeEvents: true,
-        onButtonClick: (): void => this.close()
-      }) {
-        SymbolGlyph($r('sys.symbol.arrow_left'))
-          .fontSize(22)
-          .fontColor([$r('app.color.text_on_brand')])
-      }
-      Row() {
-        if (this.items.length > 1) {
-          Text((this.current + 1) + ' / ' + this.items.length).fontFamily(this.appFontFamily)
-            .fontSize($r('sys.float.Body_M'))
-            .fontColor($r('app.color.text_on_brand'))
-            .backgroundColor(deviceInfo.apiAvailable('26.0.0') ? Color.Transparent : '#66000000')
-            .attributeModifier(materialModifier(this.controlMaterial(false)))
-            .borderRadius(14)
-            .padding({ left: 10, right: 10, top: 4, bottom: 4 })
-        }
-      }
-      .layoutWeight(1)
-      .justifyContent(FlexAlign.Center)
-      MaterialButton({
-        buttonWidth: 44,
-        buttonPressFeedback: this.usesBiliLayout(),
-        buttonHeight: 44,
-        buttonRadius: 22,
-        surfaceColor: '#66000000',
-        materialLevel: 1,
-        applyShadow: true,
-        lightColor: this.accentColor,
-        accessibilityLabel: this.text($r('app.string.video_feed_more')),
-        buttonMonopolizeEvents: true,
-        onButtonClick: (): void => {
-          this.showMoreSheet = true;
-        }
-      }) {
-        SymbolGlyph($r('sys.symbol.ellipsis_circle'))
-          .fontSize(23)
-          .fontColor([$r('app.color.text_on_brand')])
-      }
-    }
-    .width('100%')
-    .padding({ left: 14, right: 14, top: this.statusBarHeight + 10 })
-  }
 
   @Builder
   private PostOverlay(tweet: Tweet, bottomInset: number): void {
     Column({ space: 10 }) {
       // Both the caption and comment count open the current video's conversation.
       Column({ space: 6 }) {
+        this.SourceAttribution(tweet)
         this.AuthorLine(tweet)
         if (tweet.text.length > 0) {
           Text() { EmojiSpans(this.getUIContext(), tweet.text, $r('sys.float.Body_L'), this.systemEmojiEnabled) }
@@ -2225,6 +2301,7 @@ export struct VideoFeedViewer {
   @Builder
   private CompactBottomCaption(tweet: Tweet): void {
     Column({ space: $r('app.float.compact_video_bottom_gap') }) {
+      this.SourceAttribution(tweet)
       Row({ space: $r('app.float.compact_video_bottom_gap') }) {
         Row({ space: $r('app.float.compact_video_bottom_gap') }) {
           ProxyAvatar({ url: tweet.author.avatarUrl ?? '',
@@ -2512,6 +2589,7 @@ export struct VideoFeedViewer {
   @Builder
   private ShortVideoCaption(tweet: Tweet, bottomInset: number): void {
     Column({ space: this.compactWindow() ? 4 : 6 }) {
+      this.SourceAttribution(tweet)
       Row({ space: 6 }) {
         Text(tweet.author.name).fontFamily(this.appFontFamily)
           .fontSize(this.compactWindow() ? $r('app.float.compact_video_caption_font') : $r('sys.float.Body_L'))
@@ -2570,6 +2648,13 @@ export struct VideoFeedViewer {
     const item: VideoFeedItem | undefined = this.items[this.current];
     if (item === undefined || item.tweet.id !== tweet.id || index < 0 || index >= videos.length ||
       item.attachments[0]?.id === videos[index].id) { return; }
+    const existing: number = this.items.findIndex((entry: VideoFeedItem): boolean =>
+      entry.tweet.id === tweet.id && entry.attachments[0]?.id === videos[index].id);
+    if (existing >= 0) {
+      this.pager.changeIndex(existing, false);
+      hapticTick();
+      return;
+    }
     this.preloadActive = false;
     this.holdSpeedActive = false;
     this.fullscreenRequest = 0;
@@ -2772,6 +2857,7 @@ export struct VideoFeedViewer {
   @Builder
   private BiliFooter(tweet: Tweet): void {
     Column({ space: 12 }) {
+      this.SourceAttribution(tweet)
       this.AuthorLine(tweet)
       Text() { EmojiSpans(this.getUIContext(), tweet.text, $r('sys.float.Body_L'), this.systemEmojiEnabled) }
         .fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontColor($r('app.color.text_on_brand'))
@@ -2824,7 +2910,7 @@ export struct VideoFeedViewer {
   @Builder
   private BiliOverlay(item: VideoFeedItem): void {
     Column() {
-      this.TopControls()
+      Row().height(0)
       Stack({ alignContent: Alignment.Bottom }) {
         if (item.index === this.current && this.danmakuEnabled) {
           ForEach([item.tweet.id + '-' + item.attachments[0].id], (key: string) => {
@@ -2874,7 +2960,7 @@ export struct VideoFeedViewer {
     Swiper(this.pager) {
       LazyForEach(this.videoDataSource, (item: VideoFeedItem) => {
         VideoFeedCell({ item: item, content: this.VideoPage })
-      }, (item: VideoFeedItem): string => item.tweet.id)
+      }, (item: VideoFeedItem): string => item.tweet.id + '-' + item.attachments[0].id)
     }
     .index(this.current)
     .vertical(true)
@@ -2917,6 +3003,7 @@ export struct VideoFeedViewer {
   @LocalBuilder
   private LandscapePostOverlay(tweet: Tweet): void {
     Column({ space: 4 }) {
+        this.SourceAttribution(tweet)
         Text() { EmojiSpans(this.getUIContext(), tweet.text, $r('sys.float.Caption_M'), this.systemEmojiEnabled) }
           .fontSize($r('sys.float.Caption_M')).fontWeight(FontWeight.Medium)
           .fontFamily(this.appFontFamily === DEFAULT_APP_FONT_FAMILY ? this.contentFontFamily : this.appFontFamily).fontColor($r('app.color.text_on_brand'))
@@ -3024,15 +3111,25 @@ export struct VideoFeedViewer {
       }, this.sheetMaterialEnabled, this.sheetMaterialLevel, this.sheetWindowBreakpoint, this.compactWindow()))
       }
     }
-    .mode(NavDestinationMode.DIALOG)
+    .mode(NavDestinationMode.STANDARD)
     .systemTransition(pageSystemTransition(this.pageTransitionMode, this.motion.enabled() ? NavigationSystemTransitionType.NONE : NavigationSystemTransitionType.DEFAULT))
-    .onReady((): void => this.readRoute())
+    .onReady((context: NavDestinationContext): void => {
+      this.returnNavigation.attach(context);
+      this.readRoute();
+    })
     .titleMode(HdsNavDestinationTitleMode.MINI)
-    .hideTitleBar(true)
-    .hideBackButton(true)
+    .titleBar({
+      avoidLayoutSafeArea: true,
+      content: { title: { mainTitle: '' }, menu: { value: this.nativeViewerMenus() } },
+      style: mediaViewerTitleBarStyle()
+    })
+    .hideTitleBar(this.closing || !this.isVideoChromeVisible(this.current))
+    .hideBackButton(false)
     .ignoreLayoutSafeArea([LayoutSafeAreaType.SYSTEM], [LayoutSafeAreaEdge.TOP, LayoutSafeAreaEdge.BOTTOM])
     .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])
     .onShown((): void => {
+      this.viewerAlive = true;
+      this.closing = false;
       this.pageShown = true;
       AppStorage.setOrCreate<boolean>(STORAGE_KEY_VIDEO_FEED_ACTIVE, true);
       this.startNetworkPolicyMonitoring();
@@ -3041,10 +3138,14 @@ export struct VideoFeedViewer {
       this.recommendationStream.flush();
       this.pageShown = false;
       this.preloadActive = false;
+      const media: MediaAttachment | null = this.currentVideo();
+      if (media !== null && videoPipGate.isHeld(media.id)) {
+        AppStorage.setOrCreate<boolean>(STORAGE_KEY_VIDEO_FEED_ACTIVE, false);
+      }
       this.stopNetworkPolicyMonitoring();
     })
     .onKeyEvent((event: KeyEvent): boolean => backInputKey(event, (): void => this.inputBack()))
     .onBackPressed((): boolean => { this.inputBack(); return true; })
-    .backgroundColor(Color.Transparent);
+    .backgroundColor(this.closing ? Color.Transparent : $r('app.color.media_viewer_black_background'));
   }
 }

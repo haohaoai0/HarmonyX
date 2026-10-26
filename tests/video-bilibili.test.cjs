@@ -51,6 +51,7 @@ function setup() {
   const tweet = {id:'root',attachments:[a,b],metrics:{replyCount:4}};
   return Object.assign(new Feed(), {
     items:[{tweet, attachments:[a],index:0}], current:0, videoFeedLayout:2, autoAdvance:true,
+    pageShown:true, closing:false,
     currentTweet() { return this.items[this.current]?.tweet ?? null; },
     currentVideo() { return this.items[this.current]?.attachments[0] ?? null; },
     pager:{calls:0, showNext() { this.calls++; }}, postSheetActive:false,

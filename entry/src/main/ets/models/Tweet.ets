@@ -34,6 +34,8 @@ export interface VideoRendition {
 }
 
 export interface MediaAttachment {
+  sourcePostId?: string;
+  sourceAuthor?: TweetAuthor | null;
   id: string;
   type: string;
   // Highest-quality MP4, or HLS when no MP4 exists (still image for a photo).

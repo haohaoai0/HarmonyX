@@ -8,6 +8,7 @@ export class DesktopLayout {
 
   static timelineColumns(mode: number, contentWidth: number): number {
     if (mode === 1 || mode === 2 || mode === 3) { return mode; }
+    if (mode === 4) { return 2; }
     const contentBreakpoint: string = ResponsiveLayout.breakpointForWidth(contentWidth);
     if (ResponsiveLayout.isSmall(contentBreakpoint)) { return 1; }
     return ResponsiveLayout.isLarge(contentBreakpoint) ? 3 : 2;

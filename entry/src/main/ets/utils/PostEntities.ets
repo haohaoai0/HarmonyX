@@ -18,8 +18,8 @@ export function requestSearch(query: string): void {
   AppStorage.setOrCreate<string>(SEARCH_REQUEST_KEY, query);
 }
 
-// Links go to the system browser: t.co expansion and page rendering are the
-// browser's job, which keeps this app out of the redirect business.
+// Post bodies already use the destination supplied by X's URL entities.
+// Missing expansions still fall back to opening the original short link.
 export function openExternalLink(context: common.UIAbilityContext, url: string): void {
   if (url.length === 0) {
     return;

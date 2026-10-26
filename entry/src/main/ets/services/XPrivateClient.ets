@@ -23,6 +23,8 @@ import { XListParser } from './XListParser';
 import { connectTimelineFeatures } from './XConnectFeatures';
 import { JetfuelDecoder } from './JetfuelDecoder';
 import { StarterPackPage, XStarterPackParser } from './XStarterPackParser';
+import { GlobalTrendsPage } from '../models/GlobalTrends';
+import { XGlobalTrendsParser } from './XGlobalTrendsParser';
 import { XPostReceipt, XPostResponse } from './XPostResponse';
 import { ResponseCache } from './ResponseCache';
 import { requestLog } from './RequestLog';
@@ -1306,6 +1308,15 @@ export class XPrivateClient {
     return this.searchTimeline(query, cursor, count, 'Latest');
   }
 
+  searchSuggestions(query: string): Promise<XPrivateResult> {
+    const form: Record<string, string> = {
+      'q': query, 'count': '10', 'result_type': 'topics,users', 'src': 'search_box',
+      'include_ext_is_blue_verified': '1', 'include_ext_verified_type': '1',
+      'include_ext_profile_image_shape': '1'
+    };
+    return this.restOn('https://x.com/i/api', 'GET', '/1.1/search/typeahead.json', form);
+  }
+
   // The ordinary HomeTimeline does not accept a sensitive-only flag. A search
   // timeline is the server-side channel that can request those posts explicitly.
   sensitiveTimeline(cursor: string, count: number): Promise<XPrivateResult> {
@@ -1425,6 +1436,74 @@ export class XPrivateClient {
     } catch (error) {
       hilog.warn(DOMAIN, TAG, 'StarterPacks failed: %{public}s', JSON.stringify(error));
       return new XPrivateResult(false, -1, '', 'pack_decode_failed', label);
+    } finally { request.destroy(); }
+  }
+
+  async globalTrends(path: string = 'global-trending/home'): Promise<XPrivateResult> {
+    const label: string = 'GlobalTrends';
+    if (!this.session.isUsable() || this.context === undefined) {
+      hilog.info(DOMAIN, TAG, 'GlobalTrends skipped: no_session');
+      return new XPrivateResult(false, 0, '', 'no_session', label);
+    }
+    const requestPath: string = XGlobalTrendsParser.requestPath(path);
+    if (requestPath.length === 0) {
+      hilog.info(DOMAIN, TAG, 'GlobalTrends skipped: invalid_path');
+      return new XPrivateResult(false, 0, '', 'invalid_trends_path', label);
+    }
+    const generation: number = this.sessionGeneration();
+    const context: common.Context = this.context;
+    const url: string = 'https://x.com/i/jfapi/' + requestPath;
+    const request: http.HttpRequest = http.createHttp();
+    try {
+      const headers: Record<string, string> = this.headers('', 'application/octet-stream');
+      headers['x-jf-v'] = 'JP-5';
+      headers['x-jf-client-theme'] = AppStorage.get<string>('harmonyx.display_mode') === 'dark' ? 'dark' : 'light';
+      headers['origin'] = 'https://x.com';
+      headers['referer'] = 'https://x.com/i/jf/global-trending';
+      const timezone: string = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      if (timezone.length > 0) { headers['timezone'] = timezone; }
+      hilog.info(DOMAIN, TAG, 'GlobalTrends begin path=%{public}s tz=%{public}s', requestPath, timezone);
+      const transaction: string = await xTransactionId.resolve('GET', XPrivateClient.pathOf(url));
+      hilog.info(DOMAIN, TAG, 'GlobalTrends transaction resolved=%{public}s', transaction.length > 0 ? 'yes' : 'no');
+      if (transaction.length > 0) { headers['X-Client-Transaction-Id'] = transaction; }
+      const options: http.HttpRequestOptions = { method: http.RequestMethod.GET, header: headers,
+        expectDataType: http.HttpDataType.ARRAY_BUFFER,
+        connectTimeout: REQUEST_TIMEOUT_MS, readTimeout: REQUEST_TIMEOUT_MS };
+      await proxyStore.apply(options);
+      if (generation !== this.sessionGeneration() || !this.session.isUsable()) {
+        return new XPrivateResult(false, 0, '', 'stale_session', label);
+      }
+      hilog.info(DOMAIN, TAG, 'GlobalTrends request dispatched');
+      const response: http.HttpResponse = await request.request(url, options);
+      const responseBytes: number = response.result === undefined || response.result === null ? -1 :
+        typeof response.result === 'string' ? response.result.length :
+          (response.result as ArrayBuffer).byteLength;
+      hilog.info(DOMAIN, TAG, 'GlobalTrends HTTP %{public}d bytes %{public}d path %{public}s',
+        response.responseCode, responseBytes, requestPath);
+      if (generation !== this.sessionGeneration() || !this.session.isUsable()) {
+        return new XPrivateResult(false, 0, '', 'stale_session', label);
+      }
+      if (response.responseCode < 200 || response.responseCode >= 300) {
+        hilog.warn(DOMAIN, TAG, 'GlobalTrends HTTP failure %{public}d body=%{public}s',
+          response.responseCode, typeof response.result === 'string' ? response.result.substring(0, 500) : '');
+        return new XPrivateResult(false, response.responseCode, '', 'trends_request_failed', label);
+      }
+      if (!(response.result instanceof ArrayBuffer)) {
+        hilog.warn(DOMAIN, TAG, 'GlobalTrends unexpected response type %{public}s',
+          typeof response.result === 'string' ? response.result.substring(0, 500) : 'non_buffer');
+        return new XPrivateResult(false, response.responseCode, '', 'trends_response_not_buffer', label);
+      }
+      const buffer: ArrayBuffer = response.result as ArrayBuffer;
+      const page: GlobalTrendsPage = XGlobalTrendsParser.parse(
+        JetfuelDecoder.load(context).decode(buffer), requestPath);
+      return new XPrivateResult(true, response.responseCode, JSON.stringify(page), '', label);
+    } catch (error) {
+      if (generation !== this.sessionGeneration() || !this.session.isUsable()) {
+        return new XPrivateResult(false, 0, '', 'stale_session', label);
+      }
+      const message: string = error instanceof Error ? error.message : JSON.stringify(error);
+      hilog.warn(DOMAIN, TAG, 'GlobalTrends failed message=%{public}s', message);
+      return new XPrivateResult(false, -1, '', 'trends_decode_failed', label);
     } finally { request.destroy(); }
   }
 

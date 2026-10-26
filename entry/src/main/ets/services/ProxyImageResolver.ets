@@ -54,7 +54,7 @@ class ProxyImageResolver {
   async load(url: string, allowDirect: boolean = false): Promise<image.PixelMap | null> {
     // Private media is decoded on demand and never enters the shared HTTP cache.
     if (url.startsWith('file://')) { return this.loadLocal(url); }
-    if (url.length === 0 || (!proxyStore.snapshot().enabled && !allowDirect)) {
+    if (url.length === 0 || (!proxyStore.requiresHttpTransport() && !allowDirect)) {
       return null;
     }
     let entry: ProxyImageCacheEntry | null = this.findEntry(url);
@@ -92,7 +92,7 @@ class ProxyImageResolver {
   // independent while still sharing downloads and the compressed-byte cache.
   async loadForViewer(url: string, allowDirect: boolean = false): Promise<image.PixelMap | null> {
     if (url.startsWith('file://')) { return this.loadLocal(url); }
-    if (url.length === 0 || (!proxyStore.snapshot().enabled && !allowDirect)) {
+    if (url.length === 0 || (!proxyStore.requiresHttpTransport() && !allowDirect)) {
       return null;
     }
     const bytes: ArrayBuffer | null = await this.loadBytes(url);

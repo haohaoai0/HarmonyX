@@ -1,82 +1,433 @@
 {
   "float": [
-    {"name": "compact_video_bottom_controls_height", "value": "96vp"},
-    {"name": "compact_video_bottom_caption_height", "value": "80vp"},
-    {"name": "compact_video_bottom_action_height", "value": "44vp"},
-    {"name": "compact_video_bottom_icon", "value": "24fp"},
-    {"name": "compact_video_bottom_avatar", "value": "36vp"},
-    {"name": "compact_video_bottom_inset", "value": "12vp"},
-    {"name": "compact_video_bottom_gap", "value": "4vp"},
-    {"name": "compact_video_bottom_radius", "value": "22vp"},
-    {"name": "compact_video_bottom_follow_width", "value": "64vp"},
-    { "name": "hdr_touch_light_border_width", "value": "1vp" },
-    { "name": "component_hdr_highlight_ratio", "value": "1.25" },
-    { "name": "component_hdr_preview_size", "value": "48vp" },
-    { "name": "timeline_column_radius", "value": "8vp" },
-    { "name": "timeline_column_inset", "value": "8vp" },
-    { "name": "timeline_column_avatar", "value": "20vp" },
-    { "name": "timeline_column_body_font", "value": "14fp" },
-    { "name": "timeline_column_author_font", "value": "13fp" },
-    { "name": "timeline_column_meta_font", "value": "11fp" },
-    { "name": "timeline_column_action_icon", "value": "16fp" },
-    { "name": "timeline_column_action_target", "value": "32vp" },
-    { "name": "article_card_inset", "value": "12vp" },
-    { "name": "article_card_brand_size", "value": "20vp" },
-    { "name": "article_card_brand_radius", "value": "5vp" },
-    { "name": "article_card_heading_size", "value": "14fp" },
-    { "name": "article_card_action_size", "value": "16fp" },
-    { "name": "article_card_action_target", "value": "24vp" },
-    { "name": "article_card_header_height", "value": "24vp" },
-    { "name": "article_card_meta_size", "value": "10fp" },
-    { "name": "article_card_meta_line", "value": "13fp" },
-    { "name": "article_card_thumbnail_size", "value": "42vp" },
-    { "name": "article_card_compact_thumbnail_size", "value": "30vp" },
-    { "name": "article_card_thumbnail_radius", "value": "8vp" },
-    { "name": "article_card_avatar_size", "value": "32vp" },
-    { "name": "article_card_rank_size", "value": "22fp" },
-    { "name": "article_card_rank_width", "value": "32vp" },
-    { "name": "article_card_row_title_size", "value": "13fp" },
-    { "name": "article_card_row_title_line", "value": "17fp" },
-    { "name": "article_card_rule_height", "value": "0.5vp" },
-    { "name": "article_card_small_title_size", "value": "15fp" },
-    { "name": "article_card_small_title_line", "value": "19fp" },
-    { "name": "article_card_small_feature_inset", "value": "8vp" },
-    { "name": "article_card_feature_title_size", "value": "20fp" },
-    { "name": "article_card_feature_title_line", "value": "25fp" },
-    { "name": "article_card_feature_inset", "value": "12vp" },
-    { "name": "article_card_feature_radius", "value": "12vp" },
-    { "name": "article_card_large_row_height", "value": "54vp" },
-    { "name": "article_card_scroll_row_height", "value": "36vp" },
-    { "name": "article_card_scroll_feature_height", "value": "136vp" },
-    { "name": "article_card_empty_symbol_size", "value": "28fp" },
-    {"name": "photo_viewer_author_avatar_size", "value": "44vp"},
-    {"name": "photo_viewer_author_gap", "value": "12vp"},
-    {"name": "photo_viewer_author_identity_gap", "value": "10vp"},
-    {"name": "photo_viewer_author_line_gap", "value": "2vp"},
-    {"name": "photo_viewer_author_badge_gap", "value": "4vp"},
-    {"name": "photo_viewer_author_badge_size", "value": "16vp"},
-    {"name": "photo_viewer_author_inset", "value": "16vp"},
-    {"name": "photo_viewer_author_bottom", "value": "20vp"},
-    {"name": "photo_viewer_follow_width", "value": "96vp"},
-    {"name": "photo_viewer_follow_height", "value": "38vp"},
-    {"name": "photo_viewer_follow_radius", "value": "19vp"},
-    {"name": "compact_video_controls_height", "value": "64vp"},
-    {"name": "compact_video_controls_row_height", "value": "40vp"},
-    {"name": "compact_video_control_gap", "value": "4vp"},
-    {"name": "compact_video_seek_height", "value": "16vp"},
-    {"name": "compact_video_seek_track", "value": "3vp"},
-    {"name": "compact_video_seek_thumb", "value": "12vp"},
-    {"name": "compact_video_rail_button_size", "value": "44vp"},
-    {"name": "compact_video_caption_font", "value": "14fp"},
-    {"name": "compact_video_count_font", "value": "12fp"},
-    {"name": "compact_window_editor_height", "value": "80vp"},
-    {"name": "compact_window_tool_bar_height", "value": "48vp"},
-    {"name": "compact_reply_capsule_height", "value": "112vp"},
-    {"name": "compact_reply_preview_size", "value": "44vp"},
-    {"name": "compact_dm_reply_height", "value": "44vp"},
-    {"name": "compact_dm_media_size", "value": "56vp"},
-    {"name": "compact_dm_media_composer_height", "value": "148vp"},
-    {"name": "compact_dm_media_keyboard_height", "value": "64vp"},
+    {
+      "name": "explore_search_title_gap",
+      "value": "16vp"
+    },
+    {
+      "name": "explore_search_categories_gap",
+      "value": "4px"
+    },
+    {
+      "name": "title_bar_search_height",
+      "value": "38vp"
+    },
+    {
+      "name": "title_bar_search_radius",
+      "value": "19vp"
+    },
+    {
+      "name": "page_search_height",
+      "value": "44vp"
+    },
+    {
+      "name": "page_search_font_size",
+      "value": "16fp"
+    },
+    {
+      "name": "page_search_radius",
+      "value": "22vp"
+    },
+    {
+      "name": "page_search_inset",
+      "value": "16vp"
+    },
+    {
+      "name": "page_search_band_height",
+      "value": "56vp"
+    },
+    {
+      "name": "page_search_top_inset",
+      "value": "4vp"
+    },
+    {
+      "name": "page_search_bottom_inset",
+      "value": "8vp"
+    },
+    {
+      "name": "settings_search_results_gap",
+      "value": "12vp"
+    },
+    {
+      "name": "history_page_inset",
+      "value": "16vp"
+    },
+    {
+      "name": "history_card_gap",
+      "value": "12vp"
+    },
+    {
+      "name": "history_card_padding",
+      "value": "16vp"
+    },
+    {
+      "name": "splash_ad_caption_size",
+      "value": "12fp"
+    },
+    {
+      "name": "splash_ad_body_size",
+      "value": "14fp"
+    },
+    {
+      "name": "splash_ad_title_size",
+      "value": "38fp"
+    },
+    {
+      "name": "splash_ad_compact_title_size",
+      "value": "24fp"
+    },
+    {
+      "name": "splash_ad_brand_size",
+      "value": "16fp"
+    },
+    {
+      "name": "splash_ad_control_height",
+      "value": "44vp"
+    },
+    {
+      "name": "splash_ad_action_height",
+      "value": "52vp"
+    },
+    {
+      "name": "splash_ad_poster_radius",
+      "value": "28vp"
+    },
+    {
+      "name": "splash_ad_tile_radius",
+      "value": "14vp"
+    },
+    {
+      "name": "startup_mark_size",
+      "value": "120vp"
+    },
+    {
+      "name": "startup_name_size",
+      "value": "22fp"
+    },
+    {
+      "name": "startup_animation_size",
+      "value": "720vp"
+    },
+    {
+      "name": "post_action_icon",
+      "value": "19fp"
+    },
+    {
+      "name": "post_action_text",
+      "value": "12fp"
+    },
+    {
+      "name": "post_action_hit_height",
+      "value": "40vp"
+    },
+    {
+      "name": "compact_video_bottom_controls_height",
+      "value": "96vp"
+    },
+    {
+      "name": "compact_video_bottom_caption_height",
+      "value": "80vp"
+    },
+    {
+      "name": "compact_video_bottom_action_height",
+      "value": "44vp"
+    },
+    {
+      "name": "compact_video_bottom_icon",
+      "value": "24fp"
+    },
+    {
+      "name": "compact_video_bottom_avatar",
+      "value": "36vp"
+    },
+    {
+      "name": "compact_video_bottom_inset",
+      "value": "12vp"
+    },
+    {
+      "name": "compact_video_bottom_gap",
+      "value": "4vp"
+    },
+    {
+      "name": "compact_video_bottom_radius",
+      "value": "22vp"
+    },
+    {
+      "name": "compact_video_bottom_follow_width",
+      "value": "64vp"
+    },
+    {
+      "name": "hdr_touch_light_border_width",
+      "value": "1vp"
+    },
+    {
+      "name": "component_hdr_highlight_ratio",
+      "value": "1.25"
+    },
+    {
+      "name": "component_hdr_preview_size",
+      "value": "48vp"
+    },
+    {
+      "name": "timeline_column_radius",
+      "value": "8vp"
+    },
+    {
+      "name": "timeline_column_inset",
+      "value": "8vp"
+    },
+    {
+      "name": "timeline_column_avatar",
+      "value": "20vp"
+    },
+    {
+      "name": "timeline_column_body_font",
+      "value": "14fp"
+    },
+    {
+      "name": "timeline_column_author_font",
+      "value": "13fp"
+    },
+    {
+      "name": "timeline_column_meta_font",
+      "value": "11fp"
+    },
+    {
+      "name": "timeline_column_action_icon",
+      "value": "16fp"
+    },
+    {
+      "name": "timeline_column_action_target",
+      "value": "32vp"
+    },
+    {
+      "name": "article_card_inset",
+      "value": "12vp"
+    },
+    {
+      "name": "article_card_brand_size",
+      "value": "20vp"
+    },
+    {
+      "name": "article_card_brand_radius",
+      "value": "5vp"
+    },
+    {
+      "name": "article_card_heading_size",
+      "value": "14fp"
+    },
+    {
+      "name": "article_card_action_size",
+      "value": "16fp"
+    },
+    {
+      "name": "article_card_action_target",
+      "value": "24vp"
+    },
+    {
+      "name": "article_card_header_height",
+      "value": "24vp"
+    },
+    {
+      "name": "article_card_meta_size",
+      "value": "10fp"
+    },
+    {
+      "name": "article_card_meta_line",
+      "value": "13fp"
+    },
+    {
+      "name": "article_card_thumbnail_size",
+      "value": "42vp"
+    },
+    {
+      "name": "article_card_compact_thumbnail_size",
+      "value": "30vp"
+    },
+    {
+      "name": "article_card_thumbnail_radius",
+      "value": "8vp"
+    },
+    {
+      "name": "article_card_avatar_size",
+      "value": "32vp"
+    },
+    {
+      "name": "article_card_rank_size",
+      "value": "22fp"
+    },
+    {
+      "name": "article_card_rank_width",
+      "value": "32vp"
+    },
+    {
+      "name": "article_card_row_title_size",
+      "value": "13fp"
+    },
+    {
+      "name": "article_card_row_title_line",
+      "value": "17fp"
+    },
+    {
+      "name": "article_card_rule_height",
+      "value": "0.5vp"
+    },
+    {
+      "name": "article_card_small_title_size",
+      "value": "15fp"
+    },
+    {
+      "name": "article_card_small_title_line",
+      "value": "19fp"
+    },
+    {
+      "name": "article_card_small_feature_inset",
+      "value": "8vp"
+    },
+    {
+      "name": "article_card_feature_title_size",
+      "value": "20fp"
+    },
+    {
+      "name": "article_card_feature_title_line",
+      "value": "25fp"
+    },
+    {
+      "name": "article_card_feature_inset",
+      "value": "12vp"
+    },
+    {
+      "name": "article_card_feature_radius",
+      "value": "12vp"
+    },
+    {
+      "name": "article_card_large_row_height",
+      "value": "54vp"
+    },
+    {
+      "name": "article_card_scroll_row_height",
+      "value": "36vp"
+    },
+    {
+      "name": "article_card_scroll_feature_height",
+      "value": "136vp"
+    },
+    {
+      "name": "article_card_empty_symbol_size",
+      "value": "28fp"
+    },
+    {
+      "name": "photo_viewer_author_avatar_size",
+      "value": "44vp"
+    },
+    {
+      "name": "photo_viewer_author_gap",
+      "value": "12vp"
+    },
+    {
+      "name": "photo_viewer_author_identity_gap",
+      "value": "10vp"
+    },
+    {
+      "name": "photo_viewer_author_line_gap",
+      "value": "2vp"
+    },
+    {
+      "name": "photo_viewer_author_badge_gap",
+      "value": "4vp"
+    },
+    {
+      "name": "photo_viewer_author_badge_size",
+      "value": "16vp"
+    },
+    {
+      "name": "photo_viewer_author_inset",
+      "value": "16vp"
+    },
+    {
+      "name": "photo_viewer_author_bottom",
+      "value": "20vp"
+    },
+    {
+      "name": "photo_viewer_follow_width",
+      "value": "96vp"
+    },
+    {
+      "name": "photo_viewer_follow_height",
+      "value": "38vp"
+    },
+    {
+      "name": "photo_viewer_follow_radius",
+      "value": "19vp"
+    },
+    {
+      "name": "compact_video_controls_height",
+      "value": "64vp"
+    },
+    {
+      "name": "compact_video_controls_row_height",
+      "value": "40vp"
+    },
+    {
+      "name": "compact_video_control_gap",
+      "value": "4vp"
+    },
+    {
+      "name": "compact_video_seek_height",
+      "value": "16vp"
+    },
+    {
+      "name": "compact_video_seek_track",
+      "value": "3vp"
+    },
+    {
+      "name": "compact_video_seek_thumb",
+      "value": "12vp"
+    },
+    {
+      "name": "compact_video_rail_button_size",
+      "value": "44vp"
+    },
+    {
+      "name": "compact_video_caption_font",
+      "value": "14fp"
+    },
+    {
+      "name": "compact_video_count_font",
+      "value": "12fp"
+    },
+    {
+      "name": "compact_window_editor_height",
+      "value": "80vp"
+    },
+    {
+      "name": "compact_window_tool_bar_height",
+      "value": "48vp"
+    },
+    {
+      "name": "compact_reply_capsule_height",
+      "value": "112vp"
+    },
+    {
+      "name": "compact_reply_preview_size",
+      "value": "44vp"
+    },
+    {
+      "name": "compact_dm_reply_height",
+      "value": "44vp"
+    },
+    {
+      "name": "compact_dm_media_size",
+      "value": "56vp"
+    },
+    {
+      "name": "compact_dm_media_composer_height",
+      "value": "148vp"
+    },
+    {
+      "name": "compact_dm_media_keyboard_height",
+      "value": "64vp"
+    },
     {
       "name": "settings_page_horizontal_padding",
       "value": "16vp"
@@ -703,11 +1054,11 @@
     },
     {
       "name": "post_detail_action_icon",
-      "value": "22vp"
+      "value": "23fp"
     },
     {
       "name": "post_detail_action_text",
-      "value": "14fp"
+      "value": "13fp"
     },
     {
       "name": "post_detail_action_height",
@@ -833,78 +1184,413 @@
       "name": "about_content_max_width",
       "value": "720vp"
     },
-    {"name": "about_account_button_size", "value": "44vp"},
-    {"name": "about_account_icon_size", "value": "28vp"},
-    {"name": "about_account_button_radius", "value": "16vp"},
-    {"name": "about_account_image_radius", "value": "7vp"},
-    {"name": "about_account_gap", "value": "8vp"},
-    {"name": "floating_tab_bottom_gap", "value": "8vp"},
-    {"name": "root_liquid_tab_label_width", "value": "88vp"},
-    {"name": "root_liquid_tab_label_height", "value": "52vp"},
-    {"name": "root_liquid_tab_compact_width", "value": "64vp"},
-    {"name": "root_liquid_tab_compact_height", "value": "40vp"},
-    {"name": "root_liquid_tab_slot_overhang", "value": "12vp"},
-    {"name": "root_liquid_tab_overlay_height", "value": "112vp"},
-    {"name": "root_tab_icon_size", "value": "24vp"},
-    {"name": "root_tab_label_size", "value": "10fp"},
-    {"name": "root_tab_item_gap", "value": "2vp"},
-    {"name": "root_tab_badge_size", "value": "6vp"},
-    {"name": "root_refresh_indicator_size", "value": "32vp"},
-    {"name": "root_refresh_indicator_height", "value": "64vp"},
-    {"name": "video_fullscreen_controls_radius", "value": "24vp"},
-    {"name": "video_danmaku_font_size", "value": "16fp"},
-    {"name": "video_danmaku_line_height", "value": "28vp"},
-    {"name": "video_danmaku_lane_gap", "value": "4vp"},
-    {"name": "video_danmaku_inset", "value": "8vp"},
-    {"name": "video_danmaku_spacing", "value": "32vp"},
-    {"name": "root_tab_bar_height", "value": "56vp"},
-    {"name": "account_overview_hero_height", "value": "164vp"},
-    {"name": "profile_editor_avatar_size", "value": "88vp"},
-    {"name":"huawei_account_avatar_size","value":"56vp"},
-    {"name":"huawei_account_button_height","value":"48vp"},
-    {"name":"page_background_preview_height","value":"260vp"},
-    {"name":"page_background_tile_height","value":"112vp"},
-    {"name":"page_background_motif_size","value":"40vp"},
-    {"name":"theme_mix_tile_padding","value":"12vp"},
-    {"name":"theme_mix_tile_radius","value":"20vp"},
-    {"name":"theme_mix_preview_height","value":"66vp"},
-    {"name":"theme_mix_swatch_size","value":"12vp"},
-    {"name":"theme_mix_action_size","value":"32vp"},
-    {"name":"theme_mix_title_size","value":"14fp"},
-    {"name":"theme_mix_check_size","value":"16vp"},
-    {"name":"theme_mix_preview_icon_size","value":"18vp"},
-    {"name":"post_feed_column_gap","value":"12vp"},
-    {"name":"post_feed_row_gap","value":"12vp"},
-    {"name":"appearance_preview_max_width","value":"400vp"},
-    {"name":"appearance_preview_avatar_size","value":"34vp"},
-    {"name":"appearance_preview_card_radius","value":"26vp"},
-    {"name":"appearance_preview_frame_radius","value":"28vp"},
-    {"name":"landscape_player_icon","value":"24vp"},
-    {"name":"landscape_player_target","value":"48vp"},
-    {"name":"landscape_player_inset","value":"16vp"},
-    {"name":"landscape_player_progress_gap","value":"6vp"},
-    {"name":"landscape_player_time_width","value":"52vp"},
-    {"name":"landscape_player_speed_width","value":"102vp"},
-    {"name":"landscape_player_quality_width","value":"68vp"},
-    {"name":"landscape_player_download_width","value":"104vp"},
-    {"name":"landscape_player_value_font","value":"20fp"},
-    {"name":"landscape_player_label_font","value":"16fp"},
-    {"name":"landscape_player_top_label","value":"12fp"},
-    {"name":"landscape_player_top_icon","value":"22vp"},
-    {"name":"landscape_player_top_width","value":"60vp"},
-    {"name":"landscape_player_glass_border","value":"0.75vp"},
-    {"name":"landscape_player_glass_radius","value":"24vp"},
-    {"name":"landscape_player_glass_padding","value":"4vp"},
-    {"name":"landscape_player_top_capsule_width","value":"192vp"},
-    {"name":"landscape_player_top_capsule_height","value":"56vp"},
-    {"name":"split_navigation_gap","value":"8vp"},
-    {"name":"split_navigation_side_margin","value":"12vp"},
-    {"name":"split_navigation_corner_radius","value":"28vp"},
-    {"name":"split_navigation_max_width","value":"440vp"},
-    {"name":"split_navigation_content_inset","value":"4vp"},
-    {"name": "reply_capsule_split_action_width", "value": "44vp"},
-    {"name": "reply_capsule_split_actions_width", "value": "220vp"},
-    {"name": "reply_capsule_split_icon_size", "value": "20vp"},
-    {"name": "reply_capsule_split_caption_size", "value": "10fp"}
+    {
+      "name": "about_account_button_size",
+      "value": "44vp"
+    },
+    {
+      "name": "about_account_icon_size",
+      "value": "28vp"
+    },
+    {
+      "name": "about_account_button_radius",
+      "value": "16vp"
+    },
+    {
+      "name": "about_account_image_radius",
+      "value": "7vp"
+    },
+    {
+      "name": "about_account_gap",
+      "value": "8vp"
+    },
+    {
+      "name": "floating_tab_bottom_gap",
+      "value": "8vp"
+    },
+    {
+      "name": "root_liquid_tab_label_width",
+      "value": "88vp"
+    },
+    {
+      "name": "root_liquid_tab_label_height",
+      "value": "52vp"
+    },
+    {
+      "name": "root_liquid_tab_compact_width",
+      "value": "64vp"
+    },
+    {
+      "name": "root_liquid_tab_compact_height",
+      "value": "40vp"
+    },
+    {
+      "name": "root_liquid_tab_slot_overhang",
+      "value": "12vp"
+    },
+    {
+      "name": "root_liquid_tab_overlay_height",
+      "value": "112vp"
+    },
+    {
+      "name": "root_tab_icon_size",
+      "value": "24vp"
+    },
+    {
+      "name": "root_tab_label_size",
+      "value": "10fp"
+    },
+    {
+      "name": "root_tab_item_gap",
+      "value": "2vp"
+    },
+    {
+      "name": "root_tab_badge_size",
+      "value": "6vp"
+    },
+    {
+      "name": "root_refresh_indicator_size",
+      "value": "32vp"
+    },
+    {
+      "name": "root_refresh_indicator_height",
+      "value": "64vp"
+    },
+    {
+      "name": "video_fullscreen_controls_radius",
+      "value": "24vp"
+    },
+    {
+      "name": "video_danmaku_font_size",
+      "value": "16fp"
+    },
+    {
+      "name": "video_danmaku_line_height",
+      "value": "28vp"
+    },
+    {
+      "name": "video_danmaku_lane_gap",
+      "value": "4vp"
+    },
+    {
+      "name": "video_danmaku_inset",
+      "value": "8vp"
+    },
+    {
+      "name": "video_danmaku_spacing",
+      "value": "32vp"
+    },
+    {
+      "name": "root_tab_bar_height",
+      "value": "56vp"
+    },
+    {
+      "name": "account_overview_hero_height",
+      "value": "164vp"
+    },
+    {
+      "name": "profile_editor_avatar_size",
+      "value": "88vp"
+    },
+    {
+      "name": "huawei_account_avatar_size",
+      "value": "56vp"
+    },
+    {
+      "name": "huawei_account_button_height",
+      "value": "48vp"
+    },
+    {
+      "name": "page_background_preview_height",
+      "value": "260vp"
+    },
+    {
+      "name": "page_background_tile_height",
+      "value": "112vp"
+    },
+    {
+      "name": "page_background_motif_size",
+      "value": "40vp"
+    },
+    {
+      "name": "theme_mix_tile_padding",
+      "value": "12vp"
+    },
+    {
+      "name": "theme_mix_tile_radius",
+      "value": "20vp"
+    },
+    {
+      "name": "theme_mix_preview_height",
+      "value": "66vp"
+    },
+    {
+      "name": "theme_mix_swatch_size",
+      "value": "12vp"
+    },
+    {
+      "name": "theme_mix_action_size",
+      "value": "32vp"
+    },
+    {
+      "name": "theme_mix_title_size",
+      "value": "14fp"
+    },
+    {
+      "name": "theme_mix_check_size",
+      "value": "16vp"
+    },
+    {
+      "name": "theme_mix_preview_icon_size",
+      "value": "18vp"
+    },
+    {
+      "name": "post_feed_column_gap",
+      "value": "12vp"
+    },
+    {
+      "name": "post_feed_row_gap",
+      "value": "12vp"
+    },
+    {
+      "name": "appearance_preview_max_width",
+      "value": "400vp"
+    },
+    {
+      "name": "appearance_preview_avatar_size",
+      "value": "34vp"
+    },
+    {
+      "name": "appearance_preview_card_radius",
+      "value": "26vp"
+    },
+    {
+      "name": "appearance_preview_frame_radius",
+      "value": "28vp"
+    },
+    {
+      "name": "landscape_player_icon",
+      "value": "24vp"
+    },
+    {
+      "name": "landscape_player_target",
+      "value": "48vp"
+    },
+    {
+      "name": "landscape_player_inset",
+      "value": "16vp"
+    },
+    {
+      "name": "landscape_player_progress_gap",
+      "value": "6vp"
+    },
+    {
+      "name": "landscape_player_time_width",
+      "value": "52vp"
+    },
+    {
+      "name": "landscape_player_speed_width",
+      "value": "102vp"
+    },
+    {
+      "name": "landscape_player_quality_width",
+      "value": "68vp"
+    },
+    {
+      "name": "landscape_player_download_width",
+      "value": "104vp"
+    },
+    {
+      "name": "landscape_player_value_font",
+      "value": "20fp"
+    },
+    {
+      "name": "landscape_player_label_font",
+      "value": "16fp"
+    },
+    {
+      "name": "landscape_player_top_label",
+      "value": "12fp"
+    },
+    {
+      "name": "landscape_player_top_icon",
+      "value": "22vp"
+    },
+    {
+      "name": "landscape_player_top_width",
+      "value": "60vp"
+    },
+    {
+      "name": "landscape_player_glass_border",
+      "value": "0.75vp"
+    },
+    {
+      "name": "landscape_player_glass_radius",
+      "value": "24vp"
+    },
+    {
+      "name": "landscape_player_glass_padding",
+      "value": "4vp"
+    },
+    {
+      "name": "landscape_player_top_capsule_width",
+      "value": "192vp"
+    },
+    {
+      "name": "landscape_player_top_capsule_height",
+      "value": "56vp"
+    },
+    {
+      "name": "split_navigation_gap",
+      "value": "8vp"
+    },
+    {
+      "name": "split_navigation_side_margin",
+      "value": "12vp"
+    },
+    {
+      "name": "split_navigation_corner_radius",
+      "value": "28vp"
+    },
+    {
+      "name": "split_navigation_max_width",
+      "value": "440vp"
+    },
+    {
+      "name": "split_navigation_content_inset",
+      "value": "4vp"
+    },
+    {
+      "name": "reply_capsule_split_action_width",
+      "value": "44vp"
+    },
+    {
+      "name": "reply_capsule_split_actions_width",
+      "value": "220vp"
+    },
+    {
+      "name": "reply_capsule_split_icon_size",
+      "value": "20vp"
+    },
+    {
+      "name": "reply_capsule_split_caption_size",
+      "value": "10fp"
+    },
+    {
+      "name": "video_download_notice_height",
+      "value": "44vp"
+    },
+    {
+      "name": "video_download_notice_radius",
+      "value": "22vp"
+    },
+    {
+      "name": "video_download_notice_icon_size",
+      "value": "18vp"
+    },
+    {
+      "name": "video_download_notice_font_size",
+      "value": "12fp"
+    },
+    {
+      "name": "background_selection_size",
+      "value": "26vp"
+    },
+    {
+      "name": "background_selection_radius",
+      "value": "13vp"
+    },
+    {
+      "name": "background_selection_icon_size",
+      "value": "14vp"
+    },
+    {
+      "name": "background_photo_delete_button_size",
+      "value": "40vp"
+    },
+    {
+      "name": "background_photo_delete_icon_size",
+      "value": "20vp"
+    },
+    {
+      "name": "search_recent_user_gap",
+      "value": "12vp"
+    },
+    {
+      "name": "search_recent_avatar_size",
+      "value": "52vp"
+    },
+    {
+      "name": "search_recent_user_width",
+      "value": "88vp"
+    },
+    {
+      "name": "search_recent_text_height",
+      "value": "64vp"
+    },
+    {
+      "name": "search_entry_refill_size",
+      "value": "40vp"
+    },
+    {
+      "name": "search_entry_term_height",
+      "value": "56vp"
+    },
+    {
+      "name": "global_trends_entry_height",
+      "value": "140vp"
+    },
+    {
+      "name": "global_trends_card_radius",
+      "value": "12vp"
+    },
+    {
+      "name": "global_trends_category_width",
+      "value": "176vp"
+    },
+    {
+      "name": "global_trends_category_height",
+      "value": "100vp"
+    },
+    {
+      "name": "global_trends_topic_height",
+      "value": "36vp"
+    },
+    {
+      "name": "post_translation_gap",
+      "value": "4vp"
+    },
+    {
+      "name": "post_translation_padding",
+      "value": "4vp"
+    },
+    {
+      "name": "post_translation_action_gap",
+      "value": "8vp"
+    },
+    {
+      "name": "post_translation_sheet_gap",
+      "value": "16vp"
+    },
+    {
+      "name": "post_translation_sheet_inset",
+      "value": "20vp"
+    },
+    {
+      "name": "post_translation_sheet_top",
+      "value": "24vp"
+    },
+    {
+      "name": "post_translation_sheet_height",
+      "value": "360vp"
+    },
+    {
+      "name": "post_translation_sheet_width",
+      "value": "480vp"
+    },
+    {
+      "name": "post_translation_language_padding",
+      "value": "8vp"
+    }
   ]
 }

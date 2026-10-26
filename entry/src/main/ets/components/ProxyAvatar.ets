@@ -4,6 +4,7 @@ import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFon
 import { common } from '@kit.AbilityKit';
 import { avatarImageStore } from '../services/AvatarImageStore';
 import { proxyStore, STORAGE_KEY_PROXY_REVISION } from '../services/ProxyStore';
+import { STORAGE_KEY_DNS_REVISION } from '../services/DnsSettingsStore';
 import { XUserParser } from '../services/XUserParser';
 import { STORAGE_KEY_AVATAR_TINT_ENABLED } from '../services/AppearanceStore';
 import { avatarTintStore } from '../services/AvatarTintStore';
@@ -24,6 +25,7 @@ export struct ProxyAvatar {
   @StorageProp(STORAGE_KEY_AVATAR_TINT_ENABLED) @Watch('onUrlChanged')
   private avatarTintEnabled: boolean = false;
   @StorageProp(STORAGE_KEY_PROXY_REVISION) @Watch('onUrlChanged') private proxyRevision: number = 0;
+  @StorageProp(STORAGE_KEY_DNS_REVISION) @Watch('onUrlChanged') private dnsRevision: number = 0;
   onTintResolved: (palette: AvatarTintPalette | null) => void = (): void => {};
   @State private source: string = '';
   private alive: boolean = true;
@@ -48,12 +50,12 @@ export struct ProxyAvatar {
     this.requestGeneration += 1;
     const generation: number = this.requestGeneration;
     const sourceUrl: string = XUserParser.highResAvatarUrl(this.url);
-    this.source = sourceUrl;
+    this.source = proxyStore.requiresHttpTransport() && !sourceUrl.startsWith('file://') ? '' : sourceUrl;
     if (this.tintBackground) {
       this.onTintResolved(null);
     }
     const tint: boolean = this.tintBackground && this.avatarTintEnabled;
-    if (sourceUrl.length === 0 || (!proxyStore.snapshot().enabled && !tint)) {
+    if (sourceUrl.length === 0 || (!proxyStore.requiresHttpTransport() && !tint)) {
       return;
     }
     const context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;

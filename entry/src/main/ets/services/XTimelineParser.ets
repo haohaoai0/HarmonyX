@@ -1243,7 +1243,7 @@ export class XTimelineParser {
       communityId: String(community['rest_id'] ?? community['id'] ?? ''),
       communityName: String(community['name'] ?? ''),
       author: author,
-      text: XTimelineParser.text(result, legacy),
+      text: XTimelineParser.postText(result, legacy),
       language: String(legacy['lang'] ?? ''),
       editHistoryIds: postEditHistoryIds(result),
       createdAt: XTimelineParser.createdAt(result, legacy),
@@ -1392,7 +1392,7 @@ export class XTimelineParser {
     return {
       id: id,
       author: XTimelineParser.author(quote),
-      text: XTimelineParser.text(quote, legacy),
+      text: XTimelineParser.postText(quote, legacy),
       createdAt: XTimelineParser.createdAt(quote, legacy),
       editHistoryIds: postEditHistoryIds(quote),
       isReply: reply.isReply, replyToTweetId: reply.parentId, replyToUsername: reply.username,
@@ -1484,6 +1484,10 @@ export class XTimelineParser {
         verified: false
       };
     }
+    return XTimelineParser.authorFromUser(user);
+  }
+
+  private static authorFromUser(user: Record<string, Object>): TweetAuthor {
     const userCore: Record<string, Object> = XTimelineParser.obj(user, 'core');
     // Newer responses put identity on `core`; older ones only fill `legacy`.
     const legacy: Record<string, Object> = XTimelineParser.obj(user, 'legacy');
@@ -1649,21 +1653,66 @@ export class XTimelineParser {
     };
   }
 
+  static postText(result: Record<string, Object>, legacy: Record<string, Object> = {}): string {
+    // Apply display ranges/media cleanup to the source text before expanding
+    // URLs: API offsets refer to the short links, not the longer destinations.
+    const text: string = XTimelineParser.rawText(result, legacy);
+    const note: Record<string, Object> = XTimelineParser.obj(
+      XTimelineParser.obj(XTimelineParser.obj(result, 'note_tweet'), 'note_tweet_results'), 'result');
+    const sources: Array<Record<string, Object>> = [note, XTimelineParser.obj(result, 'details'),
+      legacy, result, XTimelineParser.obj(result, 'tweet')];
+    const urls: Map<string, string> = new Map<string, string>();
+    for (let i: number = 0; i < sources.length; i++) {
+      const containers: Array<Record<string, Object>> = [XTimelineParser.obj(sources[i], 'entity_set'),
+        XTimelineParser.obj(sources[i], 'entities')];
+      for (let j: number = 0; j < containers.length; j++) {
+        XTimelineParser.collectExpandedUrls(XTimelineParser.arr(containers[j], 'urls'), urls);
+      }
+      XTimelineParser.collectExpandedUrls(XTimelineParser.arr(sources[i], 'url_entities'), urls);
+    }
+    if (urls.size === 0) { return text; }
+    // Match complete URL tokens so a short-link prefix or a t.co string inside
+    // another URL's query/path is never replaced. Repeated links expand once.
+    return text.replace(/https?:\/\/[^\s<>"'，。！？；（）【】]+/gi, (token: string): string => {
+      const link: string = token.replace(/[.,!?;:)\]}]+$/, '');
+      const expanded: string | undefined = urls.get(link);
+      return expanded === undefined ? token : expanded + token.substring(link.length);
+    });
+  }
+
+  private static collectExpandedUrls(entities: Array<Record<string, Object>>, urls: Map<string, string>): void {
+    for (let i: number = 0; i < entities.length; i++) {
+      const entity: Record<string, Object> = entities[i];
+      if (entity === null || entity === undefined || typeof entity !== 'object' || entity instanceof Array) {
+        continue;
+      }
+      const short: string = String(entity['url'] ?? '');
+      const unwound: string = String(entity['unwound_url'] ?? '');
+      const expanded: string = String(entity['expanded_url'] ?? '');
+      const target: string = /^https?:\/\/[^\s<>"']+$/i.test(unwound) ? unwound : expanded;
+      // display_url can be truncated; only complete http(s) targets are opened.
+      if (/^https?:\/\/[^\s<>"']+$/i.test(short) && /^https?:\/\/[^\s<>"']+$/i.test(target) &&
+        !urls.has(short)) {
+        urls.set(short, target);
+      }
+    }
+  }
+
   // Long posts keep the visible body in note_tweet; legacy.full_text is a
   // truncated preview ending in an ellipsis link.
-  private static text(result: Record<string, Object>, legacy: Record<string, Object>): string {
-    // Flat schema: the body sits in "details".
-    const details: Record<string, Object> = XTimelineParser.obj(result, 'details');
-    const detailsText: string = String(details['full_text'] ?? details['text'] ?? '');
-    if (detailsText.length > 0) {
-      return XTimelineParser.displayText(detailsText, result, legacy);
-    }
+  private static rawText(result: Record<string, Object>, legacy: Record<string, Object>): string {
     const note: Record<string, Object> = XTimelineParser.obj(
       XTimelineParser.obj(result, 'note_tweet'), 'note_tweet_results');
     const noteResult: Record<string, Object> = XTimelineParser.obj(note, 'result');
     const noteText: string = String(noteResult['text'] ?? '');
     if (noteText.length > 0) {
       return noteText;
+    }
+    // Flat schema: the body sits in "details"; it can also be a note preview.
+    const details: Record<string, Object> = XTimelineParser.obj(result, 'details');
+    const detailsText: string = String(details['full_text'] ?? details['text'] ?? '');
+    if (detailsText.length > 0) {
+      return XTimelineParser.displayText(detailsText, result, legacy);
     }
     const legacyText: string = String(legacy['full_text'] ?? legacy['text'] ?? '');
     if (legacyText.length > 0) {
@@ -1836,6 +1885,22 @@ export class XTimelineParser {
     return XTimelineParser.buildAttachments(XTimelineParser.arr(holder, 'media'), sensitive);
   }
 
+  private static mediaSourceAuthor(item: Record<string, Object>, info: Record<string, Object>): TweetAuthor | null {
+    let additional: Record<string, Object> = XTimelineParser.obj(item, 'additional_media_info');
+    if (Object.keys(additional).length === 0) { additional = XTimelineParser.obj(info, 'additional_media_info'); }
+    const source: Record<string, Object> = XTimelineParser.obj(additional, 'source_user');
+    const user: Record<string, Object> = XTimelineParser.obj(XTimelineParser.obj(source, 'user_results'), 'result');
+    const userId: string = String(item['source_user_id_str'] ?? info['source_user_id_str'] ?? '');
+    if (Object.keys(user).length > 0 && user['__typename'] !== 'UserUnavailable') {
+      return XTimelineParser.authorFromUser(user);
+    }
+    if (userId.length > 0 && XTimelineParser.users.has(userId)) {
+      const known: Record<string, Object> | undefined = XTimelineParser.users.get(userId);
+      if (known !== undefined) { return XTimelineParser.authorFromUser(known); }
+    }
+    return null;
+  }
+
   private static buildAttachments(rawMedia: Array<Record<string, Object>>, sensitive: boolean): MediaAttachment[] {
     const out: MediaAttachment[] = [];
     for (let i: number = 0; i < rawMedia.length; i++) {
@@ -1945,6 +2010,8 @@ export class XTimelineParser {
       out.push({
         id: String(item['id_str'] ?? item['media_id'] ?? item['id'] ?? ('media-' + i)),
         type: type,
+        sourcePostId: String(item['source_status_id_str'] ?? info['source_status_id_str'] ?? ''),
+        sourceAuthor: XTimelineParser.mediaSourceAuthor(item, info),
         mediaUrl: mediaUrl,
         feedUrl: feedUrl,
         videoVariantUrls: XTimelineParser.videoVariantUrls(variants),

@@ -1,3 +1,6 @@
+import { STORAGE_KEY_VIDEO_DOWNLOAD_BUTTON } from '../services/MediaSettingsStore';
+import { tabOrderSettingsStore, STORAGE_KEY_BOTTOM_TAB_ORDER, STORAGE_KEY_HOME_TAB_ORDER } from '../services/TabOrderSettingsStore';
+import { postDisplaySettingsStore, STORAGE_KEY_POST_ACTIONS_MASK, STORAGE_KEY_POST_ACTION_COUNTS } from '../services/PostDisplaySettingsStore';
 import { sceneModeStore } from '../services/SceneModeStore';
 import { componentHdrSettingsStore } from '../services/ComponentHdrSettingsStore';
 import { menuSettingsStore } from '../services/MenuSettingsStore';
@@ -10,10 +13,14 @@ import { huaweiAccountService } from '../services/HuaweiAccountService';
 import { huaweiCloudSyncService } from '../services/HuaweiCloudSyncService';
 import { antiPeepProtection } from '../services/AntiPeepProtection';
 import { pageTransitionSettingsStore, STORAGE_KEY_PAGE_TRANSITION_MODE } from '../services/PageTransitionSettingsStore';
+import display from '@ohos.display';
 import UIAbility from '@ohos.app.ability.UIAbility';
+import { startupSession } from '../utils/StartupSession';
+import { SPLASH_OPEN_REQUEST, xxAuthSplashStore } from '../services/XXAuthSplashStore';
 import { videoKeepAwake } from '../services/VideoKeepAwake';
 import { interactionSettingsStore } from '../services/InteractionSettingsStore';
 import { motionSettingsStore } from '../services/MotionSettingsStore';
+import { startupSettingsStore, STORAGE_KEY_STARTUP_MODE, STARTUP_MODE_NONE } from '../services/StartupSettingsStore';
 import AbilityConstant from '@ohos.app.ability.AbilityConstant';
 import hilog from '@ohos.hilog';
 import window from '@ohos.window';
@@ -98,6 +105,8 @@ import {
 import {
   STORAGE_KEY_DEFAULT_HOME_FEED,
   STORAGE_KEY_TIMELINE_COLUMNS,
+  STORAGE_KEY_COVER_SINGLE_COLUMN,
+  STORAGE_KEY_COVER_SCREEN_ACTIVE,
   timelineSettingsStore
 } from '../services/TimelineSettingsStore';
 import {
@@ -131,6 +140,7 @@ import {
   translationStore
 } from '../services/TranslationStore';
 import { proxyStore } from '../services/ProxyStore';
+import { dnsSettingsStore } from '../services/DnsSettingsStore';
 import { GROK_WEB_SESSION_ORIGINS, webSessionStore } from '../services/WebSessionStore';
 import { continuationStore } from '../services/ContinuationState';
 import { downloadManager } from '../services/DownloadManager';
@@ -162,6 +172,15 @@ const SUPPORT_CONTINUE_PAGE_STACK_PARAMETER: string =
 
 export default class EntryAbility extends UIAbility {
   private windowStage: window.WindowStage | null = null;
+  private foldListener: (status: display.FoldStatus) => void = (_status: display.FoldStatus): void => this.updateCoverScreen();
+  private observingFold: boolean = false;
+  private updateCoverScreen(): void {
+    let active: boolean = false;
+    try { active = display.isFoldable() && display.getFoldStatus() === display.FoldStatus.FOLD_STATUS_FOLDED; }
+    catch (error) { /* Non-foldable devices keep the ordinary column preference. */ }
+    AppStorage.setOrCreate<boolean>(STORAGE_KEY_COVER_SCREEN_ACTIVE, active);
+  }
+
   private observedWindow: window.Window | null = null;
   private windowSizeListener: ((size: window.Size) => void) | null = null;
   private avoidAreaListener: ((area: window.AvoidAreaOptions) => void) | null = null;
@@ -172,10 +191,14 @@ export default class EntryAbility extends UIAbility {
   private languageStore: LanguageStore = new LanguageStore();
   private pressEffectSettingsStore: PressEffectSettingsStore = new PressEffectSettingsStore();
   private appIconScheduleStore: AppIconScheduleStore = new AppIconScheduleStore();
+  private startupIconReady: Promise<void> = Promise.resolve();
   private appIconScheduleRefreshTimerId: number = -1;
 
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
     hilog.info(DOMAIN, TAG, '%{public}s', 'Ability onCreate');
+    startupSession.cancel();
+    xxAuthSplashStore.beginSession();
+    this.startupIconReady = this.appIconScheduleStore.applyIfEnabled(this.context);
     try { huaweiCloudSyncService.initialize(this.context); }
     catch (error) { hilog.warn(DOMAIN, TAG, '%{public}s', 'Cloud preferences are temporarily unavailable'); }
     huaweiAccountService.initialize(this.context).catch((): void => {});
@@ -248,6 +271,7 @@ export default class EntryAbility extends UIAbility {
     const videoAutoplay: boolean = mediaSettingsStore.loadVideoAutoplay(this.context);
     interactionSettingsStore.publish(interactionSettingsStore.load(this.context));
     motionSettingsStore.publish(motionSettingsStore.load(this.context));
+    startupSettingsStore.initialize(this.context);
     menuSettingsStore.publish(menuSettingsStore.load(this.context));
     AppStorage.setOrCreate<boolean>(STORAGE_KEY_VIDEO_CAPTIONS_ENABLED, mediaSettingsStore.loadVideoCaptionsEnabled(this.context));
     AppStorage.setOrCreate<boolean>(STORAGE_KEY_VIDEO_AUTO_ADVANCE, mediaSettingsStore.loadVideoAutoAdvance(this.context));
@@ -262,6 +286,8 @@ export default class EntryAbility extends UIAbility {
       mediaSettingsStore.loadMediaViewerBlackBackground(this.context));
     AppStorage.setOrCreate<boolean>(STORAGE_KEY_MEDIA_COMMENT_BACKGROUND,
       mediaSettingsStore.loadMediaCommentBackground(this.context));
+    AppStorage.setOrCreate<boolean>(STORAGE_KEY_VIDEO_DOWNLOAD_BUTTON,
+      mediaSettingsStore.loadVideoDownloadButton(this.context));
     AppStorage.setOrCreate<boolean>(STORAGE_KEY_VIDEO_COMMENT_PROGRESS_RING,
       mediaSettingsStore.loadVideoCommentProgressRing(this.context));
     const imageQuality: number = mediaSettingsStore.loadImageQuality(this.context);
@@ -301,8 +327,14 @@ export default class EntryAbility extends UIAbility {
     AppStorage.setOrCreate<boolean>(STORAGE_KEY_NOTIFICATION_DND_SILENT, dndSilent);
     const defaultHomeFeed: number = timelineSettingsStore.loadDefaultHomeFeed(this.context);
     AppStorage.setOrCreate<number>(STORAGE_KEY_DEFAULT_HOME_FEED, defaultHomeFeed);
+    AppStorage.setOrCreate<boolean>(STORAGE_KEY_COVER_SINGLE_COLUMN, timelineSettingsStore.loadCoverSingleColumn(this.context));
+    this.updateCoverScreen();
     const timelineColumns: number = timelineSettingsStore.loadTimelineColumns(this.context);
     AppStorage.setOrCreate<number>(STORAGE_KEY_TIMELINE_COLUMNS, timelineColumns);
+    AppStorage.setOrCreate<string>(STORAGE_KEY_BOTTOM_TAB_ORDER, tabOrderSettingsStore.load(this.context, false));
+    AppStorage.setOrCreate<string>(STORAGE_KEY_HOME_TAB_ORDER, tabOrderSettingsStore.load(this.context, true));
+    AppStorage.setOrCreate<number>(STORAGE_KEY_POST_ACTIONS_MASK, postDisplaySettingsStore.loadMask(this.context));
+    AppStorage.setOrCreate<boolean>(STORAGE_KEY_POST_ACTION_COUNTS, postDisplaySettingsStore.loadCounts(this.context));
     const bottomBarPages: number = bottomBarSettingsStore.load(this.context);
     AppStorage.setOrCreate<number>(STORAGE_KEY_BOTTOM_BAR_PAGES, bottomBarPages);
     const homeTabMaterialLevel: number = hdsTabsSettingsStore.loadHomeTabMaterialLevel(this.context);
@@ -333,6 +365,7 @@ export default class EntryAbility extends UIAbility {
     AppStorage.setOrCreate<boolean>(STORAGE_KEY_TRANSLATION_AUTO_ENABLED, translationSettings.autoTranslate);
     // Proxy settings must be available before any page creates an HTTP client.
     proxyStore.load(this.context);
+    dnsSettingsStore.load(this.context);
     // Prime the VPN state during application entry. Each request checks again
     // because the user can change the system VPN while Harmony X stays open.
     proxyStore.refreshSystemVpnState();
@@ -396,6 +429,7 @@ export default class EntryAbility extends UIAbility {
   }
 
   onDestroy(): void {
+    startupSession.cancel();
     pageBackgroundTextureCache.clear();
     hilog.info(DOMAIN, TAG, '%{public}s', 'Ability onDestroy');
     huaweiCloudSyncService.dispose();
@@ -448,12 +482,24 @@ export default class EntryAbility extends UIAbility {
     });
   }
 
-  private showInitialPage(windowStage: window.WindowStage): void {
+  private async showInitialPage(windowStage: window.WindowStage): Promise<void> {
     if (this.callbackUri.length > 0) {
       this.openOAuthCallback(this.callbackUri);
       return;
     }
-    this.loadHomePage(windowStage);
+    if (AppStorage.get<string>(STORAGE_KEY_STARTUP_MODE) === STARTUP_MODE_NONE) {
+      if (this.windowStage === windowStage) {
+        startupSession.begin();
+        this.loadHomePage(windowStage);
+      }
+      return;
+    }
+    // Prime the actual system selection before painting the launch mark. This
+    // local lookup has a deadline and never holds startup on an unresponsive IPC.
+    await Promise.race<void>([this.startupIconReady, new Promise<void>((resolve): void => {
+      setTimeout(resolve, 120);
+    })]);
+    if (this.windowStage === windowStage) { this.loadHomePage(windowStage, true); }
   }
 
   private async configureFullScreen(windowStage: window.WindowStage): Promise<void> {
@@ -576,11 +622,15 @@ export default class EntryAbility extends UIAbility {
     });
   }
 
-  private loadHomePage(windowStage: window.WindowStage): void {
-    windowStage.loadContent('pages/Index', (err) => {
+  private loadHomePage(windowStage: window.WindowStage, startup: boolean = false): void {
+    windowStage.loadContent(startup ? 'pages/Startup' : 'pages/Index', (err) => {
       if (this.windowStage !== windowStage) { return; }
       if (err.code) {
         hilog.error(DOMAIN, TAG, 'Failed to load content: %{public}s', JSON.stringify(err));
+        if (startup) {
+          startupSession.cancel();
+          this.loadHomePage(windowStage);
+        }
         return;
       }
       this.observeWindowAvoidAreas(windowStage);
@@ -645,6 +695,10 @@ export default class EntryAbility extends UIAbility {
             uiContext.px2vp(avoidAreaOption.area.bottomRect.height));
         }
       };
+      if (display.isFoldable()) {
+        display.on('foldStatusChange', this.foldListener); this.observingFold = true;
+      }
+      this.updateCoverScreen();
       mainWindow.on('windowSizeChange', this.windowSizeListener);
       mainWindow.on('avoidAreaChange', this.avoidAreaListener);
     } catch (error) {
@@ -654,6 +708,7 @@ export default class EntryAbility extends UIAbility {
   }
 
   private updateResponsiveState(uiContext: UIContext, windowWidthPx: number, windowHeightPx: number): void {
+    this.updateCoverScreen();
     const widthVp: number = uiContext.px2vp(windowWidthPx);
     const heightVp: number = uiContext.px2vp(windowHeightPx);
     const breakpoint: string = ResponsiveLayout.breakpointForWidth(widthVp);
@@ -667,6 +722,7 @@ export default class EntryAbility extends UIAbility {
   }
 
   onWindowStageDestroy(): void {
+    startupSession.cancel();
     hilog.info(DOMAIN, TAG, '%{public}s', 'Ability onWindowStageDestroy');
     antiPeepProtection.detachWindow();
     this.releaseWindowListeners();
@@ -674,6 +730,10 @@ export default class EntryAbility extends UIAbility {
   }
 
   private releaseWindowListeners(): void {
+    if (this.observingFold) {
+      try { display.off('foldStatusChange', this.foldListener); } catch (error) { /* Display service released. */ }
+      this.observingFold = false;
+    }
     videoHdrCapability.stop();
     const observed: window.Window | null = this.observedWindow;
     this.observedWindow = null;
@@ -696,6 +756,9 @@ export default class EntryAbility extends UIAbility {
     videoHdrCapability.refresh();
     downloadManager.onForeground(this.context);
     AppStorage.setOrCreate<boolean>('harmonyx.app_foreground', true);
+    if (xxAuthSplashStore.onForeground()) {
+      AppStorage.setOrCreate<number>(SPLASH_OPEN_REQUEST, Date.now());
+    }
     videoKeepAwake.setForeground(true, this.context);
     AppStorage.setOrCreate<number>('harmonyx.foreground_tick', Date.now());
     AppStorage.setOrCreate<number>(STORAGE_KEY_POST_TIME_NOW, Date.now());
@@ -724,6 +787,7 @@ export default class EntryAbility extends UIAbility {
     // window dismissed while the app stays behind stops playback, one that is
     // tapped to return to the app does not.
     AppStorage.setOrCreate<boolean>('harmonyx.app_foreground', false);
+    xxAuthSplashStore.onBackground();
     videoKeepAwake.setForeground(false, this.context);
     AppStorage.setOrCreate<number>('harmonyx.background_tick', Date.now());
     videoPipPlaybackKeeper.resumeAll();

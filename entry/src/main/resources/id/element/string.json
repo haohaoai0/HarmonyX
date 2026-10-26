@@ -1,6 +1,70 @@
 {
   "string": [
     {
+      "name": "startup_animation_none",
+      "value": "Buka langsung"
+    },
+    {
+      "name": "startup_animation_none_desc",
+      "value": "Buka Beranda tanpa ikon atau animasi awal."
+    },
+    {
+      "name": "startup_animation_speed",
+      "value": "Kecepatan pemutaran"
+    },
+    {
+      "name": "startup_animation_speed_desc",
+      "value": "Berlaku untuk pembuka animasi saat aplikasi dibuka berikutnya."
+    },
+    {
+      "name": "startup_animation_speed_value",
+      "value": "%s×"
+    },
+    {
+      "name": "startup_animation_title",
+      "value": "Animasi awal"
+    },
+    {
+      "name": "startup_animation_desc",
+      "value": "Berlaku saat aplikasi dibuka ulang. Beranda dimuat ulang selama animasi. Kurangi gerakan menampilkan ikon statis."
+    },
+    {
+      "name": "startup_animation_icon",
+      "value": "Pertahankan ikon"
+    },
+    {
+      "name": "startup_animation_icon_desc",
+      "value": "Tampilkan ikon saat ini sampai Beranda siap, lalu pudarkan."
+    },
+    {
+      "name": "startup_animation_ios",
+      "value": "Gaya iOS"
+    },
+    {
+      "name": "startup_animation_ios_desc",
+      "value": "Ikon memantul lembut lalu membesar untuk menampilkan Beranda yang diperbarui."
+    },
+    {
+      "name": "startup_animation_video",
+      "value": "Pembuka animasi"
+    },
+    {
+      "name": "startup_animation_video_desc",
+      "value": "Putar animasi khusus ikon saat ini, lalu tampilkan Beranda."
+    },
+    {
+      "name": "splash_ad_label",
+      "value": "Iklan"
+    },
+    {
+      "name": "splash_ad_skip",
+      "value": "Lewati"
+    },
+    {
+      "name": "splash_ad_signature",
+      "value": "Temukan dunia yang kamu suka"
+    },
+    {
       "name": "supporter_config_error",
       "value": "Pengikatan akun di cloud tidak dapat dikonfirmasi. Hubungi pengembang."
     },
@@ -8,63 +72,234 @@
       "name": "supporter_restore_hint",
       "value": "Beralih kembali ke akun memulihkan status tersimpannya. Di perangkat baru, setelah menginstal ulang, atau pada versi lain, masuk ke akun X yang sama dan masukkan kode asli untuk memulihkan akses."
     },
-    {"name": "eye_reading_title", "value": "Membaca dengan tatapan"},
-    {"name": "eye_reading_intro", "value": "Lihat ke atas atau bawah dan tahan untuk menggulir utas, salinan offline, dan artikel."},
-    {"name": "eye_reading_enable", "value": "Aktifkan membaca dengan tatapan"},
-    {"name": "eye_reading_supported", "value": "Pelacakan wajah didukung. Kamera hanya menyala saat Anda mengetuk Mulai di halaman baca."},
-    {"name": "eye_reading_unsupported", "value": "Perangkat ini tidak mendukung pelacakan wajah yang diperlukan. Gunakan sentuhan atau papan ketik."},
-    {"name": "eye_reading_dwell", "value": "Waktu menahan tatapan"},
-    {"name": "eye_reading_threshold", "value": "Ambang arah"},
-    {"name": "eye_reading_threshold_desc", "value": "Ambang yang lebih tinggi membutuhkan gerakan mata lebih besar dan mengurangi guliran yang tidak disengaja."},
-    {"name": "eye_reading_help", "value": "Jaga kepala tetap diam dan lihat tengah layar untuk kalibrasi. Lihat ke atas atau bawah dan tahan untuk menggulir sekitar setengah layar. Kembali ke tengah setelah tiap tindakan. Sentuhan, roda, dan papan ketik diprioritaskan."},
-    {"name": "eye_reading_privacy", "value": "Kamera depan digunakan hanya setelah Anda memulai. Data arah diproses di perangkat; gambar tidak disimpan atau diunggah. Meninggalkan halaman atau beralih ke latar belakang menghentikan sesi. Mulai lagi secara manual."},
-    {"name": "eye_reading_save_failed", "value": "Tidak dapat menyimpan pengaturan. Coba lagi."},
-    {"name": "eye_reading_start", "value": "Mulai kontrol mata"},
-    {"name": "eye_reading_stop", "value": "Hentikan kontrol mata"},
-    {"name": "eye_reading_recalibrate", "value": "Kalibrasi ulang"},
-    {"name": "eye_reading_starting", "value": "Memulai kamera depan…"},
-    {"name": "eye_reading_permission", "value": "Izin kamera diperlukan. Izinkan kamera di izin aplikasi sistem, lalu coba lagi."},
-    {"name": "eye_reading_failed", "value": "Kamera tidak tersedia. Tutup aplikasi kamera lain, lalu coba lagi."},
-    {"name": "eye_reading_calibrating", "value": "Lihat tengah layar dan jaga kepala serta tatapan tetap stabil untuk kalibrasi."},
-    {"name": "eye_reading_center", "value": "Kembalikan tatapan ke tengah sebelum tindakan berikutnya."},
-    {"name": "eye_reading_ready", "value": "Siap: lihat ke atas atau bawah dan tahan."},
-    {"name": "eye_reading_up", "value": "Terus lihat ke atas untuk menggulir ke atas."},
-    {"name": "eye_reading_down", "value": "Terus lihat ke bawah untuk menggulir ke bawah."},
-    {"name": "eye_reading_lost", "value": "Buka mata dan hadap layar dengan cahaya cukup. Kalibrasi ulang jika tetap tidak merespons."},
-    {"name": "eye_reading_paused", "value": "Input manual diprioritaskan. Kontrol mata dijeda sementara."},
-    {"name": "eye_reading_camera_reason", "value": "Menggunakan kamera depan untuk mengenali arah mata di perangkat saat Anda memulai membaca dengan tatapan."},
-    {"name": "compact_video_layout", "value": "Tata letak video layar luar"},
-    {"name": "settings_compact_video_layout_desc", "value": "Untuk layar persegi kecil seperti Pura X. Pilih aksi samping atau baris bawah. Membuka lipatan memulihkan tata letak video biasa."},
-    {"name": "compact_video_layout_rail", "value": "Aksi samping"},
-    {"name": "compact_video_layout_bottom", "value": "Baris bawah"},
-    {"name":"settings_component_hdr_enabled","value":"Component HDR effect"},
-    {"name":"settings_component_hdr_enabled_desc","value":"Off by default. Turn it on to use 1.25x brightening, then adjust the multiplier below."},
-    {"name":"settings_confirm_app_exit","value":"Konfirmasi sebelum keluar"},
-    {"name":"settings_confirm_app_exit_desc","value":"Minta konfirmasi saat kembali dari halaman utama. Jika dimatikan, langsung keluar."},
-    {"name":"app_exit_title","value":"Keluar dari aplikasi?"},
-    {"name":"app_exit_message","value":"Yakin ingin keluar dari aplikasi?"},
-    {"name":"app_exit_action","value":"Keluar"},
-    {"name":"settings_component_hdr_max","value":"Pengali kecerahan maksimum layar saat ini"},
-    {"name":"settings_component_hdr_max_unavailable","value":"Sementara tidak tersedia"},
-    {"name":"settings_component_hdr_max_desc","value":"Dilaporkan sistem untuk layar ini. Diperbarui otomatis saat kecerahan atau layar berubah."},
-    {"name":"settings_component_hdr_ratio","value":"Pengali kecerahan HDR antarmuka"},
-    {"name":"settings_component_hdr_desc","value":"Atur sorotan tombol, ikon, dan item terpilih. Default: 1.25; nilai 1 menonaktifkan peningkatan kecerahan. Kecerahan sebenarnya bergantung pada perangkat. Perubahan disimpan dan diterapkan otomatis."},
-    {"name":"settings_component_hdr_invalid","value":"Masukkan angka valid minimal 1."},
-    {"name":"settings_component_hdr_reset","value":"Atur ulang ke 1.25"},
-    {"name":"settings_video_hdr_enhancement","value":"Peningkatan video HDR"},
-    {"name":"settings_video_hdr_enhancement_desc","value":"Tingkatkan kontras dan warna video standar. Perangkat yang tidak didukung otomatis menggunakan pemutaran normal."},
-    {"name": "settings_menu_post", "value": "Tindakan menu postingan"},
-    {"name": "settings_menu_photo", "value": "Tindakan menu foto"},
-    {"name": "settings_menu_video", "value": "Tindakan menu video"},
-    {"name": "settings_menu_item_desc", "value": "Pilih tindakan yang tampil di menu terkait. Tindakan muncul jika didukung konten dan dapat direset kapan saja."},
-    {"name": "settings_menu_show_action", "value": "Tampilkan di menu terkait"},
-    {"name": "settings_menu_empty", "value": "Tindakan menu disembunyikan. Pulihkan di kategori Pengaturan yang sesuai."},
-    {"name": "settings_viewer_video_mute", "value": "Bisukan penampil video"},
-    {"name": "settings_viewer_video_mute_desc", "value": "Bisukan video yang dibuka secara terpisah dari pratinjau beranda."},
-    {"name": "settings_video_auto_advance_desc", "value": "Beralih otomatis ke video berikutnya setelah pemutaran selesai."},
-    {"name": "settings_video_captions_desc", "value": "Aktifkan subtitel AI sistem secara default di penampil video."},
-    {"name": "settings_video_feed_layout_desc", "value": "Pilih tata letak video potret ponsel. Jendela lebar dan lanskap mempertahankan tata letaknya."},
-    {"name": "settings_chat_desc", "value": "Message requests, call permissions, PIN and chat auto-download"},
+    {
+      "name": "eye_reading_title",
+      "value": "Membaca dengan tatapan"
+    },
+    {
+      "name": "eye_reading_intro",
+      "value": "Lihat ke atas atau bawah dan tahan untuk menggulir utas, salinan offline, dan artikel."
+    },
+    {
+      "name": "eye_reading_enable",
+      "value": "Aktifkan membaca dengan tatapan"
+    },
+    {
+      "name": "eye_reading_supported",
+      "value": "Pelacakan wajah didukung. Kamera hanya menyala saat Anda mengetuk Mulai di halaman baca."
+    },
+    {
+      "name": "eye_reading_unsupported",
+      "value": "Perangkat ini tidak mendukung pelacakan wajah yang diperlukan. Gunakan sentuhan atau papan ketik."
+    },
+    {
+      "name": "eye_reading_dwell",
+      "value": "Waktu menahan tatapan"
+    },
+    {
+      "name": "eye_reading_threshold",
+      "value": "Ambang arah"
+    },
+    {
+      "name": "eye_reading_threshold_desc",
+      "value": "Ambang yang lebih tinggi membutuhkan gerakan mata lebih besar dan mengurangi guliran yang tidak disengaja."
+    },
+    {
+      "name": "eye_reading_help",
+      "value": "Jaga kepala tetap diam dan lihat tengah layar untuk kalibrasi. Lihat ke atas atau bawah dan tahan untuk menggulir sekitar setengah layar. Kembali ke tengah setelah tiap tindakan. Sentuhan, roda, dan papan ketik diprioritaskan."
+    },
+    {
+      "name": "eye_reading_privacy",
+      "value": "Kamera depan digunakan hanya setelah Anda memulai. Data arah diproses di perangkat; gambar tidak disimpan atau diunggah. Meninggalkan halaman atau beralih ke latar belakang menghentikan sesi. Mulai lagi secara manual."
+    },
+    {
+      "name": "eye_reading_save_failed",
+      "value": "Tidak dapat menyimpan pengaturan. Coba lagi."
+    },
+    {
+      "name": "eye_reading_start",
+      "value": "Mulai kontrol mata"
+    },
+    {
+      "name": "eye_reading_stop",
+      "value": "Hentikan kontrol mata"
+    },
+    {
+      "name": "eye_reading_recalibrate",
+      "value": "Kalibrasi ulang"
+    },
+    {
+      "name": "eye_reading_starting",
+      "value": "Memulai kamera depan…"
+    },
+    {
+      "name": "eye_reading_permission",
+      "value": "Izin kamera diperlukan. Izinkan kamera di izin aplikasi sistem, lalu coba lagi."
+    },
+    {
+      "name": "eye_reading_failed",
+      "value": "Kamera tidak tersedia. Tutup aplikasi kamera lain, lalu coba lagi."
+    },
+    {
+      "name": "eye_reading_calibrating",
+      "value": "Lihat tengah layar dan jaga kepala serta tatapan tetap stabil untuk kalibrasi."
+    },
+    {
+      "name": "eye_reading_center",
+      "value": "Kembalikan tatapan ke tengah sebelum tindakan berikutnya."
+    },
+    {
+      "name": "eye_reading_ready",
+      "value": "Siap: lihat ke atas atau bawah dan tahan."
+    },
+    {
+      "name": "eye_reading_up",
+      "value": "Terus lihat ke atas untuk menggulir ke atas."
+    },
+    {
+      "name": "eye_reading_down",
+      "value": "Terus lihat ke bawah untuk menggulir ke bawah."
+    },
+    {
+      "name": "eye_reading_lost",
+      "value": "Buka mata dan hadap layar dengan cahaya cukup. Kalibrasi ulang jika tetap tidak merespons."
+    },
+    {
+      "name": "eye_reading_paused",
+      "value": "Input manual diprioritaskan. Kontrol mata dijeda sementara."
+    },
+    {
+      "name": "eye_reading_camera_reason",
+      "value": "Menggunakan kamera depan untuk mengenali arah mata di perangkat saat Anda memulai membaca dengan tatapan."
+    },
+    {
+      "name": "compact_video_layout",
+      "value": "Tata letak video layar luar"
+    },
+    {
+      "name": "settings_compact_video_layout_desc",
+      "value": "Untuk layar persegi kecil seperti Pura X. Pilih aksi samping atau baris bawah. Membuka lipatan memulihkan tata letak video biasa."
+    },
+    {
+      "name": "compact_video_layout_rail",
+      "value": "Aksi samping"
+    },
+    {
+      "name": "compact_video_layout_bottom",
+      "value": "Baris bawah"
+    },
+    {
+      "name": "settings_component_hdr_enabled",
+      "value": "Component HDR effect"
+    },
+    {
+      "name": "settings_component_hdr_enabled_desc",
+      "value": "Off by default. Turn it on to use 1.25x brightening, then adjust the multiplier below."
+    },
+    {
+      "name": "settings_confirm_app_exit",
+      "value": "Konfirmasi sebelum keluar"
+    },
+    {
+      "name": "settings_confirm_app_exit_desc",
+      "value": "Minta konfirmasi saat kembali dari halaman utama. Jika dimatikan, langsung keluar."
+    },
+    {
+      "name": "app_exit_title",
+      "value": "Keluar dari aplikasi?"
+    },
+    {
+      "name": "app_exit_message",
+      "value": "Yakin ingin keluar dari aplikasi?"
+    },
+    {
+      "name": "app_exit_action",
+      "value": "Keluar"
+    },
+    {
+      "name": "settings_component_hdr_max",
+      "value": "Pengali kecerahan maksimum layar saat ini"
+    },
+    {
+      "name": "settings_component_hdr_max_unavailable",
+      "value": "Sementara tidak tersedia"
+    },
+    {
+      "name": "settings_component_hdr_max_desc",
+      "value": "Dilaporkan sistem untuk layar ini. Diperbarui otomatis saat kecerahan atau layar berubah."
+    },
+    {
+      "name": "settings_component_hdr_ratio",
+      "value": "Pengali kecerahan HDR antarmuka"
+    },
+    {
+      "name": "settings_component_hdr_desc",
+      "value": "Atur sorotan tombol, ikon, dan item terpilih. Default: 1.25; nilai 1 menonaktifkan peningkatan kecerahan. Kecerahan sebenarnya bergantung pada perangkat. Perubahan disimpan dan diterapkan otomatis."
+    },
+    {
+      "name": "settings_component_hdr_invalid",
+      "value": "Masukkan angka valid minimal 1."
+    },
+    {
+      "name": "settings_component_hdr_reset",
+      "value": "Atur ulang ke 1.25"
+    },
+    {
+      "name": "settings_video_hdr_enhancement",
+      "value": "Peningkatan video HDR"
+    },
+    {
+      "name": "settings_video_hdr_enhancement_desc",
+      "value": "Tingkatkan kontras dan warna video standar. Perangkat yang tidak didukung otomatis menggunakan pemutaran normal."
+    },
+    {
+      "name": "settings_menu_post",
+      "value": "Tindakan menu postingan"
+    },
+    {
+      "name": "settings_menu_photo",
+      "value": "Tindakan menu foto"
+    },
+    {
+      "name": "settings_menu_video",
+      "value": "Tindakan menu video"
+    },
+    {
+      "name": "settings_menu_item_desc",
+      "value": "Pilih tindakan yang tampil di menu terkait. Tindakan muncul jika didukung konten dan dapat direset kapan saja."
+    },
+    {
+      "name": "settings_menu_show_action",
+      "value": "Tampilkan di menu terkait"
+    },
+    {
+      "name": "settings_menu_empty",
+      "value": "Tindakan menu disembunyikan. Pulihkan di kategori Pengaturan yang sesuai."
+    },
+    {
+      "name": "settings_viewer_video_mute",
+      "value": "Bisukan penampil video"
+    },
+    {
+      "name": "settings_viewer_video_mute_desc",
+      "value": "Bisukan video yang dibuka secara terpisah dari pratinjau beranda."
+    },
+    {
+      "name": "settings_video_auto_advance_desc",
+      "value": "Beralih otomatis ke video berikutnya setelah pemutaran selesai."
+    },
+    {
+      "name": "settings_video_captions_desc",
+      "value": "Aktifkan subtitel AI sistem secara default di penampil video."
+    },
+    {
+      "name": "settings_video_feed_layout_desc",
+      "value": "Pilih tata letak video potret ponsel. Jendela lebar dan lanskap mempertahankan tata letaknya."
+    },
+    {
+      "name": "settings_chat_desc",
+      "value": "Message requests, call permissions, PIN and chat auto-download"
+    },
     {
       "name": "settings_video_double_tap_seek",
       "value": "Ketuk dua kali untuk maju atau mundur"
@@ -1107,7 +1342,7 @@
     },
     {
       "name": "profile_version",
-      "value": "Harmony X 3.1.0 · HarmonyOS 6.1 (API 23-26) · model Stage"
+      "value": "Harmony X 3.5.0 · HarmonyOS 6.0.2 (API 22-26) · model Stage"
     },
     {
       "name": "profile_following",
@@ -1836,6 +2071,10 @@
     {
       "name": "settings_timeline_columns_auto",
       "value": "Otomatis"
+    },
+    {
+      "name": "settings_timeline_columns_auto_two",
+      "value": "Otomatis: 2 di desktop/lanskap, 1 di layar luar"
     },
     {
       "name": "settings_timeline_columns_one",
@@ -4500,6 +4739,10 @@
     {
       "name": "onboarding_login_title",
       "value": "Masuk ke X"
+    },
+    {
+      "name": "onboarding_login_notice",
+      "value": "Jangan masuk dengan Google; masukkan email secara langsung. Jika jaringan berfungsi tetapi halaman tetap kosong, harap tunggu."
     },
     {
       "name": "onboarding_login_hint",
@@ -10477,330 +10720,1346 @@
       "name": "settings_desktop_video_feed",
       "value": "Feed video seperti di ponsel"
     },
-    {"name":"settings_classic_bottom_bar","value":"Navigasi bawah klasik"},
-    {"name":"settings_classic_bottom_bar_desc","value":"Gunakan bilah ikon dan teks selebar layar di bawah, dengan opsi sembunyikan otomatis. Nonaktifkan untuk kembali ke gaya mengambang. Perubahan langsung berlaku dan tersimpan."},
-    {"name":"settings_root_liquid_tab_indicator","value":"Indikator cair"},
-    {"name":"settings_root_liquid_tab_indicator_desc","value":"Tampilkan kapsul yang dapat diseret dengan pantulan elastis pada navigasi mengambang. Ukurannya mengikuti pengaturan label tab."},
-    {"name":"settings_root_tab_labels","value":"Tampilkan label tab"},
-    {"name":"settings_root_tab_labels_desc","value":"Berlaku untuk navigasi bawah mengambang dan klasik. Saat dimatikan, hanya ikon dan lencana belum dibaca yang tersisa."},
+    {
+      "name": "settings_classic_bottom_bar",
+      "value": "Navigasi bawah klasik"
+    },
+    {
+      "name": "settings_classic_bottom_bar_desc",
+      "value": "Gunakan bilah ikon dan teks selebar layar di bawah, dengan opsi sembunyikan otomatis. Nonaktifkan untuk kembali ke gaya mengambang. Perubahan langsung berlaku dan tersimpan."
+    },
+    {
+      "name": "settings_root_liquid_tab_indicator",
+      "value": "Indikator cair"
+    },
+    {
+      "name": "settings_root_liquid_tab_indicator_desc",
+      "value": "Tampilkan kapsul yang dapat diseret dengan pantulan elastis pada navigasi mengambang. Ukurannya mengikuti pengaturan label tab."
+    },
+    {
+      "name": "settings_root_tab_labels",
+      "value": "Tampilkan label tab"
+    },
+    {
+      "name": "settings_root_tab_labels_desc",
+      "value": "Berlaku untuk navigasi bawah mengambang dan klasik. Saat dimatikan, hanya ikon dan lencana belum dibaca yang tersisa."
+    },
     {
       "name": "chat_post_preview",
       "value": "Posting dibagikan"
     },
-    {"name": "account_overview_signed_out", "value": "Belum masuk"},
-    {"name": "account_overview_no_bio", "value": "Belum ada bio"},
-    {"name": "account_overview_handle", "value": "Nama pengguna"},
-    {"name": "account_overview_location", "value": "Lokasi"},
-    {"name": "account_overview_website", "value": "Situs web"},
-    {"name": "account_overview_manage", "value": "Kelola dan ganti akun"},
-    {"name": "profile_editor_choose_banner", "value": "Change header photo"},
-    {"name": "profile_editor_choose_avatar", "value": "Change profile photo"},
-    {"name": "profile_editor_birthdate", "value": "Birth date"},
-    {"name": "profile_editor_birthdate_empty", "value": "Add birth date"},
-    {"name": "profile_editor_birthdate_manage", "value": "Edit birth date and visibility"},
-    {"name": "profile_editor_birthdate_privacy", "value": "Month and day: %s\nYear: %s"},
-    {"name": "profile_editor_account_changed", "value": "The signed-in account changed. Go back and reopen the editor."},
-    {"name": "profile_editor_unsaved_title", "value": "Discard unsaved changes?"},
-    {"name": "profile_editor_unsaved_message", "value": "Unsaved profile and photo changes will be lost when you leave."},
-    {"name": "profile_editor_keep_editing", "value": "Keep editing"},
-    {"name": "profile_editor_discard", "value": "Discard changes"},
-    {"name": "profile_editor_partial", "value": "Some changes were saved. Your remaining edits are still here. Try saving again."},
-    {"name": "profile_editor_confirm_failed", "value": "Changes were submitted, but the updated profile could not be loaded. Save again to refresh without uploading the photos again."},
-    {"name": "settings_page_transition", "value": "Transisi halaman"},
-    {"name": "settings_page_transition_desc", "value": "Pilih animasi saat membuka halaman dan kembali. Perubahan langsung diterapkan dan disimpan."},
-    {"name": "settings_page_transition_classic", "value": "Animasi saat ini"},
-    {"name": "settings_page_transition_classic_desc", "value": "Pertahankan transisi navigasi sistem saat ini."},
-    {"name": "settings_page_transition_official", "value": "Gaya resmi"},
-    {"name": "settings_page_transition_official_desc", "value": "Zoom tengah dan efek pudar, dengan animasi masuk dan keluar yang selaras."},
-    {"name":"settings_anti_peep","value":"Perlindungan dari intipan"},
-    {"name":"settings_anti_peep_desc","value":"Menutupi jendela aplikasi dengan masker sistem saat orang lain terdeteksi melihat layar."},
-    {"name":"settings_anti_peep_enable","value":"Aktifkan perlindungan"},
-    {"name":"settings_anti_peep_setup","value":"Atur perlindungan sistem"},
-    {"name":"settings_anti_peep_recheck","value":"Periksa lagi"},
-    {"name":"settings_anti_peep_note","value":"Siapkan pengenalan wajah dan izinkan aplikasi ini di Privasi & keamanan > Perlindungan dari intipan. Aplikasi hanya memakai status sistem dan tidak mengakses gambar wajah."},
-    {"name":"settings_anti_peep_disabled","value":"Nonaktif"},
-    {"name":"settings_anti_peep_unsupported","value":"Perangkat ini tidak mendukung perlindungan dari intipan sistem."},
-    {"name":"settings_anti_peep_permission","value":"Menunggu otorisasi aplikasi. Setelah dikonfigurasi, kembali ke aplikasi atau periksa lagi untuk mengaktifkan."},
-    {"name":"settings_anti_peep_system_off","value":"Aktifkan aplikasi ini di perlindungan dari intipan sistem."},
-    {"name":"settings_anti_peep_face","value":"Aktifkan pengenalan wajah di pengaturan sistem terlebih dahulu."},
-    {"name":"settings_anti_peep_ready","value":"Aktif. Memantau status intipan."},
-    {"name":"settings_anti_peep_protected","value":"Intipan terdeteksi. Masker perlindungan sistem dipicu."},
-    {"name":"settings_anti_peep_error","value":"Perlindungan sementara tidak tersedia. Periksa lagi."},
-    {"name":"settings_anti_peep_checking","value":"Memeriksa atau mengaktifkan perlindungan…"},
-    {"name":"settings_anti_peep_save_failed","value":"Gagal menyimpan. Coba lagi."},
-    {"name":"huawei_account_title","value":"HUAWEI ID and cloud sync"},
-    {"name":"huawei_account_name","value":"HUAWEI ID"},
-    {"name":"huawei_login","value":"Sign in with HUAWEI ID"},
-    {"name":"huawei_logout","value":"Sign out"},
-    {"name":"huawei_signed_in","value":"Signed in with HUAWEI ID"},
-    {"name":"huawei_logging_in","value":"Signing in…"},
-    {"name":"huawei_signed_out_description","value":"Sign in to bring your preferences with you"},
-    {"name":"huawei_cloud_sync","value":"Cloud sync"},
-    {"name":"huawei_sync_description","value":"Sign in to enable sync for appearance, reading, playback preferences and local content rules across your devices."},
-    {"name":"huawei_local_data_note","value":"X credentials, messages, drafts and caches stay on this device. Some appearance changes take effect after restarting."},
-    {"name":"huawei_logout_title","value":"Sign out of HUAWEI ID?"},
-    {"name":"huawei_logout_description","value":"Cloud sync will pause. Local settings and existing cloud data will be kept. Your X account remains available."},
-    {"name":"huawei_sync_disabled","value":"Off. Settings are saved on this device."},
-    {"name":"huawei_sync_unavailable","value":"Cloud storage is unavailable. Check the system cloud service and this app’s sync switch."},
-    {"name":"huawei_sync_downloading","value":"Reading and merging cloud settings…"},
-    {"name":"huawei_sync_uploading","value":"Uploading settings…"},
-    {"name":"huawei_sync_success","value":"Synced"},
-    {"name":"huawei_sync_pending","value":"Saved locally, waiting to sync"},
-    {"name":"huawei_sync_failed","value":"Sync did not finish. Your local data is safe. Check system cloud settings and try again."},
-    {"name":"huawei_network_error","value":"Network unavailable. Try again when connected."},
-    {"name":"huawei_storage_full","value":"Cloud or device storage is full. Free some space and try again."},
-    {"name":"huawei_login_error","value":"Sign-in did not finish. Check account service configuration or try again later."},
-    {"name":"huawei_authorization_error","value":"Nickname and avatar authorization failed. Check account permissions and try again."},
-    {"name":"huawei_save_error","value":"Could not save settings. Try again."},
-    {"name":"huawei_select_group","value":"Select at least one group to sync."},
-    {"name":"huawei_account_changed","value":"HUAWEI ID has changed. Enabling sync will merge the selected local settings into the current account."},
-    {"name":"huawei_last_sync","value":"Last successful sync:"},
-    {"name":"huawei_syncing","value":"Syncing…"},
-    {"name":"huawei_sync_now","value":"Sync now"},
-    {"name":"huawei_group_appearance","value":"Appearance and navigation"},
-    {"name":"huawei_group_appearance_description","value":"Theme, text size, title bar, tabs and sheet material"},
-    {"name":"huawei_group_media","value":"Reading and playback"},
-    {"name":"huawei_group_media_description","value":"Image and video quality, autoplay and mute preferences"},
-    {"name":"huawei_group_filters","value":"Local content rules"},
-    {"name":"huawei_group_filters_description","value":"Keyword and user filters, and content preferences"},
-    {"name":"post_photo_save_background","value":"Simpan ke koleksi latar"},
-    {"name":"chat_background_saving_photo","value":"Menyimpan gambar latar…"},
-    {"name":"chat_background_saved_photo","value":"Tersimpan. Pilih di Latar halaman atau Latar percakapan."},
-    {"name":"chat_background_save_photo_failed","value":"Gagal menyimpan gambar latar. Coba lagi."},
-    {"name":"chat_background_saved_photos","value":"Gambar yang disimpan dari postingan"},
-    {"name":"page_background_title","value":"Latar halaman"},
-    {"name":"page_background_description","value":"Colors, photos and mixable patterns"},
-    {"name":"page_background_switch_title","value":"Aktifkan latar halaman"},
-    {"name":"page_background_switch_desc","value":"Matikan untuk langsung memakai latar tema. Gaya saat ini tetap disimpan."},
-    {"name":"page_background_base","value":"Latar dasar"},
-    {"name":"page_background_pattern","value":"Lapisan pola"},
-    {"name":"page_background_pattern_none","value":"Tanpa pola"},
-    {"name":"page_background_content_opacity","value":"Opasitas latar konten"},
-    {"name":"page_background_reset","value":"Pulihkan bawaan"},
-    {"name":"page_background_color_placeholder","value":"Custom color #RRGGBB"},
-    {"name":"page_background_preview","value":"Pratinjau latar"},
-    {"name":"page_background_preview_text","value":"Bring your favorite colors and patterns to every visit."},
-    {"name":"page_background_preview_hint","value":"Text and content surfaces show how readable your background will be."},
-    {"name":"page_background_note","value":"Applies to regular pages. Chats have separate backgrounds; media viewers keep their immersive backgrounds. Tap Apply to save."},
-    {"name":"page_background_layout_preset","value":"Pola lengkap"},
-    {"name":"page_background_layout_icons","value":"Motif satuan"},
-    {"name":"page_background_density","value":"Kepadatan motif"},
-    {"name":"page_background_set_add","value":"Pilih seluruh set"},
-    {"name":"page_background_set_remove","value":"Batalkan pilihan set"},
-    {"name":"page_background_mix_hint","value":"Select motifs across sets to mix them, or repeat a single motif."},
-    {"name":"page_background_selected","value":"%d motifs selected"},
-    {"name":"page_background_icons_clear","value":"Hapus motif"},
-    {"name":"page_background_paper","value":"Tekstur kertas"},
-    {"name":"page_background_paper_none","value":"Tidak ada"},
-    {"name":"page_background_kraft","value":"Kertas kraft"},
-    {"name":"page_background_parchment","value":"Perkamen"},
-    {"name":"page_background_texture_strength","value":"Kekuatan tekstur"},
-    {"name":"page_background_presets_mix","value":"Select multiple full patterns to combine them."},
-    {"name":"page_background_applied","value":"Latar halaman diterapkan"},
-    {"name":"page_background_apply_failed","value":"Latar tidak dapat disimpan. Coba lagi."},
-    {"name":"page_background_transparent_posts","value":"Transparent post cards"},
-    {"name":"page_background_transparent_posts_desc","value":"Hide the surface behind posts and quoted posts to reveal the page background."},
-    {"name":"page_background_transparent_inbox","value":"Transparent message list"},
-    {"name":"page_background_transparent_inbox_desc","value":"Hide conversation row surfaces while keeping text, avatars and unread indicators."},
-    {"name":"page_background_post_opacity","value":"Post surface opacity"},
-    {"name":"page_background_inbox_opacity","value":"Message list surface opacity"},
-    {"name":"page_background_scheme_import","value":"Import scheme"},
-    {"name":"page_background_scheme_share","value":"Share scheme"},
-    {"name":"page_background_scheme_title","value":"Page background scheme"},
-    {"name":"page_background_scheme_imported","value":"Scheme imported. Preview it, then tap Apply."},
-    {"name":"page_background_scheme_import_failed","value":"Unable to import. Choose a valid HarmonyX background scheme (up to 48 MB)."},
-    {"name":"page_background_scheme_share_failed","value":"Unable to share. Please try again; background photos must be under 32 MB."},
-    {"name":"page_background_set_signature_icons","value":"Ikon alternatif"},
-    {"name":"page_background_set_garden_defense","value":"Plants vs. Zombies"},
-    {"name":"page_background_motif_signature_icons_frog_face","value":"Frog face"},
-    {"name":"page_background_motif_signature_icons_frog_lily","value":"Frog on a lily pad"},
-    {"name":"page_background_motif_signature_icons_milk_frog","value":"Milk frog"},
-    {"name":"page_background_motif_signature_icons_milk_frog_wave","value":"Waving milk frog"},
-    {"name":"page_background_motif_signature_icons_bird","value":"Flying bird"},
-    {"name":"page_background_motif_signature_icons_bird_wings","value":"Bird with open wings"},
-    {"name":"page_background_motif_signature_icons_ribbon_x","value":"Ribbon X"},
-    {"name":"page_background_motif_signature_icons_blossom_x","value":"Blossom X"},
-    {"name":"page_background_motif_signature_icons_brush_x","value":"Brush X"},
-    {"name":"page_background_motif_signature_icons_prism_x","value":"Prism X"},
-    {"name":"page_background_motif_signature_icons_zombie_x","value":"Zombie X"},
-    {"name":"page_background_motif_signature_icons_lily_blossom","value":"Lily blossom"},
-    {"name":"page_background_motif_garden_defense_peashooter","value":"Peashooter"},
-    {"name":"page_background_motif_garden_defense_sunflower","value":"Sunflower"},
-    {"name":"page_background_motif_garden_defense_wallnut","value":"Wall-nut"},
-    {"name":"page_background_motif_garden_defense_cherry_bomb","value":"Cherry Bomb"},
-    {"name":"page_background_motif_garden_defense_snow_pea","value":"Snow Pea"},
-    {"name":"page_background_motif_garden_defense_potato_mine","value":"Potato Mine"},
-    {"name":"page_background_motif_garden_defense_chomper","value":"Chomper"},
-    {"name":"page_background_motif_garden_defense_squash","value":"Squash"},
-    {"name":"page_background_motif_garden_defense_zombie","value":"Zombie"},
-    {"name":"page_background_motif_garden_defense_conehead","value":"Conehead Zombie"},
-    {"name":"page_background_motif_garden_defense_buckethead","value":"Buckethead Zombie"},
-    {"name":"page_background_motif_garden_defense_lawnmower","value":"Lawn mower"},
-    {"name":"page_background_set_ai_assistants","value":"Asisten AI"},
-    {"name":"page_background_motif_ai_assistants_gpt","value":"GPT"},
-    {"name":"page_background_motif_ai_assistants_claude","value":"Claude"},
-    {"name":"page_background_motif_ai_assistants_gemini","value":"Gemini"},
-    {"name":"page_background_motif_ai_assistants_deepseek","value":"DeepSeek"},
-    {"name":"page_background_motif_ai_assistants_grok","value":"Grok"},
-    {"name":"page_background_motif_ai_assistants_qwen","value":"Qwen"},
-    {"name":"page_background_motif_ai_assistants_kimi","value":"Kimi"},
-    {"name":"page_background_motif_ai_assistants_doubao","value":"Doubao"},
-    {"name":"page_background_motif_ai_assistants_copilot","value":"Copilot"},
-    {"name":"page_background_motif_ai_assistants_perplexity","value":"Perplexity"},
-    {"name":"page_background_motif_ai_assistants_mistral","value":"Mistral"},
-    {"name":"page_background_motif_ai_assistants_robot","value":"AI robot"},
-    {"name":"page_background_set_mobile_brands_systems","value":"Merek dan sistem ponsel"},
-    {"name":"page_background_motif_mobile_brands_systems_apple","value":"Apple"},
-    {"name":"page_background_motif_mobile_brands_systems_huawei","value":"Huawei"},
-    {"name":"page_background_motif_mobile_brands_systems_xiaomi","value":"Xiaomi"},
-    {"name":"page_background_motif_mobile_brands_systems_samsung","value":"Samsung"},
-    {"name":"page_background_motif_mobile_brands_systems_oppo","value":"OPPO"},
-    {"name":"page_background_motif_mobile_brands_systems_vivo","value":"vivo"},
-    {"name":"page_background_motif_mobile_brands_systems_honor","value":"HONOR"},
-    {"name":"page_background_motif_mobile_brands_systems_oneplus","value":"OnePlus"},
-    {"name":"page_background_motif_mobile_brands_systems_meizu","value":"Meizu"},
-    {"name":"page_background_motif_mobile_brands_systems_harmonyos","value":"HarmonyOS"},
-    {"name":"page_background_motif_mobile_brands_systems_android","value":"Android"},
-    {"name":"page_background_motif_mobile_brands_systems_ios","value":"iOS"},
-    {"name":"page_background_motif_mobile_brands_systems_hyperos","value":"HyperOS"},
-    {"name":"page_background_motif_mobile_brands_systems_coloros","value":"ColorOS"},
-    {"name":"page_background_motif_mobile_brands_systems_originos","value":"OriginOS"},
-    {"name":"page_background_motif_mobile_brands_systems_oneui","value":"One UI"},
-    {"name":"motion_title","value":"Animation & haptics"},
-    {"name":"motion_intro","value":"Tune interaction animations and touch feedback. Changes are saved automatically. Tap the preview to try them."},
-    {"name":"motion_preview","value":"Tap to preview animation and haptics"},
-    {"name":"motion_reduce","value":"Reduce motion"},
-    {"name":"motion_reduce_desc","value":"Turn off decorative scaling, movement and Symbol effects, and skip page transitions. Your animation preferences are kept."},
-    {"name":"motion_duration","value":"Animation duration"},
-    {"name":"motion_duration_desc","value":"Reference duration for app animations. Button and page animations scale proportionally. System Symbol effects keep their native timing."},
-    {"name":"motion_amplitude","value":"Movement amplitude"},
-    {"name":"motion_amplitude_desc","value":"Adjust decorative scaling and rotation. At 0%, these effects stop. Gesture tracking and zoom keep their full range."},
-    {"name":"motion_damping","value":"Spring damping"},
-    {"name":"motion_damping_desc","value":"Lower values bounce more; higher values settle more gently."},
-    {"name":"motion_symbol","value":"Animated Symbols"},
-    {"name":"motion_symbol_desc","value":"Play a native Symbol effect once when selecting a tab or using an action button. Effects pause with Reduce motion."},
-    {"name":"motion_haptics","value":"Touch feedback"},
-    {"name":"motion_haptics_desc","value":"Use light feedback for navigation, buttons, switches and actions. Follows the system haptics setting."},
-    {"name":"motion_intensity","value":"Haptic intensity"},
-    {"name":"motion_intensity_desc","value":"Adjust preset effects on supported devices. Other motors use a short system touch vibration."},
-    {"name":"motion_presets","value":"Animation presets"},
-    {"name":"motion_preset_quick","value":"Quick"},
-    {"name":"motion_preset_quick_desc","value":"175 ms · 60% movement · firm settling. Short, crisp feedback."},
-    {"name":"motion_preset_standard","value":"Standard"},
-    {"name":"motion_preset_standard_desc","value":"300 ms · 100% movement · balanced spring. Recommended for everyday use."},
-    {"name":"motion_preset_spring","value":"Bouncy"},
-    {"name":"motion_preset_spring_desc","value":"450 ms · 120% movement · lower damping. Softer, more visible rebound."},
-    {"name":"motion_preset_reduced","value":"Low motion"},
-    {"name":"motion_preset_reduced_desc","value":"Skip page transitions and decorative effects. Keep your previous tuning."},
-    {"name":"motion_preset_custom","value":"Current preset: Custom. Choose a preset to restore its animation values."},
-    {"name":"chat_auto_download","value":"Chat auto-download"},
-    {"name":"storage_chat_retention","value":"Keep chat media"},
-    {"name":"storage_chat_retention_desc","value":"Set how long downloaded chat media stays cached. Chat history and manually saved files are kept."},
-    {"name":"settings_theme_mix","value":"Palet campuran"},
-    {"name":"settings_theme_mix_desc","value":"Warna serasi untuk sakelar, navigasi, dan tombol posting dalam mode terang dan gelap."},
-    {"name":"settings_theme_mix_confetti","value":"Konfeti"},
-    {"name":"settings_theme_mix_coast","value":"Garam Laut & Koral"},
-    {"name":"settings_theme_mix_sunset","value":"Iris Senja"},
-    {"name":"settings_theme_mix_forest","value":"Ambar Hutan"},
-    {"name":"settings_theme_mix_berry","value":"Beri & Mint"},
-    {"name":"settings_theme_mix_morandi","value":"Morandi"},
-    {"name":"settings_theme_solid","value":"Warna tunggal"},
-    {"name":"settings_theme_mix_candy","value":"Konfeti Permen"},
-    {"name":"settings_theme_mix_sky","value":"Langit & Lemon"},
-    {"name":"settings_theme_mix_peach","value":"Persik & Mint"},
-    {"name":"settings_theme_mix_lilac","value":"Lilac & Custard"},
-    {"name":"page_background_set_popular_apps_cn","value":"Aplikasi populer · Tiongkok"},
-    {"name":"page_background_motif_popular_apps_cn_wechat","value":"WeChat"},
-    {"name":"page_background_motif_popular_apps_cn_qq","value":"QQ"},
-    {"name":"page_background_motif_popular_apps_cn_weibo","value":"Weibo"},
-    {"name":"page_background_motif_popular_apps_cn_douyin","value":"Douyin"},
-    {"name":"page_background_motif_popular_apps_cn_kuaishou","value":"Kuaishou"},
-    {"name":"page_background_motif_popular_apps_cn_bilibili","value":"Bilibili"},
-    {"name":"page_background_motif_popular_apps_cn_xiaohongshu","value":"Xiaohongshu"},
-    {"name":"page_background_motif_popular_apps_cn_zhihu","value":"Zhihu"},
-    {"name":"page_background_motif_popular_apps_cn_baidu","value":"Baidu"},
-    {"name":"page_background_motif_popular_apps_cn_tieba","value":"Baidu Tieba"},
-    {"name":"page_background_motif_popular_apps_cn_alipay","value":"Alipay"},
-    {"name":"page_background_motif_popular_apps_cn_taobao","value":"Taobao"},
-    {"name":"page_background_motif_popular_apps_cn_jd","value":"JD"},
-    {"name":"page_background_motif_popular_apps_cn_pinduoduo","value":"Pinduoduo"},
-    {"name":"page_background_motif_popular_apps_cn_meituan","value":"Meituan"},
-    {"name":"page_background_motif_popular_apps_cn_eleme","value":"Ele.me"},
-    {"name":"page_background_motif_popular_apps_cn_dianping","value":"Dianping"},
-    {"name":"page_background_motif_popular_apps_cn_amap","value":"Amap"},
-    {"name":"page_background_motif_popular_apps_cn_baidu_maps","value":"Baidu Maps"},
-    {"name":"page_background_motif_popular_apps_cn_didi","value":"DiDi"},
-    {"name":"page_background_motif_popular_apps_cn_netease_music","value":"NetEase Cloud Music"},
-    {"name":"page_background_motif_popular_apps_cn_qq_music","value":"QQ Music"},
-    {"name":"page_background_motif_popular_apps_cn_kugou","value":"KuGou"},
-    {"name":"page_background_motif_popular_apps_cn_weread","value":"WeRead"},
-    {"name":"page_background_set_popular_apps_global","value":"Aplikasi populer · Global"},
-    {"name":"page_background_motif_popular_apps_global_whatsapp","value":"WhatsApp"},
-    {"name":"page_background_motif_popular_apps_global_telegram","value":"Telegram"},
-    {"name":"page_background_motif_popular_apps_global_signal","value":"Signal"},
-    {"name":"page_background_motif_popular_apps_global_instagram","value":"Instagram"},
-    {"name":"page_background_motif_popular_apps_global_facebook","value":"Facebook"},
-    {"name":"page_background_motif_popular_apps_global_messenger","value":"Messenger"},
-    {"name":"page_background_motif_popular_apps_global_x","value":"X"},
-    {"name":"page_background_motif_popular_apps_global_threads","value":"Threads"},
-    {"name":"page_background_motif_popular_apps_global_youtube","value":"YouTube"},
-    {"name":"page_background_motif_popular_apps_global_tiktok","value":"TikTok"},
-    {"name":"page_background_motif_popular_apps_global_reddit","value":"Reddit"},
-    {"name":"page_background_motif_popular_apps_global_discord","value":"Discord"},
-    {"name":"page_background_motif_popular_apps_global_spotify","value":"Spotify"},
-    {"name":"page_background_motif_popular_apps_global_apple_music","value":"Apple Music"},
-    {"name":"page_background_motif_popular_apps_global_netflix","value":"Netflix"},
-    {"name":"page_background_motif_popular_apps_global_twitch","value":"Twitch"},
-    {"name":"page_background_motif_popular_apps_global_line","value":"LINE"},
-    {"name":"page_background_motif_popular_apps_global_snapchat","value":"Snapchat"},
-    {"name":"page_background_motif_popular_apps_global_pinterest","value":"Pinterest"},
-    {"name":"page_background_motif_popular_apps_global_chrome","value":"Chrome"},
-    {"name":"page_background_motif_popular_apps_global_firefox","value":"Firefox"},
-    {"name":"page_background_motif_popular_apps_global_edge","value":"Edge"},
-    {"name":"page_background_motif_popular_apps_global_gmail","value":"Gmail"},
-    {"name":"page_background_motif_popular_apps_global_google_maps","value":"Google Maps"},
-    {"name":"scene_title","value":"Scene modes"},
-    {"name":"scene_intro","value":"Apply a set of playback, quality, motion and background preferences. Restore returns to your settings from before the first mode was enabled."},
-    {"name":"scene_reading","value":"Clear reading"},
-    {"name":"scene_reading_desc","value":"Autoplay off · high quality images · low quality video · reduced motion · plain background"},
-    {"name":"scene_saver","value":"Power and data saver"},
-    {"name":"scene_saver_desc","value":"Autoplay off · small images · low quality video · reduced motion · plain background"},
-    {"name":"scene_media","value":"Media browsing"},
-    {"name":"scene_media_desc","value":"Autoplay on · original images · high quality video · motion on · your saved background"},
-    {"name":"scene_restore","value":"Restore original settings"},
-    {"name":"scene_restore_desc","value":"Keep your preferences from before scene mode. Switching between modes does not replace this backup."},
-    {"name":"scene_failed","value":"Some settings could not be saved. Your original settings are retained; retry or restore."},
-    {"name":"offline_title","value":"Offline & later"},
-    {"name":"offline_online","value":"Online bookmarks"},
-    {"name":"offline_intro","value":"New bookmarks save text and available articles automatically. Enable images before saving to include photos. Local copies stay separate from online bookmarks and ordinary cache cleanup."},
-    {"name":"offline_images","value":"Include photos in future saves"},
-    {"name":"offline_save","value":"Save offline"},
-    {"name":"offline_saving","value":"Saving…"},
-    {"name":"offline_saved","value":"Saved for offline reading"},
-    {"name":"offline_partial_saved","value":"Saved available content. Some article text or photos are missing; retry when online."},
-    {"name":"offline_save_failed","value":"Could not save locally. Please retry."},
-    {"name":"offline_partial","value":"Incomplete copy"},
-    {"name":"offline_unread","value":"Unread"},
-    {"name":"offline_unread_only","value":"Unread only"},
-    {"name":"offline_search","value":"Search titles, tags or notes"},
-    {"name":"offline_empty","value":"No matching offline items. Save a bookmark or use Save offline on a post."},
-    {"name":"offline_edit","value":"Tags & note"},
-    {"name":"offline_tags","value":"Tags"},
-    {"name":"offline_tags_hint","value":"Tags, separated by commas"},
-    {"name":"offline_note","value":"Private note"},
-    {"name":"offline_done","value":"Save"},
-    {"name":"offline_delete","value":"Delete local copy"},
-    {"name":"reader_title","value":"Thread reader"},
-    {"name":"reader_author_only","value":"Author only"},
-    {"name":"reader_translate","value":"Translate passages"},
-    {"name":"reader_font","value":"Text size"},
-    {"name":"reader_missing","value":"This offline item is missing or unavailable. Save it again while online."},
-    {"name":"reader_partial","value":"Only the available article content is shown. Continue loading or retry while online to get the complete text."},
-    {"name":"reader_load_failed","value":"Could not load more replies. Your current reading content is kept."},
-    {"name":"reader_translation_setup","value":"Enable translation and choose a target language in Settings first."},
-    {"name":"reader_translation_failed","value":"Some passages could not be translated. You can hide translations and retry."},
-    {"name":"reader_offline_note","value":"Saved local content. Translation requires a network connection."},
-    {"name":"reader_scope","value":"Replies loaded so far. Use Continue loading to include more of the discussion."},
+    {
+      "name": "account_overview_signed_out",
+      "value": "Belum masuk"
+    },
+    {
+      "name": "account_overview_no_bio",
+      "value": "Belum ada bio"
+    },
+    {
+      "name": "account_overview_handle",
+      "value": "Nama pengguna"
+    },
+    {
+      "name": "account_overview_location",
+      "value": "Lokasi"
+    },
+    {
+      "name": "account_overview_website",
+      "value": "Situs web"
+    },
+    {
+      "name": "account_overview_manage",
+      "value": "Kelola dan ganti akun"
+    },
+    {
+      "name": "profile_editor_choose_banner",
+      "value": "Change header photo"
+    },
+    {
+      "name": "profile_editor_choose_avatar",
+      "value": "Change profile photo"
+    },
+    {
+      "name": "profile_editor_birthdate",
+      "value": "Birth date"
+    },
+    {
+      "name": "profile_editor_birthdate_empty",
+      "value": "Add birth date"
+    },
+    {
+      "name": "profile_editor_birthdate_manage",
+      "value": "Edit birth date and visibility"
+    },
+    {
+      "name": "profile_editor_birthdate_privacy",
+      "value": "Month and day: %s\nYear: %s"
+    },
+    {
+      "name": "profile_editor_account_changed",
+      "value": "The signed-in account changed. Go back and reopen the editor."
+    },
+    {
+      "name": "profile_editor_unsaved_title",
+      "value": "Discard unsaved changes?"
+    },
+    {
+      "name": "profile_editor_unsaved_message",
+      "value": "Unsaved profile and photo changes will be lost when you leave."
+    },
+    {
+      "name": "profile_editor_keep_editing",
+      "value": "Keep editing"
+    },
+    {
+      "name": "profile_editor_discard",
+      "value": "Discard changes"
+    },
+    {
+      "name": "profile_editor_partial",
+      "value": "Some changes were saved. Your remaining edits are still here. Try saving again."
+    },
+    {
+      "name": "profile_editor_confirm_failed",
+      "value": "Changes were submitted, but the updated profile could not be loaded. Save again to refresh without uploading the photos again."
+    },
+    {
+      "name": "settings_page_transition",
+      "value": "Transisi halaman"
+    },
+    {
+      "name": "settings_page_transition_desc",
+      "value": "Pilih animasi saat membuka halaman dan kembali. Perubahan langsung diterapkan dan disimpan."
+    },
+    {
+      "name": "settings_page_transition_classic",
+      "value": "Animasi saat ini"
+    },
+    {
+      "name": "settings_page_transition_classic_desc",
+      "value": "Pertahankan transisi navigasi sistem saat ini."
+    },
+    {
+      "name": "settings_page_transition_official",
+      "value": "Gaya resmi"
+    },
+    {
+      "name": "settings_page_transition_official_desc",
+      "value": "Zoom tengah dan efek pudar, dengan animasi masuk dan keluar yang selaras."
+    },
+    {
+      "name": "settings_anti_peep",
+      "value": "Perlindungan dari intipan"
+    },
+    {
+      "name": "settings_anti_peep_desc",
+      "value": "Menutupi jendela aplikasi dengan masker sistem saat orang lain terdeteksi melihat layar."
+    },
+    {
+      "name": "settings_anti_peep_enable",
+      "value": "Aktifkan perlindungan"
+    },
+    {
+      "name": "settings_anti_peep_setup",
+      "value": "Atur perlindungan sistem"
+    },
+    {
+      "name": "settings_anti_peep_recheck",
+      "value": "Periksa lagi"
+    },
+    {
+      "name": "settings_anti_peep_note",
+      "value": "Siapkan pengenalan wajah dan izinkan aplikasi ini di Privasi & keamanan > Perlindungan dari intipan. Aplikasi hanya memakai status sistem dan tidak mengakses gambar wajah."
+    },
+    {
+      "name": "settings_anti_peep_disabled",
+      "value": "Nonaktif"
+    },
+    {
+      "name": "settings_anti_peep_unsupported",
+      "value": "Perangkat ini tidak mendukung perlindungan dari intipan sistem."
+    },
+    {
+      "name": "settings_anti_peep_permission",
+      "value": "Menunggu otorisasi aplikasi. Setelah dikonfigurasi, kembali ke aplikasi atau periksa lagi untuk mengaktifkan."
+    },
+    {
+      "name": "settings_anti_peep_system_off",
+      "value": "Aktifkan aplikasi ini di perlindungan dari intipan sistem."
+    },
+    {
+      "name": "settings_anti_peep_face",
+      "value": "Aktifkan pengenalan wajah di pengaturan sistem terlebih dahulu."
+    },
+    {
+      "name": "settings_anti_peep_ready",
+      "value": "Aktif. Memantau status intipan."
+    },
+    {
+      "name": "settings_anti_peep_protected",
+      "value": "Intipan terdeteksi. Masker perlindungan sistem dipicu."
+    },
+    {
+      "name": "settings_anti_peep_error",
+      "value": "Perlindungan sementara tidak tersedia. Periksa lagi."
+    },
+    {
+      "name": "settings_anti_peep_checking",
+      "value": "Memeriksa atau mengaktifkan perlindungan…"
+    },
+    {
+      "name": "settings_anti_peep_save_failed",
+      "value": "Gagal menyimpan. Coba lagi."
+    },
+    {
+      "name": "huawei_account_title",
+      "value": "HUAWEI ID and cloud sync"
+    },
+    {
+      "name": "huawei_config_section",
+      "value": "Settings profile"
+    },
+    {
+      "name": "huawei_config_import",
+      "value": "Import"
+    },
+    {
+      "name": "huawei_config_export",
+      "value": "Export"
+    },
+    {
+      "name": "huawei_config_importing",
+      "value": "Importing…"
+    },
+    {
+      "name": "huawei_config_exporting",
+      "value": "Exporting…"
+    },
+    {
+      "name": "huawei_config_description",
+      "value": "Back up or restore appearance, media and filter settings with a JSON file. Account, token and proxy details are never included."
+    },
+    {
+      "name": "huawei_config_exported",
+      "value": "Settings profile exported"
+    },
+    {
+      "name": "huawei_config_export_failed",
+      "value": "Export failed. Try again."
+    },
+    {
+      "name": "huawei_config_imported",
+      "value": "Settings imported"
+    },
+    {
+      "name": "huawei_config_import_failed",
+      "value": "The settings profile could not be read or validated."
+    },
+    {
+      "name": "huawei_config_import_title",
+      "value": "Import settings profile?"
+    },
+    {
+      "name": "huawei_config_import_message",
+      "value": "Appearance, media and filter settings in this file will replace the matching settings on this device. Account and proxy details will not change."
+    },
+    {
+      "name": "huawei_config_import_confirm",
+      "value": "Import"
+    },
+    {
+      "name": "huawei_account_name",
+      "value": "HUAWEI ID"
+    },
+    {
+      "name": "huawei_login",
+      "value": "Sign in with HUAWEI ID"
+    },
+    {
+      "name": "huawei_logout",
+      "value": "Sign out"
+    },
+    {
+      "name": "huawei_signed_in",
+      "value": "Signed in with HUAWEI ID"
+    },
+    {
+      "name": "huawei_logging_in",
+      "value": "Signing in…"
+    },
+    {
+      "name": "huawei_signed_out_description",
+      "value": "Sign in to bring your preferences with you"
+    },
+    {
+      "name": "huawei_cloud_sync",
+      "value": "Cloud sync"
+    },
+    {
+      "name": "huawei_sync_description",
+      "value": "Sign in to enable sync for appearance, reading, playback preferences and local content rules across your devices."
+    },
+    {
+      "name": "huawei_local_data_note",
+      "value": "X credentials, messages, drafts and caches stay on this device. Some appearance changes take effect after restarting."
+    },
+    {
+      "name": "huawei_logout_title",
+      "value": "Sign out of HUAWEI ID?"
+    },
+    {
+      "name": "huawei_logout_description",
+      "value": "Cloud sync will pause. Local settings and existing cloud data will be kept. Your X account remains available."
+    },
+    {
+      "name": "huawei_sync_disabled",
+      "value": "Off. Settings are saved on this device."
+    },
+    {
+      "name": "huawei_sync_unavailable",
+      "value": "Cloud storage is unavailable. Check the system cloud service and this app’s sync switch."
+    },
+    {
+      "name": "huawei_sync_downloading",
+      "value": "Reading and merging cloud settings…"
+    },
+    {
+      "name": "huawei_sync_uploading",
+      "value": "Uploading settings…"
+    },
+    {
+      "name": "huawei_sync_success",
+      "value": "Synced"
+    },
+    {
+      "name": "huawei_sync_pending",
+      "value": "Saved locally, waiting to sync"
+    },
+    {
+      "name": "huawei_sync_failed",
+      "value": "Sync did not finish. Your local data is safe. Check system cloud settings and try again."
+    },
+    {
+      "name": "huawei_network_error",
+      "value": "Network unavailable. Try again when connected."
+    },
+    {
+      "name": "huawei_storage_full",
+      "value": "Cloud or device storage is full. Free some space and try again."
+    },
+    {
+      "name": "huawei_login_error",
+      "value": "Sign-in did not finish. Check account service configuration or try again later."
+    },
+    {
+      "name": "huawei_authorization_error",
+      "value": "Nickname and avatar authorization failed. Check account permissions and try again."
+    },
+    {
+      "name": "huawei_save_error",
+      "value": "Could not save settings. Try again."
+    },
+    {
+      "name": "huawei_select_group",
+      "value": "Select at least one group to sync."
+    },
+    {
+      "name": "huawei_account_changed",
+      "value": "HUAWEI ID has changed. Enabling sync will merge the selected local settings into the current account."
+    },
+    {
+      "name": "huawei_last_sync",
+      "value": "Last successful sync:"
+    },
+    {
+      "name": "huawei_syncing",
+      "value": "Syncing…"
+    },
+    {
+      "name": "huawei_sync_now",
+      "value": "Sync now"
+    },
+    {
+      "name": "huawei_group_appearance",
+      "value": "Appearance and navigation"
+    },
+    {
+      "name": "huawei_group_appearance_description",
+      "value": "Theme, text size, title bar, tabs and sheet material"
+    },
+    {
+      "name": "huawei_group_media",
+      "value": "Reading and playback"
+    },
+    {
+      "name": "huawei_group_media_description",
+      "value": "Image and video quality, autoplay and mute preferences"
+    },
+    {
+      "name": "huawei_group_filters",
+      "value": "Local content rules"
+    },
+    {
+      "name": "huawei_group_filters_description",
+      "value": "Keyword and user filters, and content preferences"
+    },
+    {
+      "name": "post_photo_save_background",
+      "value": "Simpan ke koleksi latar"
+    },
+    {
+      "name": "chat_background_saving_photo",
+      "value": "Menyimpan gambar latar…"
+    },
+    {
+      "name": "chat_background_saved_photo",
+      "value": "Tersimpan. Pilih di Latar halaman atau Latar percakapan."
+    },
+    {
+      "name": "chat_background_save_photo_failed",
+      "value": "Gagal menyimpan gambar latar. Coba lagi."
+    },
+    {
+      "name": "chat_background_saved_photos",
+      "value": "Gambar yang disimpan dari postingan"
+    },
+    {
+      "name": "page_background_title",
+      "value": "Latar halaman"
+    },
+    {
+      "name": "page_background_description",
+      "value": "Colors, photos and mixable patterns"
+    },
+    {
+      "name": "page_background_switch_title",
+      "value": "Aktifkan latar halaman"
+    },
+    {
+      "name": "page_background_switch_desc",
+      "value": "Matikan untuk langsung memakai latar tema. Gaya saat ini tetap disimpan."
+    },
+    {
+      "name": "page_background_base",
+      "value": "Latar dasar"
+    },
+    {
+      "name": "page_background_pattern",
+      "value": "Lapisan pola"
+    },
+    {
+      "name": "page_background_pattern_none",
+      "value": "Tanpa pola"
+    },
+    {
+      "name": "page_background_content_opacity",
+      "value": "Opasitas latar konten"
+    },
+    {
+      "name": "page_background_reset",
+      "value": "Pulihkan bawaan"
+    },
+    {
+      "name": "page_background_color_placeholder",
+      "value": "Custom color #RRGGBB"
+    },
+    {
+      "name": "page_background_preview",
+      "value": "Pratinjau latar"
+    },
+    {
+      "name": "page_background_preview_text",
+      "value": "Bring your favorite colors and patterns to every visit."
+    },
+    {
+      "name": "page_background_preview_hint",
+      "value": "Text and content surfaces show how readable your background will be."
+    },
+    {
+      "name": "page_background_note",
+      "value": "Applies to regular pages. Chats have separate backgrounds; media viewers keep their immersive backgrounds. Tap Apply to save."
+    },
+    {
+      "name": "page_background_layout_preset",
+      "value": "Pola lengkap"
+    },
+    {
+      "name": "page_background_layout_icons",
+      "value": "Motif satuan"
+    },
+    {
+      "name": "page_background_density",
+      "value": "Kepadatan motif"
+    },
+    {
+      "name": "page_background_set_add",
+      "value": "Pilih seluruh set"
+    },
+    {
+      "name": "page_background_set_remove",
+      "value": "Batalkan pilihan set"
+    },
+    {
+      "name": "page_background_mix_hint",
+      "value": "Select motifs across sets to mix them, or repeat a single motif."
+    },
+    {
+      "name": "page_background_selected",
+      "value": "%d motifs selected"
+    },
+    {
+      "name": "page_background_icons_clear",
+      "value": "Hapus motif"
+    },
+    {
+      "name": "page_background_paper",
+      "value": "Tekstur kertas"
+    },
+    {
+      "name": "page_background_paper_none",
+      "value": "Tidak ada"
+    },
+    {
+      "name": "page_background_kraft",
+      "value": "Kertas kraft"
+    },
+    {
+      "name": "page_background_parchment",
+      "value": "Perkamen"
+    },
+    {
+      "name": "page_background_texture_strength",
+      "value": "Kekuatan tekstur"
+    },
+    {
+      "name": "page_background_presets_mix",
+      "value": "Pilih satu pola lengkap setiap kali."
+    },
+    {
+      "name": "page_background_applied",
+      "value": "Latar halaman diterapkan"
+    },
+    {
+      "name": "page_background_apply_failed",
+      "value": "Latar tidak dapat disimpan. Coba lagi."
+    },
+    {
+      "name": "page_background_transparent_posts",
+      "value": "Transparent post cards"
+    },
+    {
+      "name": "page_background_transparent_posts_desc",
+      "value": "Hide the surface behind posts and quoted posts to reveal the page background."
+    },
+    {
+      "name": "page_background_transparent_inbox",
+      "value": "Transparent message list"
+    },
+    {
+      "name": "page_background_transparent_inbox_desc",
+      "value": "Hide conversation row surfaces while keeping text, avatars and unread indicators."
+    },
+    {
+      "name": "page_background_post_opacity",
+      "value": "Post surface opacity"
+    },
+    {
+      "name": "page_background_inbox_opacity",
+      "value": "Message list surface opacity"
+    },
+    {
+      "name": "page_background_scheme_import",
+      "value": "Import scheme"
+    },
+    {
+      "name": "page_background_scheme_share",
+      "value": "Share scheme"
+    },
+    {
+      "name": "page_background_scheme_title",
+      "value": "Page background scheme"
+    },
+    {
+      "name": "page_background_scheme_imported",
+      "value": "Scheme imported. Preview it, then tap Apply."
+    },
+    {
+      "name": "page_background_scheme_import_failed",
+      "value": "Unable to import. Choose a valid HarmonyX background scheme (up to 48 MB)."
+    },
+    {
+      "name": "page_background_scheme_share_failed",
+      "value": "Unable to share. Please try again; background photos must be under 32 MB."
+    },
+    {
+      "name": "page_background_set_signature_icons",
+      "value": "Ikon alternatif"
+    },
+    {
+      "name": "page_background_set_garden_defense",
+      "value": "Plants vs. Zombies"
+    },
+    {
+      "name": "page_background_motif_signature_icons_frog_face",
+      "value": "Frog face"
+    },
+    {
+      "name": "page_background_motif_signature_icons_frog_lily",
+      "value": "Frog on a lily pad"
+    },
+    {
+      "name": "page_background_motif_signature_icons_milk_frog",
+      "value": "Milk frog"
+    },
+    {
+      "name": "page_background_motif_signature_icons_milk_frog_wave",
+      "value": "Waving milk frog"
+    },
+    {
+      "name": "page_background_motif_signature_icons_bird",
+      "value": "Flying bird"
+    },
+    {
+      "name": "page_background_motif_signature_icons_bird_wings",
+      "value": "Bird with open wings"
+    },
+    {
+      "name": "page_background_motif_signature_icons_ribbon_x",
+      "value": "Ribbon X"
+    },
+    {
+      "name": "page_background_motif_signature_icons_blossom_x",
+      "value": "Blossom X"
+    },
+    {
+      "name": "page_background_motif_signature_icons_brush_x",
+      "value": "Brush X"
+    },
+    {
+      "name": "page_background_motif_signature_icons_prism_x",
+      "value": "Prism X"
+    },
+    {
+      "name": "page_background_motif_signature_icons_zombie_x",
+      "value": "Zombie X"
+    },
+    {
+      "name": "page_background_motif_signature_icons_lily_blossom",
+      "value": "Lily blossom"
+    },
+    {
+      "name": "page_background_motif_garden_defense_peashooter",
+      "value": "Peashooter"
+    },
+    {
+      "name": "page_background_motif_garden_defense_sunflower",
+      "value": "Sunflower"
+    },
+    {
+      "name": "page_background_motif_garden_defense_wallnut",
+      "value": "Wall-nut"
+    },
+    {
+      "name": "page_background_motif_garden_defense_cherry_bomb",
+      "value": "Cherry Bomb"
+    },
+    {
+      "name": "page_background_motif_garden_defense_snow_pea",
+      "value": "Snow Pea"
+    },
+    {
+      "name": "page_background_motif_garden_defense_potato_mine",
+      "value": "Potato Mine"
+    },
+    {
+      "name": "page_background_motif_garden_defense_chomper",
+      "value": "Chomper"
+    },
+    {
+      "name": "page_background_motif_garden_defense_squash",
+      "value": "Squash"
+    },
+    {
+      "name": "page_background_motif_garden_defense_zombie",
+      "value": "Zombie"
+    },
+    {
+      "name": "page_background_motif_garden_defense_conehead",
+      "value": "Conehead Zombie"
+    },
+    {
+      "name": "page_background_motif_garden_defense_buckethead",
+      "value": "Buckethead Zombie"
+    },
+    {
+      "name": "page_background_motif_garden_defense_lawnmower",
+      "value": "Lawn mower"
+    },
+    {
+      "name": "page_background_set_ai_assistants",
+      "value": "Asisten AI"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_gpt",
+      "value": "GPT"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_claude",
+      "value": "Claude"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_gemini",
+      "value": "Gemini"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_deepseek",
+      "value": "DeepSeek"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_grok",
+      "value": "Grok"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_qwen",
+      "value": "Qwen"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_kimi",
+      "value": "Kimi"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_doubao",
+      "value": "Doubao"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_copilot",
+      "value": "Copilot"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_perplexity",
+      "value": "Perplexity"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_mistral",
+      "value": "Mistral"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_robot",
+      "value": "AI robot"
+    },
+    {
+      "name": "page_background_set_mobile_brands_systems",
+      "value": "Merek dan sistem ponsel"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_apple",
+      "value": "Apple"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_huawei",
+      "value": "Huawei"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_xiaomi",
+      "value": "Xiaomi"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_samsung",
+      "value": "Samsung"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_oppo",
+      "value": "OPPO"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_vivo",
+      "value": "vivo"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_honor",
+      "value": "HONOR"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_oneplus",
+      "value": "OnePlus"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_meizu",
+      "value": "Meizu"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_harmonyos",
+      "value": "HarmonyOS"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_android",
+      "value": "Android"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_ios",
+      "value": "iOS"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_hyperos",
+      "value": "HyperOS"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_coloros",
+      "value": "ColorOS"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_originos",
+      "value": "OriginOS"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_oneui",
+      "value": "One UI"
+    },
+    {
+      "name": "motion_title",
+      "value": "Animation & haptics"
+    },
+    {
+      "name": "motion_intro",
+      "value": "Tune interaction animations and touch feedback. Changes are saved automatically. Tap the preview to try them."
+    },
+    {
+      "name": "motion_preview",
+      "value": "Tap to preview animation and haptics"
+    },
+    {
+      "name": "motion_reduce",
+      "value": "Reduce motion"
+    },
+    {
+      "name": "motion_reduce_desc",
+      "value": "Turn off decorative scaling, movement and Symbol effects, and skip page transitions. Your animation preferences are kept."
+    },
+    {
+      "name": "motion_duration",
+      "value": "Animation duration"
+    },
+    {
+      "name": "motion_duration_desc",
+      "value": "Reference duration for app animations. Button and page animations scale proportionally. System Symbol effects keep their native timing."
+    },
+    {
+      "name": "motion_amplitude",
+      "value": "Movement amplitude"
+    },
+    {
+      "name": "motion_amplitude_desc",
+      "value": "Adjust decorative scaling and rotation. At 0%, these effects stop. Gesture tracking and zoom keep their full range."
+    },
+    {
+      "name": "motion_damping",
+      "value": "Spring damping"
+    },
+    {
+      "name": "motion_damping_desc",
+      "value": "Lower values bounce more; higher values settle more gently."
+    },
+    {
+      "name": "motion_symbol",
+      "value": "Animated Symbols"
+    },
+    {
+      "name": "motion_symbol_desc",
+      "value": "Play a native Symbol effect once when selecting a tab or using an action button. Effects pause with Reduce motion."
+    },
+    {
+      "name": "motion_haptics",
+      "value": "Touch feedback"
+    },
+    {
+      "name": "motion_haptics_desc",
+      "value": "Use light feedback for navigation, buttons, switches and actions. Follows the system haptics setting."
+    },
+    {
+      "name": "motion_intensity",
+      "value": "Haptic intensity"
+    },
+    {
+      "name": "motion_intensity_desc",
+      "value": "Adjust preset effects on supported devices. Other motors use a short system touch vibration."
+    },
+    {
+      "name": "motion_presets",
+      "value": "Animation presets"
+    },
+    {
+      "name": "motion_preset_quick",
+      "value": "Quick"
+    },
+    {
+      "name": "motion_preset_quick_desc",
+      "value": "175 ms · 60% movement · firm settling. Short, crisp feedback."
+    },
+    {
+      "name": "motion_preset_standard",
+      "value": "Standard"
+    },
+    {
+      "name": "motion_preset_standard_desc",
+      "value": "300 ms · 100% movement · balanced spring. Recommended for everyday use."
+    },
+    {
+      "name": "motion_preset_spring",
+      "value": "Bouncy"
+    },
+    {
+      "name": "motion_preset_spring_desc",
+      "value": "450 ms · 120% movement · lower damping. Softer, more visible rebound."
+    },
+    {
+      "name": "motion_preset_reduced",
+      "value": "Low motion"
+    },
+    {
+      "name": "motion_preset_reduced_desc",
+      "value": "Skip page transitions and decorative effects. Keep your previous tuning."
+    },
+    {
+      "name": "motion_preset_custom",
+      "value": "Current preset: Custom. Choose a preset to restore its animation values."
+    },
+    {
+      "name": "chat_auto_download",
+      "value": "Chat auto-download"
+    },
+    {
+      "name": "storage_chat_retention",
+      "value": "Keep chat media"
+    },
+    {
+      "name": "storage_chat_retention_desc",
+      "value": "Set how long downloaded chat media stays cached. Chat history and manually saved files are kept."
+    },
+    {
+      "name": "settings_theme_mix",
+      "value": "Palet campuran"
+    },
+    {
+      "name": "settings_theme_mix_desc",
+      "value": "Warna serasi untuk sakelar, navigasi, dan tombol posting dalam mode terang dan gelap."
+    },
+    {
+      "name": "settings_theme_mix_confetti",
+      "value": "Konfeti"
+    },
+    {
+      "name": "settings_theme_mix_coast",
+      "value": "Garam Laut & Koral"
+    },
+    {
+      "name": "settings_theme_mix_sunset",
+      "value": "Iris Senja"
+    },
+    {
+      "name": "settings_theme_mix_forest",
+      "value": "Ambar Hutan"
+    },
+    {
+      "name": "settings_theme_mix_berry",
+      "value": "Beri & Mint"
+    },
+    {
+      "name": "settings_theme_mix_morandi",
+      "value": "Morandi"
+    },
+    {
+      "name": "settings_theme_mix_prism",
+      "value": "Spektrum Primer"
+    },
+    {
+      "name": "settings_theme_solid",
+      "value": "Warna tunggal"
+    },
+    {
+      "name": "settings_theme_mix_candy",
+      "value": "Konfeti Permen"
+    },
+    {
+      "name": "settings_theme_mix_sky",
+      "value": "Langit & Lemon"
+    },
+    {
+      "name": "settings_theme_mix_peach",
+      "value": "Persik & Mint"
+    },
+    {
+      "name": "settings_theme_mix_lilac",
+      "value": "Lilac & Custard"
+    },
+    {
+      "name": "page_background_set_popular_apps_cn",
+      "value": "Aplikasi populer · Tiongkok"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_wechat",
+      "value": "WeChat"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_qq",
+      "value": "QQ"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_weibo",
+      "value": "Weibo"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_douyin",
+      "value": "Douyin"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_kuaishou",
+      "value": "Kuaishou"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_bilibili",
+      "value": "Bilibili"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_xiaohongshu",
+      "value": "Xiaohongshu"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_zhihu",
+      "value": "Zhihu"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_baidu",
+      "value": "Baidu"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_tieba",
+      "value": "Baidu Tieba"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_alipay",
+      "value": "Alipay"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_taobao",
+      "value": "Taobao"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_jd",
+      "value": "JD"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_pinduoduo",
+      "value": "Pinduoduo"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_meituan",
+      "value": "Meituan"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_eleme",
+      "value": "Ele.me"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_dianping",
+      "value": "Dianping"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_amap",
+      "value": "Amap"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_baidu_maps",
+      "value": "Baidu Maps"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_didi",
+      "value": "DiDi"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_netease_music",
+      "value": "NetEase Cloud Music"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_qq_music",
+      "value": "QQ Music"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_kugou",
+      "value": "KuGou"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_weread",
+      "value": "WeRead"
+    },
+    {
+      "name": "page_background_set_popular_apps_global",
+      "value": "Aplikasi populer · Global"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_whatsapp",
+      "value": "WhatsApp"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_telegram",
+      "value": "Telegram"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_signal",
+      "value": "Signal"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_instagram",
+      "value": "Instagram"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_facebook",
+      "value": "Facebook"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_messenger",
+      "value": "Messenger"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_x",
+      "value": "X"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_threads",
+      "value": "Threads"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_youtube",
+      "value": "YouTube"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_tiktok",
+      "value": "TikTok"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_reddit",
+      "value": "Reddit"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_discord",
+      "value": "Discord"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_spotify",
+      "value": "Spotify"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_apple_music",
+      "value": "Apple Music"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_netflix",
+      "value": "Netflix"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_twitch",
+      "value": "Twitch"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_line",
+      "value": "LINE"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_snapchat",
+      "value": "Snapchat"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_pinterest",
+      "value": "Pinterest"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_chrome",
+      "value": "Chrome"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_firefox",
+      "value": "Firefox"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_edge",
+      "value": "Edge"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_gmail",
+      "value": "Gmail"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_google_maps",
+      "value": "Google Maps"
+    },
+    {
+      "name": "scene_title",
+      "value": "Scene modes"
+    },
+    {
+      "name": "scene_intro",
+      "value": "Apply a set of playback, quality, motion and background preferences. Restore returns to your settings from before the first mode was enabled."
+    },
+    {
+      "name": "scene_reading",
+      "value": "Clear reading"
+    },
+    {
+      "name": "scene_reading_desc",
+      "value": "Autoplay off · high quality images · low quality video · reduced motion · plain background"
+    },
+    {
+      "name": "scene_saver",
+      "value": "Power and data saver"
+    },
+    {
+      "name": "scene_saver_desc",
+      "value": "Autoplay off · small images · low quality video · reduced motion · plain background"
+    },
+    {
+      "name": "scene_media",
+      "value": "Media browsing"
+    },
+    {
+      "name": "scene_media_desc",
+      "value": "Autoplay on · original images · high quality video · motion on · your saved background"
+    },
+    {
+      "name": "scene_restore",
+      "value": "Restore original settings"
+    },
+    {
+      "name": "scene_restore_desc",
+      "value": "Keep your preferences from before scene mode. Switching between modes does not replace this backup."
+    },
+    {
+      "name": "scene_failed",
+      "value": "Some settings could not be saved. Your original settings are retained; retry or restore."
+    },
+    {
+      "name": "offline_title",
+      "value": "Offline & later"
+    },
+    {
+      "name": "offline_online",
+      "value": "Online bookmarks"
+    },
+    {
+      "name": "offline_intro",
+      "value": "New bookmarks save text and available articles automatically. Enable images before saving to include photos. Local copies stay separate from online bookmarks and ordinary cache cleanup."
+    },
+    {
+      "name": "offline_images",
+      "value": "Include photos in future saves"
+    },
+    {
+      "name": "offline_save",
+      "value": "Save offline"
+    },
+    {
+      "name": "offline_saving",
+      "value": "Saving…"
+    },
+    {
+      "name": "offline_saved",
+      "value": "Saved for offline reading"
+    },
+    {
+      "name": "offline_partial_saved",
+      "value": "Saved available content. Some article text or photos are missing; retry when online."
+    },
+    {
+      "name": "offline_save_failed",
+      "value": "Could not save locally. Please retry."
+    },
+    {
+      "name": "offline_partial",
+      "value": "Incomplete copy"
+    },
+    {
+      "name": "offline_unread",
+      "value": "Unread"
+    },
+    {
+      "name": "offline_unread_only",
+      "value": "Unread only"
+    },
+    {
+      "name": "offline_search",
+      "value": "Search titles, tags or notes"
+    },
+    {
+      "name": "offline_empty",
+      "value": "No matching offline items. Save a bookmark or use Save offline on a post."
+    },
+    {
+      "name": "offline_edit",
+      "value": "Tags & note"
+    },
+    {
+      "name": "offline_tags",
+      "value": "Tags"
+    },
+    {
+      "name": "offline_tags_hint",
+      "value": "Tags, separated by commas"
+    },
+    {
+      "name": "offline_note",
+      "value": "Private note"
+    },
+    {
+      "name": "offline_done",
+      "value": "Save"
+    },
+    {
+      "name": "offline_delete",
+      "value": "Delete local copy"
+    },
+    {
+      "name": "reader_title",
+      "value": "Thread reader"
+    },
+    {
+      "name": "reader_author_only",
+      "value": "Author only"
+    },
+    {
+      "name": "reader_translate",
+      "value": "Translate passages"
+    },
+    {
+      "name": "reader_font",
+      "value": "Text size"
+    },
+    {
+      "name": "reader_missing",
+      "value": "This offline item is missing or unavailable. Save it again while online."
+    },
+    {
+      "name": "reader_partial",
+      "value": "Only the available article content is shown. Continue loading or retry while online to get the complete text."
+    },
+    {
+      "name": "reader_load_failed",
+      "value": "Could not load more replies. Your current reading content is kept."
+    },
+    {
+      "name": "reader_translation_setup",
+      "value": "Enable translation and choose a target language in Settings first."
+    },
+    {
+      "name": "reader_translation_failed",
+      "value": "Some passages could not be translated. You can hide translations and retry."
+    },
+    {
+      "name": "reader_offline_note",
+      "value": "Saved local content. Translation requires a network connection."
+    },
+    {
+      "name": "reader_scope",
+      "value": "Replies loaded so far. Use Continue loading to include more of the discussion."
+    },
     {
       "name": "input_help_title",
       "value": "Mouse, keyboard, dan touchpad"
@@ -10945,26 +12204,86 @@
       "name": "input_key_playback",
       "value": "Space / Enter / ← / →"
     },
-    {"name":"settings_filter_languages","value":"Bahasa postingan yang diblokir"},
-    {"name":"settings_filter_languages_desc","value":"Pilih bahasa untuk disembunyikan. Bahasa tak dikenal dan postingan hanya media tetap terlihat."},
-    {"name":"appearance_preview_title","value":"Pratinjau langsung"},
-    {"name":"appearance_preview_hint","value":"Perubahan langsung ditampilkan. Ketuk contoh panel untuk memperluasnya."},
-    {"name":"post_edited","value":"Diedit"},
-    {"name":"post_metric_bookmarks","value":"markah"},
-    {"name":"post_metric_quotes","value":"kutipan"},
-    {"name":"settings_reply_quality","value":"Ciutkan balasan berkualitas rendah"},
-    {"name":"settings_reply_quality_desc","value":"Ciutkan promosi berulang dan ajakan massal. Aturan lokal bisa keliru; balasan dapat dibuka untuk ditinjau."},
-    {"name":"reply_quality_folded","value":"Balasan mungkin berkualitas rendah"},
-    {"name":"reply_quality_reasons","value":"Lihat alasan"},
-    {"name":"reply_quality_allow","value":"Selalu tampilkan penulis ini"},
-    {"name":"reply_quality_whitelist","value":"Penulis yang diizinkan"},
-    {"name":"reply_quality_whitelist_desc","value":"Balasan Anda, penulis postingan, akun yang diikuti, dan penulis yang diizinkan tetap terlihat. Daftar khusus akun saat ini."},
-    {"name":"reply_quality_empty","value":"Belum ada penulis yang diizinkan"},
-    {"name":"reply_quality_reason_duplicate","value":"Beberapa penulis mengulang templat promosi yang sama"},
-    {"name":"reply_quality_reason_author_repeat","value":"Penulis berulang kali mengirim konten yang sama"},
-    {"name":"reply_quality_reason_links","value":"Memuat beberapa tautan eksternal"},
-    {"name":"reply_quality_reason_promotion","value":"Memuat promosi atau iming-iming keuntungan"},
-    {"name":"reply_quality_reason_contact","value":"Memuat kontak untuk menarik pengguna"},
+    {
+      "name": "settings_filter_languages",
+      "value": "Bahasa postingan yang diblokir"
+    },
+    {
+      "name": "settings_filter_languages_desc",
+      "value": "Pilih bahasa untuk disembunyikan. Bahasa tak dikenal dan postingan hanya media tetap terlihat."
+    },
+    {
+      "name": "appearance_preview_title",
+      "value": "Pratinjau langsung"
+    },
+    {
+      "name": "appearance_preview_hint",
+      "value": "Perubahan langsung ditampilkan. Ketuk contoh panel untuk memperluasnya."
+    },
+    {
+      "name": "post_edited",
+      "value": "Diedit"
+    },
+    {
+      "name": "post_metric_bookmarks",
+      "value": "markah"
+    },
+    {
+      "name": "post_metric_quotes",
+      "value": "kutipan"
+    },
+    {
+      "name": "settings_reply_quality",
+      "value": "Ciutkan balasan berkualitas rendah"
+    },
+    {
+      "name": "settings_reply_quality_desc",
+      "value": "Ciutkan promosi berulang dan ajakan massal. Aturan lokal bisa keliru; balasan dapat dibuka untuk ditinjau."
+    },
+    {
+      "name": "reply_quality_folded",
+      "value": "Balasan mungkin berkualitas rendah"
+    },
+    {
+      "name": "reply_quality_reasons",
+      "value": "Lihat alasan"
+    },
+    {
+      "name": "reply_quality_allow",
+      "value": "Selalu tampilkan penulis ini"
+    },
+    {
+      "name": "reply_quality_whitelist",
+      "value": "Penulis yang diizinkan"
+    },
+    {
+      "name": "reply_quality_whitelist_desc",
+      "value": "Balasan Anda, penulis postingan, akun yang diikuti, dan penulis yang diizinkan tetap terlihat. Daftar khusus akun saat ini."
+    },
+    {
+      "name": "reply_quality_empty",
+      "value": "Belum ada penulis yang diizinkan"
+    },
+    {
+      "name": "reply_quality_reason_duplicate",
+      "value": "Beberapa penulis mengulang templat promosi yang sama"
+    },
+    {
+      "name": "reply_quality_reason_author_repeat",
+      "value": "Penulis berulang kali mengirim konten yang sama"
+    },
+    {
+      "name": "reply_quality_reason_links",
+      "value": "Memuat beberapa tautan eksternal"
+    },
+    {
+      "name": "reply_quality_reason_promotion",
+      "value": "Memuat promosi atau iming-iming keuntungan"
+    },
+    {
+      "name": "reply_quality_reason_contact",
+      "value": "Memuat kontak untuk menarik pengguna"
+    },
     {
       "name": "settings_floating_compose_material_tint",
       "value": "Warna material tombol posting mengambang"
@@ -11053,64 +12372,528 @@
       "name": "chat_decoration_sample_text",
       "value": "Have a lovely day."
     },
-    {"name": "sign_out_confirm_title", "value": "Keluar dari akun?"},
-    {"name": "sign_out_confirm_message", "value": "Anda perlu masuk lagi untuk menggunakan akun ini."},
-    {"name": "settings_for_you_only_sensitive", "value": "Hanya konten sensitif di Untuk Anda"},
-    {"name": "settings_for_you_only_sensitive_desc", "value": "Tampilkan postingan yang ditandai sensitif oleh X, termasuk kutipan. Mengikuti dan Daftar tidak berubah. Media tetap tertutup."},
-    {"name": "settings_grip_floating", "value": "Tombol tindakan mengambang"},
-    {"name": "settings_grip_video", "value": "Bilah tindakan video"},
-    {"name": "settings_grip_reply", "value": "Tombol balasan postingan"},
-    {"name": "settings_grip_component_desc", "value": "Sesuaikan posisi dengan tangan yang memegang perangkat. Jika nonaktif, gunakan tangan pilihan."},
-    {"name": "settings_grip_hdstabs", "value": "Bilah tab bawah HdsTabs"},
-    {"name": "settings_grip_hdstabs_desc", "value": "Gunakan adaptasi tangan bawaan. Jika nonaktif, bilah tidak mengikuti tangan yang memegang perangkat."},
-    {"name":"gif_action_save_video","value":"Simpan sebagai video berkualitas tinggi (MP4)"},
-    {"name":"storage_save_remembered_note","value":"Pilih folder unduhan sekali untuk menyimpan file berikutnya secara otomatis di sana. Nonaktifkan untuk menyimpan ke Galeri."},
-    {"name":"storage_save_to_remembered","value":"Simpan ke folder unduhan"},
-    {"name": "storage_permission_reason", "value": "Pertahankan akses ke file dan folder yang Anda pilih."},
-    {"name": "timeline_sources_lists", "value": "Daftar"},
-    {"name": "timeline_sources_communities", "value": "Komunitas"},
-    {"name": "timeline_edit", "value": "Edit"},
-    {"name": "timeline_done", "value": "Selesai"},
-    {"name": "timeline_move_up", "value": "Pindah ke atas"},
-    {"name": "timeline_move_down", "value": "Pindah ke bawah"},
-    {"name": "timeline_remove_source", "value": "Hapus %s"},
-    {"name": "timeline_add_to_home", "value": "Tambahkan ke linimasa Beranda"},
-    {"name": "timeline_remove_from_home", "value": "Hapus dari linimasa Beranda"},
-    {"name": "timeline_sources_failed", "value": "Beberapa daftar atau komunitas gagal dimuat. Ketuk untuk mencoba lagi."},
-    {"name": "timeline_sources_pinned_empty", "value": "Belum ada linimasa tersemat. Tambahkan daftar, komunitas, atau topik di bawah."},
-    {"name":"video_controls_mirror","value":"Cerminkan kontrol"},
-    {"name":"video_controls_speed","value":"Kecepatan"},
-    {"name":"video_controls_aspect","value":"Rasio"},
-    {"name":"video_controls_background","value":"Latar"},
-    {"name":"video_controls_quality_hd","value":"HD"},
-    {"name":"video_controls_quality_sd","value":"SD"},
-    {"name":"video_controls_quality_ld","value":"LD"},
-    {"name":"video_controls_more","value":"Lainnya"},
-    {"name":"video_controls_download","value":"Unduh"},
-    {"name":"settings_navigation_style","value":"Gaya navigasi bawah"},
-    {"name":"settings_hds_bottom_bar","value":"HdsTabs mengambang"},
-    {"name":"settings_split_bottom_bar","value":"Navigasi kapsul terpisah"},
-    {"name":"settings_split_bottom_bar_desc","value":"Ganti halaman di kapsul kiri. Tombol terpisah untuk membuat postingan, memulai chat, menyegarkan, atau kembali ke atas. Keduanya memakai material HDS; sistem lama memakai navigasi kompatibel."},
-    {"name":"split_navigation_action_top","value":"Kembali ke atas"},
-    {"name":"split_navigation_action_refresh","value":"Segarkan Beranda"},
-    {"name":"split_navigation_action_compose","value":"Buat postingan"},
-    {"name": "settings_reply_capsule_split", "value": "Kapsul balasan terpisah"},
-    {"name": "settings_reply_capsule_split_desc", "value": "Pisahkan kolom balasan dan tindakan postingan saat diciutkan"},
-    {"name": "reply_capsule_write_reply", "value": "Balas"},
-    {"name":"settings_native_bottom_bar","value":"Navigasi kapsul material 7.0"},
-    {"name":"settings_native_bottom_bar_desc","value":"Menggunakan material imersif HarmonyOS 7.0 dari kapsul balasan, dengan cahaya sentuh, indikator cair, dan perpindahan sisi sesuai genggaman. Beralih ke kapsul HDS jika tidak tersedia."},
-    {"name":"settings_native_navigation_material","value":"Ketebalan material kapsul navigasi"},
-    {"name":"settings_for_you_only_sensitive_age_title","value":"Konfirmasi usia"},
-    {"name":"settings_for_you_only_sensitive_age_message","value":"“Hanya konten sensitif di Untuk Anda” hanya tersedia untuk pengguna berusia 18 tahun ke atas. Apakah Anda berusia 18 tahun atau lebih?"},
-    {"name":"settings_for_you_only_sensitive_age_under","value":"Di bawah 18 tahun"},
-    {"name":"settings_for_you_only_sensitive_age_adult","value":"18 tahun atau lebih"},
-    {"name":"settings_theme_icon_blue","value":"Biru ikon"},
-    {"name":"settings_theme_icon_red","value":"Merah ikon"},
-    {"name":"settings_theme_icon_orange","value":"Oranye ikon"},
-    {"name":"settings_theme_icon_yellow","value":"Kuning ikon"},
-    {"name":"settings_theme_icon_green","value":"Hijau ikon"},
-    {"name":"settings_theme_icon_pink","value":"Merah muda ikon"},
-    {"name":"settings_theme_icon_cyan","value":"Sian ikon"},
-    {"name":"settings_theme_icon_navy","value":"Nila tua ikon"}
+    {
+      "name": "sign_out_confirm_title",
+      "value": "Keluar dari akun?"
+    },
+    {
+      "name": "sign_out_confirm_message",
+      "value": "Anda perlu masuk lagi untuk menggunakan akun ini."
+    },
+    {
+      "name": "settings_for_you_only_sensitive",
+      "value": "Hanya konten sensitif di Untuk Anda"
+    },
+    {
+      "name": "settings_for_you_only_sensitive_desc",
+      "value": "Tampilkan postingan yang ditandai sensitif oleh X, termasuk kutipan. Mengikuti dan Daftar tidak berubah. Media tetap tertutup."
+    },
+    {
+      "name": "settings_grip_floating",
+      "value": "Tombol tindakan mengambang"
+    },
+    {
+      "name": "settings_grip_video",
+      "value": "Bilah tindakan video"
+    },
+    {
+      "name": "settings_grip_reply",
+      "value": "Tombol balasan postingan"
+    },
+    {
+      "name": "settings_grip_component_desc",
+      "value": "Sesuaikan posisi dengan tangan yang memegang perangkat. Jika nonaktif, gunakan tangan pilihan."
+    },
+    {
+      "name": "settings_grip_hdstabs",
+      "value": "Bilah tab bawah HdsTabs"
+    },
+    {
+      "name": "settings_grip_hdstabs_desc",
+      "value": "Gunakan adaptasi tangan bawaan. Jika nonaktif, bilah tidak mengikuti tangan yang memegang perangkat."
+    },
+    {
+      "name": "gif_action_save_video",
+      "value": "Simpan sebagai video berkualitas tinggi (MP4)"
+    },
+    {
+      "name": "storage_save_remembered_note",
+      "value": "Pilih folder unduhan sekali untuk menyimpan file berikutnya secara otomatis di sana. Nonaktifkan untuk menyimpan ke Galeri."
+    },
+    {
+      "name": "storage_save_to_remembered",
+      "value": "Simpan ke folder unduhan"
+    },
+    {
+      "name": "storage_permission_reason",
+      "value": "Pertahankan akses ke file dan folder yang Anda pilih."
+    },
+    {
+      "name": "timeline_sources_lists",
+      "value": "Daftar"
+    },
+    {
+      "name": "timeline_sources_communities",
+      "value": "Komunitas"
+    },
+    {
+      "name": "timeline_edit",
+      "value": "Edit"
+    },
+    {
+      "name": "timeline_done",
+      "value": "Selesai"
+    },
+    {
+      "name": "timeline_move_up",
+      "value": "Pindah ke atas"
+    },
+    {
+      "name": "timeline_move_down",
+      "value": "Pindah ke bawah"
+    },
+    {
+      "name": "timeline_remove_source",
+      "value": "Hapus %s"
+    },
+    {
+      "name": "timeline_add_to_home",
+      "value": "Tambahkan ke linimasa Beranda"
+    },
+    {
+      "name": "timeline_remove_from_home",
+      "value": "Hapus dari linimasa Beranda"
+    },
+    {
+      "name": "timeline_sources_failed",
+      "value": "Beberapa daftar atau komunitas gagal dimuat. Ketuk untuk mencoba lagi."
+    },
+    {
+      "name": "timeline_sources_pinned_empty",
+      "value": "Belum ada linimasa tersemat. Tambahkan daftar, komunitas, atau topik di bawah."
+    },
+    {
+      "name": "video_controls_mirror",
+      "value": "Cerminkan kontrol"
+    },
+    {
+      "name": "video_controls_speed",
+      "value": "Kecepatan"
+    },
+    {
+      "name": "video_controls_aspect",
+      "value": "Rasio"
+    },
+    {
+      "name": "video_controls_background",
+      "value": "Latar"
+    },
+    {
+      "name": "video_controls_quality_hd",
+      "value": "HD"
+    },
+    {
+      "name": "video_controls_quality_sd",
+      "value": "SD"
+    },
+    {
+      "name": "video_controls_quality_ld",
+      "value": "LD"
+    },
+    {
+      "name": "video_controls_more",
+      "value": "Lainnya"
+    },
+    {
+      "name": "video_controls_download",
+      "value": "Unduh"
+    },
+    {
+      "name": "settings_navigation_style",
+      "value": "Gaya navigasi bawah"
+    },
+    {
+      "name": "settings_hds_bottom_bar",
+      "value": "HdsTabs mengambang"
+    },
+    {
+      "name": "settings_split_bottom_bar",
+      "value": "Navigasi kapsul terpisah"
+    },
+    {
+      "name": "settings_split_bottom_bar_desc",
+      "value": "Ganti halaman di kapsul kiri. Tombol terpisah untuk membuat postingan, memulai chat, menyegarkan, atau kembali ke atas. Keduanya memakai material HDS; sistem lama memakai navigasi kompatibel."
+    },
+    {
+      "name": "settings_me_floating_action",
+      "value": "Kapsul pintasan “Saya”"
+    },
+    {
+      "name": "settings_me_floating_action_desc",
+      "value": "Pilih fungsi yang langsung terbuka saat kapsul terpisah di samping tab Saya diketuk."
+    },
+    {
+      "name": "split_navigation_action_top",
+      "value": "Kembali ke atas"
+    },
+    {
+      "name": "split_navigation_action_refresh",
+      "value": "Segarkan Beranda"
+    },
+    {
+      "name": "split_navigation_action_compose",
+      "value": "Buat postingan"
+    },
+    {
+      "name": "settings_reply_capsule_split",
+      "value": "Kapsul balasan terpisah"
+    },
+    {
+      "name": "settings_reply_capsule_split_desc",
+      "value": "Pisahkan kolom balasan dan tindakan postingan saat diciutkan"
+    },
+    {
+      "name": "reply_capsule_write_reply",
+      "value": "Balas"
+    },
+    {
+      "name": "settings_native_bottom_bar",
+      "value": "Navigasi kapsul material 7.0"
+    },
+    {
+      "name": "settings_native_bottom_bar_desc",
+      "value": "Menggunakan material imersif HarmonyOS 7.0 dari kapsul balasan, dengan cahaya sentuh, indikator cair, dan perpindahan sisi sesuai genggaman. Beralih ke kapsul HDS jika tidak tersedia."
+    },
+    {
+      "name": "settings_native_navigation_material",
+      "value": "Ketebalan material kapsul navigasi"
+    },
+    {
+      "name": "settings_for_you_only_sensitive_age_title",
+      "value": "Konfirmasi usia"
+    },
+    {
+      "name": "settings_for_you_only_sensitive_age_message",
+      "value": "“Hanya konten sensitif di Untuk Anda” hanya tersedia untuk pengguna berusia 18 tahun ke atas. Apakah Anda berusia 18 tahun atau lebih?"
+    },
+    {
+      "name": "settings_for_you_only_sensitive_age_under",
+      "value": "Di bawah 18 tahun"
+    },
+    {
+      "name": "settings_for_you_only_sensitive_age_adult",
+      "value": "18 tahun atau lebih"
+    },
+    {
+      "name": "settings_theme_icon_blue",
+      "value": "Biru ikon"
+    },
+    {
+      "name": "settings_theme_icon_red",
+      "value": "Merah ikon"
+    },
+    {
+      "name": "settings_theme_icon_orange",
+      "value": "Oranye ikon"
+    },
+    {
+      "name": "settings_theme_icon_yellow",
+      "value": "Kuning ikon"
+    },
+    {
+      "name": "settings_theme_icon_green",
+      "value": "Hijau ikon"
+    },
+    {
+      "name": "settings_theme_icon_pink",
+      "value": "Merah muda ikon"
+    },
+    {
+      "name": "settings_theme_icon_cyan",
+      "value": "Sian ikon"
+    },
+    {
+      "name": "settings_theme_icon_navy",
+      "value": "Nila tua ikon"
+    },
+    {
+      "name": "settings_bottom_tab_order",
+      "value": "Bottom tab order"
+    },
+    {
+      "name": "settings_home_tab_order",
+      "value": "Home tab order"
+    },
+    {
+      "name": "settings_tab_order_desc",
+      "value": "Use the arrows to reorder tabs. Changes apply immediately; new tabs are added at the end."
+    },
+    {
+      "name": "settings_tab_move_up",
+      "value": "Move earlier"
+    },
+    {
+      "name": "settings_tab_move_down",
+      "value": "Move later"
+    },
+    {
+      "name": "settings_tab_order_reset",
+      "value": "Reset order"
+    },
+    {
+      "name": "settings_post_actions",
+      "value": "Post action bar"
+    },
+    {
+      "name": "settings_post_actions_desc",
+      "value": "Choose the actions shown in feeds and post details. Turn off counts to keep only icons."
+    },
+    {
+      "name": "settings_post_action_counts",
+      "value": "Show interaction counts"
+    },
+    {
+      "name": "video_rotate",
+      "value": "Open landscape player"
+    },
+    {
+      "name": "video_download_notice_downloading",
+      "value": "Mengunduh video"
+    },
+    {
+      "name": "video_download_notice_saving",
+      "value": "Menyimpan video"
+    },
+    {
+      "name": "video_download_notice_completed",
+      "value": "Video diunduh"
+    },
+    {
+      "name": "settings_home_single_tap_top",
+      "value": "Ketuk Beranda untuk kembali ke atas"
+    },
+    {
+      "name": "settings_home_single_tap_top_desc",
+      "value": "Ketuk tab Beranda di bawah untuk kembali ke bagian atas linimasa saat ini. Pengaturan penyegaran dengan ketukan ganda tetap berlaku."
+    },
+    {
+      "name": "background_photo_delete",
+      "value": "Hapus latar belakang"
+    },
+    {
+      "name": "background_photo_delete_confirm",
+      "value": "Hapus gambar ini? Gambar juga akan dihapus dari latar belakang halaman dan obrolan yang menggunakannya. Tindakan ini tidak dapat dibatalkan."
+    },
+    {
+      "name": "background_photo_deleted",
+      "value": "Gambar latar belakang dihapus"
+    },
+    {
+      "name": "background_photo_delete_failed",
+      "value": "Tidak dapat menghapus. Coba lagi."
+    },
+    {
+      "name": "search_refill_query",
+      "value": "Isi kolom pencarian"
+    },
+    {
+      "name": "search_history_delete_title",
+      "value": "Hapus riwayat ini?"
+    },
+    {
+      "name": "global_trends_title",
+      "value": "Tren global"
+    },
+    {
+      "name": "global_trends_description",
+      "value": "Postingan terpopuler"
+    },
+    {
+      "name": "global_trends_explore",
+      "value": "Jelajahi"
+    },
+    {
+      "name": "global_trends_today",
+      "value": "Populer hari ini"
+    },
+    {
+      "name": "global_trends_worldwide",
+      "value": "Seluruh dunia"
+    },
+    {
+      "name": "global_trends_countries",
+      "value": "Negara"
+    },
+    {
+      "name": "global_trends_reset",
+      "value": "Tampilkan semua postingan populer"
+    },
+    {
+      "name": "post_video_publish",
+      "value": "Posting video"
+    },
+    {
+      "name": "post_video_copy_link",
+      "value": "Salin tautan video"
+    },
+    {
+      "name": "post_video_save",
+      "value": "Simpan video"
+    },
+    {
+      "name": "post_video_link_copied",
+      "value": "Tautan video disalin"
+    },
+    {
+      "name": "post_video_link_copy_failed",
+      "value": "Tidak dapat menyalin tautan video"
+    },
+    {
+      "name": "offline_videos_title",
+      "value": "Video offline"
+    },
+    {
+      "name": "offline_videos_local",
+      "value": "Hanya disimpan di perangkat ini"
+    },
+    {
+      "name": "offline_videos_empty",
+      "value": "Belum ada video offline"
+    },
+    {
+      "name": "offline_videos_search",
+      "value": "Cari video offline atau penulis"
+    },
+    {
+      "name": "offline_videos_no_results",
+      "value": "Tidak ada video offline yang cocok"
+    },
+    {
+      "name": "offline_videos_clear",
+      "value": "Hapus video offline"
+    },
+    {
+      "name": "offline_videos_clear_confirm",
+      "value": "Hapus semua video yang diunduh?"
+    },
+    {
+      "name": "offline_videos_delete",
+      "value": "Hapus video offline"
+    },
+    {
+      "name": "offline_videos_added",
+      "value": "Ditambahkan ke video offline"
+    },
+    {
+      "name": "offline_videos_already",
+      "value": "Sudah ada di video offline"
+    },
+    {
+      "name": "offline_videos_play",
+      "value": "Putar video offline"
+    },
+    {
+      "name": "offline_videos_missing",
+      "value": "File offline tidak ditemukan. Tambahkan lagi."
+    },
+    {
+      "name": "offline_video_title",
+      "value": "Video offline"
+    },
+    {
+      "name": "post_translated_from",
+      "value": "Diterjemahkan dari %s"
+    },
+    {
+      "name": "post_translated",
+      "value": "Diterjemahkan"
+    },
+    {
+      "name": "post_show_original",
+      "value": "Tampilkan asli"
+    },
+    {
+      "name": "post_show_translation",
+      "value": "Tampilkan terjemahan"
+    },
+    {
+      "name": "settings_cover_single_column",
+      "value": "Satu kolom di layar luar"
+    },
+    {
+      "name": "settings_cover_single_column_desc",
+      "value": "Gunakan satu kolom saat dilipat dan pertahankan kolom pilihan saat dibuka."
+    },
+    {
+      "name": "huawei_cloud_overwrite",
+      "value": "Timpa cloud dengan setelan lokal"
+    },
+    {
+      "name": "huawei_cloud_overwrite_message",
+      "value": "Timpa grup terpilih dengan setelan perangkat ini. Perangkat lain akan menerimanya pada sinkronisasi berikutnya."
+    },
+    {
+      "name": "huawei_cloud_clear",
+      "value": "Hapus setelan cloud"
+    },
+    {
+      "name": "huawei_cloud_clear_message",
+      "value": "Hapus semua setelan cloud aplikasi untuk akun Huawei ini dan matikan sinkronisasi. Setelan lokal tetap ada. Aktifkan lagi untuk mengunggahnya."
+    },
+    {
+      "name": "huawei_cloud_cleared",
+      "value": "Setelan cloud dihapus. Sinkronisasi dimatikan."
+    },
+    {
+      "name": "huawei_cloud_manage_description",
+      "value": "Timpa berlaku untuk grup terpilih. Hapus menghapus semua grup cloud dan mempertahankan setelan lokal."
+    },
+    {
+      "name": "post_translation_choose_languages",
+      "value": "Pilih bahasa"
+    },
+    {
+      "name": "post_translation_auto_language",
+      "value": "Terjemahkan %s otomatis"
+    },
+    {
+      "name": "post_translation_languages_description",
+      "value": "Pilih bahasa postingan untuk terjemahan otomatis. Bahasa lain tetap dapat diterjemahkan manual."
+    },
+    {"name": "post_link_copy", "value": "Copy link"},
+    {"name": "post_link_open", "value": "Open link"},
+    {"name": "settings_video_download_button", "value": "Video download button"},
+    {"name": "settings_video_download_button_desc", "value": "Show the download button in the top-right corner of videos"},
+    {"name": "video_source_from", "value": "From"},
+    {"name": "video_source_original", "value": "Original video"},
+    {"name": "video_source_open_failed", "value": "Unable to open the original video. Try again."},
+    {"name":"dns_title","value":"DNS over HTTPS (DoH)"},
+    {"name":"dns_enable","value":"Use DNS over HTTPS"},
+    {"name":"dns_enable_desc","value":"Encrypt DNS queries with a chosen HTTPS resolver"},
+    {"name":"dns_scope","value":"Applies to app API requests, downloaded images, video segments and built-in web pages. System players and external apps may use their own DNS. When a proxy resolves the destination, its DNS takes precedence. DoH does not replace a proxy or VPN."},
+    {"name":"dns_provider","value":"DNS provider"},
+    {"name":"dns_provider_ali","value":"AliDNS"},
+    {"name":"dns_provider_cloudflare","value":"Cloudflare"},
+    {"name":"dns_provider_google","value":"Google Public DNS"},
+    {"name":"dns_provider_custom","value":"Custom"},
+    {"name":"dns_endpoint","value":"DoH server URL"},
+    {"name":"dns_endpoint_hint","value":"https://example.com/dns-query"},
+    {"name":"dns_endpoint_desc","value":"Enter a complete RFC 8484 HTTPS endpoint, without credentials, fragments or URI templates such as {?dns}."},
+    {"name":"dns_invalid","value":"Enter a valid HTTPS DoH server URL"},
+    {"name":"dns_saved","value":"Saved. New requests use this setting; reload open web pages."},
+    {"name":"dns_test","value":"Test DNS resolution"},
+    {"name":"dns_test_desc","value":"Tests the current URL by resolving x.com directly, without saving or enabling it. The test bypasses the in-app proxy; a system VPN still applies."},
+    {"name":"dns_test_success","value":"x.com resolved successfully"},
+    {"name":"dns_test_failed","value":"Resolution failed. Check the URL, network or DNS service."},
+    {"name":"dns_failure_note","value":"After saving, DoH failures stop affected requests instead of falling back to system DNS. Turn DoH off and save to restore system DNS. Changes apply after saving."},
+    {"name":"help_support_afdian","value":"Afdian"},
+    {"name":"help_support_qr_summary","value":"Pindai untuk mendukung pengembangan"},
+    {"name":"help_support_afdian_summary","value":"Tanpa rekomendasi selamanya · ¥16.6"},
+    {"name":"help_support_afdian_desc","value":"Beli kode permanen tanpa rekomendasi di Afdian, lalu kembali ke aplikasi untuk menukarkannya."},
+    {"name":"help_support_afdian_buy","value":"Beli di Afdian"},
+    {"name":"help_support_expand","value":"Ketuk untuk membuka"},
+    {"name":"help_support_collapse","value":"Ketuk untuk menutup"},
+    {"name":"help_support_scan_code","value":"Pindai kode ini dengan aplikasi pembayaran yang sesuai."},
+    {"name":"help_support_recommended","value":"Direkomendasikan"}
   ]
 }

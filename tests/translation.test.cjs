@@ -45,6 +45,7 @@ function fixture() {
   };
   const { TranslationService } = load('services/TranslationService', {
     '../models/Translation': model,
+    '../utils/TranslationLinks': load('utils/TranslationLinks'),
     './XPrivateClient': { xPrivateClient: client },
     './ProxyStore': { proxyStore: { apply: async () => {} } },
     '@ohos.hilog': { error() {} },
@@ -492,4 +493,96 @@ test('biographies use configured API or web translation and never send a user id
   assert.equal(api.ok, true); assert.equal(api.text, 'API result');
   const disabled = settings(); disabled.enabled = false;
   assert.equal((await f.service.translateBiography('user-123', 'Biography', disabled)).ok, false);
+});
+
+test('OpenAI, Anthropic and web translations never send URL text for translation and restore exact destinations', async () => {
+  const source = 'Visit https://example.org/a_(b)?x=one%20two&y=2#part and https://other.example/';
+  const translated = '访问 __HX_LINK_0__ 和 __HX_LINK_1__';
+  const expected = '访问 https://example.org/a_(b)?x=one%20two&y=2#part 和 https://other.example/';
+  for (const kind of ['openai', 'claude', 'web']) {
+    const f = fixture(), config = settings(kind === 'web' ? model.TRANSLATION_MODE_WEB : model.TRANSLATION_MODE_API);
+    if (kind === 'claude') config.providerId = 'claude';
+    f.setHttpResponse(JSON.stringify(kind === 'web' ? [[[translated]]] : kind === 'claude' ?
+      { content: [{ type: 'text', text: translated }] } : { choices: [{ message: { content: translated } }] }));
+    const result = await f.service.translate('123', source, config);
+    assert.equal(result.ok, true, kind);
+    assert.equal(result.text, expected, kind);
+    const requestText = kind === 'web' ? new URL(f.httpCalls[0].url).searchParams.get('q') :
+      JSON.parse(f.httpCalls[0].options.extraData).messages.at(-1).content;
+    assert.equal(requestText, 'Visit __HX_LINK_0__ and __HX_LINK_1__', kind);
+    assert.equal(requestText.includes('example.org'), false, kind);
+    await f.service.translate('123', source, config);
+    assert.equal(f.httpCalls.length, 1, kind);
+  }
+});
+
+test('X translation restores t.co links to the same original destinations shown in the post', async () => {
+  const f = fixture(), config = settings(model.TRANSLATION_MODE_X);
+  f.setResponse({ ok: true, status: 200, body: JSON.stringify({ id_str: '123',
+    translation: '访问 https://t.co/first 和 https://t.co/second' }) });
+  assert.equal((await f.service.translate('123', 'Visit https://news.ycombinator.com/ and https://reddit.com/', config)).text,
+    '访问 https://news.ycombinator.com/ 和 https://reddit.com/');
+  assert.equal(f.httpCalls.length, 0);
+});
+
+test('URL-only numbered lists skip all translation providers', async () => {
+  const source = '\n  1. https://news.ycombinator.com/\n2. reddit.com\n';
+  for (const mode of [model.TRANSLATION_MODE_API, model.TRANSLATION_MODE_WEB, model.TRANSLATION_MODE_X]) {
+    const f = fixture();
+    const result = await f.service.translate('123', source, settings(mode));
+    assert.equal(result.ok, true);
+    assert.equal(result.text, source);
+    assert.equal(f.httpCalls.length, 0);
+    assert.equal(f.calls.length, 0);
+  }
+});
+
+test('corrupted URL translations fail without caching a changed address or exposing placeholders', async () => {
+  const source = 'Visit https://example.org/original';
+  for (const mode of [model.TRANSLATION_MODE_API, model.TRANSLATION_MODE_WEB, model.TRANSLATION_MODE_X]) {
+    const f = fixture(), config = settings(mode);
+    f.setHttpResponse(JSON.stringify(mode === model.TRANSLATION_MODE_WEB ? [[['访问网站']]] :
+      { choices: [{ message: { content: '访问 __HX_LINK_0__ __HX_LINK_0__' } }] }));
+    f.setResponse({ ok: true, status: 200, body: JSON.stringify({ id_str: '123', translation: '访问网站' }) });
+    const failed = await f.service.translate('123', source, config);
+    assert.equal(failed.ok, false);
+    assert.equal(failed.errorText, 'links_changed');
+    assert.equal(failed.text, '');
+    const valid = mode === model.TRANSLATION_MODE_X ? '访问 https://t.co/real' : '访问 __HX_LINK_0__';
+    f.setHttpResponse(JSON.stringify(mode === model.TRANSLATION_MODE_WEB ? [[[valid]]] :
+      { choices: [{ message: { content: valid } }] }));
+    f.setResponse({ ok: true, status: 200, body: JSON.stringify({ id_str: '123', translation: valid }) });
+    assert.equal((await f.service.translate('123', source, config)).text, '访问 https://example.org/original');
+  }
+});
+
+for (const kind of ['card','detail']) {
+  test(`${kind}: original/translation toggles preserve the translated text and never send another request`,async()=>{
+    const f=translationUi(kind);
+    const pending=f.run(false);finish(f.requests[0],'translated body');await pending;
+    const flag=kind==='card'?'showingOriginal':'heroShowingOriginal';
+    assert.equal(f.subject[flag]??false,false);
+    await f.run(false);assert.equal(f.subject[flag],true);assert.equal(f.value(),'translated body');
+    await f.run(false);assert.equal(f.subject[flag],false);assert.equal(f.requests.length,1);
+  });
+}
+
+test('post translation quick settings toggle languages without losing provider credentials or other exclusions',()=>{
+  const source=fs.readFileSync('entry/src/main/ets/components/PostTranslationOptionsHost.ets','utf8');
+  const names=['allowed','saveLanguage','saveAutomatic','refresh'];
+  const methods=names.map(name=>source.match(new RegExp('\\n  private '+name+'\\([\\s\\S]*?\\n  }'))[0]).join('\n');
+  const config=settings(model.TRANSLATION_MODE_API);config.autoTranslateExcludedLanguages='ja,es';
+  let saved=0;
+  const store={load:()=>config,save:(_context,value)=>{Object.assign(config,value);saved++;return true;}};
+  const code=ts.transpileModule('class Subject {'+methods+'}',{compilerOptions:{target:ts.ScriptTarget.ES2020}}).outputText;
+  const Subject=new Function('translationStore','sameTranslationLanguage','TRANSLATION_MODE_WEB',code+';return Subject;')(
+    store,model.sameTranslationLanguage,model.TRANSLATION_MODE_WEB);
+  const subject=Object.assign(new Subject(),{context:()=>({})});subject.refresh();
+  assert.equal(subject.allowed('es'),false);
+  subject.saveLanguage('es',true);assert.equal(subject.allowed('es'),true);assert.equal(subject.allowed('ja'),false);
+  assert.equal(config.apiKey,'provider-key');assert.equal(config.providerId,'openai');
+  subject.saveAutomatic(false);subject.saveLanguage('de',false);
+  assert.equal(config.autoTranslate,false);assert.equal(subject.allowed('de'),false);
+  subject.saveLanguage('de',true,true);assert.equal(config.autoTranslate,true);assert.equal(subject.allowed('de'),true);
+  assert.equal(subject.allowed('ja'),false);assert.equal(saved,4);
 });

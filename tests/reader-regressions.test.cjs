@@ -205,14 +205,17 @@ test('notification refresh callbacks cannot duplicate an in-flight request or cl
 });
 
 test('profile and detail videos use the shared viewer even without a page callback, and viewer cells do not recursively open it', () => {
-  const requests=[];
+  const requests=[],retained=[];
+  const source={id:'transition-v'};
   const Media=methods('components/PostMedia','PostMedia',['openVideo'],{
     isAnimatedGif:m=>m.type==='animated_gif',requestVideoViewer:(...args)=>requests.push(args),
-    videoPlaybackPositionStore:{positionFor:()=>23}
+    videoPlaybackPositionStore:{positionFor:()=>23},captureMediaViewerSource:()=>source
   });
   const tweet={id:'11'};const media={id:'v',type:'video'};
-  const component=Object.assign(new Media(),{mediaViewerLayout:false,videoFeedEnabled:false,sourceTweet:tweet,canStream:()=>true});
-  assert.equal(component.openVideo(media),true);assert.deepEqual(requests,[[tweet,media,23]]);
+  const component=Object.assign(new Media(),{mediaViewerLayout:false,videoFeedEnabled:false,sourceTweet:tweet,canStream:()=>true,
+    getUIContext:()=>({}),mediaSourceId:()=>media.id,retainInlinePlayer:id=>retained.push(id)});
+  assert.equal(component.openVideo(media),true);assert.deepEqual(requests,[[tweet,media,23,source]]);
+  assert.deepEqual(retained,['v']);
   component.mediaViewerLayout=true;assert.equal(component.openVideo(media),false);
   component.mediaViewerLayout=false;assert.equal(component.openVideo({type:'animated_gif'}),false);
 });
@@ -259,7 +262,7 @@ test('profile action collapse waits until the action row reaches the toolbar, in
 function historyFixture() {
   const disk=new Map();let fail=false;
   const store={getSync:(k,f)=>disk.get(k)??f,putSync:(k,v)=>{if(fail)throw Error('full');assert.ok(typeof v!=='string'||v.length<8192);disk.set(k,v);},
-    deleteSync:k=>disk.delete(k),flushSync(){}};
+    deleteSync:k=>disk.delete(k),flushSync(){},flush:async()=>{}};
   const service=load('services/BrowsingHistoryStore',{'@kit.ArkData':{preferences:{getPreferencesSync:()=>store}}});
   return {disk,service,store:new service.BrowsingHistoryStore(),fail:()=>{fail=true;}};
 }
@@ -302,29 +305,36 @@ test('history detail replaces the preview with the complete fetched post while o
   detail.tweet={...live,text:'Existing hero'};detail.applyLivePostState(live);assert.equal(detail.tweet.text,'Existing hero');
 });
 
-test('history entry preloads old links with a bounded request queue and skips cached cards', () => {
-  const Page=methods('pages/BrowsingHistory','BrowsingHistory',['needsPreview','loadVisiblePreviews','drainPreviews'],{});
+test('history entry defers old-link previews and bounds them to the viewport and a small lookahead', () => {
+  const timers=[];
+  const Page=methods('pages/BrowsingHistory','BrowsingHistory',['needsPreview','loadVisiblePreviews','drainPreviews'],{
+    setTimeout:(callback,delay)=>{timers.push({callback,delay});return timers.length;}
+  });
   const started=[];
   const rows=Array.from({length:50},(_,i)=>({id:String(i),text:i===1?'cached':'',previewUrl:'',mediaCount:0}));
   const page=Object.assign(new Page(),{visible:true,visibleRows:rows,attemptedIds:new Set(),previewQueue:[],
-    loadingIds:[],activeRequests:0,previewGeneration:1,fetchPreview:(id,generation)=>started.push([id,generation])});
-  page.loadVisiblePreviews(0,19);page.loadVisiblePreviews(0,19);
+    loadingIds:[],activeRequests:0,previewGeneration:1,previewTimer:-1,clientReady:true,
+    fetchPreview:(id,generation)=>started.push([id,generation])});
+  page.loadVisiblePreviews(0,3);page.loadVisiblePreviews(0,3);
+  assert.deepEqual(started,[]);assert.equal(timers.length,1);assert.equal(timers[0].delay,200);
+  timers[0].callback();
   assert.deepEqual(started,[['0',1],['2',1]]);assert.equal(page.activeRequests,2);
-  assert.equal(page.previewQueue.length,25);assert.equal(page.loadingIds.length,27);
+  assert.equal(page.previewQueue.length,4);assert.equal(page.loadingIds.length,6);
   assert.equal(page.loadingIds.includes('1'),false);assert.equal(page.loadingIds.includes('40'),false);
-  page.visible=false;page.loadVisiblePreviews(30,40);assert.equal(page.previewQueue.length,25);
+  page.visible=false;page.loadVisiblePreviews(30,40);assert.equal(page.previewQueue.length,4);
 });
 
 test('history automatically saves fetched previews without recording a new visit, and rejects a mismatched post', async () => {
-  const enriched=[];let body='actual',reloads=0;
+  const enriched=[],applied=[];let body='actual';
   const Page=methods('pages/BrowsingHistory','BrowsingHistory',['fetchPreview'],{
     xPrivateClient:{sessionGeneration:()=>1,postContent:async()=>({ok:true,status:200,body}),tweetDetail:async()=>{throw Error('unneeded detail');}},
     XTimelineParser:{parsePostContent:(text)=>({id:text==='actual'?'10':'11',text:'Actual post'})},
-    browsingHistoryStore:{enrich:(_context,tweet)=>enriched.push(tweet)}
+    browsingHistoryStore:{enrich:(_context,tweet)=>{enriched.push(tweet);return {id:tweet.id,text:tweet.text};}}
   });
   const page=Object.assign(new Page(),{visible:true,previewGeneration:1,activeRequests:1,loadingIds:['10'],failedIds:[],
-    previewQueue:[],context:()=>({}),reload:()=>reloads++,drainPreviews(){}});
-  await page.fetchPreview('10',1);assert.equal(enriched[0].text,'Actual post');assert.equal(reloads,1);
+    previewQueue:[],context:()=>({}),reload:()=>{throw Error('must not reread archive');},
+    applyPreview:row=>applied.push(row),drainPreviews(){}});
+  await page.fetchPreview('10',1);assert.equal(enriched[0].text,'Actual post');assert.deepEqual(applied,[{id:'10',text:'Actual post'}]);
   body='wrong';await page.fetchPreview('10',1);assert.equal(enriched.length,1);assert.deepEqual(page.failedIds,['10']);
 });
 
@@ -355,4 +365,45 @@ test('history capacity prunes stale links and storage errors do not interrupt br
   assert.deepEqual(f.store.load({}).map(r=>r.id),['14','13','12']);assert.equal(f.disk.has('post_10'),false);
   assert.equal(f.store.load({})[0].url,'https://x.com/i/web/status/14');
   f.fail();assert.doesNotThrow(()=>f.store.record({},visit(15)));assert.equal(f.store.clear({}),false);
+});
+
+test('history loads only a bounded page of a 2000-entry archive and isolates malformed snapshots', () => {
+  const f=historyFixture();
+  const ids=Array.from({length:2000},(_,i)=>String(2000-i));
+  f.disk.set('index_count',20);
+  for(let i=0;i<20;i++)f.disk.set('index_'+i,JSON.stringify(ids.slice(i*100,(i+1)*100)));
+  for(const id of ids)f.disk.set('post_'+id,JSON.stringify({id,url:'https://x.com/author/status/'+id,viewedAt:1}));
+  const reads=[],get=f.store.store({}).getSync;
+  f.store.store({}).getSync=(key,fallback)=>{reads.push(key);return get(key,fallback);};
+  f.disk.set('post_1999','{corrupt');
+  const first=f.store.loadBatch({});
+  assert.equal(first.rows.length,31);assert.equal(first.nextOffset,32);assert.equal(first.hasMore,true);
+  assert.equal(reads.filter(key=>key.startsWith('post_')).length,32);
+  const second=f.store.loadBatch({},first.nextOffset);
+  assert.equal(second.rows[0].id,'1968');assert.equal(second.rows.length,32);
+  const last=f.store.loadBatch({},1984);assert.equal(last.rows.length,16);assert.equal(last.hasMore,false);
+});
+
+test('history search reads later batches across frames and hidden pages cancel further disk work', () => {
+  const f=historyFixture(),timers=new Map();let timerId=0,reads=0;
+  for(let i=0;i<90;i++)f.store.record({}, {...visit(i),text:i===0?'needle':'other'});
+  const Page=methods('pages/BrowsingHistory','BrowsingHistory',['reload','scheduleLoad','filter','hidden'],{
+    browsingHistoryStore:{loadBatch:(...args)=>{reads++;return f.store.loadBatch(...args);}},
+    setTimeout:callback=>{timers.set(++timerId,callback);return timerId;},clearTimeout:id=>timers.delete(id)
+  });
+  const page=Object.assign(new Page(),{visible:true,rows:[],visibleRows:[],query:'needle',loadTimer:-1,previewTimer:-1,
+    previewGeneration:1,context:()=>({}),loadVisiblePreviews(){},visibleStart:0,visibleEnd:3});
+  page.reload();assert.equal(reads,0);
+  while(timers.size){const [id,callback]=timers.entries().next().value;timers.delete(id);callback();}
+  assert.equal(reads,3);assert.deepEqual(page.visibleRows.map(row=>row.id),['0']);assert.equal(page.historyLoading,false);
+  page.reload();page.hidden();assert.equal(timers.size,0);assert.equal(reads,3);
+});
+
+test('history preview enrichment returns the updated row without a full reload or synchronous disk flush', () => {
+  const f=historyFixture();f.store.record({}, {...visit(10),text:'cached'});
+  let syncFlushes=0;f.store.store({}).flushSync=()=>syncFlushes++;
+  const before=f.store.load({})[0];
+  const row=f.store.enrich({}, {...visit(10),text:'enriched'});
+  assert.equal(row.text,'enriched');assert.equal(row.viewedAt,before.viewedAt);assert.equal(syncFlushes,0);
+  f.store.clear({});assert.equal(f.store.enrich({},visit(10)),null);
 });

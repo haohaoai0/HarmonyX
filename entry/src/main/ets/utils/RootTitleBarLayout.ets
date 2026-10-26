@@ -8,19 +8,21 @@ export class RootTitleBarLayout {
   }
 
   static bottomHeight(tab: number, logo: boolean, collapsed: boolean,
-    spaceHeight: number, exploreHasQuery: boolean): number {
+    spaceHeight: number, exploreHasQuery: boolean, exploreCategoryGap: number = 4): number {
     const extra: number = logo ? 0 : COMPACT_TITLE_BAR_EXTRA_HEIGHT_VP;
-    if (tab === 0) { return (logo ? (collapsed ? 12 : 48) : 0) + spaceHeight + extra; }
-    if (tab === 1) { return (exploreHasQuery ? 0 : (logo ? 96 : 52)) + extra; }
+    // Match the visible Home tab row so its bottom-aligned indicator remains
+    // inside the title-bar surface instead of extending past that boundary.
+    if (tab === 0) { return (logo ? (collapsed ? 12 : 54) : 0) + spaceHeight + extra; }
+    if (tab === 1) { return (exploreHasQuery ? 0 : (logo ? 96 + exploreCategoryGap : 52)) + extra; }
     if (tab === 2) { return logo ? 52 : extra; }
     if (tab === 3) { return logo ? 56 : extra; }
     return extra;
   }
 
   static labelsHeight(tab: number, logo: boolean, spaceHeight: number,
-    exploreHasQuery: boolean): number {
+    exploreHasQuery: boolean, exploreCategoryGap: number = 4): number {
     if (tab === 0) { return (logo ? 54 : 0) + spaceHeight; }
-    if (tab === 1 && !exploreHasQuery) { return logo ? 108 : 52; }
+    if (tab === 1 && !exploreHasQuery) { return logo ? 108 + exploreCategoryGap : 52; }
     if (tab === 2) { return logo ? 52 : 0; }
     return 0;
   }
@@ -33,14 +35,14 @@ export class RootTitleBarLayout {
   }
 
   static contentTopInset(tab: number, logo: boolean, statusHeight: number,
-    collapsed: boolean, spaceHeight: number, labelsClearance: number = 0): number {
+    collapsed: boolean, spaceHeight: number, labelsClearance: number = 0, exploreCategoryGap: number = 4): number {
     const extra: number = logo ? 0 : COMPACT_TITLE_BAR_EXTRA_HEIGHT_VP;
     let inset: number = statusHeight + 64 + extra;
     if (tab === 0) { inset = statusHeight + (logo ? (collapsed ? 76 : 104) : 64) + spaceHeight + extra; }
-    else if (tab === 1) { inset = logo ? 174 : 130 + extra; }
+    else if (tab === 1) { inset = logo ? 174 + exploreCategoryGap : 130 + extra; }
     else if (tab === 2) { inset = statusHeight + (logo ? 116 : 64) + extra; }
     else if (tab === 3) { inset = statusHeight + (logo ? 112 : 64) + extra; }
-    const labelsHeight: number = RootTitleBarLayout.labelsHeight(tab, logo, spaceHeight, false);
+    const labelsHeight: number = RootTitleBarLayout.labelsHeight(tab, logo, spaceHeight, false, exploreCategoryGap);
     if (labelsClearance > 0 && labelsHeight > 0) {
       // Home's expanded labels overflow the native lower slot. Clear the
       // actual label edge, including its underline, rather than that slot.

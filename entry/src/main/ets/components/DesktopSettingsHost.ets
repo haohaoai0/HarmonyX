@@ -105,7 +105,7 @@ export struct DesktopSettingsHost {
       }.width('100%').height('100%')
     }
     .bindSheet($$this.huaweiAccountOpen, this.HuaweiAccountContent(), sheetMaterialOptions({
-      height: this.huaweiSignedIn ? 560 : 380, preferType: SheetType.CENTER, width: 480, showClose: true, dragBar: false,
+      height: this.huaweiSignedIn ? 820 : 560, preferType: SheetType.CENTER, width: 480, showClose: true, dragBar: false,
       backgroundColor: pageSurfaceColor(this.displayMode, this.darkSurface),
       onDisappear: (): void => { this.huaweiAccountOpen = false; }
     }, this.accountSheetMaterialEnabled, this.accountSheetMaterialLevel))

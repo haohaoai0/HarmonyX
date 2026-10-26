@@ -23,6 +23,7 @@ import { optionalPostCount, postEditHistoryIds } from '../utils/PostMetadata';
 import { ReplyConversation } from './ReplyConversation';
 import { XPostCardParser } from './XPostCardParser';
 import { XPostPresentationParser } from './XPostPresentationParser';
+import { XTimelineParser } from './XTimelineParser';
 import { NotificationRateLimit } from '../utils/NotificationRateLimit';
 
 const DOMAIN = 0xFF00;
@@ -31,7 +32,7 @@ const BASE_URL = 'https://api.x.com/2';
 const AUTHORIZE_URL = 'https://x.com/i/oauth2/authorize';
 const TOKEN_URL = 'https://api.x.com/2/oauth2/token';
 export const REDIRECT_URI = 'harmonyx://callback';
-const TWEET_FIELDS = 'created_at,lang,public_metrics,attachments,referenced_tweets,in_reply_to_user_id,conversation_id,possibly_sensitive';
+const TWEET_FIELDS = 'created_at,lang,entities,public_metrics,attachments,referenced_tweets,in_reply_to_user_id,conversation_id,possibly_sensitive';
 const USER_FIELDS = 'name,username,verified,verified_type,profile_image_url';
 const PROFILE_FIELDS = 'name,username,verified,verified_type,description,public_metrics,profile_image_url,profile_banner_url';
 const MEDIA_FIELDS = 'type,url,preview_image_url,width,height,duration_ms,alt_text,variants';
@@ -634,7 +635,7 @@ export class XApiClient {
             avatarUrl: XApiClient.highResAvatarUrl(String(u?.['profile_image_url'] ?? '')),
             verified: userIsVerified(u), verifiedType: userVerifiedType(u), avatarShape: userAvatarShape(u)
           },
-          text: String(t['text'] ?? ''),
+          text: XTimelineParser.postText(t),
           language: String(t['lang'] ?? ''),
           editHistoryIds: postEditHistoryIds(t),
           createdAt: String(t['created_at'] ?? ''),

@@ -27,6 +27,14 @@ export class CloudSettingField {
 
 // A small, explicit allowlist. No account, token, proxy, API key, file URI or chat store is exported.
 export const CLOUD_SETTING_FIELDS: CloudSettingField[] = [
+  new CloudSettingField('harmonyx_timeline', 'cover_single_column', 'harmonyx.cover_single_column', 1, true),
+  new CloudSettingField('harmonyx_interaction', 'home_single_tap_top', 'harmonyx.home_single_tap_top', 1, true),
+  new CloudSettingField('harmonyx_startup', 'mode', 'harmonyx.startup_mode', 1, 'video'),
+  new CloudSettingField('harmonyx_startup', 'speed', 'harmonyx.startup_speed', 1, 1, 0.5, 2),
+  new CloudSettingField('harmonyx_tab_order', 'bottom', 'harmonyx.bottom_tab_order', 1, ''),
+  new CloudSettingField('harmonyx_tab_order', 'home', 'harmonyx.home_tab_order', 1, ''),
+  new CloudSettingField('harmonyx_post_display', 'actions_mask', 'harmonyx.post_actions_mask', 1, 127, 0, 127),
+  new CloudSettingField('harmonyx_post_display', 'counts', 'harmonyx.post_action_counts', 1, true),
   new CloudSettingField('harmonyx_motion', 'reduce_motion', 'reduceMotionEnabled', 1, false),
   new CloudSettingField('harmonyx_motion', 'duration', 'harmonyx.motion_duration', 1, 300, 100, 700),
   new CloudSettingField('harmonyx_motion', 'amplitude', 'harmonyx.motion_amplitude', 1, 1, 0, 1.5),
@@ -49,6 +57,7 @@ export const CLOUD_SETTING_FIELDS: CloudSettingField[] = [
   new CloudSettingField('harmonyx_appearance', 'reply_capsule_split_enabled', 'harmonyx.reply_capsule_split_enabled', 1, false),
   new CloudSettingField('harmonyx_hds_tabs', 'classic_bottom_bar', 'harmonyx.classic_bottom_bar', 1, false),
   new CloudSettingField('harmonyx_hds_tabs', 'split_bottom_bar', 'harmonyx.split_bottom_bar', 1, false),
+  new CloudSettingField('harmonyx_hds_tabs', 'me_floating_action', 'harmonyx.me_floating_action', 1, 'profile'),
   new CloudSettingField('harmonyx_hds_tabs', 'root_tab_labels_visible', 'harmonyx.root_tab_labels_visible', 1, true),
   new CloudSettingField('harmonyx_sheet_material', 'enabled', 'harmonyx.sheet_material_enabled', 1, true),
   new CloudSettingField('harmonyx_sheet_material', 'level', 'harmonyx.sheet_material_level', 1, 2, 0, 4),
@@ -62,7 +71,8 @@ export const CLOUD_SETTING_FIELDS: CloudSettingField[] = [
   new CloudSettingField('harmonyx_media', 'video_double_tap_seek', 'harmonyx.video_double_tap_seek', 2, true),
   new CloudSettingField('harmonyx_media', 'video_double_tap_seek_seconds', 'harmonyx.video_double_tap_seek_seconds', 2, 10, 1, 60),
   new CloudSettingField('harmonyx_media', 'media_viewer_black_background', 'harmonyx.media_viewer_black_background', 2, false),
-  new CloudSettingField('harmonyx_media', 'media_comment_background', 'harmonyx.media_comment_background', 2, true),
+  new CloudSettingField('harmonyx_media', 'video_download_button', 'harmonyx.video_download_button', 2, true),
+    new CloudSettingField('harmonyx_media', 'media_comment_background', 'harmonyx.media_comment_background', 2, true),
   new CloudSettingField('harmonyx_fab_preferences', 'component_hdstabs', 'harmonyx.grip_hdstabs_enabled', 4, true),
   new CloudSettingField('harmonyx_fab_preferences', 'component_floating', 'harmonyx.grip_floating_enabled', 4, true),
   new CloudSettingField('harmonyx_fab_preferences', 'component_video', 'harmonyx.grip_video_enabled', 4, true),
@@ -100,15 +110,24 @@ export function validCloudValue(field: CloudSettingField, encoded: string): bool
     const value: CloudPreferenceValue = JSON.parse(encoded) as CloudPreferenceValue;
     if (typeof value !== typeof field.fallback) { return false; }
     if (typeof value === 'number') {
+      if (field.store === 'harmonyx_startup' && field.key === 'speed') {
+        return [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2].indexOf(value) >= 0;
+      }
       return Number.isFinite(value) && value >= field.min && value <= field.max &&
         (field.key === 'font_scale' || (field.store === 'harmonyx_motion' &&
           (field.key === 'amplitude' || field.key === 'damping')) || Number.isInteger(value));
     }
     if (typeof value === 'string') {
+      if (field.store === 'harmonyx_startup' && field.key === 'mode') {
+        return ['none', 'icon', 'ios', 'video'].indexOf(value) >= 0;
+      }
       if (field.key === 'display_mode') { return ['system', 'light', 'dark'].indexOf(value) >= 0; }
       if (field.key === 'font_mode') { return ['system', 'app'].indexOf(value) >= 0; }
       if (field.key === 'dark_surface') { return ['black', 'gentle'].indexOf(value) >= 0; }
       if (field.key === 'accent_color') { return isKnownAccentTheme(value) && (/^#[0-9a-fA-F]{6}$/.test(value) || /^[a-z_]{1,32}$/.test(value)); }
+      if (field.key === 'me_floating_action') {
+        return ['profile', 'accounts', 'settings', 'help', 'hidden'].indexOf(value) >= 0;
+      }
     }
     return true;
   } catch (error) { return false; }
@@ -144,6 +163,24 @@ export function mergeCloudSettings(local: CloudSettingRecord[], remote: CloudSet
       (candidate.revision === current.revision && candidate.writer > current.writer)) { merged[index] = candidate; }
   }
   return merged;
+}
+
+// Rebase edits that have not been uploaded onto the latest observed clock.
+// Untouched fields still use the deterministic merge, including on a new device.
+export function preferLocalCloudChanges(local: CloudSettingRecord[], remote: CloudSettingRecord[],
+  pendingIds: string[], writer: string, mask: number, overwrite: boolean = false): CloudSettingRecord[] {
+  const result: CloudSettingRecord[] = mergeCloudSettings(local, remote, mask);
+  let clock: number = result.reduce((max: number, record: CloudSettingRecord): number => Math.max(max, record.revision), 0);
+  for (const record of local) {
+    const field: CloudSettingField | undefined = cloudField(record.id);
+    if (field === undefined || (field.group & mask) === 0 ||
+      (!overwrite && pendingIds.indexOf(record.id) < 0)) { continue; }
+    const next: CloudSettingRecord = new CloudSettingRecord();
+    next.id = record.id; next.value = record.value; next.writer = writer; next.revision = ++clock;
+    const index: number = result.findIndex((item: CloudSettingRecord): boolean => item.id === record.id);
+    if (index < 0) { result.push(next); } else { result[index] = next; }
+  }
+  return result;
 }
 
 export class CloudSettingsRepository {

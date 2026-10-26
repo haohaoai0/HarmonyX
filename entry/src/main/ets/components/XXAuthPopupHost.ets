@@ -1,4 +1,5 @@
 import { TouchHdrLight } from './TouchHdrLight';
+import { xxAuthSplashStore } from '../services/XXAuthSplashStore';
 import { bundleManager, common } from '@kit.AbilityKit';
 import hilog from '@ohos.hilog';
 import { hdsEffect } from '@kit.UIDesignKit';
@@ -210,11 +211,15 @@ export struct XXAuthPopupHost {
         this.timer = -1;
       }
       this.currentConfig = config;
+      xxAuthSplashStore.refresh(this.context(),
+        announcements.ok && announcements.data instanceof Array && variables.ok && !xxAuthSupporterService.active() ?
+          announcements.data : [], config).catch((): void => {});
       const panels: XXAuthPanel[] = XXAuthPopupPolicy.startup(
         announcements.ok && announcements.data instanceof Array ? announcements.data : [],
         banners.ok && banners.data instanceof Array ? banners.data : [],
         articles.ok && articles.data instanceof Array ? articles.data : [], config).filter(
-          (item: XXAuthPanel): boolean => !xxAuthSupporterService.active() || !XXAuthSupporterPolicy.promotional(item.kind));
+          (item: XXAuthPanel): boolean => (!xxAuthSupporterService.active() || !XXAuthSupporterPolicy.promotional(item.kind)) &&
+            (item.kind !== 'recommendation' || !xxAuthSplashStore.wasShown(item.recommendationAppId)));
       this.publishPromotionPost(
         announcements.ok && announcements.data instanceof Array ? announcements.data : [], config);
       const update: XXAuthPanel | undefined = check.ok && check.data !== undefined ?
@@ -265,7 +270,7 @@ export struct XXAuthPopupHost {
       for (let i: number = 0; i < this.pending.length; i++) {
         const item: XXAuthPanel = this.pending[i];
         const key: string = item.kind + ':' + item.fingerprint;
-        const scheduled: boolean = item.kind === 'recommendation' && XXAuthPopupSchedule.configured(this.currentConfig);
+        const scheduled: boolean = item.kind === 'recommendation';
         if ((!scheduled && this.shown.indexOf(key) >= 0) ||
           !xxAuthPopupStore.shouldShow(this.context(), item, Date.now(), this.currentConfig, this.readySince)) { continue; }
         this.present(item);
@@ -275,6 +280,7 @@ export struct XXAuthPopupHost {
   }
 
   private async present(item: XXAuthPanel): Promise<void> {
+    if (item.kind === 'recommendation' && xxAuthSplashStore.wasShown(item.recommendationAppId)) { return; }
     if (this.preparing) { return; }
     if (xxAuthSupporterService.active() && XXAuthSupporterPolicy.promotional(item.kind)) { return; }
     this.preparing = true;

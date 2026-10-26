@@ -1,3 +1,4 @@
+import { orderedTabIds } from '../utils/TabOrder';
 import { common } from '@kit.AbilityKit';
 import { curves } from '@kit.ArkUI';
 import { LiquidTabTarget, RootLiquidTabGeometry } from '../utils/RootLiquidTabGeometry';
@@ -28,6 +29,7 @@ export struct RootLiquidTabIndicator {
   @Prop @Watch('onSelectionChanged') selectedPage: number = 0;
   @Prop @Watch('onRequestedPageChanged') requestedPage: number = 0;
   @Prop @Watch('onPresentationChanged') pagesMask: number = 31;
+  @Prop @Watch('onPresentationChanged') pageOrder: string = '';
   @Prop @Watch('onPresentationChanged') showLabel: boolean = true;
   @Prop @Watch('onVisibilityChanged') hidden: boolean = false;
   onSelect: (visibleIndex: number) => void = (_index: number): void => {};
@@ -89,7 +91,8 @@ export struct RootLiquidTabIndicator {
       const hits: RootLiquidTabHitTarget[] = [];
       let anchorX: number = 0;
       let anchorY: number = 0;
-      for (let page: number = 0; page < 5; page++) {
+      for (const id of orderedTabIds(this.pageOrder, ['0', '1', '2', '3', '4'])) {
+        const page: number = Number(id);
         if ((this.pagesMask & (1 << page)) === 0) { continue; }
         const node = ui.getFrameNodeById('root-floating-tab-' + page.toString());
         if (node === null) { return false; }

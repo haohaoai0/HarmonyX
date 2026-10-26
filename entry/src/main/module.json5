@@ -29,7 +29,7 @@
         "description": "$string:EntryAbility_desc",
         "icon": "$media:layered_image",
         "label": "$string:EntryAbility_label",
-        "startWindowIcon": "$media:start_window_icon",
+        "startWindowIcon": "$media:start_window_empty",
         "startWindowBackground": "$color:start_window_background",
         // Follow the desktop by default. EntryAbility enables sensor rotation
         // on foldable devices, and fullscreen video restores that app policy.

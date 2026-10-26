@@ -66,7 +66,6 @@ export class XXAuthPopupStore {
   }
 
   markRecommendationShown(context: common.Context, config: XXAuthPopupConfig, now: number): boolean {
-    if (!XXAuthPopupSchedule.configured(config)) { return true; }
     try {
       const store: preferences.Preferences = this.open(context);
       const next: XXAuthPopupHistory = XXAuthPopupSchedule.record(this.popupHistory(store, config), now);
@@ -92,7 +91,7 @@ export class XXAuthPopupStore {
       }
       return panel.forced || panel.repeat ||
         store.getSync('seen_' + panel.kind + '_' + panel.id, '') !== panel.fingerprint;
-    } catch (error) { return panel.kind !== 'recommendation' || !XXAuthPopupSchedule.configured(config); }
+    } catch (error) { return panel.kind !== 'recommendation'; }
   }
 
   markRead(context: common.Context, panel: XXAuthPanel): void {

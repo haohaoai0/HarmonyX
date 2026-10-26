@@ -48,7 +48,8 @@ test('cover and inner screen choose different layouts despite sharing the sm wid
 
 test('window resizing publishes cover and inner states even when the width breakpoint stays sm', () => {
   const storage = new Map();
-  const Ability = methods('entryability/EntryAbility', 'EntryAbility', ['updateResponsiveState'], {
+  const Ability = methods('entryability/EntryAbility', 'EntryAbility', ['updateResponsiveState', 'updateCoverScreen'], {
+    display: { isFoldable: () => false }, STORAGE_KEY_COVER_SCREEN_ACTIVE: 'cover',
     ResponsiveLayout: layout, AppStorage: { setOrCreate: (key, value) => storage.set(key, value) },
     WINDOW_WIDTH_KEY: 'width', WINDOW_HEIGHT_KEY: 'height', BREAKPOINT_KEY: 'breakpoint'
   });
@@ -78,7 +79,7 @@ test('cover sheets bound numeric, preset and percentage detents without losing k
   const storage = new Map([['harmonyx.window_width', 326], ['harmonyx.window_height', 326],
     ['harmonyx.status_bar_height', 32], ['harmonyx.navigation_indicator_height', 20]]);
   const sheet = load('utils/SheetMaterial', {
-    '@kit.ArkUI': {}, '@kit.BasicServicesKit': {},
+    '@kit.ArkUI': {}, '@kit.BasicServicesKit': { deviceInfo: { apiAvailable: () => false } },
     '../services/SheetMaterialSettingsStore': {}, './SystemMaterial': {},
     './ResponsiveLayout': { ResponsiveLayout: layout }
   }, storage);

@@ -38,7 +38,7 @@ function imageHarness() {
         }, destroy() {}
       })
     } },
-    './ProxyStore': { proxyStore: { snapshot: () => ({ enabled: true }), apply: async () => {} } },
+    './ProxyStore': { proxyStore: { snapshot: () => ({ enabled: true }), requiresHttpTransport: () => true, apply: async () => {} } },
     '@kit.ImageKit': { image: {
       createImageSource: () => ({
         createPixelMap: async () => {
@@ -113,7 +113,7 @@ function zoomHarness(load, proxyEnabled = true) {
     '../utils/AppMotion': { motionDuration: value => value, motionCurve: () => 0 },
     '@kit.ArkUI': { curves: { springMotion: () => 0 } },
     '../services/ProxyImageResolver': { proxyImageResolver: { loadForViewer: load, release: map => released.push(map) } },
-    '../services/ProxyStore': { proxyStore: { snapshot: () => ({ enabled: proxyEnabled }) } }
+    '../services/ProxyStore': { proxyStore: { snapshot: () => ({ enabled: proxyEnabled }), requiresHttpTransport: () => proxyEnabled } }
   }, {
     setTimeout: callback => { const id = ++timerId; timers.set(id, callback); return id; },
     clearTimeout: id => timers.delete(id)

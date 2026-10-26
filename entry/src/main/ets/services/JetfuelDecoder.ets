@@ -41,6 +41,10 @@ export class JetfuelDocument {
     return this.resolve(this.props[ref.number], 0);
   }
 
+  // Resolve a JP-5 property/reference node into the value it names. This is
+  // required for action handlers, where URLs and values are nested references.
+  resolveValue(value: JetfuelValue): JetfuelValue { return this.resolve(value, 0); }
+
   private resolve(value: JetfuelValue | undefined, depth: number): JetfuelValue {
     if (value === undefined || depth > 20) { return new JetfuelValue(); }
     if (value.tag === 18 || value.tag === 31) {

@@ -13,6 +13,13 @@ export class XXAuthRecommendationApp {
   enabled: boolean = false;
   popupEnabled: boolean = false;
   postEnabled: boolean = false;
+  splashEnabled: boolean = false;
+  splashImage: string = '';
+  splashImages: string[] = [];
+  splashTitle: string = '';
+  splashDescription: string = '';
+  splashAction: string = '';
+  splashDuration: number = 3;
   reminderForced: boolean = false;
   snoozeTitle: string = '';
   snoozeMessage: string = '';
@@ -29,7 +36,7 @@ export class XXAuthRecommendationCatalog {
     let section: string = '';
     for (let i: number = 0; i < lines.length; i++) {
       const match: RegExpMatchArray | null = lines[i].trim().match(
-        /^(应用标识|应用名称|应用小注释|应用多行注释|应用图标|应用链接|应用开关|弹窗开关|信息流开关|弹窗提醒|免提醒标题|免提醒文案|帖子昵称|帖子账号|帖子认证|帖子头像|帖子正文|帖子媒体|帖子媒体平板|帖子链接|帖子开关)\s*[:：]\s*(.*)$/);
+        /^(应用标识|应用名称|应用小注释|应用多行注释|应用图标|应用链接|应用开关|弹窗开关|信息流开关|弹窗提醒|免提醒标题|免提醒文案|帖子昵称|帖子账号|帖子认证|帖子头像|帖子正文|帖子媒体|帖子媒体平板|帖子链接|帖子开关|开屏开关|开屏图片|开屏标题|开屏文案|开屏按钮|开屏时长)\s*[:：]\s*(.*)$/);
       if (match !== null) {
         section = match[1];
         fields.set(section, match[2]);
@@ -65,6 +72,18 @@ export class XXAuthRecommendationCatalog {
     return /^https:\/\/[^\s/@]+(?:\:[0-9]+)?(?:[/?#][^\s]*)?$/i.test(url) ? url : '';
   }
 
+  private static pictures(value: string | undefined): string[] {
+    const result: string[] = [];
+    const lines: string[] = (value ?? '').replace(/\r\n?/g, '\n').split('\n');
+    for (let i: number = 0; i < lines.length && result.length < 6; i++) {
+      const url: string = XXAuthRecommendationCatalog.https(lines[i].trim().split('|')[0]);
+      if (url.length > 0 && !/\.(mp4|m3u8|webm|mov)(\?|#|$)/i.test(url) && !result.includes(url)) {
+        result.push(url);
+      }
+    }
+    return result;
+  }
+
   static apps(items: XXAuthAnnouncement[]): XXAuthRecommendationApp[] {
     const records: XXAuthAnnouncement[] = items.filter(
       (item: XXAuthAnnouncement): boolean => XXAuthRecommendationCatalog.isApp(item));
@@ -92,6 +111,19 @@ export class XXAuthRecommendationCatalog {
         record.content.indexOf('//关闭') < 0 && XXAuthRecommendationCatalog.on(fields.get('应用开关'));
       app.popupEnabled = XXAuthRecommendationCatalog.on(fields.get('弹窗开关'));
       app.postEnabled = XXAuthRecommendationCatalog.on(fields.get('信息流开关'));
+      const configuredPictures: string[] = XXAuthRecommendationCatalog.pictures(fields.get('开屏图片'));
+      // One poster can be supplemented by this app's own introduction images.
+      // An explicit multi-image list gives the operator full control of the mosaic.
+      app.splashImages = configuredPictures.length > 1 ? configuredPictures :
+        XXAuthRecommendationCatalog.pictures(configuredPictures.join('\n') + '\n' + (fields.get('帖子媒体') ?? ''));
+      app.splashImage = app.splashImages.length > 0 ? app.splashImages[0] : '';
+      app.splashEnabled = XXAuthRecommendationCatalog.on(fields.get('开屏开关')) && app.splashImage.length > 0;
+      app.splashTitle = XXAuthRecommendationCatalog.text(fields.get('开屏标题')) || app.name;
+      app.splashDescription = XXAuthRecommendationCatalog.text(fields.get('开屏文案')) || app.description;
+      app.splashAction = XXAuthRecommendationCatalog.text(fields.get('开屏按钮'));
+      const splashDuration: number = Number((fields.get('开屏时长') ?? '').trim());
+      app.splashDuration = Number.isFinite(splashDuration) && splashDuration > 0 ?
+        Math.max(1, Math.min(5, splashDuration)) : 3;
       app.reminderForced = /^(强制提醒|force)$/i.test((fields.get('弹窗提醒') ?? '').trim());
       app.snoozeTitle = XXAuthRecommendationCatalog.text(fields.get('免提醒标题'));
       app.snoozeMessage = XXAuthRecommendationCatalog.text(fields.get('免提醒文案'));

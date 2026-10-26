@@ -183,16 +183,18 @@ test('a late inline AVPlayer creation cannot overwrite the active viewer offer a
   h.store.request('video'); assert.equal(h.store.take('video').player, incoming);
 });
 
-function routeHarness(canReturn = true) {
+function routeHarness(canReturn = true, pipHeld = false) {
   const frames = [], events = [];
   class Frame { constructor(action) { this.action = action; } onFrame() { this.action(); } }
-  const Viewer = methods('entry/src/main/ets/pages/VideoFeedViewer.ets', 'VideoFeedViewer', ['close'], {
+  const Viewer = methods('entry/src/main/ets/pages/VideoFeedViewer.ets', 'VideoFeedViewer', ['close', 'finishNavigationReturn'], {
+    videoPipGate: { isHeld: () => pipHeld },
     videoPlayerHandoff: { returnToSource: (id, source) => { events.push(['return', id, source]); return canReturn; },
       request: id => events.push(['request', id]) },
     ResponsiveLayout: { closeContentDestination: () => events.push(['pop']) }, MediaViewerMotionFrame: Frame,
     measureMediaViewerGeometry: () => ({ viewport: {}, target: {} }), captureMediaViewerSource: () => undefined
   });
   const view = Object.assign(new Viewer(), { viewerAlive: true, closing: false, returningMediaId: '',
+    returnNavigation: { request: () => false, complete: () => false },
     pageShown: true,
     motion: { enabled: () => false, source: { mediaId: 'video', id: 'card' } },
     recommendationStream: { close() {} }, currentVideo: () => ({ id: 'video' }),
@@ -214,6 +216,16 @@ test('a destroyed source uses the normal requested handoff and stale frame callb
   assert.deepEqual(missing.events, [['return', 'video', 'card'], ['request', 'video'], ['pop']]);
   const stale = routeHarness(); stale.view.close(); stale.view.viewerAlive = false; stale.frames.shift().onFrame();
   assert.equal(stale.events.length, 2); assert.equal(stale.frames.length, 0);
+});
+
+test('Back during active or starting PiP keeps the decoder in its window and skips the card dismiss animation', () => {
+  const h = routeHarness(true, true);
+  h.view.motion.enabled = () => true;
+  h.view.motion.dismiss = () => { throw Error('PiP must not shrink the viewer into its card'); };
+  h.view.close(); h.view.close();
+  assert.deepEqual(h.events, [['pop']]);
+  assert.equal(h.frames.length, 0);
+  assert.equal(h.view.returningMediaId, '');
 });
 
 test('a cold video exposes its destination as soon as its surface exists while the cover still awaits decoding', () => {

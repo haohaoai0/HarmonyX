@@ -1,6 +1,70 @@
 {
   "string": [
     {
+      "name": "startup_animation_none",
+      "value": "Doğrudan aç"
+    },
+    {
+      "name": "startup_animation_none_desc",
+      "value": "Ana sayfayı simge veya açılış animasyonu olmadan açar."
+    },
+    {
+      "name": "startup_animation_speed",
+      "value": "Oynatma hızı"
+    },
+    {
+      "name": "startup_animation_speed_desc",
+      "value": "Bir sonraki başlatmada animasyonlu açılışa uygulanır."
+    },
+    {
+      "name": "startup_animation_speed_value",
+      "value": "%s×"
+    },
+    {
+      "name": "startup_animation_title",
+      "value": "Başlangıç animasyonu"
+    },
+    {
+      "name": "startup_animation_desc",
+      "value": "Bir sonraki soğuk başlangıçta uygulanır. Animasyon sırasında ana sayfa yenilenir. Hareketi azalt, sabit simge kullanır."
+    },
+    {
+      "name": "startup_animation_icon",
+      "value": "Simgeyi koru"
+    },
+    {
+      "name": "startup_animation_icon_desc",
+      "value": "Ana sayfa hazır olana kadar mevcut simgeyi koru, ardından soldur."
+    },
+    {
+      "name": "startup_animation_ios",
+      "value": "iOS tarzı"
+    },
+    {
+      "name": "startup_animation_ios_desc",
+      "value": "Simge hafifçe yaylanıp büyüyerek yenilenen ana sayfayı gösterir."
+    },
+    {
+      "name": "startup_animation_video",
+      "value": "Animasyonlu açılış"
+    },
+    {
+      "name": "startup_animation_video_desc",
+      "value": "Geçerli simgeye özel açılış animasyonunu oynatır, ardından ana sayfayı gösterir."
+    },
+    {
+      "name": "splash_ad_label",
+      "value": "Reklam"
+    },
+    {
+      "name": "splash_ad_skip",
+      "value": "Atla"
+    },
+    {
+      "name": "splash_ad_signature",
+      "value": "Seveceğin bir dünyayla tanış"
+    },
+    {
       "name": "supporter_config_error",
       "value": "Bulut hesabı bağlantısı doğrulanamadı. Lütfen geliştiriciyle iletişime geçin."
     },
@@ -8,63 +72,234 @@
       "name": "supporter_restore_hint",
       "value": "Bir hesaba geri dönmek kayıtlı durumunu geri yükler. Yeni bir cihazda, yeniden yüklemeden sonra veya başka bir sürümde aynı X hesabıyla giriş yapıp erişimi geri yüklemek için ilk kodunuzu girin."
     },
-    {"name": "eye_reading_title", "value": "Gözle okuma"},
-    {"name": "eye_reading_intro", "value": "Akışları, çevrimdışı kopyaları ve makaleleri kaydırmak için yukarı veya aşağı bakıp bekleyin."},
-    {"name": "eye_reading_enable", "value": "Gözle okumayı etkinleştir"},
-    {"name": "eye_reading_supported", "value": "Yüz takibi destekleniyor. Kamera yalnızca okuma sayfasında Başlat'a dokunduğunuzda açılır."},
-    {"name": "eye_reading_unsupported", "value": "Bu cihaz gerekli yüz takibini desteklemiyor. Dokunmatik ekranı veya klavyeyi kullanın."},
-    {"name": "eye_reading_dwell", "value": "Bakış bekleme süresi"},
-    {"name": "eye_reading_threshold", "value": "Yön eşiği"},
-    {"name": "eye_reading_threshold_desc", "value": "Daha yüksek eşik, daha belirgin göz hareketi gerektirir ve yanlış kaydırmaları azaltır."},
-    {"name": "eye_reading_help", "value": "Kalibrasyon için başınızı sabit tutup ekranın ortasına bakın. Yaklaşık yarım ekran kaydırmak için yukarı veya aşağı bakıp bekleyin. Her işlemden sonra ortaya dönün. Dokunma, tekerlek ve klavye önceliklidir."},
-    {"name": "eye_reading_privacy", "value": "Ön kamera yalnızca başlattıktan sonra kullanılır. Yön bilgileri cihazda işlenir; görüntüler kaydedilmez veya yüklenmez. Sayfadan ayrılmak ya da arka plana geçmek oturumu durdurur. Yeniden elle başlatın."},
-    {"name": "eye_reading_save_failed", "value": "Ayarlar kaydedilemedi. Tekrar deneyin."},
-    {"name": "eye_reading_start", "value": "Göz kontrolünü başlat"},
-    {"name": "eye_reading_stop", "value": "Göz kontrolünü durdur"},
-    {"name": "eye_reading_recalibrate", "value": "Yeniden kalibre et"},
-    {"name": "eye_reading_starting", "value": "Ön kamera başlatılıyor…"},
-    {"name": "eye_reading_permission", "value": "Kamera izni gerekli. Sistem uygulama izinlerinden erişime izin verip tekrar deneyin."},
-    {"name": "eye_reading_failed", "value": "Kamera kullanılamıyor. Diğer kamera uygulamalarını kapatıp tekrar deneyin."},
-    {"name": "eye_reading_calibrating", "value": "Kalibrasyon için ekranın ortasına bakıp başınızı ve bakışınızı sabit tutun."},
-    {"name": "eye_reading_center", "value": "Sonraki işlemden önce bakışınızı ortaya döndürün."},
-    {"name": "eye_reading_ready", "value": "Hazır: yukarı veya aşağı bakıp bekleyin."},
-    {"name": "eye_reading_up", "value": "Yukarı kaydırmak için yukarı bakmaya devam edin."},
-    {"name": "eye_reading_down", "value": "Aşağı kaydırmak için aşağı bakmaya devam edin."},
-    {"name": "eye_reading_lost", "value": "İyi ışıkta gözlerinizi açıp ekrana dönün. Yanıt alamıyorsanız yeniden kalibre edin."},
-    {"name": "eye_reading_paused", "value": "Elle giriş önceliklidir. Göz kontrolü geçici olarak duraklatıldı."},
-    {"name": "eye_reading_camera_reason", "value": "Gözle okumayı başlattığınızda göz yönünü cihazda algılamak için ön kamerayı kullanır."},
-    {"name": "compact_video_layout", "value": "Dış ekran video düzeni"},
-    {"name": "settings_compact_video_layout_desc", "value": "Pura X gibi küçük kare ekranlarda yan işlemleri veya alt sırayı seçin. Telefon açılınca normal video düzeni geri yüklenir."},
-    {"name": "compact_video_layout_rail", "value": "Yan işlemler"},
-    {"name": "compact_video_layout_bottom", "value": "Alt sıra"},
-    {"name":"settings_component_hdr_enabled","value":"Component HDR effect"},
-    {"name":"settings_component_hdr_enabled_desc","value":"Off by default. Turn it on to use 1.25x brightening, then adjust the multiplier below."},
-    {"name":"settings_confirm_app_exit","value":"Çıkmadan önce onayla"},
-    {"name":"settings_confirm_app_exit_desc","value":"Ana sayfada geri gidildiğinde onay iste. Kapalıysa doğrudan çık."},
-    {"name":"app_exit_title","value":"Uygulamadan çıkılsın mı?"},
-    {"name":"app_exit_message","value":"Uygulamadan çıkmak istediğinize emin misiniz?"},
-    {"name":"app_exit_action","value":"Çık"},
-    {"name":"settings_component_hdr_max","value":"Geçerli ekranın en yüksek parlaklık çarpanı"},
-    {"name":"settings_component_hdr_max_unavailable","value":"Geçici olarak kullanılamıyor"},
-    {"name":"settings_component_hdr_max_desc","value":"Sistem tarafından bu ekran için bildirilen değerdir. Parlaklık veya ekran değiştiğinde otomatik güncellenir."},
-    {"name":"settings_component_hdr_ratio","value":"Arayüz HDR parlaklık çarpanı"},
-    {"name":"settings_component_hdr_desc","value":"Düğmelerin, simgelerin ve seçili öğelerin vurgularını ayarlayın. Varsayılan: 1.25; 1 değeri parlaklık artışını kapatır. Gerçek parlaklık cihaza bağlıdır. Değişiklikler otomatik kaydedilir ve uygulanır."},
-    {"name":"settings_component_hdr_invalid","value":"En az 1 olan geçerli bir sayı girin."},
-    {"name":"settings_component_hdr_reset","value":"1.25 değerine sıfırla"},
-    {"name":"settings_video_hdr_enhancement","value":"HDR video iyileştirme"},
-    {"name":"settings_video_hdr_enhancement_desc","value":"Standart videoların kontrastını ve renklerini iyileştirir. Desteklenmeyen cihazlar otomatik olarak normal oynatmayı kullanır."},
-    {"name": "settings_menu_post", "value": "Gönderi menüsü işlemleri"},
-    {"name": "settings_menu_photo", "value": "Fotoğraf menüsü işlemleri"},
-    {"name": "settings_menu_video", "value": "Video menüsü işlemleri"},
-    {"name": "settings_menu_item_desc", "value": "Menülerde gösterilecek işlemleri seçin. İçerik desteklediğinde görünürler. Varsayılanlar geri yüklenebilir."},
-    {"name": "settings_menu_show_action", "value": "İlgili menülerde göster"},
-    {"name": "settings_menu_empty", "value": "Menü işlemleri gizli. Ayarların ilgili kategorisinden geri yükleyin."},
-    {"name": "settings_viewer_video_mute", "value": "Video görüntüleyiciyi sessize al"},
-    {"name": "settings_viewer_video_mute_desc", "value": "Açılan videoları ana sayfa önizlemelerinden bağımsız olarak sessize alın."},
-    {"name": "settings_video_auto_advance_desc", "value": "Oynatma bitince otomatik olarak sonraki videoya geç."},
-    {"name": "settings_video_captions_desc", "value": "Video görüntüleyicide sistem yapay zekâ altyazılarını varsayılan olarak aç."},
-    {"name": "settings_video_feed_layout_desc", "value": "Telefonun dikey video düzenini seçin. Geniş ve yatay pencereler kendi düzenlerini korur."},
-    {"name": "settings_chat_desc", "value": "Message requests, call permissions, PIN and chat auto-download"},
+    {
+      "name": "eye_reading_title",
+      "value": "Gözle okuma"
+    },
+    {
+      "name": "eye_reading_intro",
+      "value": "Akışları, çevrimdışı kopyaları ve makaleleri kaydırmak için yukarı veya aşağı bakıp bekleyin."
+    },
+    {
+      "name": "eye_reading_enable",
+      "value": "Gözle okumayı etkinleştir"
+    },
+    {
+      "name": "eye_reading_supported",
+      "value": "Yüz takibi destekleniyor. Kamera yalnızca okuma sayfasında Başlat'a dokunduğunuzda açılır."
+    },
+    {
+      "name": "eye_reading_unsupported",
+      "value": "Bu cihaz gerekli yüz takibini desteklemiyor. Dokunmatik ekranı veya klavyeyi kullanın."
+    },
+    {
+      "name": "eye_reading_dwell",
+      "value": "Bakış bekleme süresi"
+    },
+    {
+      "name": "eye_reading_threshold",
+      "value": "Yön eşiği"
+    },
+    {
+      "name": "eye_reading_threshold_desc",
+      "value": "Daha yüksek eşik, daha belirgin göz hareketi gerektirir ve yanlış kaydırmaları azaltır."
+    },
+    {
+      "name": "eye_reading_help",
+      "value": "Kalibrasyon için başınızı sabit tutup ekranın ortasına bakın. Yaklaşık yarım ekran kaydırmak için yukarı veya aşağı bakıp bekleyin. Her işlemden sonra ortaya dönün. Dokunma, tekerlek ve klavye önceliklidir."
+    },
+    {
+      "name": "eye_reading_privacy",
+      "value": "Ön kamera yalnızca başlattıktan sonra kullanılır. Yön bilgileri cihazda işlenir; görüntüler kaydedilmez veya yüklenmez. Sayfadan ayrılmak ya da arka plana geçmek oturumu durdurur. Yeniden elle başlatın."
+    },
+    {
+      "name": "eye_reading_save_failed",
+      "value": "Ayarlar kaydedilemedi. Tekrar deneyin."
+    },
+    {
+      "name": "eye_reading_start",
+      "value": "Göz kontrolünü başlat"
+    },
+    {
+      "name": "eye_reading_stop",
+      "value": "Göz kontrolünü durdur"
+    },
+    {
+      "name": "eye_reading_recalibrate",
+      "value": "Yeniden kalibre et"
+    },
+    {
+      "name": "eye_reading_starting",
+      "value": "Ön kamera başlatılıyor…"
+    },
+    {
+      "name": "eye_reading_permission",
+      "value": "Kamera izni gerekli. Sistem uygulama izinlerinden erişime izin verip tekrar deneyin."
+    },
+    {
+      "name": "eye_reading_failed",
+      "value": "Kamera kullanılamıyor. Diğer kamera uygulamalarını kapatıp tekrar deneyin."
+    },
+    {
+      "name": "eye_reading_calibrating",
+      "value": "Kalibrasyon için ekranın ortasına bakıp başınızı ve bakışınızı sabit tutun."
+    },
+    {
+      "name": "eye_reading_center",
+      "value": "Sonraki işlemden önce bakışınızı ortaya döndürün."
+    },
+    {
+      "name": "eye_reading_ready",
+      "value": "Hazır: yukarı veya aşağı bakıp bekleyin."
+    },
+    {
+      "name": "eye_reading_up",
+      "value": "Yukarı kaydırmak için yukarı bakmaya devam edin."
+    },
+    {
+      "name": "eye_reading_down",
+      "value": "Aşağı kaydırmak için aşağı bakmaya devam edin."
+    },
+    {
+      "name": "eye_reading_lost",
+      "value": "İyi ışıkta gözlerinizi açıp ekrana dönün. Yanıt alamıyorsanız yeniden kalibre edin."
+    },
+    {
+      "name": "eye_reading_paused",
+      "value": "Elle giriş önceliklidir. Göz kontrolü geçici olarak duraklatıldı."
+    },
+    {
+      "name": "eye_reading_camera_reason",
+      "value": "Gözle okumayı başlattığınızda göz yönünü cihazda algılamak için ön kamerayı kullanır."
+    },
+    {
+      "name": "compact_video_layout",
+      "value": "Dış ekran video düzeni"
+    },
+    {
+      "name": "settings_compact_video_layout_desc",
+      "value": "Pura X gibi küçük kare ekranlarda yan işlemleri veya alt sırayı seçin. Telefon açılınca normal video düzeni geri yüklenir."
+    },
+    {
+      "name": "compact_video_layout_rail",
+      "value": "Yan işlemler"
+    },
+    {
+      "name": "compact_video_layout_bottom",
+      "value": "Alt sıra"
+    },
+    {
+      "name": "settings_component_hdr_enabled",
+      "value": "Component HDR effect"
+    },
+    {
+      "name": "settings_component_hdr_enabled_desc",
+      "value": "Off by default. Turn it on to use 1.25x brightening, then adjust the multiplier below."
+    },
+    {
+      "name": "settings_confirm_app_exit",
+      "value": "Çıkmadan önce onayla"
+    },
+    {
+      "name": "settings_confirm_app_exit_desc",
+      "value": "Ana sayfada geri gidildiğinde onay iste. Kapalıysa doğrudan çık."
+    },
+    {
+      "name": "app_exit_title",
+      "value": "Uygulamadan çıkılsın mı?"
+    },
+    {
+      "name": "app_exit_message",
+      "value": "Uygulamadan çıkmak istediğinize emin misiniz?"
+    },
+    {
+      "name": "app_exit_action",
+      "value": "Çık"
+    },
+    {
+      "name": "settings_component_hdr_max",
+      "value": "Geçerli ekranın en yüksek parlaklık çarpanı"
+    },
+    {
+      "name": "settings_component_hdr_max_unavailable",
+      "value": "Geçici olarak kullanılamıyor"
+    },
+    {
+      "name": "settings_component_hdr_max_desc",
+      "value": "Sistem tarafından bu ekran için bildirilen değerdir. Parlaklık veya ekran değiştiğinde otomatik güncellenir."
+    },
+    {
+      "name": "settings_component_hdr_ratio",
+      "value": "Arayüz HDR parlaklık çarpanı"
+    },
+    {
+      "name": "settings_component_hdr_desc",
+      "value": "Düğmelerin, simgelerin ve seçili öğelerin vurgularını ayarlayın. Varsayılan: 1.25; 1 değeri parlaklık artışını kapatır. Gerçek parlaklık cihaza bağlıdır. Değişiklikler otomatik kaydedilir ve uygulanır."
+    },
+    {
+      "name": "settings_component_hdr_invalid",
+      "value": "En az 1 olan geçerli bir sayı girin."
+    },
+    {
+      "name": "settings_component_hdr_reset",
+      "value": "1.25 değerine sıfırla"
+    },
+    {
+      "name": "settings_video_hdr_enhancement",
+      "value": "HDR video iyileştirme"
+    },
+    {
+      "name": "settings_video_hdr_enhancement_desc",
+      "value": "Standart videoların kontrastını ve renklerini iyileştirir. Desteklenmeyen cihazlar otomatik olarak normal oynatmayı kullanır."
+    },
+    {
+      "name": "settings_menu_post",
+      "value": "Gönderi menüsü işlemleri"
+    },
+    {
+      "name": "settings_menu_photo",
+      "value": "Fotoğraf menüsü işlemleri"
+    },
+    {
+      "name": "settings_menu_video",
+      "value": "Video menüsü işlemleri"
+    },
+    {
+      "name": "settings_menu_item_desc",
+      "value": "Menülerde gösterilecek işlemleri seçin. İçerik desteklediğinde görünürler. Varsayılanlar geri yüklenebilir."
+    },
+    {
+      "name": "settings_menu_show_action",
+      "value": "İlgili menülerde göster"
+    },
+    {
+      "name": "settings_menu_empty",
+      "value": "Menü işlemleri gizli. Ayarların ilgili kategorisinden geri yükleyin."
+    },
+    {
+      "name": "settings_viewer_video_mute",
+      "value": "Video görüntüleyiciyi sessize al"
+    },
+    {
+      "name": "settings_viewer_video_mute_desc",
+      "value": "Açılan videoları ana sayfa önizlemelerinden bağımsız olarak sessize alın."
+    },
+    {
+      "name": "settings_video_auto_advance_desc",
+      "value": "Oynatma bitince otomatik olarak sonraki videoya geç."
+    },
+    {
+      "name": "settings_video_captions_desc",
+      "value": "Video görüntüleyicide sistem yapay zekâ altyazılarını varsayılan olarak aç."
+    },
+    {
+      "name": "settings_video_feed_layout_desc",
+      "value": "Telefonun dikey video düzenini seçin. Geniş ve yatay pencereler kendi düzenlerini korur."
+    },
+    {
+      "name": "settings_chat_desc",
+      "value": "Message requests, call permissions, PIN and chat auto-download"
+    },
     {
       "name": "settings_video_double_tap_seek",
       "value": "Çift dokunarak ileri veya geri sar"
@@ -1107,7 +1342,7 @@
     },
     {
       "name": "profile_version",
-      "value": "Harmony X 3.1.0 · HarmonyOS 6.1 (API 23-26) · Stage modeli"
+      "value": "Harmony X 3.5.0 · HarmonyOS 6.0.2 (API 22-26) · Stage modeli"
     },
     {
       "name": "profile_following",
@@ -1836,6 +2071,10 @@
     {
       "name": "settings_timeline_columns_auto",
       "value": "Otomatik"
+    },
+    {
+      "name": "settings_timeline_columns_auto_two",
+      "value": "Otomatik: masaüstü/yatayda 2, dış ekranda 1"
     },
     {
       "name": "settings_timeline_columns_one",
@@ -4500,6 +4739,10 @@
     {
       "name": "onboarding_login_title",
       "value": "X'e giriş yapın"
+    },
+    {
+      "name": "onboarding_login_notice",
+      "value": "Google ile giriş yapmayın; e-posta adresinizi doğrudan girin. Ağınız çalışırken sayfa boş kalırsa lütfen bekleyin."
     },
     {
       "name": "onboarding_login_hint",
@@ -10477,330 +10720,1346 @@
       "name": "settings_desktop_video_feed",
       "value": "Telefondaki gibi video akışı"
     },
-    {"name":"settings_classic_bottom_bar","value":"Klasik alt gezinme"},
-    {"name":"settings_classic_bottom_bar_desc","value":"Altta tam genişlikte simge ve metin içeren bir çubuk kullanır; otomatik gizleme de kullanılabilir. Kapatınca yüzen stile dönülür. Değişiklikler hemen uygulanır ve kaydedilir."},
-    {"name":"settings_root_liquid_tab_indicator","value":"Sıvı gösterge"},
-    {"name":"settings_root_liquid_tab_indicator_desc","value":"Yüzen gezinme çubuğunda sürüklenebilir ve esnekçe geri dönen bir kapsül gösterir. Boyut, sekme etiketleri ayarına uyar."},
-    {"name":"settings_root_tab_labels","value":"Sekme etiketlerini göster"},
-    {"name":"settings_root_tab_labels_desc","value":"Hem yüzen hem klasik alt gezinme için geçerlidir. Kapatıldığında yalnızca simgeler ve okunmamış işaretleri kalır."},
+    {
+      "name": "settings_classic_bottom_bar",
+      "value": "Klasik alt gezinme"
+    },
+    {
+      "name": "settings_classic_bottom_bar_desc",
+      "value": "Altta tam genişlikte simge ve metin içeren bir çubuk kullanır; otomatik gizleme de kullanılabilir. Kapatınca yüzen stile dönülür. Değişiklikler hemen uygulanır ve kaydedilir."
+    },
+    {
+      "name": "settings_root_liquid_tab_indicator",
+      "value": "Sıvı gösterge"
+    },
+    {
+      "name": "settings_root_liquid_tab_indicator_desc",
+      "value": "Yüzen gezinme çubuğunda sürüklenebilir ve esnekçe geri dönen bir kapsül gösterir. Boyut, sekme etiketleri ayarına uyar."
+    },
+    {
+      "name": "settings_root_tab_labels",
+      "value": "Sekme etiketlerini göster"
+    },
+    {
+      "name": "settings_root_tab_labels_desc",
+      "value": "Hem yüzen hem klasik alt gezinme için geçerlidir. Kapatıldığında yalnızca simgeler ve okunmamış işaretleri kalır."
+    },
     {
       "name": "chat_post_preview",
       "value": "Paylaşılan gönderi"
     },
-    {"name": "account_overview_signed_out", "value": "Oturum kapalı"},
-    {"name": "account_overview_no_bio", "value": "Henüz biyografi yok"},
-    {"name": "account_overview_handle", "value": "Kullanıcı adı"},
-    {"name": "account_overview_location", "value": "Konum"},
-    {"name": "account_overview_website", "value": "Web sitesi"},
-    {"name": "account_overview_manage", "value": "Hesapları yönet ve değiştir"},
-    {"name": "profile_editor_choose_banner", "value": "Change header photo"},
-    {"name": "profile_editor_choose_avatar", "value": "Change profile photo"},
-    {"name": "profile_editor_birthdate", "value": "Birth date"},
-    {"name": "profile_editor_birthdate_empty", "value": "Add birth date"},
-    {"name": "profile_editor_birthdate_manage", "value": "Edit birth date and visibility"},
-    {"name": "profile_editor_birthdate_privacy", "value": "Month and day: %s\nYear: %s"},
-    {"name": "profile_editor_account_changed", "value": "The signed-in account changed. Go back and reopen the editor."},
-    {"name": "profile_editor_unsaved_title", "value": "Discard unsaved changes?"},
-    {"name": "profile_editor_unsaved_message", "value": "Unsaved profile and photo changes will be lost when you leave."},
-    {"name": "profile_editor_keep_editing", "value": "Keep editing"},
-    {"name": "profile_editor_discard", "value": "Discard changes"},
-    {"name": "profile_editor_partial", "value": "Some changes were saved. Your remaining edits are still here. Try saving again."},
-    {"name": "profile_editor_confirm_failed", "value": "Changes were submitted, but the updated profile could not be loaded. Save again to refresh without uploading the photos again."},
-    {"name": "settings_page_transition", "value": "Sayfa geçişleri"},
-    {"name": "settings_page_transition_desc", "value": "Sayfa açma ve geri dönme animasyonlarını seçin. Değişiklikler hemen uygulanır ve kaydedilir."},
-    {"name": "settings_page_transition_classic", "value": "Mevcut animasyon"},
-    {"name": "settings_page_transition_classic_desc", "value": "Geçerli sistem gezinme geçişlerini koruyun."},
-    {"name": "settings_page_transition_official", "value": "Resmî stil"},
-    {"name": "settings_page_transition_official_desc", "value": "Merkezden yakınlaştırma ve solma ile uyumlu giriş ve çıkış animasyonları."},
-    {"name":"settings_anti_peep","value":"Bakış koruması"},
-    {"name":"settings_anti_peep_desc","value":"Başka birinin ekrana baktığı algılandığında uygulama penceresini sistem maskesiyle kapatır."},
-    {"name":"settings_anti_peep_enable","value":"Bakış korumasını etkinleştir"},
-    {"name":"settings_anti_peep_setup","value":"Sistem korumasını yapılandır"},
-    {"name":"settings_anti_peep_recheck","value":"Yeniden kontrol et"},
-    {"name":"settings_anti_peep_note","value":"Yüz tanımayı kurun ve sistemde Gizlilik ve güvenlik > Bakış koruması altında bu uygulamaya izin verin. Uygulama yalnızca sistem durumunu kullanır, yüz görüntülerine erişmez."},
-    {"name":"settings_anti_peep_disabled","value":"Kapalı"},
-    {"name":"settings_anti_peep_unsupported","value":"Bu cihaz sistem bakış korumasını desteklemiyor."},
-    {"name":"settings_anti_peep_permission","value":"Uygulama izni bekleniyor. Yapılandırdıktan sonra uygulamaya dönün veya yeniden kontrol edin."},
-    {"name":"settings_anti_peep_system_off","value":"Sistem bakış korumasında bu uygulamayı etkinleştirin."},
-    {"name":"settings_anti_peep_face","value":"Önce sistem ayarlarında yüz tanımayı etkinleştirin."},
-    {"name":"settings_anti_peep_ready","value":"Etkin. Bakış durumu izleniyor."},
-    {"name":"settings_anti_peep_protected","value":"Bakış algılandı. Sistem koruma maskesi tetiklendi."},
-    {"name":"settings_anti_peep_error","value":"Koruma şu anda kullanılamıyor. Yeniden kontrol edin."},
-    {"name":"settings_anti_peep_checking","value":"Koruma kontrol ediliyor veya etkinleştiriliyor…"},
-    {"name":"settings_anti_peep_save_failed","value":"Kaydedilemedi. Yeniden deneyin."},
-    {"name":"huawei_account_title","value":"HUAWEI ID and cloud sync"},
-    {"name":"huawei_account_name","value":"HUAWEI ID"},
-    {"name":"huawei_login","value":"Sign in with HUAWEI ID"},
-    {"name":"huawei_logout","value":"Sign out"},
-    {"name":"huawei_signed_in","value":"Signed in with HUAWEI ID"},
-    {"name":"huawei_logging_in","value":"Signing in…"},
-    {"name":"huawei_signed_out_description","value":"Sign in to bring your preferences with you"},
-    {"name":"huawei_cloud_sync","value":"Cloud sync"},
-    {"name":"huawei_sync_description","value":"Sign in to enable sync for appearance, reading, playback preferences and local content rules across your devices."},
-    {"name":"huawei_local_data_note","value":"X credentials, messages, drafts and caches stay on this device. Some appearance changes take effect after restarting."},
-    {"name":"huawei_logout_title","value":"Sign out of HUAWEI ID?"},
-    {"name":"huawei_logout_description","value":"Cloud sync will pause. Local settings and existing cloud data will be kept. Your X account remains available."},
-    {"name":"huawei_sync_disabled","value":"Off. Settings are saved on this device."},
-    {"name":"huawei_sync_unavailable","value":"Cloud storage is unavailable. Check the system cloud service and this app’s sync switch."},
-    {"name":"huawei_sync_downloading","value":"Reading and merging cloud settings…"},
-    {"name":"huawei_sync_uploading","value":"Uploading settings…"},
-    {"name":"huawei_sync_success","value":"Synced"},
-    {"name":"huawei_sync_pending","value":"Saved locally, waiting to sync"},
-    {"name":"huawei_sync_failed","value":"Sync did not finish. Your local data is safe. Check system cloud settings and try again."},
-    {"name":"huawei_network_error","value":"Network unavailable. Try again when connected."},
-    {"name":"huawei_storage_full","value":"Cloud or device storage is full. Free some space and try again."},
-    {"name":"huawei_login_error","value":"Sign-in did not finish. Check account service configuration or try again later."},
-    {"name":"huawei_authorization_error","value":"Nickname and avatar authorization failed. Check account permissions and try again."},
-    {"name":"huawei_save_error","value":"Could not save settings. Try again."},
-    {"name":"huawei_select_group","value":"Select at least one group to sync."},
-    {"name":"huawei_account_changed","value":"HUAWEI ID has changed. Enabling sync will merge the selected local settings into the current account."},
-    {"name":"huawei_last_sync","value":"Last successful sync:"},
-    {"name":"huawei_syncing","value":"Syncing…"},
-    {"name":"huawei_sync_now","value":"Sync now"},
-    {"name":"huawei_group_appearance","value":"Appearance and navigation"},
-    {"name":"huawei_group_appearance_description","value":"Theme, text size, title bar, tabs and sheet material"},
-    {"name":"huawei_group_media","value":"Reading and playback"},
-    {"name":"huawei_group_media_description","value":"Image and video quality, autoplay and mute preferences"},
-    {"name":"huawei_group_filters","value":"Local content rules"},
-    {"name":"huawei_group_filters_description","value":"Keyword and user filters, and content preferences"},
-    {"name":"post_photo_save_background","value":"Arka plan kitaplığına kaydet"},
-    {"name":"chat_background_saving_photo","value":"Arka plan resmi kaydediliyor…"},
-    {"name":"chat_background_saved_photo","value":"Kaydedildi. Sayfa arka planı veya Sohbet arka planı bölümünden seçebilirsiniz."},
-    {"name":"chat_background_save_photo_failed","value":"Arka plan resmi kaydedilemedi. Tekrar deneyin."},
-    {"name":"chat_background_saved_photos","value":"Gönderilerden kaydedilen resimler"},
-    {"name":"page_background_title","value":"Sayfa arka planı"},
-    {"name":"page_background_description","value":"Colors, photos and mixable patterns"},
-    {"name":"page_background_switch_title","value":"Sayfa arka planını etkinleştir"},
-    {"name":"page_background_switch_desc","value":"Kapatıldığında tema arka planı hemen kullanılır. Mevcut stil korunur."},
-    {"name":"page_background_base","value":"Zemin"},
-    {"name":"page_background_pattern","value":"Desen katmanı"},
-    {"name":"page_background_pattern_none","value":"Desen yok"},
-    {"name":"page_background_content_opacity","value":"İçerik yüzeyi opaklığı"},
-    {"name":"page_background_reset","value":"Varsayılanları geri yükle"},
-    {"name":"page_background_color_placeholder","value":"Custom color #RRGGBB"},
-    {"name":"page_background_preview","value":"Arka plan önizlemesi"},
-    {"name":"page_background_preview_text","value":"Bring your favorite colors and patterns to every visit."},
-    {"name":"page_background_preview_hint","value":"Text and content surfaces show how readable your background will be."},
-    {"name":"page_background_note","value":"Applies to regular pages. Chats have separate backgrounds; media viewers keep their immersive backgrounds. Tap Apply to save."},
-    {"name":"page_background_layout_preset","value":"Tam desenler"},
-    {"name":"page_background_layout_icons","value":"Tek tek motifler"},
-    {"name":"page_background_density","value":"Motif yoğunluğu"},
-    {"name":"page_background_set_add","value":"Tüm seti seç"},
-    {"name":"page_background_set_remove","value":"Setin seçimini kaldır"},
-    {"name":"page_background_mix_hint","value":"Select motifs across sets to mix them, or repeat a single motif."},
-    {"name":"page_background_selected","value":"%d motifs selected"},
-    {"name":"page_background_icons_clear","value":"Motifleri temizle"},
-    {"name":"page_background_paper","value":"Kâğıt dokusu"},
-    {"name":"page_background_paper_none","value":"Yok"},
-    {"name":"page_background_kraft","value":"Kraft kâğıdı"},
-    {"name":"page_background_parchment","value":"Parşömen"},
-    {"name":"page_background_texture_strength","value":"Doku yoğunluğu"},
-    {"name":"page_background_presets_mix","value":"Select multiple full patterns to combine them."},
-    {"name":"page_background_applied","value":"Sayfa arka planı uygulandı"},
-    {"name":"page_background_apply_failed","value":"Arka plan kaydedilemedi. Yeniden deneyin."},
-    {"name":"page_background_transparent_posts","value":"Transparent post cards"},
-    {"name":"page_background_transparent_posts_desc","value":"Hide the surface behind posts and quoted posts to reveal the page background."},
-    {"name":"page_background_transparent_inbox","value":"Transparent message list"},
-    {"name":"page_background_transparent_inbox_desc","value":"Hide conversation row surfaces while keeping text, avatars and unread indicators."},
-    {"name":"page_background_post_opacity","value":"Post surface opacity"},
-    {"name":"page_background_inbox_opacity","value":"Message list surface opacity"},
-    {"name":"page_background_scheme_import","value":"Import scheme"},
-    {"name":"page_background_scheme_share","value":"Share scheme"},
-    {"name":"page_background_scheme_title","value":"Page background scheme"},
-    {"name":"page_background_scheme_imported","value":"Scheme imported. Preview it, then tap Apply."},
-    {"name":"page_background_scheme_import_failed","value":"Unable to import. Choose a valid HarmonyX background scheme (up to 48 MB)."},
-    {"name":"page_background_scheme_share_failed","value":"Unable to share. Please try again; background photos must be under 32 MB."},
-    {"name":"page_background_set_signature_icons","value":"Alternatif simgeler"},
-    {"name":"page_background_set_garden_defense","value":"Plants vs. Zombies"},
-    {"name":"page_background_motif_signature_icons_frog_face","value":"Frog face"},
-    {"name":"page_background_motif_signature_icons_frog_lily","value":"Frog on a lily pad"},
-    {"name":"page_background_motif_signature_icons_milk_frog","value":"Milk frog"},
-    {"name":"page_background_motif_signature_icons_milk_frog_wave","value":"Waving milk frog"},
-    {"name":"page_background_motif_signature_icons_bird","value":"Flying bird"},
-    {"name":"page_background_motif_signature_icons_bird_wings","value":"Bird with open wings"},
-    {"name":"page_background_motif_signature_icons_ribbon_x","value":"Ribbon X"},
-    {"name":"page_background_motif_signature_icons_blossom_x","value":"Blossom X"},
-    {"name":"page_background_motif_signature_icons_brush_x","value":"Brush X"},
-    {"name":"page_background_motif_signature_icons_prism_x","value":"Prism X"},
-    {"name":"page_background_motif_signature_icons_zombie_x","value":"Zombie X"},
-    {"name":"page_background_motif_signature_icons_lily_blossom","value":"Lily blossom"},
-    {"name":"page_background_motif_garden_defense_peashooter","value":"Peashooter"},
-    {"name":"page_background_motif_garden_defense_sunflower","value":"Sunflower"},
-    {"name":"page_background_motif_garden_defense_wallnut","value":"Wall-nut"},
-    {"name":"page_background_motif_garden_defense_cherry_bomb","value":"Cherry Bomb"},
-    {"name":"page_background_motif_garden_defense_snow_pea","value":"Snow Pea"},
-    {"name":"page_background_motif_garden_defense_potato_mine","value":"Potato Mine"},
-    {"name":"page_background_motif_garden_defense_chomper","value":"Chomper"},
-    {"name":"page_background_motif_garden_defense_squash","value":"Squash"},
-    {"name":"page_background_motif_garden_defense_zombie","value":"Zombie"},
-    {"name":"page_background_motif_garden_defense_conehead","value":"Conehead Zombie"},
-    {"name":"page_background_motif_garden_defense_buckethead","value":"Buckethead Zombie"},
-    {"name":"page_background_motif_garden_defense_lawnmower","value":"Lawn mower"},
-    {"name":"page_background_set_ai_assistants","value":"Yapay zekâ asistanları"},
-    {"name":"page_background_motif_ai_assistants_gpt","value":"GPT"},
-    {"name":"page_background_motif_ai_assistants_claude","value":"Claude"},
-    {"name":"page_background_motif_ai_assistants_gemini","value":"Gemini"},
-    {"name":"page_background_motif_ai_assistants_deepseek","value":"DeepSeek"},
-    {"name":"page_background_motif_ai_assistants_grok","value":"Grok"},
-    {"name":"page_background_motif_ai_assistants_qwen","value":"Qwen"},
-    {"name":"page_background_motif_ai_assistants_kimi","value":"Kimi"},
-    {"name":"page_background_motif_ai_assistants_doubao","value":"Doubao"},
-    {"name":"page_background_motif_ai_assistants_copilot","value":"Copilot"},
-    {"name":"page_background_motif_ai_assistants_perplexity","value":"Perplexity"},
-    {"name":"page_background_motif_ai_assistants_mistral","value":"Mistral"},
-    {"name":"page_background_motif_ai_assistants_robot","value":"AI robot"},
-    {"name":"page_background_set_mobile_brands_systems","value":"Telefon markaları ve sistemleri"},
-    {"name":"page_background_motif_mobile_brands_systems_apple","value":"Apple"},
-    {"name":"page_background_motif_mobile_brands_systems_huawei","value":"Huawei"},
-    {"name":"page_background_motif_mobile_brands_systems_xiaomi","value":"Xiaomi"},
-    {"name":"page_background_motif_mobile_brands_systems_samsung","value":"Samsung"},
-    {"name":"page_background_motif_mobile_brands_systems_oppo","value":"OPPO"},
-    {"name":"page_background_motif_mobile_brands_systems_vivo","value":"vivo"},
-    {"name":"page_background_motif_mobile_brands_systems_honor","value":"HONOR"},
-    {"name":"page_background_motif_mobile_brands_systems_oneplus","value":"OnePlus"},
-    {"name":"page_background_motif_mobile_brands_systems_meizu","value":"Meizu"},
-    {"name":"page_background_motif_mobile_brands_systems_harmonyos","value":"HarmonyOS"},
-    {"name":"page_background_motif_mobile_brands_systems_android","value":"Android"},
-    {"name":"page_background_motif_mobile_brands_systems_ios","value":"iOS"},
-    {"name":"page_background_motif_mobile_brands_systems_hyperos","value":"HyperOS"},
-    {"name":"page_background_motif_mobile_brands_systems_coloros","value":"ColorOS"},
-    {"name":"page_background_motif_mobile_brands_systems_originos","value":"OriginOS"},
-    {"name":"page_background_motif_mobile_brands_systems_oneui","value":"One UI"},
-    {"name":"motion_title","value":"Animation & haptics"},
-    {"name":"motion_intro","value":"Tune interaction animations and touch feedback. Changes are saved automatically. Tap the preview to try them."},
-    {"name":"motion_preview","value":"Tap to preview animation and haptics"},
-    {"name":"motion_reduce","value":"Reduce motion"},
-    {"name":"motion_reduce_desc","value":"Turn off decorative scaling, movement and Symbol effects, and skip page transitions. Your animation preferences are kept."},
-    {"name":"motion_duration","value":"Animation duration"},
-    {"name":"motion_duration_desc","value":"Reference duration for app animations. Button and page animations scale proportionally. System Symbol effects keep their native timing."},
-    {"name":"motion_amplitude","value":"Movement amplitude"},
-    {"name":"motion_amplitude_desc","value":"Adjust decorative scaling and rotation. At 0%, these effects stop. Gesture tracking and zoom keep their full range."},
-    {"name":"motion_damping","value":"Spring damping"},
-    {"name":"motion_damping_desc","value":"Lower values bounce more; higher values settle more gently."},
-    {"name":"motion_symbol","value":"Animated Symbols"},
-    {"name":"motion_symbol_desc","value":"Play a native Symbol effect once when selecting a tab or using an action button. Effects pause with Reduce motion."},
-    {"name":"motion_haptics","value":"Touch feedback"},
-    {"name":"motion_haptics_desc","value":"Use light feedback for navigation, buttons, switches and actions. Follows the system haptics setting."},
-    {"name":"motion_intensity","value":"Haptic intensity"},
-    {"name":"motion_intensity_desc","value":"Adjust preset effects on supported devices. Other motors use a short system touch vibration."},
-    {"name":"motion_presets","value":"Animation presets"},
-    {"name":"motion_preset_quick","value":"Quick"},
-    {"name":"motion_preset_quick_desc","value":"175 ms · 60% movement · firm settling. Short, crisp feedback."},
-    {"name":"motion_preset_standard","value":"Standard"},
-    {"name":"motion_preset_standard_desc","value":"300 ms · 100% movement · balanced spring. Recommended for everyday use."},
-    {"name":"motion_preset_spring","value":"Bouncy"},
-    {"name":"motion_preset_spring_desc","value":"450 ms · 120% movement · lower damping. Softer, more visible rebound."},
-    {"name":"motion_preset_reduced","value":"Low motion"},
-    {"name":"motion_preset_reduced_desc","value":"Skip page transitions and decorative effects. Keep your previous tuning."},
-    {"name":"motion_preset_custom","value":"Current preset: Custom. Choose a preset to restore its animation values."},
-    {"name":"chat_auto_download","value":"Chat auto-download"},
-    {"name":"storage_chat_retention","value":"Keep chat media"},
-    {"name":"storage_chat_retention_desc","value":"Set how long downloaded chat media stays cached. Chat history and manually saved files are kept."},
-    {"name":"settings_theme_mix","value":"Karma paletler"},
-    {"name":"settings_theme_mix_desc","value":"Açık ve koyu modda anahtarlar, gezinme ve gönderi düğmeleri için uyumlu renkler."},
-    {"name":"settings_theme_mix_confetti","value":"Konfeti"},
-    {"name":"settings_theme_mix_coast","value":"Deniz Tuzu ve Mercan"},
-    {"name":"settings_theme_mix_sunset","value":"Gün Batımı İrisi"},
-    {"name":"settings_theme_mix_forest","value":"Orman Kehribarı"},
-    {"name":"settings_theme_mix_berry","value":"Orman Meyvesi ve Nane"},
-    {"name":"settings_theme_mix_morandi","value":"Morandi"},
-    {"name":"settings_theme_solid","value":"Tek renkler"},
-    {"name":"settings_theme_mix_candy","value":"Şeker Konfeti"},
-    {"name":"settings_theme_mix_sky","value":"Gökyüzü ve Limon"},
-    {"name":"settings_theme_mix_peach","value":"Şeftali ve Nane"},
-    {"name":"settings_theme_mix_lilac","value":"Leylak ve Krema"},
-    {"name":"page_background_set_popular_apps_cn","value":"Popüler uygulamalar · Çin"},
-    {"name":"page_background_motif_popular_apps_cn_wechat","value":"WeChat"},
-    {"name":"page_background_motif_popular_apps_cn_qq","value":"QQ"},
-    {"name":"page_background_motif_popular_apps_cn_weibo","value":"Weibo"},
-    {"name":"page_background_motif_popular_apps_cn_douyin","value":"Douyin"},
-    {"name":"page_background_motif_popular_apps_cn_kuaishou","value":"Kuaishou"},
-    {"name":"page_background_motif_popular_apps_cn_bilibili","value":"Bilibili"},
-    {"name":"page_background_motif_popular_apps_cn_xiaohongshu","value":"Xiaohongshu"},
-    {"name":"page_background_motif_popular_apps_cn_zhihu","value":"Zhihu"},
-    {"name":"page_background_motif_popular_apps_cn_baidu","value":"Baidu"},
-    {"name":"page_background_motif_popular_apps_cn_tieba","value":"Baidu Tieba"},
-    {"name":"page_background_motif_popular_apps_cn_alipay","value":"Alipay"},
-    {"name":"page_background_motif_popular_apps_cn_taobao","value":"Taobao"},
-    {"name":"page_background_motif_popular_apps_cn_jd","value":"JD"},
-    {"name":"page_background_motif_popular_apps_cn_pinduoduo","value":"Pinduoduo"},
-    {"name":"page_background_motif_popular_apps_cn_meituan","value":"Meituan"},
-    {"name":"page_background_motif_popular_apps_cn_eleme","value":"Ele.me"},
-    {"name":"page_background_motif_popular_apps_cn_dianping","value":"Dianping"},
-    {"name":"page_background_motif_popular_apps_cn_amap","value":"Amap"},
-    {"name":"page_background_motif_popular_apps_cn_baidu_maps","value":"Baidu Maps"},
-    {"name":"page_background_motif_popular_apps_cn_didi","value":"DiDi"},
-    {"name":"page_background_motif_popular_apps_cn_netease_music","value":"NetEase Cloud Music"},
-    {"name":"page_background_motif_popular_apps_cn_qq_music","value":"QQ Music"},
-    {"name":"page_background_motif_popular_apps_cn_kugou","value":"KuGou"},
-    {"name":"page_background_motif_popular_apps_cn_weread","value":"WeRead"},
-    {"name":"page_background_set_popular_apps_global","value":"Popüler uygulamalar · Dünya"},
-    {"name":"page_background_motif_popular_apps_global_whatsapp","value":"WhatsApp"},
-    {"name":"page_background_motif_popular_apps_global_telegram","value":"Telegram"},
-    {"name":"page_background_motif_popular_apps_global_signal","value":"Signal"},
-    {"name":"page_background_motif_popular_apps_global_instagram","value":"Instagram"},
-    {"name":"page_background_motif_popular_apps_global_facebook","value":"Facebook"},
-    {"name":"page_background_motif_popular_apps_global_messenger","value":"Messenger"},
-    {"name":"page_background_motif_popular_apps_global_x","value":"X"},
-    {"name":"page_background_motif_popular_apps_global_threads","value":"Threads"},
-    {"name":"page_background_motif_popular_apps_global_youtube","value":"YouTube"},
-    {"name":"page_background_motif_popular_apps_global_tiktok","value":"TikTok"},
-    {"name":"page_background_motif_popular_apps_global_reddit","value":"Reddit"},
-    {"name":"page_background_motif_popular_apps_global_discord","value":"Discord"},
-    {"name":"page_background_motif_popular_apps_global_spotify","value":"Spotify"},
-    {"name":"page_background_motif_popular_apps_global_apple_music","value":"Apple Music"},
-    {"name":"page_background_motif_popular_apps_global_netflix","value":"Netflix"},
-    {"name":"page_background_motif_popular_apps_global_twitch","value":"Twitch"},
-    {"name":"page_background_motif_popular_apps_global_line","value":"LINE"},
-    {"name":"page_background_motif_popular_apps_global_snapchat","value":"Snapchat"},
-    {"name":"page_background_motif_popular_apps_global_pinterest","value":"Pinterest"},
-    {"name":"page_background_motif_popular_apps_global_chrome","value":"Chrome"},
-    {"name":"page_background_motif_popular_apps_global_firefox","value":"Firefox"},
-    {"name":"page_background_motif_popular_apps_global_edge","value":"Edge"},
-    {"name":"page_background_motif_popular_apps_global_gmail","value":"Gmail"},
-    {"name":"page_background_motif_popular_apps_global_google_maps","value":"Google Maps"},
-    {"name":"scene_title","value":"Scene modes"},
-    {"name":"scene_intro","value":"Apply a set of playback, quality, motion and background preferences. Restore returns to your settings from before the first mode was enabled."},
-    {"name":"scene_reading","value":"Clear reading"},
-    {"name":"scene_reading_desc","value":"Autoplay off · high quality images · low quality video · reduced motion · plain background"},
-    {"name":"scene_saver","value":"Power and data saver"},
-    {"name":"scene_saver_desc","value":"Autoplay off · small images · low quality video · reduced motion · plain background"},
-    {"name":"scene_media","value":"Media browsing"},
-    {"name":"scene_media_desc","value":"Autoplay on · original images · high quality video · motion on · your saved background"},
-    {"name":"scene_restore","value":"Restore original settings"},
-    {"name":"scene_restore_desc","value":"Keep your preferences from before scene mode. Switching between modes does not replace this backup."},
-    {"name":"scene_failed","value":"Some settings could not be saved. Your original settings are retained; retry or restore."},
-    {"name":"offline_title","value":"Offline & later"},
-    {"name":"offline_online","value":"Online bookmarks"},
-    {"name":"offline_intro","value":"New bookmarks save text and available articles automatically. Enable images before saving to include photos. Local copies stay separate from online bookmarks and ordinary cache cleanup."},
-    {"name":"offline_images","value":"Include photos in future saves"},
-    {"name":"offline_save","value":"Save offline"},
-    {"name":"offline_saving","value":"Saving…"},
-    {"name":"offline_saved","value":"Saved for offline reading"},
-    {"name":"offline_partial_saved","value":"Saved available content. Some article text or photos are missing; retry when online."},
-    {"name":"offline_save_failed","value":"Could not save locally. Please retry."},
-    {"name":"offline_partial","value":"Incomplete copy"},
-    {"name":"offline_unread","value":"Unread"},
-    {"name":"offline_unread_only","value":"Unread only"},
-    {"name":"offline_search","value":"Search titles, tags or notes"},
-    {"name":"offline_empty","value":"No matching offline items. Save a bookmark or use Save offline on a post."},
-    {"name":"offline_edit","value":"Tags & note"},
-    {"name":"offline_tags","value":"Tags"},
-    {"name":"offline_tags_hint","value":"Tags, separated by commas"},
-    {"name":"offline_note","value":"Private note"},
-    {"name":"offline_done","value":"Save"},
-    {"name":"offline_delete","value":"Delete local copy"},
-    {"name":"reader_title","value":"Thread reader"},
-    {"name":"reader_author_only","value":"Author only"},
-    {"name":"reader_translate","value":"Translate passages"},
-    {"name":"reader_font","value":"Text size"},
-    {"name":"reader_missing","value":"This offline item is missing or unavailable. Save it again while online."},
-    {"name":"reader_partial","value":"Only the available article content is shown. Continue loading or retry while online to get the complete text."},
-    {"name":"reader_load_failed","value":"Could not load more replies. Your current reading content is kept."},
-    {"name":"reader_translation_setup","value":"Enable translation and choose a target language in Settings first."},
-    {"name":"reader_translation_failed","value":"Some passages could not be translated. You can hide translations and retry."},
-    {"name":"reader_offline_note","value":"Saved local content. Translation requires a network connection."},
-    {"name":"reader_scope","value":"Replies loaded so far. Use Continue loading to include more of the discussion."},
+    {
+      "name": "account_overview_signed_out",
+      "value": "Oturum kapalı"
+    },
+    {
+      "name": "account_overview_no_bio",
+      "value": "Henüz biyografi yok"
+    },
+    {
+      "name": "account_overview_handle",
+      "value": "Kullanıcı adı"
+    },
+    {
+      "name": "account_overview_location",
+      "value": "Konum"
+    },
+    {
+      "name": "account_overview_website",
+      "value": "Web sitesi"
+    },
+    {
+      "name": "account_overview_manage",
+      "value": "Hesapları yönet ve değiştir"
+    },
+    {
+      "name": "profile_editor_choose_banner",
+      "value": "Change header photo"
+    },
+    {
+      "name": "profile_editor_choose_avatar",
+      "value": "Change profile photo"
+    },
+    {
+      "name": "profile_editor_birthdate",
+      "value": "Birth date"
+    },
+    {
+      "name": "profile_editor_birthdate_empty",
+      "value": "Add birth date"
+    },
+    {
+      "name": "profile_editor_birthdate_manage",
+      "value": "Edit birth date and visibility"
+    },
+    {
+      "name": "profile_editor_birthdate_privacy",
+      "value": "Month and day: %s\nYear: %s"
+    },
+    {
+      "name": "profile_editor_account_changed",
+      "value": "The signed-in account changed. Go back and reopen the editor."
+    },
+    {
+      "name": "profile_editor_unsaved_title",
+      "value": "Discard unsaved changes?"
+    },
+    {
+      "name": "profile_editor_unsaved_message",
+      "value": "Unsaved profile and photo changes will be lost when you leave."
+    },
+    {
+      "name": "profile_editor_keep_editing",
+      "value": "Keep editing"
+    },
+    {
+      "name": "profile_editor_discard",
+      "value": "Discard changes"
+    },
+    {
+      "name": "profile_editor_partial",
+      "value": "Some changes were saved. Your remaining edits are still here. Try saving again."
+    },
+    {
+      "name": "profile_editor_confirm_failed",
+      "value": "Changes were submitted, but the updated profile could not be loaded. Save again to refresh without uploading the photos again."
+    },
+    {
+      "name": "settings_page_transition",
+      "value": "Sayfa geçişleri"
+    },
+    {
+      "name": "settings_page_transition_desc",
+      "value": "Sayfa açma ve geri dönme animasyonlarını seçin. Değişiklikler hemen uygulanır ve kaydedilir."
+    },
+    {
+      "name": "settings_page_transition_classic",
+      "value": "Mevcut animasyon"
+    },
+    {
+      "name": "settings_page_transition_classic_desc",
+      "value": "Geçerli sistem gezinme geçişlerini koruyun."
+    },
+    {
+      "name": "settings_page_transition_official",
+      "value": "Resmî stil"
+    },
+    {
+      "name": "settings_page_transition_official_desc",
+      "value": "Merkezden yakınlaştırma ve solma ile uyumlu giriş ve çıkış animasyonları."
+    },
+    {
+      "name": "settings_anti_peep",
+      "value": "Bakış koruması"
+    },
+    {
+      "name": "settings_anti_peep_desc",
+      "value": "Başka birinin ekrana baktığı algılandığında uygulama penceresini sistem maskesiyle kapatır."
+    },
+    {
+      "name": "settings_anti_peep_enable",
+      "value": "Bakış korumasını etkinleştir"
+    },
+    {
+      "name": "settings_anti_peep_setup",
+      "value": "Sistem korumasını yapılandır"
+    },
+    {
+      "name": "settings_anti_peep_recheck",
+      "value": "Yeniden kontrol et"
+    },
+    {
+      "name": "settings_anti_peep_note",
+      "value": "Yüz tanımayı kurun ve sistemde Gizlilik ve güvenlik > Bakış koruması altında bu uygulamaya izin verin. Uygulama yalnızca sistem durumunu kullanır, yüz görüntülerine erişmez."
+    },
+    {
+      "name": "settings_anti_peep_disabled",
+      "value": "Kapalı"
+    },
+    {
+      "name": "settings_anti_peep_unsupported",
+      "value": "Bu cihaz sistem bakış korumasını desteklemiyor."
+    },
+    {
+      "name": "settings_anti_peep_permission",
+      "value": "Uygulama izni bekleniyor. Yapılandırdıktan sonra uygulamaya dönün veya yeniden kontrol edin."
+    },
+    {
+      "name": "settings_anti_peep_system_off",
+      "value": "Sistem bakış korumasında bu uygulamayı etkinleştirin."
+    },
+    {
+      "name": "settings_anti_peep_face",
+      "value": "Önce sistem ayarlarında yüz tanımayı etkinleştirin."
+    },
+    {
+      "name": "settings_anti_peep_ready",
+      "value": "Etkin. Bakış durumu izleniyor."
+    },
+    {
+      "name": "settings_anti_peep_protected",
+      "value": "Bakış algılandı. Sistem koruma maskesi tetiklendi."
+    },
+    {
+      "name": "settings_anti_peep_error",
+      "value": "Koruma şu anda kullanılamıyor. Yeniden kontrol edin."
+    },
+    {
+      "name": "settings_anti_peep_checking",
+      "value": "Koruma kontrol ediliyor veya etkinleştiriliyor…"
+    },
+    {
+      "name": "settings_anti_peep_save_failed",
+      "value": "Kaydedilemedi. Yeniden deneyin."
+    },
+    {
+      "name": "huawei_account_title",
+      "value": "HUAWEI ID and cloud sync"
+    },
+    {
+      "name": "huawei_config_section",
+      "value": "Settings profile"
+    },
+    {
+      "name": "huawei_config_import",
+      "value": "Import"
+    },
+    {
+      "name": "huawei_config_export",
+      "value": "Export"
+    },
+    {
+      "name": "huawei_config_importing",
+      "value": "Importing…"
+    },
+    {
+      "name": "huawei_config_exporting",
+      "value": "Exporting…"
+    },
+    {
+      "name": "huawei_config_description",
+      "value": "Back up or restore appearance, media and filter settings with a JSON file. Account, token and proxy details are never included."
+    },
+    {
+      "name": "huawei_config_exported",
+      "value": "Settings profile exported"
+    },
+    {
+      "name": "huawei_config_export_failed",
+      "value": "Export failed. Try again."
+    },
+    {
+      "name": "huawei_config_imported",
+      "value": "Settings imported"
+    },
+    {
+      "name": "huawei_config_import_failed",
+      "value": "The settings profile could not be read or validated."
+    },
+    {
+      "name": "huawei_config_import_title",
+      "value": "Import settings profile?"
+    },
+    {
+      "name": "huawei_config_import_message",
+      "value": "Appearance, media and filter settings in this file will replace the matching settings on this device. Account and proxy details will not change."
+    },
+    {
+      "name": "huawei_config_import_confirm",
+      "value": "Import"
+    },
+    {
+      "name": "huawei_account_name",
+      "value": "HUAWEI ID"
+    },
+    {
+      "name": "huawei_login",
+      "value": "Sign in with HUAWEI ID"
+    },
+    {
+      "name": "huawei_logout",
+      "value": "Sign out"
+    },
+    {
+      "name": "huawei_signed_in",
+      "value": "Signed in with HUAWEI ID"
+    },
+    {
+      "name": "huawei_logging_in",
+      "value": "Signing in…"
+    },
+    {
+      "name": "huawei_signed_out_description",
+      "value": "Sign in to bring your preferences with you"
+    },
+    {
+      "name": "huawei_cloud_sync",
+      "value": "Cloud sync"
+    },
+    {
+      "name": "huawei_sync_description",
+      "value": "Sign in to enable sync for appearance, reading, playback preferences and local content rules across your devices."
+    },
+    {
+      "name": "huawei_local_data_note",
+      "value": "X credentials, messages, drafts and caches stay on this device. Some appearance changes take effect after restarting."
+    },
+    {
+      "name": "huawei_logout_title",
+      "value": "Sign out of HUAWEI ID?"
+    },
+    {
+      "name": "huawei_logout_description",
+      "value": "Cloud sync will pause. Local settings and existing cloud data will be kept. Your X account remains available."
+    },
+    {
+      "name": "huawei_sync_disabled",
+      "value": "Off. Settings are saved on this device."
+    },
+    {
+      "name": "huawei_sync_unavailable",
+      "value": "Cloud storage is unavailable. Check the system cloud service and this app’s sync switch."
+    },
+    {
+      "name": "huawei_sync_downloading",
+      "value": "Reading and merging cloud settings…"
+    },
+    {
+      "name": "huawei_sync_uploading",
+      "value": "Uploading settings…"
+    },
+    {
+      "name": "huawei_sync_success",
+      "value": "Synced"
+    },
+    {
+      "name": "huawei_sync_pending",
+      "value": "Saved locally, waiting to sync"
+    },
+    {
+      "name": "huawei_sync_failed",
+      "value": "Sync did not finish. Your local data is safe. Check system cloud settings and try again."
+    },
+    {
+      "name": "huawei_network_error",
+      "value": "Network unavailable. Try again when connected."
+    },
+    {
+      "name": "huawei_storage_full",
+      "value": "Cloud or device storage is full. Free some space and try again."
+    },
+    {
+      "name": "huawei_login_error",
+      "value": "Sign-in did not finish. Check account service configuration or try again later."
+    },
+    {
+      "name": "huawei_authorization_error",
+      "value": "Nickname and avatar authorization failed. Check account permissions and try again."
+    },
+    {
+      "name": "huawei_save_error",
+      "value": "Could not save settings. Try again."
+    },
+    {
+      "name": "huawei_select_group",
+      "value": "Select at least one group to sync."
+    },
+    {
+      "name": "huawei_account_changed",
+      "value": "HUAWEI ID has changed. Enabling sync will merge the selected local settings into the current account."
+    },
+    {
+      "name": "huawei_last_sync",
+      "value": "Last successful sync:"
+    },
+    {
+      "name": "huawei_syncing",
+      "value": "Syncing…"
+    },
+    {
+      "name": "huawei_sync_now",
+      "value": "Sync now"
+    },
+    {
+      "name": "huawei_group_appearance",
+      "value": "Appearance and navigation"
+    },
+    {
+      "name": "huawei_group_appearance_description",
+      "value": "Theme, text size, title bar, tabs and sheet material"
+    },
+    {
+      "name": "huawei_group_media",
+      "value": "Reading and playback"
+    },
+    {
+      "name": "huawei_group_media_description",
+      "value": "Image and video quality, autoplay and mute preferences"
+    },
+    {
+      "name": "huawei_group_filters",
+      "value": "Local content rules"
+    },
+    {
+      "name": "huawei_group_filters_description",
+      "value": "Keyword and user filters, and content preferences"
+    },
+    {
+      "name": "post_photo_save_background",
+      "value": "Arka plan kitaplığına kaydet"
+    },
+    {
+      "name": "chat_background_saving_photo",
+      "value": "Arka plan resmi kaydediliyor…"
+    },
+    {
+      "name": "chat_background_saved_photo",
+      "value": "Kaydedildi. Sayfa arka planı veya Sohbet arka planı bölümünden seçebilirsiniz."
+    },
+    {
+      "name": "chat_background_save_photo_failed",
+      "value": "Arka plan resmi kaydedilemedi. Tekrar deneyin."
+    },
+    {
+      "name": "chat_background_saved_photos",
+      "value": "Gönderilerden kaydedilen resimler"
+    },
+    {
+      "name": "page_background_title",
+      "value": "Sayfa arka planı"
+    },
+    {
+      "name": "page_background_description",
+      "value": "Colors, photos and mixable patterns"
+    },
+    {
+      "name": "page_background_switch_title",
+      "value": "Sayfa arka planını etkinleştir"
+    },
+    {
+      "name": "page_background_switch_desc",
+      "value": "Kapatıldığında tema arka planı hemen kullanılır. Mevcut stil korunur."
+    },
+    {
+      "name": "page_background_base",
+      "value": "Zemin"
+    },
+    {
+      "name": "page_background_pattern",
+      "value": "Desen katmanı"
+    },
+    {
+      "name": "page_background_pattern_none",
+      "value": "Desen yok"
+    },
+    {
+      "name": "page_background_content_opacity",
+      "value": "İçerik yüzeyi opaklığı"
+    },
+    {
+      "name": "page_background_reset",
+      "value": "Varsayılanları geri yükle"
+    },
+    {
+      "name": "page_background_color_placeholder",
+      "value": "Custom color #RRGGBB"
+    },
+    {
+      "name": "page_background_preview",
+      "value": "Arka plan önizlemesi"
+    },
+    {
+      "name": "page_background_preview_text",
+      "value": "Bring your favorite colors and patterns to every visit."
+    },
+    {
+      "name": "page_background_preview_hint",
+      "value": "Text and content surfaces show how readable your background will be."
+    },
+    {
+      "name": "page_background_note",
+      "value": "Applies to regular pages. Chats have separate backgrounds; media viewers keep their immersive backgrounds. Tap Apply to save."
+    },
+    {
+      "name": "page_background_layout_preset",
+      "value": "Tam desenler"
+    },
+    {
+      "name": "page_background_layout_icons",
+      "value": "Tek tek motifler"
+    },
+    {
+      "name": "page_background_density",
+      "value": "Motif yoğunluğu"
+    },
+    {
+      "name": "page_background_set_add",
+      "value": "Tüm seti seç"
+    },
+    {
+      "name": "page_background_set_remove",
+      "value": "Setin seçimini kaldır"
+    },
+    {
+      "name": "page_background_mix_hint",
+      "value": "Select motifs across sets to mix them, or repeat a single motif."
+    },
+    {
+      "name": "page_background_selected",
+      "value": "%d motifs selected"
+    },
+    {
+      "name": "page_background_icons_clear",
+      "value": "Motifleri temizle"
+    },
+    {
+      "name": "page_background_paper",
+      "value": "Kâğıt dokusu"
+    },
+    {
+      "name": "page_background_paper_none",
+      "value": "Yok"
+    },
+    {
+      "name": "page_background_kraft",
+      "value": "Kraft kâğıdı"
+    },
+    {
+      "name": "page_background_parchment",
+      "value": "Parşömen"
+    },
+    {
+      "name": "page_background_texture_strength",
+      "value": "Doku yoğunluğu"
+    },
+    {
+      "name": "page_background_presets_mix",
+      "value": "Her seferinde bir tam desen seçin."
+    },
+    {
+      "name": "page_background_applied",
+      "value": "Sayfa arka planı uygulandı"
+    },
+    {
+      "name": "page_background_apply_failed",
+      "value": "Arka plan kaydedilemedi. Yeniden deneyin."
+    },
+    {
+      "name": "page_background_transparent_posts",
+      "value": "Transparent post cards"
+    },
+    {
+      "name": "page_background_transparent_posts_desc",
+      "value": "Hide the surface behind posts and quoted posts to reveal the page background."
+    },
+    {
+      "name": "page_background_transparent_inbox",
+      "value": "Transparent message list"
+    },
+    {
+      "name": "page_background_transparent_inbox_desc",
+      "value": "Hide conversation row surfaces while keeping text, avatars and unread indicators."
+    },
+    {
+      "name": "page_background_post_opacity",
+      "value": "Post surface opacity"
+    },
+    {
+      "name": "page_background_inbox_opacity",
+      "value": "Message list surface opacity"
+    },
+    {
+      "name": "page_background_scheme_import",
+      "value": "Import scheme"
+    },
+    {
+      "name": "page_background_scheme_share",
+      "value": "Share scheme"
+    },
+    {
+      "name": "page_background_scheme_title",
+      "value": "Page background scheme"
+    },
+    {
+      "name": "page_background_scheme_imported",
+      "value": "Scheme imported. Preview it, then tap Apply."
+    },
+    {
+      "name": "page_background_scheme_import_failed",
+      "value": "Unable to import. Choose a valid HarmonyX background scheme (up to 48 MB)."
+    },
+    {
+      "name": "page_background_scheme_share_failed",
+      "value": "Unable to share. Please try again; background photos must be under 32 MB."
+    },
+    {
+      "name": "page_background_set_signature_icons",
+      "value": "Alternatif simgeler"
+    },
+    {
+      "name": "page_background_set_garden_defense",
+      "value": "Plants vs. Zombies"
+    },
+    {
+      "name": "page_background_motif_signature_icons_frog_face",
+      "value": "Frog face"
+    },
+    {
+      "name": "page_background_motif_signature_icons_frog_lily",
+      "value": "Frog on a lily pad"
+    },
+    {
+      "name": "page_background_motif_signature_icons_milk_frog",
+      "value": "Milk frog"
+    },
+    {
+      "name": "page_background_motif_signature_icons_milk_frog_wave",
+      "value": "Waving milk frog"
+    },
+    {
+      "name": "page_background_motif_signature_icons_bird",
+      "value": "Flying bird"
+    },
+    {
+      "name": "page_background_motif_signature_icons_bird_wings",
+      "value": "Bird with open wings"
+    },
+    {
+      "name": "page_background_motif_signature_icons_ribbon_x",
+      "value": "Ribbon X"
+    },
+    {
+      "name": "page_background_motif_signature_icons_blossom_x",
+      "value": "Blossom X"
+    },
+    {
+      "name": "page_background_motif_signature_icons_brush_x",
+      "value": "Brush X"
+    },
+    {
+      "name": "page_background_motif_signature_icons_prism_x",
+      "value": "Prism X"
+    },
+    {
+      "name": "page_background_motif_signature_icons_zombie_x",
+      "value": "Zombie X"
+    },
+    {
+      "name": "page_background_motif_signature_icons_lily_blossom",
+      "value": "Lily blossom"
+    },
+    {
+      "name": "page_background_motif_garden_defense_peashooter",
+      "value": "Peashooter"
+    },
+    {
+      "name": "page_background_motif_garden_defense_sunflower",
+      "value": "Sunflower"
+    },
+    {
+      "name": "page_background_motif_garden_defense_wallnut",
+      "value": "Wall-nut"
+    },
+    {
+      "name": "page_background_motif_garden_defense_cherry_bomb",
+      "value": "Cherry Bomb"
+    },
+    {
+      "name": "page_background_motif_garden_defense_snow_pea",
+      "value": "Snow Pea"
+    },
+    {
+      "name": "page_background_motif_garden_defense_potato_mine",
+      "value": "Potato Mine"
+    },
+    {
+      "name": "page_background_motif_garden_defense_chomper",
+      "value": "Chomper"
+    },
+    {
+      "name": "page_background_motif_garden_defense_squash",
+      "value": "Squash"
+    },
+    {
+      "name": "page_background_motif_garden_defense_zombie",
+      "value": "Zombie"
+    },
+    {
+      "name": "page_background_motif_garden_defense_conehead",
+      "value": "Conehead Zombie"
+    },
+    {
+      "name": "page_background_motif_garden_defense_buckethead",
+      "value": "Buckethead Zombie"
+    },
+    {
+      "name": "page_background_motif_garden_defense_lawnmower",
+      "value": "Lawn mower"
+    },
+    {
+      "name": "page_background_set_ai_assistants",
+      "value": "Yapay zekâ asistanları"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_gpt",
+      "value": "GPT"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_claude",
+      "value": "Claude"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_gemini",
+      "value": "Gemini"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_deepseek",
+      "value": "DeepSeek"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_grok",
+      "value": "Grok"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_qwen",
+      "value": "Qwen"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_kimi",
+      "value": "Kimi"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_doubao",
+      "value": "Doubao"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_copilot",
+      "value": "Copilot"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_perplexity",
+      "value": "Perplexity"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_mistral",
+      "value": "Mistral"
+    },
+    {
+      "name": "page_background_motif_ai_assistants_robot",
+      "value": "AI robot"
+    },
+    {
+      "name": "page_background_set_mobile_brands_systems",
+      "value": "Telefon markaları ve sistemleri"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_apple",
+      "value": "Apple"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_huawei",
+      "value": "Huawei"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_xiaomi",
+      "value": "Xiaomi"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_samsung",
+      "value": "Samsung"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_oppo",
+      "value": "OPPO"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_vivo",
+      "value": "vivo"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_honor",
+      "value": "HONOR"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_oneplus",
+      "value": "OnePlus"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_meizu",
+      "value": "Meizu"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_harmonyos",
+      "value": "HarmonyOS"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_android",
+      "value": "Android"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_ios",
+      "value": "iOS"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_hyperos",
+      "value": "HyperOS"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_coloros",
+      "value": "ColorOS"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_originos",
+      "value": "OriginOS"
+    },
+    {
+      "name": "page_background_motif_mobile_brands_systems_oneui",
+      "value": "One UI"
+    },
+    {
+      "name": "motion_title",
+      "value": "Animation & haptics"
+    },
+    {
+      "name": "motion_intro",
+      "value": "Tune interaction animations and touch feedback. Changes are saved automatically. Tap the preview to try them."
+    },
+    {
+      "name": "motion_preview",
+      "value": "Tap to preview animation and haptics"
+    },
+    {
+      "name": "motion_reduce",
+      "value": "Reduce motion"
+    },
+    {
+      "name": "motion_reduce_desc",
+      "value": "Turn off decorative scaling, movement and Symbol effects, and skip page transitions. Your animation preferences are kept."
+    },
+    {
+      "name": "motion_duration",
+      "value": "Animation duration"
+    },
+    {
+      "name": "motion_duration_desc",
+      "value": "Reference duration for app animations. Button and page animations scale proportionally. System Symbol effects keep their native timing."
+    },
+    {
+      "name": "motion_amplitude",
+      "value": "Movement amplitude"
+    },
+    {
+      "name": "motion_amplitude_desc",
+      "value": "Adjust decorative scaling and rotation. At 0%, these effects stop. Gesture tracking and zoom keep their full range."
+    },
+    {
+      "name": "motion_damping",
+      "value": "Spring damping"
+    },
+    {
+      "name": "motion_damping_desc",
+      "value": "Lower values bounce more; higher values settle more gently."
+    },
+    {
+      "name": "motion_symbol",
+      "value": "Animated Symbols"
+    },
+    {
+      "name": "motion_symbol_desc",
+      "value": "Play a native Symbol effect once when selecting a tab or using an action button. Effects pause with Reduce motion."
+    },
+    {
+      "name": "motion_haptics",
+      "value": "Touch feedback"
+    },
+    {
+      "name": "motion_haptics_desc",
+      "value": "Use light feedback for navigation, buttons, switches and actions. Follows the system haptics setting."
+    },
+    {
+      "name": "motion_intensity",
+      "value": "Haptic intensity"
+    },
+    {
+      "name": "motion_intensity_desc",
+      "value": "Adjust preset effects on supported devices. Other motors use a short system touch vibration."
+    },
+    {
+      "name": "motion_presets",
+      "value": "Animation presets"
+    },
+    {
+      "name": "motion_preset_quick",
+      "value": "Quick"
+    },
+    {
+      "name": "motion_preset_quick_desc",
+      "value": "175 ms · 60% movement · firm settling. Short, crisp feedback."
+    },
+    {
+      "name": "motion_preset_standard",
+      "value": "Standard"
+    },
+    {
+      "name": "motion_preset_standard_desc",
+      "value": "300 ms · 100% movement · balanced spring. Recommended for everyday use."
+    },
+    {
+      "name": "motion_preset_spring",
+      "value": "Bouncy"
+    },
+    {
+      "name": "motion_preset_spring_desc",
+      "value": "450 ms · 120% movement · lower damping. Softer, more visible rebound."
+    },
+    {
+      "name": "motion_preset_reduced",
+      "value": "Low motion"
+    },
+    {
+      "name": "motion_preset_reduced_desc",
+      "value": "Skip page transitions and decorative effects. Keep your previous tuning."
+    },
+    {
+      "name": "motion_preset_custom",
+      "value": "Current preset: Custom. Choose a preset to restore its animation values."
+    },
+    {
+      "name": "chat_auto_download",
+      "value": "Chat auto-download"
+    },
+    {
+      "name": "storage_chat_retention",
+      "value": "Keep chat media"
+    },
+    {
+      "name": "storage_chat_retention_desc",
+      "value": "Set how long downloaded chat media stays cached. Chat history and manually saved files are kept."
+    },
+    {
+      "name": "settings_theme_mix",
+      "value": "Karma paletler"
+    },
+    {
+      "name": "settings_theme_mix_desc",
+      "value": "Açık ve koyu modda anahtarlar, gezinme ve gönderi düğmeleri için uyumlu renkler."
+    },
+    {
+      "name": "settings_theme_mix_confetti",
+      "value": "Konfeti"
+    },
+    {
+      "name": "settings_theme_mix_coast",
+      "value": "Deniz Tuzu ve Mercan"
+    },
+    {
+      "name": "settings_theme_mix_sunset",
+      "value": "Gün Batımı İrisi"
+    },
+    {
+      "name": "settings_theme_mix_forest",
+      "value": "Orman Kehribarı"
+    },
+    {
+      "name": "settings_theme_mix_berry",
+      "value": "Orman Meyvesi ve Nane"
+    },
+    {
+      "name": "settings_theme_mix_morandi",
+      "value": "Morandi"
+    },
+    {
+      "name": "settings_theme_mix_prism",
+      "value": "Ana Renk Spektrumu"
+    },
+    {
+      "name": "settings_theme_solid",
+      "value": "Tek renkler"
+    },
+    {
+      "name": "settings_theme_mix_candy",
+      "value": "Şeker Konfeti"
+    },
+    {
+      "name": "settings_theme_mix_sky",
+      "value": "Gökyüzü ve Limon"
+    },
+    {
+      "name": "settings_theme_mix_peach",
+      "value": "Şeftali ve Nane"
+    },
+    {
+      "name": "settings_theme_mix_lilac",
+      "value": "Leylak ve Krema"
+    },
+    {
+      "name": "page_background_set_popular_apps_cn",
+      "value": "Popüler uygulamalar · Çin"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_wechat",
+      "value": "WeChat"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_qq",
+      "value": "QQ"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_weibo",
+      "value": "Weibo"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_douyin",
+      "value": "Douyin"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_kuaishou",
+      "value": "Kuaishou"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_bilibili",
+      "value": "Bilibili"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_xiaohongshu",
+      "value": "Xiaohongshu"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_zhihu",
+      "value": "Zhihu"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_baidu",
+      "value": "Baidu"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_tieba",
+      "value": "Baidu Tieba"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_alipay",
+      "value": "Alipay"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_taobao",
+      "value": "Taobao"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_jd",
+      "value": "JD"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_pinduoduo",
+      "value": "Pinduoduo"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_meituan",
+      "value": "Meituan"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_eleme",
+      "value": "Ele.me"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_dianping",
+      "value": "Dianping"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_amap",
+      "value": "Amap"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_baidu_maps",
+      "value": "Baidu Maps"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_didi",
+      "value": "DiDi"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_netease_music",
+      "value": "NetEase Cloud Music"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_qq_music",
+      "value": "QQ Music"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_kugou",
+      "value": "KuGou"
+    },
+    {
+      "name": "page_background_motif_popular_apps_cn_weread",
+      "value": "WeRead"
+    },
+    {
+      "name": "page_background_set_popular_apps_global",
+      "value": "Popüler uygulamalar · Dünya"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_whatsapp",
+      "value": "WhatsApp"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_telegram",
+      "value": "Telegram"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_signal",
+      "value": "Signal"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_instagram",
+      "value": "Instagram"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_facebook",
+      "value": "Facebook"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_messenger",
+      "value": "Messenger"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_x",
+      "value": "X"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_threads",
+      "value": "Threads"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_youtube",
+      "value": "YouTube"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_tiktok",
+      "value": "TikTok"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_reddit",
+      "value": "Reddit"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_discord",
+      "value": "Discord"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_spotify",
+      "value": "Spotify"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_apple_music",
+      "value": "Apple Music"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_netflix",
+      "value": "Netflix"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_twitch",
+      "value": "Twitch"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_line",
+      "value": "LINE"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_snapchat",
+      "value": "Snapchat"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_pinterest",
+      "value": "Pinterest"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_chrome",
+      "value": "Chrome"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_firefox",
+      "value": "Firefox"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_edge",
+      "value": "Edge"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_gmail",
+      "value": "Gmail"
+    },
+    {
+      "name": "page_background_motif_popular_apps_global_google_maps",
+      "value": "Google Maps"
+    },
+    {
+      "name": "scene_title",
+      "value": "Scene modes"
+    },
+    {
+      "name": "scene_intro",
+      "value": "Apply a set of playback, quality, motion and background preferences. Restore returns to your settings from before the first mode was enabled."
+    },
+    {
+      "name": "scene_reading",
+      "value": "Clear reading"
+    },
+    {
+      "name": "scene_reading_desc",
+      "value": "Autoplay off · high quality images · low quality video · reduced motion · plain background"
+    },
+    {
+      "name": "scene_saver",
+      "value": "Power and data saver"
+    },
+    {
+      "name": "scene_saver_desc",
+      "value": "Autoplay off · small images · low quality video · reduced motion · plain background"
+    },
+    {
+      "name": "scene_media",
+      "value": "Media browsing"
+    },
+    {
+      "name": "scene_media_desc",
+      "value": "Autoplay on · original images · high quality video · motion on · your saved background"
+    },
+    {
+      "name": "scene_restore",
+      "value": "Restore original settings"
+    },
+    {
+      "name": "scene_restore_desc",
+      "value": "Keep your preferences from before scene mode. Switching between modes does not replace this backup."
+    },
+    {
+      "name": "scene_failed",
+      "value": "Some settings could not be saved. Your original settings are retained; retry or restore."
+    },
+    {
+      "name": "offline_title",
+      "value": "Offline & later"
+    },
+    {
+      "name": "offline_online",
+      "value": "Online bookmarks"
+    },
+    {
+      "name": "offline_intro",
+      "value": "New bookmarks save text and available articles automatically. Enable images before saving to include photos. Local copies stay separate from online bookmarks and ordinary cache cleanup."
+    },
+    {
+      "name": "offline_images",
+      "value": "Include photos in future saves"
+    },
+    {
+      "name": "offline_save",
+      "value": "Save offline"
+    },
+    {
+      "name": "offline_saving",
+      "value": "Saving…"
+    },
+    {
+      "name": "offline_saved",
+      "value": "Saved for offline reading"
+    },
+    {
+      "name": "offline_partial_saved",
+      "value": "Saved available content. Some article text or photos are missing; retry when online."
+    },
+    {
+      "name": "offline_save_failed",
+      "value": "Could not save locally. Please retry."
+    },
+    {
+      "name": "offline_partial",
+      "value": "Incomplete copy"
+    },
+    {
+      "name": "offline_unread",
+      "value": "Unread"
+    },
+    {
+      "name": "offline_unread_only",
+      "value": "Unread only"
+    },
+    {
+      "name": "offline_search",
+      "value": "Search titles, tags or notes"
+    },
+    {
+      "name": "offline_empty",
+      "value": "No matching offline items. Save a bookmark or use Save offline on a post."
+    },
+    {
+      "name": "offline_edit",
+      "value": "Tags & note"
+    },
+    {
+      "name": "offline_tags",
+      "value": "Tags"
+    },
+    {
+      "name": "offline_tags_hint",
+      "value": "Tags, separated by commas"
+    },
+    {
+      "name": "offline_note",
+      "value": "Private note"
+    },
+    {
+      "name": "offline_done",
+      "value": "Save"
+    },
+    {
+      "name": "offline_delete",
+      "value": "Delete local copy"
+    },
+    {
+      "name": "reader_title",
+      "value": "Thread reader"
+    },
+    {
+      "name": "reader_author_only",
+      "value": "Author only"
+    },
+    {
+      "name": "reader_translate",
+      "value": "Translate passages"
+    },
+    {
+      "name": "reader_font",
+      "value": "Text size"
+    },
+    {
+      "name": "reader_missing",
+      "value": "This offline item is missing or unavailable. Save it again while online."
+    },
+    {
+      "name": "reader_partial",
+      "value": "Only the available article content is shown. Continue loading or retry while online to get the complete text."
+    },
+    {
+      "name": "reader_load_failed",
+      "value": "Could not load more replies. Your current reading content is kept."
+    },
+    {
+      "name": "reader_translation_setup",
+      "value": "Enable translation and choose a target language in Settings first."
+    },
+    {
+      "name": "reader_translation_failed",
+      "value": "Some passages could not be translated. You can hide translations and retry."
+    },
+    {
+      "name": "reader_offline_note",
+      "value": "Saved local content. Translation requires a network connection."
+    },
+    {
+      "name": "reader_scope",
+      "value": "Replies loaded so far. Use Continue loading to include more of the discussion."
+    },
     {
       "name": "input_help_title",
       "value": "Fare, klavye ve dokunmatik yüzey"
@@ -10945,26 +12204,86 @@
       "name": "input_key_playback",
       "value": "Space / Enter / ← / →"
     },
-    {"name":"settings_filter_languages","value":"Gizlenen gönderi dilleri"},
-    {"name":"settings_filter_languages_desc","value":"Gizlenecek dilleri seçin. Belirsiz diller ve yalnızca medya içeren gönderiler görünür kalır."},
-    {"name":"appearance_preview_title","value":"Canlı önizleme"},
-    {"name":"appearance_preview_hint","value":"Değişiklikler anında gösterilir. Genişletmek için panel örneğine dokunun."},
-    {"name":"post_edited","value":"Düzenlendi"},
-    {"name":"post_metric_bookmarks","value":"yer işareti"},
-    {"name":"post_metric_quotes","value":"alıntı"},
-    {"name":"settings_reply_quality","value":"Düşük kaliteli yanıtları daralt"},
-    {"name":"settings_reply_quality_desc","value":"Tekrarlanan tanıtımları ve toplu yönlendirmeleri daraltır. Yerel kurallar yanılabilir; yanıtları açabilirsiniz."},
-    {"name":"reply_quality_folded","value":"Düşük kaliteli olabilecek yanıt"},
-    {"name":"reply_quality_reasons","value":"Nedenleri gör"},
-    {"name":"reply_quality_allow","value":"Bu yazarı her zaman göster"},
-    {"name":"reply_quality_whitelist","value":"İzin verilen yazarlar"},
-    {"name":"reply_quality_whitelist_desc","value":"Yanıtlarınız, gönderi yazarı, takip edilen hesaplar ve izin verilen yazarlar görünür kalır. Liste mevcut hesaba özeldir."},
-    {"name":"reply_quality_empty","value":"Henüz izin verilen yazar yok"},
-    {"name":"reply_quality_reason_duplicate","value":"Birden çok yazar aynı tanıtım şablonunu yineliyor"},
-    {"name":"reply_quality_reason_author_repeat","value":"Yazar aynı içeriği tekrar tekrar paylaşıyor"},
-    {"name":"reply_quality_reason_links","value":"Birden çok harici bağlantı içeriyor"},
-    {"name":"reply_quality_reason_promotion","value":"Tanıtım veya kazanç vaadi içeriyor"},
-    {"name":"reply_quality_reason_contact","value":"Yönlendirme için iletişim bilgisi içeriyor"},
+    {
+      "name": "settings_filter_languages",
+      "value": "Gizlenen gönderi dilleri"
+    },
+    {
+      "name": "settings_filter_languages_desc",
+      "value": "Gizlenecek dilleri seçin. Belirsiz diller ve yalnızca medya içeren gönderiler görünür kalır."
+    },
+    {
+      "name": "appearance_preview_title",
+      "value": "Canlı önizleme"
+    },
+    {
+      "name": "appearance_preview_hint",
+      "value": "Değişiklikler anında gösterilir. Genişletmek için panel örneğine dokunun."
+    },
+    {
+      "name": "post_edited",
+      "value": "Düzenlendi"
+    },
+    {
+      "name": "post_metric_bookmarks",
+      "value": "yer işareti"
+    },
+    {
+      "name": "post_metric_quotes",
+      "value": "alıntı"
+    },
+    {
+      "name": "settings_reply_quality",
+      "value": "Düşük kaliteli yanıtları daralt"
+    },
+    {
+      "name": "settings_reply_quality_desc",
+      "value": "Tekrarlanan tanıtımları ve toplu yönlendirmeleri daraltır. Yerel kurallar yanılabilir; yanıtları açabilirsiniz."
+    },
+    {
+      "name": "reply_quality_folded",
+      "value": "Düşük kaliteli olabilecek yanıt"
+    },
+    {
+      "name": "reply_quality_reasons",
+      "value": "Nedenleri gör"
+    },
+    {
+      "name": "reply_quality_allow",
+      "value": "Bu yazarı her zaman göster"
+    },
+    {
+      "name": "reply_quality_whitelist",
+      "value": "İzin verilen yazarlar"
+    },
+    {
+      "name": "reply_quality_whitelist_desc",
+      "value": "Yanıtlarınız, gönderi yazarı, takip edilen hesaplar ve izin verilen yazarlar görünür kalır. Liste mevcut hesaba özeldir."
+    },
+    {
+      "name": "reply_quality_empty",
+      "value": "Henüz izin verilen yazar yok"
+    },
+    {
+      "name": "reply_quality_reason_duplicate",
+      "value": "Birden çok yazar aynı tanıtım şablonunu yineliyor"
+    },
+    {
+      "name": "reply_quality_reason_author_repeat",
+      "value": "Yazar aynı içeriği tekrar tekrar paylaşıyor"
+    },
+    {
+      "name": "reply_quality_reason_links",
+      "value": "Birden çok harici bağlantı içeriyor"
+    },
+    {
+      "name": "reply_quality_reason_promotion",
+      "value": "Tanıtım veya kazanç vaadi içeriyor"
+    },
+    {
+      "name": "reply_quality_reason_contact",
+      "value": "Yönlendirme için iletişim bilgisi içeriyor"
+    },
     {
       "name": "settings_floating_compose_material_tint",
       "value": "Kayan gönderi düğmesinin malzeme rengi"
@@ -11053,64 +12372,528 @@
       "name": "chat_decoration_sample_text",
       "value": "Have a lovely day."
     },
-    {"name": "sign_out_confirm_title", "value": "Çıkış yapılsın mı?"},
-    {"name": "sign_out_confirm_message", "value": "Bu hesabı kullanmak için tekrar giriş yapmanız gerekecek."},
-    {"name": "settings_for_you_only_sensitive", "value": "Sana özel’de yalnızca hassas içerik"},
-    {"name": "settings_for_you_only_sensitive_desc", "value": "Alıntılar dahil X’in hassas olarak işaretlediği gönderileri gösterir. Takip edilenler ve Listeler değişmez. Medya kapalı kalır."},
-    {"name": "settings_grip_floating", "value": "Yüzen işlem düğmesi"},
-    {"name": "settings_grip_video", "value": "Video işlem çubuğu"},
-    {"name": "settings_grip_reply", "value": "Gönderi yanıt düğmesi"},
-    {"name": "settings_grip_component_desc", "value": "Konumu cihazı tutan ele göre ayarla. Kapalıyken tercih edilen eli kullan."},
-    {"name": "settings_grip_hdstabs", "value": "HdsTabs alt sekme çubuğu"},
-    {"name": "settings_grip_hdstabs_desc", "value": "Yerel el uyarlamasını kullan. Kapalıyken çubuk cihazı tutan eli izlemez."},
-    {"name":"gif_action_save_video","value":"Yüksek kaliteli video olarak kaydet (MP4)"},
-    {"name":"storage_save_remembered_note","value":"Sonraki dosyaların otomatik kaydedilmesi için indirme klasörünü bir kez seçin. Galeriye kaydetmek için kapatın."},
-    {"name":"storage_save_to_remembered","value":"İndirme klasörüne kaydet"},
-    {"name": "storage_permission_reason", "value": "Seçtiğiniz dosya ve klasörlere erişimi koru."},
-    {"name": "timeline_sources_lists", "value": "Listeler"},
-    {"name": "timeline_sources_communities", "value": "Topluluklar"},
-    {"name": "timeline_edit", "value": "Düzenle"},
-    {"name": "timeline_done", "value": "Bitti"},
-    {"name": "timeline_move_up", "value": "Yukarı taşı"},
-    {"name": "timeline_move_down", "value": "Aşağı taşı"},
-    {"name": "timeline_remove_source", "value": "%s öğesini kaldır"},
-    {"name": "timeline_add_to_home", "value": "Ana sayfa akışlarına ekle"},
-    {"name": "timeline_remove_from_home", "value": "Ana sayfa akışlarından kaldır"},
-    {"name": "timeline_sources_failed", "value": "Bazı listeler veya topluluklar yüklenemedi. Yeniden denemek için dokun."},
-    {"name": "timeline_sources_pinned_empty", "value": "Sabitlenmiş akış yok. Aşağıdan liste, topluluk veya konu ekle."},
-    {"name":"video_controls_mirror","value":"Kontrolleri yansıt"},
-    {"name":"video_controls_speed","value":"Hız"},
-    {"name":"video_controls_aspect","value":"Oran"},
-    {"name":"video_controls_background","value":"Arka plan"},
-    {"name":"video_controls_quality_hd","value":"HD"},
-    {"name":"video_controls_quality_sd","value":"SD"},
-    {"name":"video_controls_quality_ld","value":"LD"},
-    {"name":"video_controls_more","value":"Diğer"},
-    {"name":"video_controls_download","value":"İndir"},
-    {"name":"settings_navigation_style","value":"Alt gezinme stili"},
-    {"name":"settings_hds_bottom_bar","value":"Yüzen HdsTabs"},
-    {"name":"settings_split_bottom_bar","value":"Ayrık kapsül gezinme"},
-    {"name":"settings_split_bottom_bar_desc","value":"Sol kapsülden sayfa değiştirin. Ayrı düğmeyle gönderi veya sohbet oluşturun, yenileyin ya da başa dönün. İkisi de HDS malzemesi kullanır; eski sistemlerde uyumlu gezinme kullanılır."},
-    {"name":"split_navigation_action_top","value":"Başa dön"},
-    {"name":"split_navigation_action_refresh","value":"Ana sayfayı yenile"},
-    {"name":"split_navigation_action_compose","value":"Gönderi oluştur"},
-    {"name": "settings_reply_capsule_split", "value": "Ayrı yanıt kapsülleri"},
-    {"name": "settings_reply_capsule_split_desc", "value": "Daraltıldığında yanıt alanını ve gönderi işlemlerini ayır"},
-    {"name": "reply_capsule_write_reply", "value": "Yanıtla"},
-    {"name":"settings_native_bottom_bar","value":"7.0 malzemeli kapsül gezinme"},
-    {"name":"settings_native_bottom_bar_desc","value":"Yanıt kapsülünün HarmonyOS 7.0 sürükleyici malzemesini, dokunma ışığını, sıvı göstergeyi ve tutuşa göre taraf değiştirmeyi kullanır. Desteklenmiyorsa HDS kapsülü kullanılır."},
-    {"name":"settings_native_navigation_material","value":"Gezinme kapsülü malzeme kalınlığı"},
-    {"name":"settings_for_you_only_sensitive_age_title","value":"Yaşı onayla"},
-    {"name":"settings_for_you_only_sensitive_age_message","value":"“Sana Özel’de yalnızca hassas içerik” yalnızca 18 yaş ve üzeri kişiler için kullanılabilir. 18 yaşında veya daha büyük müsünüz?"},
-    {"name":"settings_for_you_only_sensitive_age_under","value":"18 yaşından küçük"},
-    {"name":"settings_for_you_only_sensitive_age_adult","value":"18 yaş veya üzeri"},
-    {"name":"settings_theme_icon_blue","value":"Simge mavisi"},
-    {"name":"settings_theme_icon_red","value":"Simge kırmızısı"},
-    {"name":"settings_theme_icon_orange","value":"Simge turuncusu"},
-    {"name":"settings_theme_icon_yellow","value":"Simge sarısı"},
-    {"name":"settings_theme_icon_green","value":"Simge yeşili"},
-    {"name":"settings_theme_icon_pink","value":"Simge pembesi"},
-    {"name":"settings_theme_icon_cyan","value":"Simge camgöbeği"},
-    {"name":"settings_theme_icon_navy","value":"Simge laciverti"}
+    {
+      "name": "sign_out_confirm_title",
+      "value": "Çıkış yapılsın mı?"
+    },
+    {
+      "name": "sign_out_confirm_message",
+      "value": "Bu hesabı kullanmak için tekrar giriş yapmanız gerekecek."
+    },
+    {
+      "name": "settings_for_you_only_sensitive",
+      "value": "Sana özel’de yalnızca hassas içerik"
+    },
+    {
+      "name": "settings_for_you_only_sensitive_desc",
+      "value": "Alıntılar dahil X’in hassas olarak işaretlediği gönderileri gösterir. Takip edilenler ve Listeler değişmez. Medya kapalı kalır."
+    },
+    {
+      "name": "settings_grip_floating",
+      "value": "Yüzen işlem düğmesi"
+    },
+    {
+      "name": "settings_grip_video",
+      "value": "Video işlem çubuğu"
+    },
+    {
+      "name": "settings_grip_reply",
+      "value": "Gönderi yanıt düğmesi"
+    },
+    {
+      "name": "settings_grip_component_desc",
+      "value": "Konumu cihazı tutan ele göre ayarla. Kapalıyken tercih edilen eli kullan."
+    },
+    {
+      "name": "settings_grip_hdstabs",
+      "value": "HdsTabs alt sekme çubuğu"
+    },
+    {
+      "name": "settings_grip_hdstabs_desc",
+      "value": "Yerel el uyarlamasını kullan. Kapalıyken çubuk cihazı tutan eli izlemez."
+    },
+    {
+      "name": "gif_action_save_video",
+      "value": "Yüksek kaliteli video olarak kaydet (MP4)"
+    },
+    {
+      "name": "storage_save_remembered_note",
+      "value": "Sonraki dosyaların otomatik kaydedilmesi için indirme klasörünü bir kez seçin. Galeriye kaydetmek için kapatın."
+    },
+    {
+      "name": "storage_save_to_remembered",
+      "value": "İndirme klasörüne kaydet"
+    },
+    {
+      "name": "storage_permission_reason",
+      "value": "Seçtiğiniz dosya ve klasörlere erişimi koru."
+    },
+    {
+      "name": "timeline_sources_lists",
+      "value": "Listeler"
+    },
+    {
+      "name": "timeline_sources_communities",
+      "value": "Topluluklar"
+    },
+    {
+      "name": "timeline_edit",
+      "value": "Düzenle"
+    },
+    {
+      "name": "timeline_done",
+      "value": "Bitti"
+    },
+    {
+      "name": "timeline_move_up",
+      "value": "Yukarı taşı"
+    },
+    {
+      "name": "timeline_move_down",
+      "value": "Aşağı taşı"
+    },
+    {
+      "name": "timeline_remove_source",
+      "value": "%s öğesini kaldır"
+    },
+    {
+      "name": "timeline_add_to_home",
+      "value": "Ana sayfa akışlarına ekle"
+    },
+    {
+      "name": "timeline_remove_from_home",
+      "value": "Ana sayfa akışlarından kaldır"
+    },
+    {
+      "name": "timeline_sources_failed",
+      "value": "Bazı listeler veya topluluklar yüklenemedi. Yeniden denemek için dokun."
+    },
+    {
+      "name": "timeline_sources_pinned_empty",
+      "value": "Sabitlenmiş akış yok. Aşağıdan liste, topluluk veya konu ekle."
+    },
+    {
+      "name": "video_controls_mirror",
+      "value": "Kontrolleri yansıt"
+    },
+    {
+      "name": "video_controls_speed",
+      "value": "Hız"
+    },
+    {
+      "name": "video_controls_aspect",
+      "value": "Oran"
+    },
+    {
+      "name": "video_controls_background",
+      "value": "Arka plan"
+    },
+    {
+      "name": "video_controls_quality_hd",
+      "value": "HD"
+    },
+    {
+      "name": "video_controls_quality_sd",
+      "value": "SD"
+    },
+    {
+      "name": "video_controls_quality_ld",
+      "value": "LD"
+    },
+    {
+      "name": "video_controls_more",
+      "value": "Diğer"
+    },
+    {
+      "name": "video_controls_download",
+      "value": "İndir"
+    },
+    {
+      "name": "settings_navigation_style",
+      "value": "Alt gezinme stili"
+    },
+    {
+      "name": "settings_hds_bottom_bar",
+      "value": "Yüzen HdsTabs"
+    },
+    {
+      "name": "settings_split_bottom_bar",
+      "value": "Ayrık kapsül gezinme"
+    },
+    {
+      "name": "settings_split_bottom_bar_desc",
+      "value": "Sol kapsülden sayfa değiştirin. Ayrı düğmeyle gönderi veya sohbet oluşturun, yenileyin ya da başa dönün. İkisi de HDS malzemesi kullanır; eski sistemlerde uyumlu gezinme kullanılır."
+    },
+    {
+      "name": "settings_me_floating_action",
+      "value": "“Ben” kısayol kapsülü"
+    },
+    {
+      "name": "settings_me_floating_action_desc",
+      "value": "Ben sekmesinin yanındaki ayrı kapsüle dokunulduğunda doğrudan açılacak işlevi seçin."
+    },
+    {
+      "name": "split_navigation_action_top",
+      "value": "Başa dön"
+    },
+    {
+      "name": "split_navigation_action_refresh",
+      "value": "Ana sayfayı yenile"
+    },
+    {
+      "name": "split_navigation_action_compose",
+      "value": "Gönderi oluştur"
+    },
+    {
+      "name": "settings_reply_capsule_split",
+      "value": "Ayrı yanıt kapsülleri"
+    },
+    {
+      "name": "settings_reply_capsule_split_desc",
+      "value": "Daraltıldığında yanıt alanını ve gönderi işlemlerini ayır"
+    },
+    {
+      "name": "reply_capsule_write_reply",
+      "value": "Yanıtla"
+    },
+    {
+      "name": "settings_native_bottom_bar",
+      "value": "7.0 malzemeli kapsül gezinme"
+    },
+    {
+      "name": "settings_native_bottom_bar_desc",
+      "value": "Yanıt kapsülünün HarmonyOS 7.0 sürükleyici malzemesini, dokunma ışığını, sıvı göstergeyi ve tutuşa göre taraf değiştirmeyi kullanır. Desteklenmiyorsa HDS kapsülü kullanılır."
+    },
+    {
+      "name": "settings_native_navigation_material",
+      "value": "Gezinme kapsülü malzeme kalınlığı"
+    },
+    {
+      "name": "settings_for_you_only_sensitive_age_title",
+      "value": "Yaşı onayla"
+    },
+    {
+      "name": "settings_for_you_only_sensitive_age_message",
+      "value": "“Sana Özel’de yalnızca hassas içerik” yalnızca 18 yaş ve üzeri kişiler için kullanılabilir. 18 yaşında veya daha büyük müsünüz?"
+    },
+    {
+      "name": "settings_for_you_only_sensitive_age_under",
+      "value": "18 yaşından küçük"
+    },
+    {
+      "name": "settings_for_you_only_sensitive_age_adult",
+      "value": "18 yaş veya üzeri"
+    },
+    {
+      "name": "settings_theme_icon_blue",
+      "value": "Simge mavisi"
+    },
+    {
+      "name": "settings_theme_icon_red",
+      "value": "Simge kırmızısı"
+    },
+    {
+      "name": "settings_theme_icon_orange",
+      "value": "Simge turuncusu"
+    },
+    {
+      "name": "settings_theme_icon_yellow",
+      "value": "Simge sarısı"
+    },
+    {
+      "name": "settings_theme_icon_green",
+      "value": "Simge yeşili"
+    },
+    {
+      "name": "settings_theme_icon_pink",
+      "value": "Simge pembesi"
+    },
+    {
+      "name": "settings_theme_icon_cyan",
+      "value": "Simge camgöbeği"
+    },
+    {
+      "name": "settings_theme_icon_navy",
+      "value": "Simge laciverti"
+    },
+    {
+      "name": "settings_bottom_tab_order",
+      "value": "Bottom tab order"
+    },
+    {
+      "name": "settings_home_tab_order",
+      "value": "Home tab order"
+    },
+    {
+      "name": "settings_tab_order_desc",
+      "value": "Use the arrows to reorder tabs. Changes apply immediately; new tabs are added at the end."
+    },
+    {
+      "name": "settings_tab_move_up",
+      "value": "Move earlier"
+    },
+    {
+      "name": "settings_tab_move_down",
+      "value": "Move later"
+    },
+    {
+      "name": "settings_tab_order_reset",
+      "value": "Reset order"
+    },
+    {
+      "name": "settings_post_actions",
+      "value": "Post action bar"
+    },
+    {
+      "name": "settings_post_actions_desc",
+      "value": "Choose the actions shown in feeds and post details. Turn off counts to keep only icons."
+    },
+    {
+      "name": "settings_post_action_counts",
+      "value": "Show interaction counts"
+    },
+    {
+      "name": "video_rotate",
+      "value": "Open landscape player"
+    },
+    {
+      "name": "video_download_notice_downloading",
+      "value": "Video indiriliyor"
+    },
+    {
+      "name": "video_download_notice_saving",
+      "value": "Video kaydediliyor"
+    },
+    {
+      "name": "video_download_notice_completed",
+      "value": "Video indirildi"
+    },
+    {
+      "name": "settings_home_single_tap_top",
+      "value": "Başa dönmek için Ana Sayfa’ya dokun"
+    },
+    {
+      "name": "settings_home_single_tap_top_desc",
+      "value": "Geçerli zaman akışının başına dönmek için alttaki Ana Sayfa sekmesine dokunun. Çift dokunarak yenileme mevcut ayarına göre çalışır."
+    },
+    {
+      "name": "background_photo_delete",
+      "value": "Arka planı sil"
+    },
+    {
+      "name": "background_photo_delete_confirm",
+      "value": "Bu görüntü silinsin mi? Görüntü, kullanıldığı sayfa ve sohbet arka planlarından da kaldırılacak. Bu işlem geri alınamaz."
+    },
+    {
+      "name": "background_photo_deleted",
+      "value": "Arka plan görüntüsü silindi"
+    },
+    {
+      "name": "background_photo_delete_failed",
+      "value": "Silinemedi. Lütfen tekrar deneyin."
+    },
+    {
+      "name": "search_refill_query",
+      "value": "Arama alanını doldur"
+    },
+    {
+      "name": "search_history_delete_title",
+      "value": "Bu kayıt silinsin mi?"
+    },
+    {
+      "name": "global_trends_title",
+      "value": "Küresel gündem"
+    },
+    {
+      "name": "global_trends_description",
+      "value": "En popüler gönderiler"
+    },
+    {
+      "name": "global_trends_explore",
+      "value": "Keşfet"
+    },
+    {
+      "name": "global_trends_today",
+      "value": "Bugün popüler"
+    },
+    {
+      "name": "global_trends_worldwide",
+      "value": "Dünya geneli"
+    },
+    {
+      "name": "global_trends_countries",
+      "value": "Ülkeler"
+    },
+    {
+      "name": "global_trends_reset",
+      "value": "Tüm popüler gönderileri göster"
+    },
+    {
+      "name": "post_video_publish",
+      "value": "Videoyu paylaş"
+    },
+    {
+      "name": "post_video_copy_link",
+      "value": "Video bağlantısını kopyala"
+    },
+    {
+      "name": "post_video_save",
+      "value": "Videoyu kaydet"
+    },
+    {
+      "name": "post_video_link_copied",
+      "value": "Video bağlantısı kopyalandı"
+    },
+    {
+      "name": "post_video_link_copy_failed",
+      "value": "Video bağlantısı kopyalanamadı"
+    },
+    {
+      "name": "offline_videos_title",
+      "value": "Çevrimdışı videolar"
+    },
+    {
+      "name": "offline_videos_local",
+      "value": "Yalnızca bu cihazda kayıtlı"
+    },
+    {
+      "name": "offline_videos_empty",
+      "value": "Henüz çevrimdışı video yok"
+    },
+    {
+      "name": "offline_videos_search",
+      "value": "Çevrimdışı video veya yazar ara"
+    },
+    {
+      "name": "offline_videos_no_results",
+      "value": "Eşleşen çevrimdışı video yok"
+    },
+    {
+      "name": "offline_videos_clear",
+      "value": "Çevrimdışı videoları temizle"
+    },
+    {
+      "name": "offline_videos_clear_confirm",
+      "value": "İndirilen tüm videolar silinsin mi?"
+    },
+    {
+      "name": "offline_videos_delete",
+      "value": "Çevrimdışı videoyu sil"
+    },
+    {
+      "name": "offline_videos_added",
+      "value": "Çevrimdışı videolara eklendi"
+    },
+    {
+      "name": "offline_videos_already",
+      "value": "Zaten çevrimdışı videolarda"
+    },
+    {
+      "name": "offline_videos_play",
+      "value": "Çevrimdışı videoyu oynat"
+    },
+    {
+      "name": "offline_videos_missing",
+      "value": "Çevrimdışı dosya eksik. Tekrar ekleyin."
+    },
+    {
+      "name": "offline_video_title",
+      "value": "Çevrimdışı video"
+    },
+    {
+      "name": "post_translated_from",
+      "value": "%s dilinden çevrildi"
+    },
+    {
+      "name": "post_translated",
+      "value": "Çevrildi"
+    },
+    {
+      "name": "post_show_original",
+      "value": "Orijinali göster"
+    },
+    {
+      "name": "post_show_translation",
+      "value": "Çeviriyi göster"
+    },
+    {
+      "name": "settings_cover_single_column",
+      "value": "Dış ekranda tek sütun"
+    },
+    {
+      "name": "settings_cover_single_column_desc",
+      "value": "Katlıyken tek sütun kullanılır; açıldığında seçilen sütun sayısı korunur."
+    },
+    {
+      "name": "huawei_cloud_overwrite",
+      "value": "Bulutu yerel ayarlarla değiştir"
+    },
+    {
+      "name": "huawei_cloud_overwrite_message",
+      "value": "Seçili grupları bu cihazın ayarlarıyla değiştirir. Diğer cihazlar sonraki eşitlemede bunları alır."
+    },
+    {
+      "name": "huawei_cloud_clear",
+      "value": "Bulut ayarlarını temizle"
+    },
+    {
+      "name": "huawei_cloud_clear_message",
+      "value": "Bu Huawei hesabının tüm uygulama bulut ayarlarını siler ve eşitlemeyi kapatır. Yerel ayarlar korunur. Yüklemek için eşitlemeyi yeniden açın."
+    },
+    {
+      "name": "huawei_cloud_cleared",
+      "value": "Bulut ayarları temizlendi. Eşitleme kapalı."
+    },
+    {
+      "name": "huawei_cloud_manage_description",
+      "value": "Değiştirme seçili grupları etkiler. Temizleme tüm bulut gruplarını siler ve yerel ayarları korur."
+    },
+    {
+      "name": "post_translation_choose_languages",
+      "value": "Dilleri seç"
+    },
+    {
+      "name": "post_translation_auto_language",
+      "value": "%s otomatik çevir"
+    },
+    {
+      "name": "post_translation_languages_description",
+      "value": "Otomatik çevrilecek gönderi dillerini seçin. Diğer diller elle çevrilebilir."
+    },
+    {"name": "post_link_copy", "value": "Copy link"},
+    {"name": "post_link_open", "value": "Open link"},
+    {"name": "settings_video_download_button", "value": "Video download button"},
+    {"name": "settings_video_download_button_desc", "value": "Show the download button in the top-right corner of videos"},
+    {"name": "video_source_from", "value": "From"},
+    {"name": "video_source_original", "value": "Original video"},
+    {"name": "video_source_open_failed", "value": "Unable to open the original video. Try again."},
+    {"name":"dns_title","value":"DNS over HTTPS (DoH)"},
+    {"name":"dns_enable","value":"Use DNS over HTTPS"},
+    {"name":"dns_enable_desc","value":"Encrypt DNS queries with a chosen HTTPS resolver"},
+    {"name":"dns_scope","value":"Applies to app API requests, downloaded images, video segments and built-in web pages. System players and external apps may use their own DNS. When a proxy resolves the destination, its DNS takes precedence. DoH does not replace a proxy or VPN."},
+    {"name":"dns_provider","value":"DNS provider"},
+    {"name":"dns_provider_ali","value":"AliDNS"},
+    {"name":"dns_provider_cloudflare","value":"Cloudflare"},
+    {"name":"dns_provider_google","value":"Google Public DNS"},
+    {"name":"dns_provider_custom","value":"Custom"},
+    {"name":"dns_endpoint","value":"DoH server URL"},
+    {"name":"dns_endpoint_hint","value":"https://example.com/dns-query"},
+    {"name":"dns_endpoint_desc","value":"Enter a complete RFC 8484 HTTPS endpoint, without credentials, fragments or URI templates such as {?dns}."},
+    {"name":"dns_invalid","value":"Enter a valid HTTPS DoH server URL"},
+    {"name":"dns_saved","value":"Saved. New requests use this setting; reload open web pages."},
+    {"name":"dns_test","value":"Test DNS resolution"},
+    {"name":"dns_test_desc","value":"Tests the current URL by resolving x.com directly, without saving or enabling it. The test bypasses the in-app proxy; a system VPN still applies."},
+    {"name":"dns_test_success","value":"x.com resolved successfully"},
+    {"name":"dns_test_failed","value":"Resolution failed. Check the URL, network or DNS service."},
+    {"name":"dns_failure_note","value":"After saving, DoH failures stop affected requests instead of falling back to system DNS. Turn DoH off and save to restore system DNS. Changes apply after saving."},
+    {"name":"help_support_afdian","value":"Afdian"},
+    {"name":"help_support_qr_summary","value":"Geliştirmeyi desteklemek için tarayın"},
+    {"name":"help_support_afdian_summary","value":"Kalıcı olarak önerisiz · ¥16.6"},
+    {"name":"help_support_afdian_desc","value":"Afdian’dan kalıcı önerisiz kullanım kodu satın alın, ardından etkinleştirmek için uygulamaya dönün."},
+    {"name":"help_support_afdian_buy","value":"Afdian’da satın al"},
+    {"name":"help_support_expand","value":"Genişletmek için dokunun"},
+    {"name":"help_support_collapse","value":"Daraltmak için dokunun"},
+    {"name":"help_support_scan_code","value":"Bu kodu ilgili ödeme uygulamasıyla tarayın."},
+    {"name":"help_support_recommended","value":"Önerilen"}
   ]
 }

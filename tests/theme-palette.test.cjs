@@ -48,7 +48,7 @@ test('traditional palette preserves the supplied common, light, dark, and tint c
 test('mixed palettes resolve stable page roles in both appearances and retain legacy fallbacks', () => {
   for (const dark of [false, true]) {
     const palette = loadPalette(dark);
-    assert.equal(palette.MIXED_ACCENT_PALETTE.length, 10);
+    assert.equal(palette.MIXED_ACCENT_PALETTE.length, 11);
     for (const entry of palette.MIXED_ACCENT_PALETTE) {
       assert.equal(palette.isKnownAccentTheme(entry.id), true);
       assert.equal(palette.canonicalAccentTheme(entry.id), entry.id);

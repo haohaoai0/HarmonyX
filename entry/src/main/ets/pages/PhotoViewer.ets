@@ -1,3 +1,6 @@
+import { MediaViewerNavigationReturn } from '../utils/MediaViewerNavigation';
+import { mediaViewerTitleBarStyle } from '../utils/MediaViewerTitleBar';
+import { HdsNavigationMenuItemOptions } from '@kit.UIDesignKit';
 import { KeyCode } from '@kit.InputKit';
 import { backInputKey, plainInputKey, contextInputMouse } from '../utils/InputSupport';
 import { DesktopLayout } from '../utils/DesktopLayout';
@@ -322,7 +325,7 @@ struct ZoomablePhoto {
       return;
     }
     // Retain the displayed preview while the original is being decoded.
-    if (!proxyStore.snapshot().enabled) {
+    if (!proxyStore.requiresHttpTransport()) {
       this.releaseFallback();
       this.source = sourceUrl;
       return;
@@ -703,6 +706,7 @@ export struct PhotoViewer {
   private photoTransformX: number = 0;
   private photoTransformY: number = 0;
   private viewerAlive: boolean = true;
+  private returnNavigation: MediaViewerNavigationReturn = new MediaViewerNavigationReturn();
   private windowOverlay: boolean = false;
   @StorageProp('reduceMotionEnabled') private reduceMotion: boolean = false;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
@@ -770,6 +774,7 @@ export struct PhotoViewer {
   @State private selectingGif: boolean = false;
 
   aboutToDisappear(): void {
+    this.returnNavigation.detach();
     this.viewerAlive = false;
     this.ocrRequestId += 1;
     this.subjectRequestId += 1;
@@ -1378,6 +1383,7 @@ export struct PhotoViewer {
     if (this.closing) {
       return;
     }
+    if (this.returnNavigation.request((): void => this.close(), (): void => this.popViewer(true))) { return; }
     this.closing = true;
     // First align the source strip with the currently viewed photo. Measure
     // it after layout, then return from the current zoom/drag without a reset.
@@ -1444,6 +1450,7 @@ export struct PhotoViewer {
   }
 
   private popViewer(animated: boolean = true): void {
+    if (this.returnNavigation.complete()) { return; }
     if (this.windowOverlay) { this.pageStack.pop(animated); }
     else { ResponsiveLayout.closeContentDestination(this.pageStack, animated); }
   }
@@ -1654,49 +1661,18 @@ export struct PhotoViewer {
     } finally { this.savingBackground = false; }
   }
 
-  @Builder
-  private TopControls(): void {
-    Row() {
-      MaterialButton({ buttonWidth: 44, buttonHeight: 44, buttonRadius: 22,
-        surfaceColor: $r('app.color.media_viewer_control'), materialLevel: 1, applyShadow: true,
-        adaptiveForeground: true,
-        lightColor: this.accentColor, accessibilityLabel: this.text($r('app.string.common_back')),
-        buttonMonopolizeEvents: true, onButtonClick: (): void => this.close() }) {
-        SymbolGlyph($r('sys.symbol.arrow_left')).fontSize(24).fontColor([this.controlForeground()])
-      }
-      Blank()
-      if (this.gifSelectAction !== null) {
-        Button(this.text($r('app.string.gif_action_use')))
-          .fontFamily(this.appFontFamily).fontColor($r('app.color.text_on_brand'))
-          .backgroundColor(this.accentColor).enabled(!this.selectingGif)
-          .id('photo-viewer-select-gif').margin({ right: 12 })
-          .onClick((): void => { void this.selectCurrentGif(); })
-      }
-      Row({ space: 8 }) {
-        if (this.downloading) {
-          LoadingProgress().width($r('app.float.photo_viewer_quick_size'))
-            .height($r('app.float.photo_viewer_quick_size')).color($r('app.color.text_on_brand'))
-        } else {
-          SaveButton({ icon: SaveIconStyle.LINES, buttonType: ButtonType.Circle })
-            .width($r('app.float.photo_viewer_quick_size')).height($r('app.float.photo_viewer_quick_size'))
-            .iconSize($r('app.float.photo_viewer_quick_icon_size')).padding(10)
-            .iconColor($r('app.color.text_on_brand')).backgroundColor($r('app.color.photo_save_background'))
-            .id('photo-viewer-save')
-            .onClick((_event: ClickEvent, result: SaveButtonOnClickResult): void => {
-              if (result === SaveButtonOnClickResult.SUCCESS) { void this.downloadPhotos(false, true); }
-            })
-        }
-      }.margin({ right: 12 })
-      MaterialButton({ buttonWidth: 44, buttonHeight: 44, buttonRadius: 22,
-        surfaceColor: $r('app.color.media_viewer_control'), materialLevel: 1, applyShadow: true,
-        adaptiveForeground: true,
-        lightColor: this.accentColor, accessibilityLabel: this.text($r('app.string.photo_viewer_more')),
-        buttonMonopolizeEvents: true, onButtonClick: (): void => { this.showMoreSheet = true; } }) {
-        SymbolGlyph($r('sys.symbol.more')).fontSize(24).fontColor([this.controlForeground()])
-      }
+
+  private nativeViewerMenus(): HdsNavigationMenuItemOptions[] {
+    const entries: HdsNavigationMenuItemOptions[] = [];
+    if (this.gifSelectAction !== null) {
+      entries.push({ content: { icon: $r('sys.symbol.checkmark'), label: $r('app.string.gif_action_use'),
+        isEnabled: !this.selectingGif, action: (): void => { void this.selectCurrentGif(); } } });
     }
-    .width('100%')
-    .padding({ left: 16, right: 16, top: this.statusBarHeight + 16 })
+    entries.push({ content: { icon: $r('sys.symbol.download'), label: $r('app.string.media_download'),
+      isEnabled: !this.downloading, action: (): void => { void this.downloadPhotos(false); } } });
+    entries.push({ content: { icon: $r('sys.symbol.more'), label: $r('app.string.photo_viewer_more'),
+      action: (): void => { this.showMoreSheet = true; } } });
+    return entries;
   }
 
   @Builder
@@ -1912,7 +1888,7 @@ export struct PhotoViewer {
         this.PointerPhotoNavigation()
         Stack({ alignContent: Alignment.Top }) {
           Column() {
-            this.TopControls()
+            Row().height(this.statusBarHeight + 56)
             if (this.tweet !== null) {
               PhotoViewerAuthorBar({ author: this.tweet.author, onOpenAuthor: (): void => {
                 if (this.tweet === null) { return; }
@@ -2035,11 +2011,12 @@ export struct PhotoViewer {
           LayoutSafeAreaEdge.START, LayoutSafeAreaEdge.END])
       }
     }
-    .mode(NavDestinationMode.DIALOG)
+    .mode(NavDestinationMode.STANDARD)
     .systemTransition(pageSystemTransition(this.pageTransitionMode, this.motion.enabled() ? NavigationSystemTransitionType.NONE :
       this.photoFullscreen && DesktopLayout.active(this.desktopLayoutEnabled, this.breakpoint) ?
       NavigationSystemTransitionType.FADE : NavigationSystemTransitionType.DEFAULT))
     .onReady((context: NavDestinationContext): void => {
+      this.returnNavigation.attach(context);
       const param: PhotoViewerRouteParam = context.pathInfo?.param as PhotoViewerRouteParam;
       if (param !== undefined && param !== null &&
         (param.urls.length > 0 || (param.items !== undefined && param.items.length > 0))) {
@@ -2047,10 +2024,15 @@ export struct PhotoViewer {
       }
     })
     .titleMode(HdsNavDestinationTitleMode.MINI)
-    .hideTitleBar(true)
-    .hideBackButton(true)
+    .titleBar({
+      avoidLayoutSafeArea: true,
+      content: { title: { mainTitle: '' }, menu: { value: this.nativeViewerMenus() } },
+      style: mediaViewerTitleBarStyle()
+    })
+    .hideTitleBar(this.closing || !this.controlsVisible)
+    .hideBackButton(false)
     .width('100%').height('100%').borderRadius(0)
-    .backgroundColor(Color.Transparent)
+    .backgroundColor(this.closing ? Color.Transparent : Color.Black)
     .clip(true)
     .ignoreLayoutSafeArea([LayoutSafeAreaType.SYSTEM], [LayoutSafeAreaEdge.TOP, LayoutSafeAreaEdge.BOTTOM,
       LayoutSafeAreaEdge.START, LayoutSafeAreaEdge.END])

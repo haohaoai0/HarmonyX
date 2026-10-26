@@ -118,6 +118,27 @@ test('post/count changes keep the cached item and its attachment references with
   assert.deepEqual(changes.events, []);
 });
 
+test('multiple videos from one profile post remain distinct and every cell receives post-state updates', () => {
+  const viewer = feed();
+  const post = tweet(1), second = { ...post.attachments[0], id: 'second-clip' };
+  post.attachments.push(second);
+  assert.equal(viewer.appendVideoPage([post]), 2);
+  assert.deepEqual(viewer.items.map(item => item.attachments[0].id), ['media-1', 'second-clip']);
+  assert.equal(viewer.appendVideoPage([post]), 0);
+  const attachments = viewer.items.map(item => item.attachments);
+  const updated = { ...post, liked: true };
+  viewer.current = 1;
+  viewer.applyPostSheetChange(updated);
+  for (let i = 0; i < viewer.items.length; i++) {
+    assert.equal(viewer.items[i].tweet, updated);
+    assert.equal(viewer.items[i].attachments, attachments[i]);
+  }
+  viewer.videoDataSource.remove(0);
+  assert.equal(viewer.videoDataSource.has(post.id), true);
+  viewer.videoDataSource.remove(0);
+  assert.equal(viewer.videoDataSource.has(post.id), false);
+});
+
 test('removing a dismissed post reindexes surviving items and releases its duplicate key', () => {
   const source = new VideoFeedDataSource(), changes = listener();
   const entries = [0, 1, 2].map(i => new VideoFeedItem(tweet(i), tweet(i).attachments, i));

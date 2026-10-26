@@ -5,12 +5,15 @@ import { preferences } from '@kit.ArkData';
 
 export const STORAGE_KEY_DEFAULT_HOME_FEED: string = 'harmonyx.default_home_feed';
 export const STORAGE_KEY_TIMELINE_COLUMNS: string = 'harmonyx.timeline_columns';
+export const STORAGE_KEY_COVER_SINGLE_COLUMN: string = 'harmonyx.cover_single_column';
+export const STORAGE_KEY_COVER_SCREEN_ACTIVE: string = 'harmonyx.cover_screen_active';
 export const HOME_FEED_FOR_YOU: number = 0;
 export const HOME_FEED_FOLLOWING: number = 1;
 export const TIMELINE_COLUMNS_AUTO: number = 0;
 export const TIMELINE_COLUMNS_ONE: number = 1;
 export const TIMELINE_COLUMNS_TWO: number = 2;
 export const TIMELINE_COLUMNS_THREE: number = 3;
+export const TIMELINE_COLUMNS_AUTO_TWO: number = 4;
 
 export class TimelineSettingsStore {
   private static readonly STORE_NAME: string = 'harmonyx_timeline';
@@ -23,7 +26,7 @@ export class TimelineSettingsStore {
 
   private normaliseColumns(value: number): number {
     if (value === TIMELINE_COLUMNS_ONE || value === TIMELINE_COLUMNS_TWO ||
-      value === TIMELINE_COLUMNS_THREE) {
+      value === TIMELINE_COLUMNS_THREE || value === TIMELINE_COLUMNS_AUTO_TWO) {
       return value;
     }
     return TIMELINE_COLUMNS_AUTO;
@@ -83,6 +86,23 @@ export class TimelineSettingsStore {
     } catch (error) {
       return false;
     }
+  }
+
+  loadCoverSingleColumn(context: common.Context): boolean {
+    try {
+      const store: preferences.Preferences = preferences.getPreferencesSync(context, { name: TimelineSettingsStore.STORE_NAME });
+      return store.getSync('cover_single_column', true) === true;
+    } catch (error) { return true; }
+  }
+
+  saveCoverSingleColumn(context: common.Context, enabled: boolean): boolean {
+    try {
+      const store: preferences.Preferences = preferences.getPreferencesSync(context, { name: TimelineSettingsStore.STORE_NAME });
+      store.putSync('cover_single_column', enabled);
+      store.flushSync();
+      AppStorage.setOrCreate<boolean>(STORAGE_KEY_COVER_SINGLE_COLUMN, enabled);
+      return true;
+    } catch (error) { return false; }
   }
 
   publishTimelineColumns(value: number): void {

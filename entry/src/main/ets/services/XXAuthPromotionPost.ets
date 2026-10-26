@@ -50,6 +50,7 @@ export class XXAuthPromotionPlan {
   posts: XXAuthPromotionPost[] = [];
   timelineCount: number = 2;
   commentCount: number = 1;
+  commentProbability: number = 0.3;
   revision: number = 0;
 }
 
@@ -230,6 +231,9 @@ export class XXAuthPromotionPostPolicy {
     // of advertising instead of a single native-looking post.
     plan.timelineCount = XXAuthPromotionPostPolicy.count(config.post_count, 1, 1);
     plan.commentCount = XXAuthPromotionPostPolicy.count(config.post_comment_count, 1, 2);
+    const probability: number | undefined = config.post_comment_probability;
+    plan.commentProbability = typeof probability === 'number' && Number.isFinite(probability) ?
+      Math.max(0, Math.min(1, probability)) : 0.3;
     plan.revision = XXAuthPromotionPostPolicy.count(config.post_revision, 0, 1000000);
     if (plan.posts.length === 0) { plan.timelineCount = 0; plan.commentCount = 0; }
     return plan;

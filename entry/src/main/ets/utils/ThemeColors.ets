@@ -4,7 +4,7 @@
 import { DARK_SURFACE_GENTLE, DISPLAY_MODE_DARK } from '../services/AppearanceStore';
 import { ColorMetrics } from '@kit.ArkUI';
 import { pageBackgroundActive, pageBackgroundFromValue, DEFAULT_PAGE_SURFACE_OPACITY, PageBackgroundState } from '../services/PageBackgroundStore';
-import { PageRgb, rgbFromHex, mixPageRgb, pageLightInk, pageContrastRatio, photoReadingVeil, pagePatternOpacity } from './PageBackgroundContrast';
+import { PageRgb, rgbFromHex, mixPageRgb, pageLightInk, pageContrastRatio, photoReadingVeil, pagePatternOpacity, pageRgbAtLightness } from './PageBackgroundContrast';
 
 export class PageBackdropTone {
   average: PageRgb = rgbFromHex('#808080');
@@ -73,7 +73,7 @@ function readableSurfaceRgb(color: PageRgb, alpha: number, tone: PageBackdropTon
 }
 
 // The same compositing model drives both the rendered veil and foregrounds.
-// Include image extremes, grain, pattern ink and the user's dimming level.
+// Dim and balance the canvas first. Motifs keep their own opacity above it.
 export function pageBackdropTone(state: PageBackgroundState, displayMode: string, darkSurface: string): PageBackdropTone {
   const tone: PageBackdropTone = new PageBackdropTone();
   const base: PageRgb = resourceRgb(pageBackgroundBaseColor(state, displayMode, darkSurface));
@@ -85,15 +85,6 @@ export function pageBackdropTone(state: PageBackgroundState, displayMode: string
     tone.darkest = mixPageRgb(tone.darkest, black, state.textureStrength * 0.4);
     tone.lightest = mixPageRgb(tone.lightest, white, state.textureStrength * 0.4);
   }
-  const patterns: number = state.patternLayout === 'preset' ? state.patternIds.length : state.motifIds.length;
-  if (patterns > 0) {
-    const ink: number = pageLightInk(tone.average) ? 1 : 0;
-    const strength: number = state.patternLayout === 'preset' ?
-      1 - Math.pow(1 - pagePatternOpacity(state.patternStrength / Math.sqrt(patterns), ink), patterns) :
-      pagePatternOpacity(state.patternStrength, ink);
-    if (pageLightInk(tone.average)) { tone.lightest = mixPageRgb(tone.lightest, white, strength); }
-    else { tone.darkest = mixPageRgb(tone.darkest, black, strength); }
-  }
   tone.average = mixPageRgb(tone.average, black, state.dim);
   tone.darkest = mixPageRgb(tone.darkest, black, state.dim);
   tone.lightest = mixPageRgb(tone.lightest, black, state.dim);
@@ -103,13 +94,22 @@ export function pageBackdropTone(state: PageBackgroundState, displayMode: string
   tone.average = mixPageRgb(tone.average, veil, tone.veil);
   tone.darkest = mixPageRgb(tone.darkest, veil, tone.veil);
   tone.lightest = mixPageRgb(tone.lightest, veil, tone.veil);
+  const patterns: number = state.patternLayout === 'preset' ? state.patternIds.length : state.motifIds.length;
+  if (patterns > 0) {
+    const ink: number = pageLightInk(tone.average) ? 1 : 0;
+    const strength: number = state.patternLayout === 'preset' ?
+      1 - Math.pow(1 - pagePatternOpacity(state.patternStrength / Math.sqrt(patterns), ink), patterns) :
+      pagePatternOpacity(state.patternStrength, ink);
+    if (pageLightInk(tone.average)) { tone.lightest = mixPageRgb(tone.lightest, white, strength); }
+    else { tone.darkest = mixPageRgb(tone.darkest, black, strength); }
+  }
   return tone;
 }
 
 // Callers pass the actual backing surface (including its alpha). Solid fields
 // keep their own contrast; transparent posts use the visible wallpaper.
 export function pageTextColor(original: ResourceColor, backgroundValue: string, surface: ResourceColor = Color.Transparent,
-  minimum: number = 4.6): ResourceColor {
+  minimum: number = 4.6, preserveChroma: boolean = false): ResourceColor {
   try {
     // Opaque fields still need readable text when wallpaper is off. Disabled
     // wallpaper must use the actual theme canvas rather than its saved color.
@@ -118,7 +118,7 @@ export function pageTextColor(original: ResourceColor, backgroundValue: string, 
     const requestedColor: ColorMetrics = ColorMetrics.resourceColor(original);
     const requested: PageRgb = { red: requestedColor.red, green: requestedColor.green, blue: requestedColor.blue };
     const key: string = requested.red + ',' + requested.green + ',' + requested.blue + ',' + requestedColor.alpha + '|' + minimum + '|' +
-      backing.red + ',' + backing.green + ',' + backing.blue + ',' + backing.alpha;
+      backing.red + ',' + backing.green + ',' + backing.blue + ',' + backing.alpha + '|' + preserveChroma;
     const cached: ResourceColor | undefined = textColorCache.get(key);
     if (cached !== undefined) { return cached; }
     const rgb: PageRgb = { red: backing.red, green: backing.green, blue: backing.blue };
@@ -132,14 +132,18 @@ export function pageTextColor(original: ResourceColor, backgroundValue: string, 
     const light: boolean = Math.min(pageContrastRatio(white, low), pageContrastRatio(white, high)) >
       Math.min(pageContrastRatio(black, low), pageContrastRatio(black, high));
     const target: PageRgb = light ? white : black;
+    const originalLightness: number = (Math.max(requested.red, requested.green, requested.blue) +
+      Math.min(requested.red, requested.green, requested.blue)) / 510;
     let start: number = 0; let end: number = 1;
     for (let step: number = 0; step < 10; step++) {
       const middle: number = (start + end) / 2;
-      const candidate: PageRgb = mixPageRgb(requested, target, middle);
+      const candidate: PageRgb = preserveChroma ? pageRgbAtLightness(requested,
+        originalLightness + ((light ? 1 : 0) - originalLightness) * middle) : mixPageRgb(requested, target, middle);
       if (Math.min(pageContrastRatio(candidate, low), pageContrastRatio(candidate, high)) >= minimum) { end = middle; }
       else { start = middle; }
     }
-    const result: PageRgb = mixPageRgb(requested, target, end);
+    const result: PageRgb = preserveChroma ? pageRgbAtLightness(requested,
+      originalLightness + ((light ? 1 : 0) - originalLightness) * end) : mixPageRgb(requested, target, end);
     const output: ResourceColor = ColorMetrics.rgba(Math.round(result.red), Math.round(result.green), Math.round(result.blue), 1).color;
     if (textColorCache.size < 512) { textColorCache.set(key, output); }
     return output;

@@ -3,8 +3,10 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const ts = require(process.env.HARMONYX_TYPESCRIPT || 'D:/DevEco Studio/tools/ohpm/node_modules/typescript/lib/typescript.js');
+const modules = new Map();
 
 function load(file, mocks = {}) {
+  if (Object.keys(mocks).length === 0 && modules.has(file)) return modules.get(file);
   const source = fs.readFileSync(path.resolve(__dirname, '../entry/src/main/ets', file + '.ets'), 'utf8');
   const output = ts.transpileModule(source, { compilerOptions: {
     target: ts.ScriptTarget.ES2020, module: ts.ModuleKind.CommonJS, esModuleInterop: true
@@ -20,12 +22,14 @@ function load(file, mocks = {}) {
     if (name === '../services/XXAuthPromotionPost') return load('services/XXAuthPromotionPost');
     throw new Error('Unexpected dependency ' + name);
   }, module, module.exports);
+  if (Object.keys(mocks).length === 0) modules.set(file, module.exports);
   return module.exports;
 }
 
 const { XXAuthPromotionPostPolicy: policy } = load('services/XXAuthPromotionPost');
 const { TimelinePageDataSource } = load('utils/TimelinePageDataSource');
 const { XXAuthPromotionInjector: injector } = load('utils/XXAuthPromotionInjector');
+const { XXAuthCommentPromotionSession } = load('utils/XXAuthCommentPromotionSession');
 const APP_LINK = 'https://appgallery.huawei.com/app/detail?id=com.my.mark';
 const AVATAR = 'https://img.cdn1.vip/i/6ad2312f482d3_1792160047.webp';
 const ICON = 'https://example.com/icon.png';
@@ -243,9 +247,9 @@ function homeRenderingFixture() {
   const home = Object.assign(new Home(), {
     timeline: [], following: [], homeFeedPresented: false, homePresentationPending: false,
     homePresentationRevision: 0, homePageAlive: true, showSideDrawer: true,
-    showOnboardingGuide: false, showLoginSheet: false, showMidAutumnGreeting: false,
+    showStartupCover: false, showOnboardingGuide: false, showLoginSheet: false, showMidAutumnGreeting: false,
     showChatUnlock: false, showLinkPreview: false, contentDestinationOpen: false,
-    photoOverlayOpen: false, showSpacePreview: false, showPauseTopics: false, showFollowingOrder: false,
+    photoOverlayOpen: false, showSpacePreview: false, showPauseTopics: false, showFollowingOrder: false, showHomeSourceOptions: false,
     isLargeScreen: () => true, homeTabIndex: () => selected,
     homeTabItems: () => [{key: 'for-you'}, {key: 'following'}], promotionPlan: () => plan,
     homePageDataSource: index => sources[index],
@@ -296,6 +300,15 @@ test('pagination, filtering and promotion removal keep mounted WaterFlow counts 
   assert.equal(h.sections[0], 2);
   h.home.timeline = []; h.home.onPostModerationChanged();
   assert.equal(h.sections[0], 0);
+});
+
+test('startup cover keeps promotion popup deferred until its fade has finished', () => {
+  const h = homeRenderingFixture();
+  h.home.homeFeedPresented = true;
+  h.home.showStartupCover = true;
+  assert.equal(h.home.popupHostBlocked(), true);
+  h.home.showStartupCover = false;
+  assert.equal(h.home.popupHostBlocked(), false);
 });
 
 test('Following stays empty until real posts arrive, then promotions join the same response update', () => {
@@ -431,7 +444,9 @@ test('random positions stay inside the first page, distinct, ordered and stable'
   }
   assert.deepEqual(injector.positions(0, 2, 'comments:x'), [0]);
   assert.deepEqual(injector.positions(10, 0, 'comments:x'), []);
-  assert.notDeepEqual(injector.positions(20, 2, 'home:for-you'), injector.positions(20, 2, 'home:following'));
+  const salted = new Set(Array.from({length:20}, (_, i) =>
+    JSON.stringify(injector.positions(20, 2, 'home:tab-' + i))));
+  assert.ok(salted.size > 1, 'surface salts vary positions, although individual draws may coincide');
   // Several promotions in one list never land side by side.
   for (const total of [2, 3, 6, 30]) {
     const spaced = injector.positions(total, 3, 'home:following');
@@ -466,4 +481,110 @@ test('the promoted app rotates between launches but never inside one run', () =>
     seen.add(injector.slots(20, pool, 1, 'home:for-you')[0].post.name);
   }
   assert.ok(seen.size > 1, 'rotation saw ' + [...seen].join(','));
+});
+
+test('positions change between launches while a mounted timeline keeps its positions', () => {
+  const seen = new Set();
+  for (let seed = 1000; seed < 1020; seed++) {
+    injector.resetLaunchSeedForTest(seed);
+    const positions = injector.positions(20, 1, 'home:for-you');
+    seen.add(positions[0]);
+    assert.deepEqual(injector.positions(50, 1, 'home:for-you'), positions);
+  }
+  assert.ok(seen.size > 1, 'launch seed must affect positions as well as content');
+});
+
+function withRandom(values, action) {
+  const previous = Math.random;
+  let calls = 0;
+  Math.random = () => values[calls++] ?? 0.99;
+  try { return action(() => calls); } finally { Math.random = previous; }
+}
+
+test('comment probability defaults to 30 percent and respects disabled and bounded cloud values', () => {
+  assert.equal(policy.plan([info(BODY)], {}).commentProbability, 0.3);
+  assert.equal(policy.plan([info(BODY)], {post_comment_probability:-1}).commentProbability, 0);
+  assert.equal(policy.plan([info(BODY)], {post_comment_probability:9}).commentProbability, 1);
+  assert.equal(policy.plan([info(BODY)], {post_comment_probability:NaN}).commentProbability, 0.3);
+  const plan = policy.plan([info(BODY)], {});
+  let shown = 0;
+  for (let draw = 0; draw < 100; draw++) {
+    withRandom([draw / 100, draw / 101], () => {
+      shown += new XXAuthCommentPromotionSession().placements('same-post', ['reply'], plan).size;
+    });
+  }
+  assert.equal(shown, 30, 'each new visit draws, even for the same post');
+});
+
+test('a missed comment draw stays missed through repeated renders, paging and config refresh', () => {
+  withRandom([0.8, 0.2], calls => {
+    const session = new XXAuthCommentPromotionSession();
+    const plan = policy.plan([info(BODY)], {});
+    for (const anchors of [[], ['a'], ['a', 'b'], ['a', 'b', 'c']]) {
+      assert.equal(session.placements('post', anchors, plan).size, 0);
+    }
+    assert.equal(calls(), 2, 'rendering never rerolls');
+  });
+});
+
+test('comment placements stay attached to reply IDs during short-page growth and removal', () => {
+  withRandom([0.1, 0.7], calls => {
+    const session = new XXAuthCommentPromotionSession();
+    const plan = policy.plan([info(BODY)], {});
+    assert.equal(session.placements('post', [], plan).size, 0);
+    const first = session.placements('post', ['a'], plan);
+    assert.deepEqual([...first.keys()], ['a']);
+    assert.deepEqual([...session.placements('post', ['a', 'b', 'c', 'd'], plan).keys()], ['a']);
+    assert.equal(session.placements('post', ['b', 'c', 'd'], plan).size, 0);
+    assert.equal(session.placements('post', ['a'], {...plan, commentCount:0}).size, 0);
+    assert.equal(session.placements('post', ['a'], {...plan, posts:[]}).size, 0);
+    assert.equal(calls(), 2);
+  });
+});
+
+test('new detail visits randomize comment positions and switching threads draws again', () => {
+  const plan = policy.plan([info(BODY)], {post_comment_probability:1});
+  const anchors = ['a', 'b', 'c', 'd', 'e', 'f'];
+  const seen = new Set();
+  for (let visit = 0; visit < 40; visit++) {
+    withRandom([0, visit / 41], () => {
+      const placement = new XXAuthCommentPromotionSession().placements('post', anchors, plan);
+      assert.equal(placement.size, 1);
+      seen.add([...placement.keys()][0]);
+    });
+  }
+  assert.ok(seen.size > 1);
+  withRandom([0.9, 0.2, 0.1, 0.7], calls => {
+    const session = new XXAuthCommentPromotionSession();
+    const normal = policy.plan([info(BODY)], {});
+    assert.equal(session.placements('first', anchors, normal).size, 0);
+    assert.equal(session.placements('second', anchors, normal).size, 1);
+    assert.equal(calls(), 4);
+  });
+});
+
+test('detail rendering only inserts before top-level replies and embedded media keeps every reply', () => {
+  const source = fs.readFileSync('entry/src/main/ets/pages/PostDetail.ets', 'utf8')
+    .replace('struct PostDetail {', 'class PostDetail {');
+  const tree = ts.createSourceFile('detail.ts', source, ts.ScriptTarget.Latest, true);
+  const component = tree.statements.find(node => ts.isClassDeclaration(node) && node.name.text === 'PostDetail');
+  const method = component.members.find(node => ts.isMethodDeclaration(node) && node.name.getText(tree) === 'commentRows');
+  const code = ts.transpileModule('class Detail {' + method.getText(tree) + '}', {
+    compilerOptions:{target:ts.ScriptTarget.ES2020}
+  }).outputText;
+  const Detail = new Function('CommentTimelineRow', code + ';return Detail;')(class {});
+  const replies = [
+    {tweet:{id:'root-a'},isNestedReply:false}, {tweet:{id:'child-a'},isNestedReply:true},
+    {tweet:{id:'root-b'},isNestedReply:false}, {tweet:{id:'child-b'},isNestedReply:true}
+  ];
+  const plan = policy.plan([info(BODY)], {post_comment_probability:1});
+  const detail = Object.assign(new Detail(), {tweet:{id:'post'}, filterHideAds:false, replyQualityEnabled:false,
+    embedded:false, commentPromotions:new XXAuthCommentPromotionSession(), orderedReplies:()=>replies,
+    promotionPlan:()=>plan});
+  const rows = detail.commentRows();
+  assert.deepEqual(rows.filter(row => row.reply).map(row => row.reply.tweet.id), replies.map(row => row.tweet.id));
+  assert.equal(rows[2].promotion.fingerprint, plan.posts[0].fingerprint);
+  assert.equal(rows[3].reply.tweet.id, 'root-b');
+  detail.embedded = true;
+  assert.deepEqual(detail.commentRows().map(row => row.reply.tweet.id), replies.map(row => row.tweet.id));
 });

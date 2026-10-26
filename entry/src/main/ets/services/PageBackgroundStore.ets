@@ -55,7 +55,7 @@ export function normalizePageBackground(value: PageBackgroundState): PageBackgro
   const presetId: string = typeof value.patternId === 'string' ? value.patternId : 'none';
   state.patternId = chatBackgroundPreset(presetId).pattern !== undefined ? presetId : 'none';
   if (Array.isArray(value.patternIds)) {
-    for (let i: number = 0; i < Math.min(17, value.patternIds.length); i++) {
+    for (let i: number = 0; i < Math.min(17, value.patternIds.length) && state.patternIds.length === 0; i++) {
       const id: string = value.patternIds[i];
       if (typeof id === 'string' && chatBackgroundPreset(id).pattern !== undefined && state.patternIds.indexOf(id) < 0) {
         state.patternIds.push(id);

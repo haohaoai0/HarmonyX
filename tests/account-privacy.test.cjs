@@ -236,9 +236,18 @@ function transportFixture() {
     './XUserAgent': { xUserAgent: { value: () => 'test-agent' } },
     './ProxyStore': { proxyStore: { apply: async () => proxyHook(), noteNetworkFailure: () => failureHook() } },
     './XTimelineParser': {}, './XListParser': {}, './XConnectFeatures': {}, './JetfuelDecoder': {},
-    './XStarterPackParser': {}, './XPostResponse': { XPostReceipt: class {} }, './ResponseCache': {},
+    './XStarterPackParser': {}, './XGlobalTrendsParser': {}, './XPostContentOperations': {
+      postContentOperation: () => ({ id: '', features: {}, toggles: {} })
+    }, './XPostResponse': { XPostReceipt: class {} }, './ResponseCache': {},
     './RequestLog': { requestLog: { record: (...args) => logs.push(args) } },
     './XSpaceOperations': {}, './XChatConversationId': {},
+    '../models/ComposerOptions': { ComposerOptions: class {}, ComposerCoordinates: class {} },
+    './XComposerRequest': { composerPrivateFields: () => ({}), composerPollCard: () => ({}),
+      composerScheduleVariables: () => ({}) },
+    './XComposerOperations': { COMPOSER_WEB_FLAGS: {}, composerWebQueryId: () => '',
+      composerWebToggles: () => ({}) },
+    './XVideoOperations': { IMMERSIVE_MEDIA_QUERY_ID: '', IMMERSIVE_TIMELINE_QUERY_ID: '',
+      immersiveWebFeatures: () => ({}), immersiveWebToggles: () => ({}) },
     '../models/AccountPrivacy': evaluate('models/AccountPrivacy.ets')
   };
   const { XPrivateClient } = evaluate('services/XPrivateClient.ets', imports);

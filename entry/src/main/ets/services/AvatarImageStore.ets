@@ -15,7 +15,7 @@ class AvatarImageStore {
   private inFlight: Map<string, Promise<string>> = new Map();
 
   load(context: common.UIAbilityContext, url: string, requireLocal: boolean = false): Promise<string> {
-    if (url.startsWith('file://') || url.length === 0 || (!proxyStore.snapshot().enabled && !requireLocal)) {
+    if (url.startsWith('file://') || url.length === 0 || (!proxyStore.requiresHttpTransport() && !requireLocal)) {
       return Promise.resolve(url);
     }
     this.ensureDirectory(context);

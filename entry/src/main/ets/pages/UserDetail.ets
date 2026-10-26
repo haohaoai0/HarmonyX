@@ -1,3 +1,8 @@
+import type { VideoFeedRouteParam } from './VideoFeedViewer';
+import { pendingMediaViewerSource } from '../utils/MediaViewerMotion';
+import { videoPlayerHandoff } from '../services/VideoPlayerHandoff';
+import { videoPlaybackPositionStore } from '../services/VideoPlaybackPositionStore';
+import { AboutAccountRouteParam } from './AboutAccount';
 import { scrollFrame, scrollStarted, scrollStopped, stopScrollOnTouch } from '../utils/ScrollInteraction';
 import { ProfileBioTranslation } from '../components/ProfileBioTranslation';
 import { AdaptivePostFeed } from '../components/AdaptivePostFeed';
@@ -44,7 +49,7 @@ import { XUserParser } from '../services/XUserParser';
 import { postModerationStore } from '../services/PostModerationStore';
 import { XTimelineParser } from '../services/XTimelineParser';
 import { ProfileTweetPage } from '../services/ProfileTweetPage';
-import { AccountAbout, ProfileAccountData, ProfileActivityPage } from '../services/ProfileAccountData';
+import { ProfileAccountData, ProfileActivityPage } from '../services/ProfileAccountData';
 import { XListParser } from '../services/XListParser';
 import { SpaceAwareAvatar } from '../components/SpaceAwareAvatar';
 import { ProxyMediaImage } from '../components/ProxyMediaImage';
@@ -176,10 +181,6 @@ export struct UserDetail {
     new ProfileActivityPage(), new ProfileActivityPage()];
   @State private mediaFilter: string = 'video';
   @State private postsFilter: string = 'posts';
-  @State private aboutOpen: boolean = false;
-  @State private aboutLoading: boolean = false;
-  @State private aboutFailed: boolean = false;
-  @State private accountAbout: AccountAbout | null = null;
   @State private notificationOpen: boolean = false;
   @State private notificationMode: number = -1;
   @State private actionPending: boolean = false;
@@ -774,18 +775,30 @@ export struct UserDetail {
   }
 
   private async openAbout(): Promise<void> {
-    this.aboutOpen = true;
-    if (this.accountAbout !== null || this.aboutLoading) {
-      return;
+    if (this.author === null) { return; }
+    const author: TweetAuthor = {
+      id: this.resolvedUserId(), name: this.authorName(), username: this.authorHandle().substring(1),
+      avatarColor: this.author.avatarColor, avatarUrl: this.avatarUrl(), verified: this.isVerified(),
+      verifiedType: this.profile?.verifiedType ?? this.author.verifiedType,
+      avatarShape: this.profile?.avatarShape ?? this.author.avatarShape
+    };
+    const param: AboutAccountRouteParam = { author: author, joined: this.joinedDate() };
+    this.pageStack.pushPath({ name: 'AboutAccount', param: param });
+  }
+
+  private onProfileTouchIntercept(event: TouchEvent): HitTestMode {
+    if (event.type === TouchType.Down && event.touches.length > 0) {
+      try {
+        const node = this.getUIContext().getFrameNodeById('profile-post-feed-' + this.selectedTab.toString());
+        if (node !== null) {
+          const top: number = node.getPositionToWindowWithTransform().y;
+          // Let the inner WaterFlow receive the stopping press and the next
+          // drag. Blocking it here strands the gesture on a collapsed parent.
+          if (event.touches[0].windowY >= top) { return HitTestMode.Default; }
+        }
+      } catch (error) { }
     }
-    this.aboutLoading = true;
-    this.aboutFailed = false;
-    const result: XPrivateResult = await xPrivateClient.userAbout(this.authorHandle().substring(1));
-    if (this.alive) {
-      this.accountAbout = result.ok ? ProfileAccountData.about(result.body) : null;
-      this.aboutLoading = false;
-      this.aboutFailed = this.accountAbout === null;
-    }
+    return stopScrollOnTouch(event, this.scroller, [this.activityScrollers[this.selectedTab]]);
   }
 
   private async loadRelationship(): Promise<void> {
@@ -1556,6 +1569,20 @@ export struct UserDetail {
     .onClick((event: ClickEvent): void => this.selectTabAt(event))
   }
 
+  private openProfileVideo(post: Tweet, media: MediaAttachment): void {
+    videoPlayerHandoff.request(media.id);
+    const source = pendingMediaViewerSource.take(media.id);
+    const param: VideoFeedRouteParam = {
+      tweets: [post], index: 0, sourceProfileId: this.resolvedUserId(),
+      sourceTweetIds: [post.id], startMediaId: media.id, startPlaying: true, source: source,
+      startPositionSeconds: videoPlaybackPositionStore.positionFor(media.id),
+      onLike: (target: Tweet, liked: boolean): Promise<boolean> => this.onLike(target, liked),
+      onRepost: (target: Tweet, reposted: boolean): Promise<boolean> => this.onRepost(target, reposted),
+      onReply: (target: Tweet): void => this.replyToPost(target)
+    };
+    this.pageStack.pushPath({ name: 'VideoFeedViewer', param: param }, source === undefined);
+  }
+
   @Builder
   private VideoRow(post: Tweet): void {
     Row({ space: 12 }) {
@@ -1585,7 +1612,10 @@ export struct UserDetail {
       .layoutWeight(1).alignItems(HorizontalAlign.Start)
     }
     .width('100%').padding({ left: 14, right: 14, top: 10, bottom: 10 }).alignItems(VerticalAlign.Top)
-    .onClick((): void => this.openPostFromProfile(post))
+    .onClick((): void => {
+      const media: MediaAttachment | null = ProfileAccountData.video(post);
+      if (media !== null) { this.openProfileVideo(post, media); }
+    })
   }
 
   @Builder
@@ -1614,7 +1644,8 @@ export struct UserDetail {
         if (tab === 2 && this.mediaFilter === 'video') {
           this.VideoRow(post)
         } else {
-          TweetCard({ tweet: post, naturalVideoSize: true,
+          TweetCard({ tweet: post, naturalVideoSize: true, videoFeedEnabled: true,
+            onVideoOpen: (t: Tweet, media: MediaAttachment): void => this.openProfileVideo(t, media),
             onLikeChanged: (t: Tweet, liked: boolean): Promise<boolean> => this.onLike(t, liked),
             onRepostChanged: (t: Tweet, reposted: boolean): Promise<boolean> => this.onRepost(t, reposted),
             onReply: (t: Tweet): void => this.replyToPost(t),
@@ -1663,7 +1694,7 @@ export struct UserDetail {
 
   @Builder
   private ActivityList(tab: number): void {
-    AdaptivePostFeed({ scroller: this.activityScrollers[tab],
+    AdaptivePostFeed({ scroller: this.activityScrollers[tab], relatedScrollers: [this.scroller],
       itemKeys: this.tabPosts(tab).map((post: Tweet): string => post.id), feedId: 'profile-post-feed-' + tab.toString(),
       endOffset: this.navigationIndicatorHeight, forwardMode: NestedScrollMode.PARENT_FIRST,
       backwardMode: NestedScrollMode.SELF_FIRST,
@@ -1686,7 +1717,7 @@ export struct UserDetail {
     .width('100%').height(Math.max(1, this.viewportHeight - PROFILE_TAB_BAR_HEIGHT))
     .index(this.activityIndex).loop(false).indicator(false).cachedCount(1)
     .duration(PROFILE_TAB_TRANSITION_DURATION).curve(Curve.EaseOut).clip(true)
-    .disableSwipe(this.refreshing || this.aboutOpen)
+    .disableSwipe(this.refreshing)
     .onChange((index: number): void => this.activityChanged(index))
     .onContentDidScroll((selectedIndex: number, index: number, position: number, length: number): void => {
       this.onActivityScroll(index, position);
@@ -1763,59 +1794,6 @@ export struct UserDetail {
     }.width('100%').height('100%')
   }
 
-  @Builder
-  private AboutRow(symbol: Resource, label: Resource, value: string): void {
-    Row({ space: 20 }) {
-      SymbolGlyph(symbol).fontSize(25).fontColor([pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)])
-      Column({ space: 5 }) {
-        Text(label).fontFamily(this.appFontFamily).fontSize(17).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)).width('100%')
-        Text(value.length > 0 ? value : this.text($r('app.string.profile_info_unavailable'))).fontFamily(this.appFontFamily)
-          .fontSize(15).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).width('100%')
-      }.layoutWeight(1)
-    }.width('100%').padding({ top: 16, bottom: 16 })
-  }
-
-  @Builder
-  private AboutAccount(): void {
-    if (this.aboutOpen) {
-      Column() {
-        Row() {
-          this.IconButton($r('sys.symbol.arrow_left'), $r('app.string.common_back'), (): void => { this.aboutOpen = false; })
-          Text($r('app.string.profile_about_title')).fontFamily(this.appFontFamily).fontSize(20).fontWeight(FontWeight.Bold)
-            .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)).layoutWeight(1).textAlign(TextAlign.Center)
-          Blank().width(40)
-        }
-        .width('100%').height(this.statusBarHeight + 60).padding({ left: 10, right: 10, top: this.statusBarHeight })
-        Scroll() {
-          Column() {
-            this.HeroAvatar('about')
-            this.NameRow(20)
-            Text(this.authorHandle()).fontFamily(this.appFontFamily).fontSize(15).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).margin({ bottom: 30 })
-            this.AboutRow($r('sys.symbol.calendar'), $r('app.string.profile_join_date'), this.joinedDate())
-            this.AboutRow($r('sys.symbol.location_up'), $r('app.string.profile_account_country'), this.accountAbout?.country ?? '')
-            if (this.accountAbout?.locationAccurate === false) {
-              Text($r('app.string.profile_location_approximate')).fontFamily(this.appFontFamily).fontSize(13).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).width('100%')
-            }
-            this.AboutRow($r('sys.symbol.checkmark_circle'), $r('app.string.profile_verified'),
-              this.text(this.isVerified() ? $r('app.string.profile_verified_yes') : $r('app.string.profile_verified_no')))
-            this.AboutRow($r('sys.symbol.globe_badge_message'), $r('app.string.profile_connected_via'), this.accountAbout?.source ?? '')
-            if (this.aboutLoading) { LoadingProgress().width(26).height(26).color(this.accentColor) }
-            if (this.aboutFailed) {
-              Text($r('app.string.profile_about_failed')).fontFamily(this.appFontFamily).fontSize(14).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
-              Button($r('app.string.profile_retry')).onClick((): void => { this.openAbout(); })
-            }
-          }
-          .width('100%').padding({ left: 20, right: 20, top: 30, bottom: 20 })
-        }.width('100%').layoutWeight(1).scrollBar(BarState.Off)
-        Button($r('app.string.profile_get_verified')).width('90%').height(50).borderRadius(25)
-          .fontSize(17).fontWeight(FontWeight.Bold).backgroundColor($r('app.color.text_primary'))
-          .fontColor($r('app.color.bg_page')).margin({ bottom: this.navigationIndicatorHeight + 16, top: 8 })
-          .onClick((): void => this.openWeb('https://x.com/i/premium_sign_up', this.text($r('app.string.profile_get_verified'))))
-      }
-      .width('100%').height('100%').backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue))
-    }
-  }
-
   build(): void {
     HdsNavDestination() {
       Stack({ alignContent: Alignment.TopStart }) {
@@ -1836,7 +1814,7 @@ export struct UserDetail {
             .onScrollStart((): void => scrollStarted(this.scroller))
             .onScrollFrameBegin((offset: number, state: ScrollState): OnScrollFrameBeginHandlerResult =>
               scrollFrame(this.scroller, offset, state))
-            .onTouchIntercept((event: TouchEvent): HitTestMode => stopScrollOnTouch(event, this.scroller, this.activityScrollers))
+            .onTouchIntercept((event: TouchEvent): HitTestMode => this.onProfileTouchIntercept(event))
             .width('100%').height('100%').scrollBar(BarState.Off).sticky(StickyStyle.Header)
             .onDidScroll((): void => {
               this.updateHeaderScroll();
@@ -1859,7 +1837,6 @@ export struct UserDetail {
             $r('app.string.action_scroll_top') : $r('app.string.action_reply')),
           onTop: (): void => { this.scroller.scrollEdge(Edge.Top); this.headerScrollOffset = 0; },
           onReply: (): void => this.replyToAuthor() })
-        this.AboutAccount()
 
       }.width('100%').height('100%')
         .ignoreLayoutSafeArea([LayoutSafeAreaType.SYSTEM], [LayoutSafeAreaEdge.TOP])
@@ -1877,9 +1854,7 @@ export struct UserDetail {
     .hideTitleBar(true).hideBackButton(true)
     .ignoreLayoutSafeArea([LayoutSafeAreaType.SYSTEM], [LayoutSafeAreaEdge.TOP])
     .onBackPressed((): boolean => {
-      if (this.aboutOpen) { this.aboutOpen = false; }
-
-      else { this.back(); }
+      this.back();
       return true;
     })
     .backgroundColor(pageCanvasColor(this.themeDisplayMode, this.themeDarkSurface, this.pageBackgroundValue));

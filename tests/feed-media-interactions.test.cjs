@@ -152,7 +152,7 @@ test('initial layout does not overwrite a separately restored feed position', ()
   assert.equal(h.timers.size, 0); assert.equal(h.page.homeViewportChanging, false);
 });
 
-test('fullscreen desktop photos use a window layer without resizing or navigating the desktop pane', () => {
+test('photos use a native destination on both desktop and phone', () => {
   const Home = methods('pages/Index', 'Index', ['onPhotoRequested']);
   for (const desktop of [true, false]) {
     const pane = [], overlay = []; let contentOpens = 0;
@@ -164,10 +164,10 @@ test('fullscreen desktop photos use a window layer without resizing or navigatin
       openContentDestination() { contentOpens++; }
     });
     page.onPhotoRequested();
-    assert.equal(overlay.length, desktop ? 1 : 0);
-    assert.equal(pane.length, desktop ? 0 : 1);
-    assert.equal(contentOpens, desktop ? 0 : 1);
-    if (desktop) assert.equal(overlay[0][0].param.windowOverlay, true);
+    assert.equal(overlay.length, 0);
+    assert.equal(pane.length, 1);
+    assert.equal(contentOpens, 1);
+    assert.equal(pane[0][0].param.windowOverlay, undefined);
   }
 });
 
@@ -177,7 +177,8 @@ test('closing the window photo layer preserves an underlying open post destinati
     ResponsiveLayout: { closeContentDestination: (...args) => closes.push(args) }
   });
   const pops = [], pageStack = { pop: value => pops.push(value) };
-  const viewer = Object.assign(new Viewer(), { windowOverlay: true, pageStack });
+  const viewer = Object.assign(new Viewer(), { windowOverlay: true, pageStack,
+    returnNavigation: { complete: () => false } });
   viewer.popViewer(false);
   assert.deepEqual(pops, [false]); assert.equal(closes.length, 0);
   viewer.windowOverlay = false; viewer.popViewer();
@@ -190,6 +191,92 @@ test('native media menu defers its selected action until preview and focus have 
   let calls = 0; menu.dismissThen(() => calls++);
   assert.equal(menu.menuShown, false); assert.equal(calls, 0);
   menu.onMenuDismissed(); menu.onMenuDismissed(); assert.equal(calls, 1);
+});
+
+test('video surfaces wire viewer hold playback and keep inline menus exclusive with taps', () => {
+  const media = fs.readFileSync('entry/src/main/ets/components/PostMedia.ets', 'utf8');
+  const actions = fs.readFileSync('entry/src/main/ets/components/PostMediaActions.ets', 'utf8');
+  assert.equal((media.match(/\.onTouch\(\(event: TouchEvent\): void => this\.onHoldSpeedTouch\(event\)\)/g) || []).length, 2);
+  assert.equal((media.match(/LongPressGesture\(\{ fingers: 1, repeat: this\.mediaViewerLayout \|\| this\.fullscreen, duration: HOLD_SEEK_DURATION_MS \}\)\s*\.onAction\(\(event: GestureEvent\): void => this\.onVideoLongPress\(event\)\)\s*\.onActionEnd\(\(\): void => this\.finishHoldGesture\(\)\)\s*\.onActionCancel\(\(\): void => this\.finishHoldGesture\(\)\)/g) || []).length, 2);
+  assert.match(media, /onMenuRequest: onLongPress/);
+  assert.doesNotMatch(media, /showDownloadButton && media\.type === 'video'/);
+  assert.doesNotMatch(media, /arrow_up_left_and_arrow_down_right[\s\S]{0,240}post_card_title_overlay/);
+  assert.match(actions,
+    /preview: this\.media\.type === 'photo' \? MenuPreviewMode\.IMAGE : MenuPreviewMode\.NONE/);
+});
+
+function holdVideo(options = {}) {
+  const timers = new Map(), rates = [], changes = [], menus = [], seeks = [];
+  let nextTimer = 0;
+  const Player = methods('components/PostMedia', 'SurfaceVideoPlayer', [
+    'onVideoLongPress', 'requestMediaMenu', 'onHoldSpeedTouch', 'armHoldSpeed', 'disarmHoldSpeed',
+    'holdSpeedUsable', 'beginHoldSpeed', 'trackHoldSpeedMove', 'applyHoldSpeedRate',
+    'finishHoldSpeed', 'notifyHoldSpeedEnded', 'finishHoldGesture'
+  ], {
+    TouchType: { Down: 0, Move: 1, Up: 2, Cancel: 3 },
+    HOLD_SPEED_HOLD_MS: 500, HOLD_SPEED_SLOP_VP: 12, HOLD_SPEED_STEP_VP: 40,
+    VIDEO_HOLD_SPEED_RATE: 2, VIDEO_HOLD_SPEED_STEP_RATE: 0.5,
+    VIDEO_HOLD_SPEED_MIN_RATE: 0.5, VIDEO_HOLD_SPEED_MAX_RATE: 4,
+    setTimeout: (fn, ms) => { timers.set(++nextTimer, { fn, ms }); return nextTimer; },
+    clearTimeout: id => timers.delete(id), hapticTick() {},
+    videoMediaSession: { updatePlayback() {} }, hilog: { info() {} }, DOMAIN: 0, TAG: ''
+  });
+  const player = Object.assign(new Player(), {
+    alive: true, ready: true, playing: true, playbackEnabled: true, durationSec: 120,
+    mediaViewerLayout: true, fullscreen: false, holdSpeedEnabled: true, holdSpeedActive: false,
+    playerControlsLocked: false, retainViewerPlayback: false, pipActive: false, casting: false,
+    sourceTransitioning: false, scrubbing: false, holdSpeedArmed: false, holdSpeedTimer: -1,
+    holdSpeedNotified: false, playbackRateIndex: 3, holdSpeedRate: 2, media: { id: 'video' },
+    player: {}, isAnimatedGif: () => false, clearHideTimer() {}, holdControls() {},
+    setPlayerRate: value => rates.push(value),
+    playbackRate() { return [0.75, 1, 1.25, 1.5, 2][this.playbackRateIndex]; },
+    applyPlaybackRate() { rates.push(this.playbackRate()); },
+    onHoldSpeedChanged: (...args) => changes.push(args), onMenuRequest: () => menus.push('menu'),
+    holdSeek: event => seeks.push(event), finishHoldSeek() {}
+  }, options);
+  return { player, timers, rates, changes, menus, seeks,
+    touch: (type, y = 100) => player.onHoldSpeedTouch({ type, touches: [{ y }] }),
+    activate: () => { for (const [id, timer] of [...timers]) { timers.delete(id); timer.fn(); } }
+  };
+}
+
+test('viewer and fullscreen hold speed survives gesture cancellation, slides and restores the chosen rate on release', () => {
+  for (const layout of [{ mediaViewerLayout: true }, { mediaViewerLayout: false, fullscreen: true }]) {
+    const h = holdVideo(layout);
+    h.touch(0); assert.equal([...h.timers.values()][0].ms, 500);
+    h.activate(); h.player.onVideoLongPress({ fingerList: [] });
+    assert.deepEqual(h.rates, [2]); assert.deepEqual(h.menus, []);
+    h.player.finishHoldGesture(); assert.equal(h.player.holdSpeedActive, true);
+    h.touch(1, 100); h.touch(1, 20); assert.equal(h.rates.at(-1), 3);
+    h.touch(1, 180); assert.equal(h.rates.at(-1), 1);
+    h.touch(1, 100); assert.equal(h.rates.at(-1), 2);
+    h.touch(2); assert.equal(h.player.holdSpeedActive, false);
+    assert.equal(h.rates.at(-1), 1.5); assert.equal(h.player.playbackRateIndex, 3);
+    assert.deepEqual(h.changes.at(-1), [false, 1.5]); assert.deepEqual(h.menus, []);
+  }
+});
+
+test('early scrolling or release cancels hold activation and touch cancellation restores speed', () => {
+  for (const type of [1, 2, 3]) {
+    const h = holdVideo(); h.touch(0); h.touch(type, 130); h.activate();
+    assert.equal(h.player.holdSpeedActive, false); assert.deepEqual(h.rates, []);
+    assert.equal(h.timers.size, 0); assert.deepEqual(h.menus, []);
+  }
+  const h = holdVideo(); h.touch(0); h.activate(); h.touch(3);
+  assert.equal(h.rates.at(-1), 1.5); assert.equal(h.player.holdSpeedActive, false);
+});
+
+test('inline holds open the menu without arming speed and disabled viewer speed retains hold seeking', () => {
+  const event = { fingerList: [{ localX: 100 }] };
+  const inline = holdVideo({ mediaViewerLayout: false });
+  inline.touch(0); inline.activate(); inline.player.onVideoLongPress(event);
+  assert.equal(inline.timers.size, 0); assert.deepEqual(inline.rates, []);
+  assert.deepEqual(inline.menus, ['menu']); assert.deepEqual(inline.seeks, []);
+  for (const layout of [{ mediaViewerLayout: true }, { mediaViewerLayout: false, fullscreen: true }]) {
+    const h = holdVideo({ ...layout, holdSpeedEnabled: false });
+    h.touch(0); h.activate(); h.player.onVideoLongPress(event); h.player.onVideoLongPress(event);
+    assert.deepEqual(h.rates, []); assert.deepEqual(h.menus, []); assert.deepEqual(h.seeks, [event, event]);
+  }
 });
 
 test('profile replies address the selected post, and private repost failures preserve upstream errors', async () => {
@@ -210,4 +297,29 @@ test('profile replies address the selected post, and private repost failures pre
   assert.equal(await profile.onRepost(post, true), false);
   assert.deepEqual(writes, [['chosen-post', true]]); assert.match(toasts[0].message, /Rate limited/);
   signedIn = false; profile.replyToPost(post); assert.equal(routes.length, 1);
+});
+
+test('disabled autoplay has no control spacer until a manual start, including a retained PiP-capable player',()=>{
+  const Content=methods('components/PostMedia','PostMedia',['inlineControlsHeight'],{
+    VIDEO_CONTROL_STYLE_ORIGINAL:0,INLINE_PROGRESS_LINE_HEIGHT:2,INLINE_VIDEO_CONTROLS_HEIGHT:56
+  });
+  let manual=false;
+  const content=Object.assign(new Content(),{usesStableInlineLayout:()=>true,hideInlineControls:false,
+    videoAutoplay:false,videoControlStyle:1,isManualStart:()=>manual,showsPlayer:()=>true});
+  assert.equal(content.inlineControlsHeight({id:'one'}),0);
+  manual=true;assert.equal(content.inlineControlsHeight({id:'one'}),56);
+  manual=false;content.videoAutoplay=true;assert.equal(content.inlineControlsHeight({id:'one'}),56);
+  content.hideInlineControls=true;assert.equal(content.inlineControlsHeight({id:'one'}),0);
+});
+
+test('native inline player removes its own control height before manual playback and keeps it on pause',()=>{
+  const Player=methods('components/PostMedia','SurfaceVideoPlayer',['showsProgressBelowVideo','playerContainerHeight'],{
+    VIDEO_CONTROL_STYLE_ORIGINAL:0,INLINE_PROGRESS_LINE_HEIGHT:2,INLINE_VIDEO_CONTROLS_HEIGHT:56
+  });
+  const player=Object.assign(new Player(),{hasFeedControlStrip:()=>false,displayHeight:()=>240,
+    controlsAtScreenBottom:false,adaptiveShortVideo:false,hideVideoChrome:()=>false,hideInlineVideoControls:()=>false,
+    mediaViewerLayout:false,fullscreen:false,videoAutoplay:false,manualStart:false,playing:false,videoControlStyle:1});
+  assert.equal(player.showsProgressBelowVideo(),false);assert.equal(player.playerContainerHeight(),240);
+  player.playing=true;assert.equal(player.playerContainerHeight(),296);
+  player.playing=false;player.manualStart=true;assert.equal(player.playerContainerHeight(),296);
 });

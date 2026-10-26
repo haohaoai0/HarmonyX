@@ -122,6 +122,12 @@ export class XXAuthSupporterService {
     return XXAuthSupporterPolicy.active(this.records, this.selectedAccountId(), Date.now());
   }
 
+  // An unread/locked entitlement must never be interpreted as an ad-eligible user.
+  cachedStateReady(): boolean {
+    const accountId: string = this.selectedAccountId();
+    return accountId.length > 0 && this.loadedAccounts.has(accountId);
+  }
+
   private publish(): void {
     const record: SupporterRecord = XXAuthSupporterPolicy.recordFor(this.records, this.selectedAccountId());
     const live: boolean = this.active();

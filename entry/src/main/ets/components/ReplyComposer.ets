@@ -108,6 +108,7 @@ export interface ReplyComposerRouteParam {
   initialText: string;
   imageUri: string;
   gifUri: string;
+  videoUri?: string;
   communityId: string;
   communityName: string;
   parentTweet: Tweet | null;
@@ -835,6 +836,7 @@ export struct ReplyComposerPage {
     }
     this.imageUris = routeImages;
     this.gifUri = param.gifUri;
+    this.videoUri = param.videoUri ?? '';
     this.routeLoaded = true;
     this.positionReplyTargetAboveEditor();
     this.restoreDraft();

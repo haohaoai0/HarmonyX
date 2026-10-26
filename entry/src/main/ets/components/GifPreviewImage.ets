@@ -8,10 +8,12 @@ import { image } from '@kit.ImageKit';
 import { proxyDownloadService } from '../services/ProxyDownloadService';
 import { proxyImageResolver } from '../services/ProxyImageResolver';
 import { proxyStore } from '../services/ProxyStore';
+import { STORAGE_KEY_DNS_REVISION } from '../services/DnsSettingsStore';
 
 @Component
 export struct GifPreviewImage {
   @Prop @Watch('onUrlChanged') url: string = '';
+  @StorageProp(STORAGE_KEY_DNS_REVISION) @Watch('onUrlChanged') private dnsRevision: number = 0;
   @Prop @Watch('onUrlChanged') previewUrl: string = '';
   @Prop displayHeight: number = 228;
   @Prop surfaceColor: ResourceColor = '';
@@ -52,7 +54,7 @@ export struct GifPreviewImage {
   private resolveSource(): void {
     const gifUrl: string = this.url;
     const thumbnailUrl: string = this.previewUrl;
-    const proxyEnabled: boolean = proxyStore.snapshot().enabled;
+    const proxyEnabled: boolean = proxyStore.requiresHttpTransport();
     if (thumbnailUrl.length > 0 && thumbnailUrl !== gifUrl) {
       if (proxyEnabled || gifUrl.length === 0) {
         this.beginProxyPreview(thumbnailUrl);

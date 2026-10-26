@@ -17,6 +17,12 @@ export class BrowsingHistoryEntry {
   sensitive: boolean = false;
 }
 
+export class BrowsingHistoryBatch {
+  rows: BrowsingHistoryEntry[] = [];
+  nextOffset: number = 0;
+  hasMore: boolean = false;
+}
+
 // Keep links and a small local preview of content the reader already saw.
 // No timeline/API request is needed to display the history. Rows and indexes stay
 // below Preferences' per-value size limit even with a long local history.
@@ -31,10 +37,11 @@ export class BrowsingHistoryStore {
   private ids(store: preferences.Preferences): string[] {
     const count: number = Math.min(20, Math.max(0, store.getSync('index_count', 0) as number));
     const result: string[] = [];
+    const seen: Set<string> = new Set<string>();
     for (let i: number = 0; i < count; i++) {
       const chunk: string[] = JSON.parse(store.getSync('index_' + i, '[]') as string) as string[];
       for (const id of chunk) {
-        if (/^\d+$/.test(id) && result.indexOf(id) < 0) { result.push(id); }
+        if (/^\d+$/.test(id) && !seen.has(id)) { seen.add(id); result.push(id); }
       }
     }
     return result.slice(0, BrowsingHistoryStore.MAX_ENTRIES);
@@ -54,6 +61,29 @@ export class BrowsingHistoryStore {
     } catch (error) { return []; }
   }
 
+  // Bound synchronous preference reads to one page instead of parsing 2000
+  // snapshots during a navigation frame. Offset counts IDs, including bad rows.
+  loadBatch(context: common.Context, offset: number = 0, count: number = 32): BrowsingHistoryBatch {
+    const batch: BrowsingHistoryBatch = new BrowsingHistoryBatch();
+    try {
+      const store: preferences.Preferences = this.store(context);
+      const ids: string[] = this.ids(store);
+      const start: number = Math.max(0, offset);
+      batch.nextOffset = Math.min(ids.length, start + Math.max(1, Math.min(64, count)));
+      batch.hasMore = batch.nextOffset < ids.length;
+      for (let index: number = start; index < batch.nextOffset; index++) {
+        try {
+          const id: string = ids[index];
+          const row: BrowsingHistoryEntry = JSON.parse(store.getSync('post_' + id, '{}') as string) as BrowsingHistoryEntry;
+          if (row.id === id && /^https:\/\/x\.com\/(?:[A-Za-z0-9_]+|i\/web)\/status\/\d+$/.test(row.url)) {
+            batch.rows.push(this.normalize(row));
+          }
+        } catch (_error) { }
+      }
+    } catch (_error) { }
+    return batch;
+  }
+
   record(context: common.Context, tweet: Tweet): void {
     if (!/^\d+$/.test(tweet.id)) { return; }
     try {
@@ -70,17 +100,19 @@ export class BrowsingHistoryStore {
   }
 
   // A detail fetch can fill an old link-only entry without changing visit order.
-  enrich(context: common.Context, tweet: Tweet): void {
-    if (!/^\d+$/.test(tweet.id)) { return; }
+  enrich(context: common.Context, tweet: Tweet): BrowsingHistoryEntry | null {
+    if (!/^\d+$/.test(tweet.id)) { return null; }
     try {
       const store: preferences.Preferences = this.store(context);
       const previous: BrowsingHistoryEntry = JSON.parse(store.getSync('post_' + tweet.id, '{}') as string) as BrowsingHistoryEntry;
-      if (previous.id !== tweet.id) { return; }
+      if (previous.id !== tweet.id) { return null; }
       const row: BrowsingHistoryEntry = this.snapshot(tweet, previous);
       row.viewedAt = previous.viewedAt;
       store.putSync('post_' + tweet.id, JSON.stringify(row));
-      store.flushSync();
+      store.flush().catch((): void => {});
+      return row;
     } catch (error) { }
+    return null;
   }
 
   private normalize(saved: BrowsingHistoryEntry): BrowsingHistoryEntry {

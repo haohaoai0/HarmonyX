@@ -1,6 +1,7 @@
 import { avSession, AVCastPickerState } from '@kit.AVSessionKit';
 import { common } from '@kit.AbilityKit';
 import hilog from '@ohos.hilog';
+import { videoMediaArtwork, VideoMediaArtworkLease } from './VideoMediaArtwork';
 
 // What the media session needs from whatever is playing. The built-in Video
 // component and the AVPlayer-backed surface player both provide these three
@@ -27,6 +28,8 @@ class VideoMediaSession {
   private durationMs: number = 0;
   private positionMs: number = 0;
   private cover: string = '';
+  private artwork: VideoMediaArtworkLease | null = null;
+  private artworkEpoch: number = 0;
   private title: string = 'X 视频';
   private castMediaUrl: string = '';
   private castController: avSession.AVCastController | null = null;
@@ -44,6 +47,10 @@ class VideoMediaSession {
     sessionType: avSession.AVSessionType = 'video', castMediaUrl: string = ''): Promise<boolean> {
     if (this.ownerId === id && this.session !== null) {
       if (castMediaUrl.length > 0) { this.castMediaUrl = castMediaUrl; }
+      if (cover !== this.cover) {
+        this.cover = cover;
+        this.updateArtwork(context, id, this.session, cover, this.castMediaUrl);
+      }
       return true;
     }
     const generation: number = ++this.generation;
@@ -91,6 +98,9 @@ class VideoMediaSession {
         if (this.isOwner(id)) handle.seekPlayback(Math.max(0, position) / 1000);
       });
       await session.activate();
+      if (generation === this.generation) {
+        this.updateArtwork(context, id, session, cover, castMediaUrl);
+      }
       return generation === this.generation;
     } catch (err) {
       await this.release(id);
@@ -100,12 +110,39 @@ class VideoMediaSession {
 
   private metadata(id: string): avSession.AVMetadata {
     const metadata: avSession.AVMetadata = {
-      assetId: id, title: this.title, mediaImage: this.cover, duration: this.durationMs
+      assetId: id, title: this.title, mediaImage: this.artwork?.pixelMap ?? this.cover, duration: this.durationMs
     };
     if (this.castMediaUrl.length > 0) {
       metadata.filter = avSession.ProtocolType.TYPE_CAST_PLUS_STREAM | avSession.ProtocolType.TYPE_DLNA;
     }
     return metadata;
+  }
+
+  private async updateArtwork(context: common.Context, id: string, session: avSession.AVSession,
+    cover: string, videoUrl: string): Promise<void> {
+    const epoch: number = ++this.artworkEpoch;
+    let artwork: VideoMediaArtworkLease | null = null;
+    try {
+      artwork = await videoMediaArtwork.load(context, id, cover, videoUrl);
+    } catch (error) {
+      hilog.warn(0xFF00, 'HarmonyX-Media', 'session artwork unavailable id=%{public}s', id);
+      return;
+    }
+    if (epoch !== this.artworkEpoch || this.session !== session || !this.isOwner(id)) {
+      artwork?.release();
+      return;
+    }
+    if (artwork === null) { return; }
+    const previous: VideoMediaArtworkLease | null = this.artwork;
+    this.artwork = artwork;
+    try {
+      await session.setAVMetadata(this.metadata(id));
+      hilog.info(0xFF00, 'HarmonyX-Media', 'session artwork ready id=%{public}s', id);
+    } catch (error) {
+      hilog.warn(0xFF00, 'HarmonyX-Media', 'session artwork update failed id=%{public}s', id);
+    } finally {
+      previous?.release();
+    }
   }
 
   async selectCastDevice(context: common.Context, id: string,
@@ -259,6 +296,9 @@ class VideoMediaSession {
 
   private async releaseCurrent(): Promise<void> {
     const session: avSession.AVSession | null = this.session;
+    const artwork: VideoMediaArtworkLease | null = this.artwork;
+    this.artwork = null;
+    ++this.artworkEpoch;
     const callback: (() => void) | null = this.onOwnerReleased;
     const wasCasting: boolean = this.castController !== null;
     ++this.castEpoch;
@@ -279,6 +319,7 @@ class VideoMediaSession {
         // The UI player is already detached; no stale session should be reused.
       }
     }
+    artwork?.release();
   }
 }
 

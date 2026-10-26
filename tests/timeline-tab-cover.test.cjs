@@ -94,7 +94,7 @@ test('the shared file cache downloads once and later tab mounts read the same fi
       statSync: path => { if (!files.has(path)) throw Error('missing'); return { isFile: () => true, size: 100 }; }
     }, fileUri: { getUriFromPath: path => 'file://' + path } },
     '@ohos.hilog': { default: { debug() {}, warn() {} } },
-    './ProxyStore': { proxyStore: { snapshot: () => ({ enabled: true }) } },
+    './ProxyStore': { proxyStore: { snapshot: () => ({ enabled: true }), requiresHttpTransport: () => true } },
     './ProxyDownloadService': { proxyDownloadService: { download: async (url, path) => {
       calls.push(url); files.set(path, true); return true;
     } } }

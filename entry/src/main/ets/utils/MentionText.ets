@@ -49,7 +49,7 @@ function isHashtagChar(character: string): boolean {
 }
 
 function linkPrefixLength(input: string, index: number): number {
-  const rest: string = input.substring(index);
+  const rest: string = input.substring(index).toLowerCase();
   if (rest.startsWith('https://')) {
     return 8;
   }
@@ -60,7 +60,7 @@ function linkPrefixLength(input: string, index: number): number {
 }
 
 function isTrailingNoise(character: string): boolean {
-  return character === '.' || character === ',' || character === ')' ||
+  return character === '.' || character === ',' ||
     character === '，' || character === '。';
 }
 
@@ -109,7 +109,18 @@ export function splitPostText(input: string): MentionSegment[] {
       while (end < input.length && !isWhitespace(input.charAt(end))) {
         end += 1;
       }
-      while (end > index + prefix && isTrailingNoise(input.charAt(end - 1))) {
+      let parentheses: number = 0;
+      for (let cursor: number = index + prefix; cursor < end; cursor++) {
+        if (input.charAt(cursor) === '(') { parentheses++; }
+        if (input.charAt(cursor) === ')') { parentheses--; }
+      }
+      while (end > index + prefix) {
+        const last: string = input.charAt(end - 1);
+        if (last === ')' && parentheses < 0) {
+          parentheses++;
+        } else if (!isTrailingNoise(last)) {
+          break;
+        }
         end -= 1;
       }
       if (end > index + prefix) {
@@ -118,7 +129,10 @@ export function splitPostText(input: string): MentionSegment[] {
           plain = '';
         }
         const link: string = input.substring(index, end);
-        segments.push(new MentionSegment(link, false, '', '', link));
+        // Keep the complete destination for taps while showing the original
+        // site's address in the same compact form as X (example.com).
+        const label: string = link.replace(/^https?:\/\//i, '').replace(/^([^/?#]+)\/$/, '$1');
+        segments.push(new MentionSegment(label, false, '', '', link));
         index = end;
         continue;
       }

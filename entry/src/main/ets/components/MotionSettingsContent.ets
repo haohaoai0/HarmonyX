@@ -7,6 +7,9 @@ import { STORAGE_KEY_REDUCE_MOTION, STORAGE_KEY_MOTION_DURATION, STORAGE_KEY_MOT
   MOTION_PRESET_CUSTOM } from '../services/MotionSettingsStore';
 import { AppearancePreview } from './AppearancePreview';
 import { pageTextColor, fieldSurfaceColor } from '../utils/ThemeColors';
+import { STORAGE_KEY_STARTUP_MODE, STORAGE_KEY_STARTUP_SPEED, STARTUP_MODE_NONE, STARTUP_MODE_ICON,
+  STARTUP_MODE_IOS, STARTUP_MODE_VIDEO, STARTUP_PLAYBACK_SPEEDS, normaliseStartupSpeed,
+  startupSettingsStore } from '../services/StartupSettingsStore';
 
 @Component
 export struct MotionSettingsContent {
@@ -24,6 +27,63 @@ export struct MotionSettingsContent {
   @StorageProp(STORAGE_KEY_HAPTICS_INTENSITY) private intensity: number = 60;
   @State private previewReplay: number = 0;
   @State private failed: boolean = false;
+  @StorageProp(STORAGE_KEY_STARTUP_MODE) private startupMode: string = STARTUP_MODE_VIDEO;
+  @StorageProp(STORAGE_KEY_STARTUP_SPEED) private startupSpeed: number = 1;
+
+  private speedOptions(): SelectOption[] {
+    return STARTUP_PLAYBACK_SPEEDS.map((speed: number): SelectOption => {
+      return { value: $r('app.string.startup_animation_speed_value', speed.toString()) };
+    });
+  }
+
+  private chooseStartupSpeed(index: number): void {
+    if (index < 0 || index >= STARTUP_PLAYBACK_SPEEDS.length) { return; }
+    const context: common.Context | undefined = this.getUIContext().getHostContext();
+    this.failed = context === undefined || !startupSettingsStore.saveSpeed(context, STARTUP_PLAYBACK_SPEEDS[index]);
+  }
+
+  @Builder
+  private StartupSpeed(): void {
+    Column({ space: 8 }) {
+      Row({ space: 12 }) {
+        Text($r('app.string.startup_animation_speed')).fontFamily(this.appFontFamily)
+          .fontSize($r('sys.float.Subtitle_L')).layoutWeight(1)
+          .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
+        Select(this.speedOptions())
+          .selected(STARTUP_PLAYBACK_SPEEDS.indexOf(normaliseStartupSpeed(this.startupSpeed)))
+          .value($r('app.string.startup_animation_speed_value', normaliseStartupSpeed(this.startupSpeed).toString()))
+          .fontColor(this.accentColor).enabled(!this.reduceMotion)
+          .id('startup-animation-speed').accessibilityText($r('app.string.startup_animation_speed'))
+          .onSelect((index: number): void => this.chooseStartupSpeed(index))
+      }.width('100%')
+      this.Description($r('app.string.startup_animation_speed_desc'))
+    }.width('100%')
+  }
+
+  private chooseStartupMode(mode: string): void {
+    const context: common.Context | undefined = this.getUIContext().getHostContext();
+    this.failed = context === undefined || !startupSettingsStore.save(context, mode);
+  }
+
+  @Builder
+  private StartupOption(mode: string, title: Resource, detail: Resource): void {
+    Button({ type: ButtonType.Normal }) {
+      Row({ space: 14 }) {
+        Column({ space: 5 }) {
+          Text(title).fontFamily(this.appFontFamily).fontSize($r('sys.float.Subtitle_L'))
+            .fontWeight(this.startupMode === mode ? FontWeight.Bold : FontWeight.Medium)
+            .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, fieldSurfaceColor(this.displayMode, this.darkSurface)))
+          this.Description(detail, fieldSurfaceColor(this.displayMode, this.darkSurface))
+        }.layoutWeight(1).alignItems(HorizontalAlign.Start)
+        SymbolGlyph(this.startupMode === mode ? $r('sys.symbol.checkmark_circle_fill') : $r('sys.symbol.circle'))
+          .fontSize(24).fontColor([this.startupMode === mode ? this.accentColor : $r('app.color.text_secondary')])
+      }.width('100%').padding(16)
+    }.width('100%').borderRadius(16)
+      .backgroundColor(fieldSurfaceColor(this.displayMode, this.darkSurface))
+      .id('startup-mode-' + mode).accessibilityText(title).accessibilityDescription(detail)
+      .accessibilitySelected(this.startupMode === mode)
+      .onClick((): void => this.chooseStartupMode(mode))
+  }
 
   private preview(): void { this.previewReplay++; }
 
@@ -112,6 +172,16 @@ export struct MotionSettingsContent {
       AppearancePreview({ kind: 'motion', replay: this.previewReplay })
       Column({ space: 20 }) {
         this.Description($r('app.string.motion_intro'))
+        Column({ space: 10 }) {
+          Text($r('app.string.startup_animation_title')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Title_S'))
+            .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)).width('100%')
+          this.Description($r('app.string.startup_animation_desc'))
+          this.StartupOption(STARTUP_MODE_NONE, $r('app.string.startup_animation_none'), $r('app.string.startup_animation_none_desc'))
+          this.StartupOption(STARTUP_MODE_ICON, $r('app.string.startup_animation_icon'), $r('app.string.startup_animation_icon_desc'))
+          this.StartupOption(STARTUP_MODE_IOS, $r('app.string.startup_animation_ios'), $r('app.string.startup_animation_ios_desc'))
+          this.StartupOption(STARTUP_MODE_VIDEO, $r('app.string.startup_animation_video'), $r('app.string.startup_animation_video_desc'))
+          if (this.startupMode === STARTUP_MODE_VIDEO) { this.StartupSpeed() }
+        }.width('100%')
         Column({ space: 10 }) {
           Text($r('app.string.motion_presets')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Title_S'))
             .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))

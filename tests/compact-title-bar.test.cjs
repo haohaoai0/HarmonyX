@@ -36,16 +36,30 @@ test('root title-bar morph starts with the page switch and stays short', () => {
   assert.ok(schedule.indexOf('animateTo') < schedule.indexOf('setTimeout('));
   assert.match(schedule, /this\.chromeTab = index/);
   assert.match(schedule, /this\.chromeTabSettled = index/);
-  // The HDS hide hand-off still waits for the swipe; changing it mid-swipe
-  // rebuilds the title-bar material.
-  assert.match(indexMethod('titleBarHideParams'), /this\.chromeTabSettled === 1/);
+  // The shared scroll state now owns both title-bar and bottom-bar visibility.
+  assert.match(indexMethod('titleBarShouldHide'), /this\.titleBarHidden/);
+  assert.match(indexMethod('setChromeHidden'), /this\.setTitleBarHidden\(hidden\)/);
+});
+
+test('collapsed chrome keeps the HDS status-bar band for immersive gradient blur', () => {
+  const params = indexMethod('titleBarDynamicHideParams');
+  assert.match(params, /hideTitleArea: hidden/);
+  assert.match(params, /hideBottomBuilder: hidden/);
+  assert.match(params, /hideStatusBar: false/);
+  assert.match(params, /mode: HideMode\.SCROLL_UP/);
+  assert.match(indexSource, /\.dynamicHideTitleBar\(this\.titleBarDynamicHideParams\(\)\)/);
+  assert.doesNotMatch(indexSource, /collapsed-status-bar-blur/);
+  const titleBar = fs.readFileSync('entry/src/main/ets/utils/DestinationTitleBar.ets', 'utf8');
+  assert.match(titleBar, /ScrollEffectType\.IMMERSIVE_GRADIENT_BLUR/);
 });
 
 test('compact header removes the displaced rows while retaining Explore categories', () => {
-  for (const [tab, normal, compact] of [[0, 48, 12], [1, 96, 64], [2, 52, 12], [3, 56, 12], [4, 0, 12]]) {
+  for (const [tab, normal, compact] of [[0, 54, 12], [1, 100, 64], [2, 52, 12], [3, 56, 12], [4, 0, 12]]) {
     assert.equal(layout.bottomHeight(tab, true, false, 0, false), normal);
     assert.equal(layout.bottomHeight(tab, false, false, 0, false), compact);
   }
+  assert.equal(layout.bottomHeight(0, true, false, 0, false),
+    layout.labelsHeight(0, true, 0, false));
   assert.equal(layout.labelsHeight(2, true, 0, false), 52);
   assert.equal(layout.labelsHeight(2, false, 0, false), 0);
   assert.equal(layout.labelsHeight(1, false, 0, false), 52);
@@ -70,7 +84,7 @@ test('feed avoidance follows the visible controls in both settings', () => {
   assert.equal(layout.contentTopInset(2, true, 32, false, 0), 148);
   assert.equal(layout.contentTopInset(3, true, 32, false, 0), 144);
   assert.equal(layout.contentTopInset(1, true, 32, false, 0) -
-    layout.contentTopInset(1, false, 32, false, 0), 32);
+    layout.contentTopInset(1, false, 32, false, 0), 36);
 });
 
 test('large-screen content starts below the full page indicator and Space capsule', () => {

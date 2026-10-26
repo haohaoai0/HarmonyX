@@ -14,6 +14,7 @@ import { ChatMediaCard } from '../components/ChatMediaCard';
 import { DmAttachment } from '../models/Tweet';
 import { openExternalLink } from '../utils/PostEntities';
 import { xChatActions } from '../services/XChatActions';
+import { ChatUnlockRequest } from '../services/ChatUnlockRequest';
 import { xPrivateClient } from '../services/XPrivateClient';
 import { xPrivateStore } from '../services/XPrivateStore';
 import { DmConversationRouteParam } from './DmConversation';
@@ -44,6 +45,7 @@ struct DmInfoPage {
   @StorageProp(STORAGE_KEY_PAGE_TRANSITION_MODE) private pageTransitionMode: string = DEFAULT_PAGE_TRANSITION_MODE;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @Consume('pageStack') pageStack: NavPathStack;
+  @Consume('chatUnlockRequest') chatUnlockRequest: ChatUnlockRequest = new ChatUnlockRequest((): void => {});
   @StorageProp('harmonyx.status_bar_height') statusBarHeight: number = 0;
   @StorageProp('harmonyx.navigation_indicator_height') bottomInset: number = 0;
   @StorageProp('harmonyx.display_mode') displayMode: string = '';
@@ -166,13 +168,19 @@ struct DmInfoPage {
   }
   private async saveNickname(): Promise<void> {
     if (this.route === null || this.busy) { return; }
+    if (!xChatService.isUnlocked()) {
+      this.chatUnlockRequest.request((): void => { if (this.valid()) { this.saveNickname(); } }); return;
+    }
     this.busy = true;
     try { await xChatService.saveNickname(this.context(), this.route.conversationId, this.nickname.trim()); if (this.valid()) { this.pageStack.pop(); } }
     catch (error) { if (this.valid()) { this.error = this.text($r('app.string.chat_action_failed')); } }
     finally { if (this.valid()) { this.busy = false; } }
   }
   private async act(kind: string, value: string = ''): Promise<void> {
-    if (this.route === null || this.busy) { return; }
+    if (this.route === null || this.busy || !this.valid()) { return; }
+    if (!xChatService.isUnlocked() && (kind === 'delete' || kind === 'clear' || kind === 'screen' || kind === 'ttl')) {
+      this.chatUnlockRequest.request((): void => { if (this.valid()) { this.act(kind, value); } }); return;
+    }
     const route: DmInfoRouteParam = this.route;
     if (kind === 'delete' || kind === 'clear') {
       const result: promptAction.ShowDialogSuccessResponse = await promptAction.showDialog({
@@ -201,9 +209,22 @@ struct DmInfoPage {
         }
       }
       if (this.valid()) { xChatService.setConversationInfo(route.conversationId, { ttl: this.ttl, screenBlocked: this.screenBlocked, muted: this.muted }); }
-      if (this.valid() && (kind === 'hide' || kind === 'delete' || kind === 'clear')) { this.pageStack.pop(); }
+      if (this.valid() && kind === 'delete') { this.closeDeletedConversation(route.conversationId); }
+      else if (this.valid() && (kind === 'hide' || kind === 'clear')) { this.pageStack.pop(); }
     } catch (error) { if (this.valid()) { this.error = this.text($r('app.string.chat_action_failed')); } }
     finally { if (this.valid()) { this.busy = false; } }
+  }
+  private closeDeletedConversation(conversationId: string): void {
+    const names: string[] = this.pageStack.getAllPathName();
+    for (let index: number = names.length - 1; index >= 0; index--) {
+      if (names[index] !== 'DmConversation') { continue; }
+      const param: DmConversationRouteParam = this.pageStack.getParamByIndex(index) as DmConversationRouteParam;
+      if (param.conversationId.replace(':', '-') !== conversationId.replace(':', '-')) { continue; }
+      if (index === 0) { this.pageStack.clear(); }
+      else { this.pageStack.popToIndex(index - 1); }
+      return;
+    }
+    this.pageStack.pop();
   }
   private call(): void {
     if (this.route === null) { return; }

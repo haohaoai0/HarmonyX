@@ -1,0 +1,26 @@
+XXAuth 公告：优先级 15，状态为已发布。
+以下 example.com 均为占位地址，请换成实际应用和图片地址再使用。
+已有应用只追加下方六个「开屏」字段，保留原应用标识和各渠道配置。
+
+应用标识：your-app-id
+应用名称：你的应用名称
+应用开关：开
+弹窗开关：关
+信息流开关：关
+应用图标：https://example.com/app/icon.png
+应用链接：https://example.com/app
+应用小注释：一句话介绍
+应用多行注释：在这里填写应用介绍。
+开屏开关：开
+开屏图片：https://example.com/campaign/poster.jpg
+开屏标题：让好奇，遇见同频。
+开屏文案：发现喜欢的内容，遇见有趣的人。
+开屏按钮：立即体验
+开屏时长：3
+
+另外在变量配置中设置：
+harmonyx_enabled = on
+harmonyx_recommend = on
+harmonyx_splash = on
+harmonyx_splash_daily_limit = 0
+harmonyx_splash_interval_hours = 0
