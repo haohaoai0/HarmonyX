@@ -112,7 +112,6 @@ export struct PostDetail {
     if (param !== undefined && param !== null) {
       this.tweet = param.tweet;
       this.syncActionStates(param.tweet);
-      this.prepareGestureSharePreview();
     }
   }
 
@@ -160,7 +159,6 @@ export struct PostDetail {
     if (latest !== null) {
       this.tweet = latest;
       this.syncActionStates(latest);
-      this.prepareGestureSharePreview();
     }
     const liveReplies: Tweet[] | null = await this.api.conversationReplies(current.id);
     if (liveReplies !== null) {
@@ -368,7 +366,8 @@ export struct PostDetail {
 
   private async captureGestureSharePreview(post: Tweet): Promise<string> {
     const context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
-    const previewPath: string = context.filesDir + '/harmonyx-post-' + post.id + '.png';
+    // Share previews are regenerable, so keep them in cacheDir rather than filesDir.
+    const previewPath: string = context.cacheDir + '/harmonyx-post-' + post.id + '.png';
     try {
       const pixelMap: image.PixelMap = await this.getUIContext().getComponentSnapshot().createFromBuilder(
         (): void => {
