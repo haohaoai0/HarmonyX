@@ -43,6 +43,26 @@ test('an explicitly disabled fullscreen preference survives the new default', ()
   assert.equal(new api.InteractionSettingsStore().load({}).photoFullscreen, false);
 });
 
+test('Home header action and follow suggestions persist independently and publish only successful saves', () => {
+  const f = settingsFixture(), store = f.api.interactionSettingsStore;
+  const initial = store.load({});
+  assert.equal(initial.homeHeaderAction, 'search');
+  assert.equal(initial.homeFollowSuggestions, true);
+  store.publish(initial);
+  assert.equal(store.saveHomeHeaderAction({}, 'follow'), true);
+  assert.equal(store.saveHomeFollowSuggestions({}, false), true);
+  const restored = new f.api.InteractionSettingsStore().load({});
+  assert.equal(restored.homeHeaderAction, 'follow');
+  assert.equal(restored.homeFollowSuggestions, false);
+  assert.equal(store.saveHomeHeaderAction({}, 'menu'), false);
+  assert.equal(store.load({}).homeHeaderAction, 'follow');
+  f.fail();
+  assert.equal(store.saveHomeHeaderAction({}, 'search'), false);
+  assert.equal(store.saveHomeFollowSuggestions({}, true), false);
+  assert.equal(f.storage.get(f.api.STORAGE_KEY_HOME_HEADER_ACTION), 'follow');
+  assert.equal(f.storage.get(f.api.STORAGE_KEY_HOME_FOLLOW_SUGGESTIONS), false);
+});
+
 test('exit confirmation defaults on, persists when disabled, and keeps published state on save failure', () => {
   const f = settingsFixture(), store = f.api.interactionSettingsStore;
   const defaults = store.load({});

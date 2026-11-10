@@ -1,0 +1,505 @@
+{
+  "sampling": "Original-resolution RGB decode, 4 fps, dominant color of the outer 10% rim; no resizing or logo averaging.",
+  "clips": [
+    {
+      "name": "launch_blossom_dark.mp4",
+      "size": [
+        720,
+        720
+      ],
+      "background": "#000000",
+      "resource": "startup_animation_dark",
+      "dominant_fraction": 0.9847,
+      "last_frame_background": "#000000",
+      "color_metadata": {
+        "matrix": "BT.601 (SMPTE 170M)",
+        "matrix_coefficients": 6,
+        "range": "limited",
+        "mp4_nclx": true,
+        "h264_vui": true,
+        "colour_primaries": 2,
+        "transfer_characteristics": 2
+      }
+    },
+    {
+      "name": "launch_blossom_light.mp4",
+      "size": [
+        720,
+        720
+      ],
+      "background": "#FBFDFA",
+      "resource": "startup_animation_light",
+      "dominant_fraction": 0.9749,
+      "last_frame_background": "#FBFDFA",
+      "color_metadata": {
+        "matrix": "BT.601 (SMPTE 170M)",
+        "matrix_coefficients": 6,
+        "range": "limited",
+        "mp4_nclx": true,
+        "h264_vui": true,
+        "colour_primaries": 2,
+        "transfer_characteristics": 2
+      }
+    },
+    {
+      "name": "launch_blue_bird_dark.mp4",
+      "size": [
+        720,
+        720
+      ],
+      "background": "#000000",
+      "resource": "startup_animation_dark",
+      "dominant_fraction": 0.9083,
+      "last_frame_background": "#000000",
+      "color_metadata": {
+        "matrix": "BT.601 (SMPTE 170M)",
+        "matrix_coefficients": 6,
+        "range": "limited",
+        "mp4_nclx": true,
+        "h264_vui": true,
+        "colour_primaries": 2,
+        "transfer_characteristics": 2
+      }
+    },
+    {
+      "name": "launch_blue_bird_light.mp4",
+      "size": [
+        720,
+        720
+      ],
+      "background": "#FBFDFA",
+      "resource": "startup_animation_light",
+      "dominant_fraction": 0.8901,
+      "last_frame_background": "#FBFDFA",
+      "color_metadata": {
+        "matrix": "BT.601 (SMPTE 170M)",
+        "matrix_coefficients": 6,
+        "range": "limited",
+        "mp4_nclx": true,
+        "h264_vui": true,
+        "colour_primaries": 2,
+        "transfer_characteristics": 2
+      }
+    },
+    {
+      "name": "launch_blue_frog_dark.mp4",
+      "size": [
+        720,
+        720
+      ],
+      "background": "#000000",
+      "resource": "startup_animation_dark",
+      "dominant_fraction": 0.9963,
+      "last_frame_background": "#000000",
+      "color_metadata": {
+        "matrix": "BT.601 (SMPTE 170M)",
+        "matrix_coefficients": 6,
+        "range": "limited",
+        "mp4_nclx": true,
+        "h264_vui": true,
+        "colour_primaries": 2,
+        "transfer_characteristics": 2
+      }
+    },
+    {
+      "name": "launch_blue_frog_light.mp4",
+      "size": [
+        720,
+        720
+      ],
+      "background": "#FBFDFA",
+      "resource": "startup_animation_light",
+      "dominant_fraction": 0.9959,
+      "last_frame_background": "#FBFDFA",
+      "color_metadata": {
+        "matrix": "BT.601 (SMPTE 170M)",
+        "matrix_coefficients": 6,
+        "range": "limited",
+        "mp4_nclx": true,
+        "h264_vui": true,
+        "colour_primaries": 2,
+        "transfer_characteristics": 2
+      }
+    },
+    {
+      "name": "launch_brush_dark.mp4",
+      "size": [
+        720,
+        720
+      ],
+      "background": "#000000",
+      "resource": "startup_animation_dark",
+      "dominant_fraction": 0.9966,
+      "last_frame_background": "#000000",
+      "color_metadata": {
+        "matrix": "BT.601 (SMPTE 170M)",
+        "matrix_coefficients": 6,
+        "range": "limited",
+        "mp4_nclx": true,
+        "h264_vui": true,
+        "colour_primaries": 2,
+        "transfer_characteristics": 2
+      }
+    },
+    {
+      "name": "launch_brush_light.mp4",
+      "size": [
+        720,
+        720
+      ],
+      "background": "#FBFDFA",
+      "resource": "startup_animation_light",
+      "dominant_fraction": 0.9931,
+      "last_frame_background": "#FBFDFA",
+      "color_metadata": {
+        "matrix": "BT.601 (SMPTE 170M)",
+        "matrix_coefficients": 6,
+        "range": "limited",
+        "mp4_nclx": true,
+        "h264_vui": true,
+        "colour_primaries": 2,
+        "transfer_characteristics": 2
+      }
+    },
+    {
+      "name": "launch_classic_dark.mp4",
+      "size": [
+        720,
+        720
+      ],
+      "background": "#000000",
+      "resource": "startup_animation_dark",
+      "dominant_fraction": 0.9344,
+      "last_frame_background": "#000000",
+      "color_metadata": {
+        "matrix": "BT.601 (SMPTE 170M)",
+        "matrix_coefficients": 6,
+        "range": "limited",
+        "mp4_nclx": true,
+        "h264_vui": true,
+        "colour_primaries": 2,
+        "transfer_characteristics": 2
+      }
+    },
+    {
+      "name": "launch_classic_light.mp4",
+      "size": [
+        720,
+        720
+      ],
+      "background": "#FBFDFA",
+      "resource": "startup_animation_light",
+      "dominant_fraction": 0.9185,
+      "last_frame_background": "#FBFDFA",
+      "color_metadata": {
+        "matrix": "BT.601 (SMPTE 170M)",
+        "matrix_coefficients": 6,
+        "range": "limited",
+        "mp4_nclx": true,
+        "h264_vui": true,
+        "colour_primaries": 2,
+        "transfer_characteristics": 2
+      }
+    },
+    {
+      "name": "launch_mid_autumn_dark.mp4",
+      "size": [
+        720,
+        720
+      ],
+      "background": "#000000",
+      "resource": "startup_animation_dark",
+      "dominant_fraction": 0.5887,
+      "last_frame_background": "#000000",
+      "color_metadata": {
+        "matrix": "BT.601 (SMPTE 170M)",
+        "matrix_coefficients": 6,
+        "range": "limited",
+        "mp4_nclx": true,
+        "h264_vui": true,
+        "colour_primaries": 2,
+        "transfer_characteristics": 2
+      }
+    },
+    {
+      "name": "launch_mid_autumn_light.mp4",
+      "size": [
+        720,
+        720
+      ],
+      "background": "#FBFDFA",
+      "resource": "startup_animation_light",
+      "dominant_fraction": 0.5181,
+      "last_frame_background": "#FBFDFA",
+      "color_metadata": {
+        "matrix": "BT.601 (SMPTE 170M)",
+        "matrix_coefficients": 6,
+        "range": "limited",
+        "mp4_nclx": true,
+        "h264_vui": true,
+        "colour_primaries": 2,
+        "transfer_characteristics": 2
+      }
+    },
+    {
+      "name": "launch_milk_frog_dark.mp4",
+      "size": [
+        720,
+        720
+      ],
+      "background": "#000000",
+      "resource": "startup_animation_dark",
+      "dominant_fraction": 0.638,
+      "last_frame_background": "#000000",
+      "color_metadata": {
+        "matrix": "BT.601 (SMPTE 170M)",
+        "matrix_coefficients": 6,
+        "range": "limited",
+        "mp4_nclx": true,
+        "h264_vui": true,
+        "colour_primaries": 2,
+        "transfer_characteristics": 2
+      }
+    },
+    {
+      "name": "launch_milk_frog_light.mp4",
+      "size": [
+        720,
+        720
+      ],
+      "background": "#FBFDFA",
+      "resource": "startup_animation_light",
+      "dominant_fraction": 0.6344,
+      "last_frame_background": "#FBFDFA",
+      "color_metadata": {
+        "matrix": "BT.601 (SMPTE 170M)",
+        "matrix_coefficients": 6,
+        "range": "limited",
+        "mp4_nclx": true,
+        "h264_vui": true,
+        "colour_primaries": 2,
+        "transfer_characteristics": 2
+      }
+    },
+    {
+      "name": "launch_outline_dark.mp4",
+      "size": [
+        720,
+        720
+      ],
+      "background": "#000000",
+      "resource": "startup_animation_dark",
+      "dominant_fraction": 0.9651,
+      "last_frame_background": "#000000",
+      "color_metadata": {
+        "matrix": "BT.601 (SMPTE 170M)",
+        "matrix_coefficients": 6,
+        "range": "limited",
+        "mp4_nclx": true,
+        "h264_vui": true,
+        "colour_primaries": 2,
+        "transfer_characteristics": 2
+      }
+    },
+    {
+      "name": "launch_outline_light.mp4",
+      "size": [
+        720,
+        720
+      ],
+      "background": "#FBFDFA",
+      "resource": "startup_animation_light",
+      "dominant_fraction": 0.9387,
+      "last_frame_background": "#FBFDFA",
+      "color_metadata": {
+        "matrix": "BT.601 (SMPTE 170M)",
+        "matrix_coefficients": 6,
+        "range": "limited",
+        "mp4_nclx": true,
+        "h264_vui": true,
+        "colour_primaries": 2,
+        "transfer_characteristics": 2
+      }
+    },
+    {
+      "name": "launch_spectrum_dark.mp4",
+      "size": [
+        720,
+        720
+      ],
+      "background": "#000000",
+      "resource": "startup_animation_dark",
+      "dominant_fraction": 0.9345,
+      "last_frame_background": "#000000",
+      "color_metadata": {
+        "matrix": "BT.601 (SMPTE 170M)",
+        "matrix_coefficients": 6,
+        "range": "limited",
+        "mp4_nclx": true,
+        "h264_vui": true,
+        "colour_primaries": 2,
+        "transfer_characteristics": 2
+      }
+    },
+    {
+      "name": "launch_spectrum_light.mp4",
+      "size": [
+        720,
+        720
+      ],
+      "background": "#FBFDFA",
+      "resource": "startup_animation_light",
+      "dominant_fraction": 0.9251,
+      "last_frame_background": "#FBFDFA",
+      "color_metadata": {
+        "matrix": "BT.601 (SMPTE 170M)",
+        "matrix_coefficients": 6,
+        "range": "limited",
+        "mp4_nclx": true,
+        "h264_vui": true,
+        "colour_primaries": 2,
+        "transfer_characteristics": 2
+      }
+    },
+    {
+      "name": "launch_twitter_blue.mp4",
+      "size": [
+        720,
+        720
+      ],
+      "background": "#00A7F0",
+      "resource": "startup_animation_twitter_blue",
+      "dominant_fraction": 0.89,
+      "last_frame_background": "#00A7F0",
+      "color_metadata": {
+        "matrix": "BT.601 (SMPTE 170M)",
+        "matrix_coefficients": 6,
+        "range": "limited",
+        "mp4_nclx": true,
+        "h264_vui": true,
+        "colour_primaries": 2,
+        "transfer_characteristics": 2
+      }
+    },
+    {
+      "name": "launch_twitter_dark.mp4",
+      "size": [
+        720,
+        720
+      ],
+      "background": "#000000",
+      "resource": "startup_animation_dark",
+      "dominant_fraction": 0.9209,
+      "last_frame_background": "#000000",
+      "color_metadata": {
+        "matrix": "BT.601 (SMPTE 170M)",
+        "matrix_coefficients": 6,
+        "range": "limited",
+        "mp4_nclx": true,
+        "h264_vui": true,
+        "colour_primaries": 2,
+        "transfer_characteristics": 2
+      }
+    },
+    {
+      "name": "launch_twitter_white.mp4",
+      "size": [
+        720,
+        720
+      ],
+      "background": "#FBFDFA",
+      "resource": "startup_animation_light",
+      "dominant_fraction": 0.9036,
+      "last_frame_background": "#FBFDFA",
+      "color_metadata": {
+        "matrix": "BT.601 (SMPTE 170M)",
+        "matrix_coefficients": 6,
+        "range": "limited",
+        "mp4_nclx": true,
+        "h264_vui": true,
+        "colour_primaries": 2,
+        "transfer_characteristics": 2
+      }
+    },
+    {
+      "name": "launch_x_dark.mp4",
+      "size": [
+        720,
+        720
+      ],
+      "background": "#000000",
+      "resource": "startup_animation_dark",
+      "dominant_fraction": 0.9372,
+      "last_frame_background": "#000000",
+      "color_metadata": {
+        "matrix": "BT.601 (SMPTE 170M)",
+        "matrix_coefficients": 6,
+        "range": "limited",
+        "mp4_nclx": true,
+        "h264_vui": true,
+        "colour_primaries": 2,
+        "transfer_characteristics": 2
+      }
+    },
+    {
+      "name": "launch_x_light.mp4",
+      "size": [
+        720,
+        720
+      ],
+      "background": "#FBFDFA",
+      "resource": "startup_animation_light",
+      "dominant_fraction": 0.9372,
+      "last_frame_background": "#FBFDFA",
+      "color_metadata": {
+        "matrix": "BT.601 (SMPTE 170M)",
+        "matrix_coefficients": 6,
+        "range": "limited",
+        "mp4_nclx": true,
+        "h264_vui": true,
+        "colour_primaries": 2,
+        "transfer_characteristics": 2
+      }
+    },
+    {
+      "name": "launch_zombie_x_dark.mp4",
+      "size": [
+        720,
+        720
+      ],
+      "background": "#000000",
+      "resource": "startup_animation_dark",
+      "dominant_fraction": 0.9124,
+      "last_frame_background": "#000000",
+      "color_metadata": {
+        "matrix": "BT.601 (SMPTE 170M)",
+        "matrix_coefficients": 6,
+        "range": "limited",
+        "mp4_nclx": true,
+        "h264_vui": true,
+        "colour_primaries": 2,
+        "transfer_characteristics": 2
+      }
+    },
+    {
+      "name": "launch_zombie_x_light.mp4",
+      "size": [
+        720,
+        720
+      ],
+      "background": "#FBFDFA",
+      "resource": "startup_animation_light",
+      "dominant_fraction": 0.8836,
+      "last_frame_background": "#FBFDFA",
+      "color_metadata": {
+        "matrix": "BT.601 (SMPTE 170M)",
+        "matrix_coefficients": 6,
+        "range": "limited",
+        "mp4_nclx": true,
+        "h264_vui": true,
+        "colour_primaries": 2,
+        "transfer_characteristics": 2
+      }
+    }
+  ]
+}

@@ -119,8 +119,8 @@ export struct LandscapeVideoControls {
 
   @LocalBuilder
   private GlassBacking(): void {
-    // Use the same native Toggle carrier as NewPostsPill's MaterialButton.
-    MaterialButton({ buttonWidth: '100%', buttonHeight: '100%', buttonRadius: $r('app.float.landscape_player_glass_radius'),
+    // Keep the native material host outside the visible control bounds.
+    MaterialButton({ nativeMaterialHost: true, buttonWidth: '100%', buttonHeight: '100%', buttonRadius: $r('app.float.landscape_player_glass_radius'),
       surfaceColor: $r('app.color.video_control_glass_tint'), materialLevel: 2, enableFallbackBlur: true,
       lightColor: Color.White, applyShadow: true, enableHdrHighlight: false, buttonPressFeedback: false })
       .hitTestBehavior(HitTestMode.None).accessibilityLevel('no')
@@ -179,7 +179,7 @@ export struct LandscapeVideoControls {
       if (this.sourceTweet !== null) {
         if (this.mirrored) { this.FollowButton() }
         Stack() {
-        MaterialButton({ buttonWidth: this.ownerWidth(), buttonHeight: $r('app.float.landscape_player_target'),
+        MaterialButton({ nativeMaterialHost: true, buttonWidth: this.ownerWidth(), buttonHeight: $r('app.float.landscape_player_target'),
           buttonRadius: $r('app.float.landscape_player_glass_radius'), surfaceColor: $r('app.color.video_control_glass_tint'),
           materialLevel: 2, enableFallbackBlur: true, applyShadow: true, lightColor: Color.White,
           buttonMonopolizeEvents: true, onButtonClick: (): void => { this.onInteraction(); this.onBack(); } }) {
@@ -213,7 +213,7 @@ export struct LandscapeVideoControls {
   @LocalBuilder
   private FollowButton(): void {
     Stack() {
-    MaterialButton({ buttonWidth: $r('app.float.landscape_player_target'), buttonHeight: $r('app.float.landscape_player_target'),
+    MaterialButton({ nativeMaterialHost: true, buttonWidth: $r('app.float.landscape_player_target'), buttonHeight: $r('app.float.landscape_player_target'),
       buttonRadius: $r('app.float.landscape_player_glass_radius'), surfaceColor: $r('app.color.video_control_glass_tint'),
       materialLevel: 2, enableFallbackBlur: true, applyShadow: true, lightColor: Color.White, buttonMonopolizeEvents: true,
       onButtonClick: (): void => { this.onInteraction(); this.onFollow(); } }) {
@@ -312,7 +312,7 @@ export struct LandscapeVideoControls {
         this.QualityButton()
       }
       Stack() {
-      MaterialButton({ buttonWidth: $r('app.float.landscape_player_speed_width'), buttonHeight: $r('app.float.landscape_player_target'),
+      MaterialButton({ nativeMaterialHost: true, buttonWidth: $r('app.float.landscape_player_speed_width'), buttonHeight: $r('app.float.landscape_player_target'),
         buttonRadius: $r('app.float.landscape_player_glass_radius'), surfaceColor: $r('app.color.video_control_glass_tint'),
         materialLevel: 2, enableFallbackBlur: true, applyShadow: true, lightColor: Color.White, buttonMonopolizeEvents: true,
         onButtonClick: (): void => { this.onInteraction(); this.onRate(); } }) {
@@ -336,7 +336,7 @@ export struct LandscapeVideoControls {
   @LocalBuilder
   private QualityButton(): void {
     Stack() {
-    MaterialButton({ buttonWidth: $r('app.float.landscape_player_quality_width'), buttonHeight: $r('app.float.landscape_player_target'),
+    MaterialButton({ nativeMaterialHost: true, buttonWidth: $r('app.float.landscape_player_quality_width'), buttonHeight: $r('app.float.landscape_player_target'),
       buttonRadius: $r('app.float.landscape_player_glass_radius'), surfaceColor: $r('app.color.video_control_glass_tint'),
       materialLevel: 2, enableFallbackBlur: true, applyShadow: true, lightColor: Color.White, buttonMonopolizeEvents: true,
       onButtonClick: (): void => { this.onInteraction(); this.onQuality(); } }) {
@@ -353,7 +353,7 @@ export struct LandscapeVideoControls {
   @LocalBuilder
   private DownloadButton(): void {
     Stack() {
-    MaterialButton({ buttonWidth: $r('app.float.landscape_player_download_width'), buttonHeight: $r('app.float.landscape_player_target'),
+    MaterialButton({ nativeMaterialHost: true, buttonWidth: $r('app.float.landscape_player_download_width'), buttonHeight: $r('app.float.landscape_player_target'),
       buttonRadius: $r('app.float.landscape_player_glass_radius'), surfaceColor: $r('app.color.video_control_glass_tint'),
       materialLevel: 2, enableFallbackBlur: true, applyShadow: true, lightColor: Color.White, buttonMonopolizeEvents: true,
       buttonEnabled: !this.downloading, onButtonClick: (): void => { this.onInteraction(); this.onDownload(); } }) {

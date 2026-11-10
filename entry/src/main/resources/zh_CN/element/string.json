@@ -198,11 +198,11 @@
     },
     {
       "name": "settings_confirm_app_exit",
-      "value": "退出前确认"
+      "value": "返回桌面提示"
     },
     {
       "name": "settings_confirm_app_exit_desc",
-      "value": "主页面返回时先询问是否退出，关闭后直接退出。"
+      "value": "首页第一次返回仅显示提示，2.2秒内再次返回到桌面"
     },
     {
       "name": "app_exit_title",
@@ -622,7 +622,7 @@
     },
     {
       "name": "settings_compact_switch_style_desc",
-      "value": "关闭 X Logo 时使用。按钮背景随横向滑动进度填充。"
+      "value": "关闭 X Logo 时使用，可选择文字页签、胶囊按钮或分段开关。"
     },
     {
       "name": "settings_compact_switch_tabs",
@@ -631,6 +631,10 @@
     {
       "name": "settings_compact_switch_buttons",
       "value": "按钮"
+    },
+    {
+      "name": "settings_compact_switch_segmented",
+      "value": "分段开关"
     },
     {
       "name": "settings_avatar_tint",
@@ -1342,7 +1346,7 @@
     },
     {
       "name": "profile_version",
-      "value": "Harmony X 3.5.0 · HarmonyOS 6.0.2（API 22-26）· Stage 模型"
+      "value": "Harmony X 3.9.0 · HarmonyOS 6.0.2（API 22-26）· Stage 模型"
     },
     {
       "name": "profile_following",
@@ -3514,7 +3518,7 @@
     },
     {
       "name": "diagnostics_desc",
-      "value": "查看最近的接口调用与私有接口自检结果。"
+      "value": "导出崩溃日志，查看最近的接口调用与自检结果。"
     },
     {
       "name": "diagnostics_probe",
@@ -12729,6 +12733,10 @@
       "value": "显示全部热门帖子"
     },
     {
+      "name": "global_trends_cover_url",
+      "value": "https://pbs.twimg.com/topics/topic/globe_center_compressed.png"
+    },
+    {
       "name": "post_video_publish",
       "value": "发布视频"
     },
@@ -12860,40 +12868,405 @@
       "name": "post_translation_languages_description",
       "value": "勾选需要自动翻译的帖子语言，未勾选的语言仍可手动翻译。"
     },
-    {"name": "post_link_copy", "value": "复制链接"},
-    {"name": "post_link_open", "value": "打开链接"},
-    {"name": "settings_video_download_button", "value": "视频下载按钮"},
-    {"name": "settings_video_download_button_desc", "value": "显示视频右上角的下载按钮"},
-    {"name": "video_source_from", "value": "来自"},
-    {"name": "video_source_original", "value": "原视频"},
-    {"name": "video_source_open_failed", "value": "暂时无法打开原视频，请重试"},
-    {"name":"dns_title","value":"DNS over HTTPS（DoH）"},
-    {"name":"dns_enable","value":"启用 DoH 加密解析"},
-    {"name":"dns_enable_desc","value":"通过指定的 HTTPS 服务加密查询域名"},
-    {"name":"dns_scope","value":"用于应用接口、图片下载、视频分段请求和内置网页。系统播放器和外部应用可能使用各自的 DNS。代理服务器代解析目标域名时，以代理的 DNS 为准。DoH 不能替代代理或 VPN。"},
-    {"name":"dns_provider","value":"DNS 服务商"},
-    {"name":"dns_provider_ali","value":"阿里云公共 DNS"},
-    {"name":"dns_provider_cloudflare","value":"Cloudflare"},
-    {"name":"dns_provider_google","value":"Google Public DNS"},
-    {"name":"dns_provider_custom","value":"自定义"},
-    {"name":"dns_endpoint","value":"DoH 服务地址"},
-    {"name":"dns_endpoint_hint","value":"https://example.com/dns-query"},
-    {"name":"dns_endpoint_desc","value":"填写完整的 RFC 8484 HTTPS 地址，不支持用户名密码、片段或 {?dns} 等地址模板。"},
-    {"name":"dns_invalid","value":"请输入有效的 HTTPS DoH 服务地址"},
-    {"name":"dns_saved","value":"已保存，新请求生效；已打开的网页请重新加载"},
-    {"name":"dns_test","value":"测试 DNS 解析"},
-    {"name":"dns_test_desc","value":"使用当前地址直接解析 x.com，不会保存或开启设置。测试绕过应用内代理，仍受系统 VPN 影响。"},
-    {"name":"dns_test_success","value":"x.com 解析成功"},
-    {"name":"dns_test_failed","value":"解析失败，请检查服务地址、网络或 DNS 服务"},
-    {"name":"dns_failure_note","value":"保存后，DoH 解析失败会停止相应请求，不会自动回退到系统 DNS。关闭 DoH 并保存可恢复系统解析。所有更改均在保存后生效。"},
-    {"name":"help_support_afdian","value":"爱发电"},
-    {"name":"help_support_qr_summary","value":"扫码支持开发"},
-    {"name":"help_support_afdian_summary","value":"永久免推荐 · ¥16.6"},
-    {"name":"help_support_afdian_desc","value":"在爱发电购买永久免推荐卡密，购买后返回应用兑换即可。"},
-    {"name":"help_support_afdian_buy","value":"前往爱发电购买"},
-    {"name":"help_support_expand","value":"点击展开"},
-    {"name":"help_support_collapse","value":"点击收起"},
-    {"name":"help_support_scan_code","value":"使用对应的支付应用扫描收款码。"},
-    {"name":"help_support_recommended","value":"推荐"}
+    {
+      "name": "post_link_copy",
+      "value": "复制链接"
+    },
+    {
+      "name": "post_link_open",
+      "value": "打开链接"
+    },
+    {
+      "name": "settings_video_download_button",
+      "value": "视频下载按钮"
+    },
+    {
+      "name": "settings_video_download_button_desc",
+      "value": "显示视频右上角的下载按钮"
+    },
+    {
+      "name": "video_source_from",
+      "value": "来自"
+    },
+    {
+      "name": "video_source_original",
+      "value": "原视频"
+    },
+    {
+      "name": "video_source_open_failed",
+      "value": "暂时无法打开原视频，请重试"
+    },
+    {
+      "name": "dns_title",
+      "value": "DNS over HTTPS（DoH）"
+    },
+    {
+      "name": "dns_enable",
+      "value": "启用 DoH 加密解析"
+    },
+    {
+      "name": "dns_enable_desc",
+      "value": "通过指定的 HTTPS 服务加密查询域名"
+    },
+    {
+      "name": "dns_scope",
+      "value": "用于应用接口、图片下载、视频分段请求和内置网页。系统播放器和外部应用可能使用各自的 DNS。代理服务器代解析目标域名时，以代理的 DNS 为准。DoH 不能替代代理或 VPN。"
+    },
+    {
+      "name": "dns_provider",
+      "value": "DNS 服务商"
+    },
+    {
+      "name": "dns_provider_ali",
+      "value": "阿里云公共 DNS"
+    },
+    {
+      "name": "dns_provider_cloudflare",
+      "value": "Cloudflare"
+    },
+    {
+      "name": "dns_provider_google",
+      "value": "Google Public DNS"
+    },
+    {
+      "name": "dns_provider_custom",
+      "value": "自定义"
+    },
+    {
+      "name": "dns_endpoint",
+      "value": "DoH 服务地址"
+    },
+    {
+      "name": "dns_endpoint_hint",
+      "value": "https://example.com/dns-query"
+    },
+    {
+      "name": "dns_endpoint_desc",
+      "value": "填写完整的 RFC 8484 HTTPS 地址，不支持用户名密码、片段或 {?dns} 等地址模板。"
+    },
+    {
+      "name": "dns_invalid",
+      "value": "请输入有效的 HTTPS DoH 服务地址"
+    },
+    {
+      "name": "dns_saved",
+      "value": "已保存，新请求生效；已打开的网页请重新加载"
+    },
+    {
+      "name": "dns_test",
+      "value": "测试 DNS 解析"
+    },
+    {
+      "name": "dns_test_desc",
+      "value": "使用当前地址直接解析 x.com，不会保存或开启设置。测试绕过应用内代理，仍受系统 VPN 影响。"
+    },
+    {
+      "name": "dns_test_success",
+      "value": "x.com 解析成功"
+    },
+    {
+      "name": "dns_test_failed",
+      "value": "解析失败，请检查服务地址、网络或 DNS 服务"
+    },
+    {
+      "name": "dns_failure_note",
+      "value": "保存后，DoH 解析失败会停止相应请求，不会自动回退到系统 DNS。关闭 DoH 并保存可恢复系统解析。所有更改均在保存后生效。"
+    },
+    {
+      "name": "help_support_afdian",
+      "value": "爱发电"
+    },
+    {
+      "name": "help_support_qr_summary",
+      "value": "扫码支持开发"
+    },
+    {
+      "name": "help_support_afdian_summary",
+      "value": "永久免推荐 · ¥16.6"
+    },
+    {
+      "name": "help_support_afdian_desc",
+      "value": "在爱发电购买永久免推荐卡密，购买后返回应用兑换即可。"
+    },
+    {
+      "name": "help_support_afdian_buy",
+      "value": "前往爱发电购买"
+    },
+    {
+      "name": "help_support_expand",
+      "value": "点击展开"
+    },
+    {
+      "name": "help_support_collapse",
+      "value": "点击收起"
+    },
+    {
+      "name": "help_support_scan_code",
+      "value": "使用对应的支付应用扫描收款码。"
+    },
+    {
+      "name": "help_support_recommended",
+      "value": "推荐"
+    },
+    {
+      "name": "dns_x_test",
+      "value": "测试 X 原生连接"
+    },
+    {
+      "name": "dns_x_test_desc",
+      "value": "使用当前 DoH 地址，通过原生 HTTP 请求公开的 x.com/robots.txt，不携带账号信息，不使用应用内代理，也不保存设置；仍受系统 VPN 影响。成功仅代表该连接可用，不代表所有接口和媒体域名均可用。"
+    },
+    {
+      "name": "dns_x_test_success",
+      "value": "X 原生连接成功"
+    },
+    {
+      "name": "dns_x_test_failed",
+      "value": "X 原生连接失败，请检查网络、代理或 ECH 支持情况"
+    },
+    {
+      "name": "settings_inline_video_hold",
+      "value": "外层视频长按操作"
+    },
+    {
+      "name": "settings_inline_video_hold_desc",
+      "value": "选择操作菜单或长按快进。快进使用长按倍速设置；关闭倍速后，长按左右两侧快退或快进。"
+    },
+    {
+      "name": "settings_inline_video_hold_menu",
+      "value": "菜单"
+    },
+    {
+      "name": "settings_inline_video_hold_play",
+      "value": "长按快进"
+    },
+    {
+      "name": "settings_sidebar_items",
+      "value": "侧边栏功能"
+    },
+    {
+      "name": "settings_sidebar_items_desc",
+      "value": "选择显示的功能并用箭头调整顺序；设置入口始终保留。"
+    },
+    {
+      "name": "settings_bottom_bar_visible",
+      "value": "显示底栏"
+    },
+    {
+      "name": "settings_bottom_bar_visible_desc",
+      "value": "关闭后可通过侧边栏切换主页、探索、通知、私信及搜索。"
+    },
+    {
+      "name": "settings_post_count_format",
+      "value": "帖子计数格式"
+    },
+    {
+      "name": "settings_post_count_compact",
+      "value": "K/M（千／百万）"
+    },
+    {
+      "name": "settings_post_count_chinese",
+      "value": "万／亿"
+    },
+    {
+      "name": "settings_post_count_full",
+      "value": "完整数字"
+    },
+    {
+      "name": "settings_sidebar_search_capsule",
+      "value": "侧边栏搜索胶囊"
+    },
+    {
+      "name": "settings_sidebar_search_capsule_desc",
+      "value": "在侧边栏顶部显示短搜索胶囊，默认关闭。"
+    },
+    {
+      "name": "settings_home_header_action",
+      "value": "首页标题栏按钮"
+    },
+    {
+      "name": "settings_home_header_action_desc",
+      "value": "选择搜索或添加关注，点击后直接打开对应页面。"
+    },
+    {
+      "name": "settings_home_follow_suggestions",
+      "value": "推荐关注"
+    },
+    {
+      "name": "settings_home_follow_suggestions_desc",
+      "value": "在首页时间线中显示推荐关注卡片。"
+    },
+    {
+      "name": "page_background_preset_colors",
+      "value": "保留原始渐变"
+    },
+    {
+      "name": "page_background_preset_colors_desc",
+      "value": "选择完整图案时使用其配套渐变；关闭后可自定义底色或照片。"
+    },
+    {
+      "name": "settings_inline_video_overlay_controls",
+      "value": "帖子视频画面内播控"
+    },
+    {
+      "name": "settings_inline_video_overlay_controls_desc",
+      "value": "将卡片下方的播控移入视频画面。轻点显示或隐藏，播放时自动收起。"
+    },
+    {
+      "name": "settings_pause_inline_video_on_return",
+      "value": "退出视频后暂停帖子预览"
+    },
+    {
+      "name": "settings_pause_inline_video_on_return_desc",
+      "value": "退出视频查看器后，帖子里的视频保持暂停；点击播放后继续。"
+    },
+    {
+      "name": "settings_timeline_columns_four",
+      "value": "四列"
+    },
+    {
+      "name": "settings_timeline_columns_five",
+      "value": "五列"
+    },
+    {
+      "name": "crash_recovery_title",
+      "value": "检测到应用异常退出"
+    },
+    {
+      "name": "crash_recovery_message",
+      "value": "已保存上次异常退出的诊断日志。请导出日志并联系开发者，附上问题发生前的操作，帮助排查。"
+    },
+    {
+      "name": "crash_later",
+      "value": "稍后"
+    },
+    {
+      "name": "crash_export",
+      "value": "导出日志"
+    },
+    {
+      "name": "crash_contact",
+      "value": "联系开发者"
+    },
+    {
+      "name": "crash_export_success",
+      "value": "日志已导出，请联系开发者并附上日志文件。"
+    },
+    {
+      "name": "crash_export_failed",
+      "value": "日志导出失败，请重试或选择其他保存位置。"
+    },
+    {
+      "name": "crash_contact_failed",
+      "value": "无法打开反馈页面，请在“关于”中联系开发者。"
+    },
+    {
+      "name": "crash_logs_title",
+      "value": "全局日志诊断"
+    },
+    {
+      "name": "crash_logs_description",
+      "value": "崩溃日志自动保存在本地，最多保留最近 5 份。导出后可将日志文件附在反馈中。"
+    },
+    {
+      "name": "crash_logs_empty",
+      "value": "暂无崩溃记录，可导出当前运行日志。"
+    },
+    {
+      "name": "app_exit_desktop",
+      "value": "返回桌面"
+    },
+    {
+      "name": "app_exit_desktop_hint",
+      "value": "再按一次返回桌面"
+    },
+    {
+      "name": "media_save_method",
+      "value": "媒体保存方式"
+    },
+    {
+      "name": "media_save_gallery_dialog",
+      "value": "图库 · 系统确认"
+    },
+    {
+      "name": "media_save_secure_button",
+      "value": "图库 · 安全控件直存"
+    },
+    {
+      "name": "media_save_directory",
+      "value": "下载目录 · 授权后直接保存"
+    },
+    {
+      "name": "media_save_file_picker",
+      "value": "文件 · 每次选择位置"
+    },
+    {
+      "name": "media_save_secure_title",
+      "value": "保存到图库"
+    },
+    {
+      "name": "media_save_secure_note",
+      "value": "点击系统保存控件直接写入图库。首次使用按系统提示授权，批量保存时逐张点击。"
+    },
+    {
+      "name": "account_groups_title",
+      "value": "本地分组"
+    },
+    {
+      "name": "account_groups_hint",
+      "value": "分组只保存在当前设备。选择已关注账户，可将分组固定到首页时间线。"
+    },
+    {
+      "name": "account_groups_empty",
+      "value": "还没有分组，创建一个吧"
+    },
+    {
+      "name": "account_groups_manage",
+      "value": "管理本地分组"
+    },
+    {
+      "name": "account_group_create",
+      "value": "新建分组"
+    },
+    {
+      "name": "account_group_delete",
+      "value": "删除分组"
+    },
+    {
+      "name": "account_group_member_count",
+      "value": "%d 个账户"
+    },
+    {
+      "name": "account_group_edit_title",
+      "value": "编辑分组"
+    },
+    {
+      "name": "account_group_name",
+      "value": "分组名称"
+    },
+    {
+      "name": "account_group_icon",
+      "value": "图标（输入 Emoji 或符号）"
+    },
+    {
+      "name": "account_group_selected",
+      "value": "已选 %d 个账户"
+    },
+    {
+      "name": "account_group_search",
+      "value": "搜索已加载的关注账户"
+    },
+    {
+      "name": "account_group_cancel",
+      "value": "取消"
+    },
+    {
+      "name": "account_group_save",
+      "value": "保存"
+    },
+    {
+      "name": "grok_chat_hint",
+      "value": "直接向 Grok 提问，开始新的对话。"
+    }
   ]
 }

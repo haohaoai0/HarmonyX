@@ -1,3 +1,4 @@
+const { withDohHttpMock } = require('./doh-http-fixture.cjs');
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
@@ -28,7 +29,7 @@ function harness(author = { id: 'author', following: false }) {
     '@ohos.promptAction': { default: { showToast: toast => toasts.push(toast.message) } }
   };
   const exports = {};
-  new Function('require', 'exports', '$r', 'getContext', code)(name => deps[name] || {}, exports,
+  new Function('require', 'exports', '$r', 'getContext', code)(name => (() => { withDohHttpMock(deps); return deps[name] || {}; })(), exports,
     name => name, () => ({ resourceManager: { getStringSync: value => value } }));
   const bar = new exports.PhotoViewerAuthorBar();
   bar.author = author;

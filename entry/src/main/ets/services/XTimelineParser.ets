@@ -1765,8 +1765,8 @@ export class XTimelineParser {
     // These short URLs point to the attached media already shown below the
     // body. Remove only an exact trailing media URL, keeping ordinary links.
     let visible: string = text;
-    const media: Array<Record<string, Object>> = XTimelineParser.arr(
-      XTimelineParser.obj(legacy, 'extended_entities'), 'media');
+    const media: Array<Record<string, Object>> = [...XTimelineParser.arr(result, 'media_entities2'),
+      ...XTimelineParser.arr(XTimelineParser.obj(legacy, 'extended_entities'), 'media')];
     for (let i: number = 0; i < media.length; i++) {
       const url: string = String(media[i]['url'] ?? '');
       const withoutTrailingSpace: string = visible.trimEnd();
@@ -1844,11 +1844,19 @@ export class XTimelineParser {
   }
 
   private static isPossiblySensitive(result: Record<string, Object>, legacy: Record<string, Object>): boolean {
-    return Boolean(result['possibly_sensitive']) || Boolean(legacy['possibly_sensitive']);
+    return Boolean(result['possibly_sensitive']) || Boolean(legacy['possibly_sensitive']) ||
+      XTimelineParser.arr(result, 'media_entities2').some((item: Record<string, Object>): boolean => {
+        const warning: Record<string, Object> = XTimelineParser.obj(item, 'sensitive_media_warning');
+        return Boolean(warning['adult_content']) || Boolean(warning['graphic_violence']) || Boolean(warning['other']);
+      });
   }
 
   private static media(result: Record<string, Object>, legacy: Record<string, Object>,
     sensitive: boolean): MediaAttachment[] {
+    // Current x-web HomeTimelineQuery selects ApiMediaEntity via this field;
+    // its payload uses media_url_https/video_info rather than media_results.
+    const current: MediaAttachment[] = XTimelineParser.buildAttachments(XTimelineParser.arr(result, 'media_entities2'), sensitive);
+    if (current.length > 0) { return current; }
     // Flat schema keeps attachments in media_entities; the legacy paths put
     // them under extended_entities (all of them) or entities (a single one).
     // Whichever source actually yields usable attachments wins, so a present
@@ -1983,7 +1991,8 @@ export class XTimelineParser {
       if (durationMs === 0) {
         durationMs = XTimelineParser.num(info, 'duration_ms');
       }
-      const videoInfo: Record<string, Object> = XTimelineParser.obj(info, 'video_info');
+      let videoInfo: Record<string, Object> = XTimelineParser.obj(info, 'video_info');
+      if (Object.keys(videoInfo).length === 0) { videoInfo = XTimelineParser.obj(item, 'video_info'); }
       if (durationMs === 0) {
         durationMs = XTimelineParser.num(videoInfo, 'duration_millis');
       }

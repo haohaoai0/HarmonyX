@@ -1,3 +1,4 @@
+const { withDohHttpMock } = require('./doh-http-fixture.cjs');
 // Exercise the real binary transport, with local HTTP events and no X requests.
 const test = require('node:test');
 const assert = require('node:assert/strict');
@@ -39,7 +40,7 @@ function harness(responses = [204], proxyRetry = false) {
     './XPostResponse': receipt.exports
   };
   const mod = { exports: {} };
-  new Function('require', 'module', 'exports', clientSource)(id => dependencies[id] || {}, mod, mod.exports);
+  new Function('require', 'module', 'exports', clientSource)(id => (() => { withDohHttpMock(dependencies); return dependencies[id] || {}; })(), mod, mod.exports);
   const client = new mod.exports.XPrivateClient();
   client.setSession({ isUsable: () => true, cacheIdentity: () => 'local-account', rawCookie: 'local-cookie', ct0: 'local-csrf' });
   const start = onProgress => client.uploadChatMediaPart('100-200', 'hash', '123', 0, new ArrayBuffer(1024), '', onProgress);

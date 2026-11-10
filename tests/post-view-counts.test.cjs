@@ -1,3 +1,4 @@
+const { withDohHttpMock } = require('./doh-http-fixture.cjs');
 const assert = require('node:assert/strict');
 const test = require('node:test');
 const fs = require('node:fs');
@@ -25,7 +26,7 @@ function fixture() {
   };
   const module = { exports: {} };
   new Function('require', 'module', 'exports', 'AppStorage', output)(
-    id => dependencies[id], module, module.exports,
+    id => (() => { withDohHttpMock(dependencies); return dependencies[id]; })(), module, module.exports,
     { get: key => storage.get(key), setOrCreate: (key, value) => storage.set(key, value) });
   return { store: new module.exports.PostViewCounts(), requests, storage };
 }

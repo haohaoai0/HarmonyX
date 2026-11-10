@@ -453,6 +453,22 @@
       "value": "88vp"
     },
     {
+      "name": "icon_segments_min_slot",
+      "value": "64vp"
+    },
+    {
+      "name": "icon_segments_max_slot",
+      "value": "96vp"
+    },
+    {
+      "name": "icon_segments_padding",
+      "value": "2vp"
+    },
+    {
+      "name": "icon_segments_label_padding",
+      "value": "12vp"
+    },
+    {
       "name": "icon_buttons_gap",
       "value": "8vp"
     },
@@ -1066,19 +1082,19 @@
     },
     {
       "name": "video_viewer_seek_height",
-      "value": "44vp"
+      "value": "28vp"
     },
     {
       "name": "video_viewer_seek_track",
-      "value": "6vp"
+      "value": "3vp"
     },
     {
       "name": "video_viewer_seek_thumb",
-      "value": "16vp"
+      "value": "8vp"
     },
     {
       "name": "video_viewer_seek_gap",
-      "value": "12vp"
+      "value": "0vp"
     },
     {
       "name": "desktop_rail_handle_width",
@@ -1591,6 +1607,39 @@
     {
       "name": "post_translation_language_padding",
       "value": "8vp"
+    },
+    {
+      "name": "material_surface_overflow",
+      "value": "64vp"
+    },
+    { "name": "sidebar_navigation_title_height", "value": "56vp" },
+    {"name":"sidebar_search_capsule_width","value":"120vp"},
+    {"name":"sidebar_search_capsule_height","value":"36vp"},
+    {"name":"sidebar_search_capsule_icon","value":"18fp"},
+    {"name":"inline_video_overlay_height","value":"80vp"},
+    {"name":"inline_video_overlay_icon","value":"20fp"},
+    {"name":"inline_video_overlay_button_width","value":"36vp"},
+    {"name":"inline_video_overlay_button_height","value":"40vp"},
+    {"name":"inline_video_overlay_time","value":"12fp"},
+    {"name":"inline_video_overlay_seek_height","value":"24vp"},
+    {"name":"inline_video_overlay_track","value":"3vp"},
+    {"name":"inline_video_overlay_thumb","value":"8vp"},
+    {"name":"inline_video_overlay_inset","value":"8vp"},
+    {
+      "name": "post_comment_card_gap",
+      "value": "8vp"
+    },
+    {
+      "name": "media_save_sheet_inset",
+      "value": "24vp"
+    },
+    {
+      "name": "media_save_sheet_gap",
+      "value": "16vp"
+    },
+    {
+      "name": "media_save_button_height",
+      "value": "48vp"
     }
   ]
 }

@@ -11,6 +11,7 @@ const ts = require(process.env.HARMONYX_TYPESCRIPT ||
   'D:/DevEco Studio/tools/ohpm/node_modules/typescript/lib/typescript.js');
 
 function loadService(name, dependencies = {}) {
+  require('./doh-http-fixture.cjs').withDohHttpMock(dependencies);
   const filename = path.resolve(__dirname, '../entry/src/main/ets/services', name + '.ets');
   const output = ts.transpileModule(fs.readFileSync(filename, 'utf8'), {
     fileName: name + '.ts',

@@ -45,7 +45,7 @@ export struct VideoFullscreenCapsule {
 
   build(): void {
     Row() {
-      MaterialButton({ buttonWidth: 136, buttonHeight: 40, buttonRadius: 20,
+      MaterialButton({ nativeMaterialHost: true, buttonWidth: 136, buttonHeight: 40, buttonRadius: 20,
         materialLevel: 2, applyShadow: true, surfaceColor: $r('app.color.video_episode_surface'),
         buttonPressFeedback: true,
         buttonEnabled: this.visible,

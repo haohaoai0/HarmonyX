@@ -33,6 +33,7 @@ import { FollowDiscoveryData, FollowSuggestionGroup } from '../services/FollowDi
 import { followStateStore, STORAGE_KEY_FOLLOW_REVISION } from '../services/FollowStateStore';
 import { FloatingComposeButton } from '../components/FloatingComposeButton';
 import { HdsButton } from '../components/HdsButton';
+import { MaterialButton } from '../components/MaterialButton';
 import { ProfileActionButtons } from '../components/ProfileActionButtons';
 import { AnchoredCover } from '../components/AnchoredCover';
 import type { EditProfileRouteParam } from './EditProfile';
@@ -64,6 +65,12 @@ import type { ListsRouteParam } from './Lists';
 import type { ProfileWebRouteParam } from './ProfileWeb';
 import type { DmConversationRouteParam } from './DmConversation';
 import { ResponsiveLayout } from '../utils/ResponsiveLayout';
+import { DesktopLayout } from '../utils/DesktopLayout';
+import {
+  STORAGE_KEY_TIMELINE_COLUMNS,
+  TIMELINE_COLUMNS_AUTO_TWO,
+  TIMELINE_COLUMNS_TWO
+} from '../services/TimelineSettingsStore';
 import { ProfileTabMotion } from '../utils/ProfileTabMotion';
 import { ProfileHeaderAnchor, ProfileHeaderMotion } from '../utils/ProfileHeaderMotion';
 import { STORAGE_KEY_HOME_FLOATING_ACTION, HOME_FLOATING_COMPOSE, HOME_FLOATING_HIDDEN,
@@ -114,6 +121,8 @@ export struct UserDetail {
   @StorageProp(STORAGE_KEY_HOME_FLOATING_ACTION) private homeFloatingAction: string = HOME_FLOATING_COMPOSE;
   @StorageProp(STORAGE_KEY_SYSTEM_EMOJI_ENABLED) private systemEmojiEnabled: boolean = false;
   @StorageProp('harmonyx.breakpoint') private sheetWindowBreakpoint: string = 'sm';
+  @StorageProp('harmonyx.desktop_layout') private desktopLayoutEnabled: boolean = false;
+  @StorageProp(STORAGE_KEY_TIMELINE_COLUMNS) private timelineColumnsMode: number = 0;
   @StorageProp(STORAGE_KEY_SHEET_MATERIAL_ENABLED) private sheetMaterialEnabled: boolean = DEFAULT_SHEET_MATERIAL_ENABLED;
   @StorageProp(STORAGE_KEY_SHEET_MATERIAL_LEVEL) private sheetMaterialLevel: number = DEFAULT_SHEET_MATERIAL_LEVEL;
   @StorageProp(STORAGE_KEY_FOLLOW_REVISION) @Watch('syncFollowState') private followRevision: number = 0;
@@ -801,6 +810,20 @@ export struct UserDetail {
     return stopScrollOnTouch(event, this.scroller, [this.activityScrollers[this.selectedTab]]);
   }
 
+  private isDesktopLayout(): boolean {
+    return DesktopLayout.active(this.desktopLayoutEnabled, this.sheetWindowBreakpoint);
+  }
+
+  private useTimelineWaterFlow(): boolean {
+    return this.isDesktopLayout() || ResponsiveLayout.isLarge(this.sheetWindowBreakpoint) ||
+      this.timelineColumnsMode === TIMELINE_COLUMNS_TWO ||
+      this.timelineColumnsMode === TIMELINE_COLUMNS_AUTO_TWO;
+  }
+
+  private useListFeed(): boolean {
+    return !this.useTimelineWaterFlow();
+  }
+
   private async loadRelationship(): Promise<void> {
     const result: XPrivateResult = await xPrivateClient.rest('GET', '/1.1/friendships/show.json',
       { 'target_id': this.resolvedUserId() });
@@ -1141,15 +1164,45 @@ export struct UserDetail {
   }
 
   @Builder
-  private IconButton(symbol: Resource, label: Resource, action: () => void): void {
+  private IconButton(symbol: Resource, label: Resource, action: () => void, size: number = 23): void {
     Stack() {
-      HdsButton({ barWidth: 40, barHeight: 52, lightColor: this.accentColor,
-        useImmersiveMaterial: true, materialLevel: 2, forceHdsStyle: true,
-        enableShadow: true, enablePressLight: true, onButtonClick: action }) {
-        SymbolGlyph(symbol).fontSize(23).fontColor([pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)])
+      if (SystemMaterialUtil.isApi26OrAbove()) {
+        MaterialButton({ nativeMaterialHost: true, buttonWidth: 40, buttonHeight: 40, buttonRadius: 20,
+          materialLevel: 1, applyShadow: true, lightColor: this.accentColor,
+          accessibilityLabel: this.text(label), onButtonClick: action }) {
+          SymbolGlyph(symbol).fontSize(size).fontColor([pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)])
+        }
+      } else {
+        HdsButton({ barWidth: 40, barHeight: 52, lightColor: this.accentColor,
+          useImmersiveMaterial: true, materialLevel: 2, forceHdsStyle: true,
+          enableShadow: true, enablePressLight: true, onButtonClick: action }) {
+          SymbolGlyph(symbol).fontSize(size).fontColor([pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)])
+        }
       }
     }
-    .width(40).height(40).accessibilityText(this.text(label))
+    .width(40).height(40).clip(false).accessibilityText(this.text(label))
+  }
+
+  @Builder
+  private GrokButton(): void {
+    Stack() {
+      if (SystemMaterialUtil.isApi26OrAbove()) {
+        MaterialButton({ nativeMaterialHost: true, buttonWidth: 40, buttonHeight: 40, buttonRadius: 20,
+          materialLevel: 1, applyShadow: true, lightColor: this.accentColor,
+          accessibilityLabel: this.text($r('app.string.profile_grok')),
+          onButtonClick: (): void => this.openWeb('https://x.com/i/grok', this.text($r('app.string.profile_grok'))) }) {
+          Image($r('app.media.grok_mark')).width(23).height(23).fillColor($r('app.color.text_primary'))
+        }
+      } else {
+        HdsButton({ barWidth: 40, barHeight: 52, lightColor: this.accentColor,
+          useImmersiveMaterial: true, materialLevel: 2, forceHdsStyle: true,
+          enableShadow: true, enablePressLight: true,
+          onButtonClick: (): void => this.openWeb('https://x.com/i/grok', this.text($r('app.string.profile_grok'))) }) {
+          Image($r('app.media.grok_mark')).width(23).height(23).fillColor($r('app.color.text_primary'))
+        }
+      }
+    }
+    .width(40).height(40).clip(false).accessibilityText(this.text($r('app.string.profile_grok')))
   }
 
   @Builder
@@ -1213,11 +1266,7 @@ export struct UserDetail {
               Row({ space: 4 }) {
                 this.IconButton($r('sys.symbol.magnifyingglass'), $r('app.string.profile_search'),
                   (): void => requestSearch('from:' + this.authorHandle().substring(1)))
-                HdsButton({ barWidth: 40, barHeight: 52, lightColor: this.accentColor,
-                  useImmersiveMaterial: true, materialLevel: 2, forceHdsStyle: true,
-                  onButtonClick: (): void => this.openWeb('https://x.com/i/grok', this.text($r('app.string.profile_grok'))) }) {
-                  Image($r('app.media.grok_mark')).width(23).height(23).fillColor($r('app.color.text_primary'))
-                }
+                this.GrokButton()
               }.opacity(1 - this.headerActionsProgress())
                 .hitTestBehavior(this.headerActionsProgress() < 0.1 ? HitTestMode.Default : HitTestMode.None)
             }
@@ -1227,25 +1276,13 @@ export struct UserDetail {
               if (!ProfileHeaderMotion.sameAnchor(this.titleActionsAnchor, anchor)) { this.titleActionsAnchor = anchor; }
             })
         } else {
-        Stack() {
-          HdsButton({ barWidth: 40, barHeight: 52, lightColor: this.accentColor,
-            useImmersiveMaterial: true, materialLevel: 2, forceHdsStyle: true,
-            enableShadow: true, enablePressLight: true,
-            onButtonClick: (): void => this.openWeb('https://x.com/i/grok', this.text($r('app.string.profile_grok'))) }) {
-            Image($r('app.media.grok_mark')).width(23).height(23).fillColor($r('app.color.text_primary'))
-          }
-        }
-        .width(40).height(40).accessibilityText(this.text($r('app.string.profile_grok')))
+        this.GrokButton()
         this.IconButton($r('sys.symbol.magnifyingglass'), $r('app.string.profile_search'),
           (): void => requestSearch('from:' + this.authorHandle().substring(1)))
         }
         Stack() {
-          HdsButton({ barWidth: 40, barHeight: 52, lightColor: this.accentColor,
-            useImmersiveMaterial: true, materialLevel: 2, forceHdsStyle: true,
-            enableShadow: true, enablePressLight: true,
-            onButtonClick: (): void => { this.profileMenuOpen = true; } }) {
-            SymbolGlyph($r('sys.symbol.ellipsis_circle')).fontSize(25).fontColor([pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)])
-          }
+          this.IconButton($r('sys.symbol.ellipsis_circle'), $r('app.string.profile_more'),
+            (): void => { this.profileMenuOpen = true; }, 25)
         }
         .width(40).height(40).accessibilityText(this.text($r('app.string.profile_more')))
         .bindMenu(this.profileMenuOpen, this.profileMenuItems(), {
@@ -1255,25 +1292,16 @@ export struct UserDetail {
           height: SheetSize.LARGE, showClose: true, backgroundColor: pageSurfaceColor(this.themeDisplayMode, this.themeDarkSurface)
         }, this.sheetMaterialEnabled, this.sheetMaterialLevel, this.sheetWindowBreakpoint, this.sheetCompactWindow))
       }
-      .width('100%').height(60).padding({ left: 8, right: 8 })
+      .width('100%').height(60).padding({ left: 8, right: 8 }).clip(false)
   }
 
   @Builder
   private TopNavigation(): void {
     Stack({ alignContent: Alignment.Bottom }) {
-      if (SystemMaterialUtil.isApi26OrAbove()) {
-        // The compose button also hosts ImmersiveMaterial in a Navigation title.
-        Navigation() {
-          Column().width('100%').height('100%').hitTestBehavior(HitTestMode.None)
-        }
-        .title({ builder: (): void => { this.NavigationButtons(); }, height: 60 }, { barStyle: BarStyle.STACK })
-        .titleMode(NavigationTitleMode.Full).mode(NavigationMode.Stack).hideToolBar(true)
-        .backgroundColor(Color.Transparent).width('100%').height(60)
-      } else {
-        this.NavigationButtons()
-      }
+      // Each API 26 button owns its expanded Navigation material host.
+      this.NavigationButtons()
     }
-    .width('100%').height(this.statusBarHeight + 60)
+    .width('100%').height(this.statusBarHeight + 60).clip(false)
   }
 
   @Builder
@@ -1312,29 +1340,31 @@ export struct UserDetail {
             })
           Blank()
           if (!this.isSelfProfile) {
-            Button({ type: ButtonType.Circle }) {
-              SymbolGlyph(this.notificationMode >= 0 && this.notificationMode !== 3 ?
-                $r('sys.symbol.bell_fill') : $r('sys.symbol.bell'))
-                .fontSize(23).fontColor([pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)])
-            }
-            .width(40).height(40).backgroundColor(Color.Transparent)
-            .border({ width: 1, color: $r('app.color.divider') }).borderRadius(20)
-            .accessibilityText(this.text($r('app.string.profile_notifications')))
-            .onClick((): void => { this.notificationOpen = true; })
+            Stack() {
+              MaterialButton({ nativeMaterialHost: true, buttonWidth: 40, buttonHeight: 40, buttonRadius: 20,
+                buttonBorderWidth: 1,
+                buttonBorderColor: $r('app.color.divider'), lightColor: this.accentColor,
+                accessibilityLabel: this.text($r('app.string.profile_notifications')),
+                onButtonClick: (): void => { this.notificationOpen = true; } }) {
+                SymbolGlyph(this.notificationMode >= 0 && this.notificationMode !== 3 ?
+                  $r('sys.symbol.bell_fill') : $r('sys.symbol.bell'))
+                  .fontSize(23).fontColor([pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)])
+              }
+            }.width(40).height(40).clip(false)
             .bindSheet($$this.notificationOpen, this.NotificationSheet(), sheetMaterialOptions({
               height: SheetSize.LARGE, showClose: true, backgroundColor: pageSurfaceColor(this.themeDisplayMode, this.themeDarkSurface)
             }, this.sheetMaterialEnabled, this.sheetMaterialLevel, this.sheetWindowBreakpoint, this.sheetCompactWindow))
           }
-          Button({ type: ButtonType.Circle }) {
+          MaterialButton({ nativeMaterialHost: true, buttonWidth: 40, buttonHeight: 40, buttonRadius: 20,
+            buttonBorderWidth: 1,
+            buttonBorderColor: $r('app.color.divider'), lightColor: this.accentColor,
+            accessibilityLabel: this.text($r('app.string.profile_share')),
+            onButtonClick: (): void => {
+              shareProfile(getContext(this) as common.UIAbilityContext, this.authorName(),
+                this.authorHandle().substring(1), this.profileDescription());
+            } }) {
             SymbolGlyph($r('sys.symbol.share')).fontSize(22).fontColor([pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)])
           }
-          .width(40).height(40).backgroundColor(Color.Transparent)
-          .border({ width: 1, color: $r('app.color.divider') }).borderRadius(20)
-          .accessibilityText(this.text($r('app.string.profile_share')))
-          .onClick((): void => {
-            shareProfile(getContext(this) as common.UIAbilityContext, this.authorName(),
-              this.authorHandle().substring(1), this.profileDescription());
-          })
         }
         .width('100%').margin({ top: -14, bottom: 16 })
         Row() { this.NameRow(24) }
@@ -1393,10 +1423,14 @@ export struct UserDetail {
         }
         .width('100%').margin({ bottom: 16 })
         if (this.isSelfProfile) {
-          Button($r('app.string.profile_detail_edit')).width('100%').height(42).fontSize(16)
-            .fontWeight(FontWeight.Bold).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent)).backgroundColor(Color.Transparent)
-            .border({ width: 1, color: $r('app.color.divider') }).borderRadius(22)
-            .onClick((): void => this.startEditing())
+          MaterialButton({ nativeMaterialHost: true, buttonWidth: '100%', buttonHeight: 42, buttonRadius: 22,
+            buttonBorderWidth: 1,
+            buttonBorderColor: $r('app.color.divider'), lightColor: this.accentColor,
+            accessibilityLabel: this.text($r('app.string.profile_detail_edit')),
+            onButtonClick: (): void => this.startEditing() }) {
+            Text($r('app.string.profile_detail_edit')).fontFamily(this.appFontFamily).fontSize(16)
+              .fontWeight(FontWeight.Bold).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
+          }
         } else {
           Stack() {
             ProfileActionButtons({ expandedWidth: this.heroActionsAnchor.width > 0 ? this.heroActionsAnchor.width : 312,
@@ -1696,6 +1730,7 @@ export struct UserDetail {
   private ActivityList(tab: number): void {
     AdaptivePostFeed({ scroller: this.activityScrollers[tab], relatedScrollers: [this.scroller],
       itemKeys: this.tabPosts(tab).map((post: Tweet): string => post.id), feedId: 'profile-post-feed-' + tab.toString(),
+      useList: this.useListFeed(), lazyItems: true,
       endOffset: this.navigationIndicatorHeight, forwardMode: NestedScrollMode.PARENT_FIRST,
       backwardMode: NestedScrollMode.SELF_FIRST,
       header: (): void => this.ActivityHeader(tab),

@@ -25,6 +25,12 @@ import { formatCount } from '../models/Tweet';
 import type { Tweet, TweetAuthor, UserRow } from '../models/Tweet';
 import { destinationTitleBarStyle } from '../utils/DestinationTitleBar';
 import { ResponsiveLayout } from '../utils/ResponsiveLayout';
+import { DesktopLayout } from '../utils/DesktopLayout';
+import {
+  STORAGE_KEY_TIMELINE_COLUMNS,
+  TIMELINE_COLUMNS_AUTO_TWO,
+  TIMELINE_COLUMNS_TWO
+} from '../services/TimelineSettingsStore';
 import { pageSurfaceColor } from '../utils/ThemeColors';
 import type { PostDetailRouteParam } from './PostDetail';
 import type { UserDetailRouteParam } from './UserDetail';
@@ -57,6 +63,9 @@ export struct PostInteractionsPage {
   @StorageProp('harmonyx.display_mode') private themeDisplayMode: string = '';
   @StorageProp('harmonyx.dark_surface') private themeDarkSurface: string = '';
   @StorageLink('harmonyx.title_bar_style_mode') titleBarStyleMode: number = 0;
+  @StorageProp('harmonyx.desktop_layout') private desktopLayoutEnabled: boolean = false;
+  @StorageProp('harmonyx.breakpoint') private windowBreakpoint: string = 'sm';
+  @StorageProp(STORAGE_KEY_TIMELINE_COLUMNS) private timelineColumnsMode: number = 0;
   @State private tweet: Tweet | null = null;
   @State private quotes: Tweet[] = [];
   @State private reposters: UserRow[] = [];
@@ -494,11 +503,26 @@ export struct PostInteractionsPage {
     })
   }
 
+  private isDesktopLayout(): boolean {
+    return DesktopLayout.active(this.desktopLayoutEnabled, this.windowBreakpoint);
+  }
+
+  private useTimelineWaterFlow(): boolean {
+    return this.isDesktopLayout() || ResponsiveLayout.isLarge(this.windowBreakpoint) ||
+      this.timelineColumnsMode === TIMELINE_COLUMNS_TWO ||
+      this.timelineColumnsMode === TIMELINE_COLUMNS_AUTO_TWO;
+  }
+
+  private useListFeed(): boolean {
+    return !this.useTimelineWaterFlow();
+  }
+
   @Builder
   private ActivityPage(index: number): void {
     if (index === 0) {
       AdaptivePostFeed({ scroller: this.activityScrollers[index],
         itemKeys: this.quotes.map((post: Tweet): string => post.id), feedId: 'quote-post-feed',
+        useList: this.useListFeed(), lazyItems: true,
         endOffset: this.navigationIndicatorHeight + 28,
         forwardMode: NestedScrollMode.SELF_FIRST, backwardMode: NestedScrollMode.SELF_FIRST,
         header: (): void => this.QuoteContent(), item: (item: number): void => this.QuotePost(this.quotes[item]),

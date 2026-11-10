@@ -1,3 +1,4 @@
+import { DohHttpRequest, createDohHttpRequest } from './DohHttpRequest';
 // Client for the self-hosted harmonyx-gateway.
 // Mirrors XApiClient's contract: every call resolves to a value or a failure
 // marker, nothing throws across the boundary.
@@ -63,9 +64,9 @@ export class GatewayClient {
     if (!this.settings.isConfigured()) {
       return new GatewayResult(false, 0, '', 'not_configured');
     }
-    let httpRequest: http.HttpRequest | undefined = undefined;
+    let httpRequest: DohHttpRequest | undefined = undefined;
     try {
-      httpRequest = http.createHttp();
+      httpRequest = createDohHttpRequest();
       const options: http.HttpRequestOptions = {
         method: method === 'POST' ? http.RequestMethod.POST : http.RequestMethod.GET,
         header: this.headers(),

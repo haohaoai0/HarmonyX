@@ -1,3 +1,5 @@
+import { STORAGE_KEY_SIDEBAR_ORDER, STORAGE_KEY_SIDEBAR_HIDDEN } from '../services/SidebarSettingsStore';
+import { sidebarVisibleIds, sidebarMainIds, sidebarItemIcon, sidebarItemLabel, DEFAULT_SIDEBAR_HIDDEN } from '../utils/SidebarItems';
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
 // X-style drawer built as the content panel of HdsSideBar. The layout follows
 // the PaperTalk pattern: a self-contained content component plus callbacks
@@ -15,8 +17,11 @@ import { DEFAULT_DESKTOP_RAIL_MATERIAL_LEVEL, STORAGE_KEY_DESKTOP_RAIL_MATERIAL_
 
 @Component
 export struct XSideDrawer {
+  scroller: Scroller = new Scroller();
   @StorageProp('harmonyx.compact_window') private compactWindow: boolean = false;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
+  @StorageProp(STORAGE_KEY_SIDEBAR_ORDER) private itemOrder: string = '';
+  @StorageProp(STORAGE_KEY_SIDEBAR_HIDDEN) private hiddenItems: string = DEFAULT_SIDEBAR_HIDDEN;
   @Prop profile: UserProfile | null = null;
   @StorageProp(STORAGE_KEY_ACCOUNTS_CHANGED) @Watch('loadCachedAccount') private accountsChanged: number = 0;
   @State private cachedAccount: XAccount | null = null;
@@ -99,26 +104,6 @@ export struct XSideDrawer {
   @Builder
   private DrawerHeader(): void {
     Column() {
-      Row() {
-        Blank()
-        MaterialButton({
-          buttonWidth: 38,
-          buttonHeight: 38,
-          buttonRadius: 19,
-          surfaceColor: secondaryButtonSurfaceColor(this.themeDisplayMode, this.themeDarkSurface),
-          materialLevel: 1,
-          applyShadow: true,
-          lightColor: this.accentColor,
-          onButtonClick: (): void => this.onClose()
-        }) {
-          SymbolGlyph($r('sys.symbol.xmark'))
-            .fontSize(18)
-            .fontColor([$r('app.color.text_primary')])
-        }
-      }
-      .width('100%')
-      .padding({ top: this.statusBarHeight + 10, left: 18, right: 18 })
-
       Column({ space: 4 }) {
         Row({ space: 10 }) {
         Column({ space: 8 }) {
@@ -197,36 +182,29 @@ export struct XSideDrawer {
 
   @Builder
   private DrawerItems(): void {
-        Column({ space: 2 }) {
-          this.DrawerItem($r('sys.symbol.person'), $r('app.string.side_profile'), (): void => this.onProfile())
-          this.DrawerItem($r('sys.symbol.bell'), $r('app.string.side_notifications'),
-            (): void => this.onMenu('notifications'))
-          this.DrawerItem($r('sys.symbol.star_rosette'), $r('app.string.side_premium'),
-            (): void => this.onMenu('premium'))
-          this.DrawerItem($r('sys.symbol.person_2'), $r('app.string.side_communities'),
-            (): void => this.onMenu('communities'))
-          this.DrawerItem($r('sys.symbol.bookmark'), $r('app.string.side_bookmarks'),
-            (): void => this.onMenu('bookmarks'))
-          this.DrawerItem($r('sys.symbol.clock'), $r('app.string.browsing_history_title'),
-            (): void => this.onMenu('history'))
-          this.DrawerItem($r('sys.symbol.list_bullet'), $r('app.string.side_lists'),
-            (): void => this.onMenu('lists'))
-          this.DrawerItem($r('sys.symbol.waveform'), $r('app.string.side_spaces'),
-            (): void => this.onMenu('spaces'))
-          this.DrawerItem($r('sys.symbol.rectangle_3_group'), $r('app.string.side_creator_studio'),
-            (): void => this.onMenu('studio'))
-          Divider().color($r('app.color.divider')).margin({ top: 8, bottom: 8 })
-          // A single drawer entry makes voluntary support easy to find without
-          // placing a prompt or banner over the reader's timeline.
-          this.DrawerItem($r('sys.symbol.heart_fill'), $r('app.string.side_support'),
-            (): void => this.onMenu('support'))
-          this.DrawerItem($r('sys.symbol.gearshape'), $r('app.string.settings_title'),
-            (): void => this.onSettings())
-          this.DrawerItem($r('sys.symbol.questionmark_circle'), $r('app.string.side_help'),
-            (): void => this.onMenu('help'))
-        }
-        .width('100%')
-        .padding({ left: 10, right: 10, top: 8, bottom: this.navigationIndicatorHeight + 28 })
+    Column({ space: 2 }) {
+      ForEach(sidebarMainIds(this.itemOrder, this.hiddenItems), (id: string) => {
+        Column() {
+          this.DrawerItem(sidebarItemIcon(id), sidebarItemLabel(id),
+            (): void => { if (id === 'profile') { this.onProfile(); } else { this.onMenu(id); } })
+        }.width('100%').id('sidebar-item-' + id)
+      }, (id: string): string => id)
+      Divider().color($r('app.color.divider')).margin({ top: 8, bottom: 8 })
+      if (sidebarVisibleIds(this.itemOrder, this.hiddenItems).indexOf('support') >= 0) {
+        Column() { this.DrawerItem(sidebarItemIcon('support'), sidebarItemLabel('support'), (): void => this.onMenu('support')) }
+          .width('100%').id('sidebar-item-support')
+      }
+      this.DrawerItem($r('sys.symbol.gearshape'), $r('app.string.settings_title'), (): void => this.onSettings())
+      if (sidebarVisibleIds(this.itemOrder, this.hiddenItems).indexOf('help') >= 0) {
+        Column() { this.DrawerItem(sidebarItemIcon('help'), sidebarItemLabel('help'), (): void => this.onMenu('help')) }
+          .width('100%').id('sidebar-item-help')
+      }
+    }.width('100%').padding({ left: 10, right: 10, top: 8, bottom: this.navigationIndicatorHeight + 28 })
+  }
+
+  private sidebarContentTopInset(): number {
+    return this.statusBarHeight + this.getUIContext().px2vp(
+      getContext(this).resourceManager.getNumber($r('app.float.sidebar_navigation_title_height').id));
   }
 
   build(): void {
@@ -235,17 +213,14 @@ export struct XSideDrawer {
         SideBarMaterialLayer({ materialType: this.sidebarMaterialType, materialLevel: this.sidebarMaterialLevel,
           layerPrefix: 'account-sidebar' })
       }
-      if (this.compactWindow) {
-        // The account header must scroll with the menu on a short cover screen.
-        Scroll() {
-          Column() { this.DrawerHeader(); this.DrawerItems(); }.width('100%')
-        }.width('100%').height('100%').scrollBar(BarState.Off)
-      } else {
+      Scroll(this.scroller) {
         Column() {
+          Row().width('100%').height(this.sidebarContentTopInset()).flexShrink(0)
           this.DrawerHeader()
-          Scroll() { this.DrawerItems() }.width('100%').layoutWeight(1).scrollBar(BarState.Off)
-        }.width('100%').height('100%').backgroundColor(Color.Transparent)
-      }
+          this.DrawerItems()
+        }.width('100%')
+      }.width('100%').height('100%').scrollBar(BarState.Off)
+        .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: true })
     }
     .width('100%').height('100%').borderRadius(0).clip(true).id('account-sidebar-panel')
     .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.START, SafeAreaEdge.TOP, SafeAreaEdge.BOTTOM])

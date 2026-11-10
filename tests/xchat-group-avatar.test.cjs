@@ -1,3 +1,4 @@
+const { withDohHttpMock } = require('./doh-http-fixture.cjs');
 const test=require('node:test');
 const assert=require('node:assert/strict');
 const fs=require('node:fs');
@@ -14,7 +15,7 @@ function fixture(){
     './ProxyDownloadService':{proxyDownloadService:{async download(url,path){downloads++;files.set(path,'encrypted');return true;}}}
   };
   const m={exports:{}};
-  new Function('require','module','exports',source)(id=>deps[id]||{},m,m.exports);
+  new Function('require','module','exports',source)(id=>(() => { withDohHttpMock(deps); return deps[id]||{}; })(),m,m.exports);
   return {store:new m.exports.XChatGroupAvatar(),files,calls,deps,context:{cacheDir:'/cache'},account:a=>account=a,downloads:()=>downloads};
 }
 const url='https://ton.x.com/i/ton/data/xchat_media/g42/one/two';

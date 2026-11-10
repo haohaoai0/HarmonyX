@@ -227,7 +227,7 @@ test('root mounts the actual launch cover on resume, preserves the current desti
   const code = ts.transpileModule('class Root {' + methods + '}\nreturn Root;', {
     compilerOptions: {target: ts.ScriptTarget.ES2020}
   }).outputText;
-  const Root = new Function('HOME_TAB_INDEX', code)(0), view = new Root();
+  const Root = new Function('HOME_TAB_INDEX', 'crashDiagnostics', code)(0, {pendingReport: () => null}), view = new Root();
   Object.assign(view, {homePageAlive: true, splashOpenRequest: 1, showStartupCover: false,
     startupFromForeground: false, currentTab: 2, contentDestinationOpen: true,
     externalShareRequest: '', isLargeScreen: () => false, navPathStack: {size: () => 1}});

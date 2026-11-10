@@ -6,6 +6,7 @@ const ts = require(process.env.HARMONYX_TYPESCRIPT ||
   'D:/DevEco Studio/tools/ohpm/node_modules/typescript/lib/typescript.js');
 
 function evaluate(relative, imports = {}) {
+  require('./doh-http-fixture.cjs').withDohHttpMock(imports);
   const source = fs.readFileSync(path.resolve(__dirname, '../entry/src/main/ets', relative), 'utf8');
   const output = ts.transpileModule(source, { compilerOptions: {
     target: ts.ScriptTarget.ES2020, module: ts.ModuleKind.CommonJS

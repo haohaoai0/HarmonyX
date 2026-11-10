@@ -32,7 +32,7 @@ export struct VideoHoldSpeedCapsule {
   }
 
   build(): void {
-    MaterialButton({
+    MaterialButton({ nativeMaterialHost: true,
       buttonWidth: this.capsuleWidth(),
       buttonHeight: CAPSULE_HEIGHT,
       buttonRadius: CAPSULE_HEIGHT / 2,

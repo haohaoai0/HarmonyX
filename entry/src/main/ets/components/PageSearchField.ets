@@ -19,13 +19,14 @@ export struct PageSearchField {
       Search({ value: this.value, placeholder: this.placeholder })
         .width('100%').height($r('app.float.page_search_height'))
         .textFont({ size: $r('app.float.page_search_font_size'), family: this.appFontFamily })
-        .borderRadius($r('app.float.page_search_radius')).clip(true)
+        .borderRadius($r('app.float.page_search_radius')).clip(!SystemMaterialUtil.isApi26OrAbove())
         .keyboardAppearance(KeyboardAppearance.IMMERSIVE).fontColor($r('app.color.text_primary'))
         .backgroundColor(SystemMaterialUtil.isApi26OrAbove() ? Color.Transparent :
           fieldSurfaceColor(this.displayMode, this.darkSurface))
         .attributeModifier(materialModifier(this.searchMaterial.material(this.accentColor)))
         .onChange((value: string): void => this.onValueChange(value))
     }.width('100%').height($r('app.float.page_search_band_height'))
+      .clip(false)
       .padding({ left: $r('app.float.page_search_inset'), right: $r('app.float.page_search_inset'),
         top: $r('app.float.page_search_top_inset'), bottom: $r('app.float.page_search_bottom_inset') })
   }

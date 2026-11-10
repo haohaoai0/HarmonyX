@@ -197,7 +197,7 @@ test('video surfaces wire viewer hold playback and keep inline menus exclusive w
   const media = fs.readFileSync('entry/src/main/ets/components/PostMedia.ets', 'utf8');
   const actions = fs.readFileSync('entry/src/main/ets/components/PostMediaActions.ets', 'utf8');
   assert.equal((media.match(/\.onTouch\(\(event: TouchEvent\): void => this\.onHoldSpeedTouch\(event\)\)/g) || []).length, 2);
-  assert.equal((media.match(/LongPressGesture\(\{ fingers: 1, repeat: this\.mediaViewerLayout \|\| this\.fullscreen, duration: HOLD_SEEK_DURATION_MS \}\)\s*\.onAction\(\(event: GestureEvent\): void => this\.onVideoLongPress\(event\)\)\s*\.onActionEnd\(\(\): void => this\.finishHoldGesture\(\)\)\s*\.onActionCancel\(\(\): void => this\.finishHoldGesture\(\)\)/g) || []).length, 2);
+  assert.equal((media.match(/LongPressGesture\(\{ fingers: 1, repeat: this\.mediaViewerLayout \|\| this\.fullscreen \|\| this\.inlineVideoHoldPlay, duration: HOLD_SEEK_DURATION_MS \}\)\s*\.onAction\(\(event: GestureEvent\): void => this\.onVideoLongPress\(event\)\)\s*\.onActionEnd\(\(\): void => this\.finishHoldGesture\(\)\)\s*\.onActionCancel\(\(\): void => this\.finishHoldGesture\(\)\)/g) || []).length, 2);
   assert.match(media, /onMenuRequest: onLongPress/);
   assert.doesNotMatch(media, /showDownloadButton && media\.type === 'video'/);
   assert.doesNotMatch(media, /arrow_up_left_and_arrow_down_right[\s\S]{0,240}post_card_title_overlay/);
@@ -239,6 +239,25 @@ function holdVideo(options = {}) {
     activate: () => { for (const [id, timer] of [...timers]) { timers.delete(id); timer.fn(); } }
   };
 }
+
+test('inline playback mode applies hold speed and restores it on release without a menu', () => {
+  const h = holdVideo({ mediaViewerLayout: false, inlineVideoHoldPlay: true });
+  h.touch(0); h.activate(); h.player.onVideoLongPress({ fingerList: [] });
+  assert.equal(h.player.holdSpeedActive, true);
+  assert.deepEqual(h.rates, [2]); assert.deepEqual(h.menus, []);
+  h.touch(2); assert.equal(h.player.holdSpeedActive, false);
+  assert.deepEqual(h.rates, [2, 1.5]);
+});
+
+test('inline playback mode cancels before a scrolling movement and starts a paused video on hold', () => {
+  const h = holdVideo({ mediaViewerLayout: false, inlineVideoHoldPlay: true });
+  h.touch(0); h.touch(1, 140); h.activate();
+  assert.deepEqual(h.rates, []); assert.equal(h.player.holdSpeedArmed, false);
+  let plays = 0; h.player.playing = false; h.player.play = () => plays++;
+  h.player.onVideoLongPress({ fingerList: [] });
+  assert.equal(plays, 1); assert.deepEqual(h.menus, []);
+  assert.ok(h.player.suppressVideoTapUntil > Date.now());
+});
 
 test('viewer and fullscreen hold speed survives gesture cancellation, slides and restores the chosen rate on release', () => {
   for (const layout of [{ mediaViewerLayout: true }, { mediaViewerLayout: false, fullscreen: true }]) {
@@ -313,7 +332,7 @@ test('disabled autoplay has no control spacer until a manual start, including a 
 });
 
 test('native inline player removes its own control height before manual playback and keeps it on pause',()=>{
-  const Player=methods('components/PostMedia','SurfaceVideoPlayer',['showsProgressBelowVideo','playerContainerHeight'],{
+  const Player=methods('components/PostMedia','SurfaceVideoPlayer',['usesInlineOverlayControls','showsProgressBelowVideo','playerContainerHeight'],{
     VIDEO_CONTROL_STYLE_ORIGINAL:0,INLINE_PROGRESS_LINE_HEIGHT:2,INLINE_VIDEO_CONTROLS_HEIGHT:56
   });
   const player=Object.assign(new Player(),{hasFeedControlStrip:()=>false,displayHeight:()=>240,
@@ -322,4 +341,46 @@ test('native inline player removes its own control height before manual playback
   assert.equal(player.showsProgressBelowVideo(),false);assert.equal(player.playerContainerHeight(),240);
   player.playing=true;assert.equal(player.playerContainerHeight(),296);
   player.playing=false;player.manualStart=true;assert.equal(player.playerContainerHeight(),296);
+  player.inlineVideoOverlayControls=true;
+  assert.equal(player.playerContainerHeight(),240,'overlay controls reserve no extra height below the video');
+  player.mediaViewerLayout=true;
+  assert.equal(player.playerContainerHeight(),296,'the preference applies only to inline post videos');
+});
+
+test('inline video taps reveal local controls instead of opening the fullscreen viewer', () => {
+  const Player=methods('components/PostMedia','SurfaceVideoPlayer',['usesInlineOverlayControls','onVideoSurfaceTap']);
+  let controls=0, viewers=0;
+  const player=Object.assign(new Player(), { inlineVideoOverlayControls:true, mediaViewerLayout:false,
+    fullscreen:false, adaptiveShortVideo:false, controlsAtScreenBottom:false, linkCardVideo:false,
+    holdSeekDirection:0, suppressVideoTapUntil:0, hideVideoChrome:()=>false, hideInlineVideoControls:()=>false,
+    toggleControls:()=>controls++, onFullscreenIntent:()=>{ viewers++;return true; }, isAnimatedGif:()=>false });
+  player.onVideoSurfaceTap();player.onVideoSurfaceTap();
+  assert.equal(controls,2);assert.equal(viewers,0);
+  player.inlineVideoOverlayControls=false;player.onVideoSurfaceTap();
+  assert.equal(controls,3);assert.equal(viewers,0,'a surface tap must not open another player');
+});
+
+test('feed preview taps start the inline player without opening the video feed viewer', () => {
+  const source = fs.readFileSync('entry/src/main/ets/components/PostMedia.ets', 'utf8')
+    .replace(/\bstruct PostMedia\s*\{/, 'class PostMedia {');
+  const tree = ts.createSourceFile('component.ts', source, ts.ScriptTarget.Latest, true);
+  const component = tree.statements.find(node =>
+    ts.isClassDeclaration(node) && node.name.text === 'PostMedia');
+  const previewTap = component.members.find(node =>
+    ts.isMethodDeclaration(node) && node.name.getText(tree) === 'VideoActionContent').getText(tree);
+  assert.doesNotMatch(previewTap, /openVideo\(media\)/,
+    'tapping the feed preview must not mount VideoFeedViewer');
+  assert.match(previewTap, /if \(this\.canStream\(media\)\) \{ this\.activate\(media, true\); \}/);
+});
+
+test('explicit inline fullscreen action still opens the viewer at the current position', () => {
+  const Player=methods('components/PostMedia','SurfaceVideoPlayer',['activateInlineOverlayAction'], {hapticTick() {}});
+  const positions=[];
+  let nativeFullscreens=0;
+  const player=Object.assign(new Player(), { playing:false, positionSec:42,
+    onFullscreenIntent:(position)=>{ positions.push(position);return true; },
+    enterFullscreen:()=>nativeFullscreens++, scheduleHide() {} });
+  player.activateInlineOverlayAction(2);
+  assert.deepEqual(positions,[42]);
+  assert.equal(nativeFullscreens,0);
 });

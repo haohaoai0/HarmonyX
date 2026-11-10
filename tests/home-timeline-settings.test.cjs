@@ -38,6 +38,22 @@ function tweet(id, text, createdAt, likes = 0, attachments = []) {
     metrics: { likeCount: likes, repostCount: 0, replyCount: 0, viewCount: 0 } };
 }
 
+test('compiled topic matching follows expiry, unpausing and quoted text without hiding word fragments', t => {
+  let now = 100000;
+  t.mock.method(Date, 'now', () => now);
+  const {homeTimelineStore: store} = fixture();
+  const posts = [tweet('1', 'Politics today', ''), tweet('2', 'partial artist', ''),
+    {...tweet('3', 'a quote', ''), quotedTweet: tweet('quoted', '政治', '')}];
+  store.setPaused({}, 'politics', true); store.setPaused({}, 'entertainment', true);
+  assert.deepEqual(store.present(posts, true).map(p => p.id), ['2']);
+  assert.deepEqual(store.present(posts, true).map(p => p.id), ['2']);
+  store.setPaused({}, 'politics', false);
+  assert.deepEqual(store.present(posts, true).map(p => p.id), ['1', '2', '3']);
+  store.setPaused({}, 'politics', true);
+  now += 24 * 60 * 60 * 1000 + 1;
+  assert.deepEqual(store.present(posts, true).map(p => p.id), ['1', '2', '3']);
+});
+
 test('pauses hide recommendation topics without removing following posts or matching word fragments', () => {
   const { homeTimelineStore: store } = fixture();
   const posts = [tweet('1', 'Politics and election', '2026-10-03T00:00:00Z'),

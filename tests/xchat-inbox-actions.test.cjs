@@ -1,3 +1,4 @@
+const { withDohHttpMock } = require('./doh-http-fixture.cjs');
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
@@ -18,7 +19,7 @@ const dependencies = {
 };
 const loaded={exports:{}};
 global.AppStorage={get:()=>0,setOrCreate(){}};
-new Function('require','module','exports',code)(id=>dependencies[id]||{},loaded,loaded.exports);
+new Function('require','module','exports',code)(id=>(() => { withDohHttpMock(dependencies); return dependencies[id]||{}; })(),loaded,loaded.exports);
 const actions=new loaded.exports.XChatActions();
 const row=(sequence='10',unread=0)=>({id:'100-200',conversationId:'100-200',latestSequenceId:sequence,unread});
 function reset(){values.clear();account='a';response={ok:true,status:200,body:JSON.stringify({data:{success:true}})};duringRequest=()=>{};}

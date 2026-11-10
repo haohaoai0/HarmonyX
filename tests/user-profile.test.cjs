@@ -167,7 +167,7 @@ test('reads the viewer follow state from relationship_perspectives', () => {
   assert.equal(profile.followedBy, true);
 });
 
-test('defaults follow state to false when the viewer is not following', () => {
+test('keeps the viewer follow state unknown when the response omits it', () => {
   const profile = XUserParser.parse(JSON.stringify({
     data: { user: { result: {
       __typename: 'User',
@@ -176,6 +176,6 @@ test('defaults follow state to false when the viewer is not following', () => {
         profile_image_url_https: '', profile_banner_url: '' }
     } } }
   }));
-  assert.equal(profile.following, false);
+  assert.equal(profile.following, undefined);
   assert.equal(profile.followedBy, false);
 });

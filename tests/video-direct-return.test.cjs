@@ -34,7 +34,7 @@ function fixture() {
     hilog: { debug() {}, info() {}, warn() {} }, DOMAIN: 0, TAG: '',
     videoMediaSession: { release: id => events.push(['session-release', id]) },
     videoPlaybackPositionStore: { remember() {} }, videoPlayerPreparation: { cancel() {}, prepare: async () => {} },
-    videoPipGate: { isHeld: () => false, release: id => events.push(['pip-release', id]) },
+    videoPipGate: { isHeld: () => false, unregisterOwner() {}, release: id => events.push(['pip-release', id]) },
     videoPipPlaybackKeeper: { unregister: id => events.push(['pip-unregister', id]) },
     videoPlaybackCoordinator: { release: id => { events.push(['owner-release', id]); owner = ''; } },
     videoBackgroundPlayback: { start() {}, stop: id => events.push(['background-stop', id]) },
@@ -189,7 +189,7 @@ function routeHarness(canReturn = true, pipHeld = false) {
   const Viewer = methods('entry/src/main/ets/pages/VideoFeedViewer.ets', 'VideoFeedViewer', ['close', 'finishNavigationReturn'], {
     videoPipGate: { isHeld: () => pipHeld },
     videoPlayerHandoff: { returnToSource: (id, source) => { events.push(['return', id, source]); return canReturn; },
-      request: id => events.push(['request', id]) },
+      request: id => events.push(['request', id]), setInlinePaused() {} },
     ResponsiveLayout: { closeContentDestination: () => events.push(['pop']) }, MediaViewerMotionFrame: Frame,
     measureMediaViewerGeometry: () => ({ viewport: {}, target: {} }), captureMediaViewerSource: () => undefined
   });
@@ -296,4 +296,45 @@ test('teardown silences a native playing state immediately and keeps leases unti
   assert.equal(file.closed, 0); assert.equal(stream.closed, 0);
   finishRelease(); await flush();
   assert.equal(file.closed, 1); assert.equal(stream.closed, 1);
+});
+
+test('return pause keeps the same decoder, position and leases without resuming on visibility', () => {
+  const h = fixture(), native = h.native('viewer'), source = h.view('inline'), viewer = h.view('viewer', native, true);
+  const file = viewer.cacheLease, stream = viewer.dataSourceLease;
+  h.store.registerReturnTarget('video', source.playerReturnTarget());
+  viewer.registerPlayerHandoff(native);
+  h.store.setInlinePaused('video', true);
+  assert.equal(h.store.returnToSource('video', 'card-inline'), true);
+  assert.equal(source.player, native);
+  assert.equal(source.wantsPlay, false);
+  assert.equal(source.playing, false);
+  assert.equal(source.positionSec, 38);
+  assert.deepEqual(native.calls.filter(call => typeof call === 'string'), ['pause']);
+  assert.equal(file.closed, 0); assert.equal(stream.closed, 0);
+  h.store.completeReturn('video');
+  assert.equal(h.store.isInlinePaused('video'), true);
+  // An entirely new card instance sees the same session choice.
+  const recycled = h.view('recycled');
+  assert.equal(h.store.isInlinePaused(recycled.media.id), true);
+});
+
+test('automatic start respects return pause and explicit play resumes from the retained position', async () => {
+  const h = fixture(), native = h.native('inline', 'paused');
+  const Control = methods('entry/src/main/ets/components/PostMedia.ets', 'SurfaceVideoPlayer', ['play'], {
+    videoPlayerHandoff: h.store, hilog: { warn() {} }, DOMAIN: 0, TAG: ''
+  });
+  const view = Object.assign(new Control(), { media: { id: 'video' }, mediaViewerLayout: false, fullscreen: false,
+    isAnimatedGif: () => false, isCoveredByVideoFeed: () => false, casting: false,
+    playbackEnabled: true, usesFeedMutePreference: () => false, preloadFailed: false, failed: false,
+    dataSourceLease: null, cacheLease: null, player: native, playerState: 'paused', ready: true, positionSec: 38,
+    requiresProxyDownload: () => false, claimExclusivePlayback() {}, pause() { this.wantsPlay = false; } });
+  h.store.setInlinePaused('video', true);
+  view.play(); assert.equal(view.wantsPlay, false); assert.deepEqual(native.calls, []);
+  view.play(true); await flush();
+  assert.equal(h.store.isInlinePaused('video'), false);
+  assert.equal(view.wantsPlay, true); assert.deepEqual(native.calls, ['play']);
+  assert.equal(view.positionSec, 38);
+  h.store.setInlinePaused('video', true); native.state = 'paused'; view.mediaViewerLayout = true;
+  view.play(); await flush();
+  assert.equal(native.state, 'playing', 'opened viewers are independent of the inline return preference');
 });

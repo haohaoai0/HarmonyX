@@ -1,6 +1,8 @@
 import { common } from '@kit.AbilityKit';
 import { preferences } from '@kit.ArkData';
 
+export const STORAGE_KEY_BOTTOM_BAR_VISIBLE: string = 'harmonyx.bottom_bar_visible';
+
 export const STORAGE_KEY_BOTTOM_BAR_PAGES: string = 'harmonyx.bottom_bar_pages';
 export const DEFAULT_BOTTOM_BAR_PAGES_MASK: number = 31;
 export const BOTTOM_BAR_PAGE_COUNT: number = 5;
@@ -11,6 +13,23 @@ export const BOTTOM_BAR_MESSAGES_PAGE: number = 3;
 export const BOTTOM_BAR_ME_PAGE: number = 4;
 
 export class BottomBarSettingsStore {
+  loadVisible(context: common.Context): boolean {
+    try {
+      const store: preferences.Preferences = preferences.getPreferencesSync(context, { name: BottomBarSettingsStore.STORE_NAME });
+      return store.getSync('visible', true) as boolean;
+    } catch (error) { return true; }
+  }
+
+  saveVisible(context: common.Context, visible: boolean): boolean {
+    try {
+      const store: preferences.Preferences = preferences.getPreferencesSync(context, { name: BottomBarSettingsStore.STORE_NAME });
+      store.putSync('visible', visible);
+      store.flushSync();
+      AppStorage.setOrCreate<boolean>(STORAGE_KEY_BOTTOM_BAR_VISIBLE, visible);
+      return true;
+    } catch (error) { return false; }
+  }
+
   private static readonly STORE_NAME: string = 'harmonyx_bottom_bar';
   private static readonly PAGES_KEY: string = 'pages_mask';
 

@@ -36,7 +36,8 @@ function fixture() {
       new Uint8Array(buffer).set([15, 20, 30, 255, 245, 240, 230, 255]);
     }, release: async () => {} }), release: async () => { control.released++; } }) } },
     '@ohos.util': { default: { generateRandomUUID: () => '00000000-0000-0000-0000-' + String(++control.serial).padStart(12, '0') } },
-    './ChatBackgroundStore': { chatBackgroundPreset: id => ({ pattern: ['petrel_cats', 'petrel_space'].includes(id) ? {} : undefined }) },
+    './ChatBackgroundStore': { chatBackgroundPreset: id => ({ pattern: ['petrel_cats', 'petrel_space'].includes(id) ? {} : undefined,
+      colors: id === 'petrel_cats' ? ['#73CAFF', '#D5F7FF', '#FB9AE5', '#FBD9E6'] : ['#E4B2EA', '#8376C2', '#EAB9D9', '#B493E6'] }) },
     './BackgroundImageStore': { backgroundImageStore: { owns: (ctx, p) =>
       p.startsWith(ctx.filesDir + '/background_images/') && /^[a-fA-F0-9-]+\.img$/.test(p.split('/').at(-1)) } },
     '../models/PageBackgroundMotifs': { validPageMotif: id => motifs.includes(id) },
@@ -623,10 +624,88 @@ test('selecting another full pattern replaces the old one and none explicitly cl
   const editor=new result.Editor();
   editor.setPattern('petrel_cats'); editor.setPattern('petrel_space');
   assert.deepEqual(editor.selected.patternIds,['petrel_space']);
+  assert.equal(editor.selected.presetColors,true);
   editor.setPattern('petrel_space');
   assert.deepEqual(editor.selected.patternIds,['petrel_space']);
   editor.setPattern('none'); assert.deepEqual(editor.selected.patternIds,[]);
+  assert.equal(editor.selected.presetColors,false);
   assert.deepEqual(f.normalizePageBackground({patternIds:['invalid','petrel_cats','petrel_space']}).patternIds,['petrel_cats']);
+});
+
+test('full patterns retain their gradient through restart and sharing without losing the custom base', () => {
+  const f=fixture();
+  const state=f.normalizePageBackground({mode:'color',color:'#123456',patternLayout:'preset',
+    patternIds:['petrel_cats'],presetColors:true});
+  assert.deepEqual(f.pageBackgroundPresetColors(state),['#73CAFF','#D5F7FF','#FB9AE5','#FBD9E6']);
+  assert.equal(f.pageBackgroundPresetColors(state),f.pageBackgroundPresetColors(state),
+    'repeated foreground requests reuse resource references instead of rebuilding the full catalog');
+  f.pageBackgroundStore.save(f.context,state);f.pageBackgroundStore.initialize(f.context);
+  const restored=f.pageBackgroundStore.load(f.context);
+  assert.equal(restored.presetColors,true);assert.equal(restored.color,'#123456');
+  const schemes=compile('entry/src/main/ets/services/PageBackgroundScheme.ets',{'./PageBackgroundStore':f});
+  const imported=schemes.decodePageBackgroundScheme(schemes.encodePageBackgroundScheme(restored,'')).state;
+  assert.equal(imported.presetColors,true);assert.deepEqual(f.pageBackgroundPresetColors(imported),f.pageBackgroundPresetColors(state));
+  for(const config of [{presetColors:false},{patternLayout:'icons'},{patternIds:[]},{patternIds:['invalid']}]) {
+    assert.deepEqual(f.pageBackgroundPresetColors(f.normalizePageBackground({...state,...config})),[]);
+  }
+  assert.equal(f.normalizePageBackground({...state,presetColors:undefined}).presetColors,false,
+    'existing custom compositions keep their appearance until selecting a preset again');
+});
+
+test('choosing a custom base overrides the preset gradient, and the gradient can be restored independently', () => {
+  const f=fixture(),source=fs.readFileSync('entry/src/main/ets/pages/PageBackground.ets','utf8');
+  const out=ts.transpileModule(`export class Editor { selected=new PageBackgroundState(); colorInput='';
+    refreshSelectedTone(): void {} ${['setPattern','setMode','setColor','setPresetColors','selectSavedPhoto'].map(name=>method(source,name)).join('\n')} }`,
+    {compilerOptions:{target:ts.ScriptTarget.ES2020,module:ts.ModuleKind.CommonJS}}).outputText;
+  const api={};new Function('exports','PageBackgroundState','normalizePageBackground',out)(api,f.PageBackgroundState,f.normalizePageBackground);
+  const editor=new api.Editor();
+  editor.setColor('#123456');editor.setPattern('petrel_cats');assert.equal(editor.selected.presetColors,true);
+  assert.equal(editor.selected.color,'#123456');
+  editor.setPresetColors(false);assert.equal(editor.selected.mode,'color');assert.equal(editor.selected.color,'#123456');
+  editor.setPresetColors(true);editor.setColor('#ABCDEF');assert.equal(editor.selected.presetColors,false);
+  editor.setPattern('petrel_cats');editor.setMode('theme');assert.equal(editor.selected.presetColors,false);
+  editor.setPattern('petrel_space');editor.selectSavedPhoto('/app/files/background_images/aa.img');
+  assert.equal(editor.selected.presetColors,false);assert.equal(editor.selected.mode,'photo');
+  editor.setPresetColors(true);assert.equal(editor.selected.path,'/app/files/background_images/aa.img');
+  assert.deepEqual(editor.selected.patternIds,['petrel_space']);
+});
+
+test('all 17 preset gradients resolve the original light palettes and independent dark palettes', () => {
+  const catalog=compile('entry/src/main/ets/services/ChatBackgroundStore.ets');
+  const manifest=JSON.parse(fs.readFileSync('docs/chat-background-assets.json','utf8')).patterns;
+  const base=new Map(JSON.parse(fs.readFileSync('entry/src/main/resources/base/element/color.json','utf8')).color.map(c=>['app.color.'+c.name,c.value]));
+  const dark=new Map(JSON.parse(fs.readFileSync('entry/src/main/resources/dark/element/color.json','utf8')).color.map(c=>['app.color.'+c.name,c.value]));
+  for(const asset of manifest) {
+    const preset=catalog.chatBackgroundPreset(asset.id);
+    assert.deepEqual(preset.colors.map(color=>base.get(color)),asset.colors,asset.id+' retains its recorded original palette');
+    assert.ok(preset.colors.every(color=>dark.has(color)),asset.id+' has a complete dark palette');
+    assert.notDeepEqual(preset.colors.map(color=>base.get(color)),preset.colors.map(color=>dark.get(color)));
+    assert.equal(preset.angle,180);
+  }
+});
+
+test('foreground contrast uses every gradient stop rather than the stored custom base', () => {
+  const f=fixture(),contrast=compile('entry/src/main/ets/utils/PageBackgroundContrast.ets');
+  const metric=c=>({...contrast.rgbFromHex(c),alpha:255});
+  const colors=compile('entry/src/main/ets/utils/ThemeColors.ets',{
+    '../services/AppearanceStore':{},'../services/PageBackgroundStore':f,'./PageBackgroundContrast':contrast,
+    '@kit.ArkUI':{ColorMetrics:{resourceColor:metric}}
+  });
+  for(const id of ['petrel_cats','petrel_space']) {
+    const state=f.normalizePageBackground({mode:'color',color:'#000000',patternLayout:'preset',patternIds:[id],presetColors:true,patternStrength:0});
+    assert.equal(colors.pageBackgroundBaseColor(state,'',''),f.pageBackgroundPresetColors(state)[0]);
+    const tone=colors.pageBackdropTone(state,'','');
+    assert.deepEqual(tone,colors.pageBackdropTone({...state,color:'#FFFFFF'},'',''),'stored custom color cannot change preset tone');
+    assert.notDeepEqual(tone.darkest,tone.lightest);
+    const ink=contrast.rgbFromHex(contrast.pageLightInk(tone.average)?'#FFFFFF':'#000000');
+    for(const stop of f.pageBackgroundPresetColors(state)) {
+      const rendered=contrast.mixPageRgb(contrast.rgbFromHex(stop),contrast.rgbFromHex(tone.veilLight?'#FFFFFF':'#000000'),tone.veil);
+      assert.ok(contrast.pageContrastRatio(ink,rendered)>=4.99,id+' gradient remains readable at '+stop);
+    }
+  }
+  const layer=fs.readFileSync('entry/src/main/ets/components/PageBackgroundLayer.ets','utf8');
+  assert.match(layer,/pageBackgroundPresetColors\(this.wallpaper\)\.length > 0/);
+  assert.match(layer,/angle: chatBackgroundPreset\(this.wallpaper.patternIds\[0\]\)\.angle, colors: this.gradientStops\(\)/);
 });
 
 test('dimming and reading veil sit below motifs, so changing intensity never adds a canvas veil', () => {

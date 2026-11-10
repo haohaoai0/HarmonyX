@@ -189,6 +189,40 @@ function mediaService(h, manager) {
 }
 async function enableFiles(h) {await h.location.downloadLocationStore.setUseDownloads(h.context,true);}
 
+test('all four save methods persist, migrate the folder choice, and restore it on a failed write', async () => {
+  const h = harness(true);
+  try {
+    const {downloadLocationStore: store, MediaSaveMethod: mode} = h.location;
+    assert.equal(store.method(h.context), mode.GALLERY);
+    h.values.set('save_to_folder', true);
+    assert.equal(store.method(h.context), mode.DIRECTORY);
+    for (const method of [mode.GALLERY, mode.SECURE_BUTTON, mode.DIRECTORY, mode.FILE_PICKER]) {
+      await store.setMethod(h.context, method);
+      assert.equal(new h.location.DownloadLocationStore().method(h.context), method);
+      assert.equal(store.useDownloads(h.context), method === mode.DIRECTORY || method === mode.FILE_PICKER);
+    }
+    h.failWrite(true);
+    await assert.rejects(store.setMethod(h.context, mode.SECURE_BUTTON));
+    assert.equal(store.method(h.context), mode.FILE_PICKER);
+  } finally { h.close(); }
+});
+
+test('file-picker mode uses a fresh destination even when a persistent directory is already authorized', async () => {
+  const h = harness(true);
+  try {
+    const directory = h.put('exports/placeholder');
+    h.directory(path.dirname(directory));
+    await h.location.downloadLocationStore.chooseDirectory(h.context);
+    await h.location.downloadLocationStore.setMethod(h.context, h.location.MediaSaveMethod.FILE_PICKER);
+    const source = h.put('files/source.jpg', 'image'), destination = h.put('chosen/photo.jpg', '');
+    h.trace.length = 0; h.save(destination);
+    assert.equal(await h.location.downloadLocationStore.save(h.context, source, 'photo.jpg'), 0);
+    assert.equal(fs.readFileSync(destination, 'utf8'), 'image');
+    assert.equal(h.trace.filter(row => row[0] === 'picker').length, 1);
+    assert.equal(h.trace.filter(row => row[0] === 'activate' || row[0] === 'persist').length, 0);
+  } finally { h.close(); }
+});
+
 test('Gallery is restored for fresh and upgraded installs and saves single images and batches without a folder grant', async () => {
   const h = harness(true);
   try {

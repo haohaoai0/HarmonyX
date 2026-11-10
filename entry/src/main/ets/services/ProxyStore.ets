@@ -1,3 +1,5 @@
+import { DohHttpRequest, createDohHttpRequest } from './DohHttpRequest';
+import { dnsSettingsStore } from './DnsSettingsStore';
 // Application-scoped proxy configuration. The settings are persisted here and
 // the runtime helper attaches the selected proxy to every @ohos.net.http
 // request. HTTP proxies are available on the project's compatible API level;
@@ -8,7 +10,6 @@ import { deviceInfo } from '@kit.BasicServicesKit';
 import { connection } from '@kit.NetworkKit';
 import http from '@ohos.net.http';
 import hilog from '@ohos.hilog';
-import { dnsSettingsStore } from './DnsSettingsStore';
 
 const DOMAIN: number = 0xFF00;
 const TAG: string = 'HarmonyX-Proxy';
@@ -173,8 +174,7 @@ export class ProxyStore {
     return this.settings.normalized();
   }
 
-  // ArkUI Image and AVPlayer URL sources cannot receive per-request DoH.
-  // Use the existing HTTP download path when either network setting needs it.
+  // Remote images and player URL sources need the HTTP path to use DoH.
   requiresHttpTransport(): boolean {
     return this.settings.enabled || dnsSettingsStore.snapshot().enabled;
   }
@@ -494,9 +494,9 @@ export class ProxyStore {
     if (proxy.isSocks5() && !deviceInfo.apiAvailable('26.0.0')) {
       return -1;
     }
-    let request: http.HttpRequest | undefined = undefined;
+    let request: DohHttpRequest | undefined = undefined;
     try {
-      request = http.createHttp();
+      request = createDohHttpRequest();
       const options: http.HttpRequestOptions = {
         method: http.RequestMethod.GET,
         header: { 'User-Agent': 'HarmonyX proxy probe' },

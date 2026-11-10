@@ -1,3 +1,4 @@
+const { withDohHttpMock } = require('./doh-http-fixture.cjs');
 const assert = require('node:assert/strict');
 const test = require('node:test');
 const fs = require('node:fs');
@@ -10,7 +11,7 @@ function load(name, dependencies = {}) {
   const source = fs.readFileSync(path.join(__dirname, '../entry/src/main/ets/services', name + '.ets'), 'utf8');
   const output = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020, esModuleInterop: true } }).outputText;
   const module = { exports: {} };
-  new Function('require', 'module', 'exports', output)(id => {
+  new Function('require', 'module', 'exports', output)(id => { withDohHttpMock(dependencies);
     if (id in dependencies) return dependencies[id];
     throw Error('Unexpected dependency: ' + id);
   }, module, module.exports);

@@ -11,6 +11,7 @@ export struct AdaptivePostFeed {
   @Prop @Watch('syncSections') itemKeys: string[] = [];
   @Prop @Watch('syncSections') allowColumns: boolean = true;
   @Prop @Watch('syncSections') lazyItems: boolean = false;
+  @Prop useList: boolean = false;
   @Prop @Watch('syncSections') singleColumnGap: number = 0;
   @StorageProp(STORAGE_KEY_TIMELINE_COLUMNS) @Watch('syncSections') private preferredColumns: number = 0;
   scroller: Scroller = new Scroller();
@@ -62,7 +63,49 @@ export struct AdaptivePostFeed {
     if (this.lazyItems) { this.lazySource.replace(this.itemKeys); }
   }
 
-  build(): void {
+  @Builder
+  private ListFeed(): void {
+    // Match the home timeline on a single-column surface, including native
+    // press/drag routing. Insets belong to the header's ordinary layout.
+    List({ space: this.singleColumnGap, scroller: this.scroller }) {
+      if (this.lazyItems) {
+        LazyForEach(this.lazySource, (row: PostFeedItem) => {
+          ListItem() {
+            Column() {
+              if (row.index === -1) { this.header() }
+              else if (row.index === -2) { this.footer() }
+              else { this.item(row.index) }
+            }.width('100%')
+          }.width('100%')
+        }, (row: PostFeedItem): string => row.key)
+      } else {
+        ListItem() { Column() { this.header() }.width('100%') }
+        ForEach(this.itemKeys, (_key: string, index: number) => {
+          ListItem() { this.item(index) }.width('100%')
+        }, (key: string, index: number): string => index.toString() + ':' + key)
+        ListItem() { Column() { this.footer() }.width('100%') }
+      }
+    }
+    .onScrollStart((): void => scrollStarted(this.scroller))
+    .onScrollFrameBegin((offset: number, state: ScrollState): OnScrollFrameBeginHandlerResult =>
+      scrollFrame(this.scroller, offset, state))
+    .onTouchIntercept((event: TouchEvent): HitTestMode => stopScrollOnTouch(event, this.scroller, this.relatedScrollers))
+    .id(this.feedId).width('100%').height('100%')
+    .contentEndOffset(this.endOffset)
+    .cachedCount(4).scrollBar(BarState.Off)
+    .clipContent(this.clipContent ? ContentClipMode.BOUNDARY : ContentClipMode.SAFE_AREA)
+    .clip(this.clipContent)
+    .maintainVisibleContentPosition(true)
+    .nestedScroll({ scrollForward: this.forwardMode, scrollBackward: this.backwardMode })
+    .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: true })
+    .onScrollStop((): void => scrollStopped(this.scroller))
+    .onReachEnd((): void => this.onLoadMore())
+    .onDidScroll((offset: number): void => this.onFeedScroll(offset))
+    .onScrollIndex((start: number, end: number): void => this.onVisibleItems(Math.max(0, start - 1), end - 1))
+  }
+
+  @Builder
+  private WaterFlowFeed(): void {
     // Keep column assignments stable on return instead of rebalancing the
     // visible section after media playback changes a card's contents.
     WaterFlow({ scroller: this.scroller, sections: this.sections, layoutMode: WaterFlowLayoutMode.ALWAYS_TOP_DOWN }) {
@@ -105,5 +148,10 @@ export struct AdaptivePostFeed {
     .onReachEnd((): void => this.onLoadMore())
     .onDidScroll((offset: number): void => this.onFeedScroll(offset))
     .onScrollIndex((start: number, end: number): void => this.onVisibleItems(Math.max(0, start - 1), end - 1))
+  }
+
+  build(): void {
+    if (this.useList) { this.ListFeed() }
+    else { this.WaterFlowFeed() }
   }
 }

@@ -6,6 +6,7 @@ import { chatInputMaterial } from '../utils/ChatMaterial';
 import { SystemMaterialUtil } from '../utils/SystemMaterial';
 import { DEFAULT_REPLY_CAPSULE_MATERIAL_LEVEL, STORAGE_KEY_REPLY_CAPSULE_MATERIAL_LEVEL } from '../services/AppearanceStore';
 import { materialModifier } from '../utils/SystemMaterial';
+import { MaterialSurfaceHost } from './MaterialSurfaceHost';
 
 interface EmojiRow { id: string; group: string; entries: ChatEmoji[]; }
 class EmojiRows implements IDataSource {
@@ -55,15 +56,14 @@ export struct ChatEmojiPanel {
     Search({ value: this.query, placeholder: $r('app.string.chat_search') })
       .keyboardAppearance(KeyboardAppearance.IMMERSIVE).height(44)
       .fontColor($r('app.color.text_primary')).backgroundColor(SystemMaterialUtil.isApi26OrAbove() ? Color.Transparent : $r('app.color.bg_field'))
-      .borderRadius(24).clip(true).attributeModifier(materialModifier(chatInputMaterial(this.materialLevel))).margin({ left: 16, right: 16 })
+      .borderRadius(24).clip(!SystemMaterialUtil.isApi26OrAbove()).attributeModifier(materialModifier(chatInputMaterial(this.materialLevel))).margin({ left: 16, right: 16 })
       .onChange((value: string): void => { this.query = value; this.search(); })
   }
   build(): void {
     Column() {
-      Navigation() { Column().height(0).hitTestBehavior(HitTestMode.None) }
-        .title({ builder: (): void => { this.SearchBar(); }, height: 52 }, { barStyle: BarStyle.STACK })
-        .titleMode(NavigationTitleMode.Full).mode(NavigationMode.Stack).hideToolBar(true)
+      MaterialSurfaceHost({ surfaceHeight: 52, surfaceContent: (): void => { this.SearchBar(); } })
         .height(52).width('100%').backgroundColor(Color.Transparent)
+        .clip(false)
       List({ scroller: this.scroller }) {
         LazyForEach(this.rows, (row: EmojiRow) => {
           ListItem() {

@@ -5,7 +5,8 @@ import { BusinessError } from '@kit.BasicServicesKit';
 import { fileIo, fileUri } from '@kit.CoreFileKit';
 import { photoAccessHelper } from '@kit.MediaLibraryKit';
 import hilog from '@ohos.hilog';
-import { downloadLocationStore, LocalFileSaveResult } from './DownloadLocationStore';
+import { downloadLocationStore, LocalFileSaveResult, MediaSaveMethod } from './DownloadLocationStore';
+import { SecureMediaSaveRequest, secureMediaSaveController } from './SecureMediaSaveController';
 import { gifTranscoder } from './GifTranscoder';
 import {
   DownloadTask,
@@ -61,9 +62,9 @@ export class MediaDownloadService {
   // open the Gallery destination before downloading: the temporary grant is
   // consumed immediately, while writing to the open file has no time limit.
   async downloadPhotoWithSaveButton(context: common.UIAbilityContext, url: string,
-    mediaId: string, callback: MediaDownloadCallback): Promise<void> {
+    mediaId: string, callback: MediaDownloadCallback, isVideo: boolean = false): Promise<void> {
     if (downloadLocationStore.useDownloads(context)) {
-      this.download(context, url, mediaId, false, callback);
+      this.download(context, url, mediaId, isVideo, callback);
       return;
     }
     if (url.length === 0) { callback(MEDIA_DOWNLOAD_FAILED); return; }
@@ -72,12 +73,12 @@ export class MediaDownloadService {
     let result: number = MEDIA_DOWNLOAD_FAILED;
     try {
       const helper: photoAccessHelper.PhotoAccessHelper = photoAccessHelper.getPhotoAccessHelper(context);
-      const uri: string = await helper.createAsset(photoAccessHelper.PhotoType.IMAGE,
-        this.photoExtension(url));
+      const uri: string = await helper.createAsset(isVideo ? photoAccessHelper.PhotoType.VIDEO : photoAccessHelper.PhotoType.IMAGE,
+        isVideo ? 'mp4' : this.photoExtension(url));
       destination = await fileIo.open(uri, fileIo.OpenMode.WRITE_ONLY);
       let sourcePath: string = url;
       if (!url.startsWith('file://')) {
-        task = await this.photoDownloadForSave(context, url, mediaId);
+        task = await this.photoDownloadForSave(context, url, mediaId, isVideo);
         if (task === null) { throw new Error('photo_download_failed'); }
         sourcePath = task.filePath;
       }
@@ -104,9 +105,9 @@ export class MediaDownloadService {
   }
 
   private photoDownloadForSave(context: common.UIAbilityContext, url: string,
-    mediaId: string): Promise<DownloadTask | null> {
+    mediaId: string, isVideo: boolean = false): Promise<DownloadTask | null> {
     return new Promise<DownloadTask | null>((resolve: (task: DownloadTask | null) => void): void => {
-      const taskId: string = downloadManager.enqueue(context, url, mediaId, false,
+      const taskId: string = downloadManager.enqueue(context, url, mediaId, isVideo,
         (id: string, ready: boolean): void => {
           const task: DownloadTask | null = ready ? downloadManager.getTask(id, context) : null;
           if (task === null || task.status !== DownloadTaskStatus.READY_TO_SAVE || this.savingTasks.has(id)) {
@@ -131,6 +132,11 @@ export class MediaDownloadService {
 
   download(context: common.UIAbilityContext, url: string, mediaId: string,
     isVideo: boolean, callback: MediaDownloadCallback): void {
+    if (url.length === 0) { callback(MEDIA_DOWNLOAD_FAILED); return; }
+    if (downloadLocationStore.method(context) === MediaSaveMethod.SECURE_BUTTON) {
+      secureMediaSaveController.enqueue(new SecureMediaSaveRequest(context, url, mediaId, isVideo, callback));
+      return;
+    }
     if (downloadLocationStore.useDownloads(context)) {
       downloadLocationStore.prepare(context).then((ready: boolean): void => {
         if (ready) { this.startDownload(context, url, mediaId, isVideo, callback); }
@@ -299,6 +305,13 @@ export class MediaDownloadService {
   // file exports ask the system picker for each destination.
   downloadImages(context: common.UIAbilityContext, urls: string[], mediaId: string,
     callback: MediaDownloadCallback): void {
+    if (downloadLocationStore.method(context) === MediaSaveMethod.SECURE_BUTTON) {
+      if (urls.length === 0 || urls.some((url: string): boolean => url.length === 0)) {
+        callback(MEDIA_DOWNLOAD_FAILED); return;
+      }
+      this.saveSecureImages(context, urls, mediaId).then(callback).catch((): void => callback(MEDIA_DOWNLOAD_FAILED));
+      return;
+    }
     if (downloadLocationStore.useDownloads(context)) {
       downloadLocationStore.prepare(context).then((ready: boolean): void => {
         if (ready) { this.startImageDownloads(context, urls, mediaId, callback); }
@@ -307,6 +320,22 @@ export class MediaDownloadService {
       return;
     }
     this.startImageDownloads(context, urls, mediaId, callback);
+  }
+
+  private async saveSecureImages(context: common.UIAbilityContext, urls: string[], mediaId: string): Promise<number> {
+    const pending: Promise<number>[] = [];
+    for (let index: number = 0; index < urls.length; index++) {
+      pending.push(this.secureSave(context, urls[index], mediaId + '-' + index.toString(), false));
+    }
+    const results: number[] = await Promise.all(pending);
+    for (const result of results) { if (result !== MEDIA_DOWNLOAD_SUCCESS) { return result; } }
+    return MEDIA_DOWNLOAD_SUCCESS;
+  }
+
+  private secureSave(context: common.UIAbilityContext, url: string, mediaId: string, isVideo: boolean): Promise<number> {
+    return new Promise<number>((resolve: (result: number) => void): void => {
+      secureMediaSaveController.enqueue(new SecureMediaSaveRequest(context, url, mediaId, isVideo, resolve));
+    });
   }
 
   private startImageDownloads(context: common.UIAbilityContext, urls: string[], mediaId: string,
@@ -401,6 +430,10 @@ export class MediaDownloadService {
 
   private copyToDestination(context: common.UIAbilityContext, sourcePath: string,
     title: string, extension: string, isVideo: boolean): Promise<number> {
+    if (downloadLocationStore.method(context) === MediaSaveMethod.SECURE_BUTTON) {
+      return this.secureSave(context, sourcePath.startsWith('file://') ? sourcePath : fileUri.getUriFromPath(sourcePath),
+        title, isVideo);
+    }
     if (downloadLocationStore.useDownloads(context)) {
       return downloadLocationStore.save(context, sourcePath, 'HarmonyX-' + title + '.' + extension);
     }
@@ -409,6 +442,20 @@ export class MediaDownloadService {
 
   private async copyImagesToDestination(context: common.UIAbilityContext,
     files: DownloadedMediaFile[]): Promise<number> {
+    if (downloadLocationStore.method(context) === MediaSaveMethod.SECURE_BUTTON) {
+      const pending: Promise<number>[] = [];
+      for (const file of files) {
+        pending.push(this.secureSave(context,
+          file.sourcePath.startsWith('file://') ? file.sourcePath : fileUri.getUriFromPath(file.sourcePath), file.title, false)
+          .then((result: number): number => {
+            if (result === MEDIA_DOWNLOAD_SUCCESS && file.taskId.length > 0) { downloadManager.saveCompleted(file.taskId, context); }
+            return result;
+          }));
+      }
+      const results: number[] = await Promise.all(pending);
+      for (const result of results) { if (result !== MEDIA_DOWNLOAD_SUCCESS) { return result; } }
+      return MEDIA_DOWNLOAD_SUCCESS;
+    }
     if (!downloadLocationStore.useDownloads(context)) { return this.copyImagesToGallery(context, files); }
     for (let i: number = 0; i < files.length; i++) {
       const file: DownloadedMediaFile = files[i];
@@ -424,7 +471,7 @@ export class MediaDownloadService {
   private async copyToGallery(context: common.UIAbilityContext, sourcePath: string,
     title: string, extension: string, isVideo: boolean): Promise<number> {
     const helper: photoAccessHelper.PhotoAccessHelper = photoAccessHelper.getPhotoAccessHelper(context);
-    const sources: string[] = [sourcePath];
+    const sources: string[] = [sourcePath.startsWith('file://') ? sourcePath : fileUri.getUriFromPath(sourcePath)];
     const configs: photoAccessHelper.PhotoCreationConfig[] = [{
       title: 'HarmonyX-' + title,
       fileNameExtension: extension,
@@ -456,7 +503,7 @@ export class MediaDownloadService {
     const configs: photoAccessHelper.PhotoCreationConfig[] = [];
     for (let index: number = 0; index < files.length; index++) {
       const file: DownloadedMediaFile = files[index];
-      sources.push(file.sourcePath);
+      sources.push(file.sourcePath.startsWith('file://') ? file.sourcePath : fileUri.getUriFromPath(file.sourcePath));
       const config: photoAccessHelper.PhotoCreationConfig = {
         title: 'HarmonyX-' + file.title,
         fileNameExtension: file.extension,

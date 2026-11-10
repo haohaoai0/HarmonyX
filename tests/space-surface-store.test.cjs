@@ -1,3 +1,4 @@
+const { withDohHttpMock } = require('./doh-http-fixture.cjs');
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
@@ -7,7 +8,7 @@ function load(file, dependencies) {
     compilerOptions: { target: ts.ScriptTarget.ES2020, module: ts.ModuleKind.CommonJS }
   }).outputText;
   const m = { exports: {} };
-  new Function('require','module','exports',code)(id => dependencies[id],m,m.exports);
+  new Function('require','module','exports',code)(id => (() => { withDohHttpMock(dependencies); return dependencies[id]; })(),m,m.exports);
   return m.exports;
 }
 const models = load('models/Space', {});

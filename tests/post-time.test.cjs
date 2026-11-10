@@ -1,3 +1,4 @@
+const { withDohHttpMock } = require('./doh-http-fixture.cjs');
 const assert = require('node:assert/strict');
 const test = require('node:test');
 const fs = require('node:fs');
@@ -11,11 +12,12 @@ function loadEts(relativePath, dependencies = {}) {
     compilerOptions: { target: ts.ScriptTarget.ES2020, module: ts.ModuleKind.CommonJS, esModuleInterop: true }
   }).outputText;
   const module = { exports: {} };
-  new Function('require', 'module', 'exports', output)((id) => {
+  new Function('require', 'module', 'exports', output)((id) => { withDohHttpMock(dependencies);
     if (Object.hasOwn(dependencies, id)) return dependencies[id];
     if (id === './AppLocale') return loadEts('utils/AppLocale', dependencies);
     if (id === '../utils/PostGif') return require('./post-gif-fixture.cjs');
     if (id.startsWith('../utils/')) return require('./post-card-fixture.cjs').load('utils/' + id.slice('../utils/'.length), dependencies);
+    if (id.startsWith('../models/')) return require('./post-card-fixture.cjs').load('models/' + id.slice('../models/'.length), dependencies);
     if (id === './ReplyConversation') return require('./reply-conversation-fixture.cjs');
     if (id === './XPostCardParser' || id === './XPollRequest') return require('./post-card-fixture.cjs');
     if (id.startsWith('./')) return require('./post-card-fixture.cjs').load('services/' + id.slice(2), dependencies);

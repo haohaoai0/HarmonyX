@@ -8,11 +8,13 @@ const DIRECTORY_KEY: string = 'directory_uri';
 // Restore the pre-3.5 Gallery default and the reader's original explicit choice.
 // The v2 key was introduced with the forced Downloads default.
 const SAVE_TO_FOLDER_KEY: string = 'save_to_folder';
+const SAVE_METHOD_KEY: string = 'save_method';
 const DOWNLOAD_ROOT: string = 'file://docs/storage/Users/currentUser/Download';
 // 下载目录使用应用包名，文件管理器的“来源”按包名文件夹识别并显示入口。
 const APP_FOLDER: string = 'com.haohaoai0.harmonx';
 
 export enum LocalFileSaveResult { SAVED = 0, CANCELLED = 2 }
+export enum MediaSaveMethod { GALLERY = 0, SECURE_BUTTON = 1, DIRECTORY = 2, FILE_PICKER = 3 }
 
 export function downloadFileName(name: string): string {
   const sanitized: string = name.replace(/[\\/:*?"<>|\u0000-\u001f]/g, '_').trim();
@@ -41,15 +43,32 @@ export class DownloadLocationStore {
   }
 
   useDownloads(context: common.Context): boolean {
-    return this.store(context).getSync(SAVE_TO_FOLDER_KEY, false) as boolean;
+    const method: MediaSaveMethod = this.method(context);
+    return method === MediaSaveMethod.DIRECTORY || method === MediaSaveMethod.FILE_PICKER;
+  }
+
+  method(context: common.Context): MediaSaveMethod {
+    const store: preferences.Preferences = this.store(context);
+    const value: number = store.getSync(SAVE_METHOD_KEY, -1) as number;
+    if (value >= MediaSaveMethod.GALLERY && value <= MediaSaveMethod.FILE_PICKER) { return value; }
+    return store.getSync(SAVE_TO_FOLDER_KEY, false) === true ? MediaSaveMethod.DIRECTORY : MediaSaveMethod.GALLERY;
   }
 
   async setUseDownloads(context: common.Context, enabled: boolean): Promise<void> {
+    return this.setMethod(context, enabled ? MediaSaveMethod.DIRECTORY : MediaSaveMethod.GALLERY);
+  }
+
+  async setMethod(context: common.Context, method: MediaSaveMethod): Promise<void> {
     const store: preferences.Preferences = this.store(context);
     const previous: boolean = store.getSync(SAVE_TO_FOLDER_KEY, false) as boolean;
-    store.putSync(SAVE_TO_FOLDER_KEY, enabled);
+    const previousMethod: number = store.getSync(SAVE_METHOD_KEY, -1) as number;
+    store.putSync(SAVE_TO_FOLDER_KEY, method === MediaSaveMethod.DIRECTORY || method === MediaSaveMethod.FILE_PICKER);
+    store.putSync(SAVE_METHOD_KEY, method);
     try { await store.flush(); }
-    catch (error) { store.putSync(SAVE_TO_FOLDER_KEY, previous); throw error as Error; }
+    catch (error) {
+      store.putSync(SAVE_TO_FOLDER_KEY, previous); store.putSync(SAVE_METHOD_KEY, previousMethod);
+      throw error as Error;
+    }
   }
 
   path(context: common.Context): string {
@@ -100,8 +119,8 @@ export class DownloadLocationStore {
   }
 
   // Run on the user's tap, before remote transfers can move the app to the background.
-  async prepare(context: common.UIAbilityContext): Promise<boolean> {
-    if (!this.supportsDirectory()) { return true; }
+  async prepare(context: common.UIAbilityContext, forceDirectory: boolean = false): Promise<boolean> {
+    if ((!forceDirectory && this.method(context) === MediaSaveMethod.FILE_PICKER) || !this.supportsDirectory()) { return true; }
     const uri: string = this.remembered(context);
     if (uri.length > 0) {
       try {
@@ -124,7 +143,7 @@ export class DownloadLocationStore {
     if (!await this.prepare(context)) { return LocalFileSaveResult.CANCELLED; }
     let destination: string = '';
     let createdInFolder: boolean = false;
-    if (this.supportsDirectory()) {
+    if (this.method(context) !== MediaSaveMethod.FILE_PICKER && this.supportsDirectory()) {
       const uri: string = this.remembered(context);
       if (uri.length === 0) { throw new Error('download_folder_not_authorized'); }
       // An expired grant never results in a silent write to the sandbox.

@@ -1,3 +1,4 @@
+const { withDohHttpMock } = require('./doh-http-fixture.cjs');
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
@@ -79,7 +80,7 @@ function harness(appendValid=true, mimeType='image/png') {
     './ChatMovingPhoto':movingModule.exports,
     '../utils/ChatMovingPhotoProtocol':movingProtocolModule.exports
   };
-  const mod={exports:{}};new Function('require','module','exports',source)(id=>dependencies[id],mod,mod.exports);
+  const mod={exports:{}};new Function('require','module','exports',source)(id=>(() => { withDohHttpMock(dependencies); return dependencies[id]; })(),mod,mod.exports);
   const picked=path.join(cacheDir,'picked.bin');fs.writeFileSync(picked,Buffer.alloc(1024*1024+33,19));
   return {service:new mod.exports.XChatMedia(),context:{cacheDir},file:{uri:picked,filename:'test.bin',type:5},calls,sends,imageSources,
     failSend:v=>{failSend=v;},failFinalize:v=>{failFinalize=v;},omitFinalizeError:v=>{omitFinalizeError=v;},

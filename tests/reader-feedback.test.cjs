@@ -84,10 +84,12 @@ test('a viewer page explicitly plays after auto-advance even with inline autopla
   let options, next = 0;
   const Feed = harness('pages/VideoFeedViewer', 'VideoFeedViewer', ['StandardFeedVideo', 'onVideoCompleted'], {
     PostMedia: opts => { options = opts; return { width() {} }; }, Builder: () => {}, VIDEO_FEED_CONTROLS_HEIGHT: 0,
-    VIDEO_FEED_LAYOUT_BILIBILI: 2
+    VIDEO_FEED_LAYOUT_BILIBILI: 2, videoPipGate: { isHeld: () => false }
   });
   const feed = Object.assign(new Feed(), { feedItem: item => item, shouldRetainVideoPlayer: () => false,
+    getUniqueId: () => 1,
     useSideComments: () => false, usesPhoneFeedLayout: () => false, compactWindow: () => false,
+    usesCompactBottomLayout: () => false,
     motion: { enabled: () => false, interactive: false },
     preloadMediaIdForItem: () => '', videoViewportHeightForLayout: () => 700,
     isWideLandscape: () => false, current: 0, items: [{}, {}], pageShown: true, postSheetActive: false,
@@ -111,15 +113,15 @@ test('Home double tap sends the saved choice and ignores other tabs and a single
   home.onRootTabBarClick(1); assert.equal(home.lastHomeTabClickAt, 0);
 });
 
-test('tapping a playing inline video opens the viewer, while its controls, GIFs and card links keep their actions', () => {
+test('inline video taps stay with the current player, while viewer, GIF and card actions keep their behavior', () => {
   const Player = harness('components/PostMedia', 'SurfaceVideoPlayer', ['onVideoSurfaceTap']);
   const events = [];
   const player = Object.assign(new Player(), { holdSeekDirection: 0, suppressVideoTapUntil: 0, positionSec: 21,
     mediaViewerLayout: false, fullscreen: false, retainViewerPlayback: false, videoAutoplay: true,
-    isAnimatedGif: () => false, hideVideoChrome: () => false, onFullscreenIntent: sec => { events.push(['viewer', sec]); return true; },
+    isAnimatedGif: () => false, usesInlineOverlayControls: () => false, hideVideoChrome: () => false, onFullscreenIntent: sec => { events.push(['viewer', sec]); return true; },
     onLinkCardOpen: () => events.push('card'), toggleControls: () => events.push('controls'), togglePlay: () => events.push('play'),
     onViewerCommentDismiss: () => events.push('dismiss'), onViewerVideoTap() {} });
-  player.onVideoSurfaceTap(); assert.deepEqual(events, [['viewer', 21]]);
+  player.onVideoSurfaceTap(); assert.deepEqual(events, ['controls']);
   player.mediaViewerLayout = true; player.onVideoSurfaceTap(); assert.equal(events.at(-1), 'controls');
   player.retainViewerPlayback = true; player.onVideoSurfaceTap(); assert.equal(events.at(-1), 'dismiss');
   player.retainViewerPlayback = false; player.mediaViewerLayout = false;

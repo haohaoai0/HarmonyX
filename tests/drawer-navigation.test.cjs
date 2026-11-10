@@ -39,7 +39,7 @@ function fixture(wide = true, desktop = false) {
     profile: { id: 'viewer' }, isWideScreen: () => wide, isDesktopLayout: () => desktop,
     hasAnySession: () => true, xPrivate: { viewerId: () => 'viewer' },
     handleText: '@viewer', text: value => value, goLogin: () => { root.loginOpened = true; },
-    isLargeScreen: () => wide || desktop, openContentDestination() {}, showSideDrawer: true,
+    isLargeScreen: () => wide || desktop, openContentDestination() {}, showSideDrawer: true, bottomBarVisible: true,
     updateNavigationMode() {}, isBottomBarPageEnabled: () => true,
     selectRootTabPage: index => { root.selectedTab = index; },
     onNotificationsOpened() {}, refreshNotificationsIfStale() {},
@@ -57,7 +57,8 @@ function fixture(wide = true, desktop = false) {
 }
 
 const nativeMenus = [['communities', 'Communities'], ['bookmarks', 'Bookmarks'],
-  ['history', 'BrowsingHistory'], ['lists', 'Lists'], ['spaces', 'Spaces']];
+  ['history', 'BrowsingHistory'], ['lists', 'Lists'], ['spaces', 'Spaces'],
+  ['grok', 'Grok'], ['groups', 'AccountGroups']];
 for (const [feature, route] of nativeMenus) {
   test(`actual drawer ${feature}: repeat taps reuse one page; another branch is replaced in landscape`, () => {
     const f = fixture();

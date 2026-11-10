@@ -56,7 +56,8 @@ function fixture(initialMuted = true, storageFails = false, initialViewerMuted =
     'videoPlayerHandoff', 'hilog', 'DOMAIN', 'TAG', 'FIRST_FRAME_TIMEOUT_MS', 'videoMediaSession',
     'videoPlaybackPositionStore',
     `${body}; return MuteHarness;`)
-    (settings, coordinator, { isRequested: () => false, isReturning: () => false }, { warn() {}, info() {} },
+    (settings, coordinator, { isRequested: () => false, isReturning: () => false,
+      isInlinePaused: () => false, setInlinePaused() {} }, { warn() {}, info() {} },
       0, '', 12000, { release() {}, sendCastCommand() {} }, { remember() {} });
 
   function view(id, options = {}) {

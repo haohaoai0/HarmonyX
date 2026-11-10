@@ -10,8 +10,12 @@ const PAUSE_DURATION_MS: number = 24 * 60 * 60 * 1000;
 
 export class TimelineTopic {
   id: string;
+  tag: string = '';
   listId: string = '';
   communityId: string = '';
+  localGroupId: string = '';
+  localGroupVersion: number = 0;
+  iconText: string = '';
   bannerUrl: string = '';
   rankingMode: string = 'Recency';
   displayTitle: string = '';
@@ -42,12 +46,35 @@ class TopicPause {
   }
 }
 
+class PausedTopicMatcher {
+  video: boolean;
+  patterns: RegExp[] = [];
+  keywords: string[] = [];
+
+  constructor(topic: TimelineTopic) {
+    this.video = topic.id === 'video';
+    for (const keyword of topic.keywords) {
+      if (/^[a-z]+$/.test(keyword)) {
+        this.patterns.push(new RegExp('\\b' + keyword + '\\b', 'i'));
+      } else {
+        this.keywords.push(keyword);
+      }
+    }
+  }
+}
+
 export class HomeTimelineStore {
+  private matcherKey: string = '';
+  private matchers: PausedTopicMatcher[] = [];
   private pauses: TopicPause[] = [];
   private pins: string[] = [];
   private listTopics: TimelineTopic[] = [];
   private communityTopics: TimelineTopic[] = [];
+  private localGroupTopics: TimelineTopic[] = [];
+  private localGroupPins: string[] = [];
   private sourceOrder: string[] = [];
+  private accountTopics: TimelineTopic[] | null = null;
+  private accountPins: string[] = [];
   private order: number = FOLLOWING_SORT_LATEST;
   private topics: TimelineTopic[] = [
     new TimelineTopic('football', $r('app.string.timeline_topic_football'), $r('sys.symbol.ball_fill'),
@@ -79,27 +106,45 @@ export class HomeTimelineStore {
   ];
 
   allTopics(): TimelineTopic[] {
-    return this.topics;
+    return this.accountTopics ?? this.topics;
+  }
+
+  legacyTopics(): TimelineTopic[] { return this.topics; }
+  legacyPins(): string[] { return this.pins.slice(); }
+
+  setAccountTopics(topics: TimelineTopic[], pins: string[]): void {
+    this.accountTopics = topics; this.accountPins = pins.slice(); this.publish();
+  }
+
+  tagSource(tag: string, name: string, tabLabel: string, iconUrl: string): TimelineTopic {
+    const topic: TimelineTopic = new TimelineTopic('tag:' + tag, $r('app.string.timeline_title'),
+      $r('sys.symbol.list_bullet_square'), '', [], false);
+    topic.tag = tag; topic.displayTitle = tabLabel || name; topic.bannerUrl = iconUrl;
+    return topic;
   }
 
   topicById(id: string): TimelineTopic | null {
+    const accountTopic: TimelineTopic | undefined = this.accountTopics?.find((topic: TimelineTopic): boolean => topic.id === id);
+    if (accountTopic !== undefined) { return accountTopic; }
     for (let i: number = 0; i < this.topics.length; i++) {
       if (this.topics[i].id === id) {
         return this.topics[i];
       }
     }
-    return [...this.listTopics, ...this.communityTopics].find((topic: TimelineTopic): boolean => topic.id === id) ?? null;
+    return [...this.listTopics, ...this.communityTopics, ...this.localGroupTopics].find((topic: TimelineTopic): boolean => topic.id === id) ?? null;
   }
 
   pinnedTopics(): TimelineTopic[] {
     const topics: TimelineTopic[] = [];
-    for (let i: number = 0; i < this.pins.length; i++) {
-      const topic: TimelineTopic | null = this.topicById(this.pins[i]);
+    const pins: string[] = this.accountTopics === null ? this.pins : this.accountPins;
+    for (let i: number = 0; i < pins.length; i++) {
+      const topic: TimelineTopic | null = this.topicById(pins[i]);
       if (topic !== null) {
         topics.push(topic);
       }
     }
-    const combined: TimelineTopic[] = [...topics, ...this.listTopics, ...this.communityTopics];
+    const combined: TimelineTopic[] = [...topics, ...this.listTopics, ...this.communityTopics,
+      ...this.localGroupTopics.filter((topic: TimelineTopic): boolean => this.localGroupPins.indexOf(topic.id) >= 0)];
     return combined.sort((a: TimelineTopic, b: TimelineTopic): number => {
       const ai: number = this.sourceOrder.indexOf(a.id); const bi: number = this.sourceOrder.indexOf(b.id);
       return (ai < 0 ? this.sourceOrder.length : ai) - (bi < 0 ? this.sourceOrder.length : bi);
@@ -122,6 +167,10 @@ export class HomeTimelineStore {
 
   setListTopics(rows: ListRow[]): void {
     this.listTopics = rows.map((row: ListRow): TimelineTopic => this.listSource(row)); this.publish();
+  }
+
+  setLocalGroupTopics(topics: TimelineTopic[], pins: string[]): void {
+    this.localGroupTopics = topics; this.localGroupPins = pins.slice(); this.publish();
   }
 
   setCommunityTopics(rows: CommunityRow[], rankings: string[], order: string[]): void {
@@ -170,7 +219,7 @@ export class HomeTimelineStore {
   }
 
   isPinned(id: string): boolean {
-    return this.pins.indexOf(id) >= 0 || [...this.listTopics, ...this.communityTopics]
+    return this.localGroupPins.indexOf(id) >= 0 || (this.accountTopics === null ? this.pins : this.accountPins).indexOf(id) >= 0 || [...this.listTopics, ...this.communityTopics]
       .some((topic: TimelineTopic): boolean => topic.id === id);
   }
 
@@ -244,7 +293,9 @@ export class HomeTimelineStore {
 
   present(tweets: Tweet[], forYou: boolean): Tweet[] {
     if (forYou) {
-      return tweets.filter((tweet: Tweet): boolean => !this.hiddenByTopic(tweet));
+      const matchers: PausedTopicMatcher[] = this.pausedMatchers();
+      return matchers.length === 0 ? tweets :
+        tweets.filter((tweet: Tweet): boolean => !this.hiddenByTopic(tweet, matchers));
     }
     const ordered: Tweet[] = tweets.slice();
     ordered.sort((left: Tweet, right: Tweet): number => {
@@ -264,22 +315,31 @@ export class HomeTimelineStore {
     return tweet.metrics.likeCount + tweet.metrics.repostCount + tweet.metrics.replyCount;
   }
 
-  private hiddenByTopic(tweet: Tweet): boolean {
+  private pausedMatchers(): PausedTopicMatcher[] {
+    const now: number = Date.now();
+    const active: TopicPause[] = this.pauses.filter((pause: TopicPause): boolean => pause.expiresAt > now);
+    const key: string = active.map((pause: TopicPause): string => pause.id).join('|');
+    if (key === this.matcherKey) { return this.matchers; }
+    this.matcherKey = key;
+    this.matchers = [];
+    for (const pause of active) {
+      const topic: TimelineTopic | null = this.topicById(pause.id);
+      if (topic !== null) { this.matchers.push(new PausedTopicMatcher(topic)); }
+    }
+    return this.matchers;
+  }
+
+  private hiddenByTopic(tweet: Tweet, matchers: PausedTopicMatcher[]): boolean {
     const text: string = (tweet.text + '\n' + (tweet.quotedTweet?.text ?? '')).toLowerCase();
-    for (let i: number = 0; i < this.topics.length; i++) {
-      const topic: TimelineTopic = this.topics[i];
-      if (!this.isPaused(topic.id)) {
-        continue;
-      }
-      if (topic.id === 'video' && this.hasVideo(tweet)) {
+    for (const matcher of matchers) {
+      if (matcher.video && this.hasVideo(tweet)) {
         return true;
       }
-      for (let j: number = 0; j < topic.keywords.length; j++) {
-        const keyword: string = topic.keywords[j];
-        if (/^[a-z]+$/.test(keyword) ? new RegExp('\\b' + keyword + '\\b', 'i').test(text) :
-          text.indexOf(keyword) >= 0) {
-          return true;
-        }
+      for (const pattern of matcher.patterns) {
+        if (pattern.test(text)) { return true; }
+      }
+      for (const keyword of matcher.keywords) {
+        if (text.indexOf(keyword) >= 0) { return true; }
       }
     }
     return false;

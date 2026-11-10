@@ -1,3 +1,4 @@
+const { withDohHttpMock } = require('./doh-http-fixture.cjs');
 const fs = require('node:fs');
 const path = require('node:path');
 const ts = require(process.env.HARMONYX_TYPESCRIPT ||
@@ -8,7 +9,7 @@ function loadGifPreview({ loadPreview, downloadGif = async () => false, proxyEna
   let source = fs.readFileSync(filename, 'utf8');
   source = source.slice(0, source.indexOf('  build(): void {')) + '}';
   source = source.replace(/export struct GifPreviewImage/, 'export class GifPreviewImage')
-    .replace(/@(Component|Prop|State|Watch)(\([^)]*\))?\s*/g, '');
+    .replace(/@(Component|StorageProp|Prop|State|Watch)(\([^)]*\))?\s*/g, '');
   const output = ts.transpileModule(source, {
     compilerOptions: { target: ts.ScriptTarget.ES2020, module: ts.ModuleKind.CommonJS }
   }).outputText;
@@ -26,7 +27,7 @@ function loadGifPreview({ loadPreview, downloadGif = async () => false, proxyEna
   };
   const module = { exports: {} };
   new Function('require', 'module', 'exports', 'getContext', 'ImageFit', output)(
-    name => dependencies[name] || {}, module, module.exports, () => ({ cacheDir: '/app/cache' }), { Cover: 'cover' });
+    name => (() => { withDohHttpMock(dependencies); return dependencies[name] || {}; })(), module, module.exports, () => ({ cacheDir: '/app/cache' }), { Cover: 'cover' });
   return { component: new module.exports.GifPreviewImage(), released, removed };
 }
 

@@ -167,7 +167,9 @@ test('shared DM files enter the existing attachment pipeline once and retain the
 
 test('window teardown removes exact callbacks and tolerates an already destroyed window', () => {
   const { Subject } = load(methods('entry/src/main/ets/entryability/EntryAbility.ets', 'EntryAbility', ['releaseWindowListeners', 'onWindowStageDestroy']), {},
-    { hilog: { info() {}, warn() {} }, DOMAIN: 0, TAG: '' });
+    { hilog: { info() {}, warn() {} }, DOMAIN: 0, TAG: '',
+      startupSession: { cancel() {} }, antiPeepProtection: { detachWindow() {} },
+      videoHdrCapability: { stop() {} } });
   const calls = [], page = new Subject(), size = () => {}, area = () => {};
   Object.assign(page, { observedWindow: { off: (event, callback) => { calls.push([event, callback]); if (event === 'windowSizeChange') throw new Error(); } },
     windowSizeListener: size, avoidAreaListener: area, windowStage: {} });
@@ -203,11 +205,12 @@ test('shared content does not overwrite an existing composer draft without the e
   let choice = 0, saves = 0;
   const { Subject } = load(methods('entry/src/main/ets/components/ReplyComposer.ets', 'ReplyComposerPage', ['importSharedPayload']), {}, {
     getContext: () => ({}), accountStore: { activeId: () => 'account' }, $r: value => value,
-    promptAction: { showDialog: async () => ({ index: choice }) }
+    promptAction: { showDialog: async () => ({ index: choice }) },
+    ComposerOptions: class { hasSettings() { return false; } }
   });
   const page = new Subject();
   Object.assign(page, { sharedImportId: '', composerPageActive: true, draft: 'existing', imageUris: ['/old.jpg'], gifUri: '', videoUri: '',
-    text: value => value, scheduleDraftSave: () => saves++ });
+    composeOptions: { hasSettings: () => false }, text: value => value, scheduleDraftSave: () => saves++ });
   const payload = { id: 'share-1', text: 'caption', files: [{ uri: '/new.jpg', type: 1 }] };
   await page.importSharedPayload(payload);
   assert.equal(page.draft, 'existing'); assert.deepEqual(page.imageUris, ['/old.jpg']); assert.equal(saves, 0);

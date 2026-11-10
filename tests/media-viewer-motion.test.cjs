@@ -1,3 +1,4 @@
+const { withDohHttpMock } = require('./doh-http-fixture.cjs');
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
@@ -9,7 +10,7 @@ function evaluate(source, dependencies = {}, extraNames = [], extraValues = []) 
   const code = ts.transpileModule(source.replace(/@Observed\s*/g, ''), {
     compilerOptions: { target: ts.ScriptTarget.ES2020, module: ts.ModuleKind.CommonJS }
   }).outputText;
-  new Function('require', 'exports', ...extraNames, code)(name => dependencies[name] || {}, exports, ...extraValues);
+  new Function('require', 'exports', ...extraNames, code)(name => (() => { withDohHttpMock(dependencies); return dependencies[name] || {}; })(), exports, ...extraValues);
   return exports;
 }
 
@@ -183,13 +184,14 @@ function proxyPhotoHarness(load, proxyEnabled = true) {
   let file = fs.readFileSync('entry/src/main/ets/components/ProxyMediaImage.ets', 'utf8');
   file = file.slice(0, file.indexOf('  build(): void')) + '}';
   file = file.replace('export struct ProxyMediaImage', 'export class ProxyMediaImage')
-    .replace(/@(Component|Prop|State|Watch)(\([^)]*\))?\s*/g, '');
+    .replace(/@(Component|Prop|State|Watch|StorageProp)(\([^)]*\))?\s*/g, '');
   const released = [], timers = new Map(); let nextTimer = 0;
   const result = evaluate(file, {
     '../services/ProxyImageResolver': { proxyImageResolver: {
       load, loadForViewer: load, release: map => released.push(map)
     } },
-    '../services/ProxyStore': { proxyStore: { snapshot: () => ({ enabled: proxyEnabled }) } }
+    '../services/ProxyStore': { proxyStore: { snapshot: () => ({ enabled: proxyEnabled }),
+      requiresHttpTransport: () => proxyEnabled } }
   }, ['setTimeout', 'clearTimeout'], [callback => {
     const id = ++nextTimer; timers.set(id, callback); return id;
   }, id => timers.delete(id)]);

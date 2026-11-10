@@ -1,3 +1,4 @@
+const { withDohHttpMock } = require('./doh-http-fixture.cjs');
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
@@ -15,7 +16,7 @@ function load(file, dependencies) {
       esModuleInterop: true
     }
   }).outputText;
-  new Function('require', 'module', 'exports', code)(id => dependencies[id], module, module.exports);
+  new Function('require', 'module', 'exports', code)(id => (() => { withDohHttpMock(dependencies); return dependencies[id]; })(), module, module.exports);
   return module.exports;
 }
 

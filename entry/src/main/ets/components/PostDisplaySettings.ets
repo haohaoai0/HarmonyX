@@ -3,11 +3,13 @@ import promptAction from '@ohos.promptAction';
 import { DEFAULT_POST_ACTIONS_MASK, postDisplaySettingsStore, STORAGE_KEY_POST_ACTIONS_MASK, STORAGE_KEY_POST_ACTION_COUNTS } from '../services/PostDisplaySettingsStore';
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
 import { pageTextColor } from '../utils/ThemeColors';
+import { STORAGE_KEY_POST_COUNT_FORMAT } from '../services/PostDisplaySettingsStore';
 
 @Component
 export struct PostDisplaySettings {
   @StorageProp(STORAGE_KEY_POST_ACTIONS_MASK) private actionsMask: number = DEFAULT_POST_ACTIONS_MASK;
   @StorageProp(STORAGE_KEY_POST_ACTION_COUNTS) private counts: boolean = true;
+  @StorageProp(STORAGE_KEY_POST_COUNT_FORMAT) private countFormat: number = 0;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @StorageProp('harmonyx.page_background') private pageBackgroundValue: string = '';
 
@@ -36,6 +38,17 @@ export struct PostDisplaySettings {
       Text($r('app.string.settings_post_actions_desc')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M'))
         .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).width('100%')
       this.ActionRow(0, $r('app.string.settings_post_action_counts'))
+      Row({ space: 12 }) {
+        Text($r('app.string.settings_post_count_format')).fontFamily(this.appFontFamily)
+          .fontSize($r('sys.float.Body_L')).layoutWeight(1)
+          .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
+        Select([{ value: $r('app.string.settings_post_count_compact') },
+          { value: $r('app.string.settings_post_count_chinese') },
+          { value: $r('app.string.settings_post_count_full') }])
+          .selected(this.countFormat).onSelect((format: number): void => {
+            this.saved(postDisplaySettingsStore.saveCountFormat(getContext(this) as common.UIAbilityContext, format));
+          }).id('settings-post-count-format')
+      }.width('100%').constraintSize({ minHeight: 48 })
       this.ActionRow(1, $r('app.string.action_reply'))
       this.ActionRow(2, $r('app.string.action_repost'))
       this.ActionRow(4, $r('app.string.action_like'))

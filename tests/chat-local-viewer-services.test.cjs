@@ -1,3 +1,4 @@
+const { withDohHttpMock } = require('./doh-http-fixture.cjs');
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
@@ -6,7 +7,7 @@ function load(file, deps) {
   const mod = {exports: {}};
   new Function('require', 'exports', ts.transpileModule(fs.readFileSync(file, 'utf8'), {
     compilerOptions: {target: ts.ScriptTarget.ES2020, module: ts.ModuleKind.CommonJS}
-  }).outputText)(id => deps[id], mod.exports);
+  }).outputText)(id => (() => { withDohHttpMock(deps); return deps[id]; })(), mod.exports);
   return mod.exports;
 }
 test('local image decoding bypasses proxy and shared cache, balancing native source and FD', async () => {
@@ -40,8 +41,9 @@ function saveHarness(cancel = false) {
       getPhotoAccessHelper: () => ({showAssetsCreationDialog: async (sources, configs) => {
         trace.push(['dialog', sources, configs]); return cancel ? [] : sources.map((_, i) => 'file://gallery/' + i);
       }})}},
-    './DownloadManager': {downloadManager: {enqueue: () => {enqueued++; throw Error('must not enqueue local file');}}},
-    './DownloadLocationStore': {downloadLocationStore: {useDownloads: () => false}},
+    './DownloadManager': {downloadManager: {enqueue: () => {enqueued++; throw Error('must not enqueue local file');},
+      beginLocalVideoSave: () => 'local-video', finishLocalVideoSave() {}}},
+    './DownloadLocationStore': {MediaSaveMethod: {SECURE_BUTTON: 1}, downloadLocationStore: {useDownloads: () => false, method: () => 0}},
     '@ohos.hilog': {default: {error: () => {}}}
   });
   return {service: service.mediaDownloadService, trace, enqueued: () => enqueued};

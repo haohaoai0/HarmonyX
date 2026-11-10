@@ -62,11 +62,12 @@ function rootFixture() {
   let api26 = true;
   new Function('exports', 'ResponsiveLayout', 'NavigationMode', 'MESSAGES_TAB_INDEX', 'AppStorage', 'SystemMaterialUtil',
     'BottomBuilderShowType', 'DividerShowType', 'retainedTitleBarBuilder', 'DesktopLayout',
-    'TIMELINE_COLUMNS_ONE', 'TIMELINE_COLUMNS_TWO', 'TIMELINE_COLUMNS_THREE', 'TIMELINE_COLUMNS_AUTO_TWO', output)(
+    'TIMELINE_COLUMNS_ONE', 'TIMELINE_COLUMNS_TWO', 'TIMELINE_COLUMNS_THREE', 'TIMELINE_COLUMNS_AUTO_TWO',
+    'TIMELINE_COLUMNS_FOUR', 'TIMELINE_COLUMNS_FIVE', 'crashDiagnostics', output)(
     exports, f.responsive, { Stack: 'stack', Split: 'split' }, 3,
     { setOrCreate: (key, value) => f.storage.set(key, value) }, { isApi26OrAbove: () => api26 },
     { DIRECTLY_SHOW: 'show' }, { OFF: 'off' },
-    builder => ({ builder, updated: false }), f.desktop, 1, 2, 3, 4);
+    builder => ({ builder, updated: false }), f.desktop, 1, 2, 3, 4, 5, 6, {pendingReport: () => null});
   const root = new exports.Root();
   Object.assign(root, {
     breakpoint: 'sm', desktopLayoutEnabled: false, desktopAsideEnabled: true,
@@ -91,6 +92,22 @@ function rootFixture() {
   });
   return { ...f, root, setApi26: value => { api26 = value; } };
 }
+
+test('manual four/five home columns survive opening details while automatic layout keeps its original density', () => {
+  const { root, desktop } = rootFixture();
+  root.breakpoint = 'xl';
+  for (const [mode, expected] of [[5, 4], [6, 5]]) {
+    root.timelineColumnsMode = mode;
+    assert.equal(root.effectiveTimelineColumns(), expected);
+    assert.equal(root.useTimelineWaterFlow(), true);
+    assert.equal(desktop.timelineColumns(mode, 1600), expected);
+  }
+  assert.equal(desktop.timelineColumns(0, 700), 2);
+  assert.equal(desktop.timelineColumns(0, 1400), 3);
+  assert.equal(desktop.timelineColumns(4, 1400), 2);
+  root.breakpoint = 'sm';
+  assert.equal(root.effectiveTimelineColumns(), 1, 'manual dense columns apply to large screens');
+});
 
 test('desktop edge right swipe opens, left swipe closes, and the gesture switch disables both', () => {
   const { root } = rootFixture();

@@ -4,6 +4,111 @@ User-facing changes in Harmony X. Unreleased entries describe the next version; 
 
 中文版见 [CHANGELOG.md](CHANGELOG.md)。
 
+## 3.9.0 — 2026-11-10
+
+This release adds a native segmented tab style, unifies scrolling and press gestures across single-column post feeds, and refines video and comment previews, native-material profile actions, and media reading-position restoration. The build number is 36.
+
+### New features
+
+- **Native segmented tabs**: The compact tab style now offers a native segmented option for Home, Notifications, Explore, and search switching areas. The segmented control keeps a fixed native-material frame while its tabs scroll horizontally inside, supporting more than five entries, long labels, repeated-tap option menus, and RTL layouts. A normal tap cannot open a previous entry's options menu.
+
+### Improvements and fixes
+
+- **Single-column feed gestures**: Bookmarks, Communities, list timelines, notification posts, Global Trends, quote and interaction feeds, and profile feeds now share a native `List` in single-column layouts, letting the list own press, drag, and inertial scrolling. Explicit two-column, large-screen, and desktop layouts continue to use `WaterFlow`, while nested pages retain their parent-child scroll handoff rules.
+- **Video and comment previews**: Inline videos gain more consistent corner clipping, control height, and playback state. Tapping a video prioritizes its own player; returning to the feed preserves an intentional pause, and late picture-in-picture callbacks from a closed page cannot revive the video. Video comment previews use more accurate compact-control and tap regions, and resizing or collapsing the preview no longer pauses the underlying page by mistake.
+- **Media and reading-position restoration**: Rotation, repeated window resizing, or a transition between `List` and `WaterFlow` now retains the visible post and within-card offset by post ID. Inserting new posts does not return the reader to the top, while recycled comments and mixed-media strips restore their photo, video, and horizontal positions.
+- **Native-material profile actions**: Grok, Search, More, Notifications, Share, and Edit profile actions on API 26 now use individual native material button hosts. Button geometry stays unchanged while press deformation, lighting, and fallback styling improve.
+- **Version information**: App metadata, bilingual documentation, and all 21 localized version labels use 3.9.0 (`versionCode` 36), with compatible API 22 and target API 26.
+
+### Build notes
+
+- Release validation: all 2023 tests in the complete Node.js suite passed with 0 failures. `devecocli build --product default --build-mode release` completed successfully, and the signing tool verified the HAP signing block, code signature, native libraries, and permission signature. The packaged version is 3.9.0 (`versionCode` 36).
+- This Release provides a HAP generated from this source revision and verified by the signing tool. Installation compatibility still depends on the target device, system version, and local debug-signing profile; use an actual installation test as the final check.
+- This publication is primarily backed by automated regression checks. Window-size, fold and rotation behavior, live video playback, picture-in-picture, and comment gestures still require visual and interaction acceptance on target devices.
+
+## 3.8.0 — 2026-10-31
+
+This release adds local account groups, improves personalized topic timelines and access to Grok, offers more media saving choices and crash-log recovery, and refines comment photos, feed switching, and page-background performance. The build number is 35.
+
+### New features
+
+- **Local account groups**: Select members from followed accounts, name each group, choose an emoji icon, and optionally pin it to Home. Groups stay on this device and are isolated by the signed-in account. Their feeds merge member posts in time order with pagination, deduplication, and retry support; editing a group preserves X lists and follow relationships.
+- **Personalized topic timelines**: Load the topic categories provided by X for the current account and browse their personalized Home feeds, with pin and unpin actions. Categories, pins, and reading caches are account-specific, with improved restart persistence, pagination retries, and account-switch handling.
+- **Direct access to Grok**: Open Grok from the sidebar for a general conversation using the configured web or API mode. Opening it from a post continues to include that post as context.
+- **Four media saving choices**: In Data & storage, choose direct Gallery saving, the system secure save button, an authorized directory, or Save As for each download. Directory selection follows device capabilities, and cancellation or failure allows retry.
+- **Crash-log recovery**: After an ArkTS or native crash, the next launch offers diagnostic-log export and a developer feedback draft. Reports have bounded retention, remove credentials and sensitive request content, and use a user-selected save location. Cancelled or failed exports retain pending reports.
+
+### Improvements and fixes
+
+- **Photos inside comment sheets**: Reuse the photo viewer within the comment sheet while keeping the comment list, scroll position, and reply draft mounted. Reopening retains album order, and the photo background reaches the sheet's bottom edge.
+- **Home switching and refresh**: Batch topic-filter changes and update only affected post rows, reducing repeated filtering and list rebuilding. New-post notices, pagination cursors, and reading positions remain independent for each timeline.
+- **Page-background performance**: Pages and appearance previews share composed background textures to reduce repeated drawing. Background changes and page exits handle obsolete tasks and texture lifetimes, while the editor retains live previews.
+- **Post presses and search layout**: Dragging or cancelling restores post press feedback promptly so scrolling remains stable. Search results follow the same list or column preference as Home.
+- **Translation**: Refine translation-action visibility and preserve poetry indentation, blank lines, and original line breaks. Caches distinguish content, target language, and provider settings to avoid stale translations after configuration changes.
+- **Back-to-desktop hint**: When enabled, the first Back on a root page shows a toast and the second returns to the desktop. Sidebars, nested destinations, and photo viewers handle their own Back actions first.
+- **Version information**: App metadata, bilingual documentation, and all 21 localized version labels use 3.8.0 (`versionCode` 35), with compatible API 22 and target API 26.
+
+### Build notes
+
+- This release provides unsigned Release App Pack and HAP files. Re-sign them with your own HarmonyOS certificate and Profile before installation.
+- Verification covers 2,002 tests outside the complete locale-catalog audit. Two initial fixture mismatches were corrected, and all 18 tests in the affected files passed on rerun. Release compilation passed, with package version, device-type, unsigned-state, and SHA-256 checks. All 21 catalogs have matching resource keys and formatter arguments; 17 locales retain 53 existing long English fallback strings each.
+- This publication does not include a new complete device interaction acceptance run. Group feeds, server topic pins, Grok, saving authorization, crash recovery, and media gestures still require validation with the target device and live services.
+
+## 3.7.0 — 2026-10-29
+
+This release focuses on interface customization and video interaction: the sidebar and bottom bar can be configured independently, the Home header action and follow suggestions are selectable, page patterns can use their matching gradients, and dynamic menus follow the app language. Comment and post-action performance also improves. The build number is 32.
+
+### New features
+
+- **Sidebar and bottom-bar customization**: Reorder or hide sidebar entries in Settings. Home, Explore, and Messages start hidden, while Support, Settings, and Help remain in a footer group. The bottom bar can be hidden entirely, and an optional search capsule is available at the top of the sidebar, disabled by default.
+- **Home header and follow suggestions**: Choose whether the Home title-bar action opens Search or Add Follow, with the choice persisted. Follow suggestions gain an independent switch, and disabling it removes them from the feed.
+- **Matching page-background gradients**: Full page patterns can use the matching gradients from chat backgrounds, with foreground contrast calculated across the whole gradient. Turning off Keep original gradient retains custom colours, photos, and textures.
+- **Post counts and wide-screen layouts**: Post counts can use K/M, 万/亿, or full numbers. Wide feeds gain four- and five-column options.
+- **Inline video long-press options**: Choose whether holding a video in a post opens the action menu or starts temporary fast playback. Speed and cancellation behaviour follow the existing hold settings.
+- **Inline video playback options**: Playback controls can move inside the video, appearing on tap and hiding automatically during playback. Post previews can also remain paused after closing the viewer. Both options start disabled and persist across restarts.
+
+### Improvements and fixes
+
+- **Comment performance**: Adding, removing, and expanding child replies now updates only the affected comment rows, reloading the list only for a real reorder. Most-liked ordering uses a stable sort, so replies with equal counts retain their original order.
+- **Post action bar**: Counted actions share the actual card width, and narrow layouts drop lower-priority entries first. This removes horizontal scrolling, clipped long counts, and overlap at different text sizes.
+- **Dark Home status bar**: The immersive Home title bar now chooses status-bar content colours from the page background luminance, improving icon contrast in dark portrait layouts.
+- **English dynamic menus**: Post menus, settings items, and notices built from runtime strings now follow the app language instead of the host locale. All affected copy is synchronized across 21 locales.
+- **Picture-in-picture cleanup**: Leaving or changing posts synchronously closes PiP. Late creation, start, and restore callbacks cannot revive a removed post, and retained decoders are released.
+- **Video return state**: Returning from the video viewer preserves an intentional pause, while PiP and fullscreen restoration continue to reuse the existing player instead of creating a duplicate or resuming incorrectly.
+- **Version information**: App metadata, bilingual documentation, and localized version labels use 3.7.0 (`versionCode` 32), with compatible API 22 and target API 26.
+
+### Build notes
+
+- This release provides unsigned Release App Pack and HAP files. Re-sign them with your own HarmonyOS certificate and Profile before installation.
+- Release preparation passed 1,919 tests outside the complete locale-catalog audit, then ran Release compilation and package metadata, unsigned-state, and SHA-256 checks. The complete catalog audit still reports 53 pre-existing long strings falling back to English in each of 18 locales. This does not affect the new dynamic-menu application-language handling, but the translation debt remains. This publication does not include a new installation or device interaction acceptance run.
+- Sidebar and bottom-bar switching, status-bar colours, video long press, inline controls, and PiP exit remain interaction paths that require separate target-device acceptance.
+
+## 3.6.0 — 2026-10-27
+
+This release adds optional DNS over HTTPS configuration, improves loading and reading in long comment threads, and refines native material controls, media display, and browsing-history stability. The build number is 30.
+
+### New features
+
+- **DNS over HTTPS (DoH)**: Select a provider or enter an HTTPS resolver in Settings → Data & network, test it, and save. Includes AliDNS, Cloudflare, and Google presets, DNS response testing, and an X connection test. DoH starts disabled and its settings survive restarts. Community instances can be entered manually, and existing custom addresses are retained.
+- **DoH media connections**: With DoH enabled and app connections set to direct, posts, images, avatars, GIFs, translations, and media downloads share the selected resolver. HTTPS connections can use ECH configuration returned by the service. Video segments and HLS playlists use the same request path, while app proxy settings retain their separate behavior.
+
+### Improvements and fixes
+
+- **Comment performance and reading state**: Post details create comment cards on demand and retain existing cards when another page loads, reducing repeated work in long threads. Returning to a recycled comment preserves expanded text, translation selection, low-quality reply expansion, and horizontal media position. Deep reply ordering and connector handling are also improved.
+- **Native material interaction**: Photo and video viewer buttons use native material deformation and lighting on supported systems. Navigation, search, reply, and media controls share consistent material handling, with compatible styling on older systems.
+- **Browsing-history deletion**: Fixed a crash when deleting, clearing, or filtering history left old list indexes updating date headings. Cancelling a clear or failing to save retains the original records.
+- **Video comments**: Improved continuation and retry after empty first pages, consecutive empty pages, and paging failures. Replies confirmed by conversation modules are retained, recommendations are excluded from comment results, and embedded photo and video comments no longer insert recommendation posts.
+- **GIFs and media return**: Improved fallback between animations, static thumbnails, and decoded first frames to avoid blank failed previews. Reopening media handles expired cache files and preserves horizontal position in mixed-media strips.
+- **Translation switching**: Switch between an available translation and the original without repeating the request. Recycled comments validate saved state against the account, language, and translation preferences.
+- **Cloud settings**: Improved conflict handling between local edits and remote clock differences, failed-upload retries, and clearing cloud settings. Importing a valid settings file exported by another user retains local sign-in credentials.
+- **Version information**: App metadata, bilingual documentation, and localized version labels use 3.6.0 (`versionCode` 30), with compatible API 22 and target API 26.
+
+### Build notes
+
+- This release provides unsigned Release App Pack and HAP files. Re-sign them with your own HarmonyOS certificate and Profile before installation.
+- Release preparation runs related focused tests, Release compilation, and package metadata, unsigned-state, and SHA-256 checks. Exact results accompany the release build record. This publication does not include a new installation or device interaction acceptance run.
+- DoH connectivity depends on the selected service and current network. System web sign-in and the separate native chat path require their own verification. Reload open embedded web pages after changing the configuration.
+
 ## 3.5.0 — 2026-10-25
 
 This release adds an offline video library, global trends, search suggestions and recent profiles, expands launch animation options, and improves background photo management, post links, long images, and large-screen feed stability. The build number is 28.

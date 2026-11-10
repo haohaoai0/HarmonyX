@@ -1,4 +1,5 @@
 import { homeTimelineSourceStore } from '../services/HomeTimelineSourceStore';
+import { localAccountGroupStore } from '../services/LocalAccountGroupStore';
 import { ProxyMediaImage } from '../components/ProxyMediaImage';
 import type { CommunityRow } from '../models/Community';
 import type { ListRow } from '../models/Tweet';
@@ -46,6 +47,7 @@ struct TimelineManager {
   @State private pinned: TimelineTopic[] = [];
   @State private listSources: TimelineTopic[] = [];
   @State private communitySources: TimelineTopic[] = [];
+  @State private groupSources: TimelineTopic[] = [];
   @State private pendingIds: string[] = [];
   @State private editing: boolean = false;
   @State private loadingSources: boolean = false;
@@ -53,7 +55,7 @@ struct TimelineManager {
   private alive: boolean = true;
   @State private search: string = '';
   @State private expanded: boolean = true;
-  private topics: TimelineTopic[] = homeTimelineStore.allTopics();
+  @State private topics: TimelineTopic[] = [];
   private scroller: Scroller = new Scroller();
 
   aboutToAppear(): void { this.alive = true; this.reload(); this.loadSources(); }
@@ -66,9 +68,11 @@ struct TimelineManager {
     if (this.alive) { this.loadingSources = false; this.sourceLoadFailed = !ok; this.reload(); }
   }
   private reload(): void {
+    this.topics = homeTimelineStore.allTopics();
     this.pinned = homeTimelineStore.pinnedTopics();
     this.listSources = homeTimelineSourceStore.listSources();
     this.communitySources = homeTimelineSourceStore.communitySources();
+    this.groupSources = localAccountGroupStore.sources();
   }
   private text(resource: Resource): string { return getContext(this).resourceManager.getStringSync(resource); }
   private label(source: TimelineTopic): string { return source.displayTitle || this.text(source.title); }
@@ -100,7 +104,7 @@ struct TimelineManager {
     this.reload();
   }
   private openTopic(source: TimelineTopic): void {
-    if (homeTimelineStore.isPinned(source.id)) {
+    if (homeTimelineStore.isPinned(source.id) || source.tag.length > 0 || source.localGroupId.length > 0) {
       ResponsiveLayout.closeToMain(this.pageStack);
       AppStorage.setOrCreate<string>('harmonyx.home_source_request', source.id + '|' + Date.now().toString());
     } else if (source.communityId.length > 0) {
@@ -114,8 +118,6 @@ struct TimelineManager {
       const row: ListRow | undefined = homeTimelineSourceStore.listRow(source.listId);
       const param: ListTimelineRouteParam = { listId: source.listId, title: this.label(source), row: row };
       this.pageStack.pushPath({ name: 'ListTimeline', param: param });
-    } else {
-      ResponsiveLayout.closeToMain(this.pageStack); AppStorage.setOrCreate<string>('harmonyx.search_request', source.query);
     }
   }
   @Builder
@@ -124,7 +126,8 @@ struct TimelineManager {
       Button({ type: ButtonType.Normal }) {
         Row({ space: 14 }) {
           Stack() {
-            if (source.bannerUrl.length > 0) { ProxyMediaImage({ url: source.bannerUrl, fillParent: true }) }
+            if (source.iconText.length > 0) { Text(source.iconText).fontSize($r('app.float.timeline_symbol_size')) }
+            else if (source.bannerUrl.length > 0) { ProxyMediaImage({ url: source.bannerUrl, fillParent: true }) }
             else { SymbolGlyph(source.icon).fontSize($r('app.float.timeline_symbol_size')).fontColor([$r('app.color.text_primary')]) }
           }.width($r('app.float.timeline_topic_icon_size')).height($r('app.float.timeline_topic_icon_size'))
             .borderRadius(12).clip(true).backgroundColor(fieldSurfaceColor(this.displayMode, this.darkSurface))
@@ -215,6 +218,11 @@ struct TimelineManager {
         }
         this.SourceSection($r('app.string.timeline_sources_lists'), this.listSources)
         this.SourceSection($r('app.string.timeline_sources_communities'), this.communitySources)
+        ListItem() {
+          Button($r('app.string.account_groups_manage')).width('100%').backgroundColor(Color.Transparent)
+            .onClick((): void => { this.pageStack.pushPath({ name: 'AccountGroups' }); })
+        }
+        this.SourceSection($r('app.string.account_groups_title'), this.groupSources)
         ListItem() {
           Button({ type: ButtonType.Normal }) {
             Row() {

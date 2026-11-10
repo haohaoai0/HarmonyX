@@ -1,3 +1,5 @@
+import { STORAGE_KEY_SIDEBAR_ORDER, STORAGE_KEY_SIDEBAR_HIDDEN } from '../services/SidebarSettingsStore';
+import { sidebarVisibleIds, sidebarMainIds, sidebarItemIcon, sidebarItemLabel, DEFAULT_SIDEBAR_HIDDEN } from '../utils/SidebarItems';
 import { mixedAccentRoleColor, isMixedAccentTheme } from '../utils/AccentPalette';
 import { hapticTick } from '../utils/Haptics';
 import { DEFAULT_COMPONENT_HDR_ENABLED, DEFAULT_COMPONENT_HDR_RATIO, STORAGE_KEY_COMPONENT_HDR_ENABLED,
@@ -15,6 +17,8 @@ export struct DesktopNavRail {
   @StorageProp(STORAGE_KEY_COMPONENT_HDR_ENABLED) private componentHdrEnabled: boolean = DEFAULT_COMPONENT_HDR_ENABLED;
   @StorageProp(STORAGE_KEY_COMPONENT_HDR_RATIO) private componentHdrRatio: number = DEFAULT_COMPONENT_HDR_RATIO;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
+  @StorageProp(STORAGE_KEY_SIDEBAR_ORDER) private itemOrder: string = '';
+  @StorageProp(STORAGE_KEY_SIDEBAR_HIDDEN) private hiddenItems: string = DEFAULT_SIDEBAR_HIDDEN;
   @Prop topInset: number = 0;
   @Prop bottomInset: number = 0;
   @Prop compact: boolean = false;
@@ -85,11 +89,7 @@ export struct DesktopNavRail {
   @Builder
   private MoreMenu(): void {
     Column() {
-      this.MenuItem('lists', $r('app.string.side_lists'), $r('sys.symbol.list_bullet'))
-      this.MenuItem('communities', $r('app.string.side_communities'), $r('sys.symbol.person_2'))
-      this.MenuItem('spaces', $r('app.string.side_spaces'), $r('sys.symbol.mic'))
-      this.MenuItem('settings', $r('app.string.settings_title'), $r('sys.symbol.gearshape'))
-      this.MenuItem('help', $r('app.string.desktop_studio_support'), $r('sys.symbol.questionmark_circle'))
+      this.MenuItem('sidebar', $r('app.string.settings_sidebar_items'), $r('sys.symbol.list_bullet'))
     }.width(280).padding(8)
   }
 
@@ -114,17 +114,17 @@ export struct DesktopNavRail {
         .onClick((): void => this.onSelect('home'))
       Scroll() {
         Column({ space: 0 }) {
-          this.Item('home', $r('app.string.home_title'), this.selected === 'home' ? $r('sys.symbol.house_fill') : $r('sys.symbol.house'))
-          this.Item('explore', $r('app.string.explore_title'), $r('sys.symbol.magnifyingglass'))
-          this.Item('notifications', $r('app.string.tab_alerts'), $r('sys.symbol.bell'))
-          this.Item('follow', $r('app.string.desktop_follow'), $r('sys.symbol.person_badge_plus'))
-          this.Item('messages', $r('app.string.chat_title'), $r('sys.symbol.message'))
-          this.Item('grok', $r('app.string.grok_title'), $r('sys.symbol.wand_and_stars'))
-          this.Item('bookmarks', $r('app.string.desktop_history'), $r('sys.symbol.bookmark'))
-          this.Item('history', $r('app.string.browsing_history_title'), $r('sys.symbol.clock'))
-          this.Item('studio', $r('app.string.side_creator_studio'), $r('sys.symbol.rectangle_3_group'))
-          this.Item('premium', $r('app.string.side_premium'), $r('sys.symbol.star_rosette'))
-          this.Item('profile', $r('app.string.side_profile'), $r('sys.symbol.person'))
+          ForEach(sidebarMainIds(this.itemOrder, this.hiddenItems), (id: string) => {
+            this.Item(id, sidebarItemLabel(id), sidebarItemIcon(id))
+          }, (id: string): string => id)
+          Divider().color($r('app.color.divider')).margin({ top: 8, bottom: 8 })
+          if (sidebarVisibleIds(this.itemOrder, this.hiddenItems).indexOf('support') >= 0) {
+            this.Item('support', sidebarItemLabel('support'), sidebarItemIcon('support'))
+          }
+          this.Item('settings', $r('app.string.settings_title'), $r('sys.symbol.gearshape'))
+          if (sidebarVisibleIds(this.itemOrder, this.hiddenItems).indexOf('help') >= 0) {
+            this.Item('help', sidebarItemLabel('help'), sidebarItemIcon('help'))
+          }
           Button({ type: ButtonType.Normal }) {
             Row({ space: 16 }) {
               SymbolGlyph($r('sys.symbol.ellipsis_circle')).fontSize($r('app.float.desktop_nav_icon'))

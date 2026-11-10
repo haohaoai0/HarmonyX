@@ -1,6 +1,7 @@
+import { sidebarSettingsStore, SidebarSettings, STORAGE_KEY_SIDEBAR_ORDER, STORAGE_KEY_SIDEBAR_HIDDEN, STORAGE_KEY_SIDEBAR_SEARCH_CAPSULE } from '../services/SidebarSettingsStore';
 import { STORAGE_KEY_VIDEO_DOWNLOAD_BUTTON } from '../services/MediaSettingsStore';
 import { tabOrderSettingsStore, STORAGE_KEY_BOTTOM_TAB_ORDER, STORAGE_KEY_HOME_TAB_ORDER } from '../services/TabOrderSettingsStore';
-import { postDisplaySettingsStore, STORAGE_KEY_POST_ACTIONS_MASK, STORAGE_KEY_POST_ACTION_COUNTS } from '../services/PostDisplaySettingsStore';
+import { postDisplaySettingsStore, STORAGE_KEY_POST_ACTIONS_MASK, STORAGE_KEY_POST_ACTION_COUNTS, STORAGE_KEY_POST_COUNT_FORMAT } from '../services/PostDisplaySettingsStore';
 import { sceneModeStore } from '../services/SceneModeStore';
 import { componentHdrSettingsStore } from '../services/ComponentHdrSettingsStore';
 import { menuSettingsStore } from '../services/MenuSettingsStore';
@@ -13,6 +14,7 @@ import { huaweiAccountService } from '../services/HuaweiAccountService';
 import { huaweiCloudSyncService } from '../services/HuaweiCloudSyncService';
 import { antiPeepProtection } from '../services/AntiPeepProtection';
 import { pageTransitionSettingsStore, STORAGE_KEY_PAGE_TRANSITION_MODE } from '../services/PageTransitionSettingsStore';
+import { crashDiagnostics } from '../services/CrashDiagnostics';
 import display from '@ohos.display';
 import UIAbility from '@ohos.app.ability.UIAbility';
 import { startupSession } from '../utils/StartupSession';
@@ -88,6 +90,9 @@ import {
   STORAGE_KEY_COMPACT_VIDEO_LAYOUT,
   STORAGE_KEY_VIDEO_FEED_TAP_PAUSE,
   STORAGE_KEY_VIDEO_HOLD_SPEED,
+  STORAGE_KEY_INLINE_VIDEO_HOLD_PLAY,
+  STORAGE_KEY_INLINE_VIDEO_OVERLAY_CONTROLS,
+  STORAGE_KEY_PAUSE_INLINE_VIDEO_ON_RETURN,
   STORAGE_KEY_VIDEO_DOUBLE_TAP_SEEK,
   STORAGE_KEY_VIDEO_DOUBLE_TAP_SEEK_SECONDS,
   STORAGE_KEY_VIDEO_IMMERSIVE_FILL,
@@ -110,7 +115,7 @@ import {
   timelineSettingsStore
 } from '../services/TimelineSettingsStore';
 import {
-  bottomBarSettingsStore,
+  bottomBarSettingsStore, STORAGE_KEY_BOTTOM_BAR_VISIBLE,
   STORAGE_KEY_BOTTOM_BAR_PAGES
 } from '../services/BottomBarSettingsStore';
 import {
@@ -195,6 +200,7 @@ export default class EntryAbility extends UIAbility {
   private appIconScheduleRefreshTimerId: number = -1;
 
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
+    crashDiagnostics.initialize(this.context);
     hilog.info(DOMAIN, TAG, '%{public}s', 'Ability onCreate');
     startupSession.cancel();
     xxAuthSplashStore.beginSession();
@@ -308,6 +314,12 @@ export default class EntryAbility extends UIAbility {
     AppStorage.setOrCreate<boolean>(STORAGE_KEY_VIDEO_DOUBLE_TAP_SEEK, mediaSettingsStore.loadVideoDoubleTapSeek(this.context));
     AppStorage.setOrCreate<number>(STORAGE_KEY_VIDEO_DOUBLE_TAP_SEEK_SECONDS, mediaSettingsStore.loadVideoDoubleTapSeekSeconds(this.context));
     AppStorage.setOrCreate<boolean>(STORAGE_KEY_VIDEO_HOLD_SPEED, videoHoldSpeed);
+    AppStorage.setOrCreate<boolean>(STORAGE_KEY_INLINE_VIDEO_HOLD_PLAY,
+      mediaSettingsStore.loadInlineVideoHoldPlay(this.context));
+    AppStorage.setOrCreate<boolean>(STORAGE_KEY_INLINE_VIDEO_OVERLAY_CONTROLS,
+      mediaSettingsStore.loadInlineVideoOverlayControls(this.context));
+    AppStorage.setOrCreate<boolean>(STORAGE_KEY_PAUSE_INLINE_VIDEO_ON_RETURN,
+      mediaSettingsStore.loadPauseInlineVideoOnReturn(this.context));
     AppStorage.setOrCreate<number>(STORAGE_KEY_VIDEO_FEED_LAYOUT, mediaSettingsStore.loadVideoFeedLayout(this.context));
     AppStorage.setOrCreate<number>(STORAGE_KEY_COMPACT_VIDEO_LAYOUT, mediaSettingsStore.loadCompactVideoLayout(this.context));
     AppStorage.setOrCreate<boolean>(STORAGE_KEY_VIDEO_FEED_TAP_PAUSE, mediaSettingsStore.loadVideoFeedTapPause(this.context));
@@ -335,6 +347,12 @@ export default class EntryAbility extends UIAbility {
     AppStorage.setOrCreate<string>(STORAGE_KEY_HOME_TAB_ORDER, tabOrderSettingsStore.load(this.context, true));
     AppStorage.setOrCreate<number>(STORAGE_KEY_POST_ACTIONS_MASK, postDisplaySettingsStore.loadMask(this.context));
     AppStorage.setOrCreate<boolean>(STORAGE_KEY_POST_ACTION_COUNTS, postDisplaySettingsStore.loadCounts(this.context));
+    AppStorage.setOrCreate<number>(STORAGE_KEY_POST_COUNT_FORMAT, postDisplaySettingsStore.loadCountFormat(this.context));
+    const sidebarSettings: SidebarSettings = sidebarSettingsStore.load(this.context);
+    AppStorage.setOrCreate<string>(STORAGE_KEY_SIDEBAR_ORDER, sidebarSettings.order);
+    AppStorage.setOrCreate<string>(STORAGE_KEY_SIDEBAR_HIDDEN, sidebarSettings.hidden);
+    AppStorage.setOrCreate<boolean>(STORAGE_KEY_SIDEBAR_SEARCH_CAPSULE, sidebarSettings.searchCapsule);
+    AppStorage.setOrCreate<boolean>(STORAGE_KEY_BOTTOM_BAR_VISIBLE, bottomBarSettingsStore.loadVisible(this.context));
     const bottomBarPages: number = bottomBarSettingsStore.load(this.context);
     AppStorage.setOrCreate<number>(STORAGE_KEY_BOTTOM_BAR_PAGES, bottomBarPages);
     const homeTabMaterialLevel: number = hdsTabsSettingsStore.loadHomeTabMaterialLevel(this.context);
@@ -429,6 +447,8 @@ export default class EntryAbility extends UIAbility {
   }
 
   onDestroy(): void {
+    crashDiagnostics.record('application.destroy');
+    crashDiagnostics.flush();
     startupSession.cancel();
     pageBackgroundTextureCache.clear();
     hilog.info(DOMAIN, TAG, '%{public}s', 'Ability onDestroy');
@@ -750,6 +770,7 @@ export default class EntryAbility extends UIAbility {
   }
 
   onForeground(): void {
+    crashDiagnostics.record('application.foreground');
     hilog.info(DOMAIN, TAG, '%{public}s', 'Ability onForeground');
     huaweiAccountService.revalidate().then((): void => { huaweiCloudSyncService.onForeground(); });
     antiPeepProtection.setForeground(true);
@@ -774,6 +795,8 @@ export default class EntryAbility extends UIAbility {
   }
 
   onBackground(): void {
+    crashDiagnostics.record('application.background');
+    crashDiagnostics.flush();
     hilog.info(DOMAIN, TAG, '%{public}s', 'Ability onBackground');
     huaweiCloudSyncService.onBackground();
     antiPeepProtection.setForeground(false);

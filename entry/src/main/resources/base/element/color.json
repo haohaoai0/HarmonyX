@@ -945,6 +945,7 @@
     {"name":"support_alipay_surface","value":"#EAF2FF"},
     {"name":"support_afdian_surface","value":"#F1E9FC"},
     {"name":"support_afdian_action","value":"#8051C4"},
-    {"name":"support_afdian_outline","value":"#338051C4"}
+    {"name":"support_afdian_outline","value":"#338051C4"},
+    {"name":"inline_video_overlay_scrim","value":"#CC000000"}
   ]
 }

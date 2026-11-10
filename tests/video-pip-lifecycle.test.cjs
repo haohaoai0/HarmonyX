@@ -13,17 +13,19 @@ const PiPWindow = { PiPState: { STARTED: 1, STOPPED: 4 }, PiPTemplateType: { VID
 
 function setup(overrides = {}) {
   const events = [], held = new Set(['video']);
-  const gate = { isHeld: id => held.has(id), hold: id => held.add(id), release: id => held.delete(id) };
-  const names = ['onPipState', 'onVisibleChange', 'ensurePipController', 'registerPlayerHandoff'];
+  const gate = { isHeld: id => held.has(id), hold: id => held.add(id), release: id => held.delete(id), unregisterOwner() {} };
+  const names = ['onPipState', 'onVisibleChange', 'ensurePipController', 'registerPlayerHandoff',
+    'closePostPip', 'releasePip', 'startPip'];
   const methods = names.map(name => component.members.find(node =>
     ts.isMethodDeclaration(node) && node.name.getText(tree) === name).getText(tree)).join('\n');
   let offer, configuration;
   const native = { state: 'playing' };
-  const controller = { setAutoStartEnabled() {}, on() {} };
+  const controller = { setAutoStartEnabled(value) { events.push(['auto-start', value]); }, on() {},
+    off() {}, stopPiP: async () => { events.push('pip-stopped'); } };
   const deps = { PiPWindow: { ...PiPWindow, create: async config => { configuration = config; return controller; } },
     videoPipGate: gate, videoPipPlaybackKeeper: { register() {}, unregister() {} },
     videoPlayerHandoff: { isReturning: () => false, register: (_id, _player, take) => { offer = take; } },
-    hilog: { info() {}, error() {} }, DOMAIN: 0, TAG: '', MAIN_NAVIGATION_ID: 'main',
+    hilog: { info() {}, error() {}, warn() {} }, DOMAIN: 0, TAG: '', MAIN_NAVIGATION_ID: 'main',
     PLAYER_HIDE_RATIO: 0.05, PLAYER_PLAY_RATIO: 0.35 };
   const Player = new Function(...Object.keys(deps), `${compile('class Harness { ' + methods + ' }')}; return Harness;`)
     (...Object.values(deps));
@@ -41,8 +43,67 @@ function setup(overrides = {}) {
     pause() { events.push('pause'); this.wantsPlay = false; },
     play() { events.push('play'); }, finishHoldSeek() {}, isAnimatedGif: () => false,
     playerReturnTarget: () => null, ...overrides });
-  return { view, events, native, gate, take: () => offer(), config: () => configuration };
+  return { view, events, native, gate, controller, deps, take: () => offer(), config: () => configuration };
 }
+
+test('leaving a post closes PiP and releases its retained decoder immediately', async () => {
+  const h = setup(); h.view.pipController = h.controller; h.view.pendingPip = true;
+  h.view.closePostPip();
+  assert.equal(h.view.pendingPip, false);
+  assert.equal(h.view.postPipClosed, true);
+  assert.equal(h.view.pipActive, false);
+  assert.equal(h.view.player, null);
+  assert.equal(h.gate.isHeld('video'), false);
+  assert.ok(h.events.includes('pip-stopped'));
+  assert.ok(h.events.includes('destroy'));
+  h.view.onPipState(PiPWindow.PiPState.STARTED, 'userStart');
+  h.view.onPipState(PiPWindow.PiPState.STOPPED, 'panelActionRestore');
+  assert.equal(h.view.pipActive, false);
+  assert.equal(h.view.alive, false);
+});
+
+test('leaving while the controller is being created prevents a late PiP start', async () => {
+  const h = setup({ pipActive: false, retainedForPip: false, fullscreen: false,
+    pipSupported: () => true });
+  let finishCreate, starts = 0;
+  h.controller.startPiP = async () => { starts++; };
+  h.deps.PiPWindow.create = () => new Promise(resolve => { finishCreate = resolve; });
+  const start = h.view.startPip();
+  h.view.closePostPip();
+  finishCreate(h.controller); await start;
+  assert.equal(starts, 0);
+  assert.equal(h.gate.isHeld('video'), false);
+  assert.equal(h.view.pipController, null);
+});
+
+test('an in-flight PiP start is stopped again after completion when its post has closed', async () => {
+  const h = setup({ pipActive: false, retainedForPip: false, fullscreen: false,
+    pipSupported: () => true });
+  let finishStart;
+  h.controller.startPiP = () => new Promise(resolve => { finishStart = resolve; });
+  await h.view.startPip();
+  assert.equal(typeof finishStart, 'function');
+  h.view.closePostPip(); finishStart(); await Promise.resolve();
+  assert.equal(h.events.filter(event => event === 'pip-stopped').length, 2);
+  assert.equal(h.view.pipActive, false);
+  assert.equal(h.gate.isHeld('video'), false);
+});
+
+test('post PiP gate closes all players of the removed post without closing another post', () => {
+  const source = fs.readFileSync('entry/src/main/ets/services/VideoPipGate.ets', 'utf8');
+  const output = { exports: {} };
+  const compiled = ts.transpileModule(source, { compilerOptions: {
+    target: ts.ScriptTarget.ES2020, module: ts.ModuleKind.CommonJS } }).outputText;
+  new Function('exports', compiled)(output.exports);
+  const gate = output.exports.videoPipGate, closed = [];
+  gate.registerOwner('first', 'owner-1', () => { closed.push('first'); gate.unregisterOwner('owner-1'); });
+  gate.registerOwner('second', 'owner-2', () => closed.push('second'));
+  gate.hold('first'); gate.armAuto('first'); gate.close('first');
+  assert.deepEqual(closed, ['first']);
+  assert.equal(gate.isHeld('first'), false);
+  assert.equal(gate.isAutoArmed('first'), false);
+  gate.close('second'); assert.deepEqual(closed, ['first', 'second']);
+});
 
 test('restoring a cached PiP destination keeps the same decoder alive and playing', () => {
   for (const backgroundPip of [true, false]) {

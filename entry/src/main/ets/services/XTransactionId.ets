@@ -1,3 +1,4 @@
+import { DohHttpRequest, createDohHttpRequest } from './DohHttpRequest';
 // X-Client-Transaction-Id provider for authenticated private-surface calls.
 //
 // X rejects a cookie-authenticated write with HTTP 200 / error 226 when the
@@ -209,9 +210,9 @@ export class XTransactionIdService {
       this.refreshInFlight = false;
       return;
     }
-    let httpRequest: http.HttpRequest | undefined = undefined;
+    let httpRequest: DohHttpRequest | undefined = undefined;
     try {
-      httpRequest = http.createHttp();
+      httpRequest = createDohHttpRequest();
       const options: http.HttpRequestOptions = {
         method: http.RequestMethod.GET,
         header: { 'accept': 'application/json', 'cache-control': 'no-cache' },

@@ -264,6 +264,29 @@ test('photo-only bodies omit attached media links while ordinary links and capti
   assert.equal(ordinary.tweets[0].text, raw);
 });
 
+test('current web HomeTimeline media_entities2 preserve photos, video variants, dimensions and sensitive flags', () => {
+  const parsed = page([tweetEntry('tweet-current', { __typename: 'Tweet', rest_id: 'current',
+    legacy: { full_text: 'Game clip https://t.co/clip' },
+    media_entities2: [
+      { id_str: 'photo', media_url_https: 'https://pbs.twimg.com/media/photo.jpg',
+        original_info: { width: 1600, height: 900 }, type: 'photo' },
+      { id_str: 'video', media_url_https: 'https://pbs.twimg.com/video_thumb/poster.jpg', url: 'https://t.co/clip',
+        original_info: { width: 1280, height: 720 }, sensitive_media_warning: { graphic_violence: true },
+        video_info: { duration_millis: 12345, variants: [
+          { content_type: 'video/mp4', bitrate: 800000, url: 'https://video.twimg.com/clip.mp4' }
+        ] } }
+    ]
+  })]);
+  assert.equal(parsed.tweets[0].text, 'Game clip');
+  const media = parsed.tweets[0].attachments;
+  assert.equal(media.length, 2); assert.equal(media[0].type, 'photo');
+  assert.equal(media[0].mediaUrl, 'https://pbs.twimg.com/media/photo.jpg');
+  assert.equal(media[0].width, 1600); assert.equal(media[0].height, 900);
+  assert.equal(media[1].type, 'video'); assert.equal(media[1].mediaUrl, 'https://video.twimg.com/clip.mp4');
+  assert.equal(media[1].durationMs, 12345); assert.equal(media[1].width, 1280);
+  assert.equal(media[1].sensitive, true);
+});
+
 test('long-form posts resolve their media through the media_id side table', () => {
   const longPost = tweetEntry('tweet-100', {
     __typename: 'Tweet',

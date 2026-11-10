@@ -1,3 +1,4 @@
+import { DohHttpRequest, createDohHttpRequest } from './DohHttpRequest';
 import http from '@ohos.net.http';
 import hilog from '@ohos.hilog';
 import { media } from '@kit.MediaKit';
@@ -5,7 +6,7 @@ import { proxyStore } from './ProxyStore';
 
 class SpaceResource {
   request: media.MediaSourceLoadingRequest;
-  httpRequest: http.HttpRequest | null = null;
+  httpRequest: DohHttpRequest | null = null;
   bytes: ArrayBuffer | null = null;
   baseOffset: number = 0;
   offset: number = 0;
@@ -51,7 +52,7 @@ export class SpaceHlsLoader {
     setTimeout((): void => this.drain(id, entry), 0);
   }
   private async fetch(id: number, entry: SpaceResource): Promise<void> {
-    const request: http.HttpRequest = http.createHttp();
+    const request: DohHttpRequest = createDohHttpRequest();
     entry.httpRequest = request;
     try {
       const options: http.HttpRequestOptions = {

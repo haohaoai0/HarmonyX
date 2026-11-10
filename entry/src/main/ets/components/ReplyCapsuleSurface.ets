@@ -1,9 +1,9 @@
 import { DEFAULT_REPLY_CAPSULE_MATERIAL_LEVEL } from '../services/AppearanceStore';
 import { replyCapsuleMaterial } from '../utils/ReplyCapsuleMaterial';
 import { materialModifier } from '../utils/SystemMaterial';
+import { MaterialSurfaceHost } from './MaterialSurfaceHost';
 
-// Navigation's custom title hosts the material just like the reply composer.
-// Keep this presentation-only so settings can reuse it without editor lifecycle.
+// Keep the material shape independent of Navigation's internally clipped NavBar.
 @Component
 export struct ReplyCapsuleSurface {
   @Prop capsuleHeight: number = 64;
@@ -23,7 +23,8 @@ export struct ReplyCapsuleSurface {
       .width('100%').height('100%')
       .backgroundColor(this.materialEnabled ? Color.Transparent : $r('app.color.bg_field'))
       .border({ width: this.materialEnabled ? 0 : 1, color: $r('app.color.divider') })
-      .borderRadius(this.cornerRadius).clip(true)
+      // The material follows borderRadius itself; clipping cuts its light and deformation.
+      .borderRadius(this.cornerRadius).clip(!this.materialEnabled)
       .attributeModifier(materialModifier(replyCapsuleMaterial(this.materialEnabled, this.materialLevel)))
   }
 
@@ -34,6 +35,7 @@ export struct ReplyCapsuleSurface {
         this.SurfaceFrame()
       }
       .width('100%').height(this.capsuleHeight)
+      .clip(false)
       .geometryTransition(this.transitionId, { follow: this.transitionFollow })
       .transition(TransitionEffect.OPACITY)
     } else {
@@ -42,11 +44,10 @@ export struct ReplyCapsuleSurface {
   }
 
   build(): void {
-    Navigation() {
-      Column().width('100%').height('100%').hitTestBehavior(HitTestMode.None)
-    }
-    .title({ builder: (): void => { this.Surface(); }, height: this.capsuleHeight }, { barStyle: BarStyle.STACK })
-    .titleMode(NavigationTitleMode.Full).mode(NavigationMode.Stack).hideToolBar(true)
+    MaterialSurfaceHost({ surfaceHeight: this.capsuleHeight,
+      surfaceContent: (): void => { this.Surface(); }
+    })
     .backgroundColor(Color.Transparent).width('100%').height(this.capsuleHeight)
+    .clip(false)
   }
 }

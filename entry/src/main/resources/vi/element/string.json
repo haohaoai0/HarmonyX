@@ -198,11 +198,11 @@
     },
     {
       "name": "settings_confirm_app_exit",
-      "value": "Xác nhận trước khi thoát"
+      "value": "Gợi ý về màn hình chính"
     },
     {
       "name": "settings_confirm_app_exit_desc",
-      "value": "Hỏi khi quay lại từ trang chính. Khi tắt, thoát trực tiếp."
+      "value": "Ở trang gốc, hiển thị gợi ý trước; nhấn Quay lại lần nữa trong 2,2 giây để về màn hình chính"
     },
     {
       "name": "app_exit_title",
@@ -622,7 +622,7 @@
     },
     {
       "name": "settings_compact_switch_style_desc",
-      "value": "Khi ẩn logo X. Nền nút được tô theo tiến độ vuốt giữa các trang."
+      "value": "Khi ẩn logo X, chọn thẻ văn bản, nút dạng viên hoặc điều khiển phân đoạn."
     },
     {
       "name": "settings_compact_switch_tabs",
@@ -631,6 +631,10 @@
     {
       "name": "settings_compact_switch_buttons",
       "value": "Nút"
+    },
+    {
+      "name": "settings_compact_switch_segmented",
+      "value": "Điều khiển phân đoạn"
     },
     {
       "name": "settings_avatar_tint",
@@ -1342,7 +1346,7 @@
     },
     {
       "name": "profile_version",
-      "value": "Harmony X 3.5.0 · HarmonyOS 6.0.2 (API 22-26) · mô hình Stage"
+      "value": "Harmony X 3.9.0 · HarmonyOS 6.0.2 (API 22-26) · mô hình Stage"
     },
     {
       "name": "profile_following",
@@ -3514,7 +3518,7 @@
     },
     {
       "name": "diagnostics_desc",
-      "value": "Lệnh gọi API gần đây và tự kiểm tra API riêng."
+      "value": "Xuất nhật ký lỗi và xem các yêu cầu gần đây cùng kết quả tự kiểm tra."
     },
     {
       "name": "diagnostics_probe",
@@ -12729,6 +12733,10 @@
       "value": "Hiện tất cả bài đăng nổi bật"
     },
     {
+      "name": "global_trends_cover_url",
+      "value": "https://pbs.twimg.com/topics/topic/globe_center_compressed.png"
+    },
+    {
       "name": "post_video_publish",
       "value": "Đăng video"
     },
@@ -12860,40 +12868,405 @@
       "name": "post_translation_languages_description",
       "value": "Chọn ngôn ngữ bài đăng để tự động dịch. Các ngôn ngữ khác vẫn có thể dịch thủ công."
     },
-    {"name": "post_link_copy", "value": "Copy link"},
-    {"name": "post_link_open", "value": "Open link"},
-    {"name": "settings_video_download_button", "value": "Video download button"},
-    {"name": "settings_video_download_button_desc", "value": "Show the download button in the top-right corner of videos"},
-    {"name": "video_source_from", "value": "From"},
-    {"name": "video_source_original", "value": "Original video"},
-    {"name": "video_source_open_failed", "value": "Unable to open the original video. Try again."},
-    {"name":"dns_title","value":"DNS over HTTPS (DoH)"},
-    {"name":"dns_enable","value":"Use DNS over HTTPS"},
-    {"name":"dns_enable_desc","value":"Encrypt DNS queries with a chosen HTTPS resolver"},
-    {"name":"dns_scope","value":"Applies to app API requests, downloaded images, video segments and built-in web pages. System players and external apps may use their own DNS. When a proxy resolves the destination, its DNS takes precedence. DoH does not replace a proxy or VPN."},
-    {"name":"dns_provider","value":"DNS provider"},
-    {"name":"dns_provider_ali","value":"AliDNS"},
-    {"name":"dns_provider_cloudflare","value":"Cloudflare"},
-    {"name":"dns_provider_google","value":"Google Public DNS"},
-    {"name":"dns_provider_custom","value":"Custom"},
-    {"name":"dns_endpoint","value":"DoH server URL"},
-    {"name":"dns_endpoint_hint","value":"https://example.com/dns-query"},
-    {"name":"dns_endpoint_desc","value":"Enter a complete RFC 8484 HTTPS endpoint, without credentials, fragments or URI templates such as {?dns}."},
-    {"name":"dns_invalid","value":"Enter a valid HTTPS DoH server URL"},
-    {"name":"dns_saved","value":"Saved. New requests use this setting; reload open web pages."},
-    {"name":"dns_test","value":"Test DNS resolution"},
-    {"name":"dns_test_desc","value":"Tests the current URL by resolving x.com directly, without saving or enabling it. The test bypasses the in-app proxy; a system VPN still applies."},
-    {"name":"dns_test_success","value":"x.com resolved successfully"},
-    {"name":"dns_test_failed","value":"Resolution failed. Check the URL, network or DNS service."},
-    {"name":"dns_failure_note","value":"After saving, DoH failures stop affected requests instead of falling back to system DNS. Turn DoH off and save to restore system DNS. Changes apply after saving."},
-    {"name":"help_support_afdian","value":"Afdian"},
-    {"name":"help_support_qr_summary","value":"Quét mã để hỗ trợ phát triển"},
-    {"name":"help_support_afdian_summary","value":"Tắt đề xuất vĩnh viễn · ¥16.6"},
-    {"name":"help_support_afdian_desc","value":"Mua mã tắt đề xuất vĩnh viễn trên Afdian, sau đó quay lại ứng dụng để đổi mã."},
-    {"name":"help_support_afdian_buy","value":"Mua trên Afdian"},
-    {"name":"help_support_expand","value":"Nhấn để mở rộng"},
-    {"name":"help_support_collapse","value":"Nhấn để thu gọn"},
-    {"name":"help_support_scan_code","value":"Quét mã này bằng ứng dụng thanh toán tương ứng."},
-    {"name":"help_support_recommended","value":"Đề xuất"}
+    {
+      "name": "post_link_copy",
+      "value": "Copy link"
+    },
+    {
+      "name": "post_link_open",
+      "value": "Open link"
+    },
+    {
+      "name": "settings_video_download_button",
+      "value": "Video download button"
+    },
+    {
+      "name": "settings_video_download_button_desc",
+      "value": "Show the download button in the top-right corner of videos"
+    },
+    {
+      "name": "video_source_from",
+      "value": "From"
+    },
+    {
+      "name": "video_source_original",
+      "value": "Original video"
+    },
+    {
+      "name": "video_source_open_failed",
+      "value": "Unable to open the original video. Try again."
+    },
+    {
+      "name": "dns_title",
+      "value": "DNS over HTTPS (DoH)"
+    },
+    {
+      "name": "dns_enable",
+      "value": "Use DNS over HTTPS"
+    },
+    {
+      "name": "dns_enable_desc",
+      "value": "Encrypt DNS queries with a chosen HTTPS resolver"
+    },
+    {
+      "name": "dns_scope",
+      "value": "Applies to app API requests, downloaded images, video segments and built-in web pages. System players and external apps may use their own DNS. When a proxy resolves the destination, its DNS takes precedence. DoH does not replace a proxy or VPN."
+    },
+    {
+      "name": "dns_provider",
+      "value": "DNS provider"
+    },
+    {
+      "name": "dns_provider_ali",
+      "value": "AliDNS"
+    },
+    {
+      "name": "dns_provider_cloudflare",
+      "value": "Cloudflare"
+    },
+    {
+      "name": "dns_provider_google",
+      "value": "Google Public DNS"
+    },
+    {
+      "name": "dns_provider_custom",
+      "value": "Custom"
+    },
+    {
+      "name": "dns_endpoint",
+      "value": "DoH server URL"
+    },
+    {
+      "name": "dns_endpoint_hint",
+      "value": "https://example.com/dns-query"
+    },
+    {
+      "name": "dns_endpoint_desc",
+      "value": "Enter a complete RFC 8484 HTTPS endpoint, without credentials, fragments or URI templates such as {?dns}."
+    },
+    {
+      "name": "dns_invalid",
+      "value": "Enter a valid HTTPS DoH server URL"
+    },
+    {
+      "name": "dns_saved",
+      "value": "Saved. New requests use this setting; reload open web pages."
+    },
+    {
+      "name": "dns_test",
+      "value": "Test DNS resolution"
+    },
+    {
+      "name": "dns_test_desc",
+      "value": "Tests the current URL by resolving x.com directly, without saving or enabling it. The test bypasses the in-app proxy; a system VPN still applies."
+    },
+    {
+      "name": "dns_test_success",
+      "value": "x.com resolved successfully"
+    },
+    {
+      "name": "dns_test_failed",
+      "value": "Resolution failed. Check the URL, network or DNS service."
+    },
+    {
+      "name": "dns_failure_note",
+      "value": "After saving, DoH failures stop affected requests instead of falling back to system DNS. Turn DoH off and save to restore system DNS. Changes apply after saving."
+    },
+    {
+      "name": "help_support_afdian",
+      "value": "Afdian"
+    },
+    {
+      "name": "help_support_qr_summary",
+      "value": "Quét mã để hỗ trợ phát triển"
+    },
+    {
+      "name": "help_support_afdian_summary",
+      "value": "Tắt đề xuất vĩnh viễn · ¥16.6"
+    },
+    {
+      "name": "help_support_afdian_desc",
+      "value": "Mua mã tắt đề xuất vĩnh viễn trên Afdian, sau đó quay lại ứng dụng để đổi mã."
+    },
+    {
+      "name": "help_support_afdian_buy",
+      "value": "Mua trên Afdian"
+    },
+    {
+      "name": "help_support_expand",
+      "value": "Nhấn để mở rộng"
+    },
+    {
+      "name": "help_support_collapse",
+      "value": "Nhấn để thu gọn"
+    },
+    {
+      "name": "help_support_scan_code",
+      "value": "Quét mã này bằng ứng dụng thanh toán tương ứng."
+    },
+    {
+      "name": "help_support_recommended",
+      "value": "Đề xuất"
+    },
+    {
+      "name": "dns_x_test",
+      "value": "Test native X connection"
+    },
+    {
+      "name": "dns_x_test_desc",
+      "value": "Uses this DoH URL to request the public x.com/robots.txt through native HTTP, without account information or the in-app proxy. Does not save settings. A system VPN still applies. Success checks this connection only, not every API or media host."
+    },
+    {
+      "name": "dns_x_test_success",
+      "value": "Native X connection succeeded"
+    },
+    {
+      "name": "dns_x_test_failed",
+      "value": "Native X connection failed. Check the network, proxy or ECH support."
+    },
+    {
+      "name": "settings_inline_video_hold",
+      "value": "Nhấn giữ video trong bảng tin"
+    },
+    {
+      "name": "settings_inline_video_hold_desc",
+      "value": "Chọn menu hoặc phát video. Chế độ phát dùng cài đặt tốc độ khi nhấn giữ."
+    },
+    {
+      "name": "settings_inline_video_hold_menu",
+      "value": "Menu"
+    },
+    {
+      "name": "settings_inline_video_hold_play",
+      "value": "Giữ để phát"
+    },
+    {
+      "name": "settings_sidebar_items",
+      "value": "Tính năng thanh bên"
+    },
+    {
+      "name": "settings_sidebar_items_desc",
+      "value": "Hiện hoặc ẩn tính năng và dùng mũi tên để sắp xếp. Cài đặt luôn có sẵn."
+    },
+    {
+      "name": "settings_bottom_bar_visible",
+      "value": "Hiện thanh dưới"
+    },
+    {
+      "name": "settings_bottom_bar_visible_desc",
+      "value": "Khi ẩn, dùng thanh bên để điều hướng và tìm kiếm."
+    },
+    {
+      "name": "settings_post_count_format",
+      "value": "Định dạng số đếm bài đăng"
+    },
+    {
+      "name": "settings_post_count_compact",
+      "value": "K/M (nghìn/triệu)"
+    },
+    {
+      "name": "settings_post_count_chinese",
+      "value": "万/亿 (10 nghìn/100 triệu)"
+    },
+    {
+      "name": "settings_post_count_full",
+      "value": "Số đầy đủ"
+    },
+    {
+      "name": "settings_sidebar_search_capsule",
+      "value": "Viên tìm kiếm thanh bên"
+    },
+    {
+      "name": "settings_sidebar_search_capsule_desc",
+      "value": "Hiện viên tìm kiếm nhỏ ở đầu thanh bên. Mặc định tắt."
+    },
+    {
+      "name": "settings_home_header_action",
+      "value": "Nút tiêu đề Trang chủ"
+    },
+    {
+      "name": "settings_home_header_action_desc",
+      "value": "Chọn Tìm kiếm hoặc Thêm người. Chạm để mở trực tiếp trang đã chọn."
+    },
+    {
+      "name": "settings_home_follow_suggestions",
+      "value": "Gợi ý theo dõi"
+    },
+    {
+      "name": "settings_home_follow_suggestions_desc",
+      "value": "Hiển thị tài khoản được gợi ý trên dòng thời gian Trang chủ."
+    },
+    {
+      "name": "page_background_preset_colors",
+      "value": "Giữ chuyển màu gốc"
+    },
+    {
+      "name": "page_background_preset_colors_desc",
+      "value": "Dùng chuyển màu phù hợp với từng họa tiết đầy đủ. Tắt để chọn màu hoặc ảnh tùy chỉnh."
+    },
+    {
+      "name": "settings_inline_video_overlay_controls",
+      "value": "Điều khiển trên video bài đăng"
+    },
+    {
+      "name": "settings_inline_video_overlay_controls_desc",
+      "value": "Chuyển các nút vào trong video. Chạm để hiện hoặc ẩn; các nút tự ẩn khi phát."
+    },
+    {
+      "name": "settings_pause_inline_video_on_return",
+      "value": "Tạm dừng video khi quay lại"
+    },
+    {
+      "name": "settings_pause_inline_video_on_return_desc",
+      "value": "Video trong bài đăng giữ trạng thái tạm dừng sau khi đóng trình xem. Chạm Phát để tiếp tục."
+    },
+    {
+      "name": "settings_timeline_columns_four",
+      "value": "Bốn cột"
+    },
+    {
+      "name": "settings_timeline_columns_five",
+      "value": "Năm cột"
+    },
+    {
+      "name": "crash_recovery_title",
+      "value": "Ứng dụng đã đóng bất ngờ"
+    },
+    {
+      "name": "crash_recovery_message",
+      "value": "Nhật ký chẩn đoán lần lỗi trước đã được lưu. Hãy xuất nhật ký và liên hệ nhà phát triển, kèm các bước trước khi xảy ra lỗi."
+    },
+    {
+      "name": "crash_later",
+      "value": "Để sau"
+    },
+    {
+      "name": "crash_export",
+      "value": "Xuất nhật ký"
+    },
+    {
+      "name": "crash_contact",
+      "value": "Liên hệ nhà phát triển"
+    },
+    {
+      "name": "crash_export_success",
+      "value": "Đã xuất nhật ký. Hãy đính kèm tệp khi liên hệ nhà phát triển."
+    },
+    {
+      "name": "crash_export_failed",
+      "value": "Không thể xuất nhật ký. Hãy thử lại hoặc chọn vị trí khác."
+    },
+    {
+      "name": "crash_contact_failed",
+      "value": "Không thể mở trang phản hồi. Hãy liên hệ nhà phát triển trong Giới thiệu."
+    },
+    {
+      "name": "crash_logs_title",
+      "value": "Chẩn đoán ứng dụng"
+    },
+    {
+      "name": "crash_logs_description",
+      "value": "Nhật ký lỗi được lưu trên thiết bị. Giữ lại 5 báo cáo mới nhất. Đính kèm tệp đã xuất vào phản hồi của bạn."
+    },
+    {
+      "name": "crash_logs_empty",
+      "value": "Chưa có báo cáo lỗi. Bạn có thể xuất nhật ký phiên hiện tại."
+    },
+    {
+      "name": "app_exit_desktop",
+      "value": "Về màn hình chính"
+    },
+    {
+      "name": "app_exit_desktop_hint",
+      "value": "Nhấn Quay lại lần nữa để về màn hình chính"
+    },
+    {
+      "name": "media_save_method",
+      "value": "Cách lưu nội dung đa phương tiện"
+    },
+    {
+      "name": "media_save_gallery_dialog",
+      "value": "Thư viện · xác nhận hệ thống"
+    },
+    {
+      "name": "media_save_secure_button",
+      "value": "Thư viện · nút lưu an toàn"
+    },
+    {
+      "name": "media_save_directory",
+      "value": "Thư mục tải xuống · lưu trực tiếp sau khi cấp quyền"
+    },
+    {
+      "name": "media_save_file_picker",
+      "value": "Tệp · chọn vị trí mỗi lần"
+    },
+    {
+      "name": "media_save_secure_title",
+      "value": "Lưu vào Thư viện"
+    },
+    {
+      "name": "media_save_secure_note",
+      "value": "Dùng nút lưu của hệ thống để lưu trực tiếp vào Thư viện. Cấp quyền trong lần đầu và chạm một lần cho mỗi tệp khi lưu nhiều tệp."
+    },
+    {
+      "name": "account_groups_title",
+      "value": "Nhóm cục bộ"
+    },
+    {
+      "name": "account_groups_hint",
+      "value": "Nhóm được lưu trên thiết bị này. Chọn tài khoản đang theo dõi và ghim nhóm vào Trang chủ."
+    },
+    {
+      "name": "account_groups_empty",
+      "value": "Chưa có nhóm. Hãy tạo nhóm để bắt đầu."
+    },
+    {
+      "name": "account_groups_manage",
+      "value": "Quản lý nhóm cục bộ"
+    },
+    {
+      "name": "account_group_create",
+      "value": "Nhóm mới"
+    },
+    {
+      "name": "account_group_delete",
+      "value": "Xóa nhóm"
+    },
+    {
+      "name": "account_group_member_count",
+      "value": "%d tài khoản"
+    },
+    {
+      "name": "account_group_edit_title",
+      "value": "Sửa nhóm"
+    },
+    {
+      "name": "account_group_name",
+      "value": "Tên nhóm"
+    },
+    {
+      "name": "account_group_icon",
+      "value": "Biểu tượng (emoji hoặc ký hiệu)"
+    },
+    {
+      "name": "account_group_selected",
+      "value": "Đã chọn %d tài khoản"
+    },
+    {
+      "name": "account_group_search",
+      "value": "Tìm tài khoản theo dõi đã tải"
+    },
+    {
+      "name": "account_group_cancel",
+      "value": "Hủy"
+    },
+    {
+      "name": "account_group_save",
+      "value": "Lưu"
+    },
+    {
+      "name": "grok_chat_hint",
+      "value": "Đặt câu hỏi cho Grok để bắt đầu trò chuyện."
+    }
   ]
 }

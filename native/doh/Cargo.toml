@@ -1,0 +1,26 @@
+[package]
+name = "harmonyx-doh"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[workspace]
+
+[lib]
+crate-type = ["staticlib", "rlib"]
+
+[dependencies]
+rustls = { version = "0.23", default-features = false, features = ["aws_lc_rs", "std", "tls12"] }
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls-no-provider", "http2", "gzip", "brotli", "deflate", "stream"] }
+tokio = { version = "1", features = ["rt-multi-thread", "time", "sync", "macros"] }
+webpki-roots = "1"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+base64 = "0.22"
+futures-util = "0.3"
+
+[profile.release]
+opt-level = "s"
+lto = true
+strip = "debuginfo"
+panic = "unwind"

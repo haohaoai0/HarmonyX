@@ -198,11 +198,11 @@
     },
     {
       "name": "settings_confirm_app_exit",
-      "value": "Sahkan sebelum keluar"
+      "value": "Petunjuk kembali ke skrin utama"
     },
     {
       "name": "settings_confirm_app_exit_desc",
-      "value": "Minta pengesahan apabila kembali dari halaman utama. Jika dimatikan, keluar terus."
+      "value": "Pada halaman utama, tunjukkan petunjuk dahulu; tekan Kembali lagi dalam 2.2 saat untuk ke skrin utama"
     },
     {
       "name": "app_exit_title",
@@ -622,7 +622,7 @@
     },
     {
       "name": "settings_compact_switch_style_desc",
-      "value": "Apabila logo X disembunyikan. Latar butang diisi semasa meleret antara halaman."
+      "value": "Apabila logo X disembunyikan, pilih tab teks, butang kapsul atau kawalan bersegmen."
     },
     {
       "name": "settings_compact_switch_tabs",
@@ -631,6 +631,10 @@
     {
       "name": "settings_compact_switch_buttons",
       "value": "Butang"
+    },
+    {
+      "name": "settings_compact_switch_segmented",
+      "value": "Kawalan bersegmen"
     },
     {
       "name": "settings_avatar_tint",
@@ -1342,7 +1346,7 @@
     },
     {
       "name": "profile_version",
-      "value": "Harmony X 3.5.0 · HarmonyOS 6.0.2 (API 22-26) · model Stage"
+      "value": "Harmony X 3.9.0 · HarmonyOS 6.0.2 (API 22-26) · model Stage"
     },
     {
       "name": "profile_following",
@@ -3514,7 +3518,7 @@
     },
     {
       "name": "diagnostics_desc",
-      "value": "Panggilan antara muka terkini dan semakan API persendirian."
+      "value": "Eksport log ranap dan semak permintaan terkini serta hasil ujian."
     },
     {
       "name": "diagnostics_probe",
@@ -12729,6 +12733,10 @@
       "value": "Tunjukkan semua siaran popular"
     },
     {
+      "name": "global_trends_cover_url",
+      "value": "https://pbs.twimg.com/topics/topic/globe_center_compressed.png"
+    },
+    {
       "name": "post_video_publish",
       "value": "Siarkan video"
     },
@@ -12860,40 +12868,405 @@
       "name": "post_translation_languages_description",
       "value": "Pilih bahasa siaran untuk terjemahan automatik. Bahasa lain masih boleh diterjemah secara manual."
     },
-    {"name": "post_link_copy", "value": "Copy link"},
-    {"name": "post_link_open", "value": "Open link"},
-    {"name": "settings_video_download_button", "value": "Video download button"},
-    {"name": "settings_video_download_button_desc", "value": "Show the download button in the top-right corner of videos"},
-    {"name": "video_source_from", "value": "From"},
-    {"name": "video_source_original", "value": "Original video"},
-    {"name": "video_source_open_failed", "value": "Unable to open the original video. Try again."},
-    {"name":"dns_title","value":"DNS over HTTPS (DoH)"},
-    {"name":"dns_enable","value":"Use DNS over HTTPS"},
-    {"name":"dns_enable_desc","value":"Encrypt DNS queries with a chosen HTTPS resolver"},
-    {"name":"dns_scope","value":"Applies to app API requests, downloaded images, video segments and built-in web pages. System players and external apps may use their own DNS. When a proxy resolves the destination, its DNS takes precedence. DoH does not replace a proxy or VPN."},
-    {"name":"dns_provider","value":"DNS provider"},
-    {"name":"dns_provider_ali","value":"AliDNS"},
-    {"name":"dns_provider_cloudflare","value":"Cloudflare"},
-    {"name":"dns_provider_google","value":"Google Public DNS"},
-    {"name":"dns_provider_custom","value":"Custom"},
-    {"name":"dns_endpoint","value":"DoH server URL"},
-    {"name":"dns_endpoint_hint","value":"https://example.com/dns-query"},
-    {"name":"dns_endpoint_desc","value":"Enter a complete RFC 8484 HTTPS endpoint, without credentials, fragments or URI templates such as {?dns}."},
-    {"name":"dns_invalid","value":"Enter a valid HTTPS DoH server URL"},
-    {"name":"dns_saved","value":"Saved. New requests use this setting; reload open web pages."},
-    {"name":"dns_test","value":"Test DNS resolution"},
-    {"name":"dns_test_desc","value":"Tests the current URL by resolving x.com directly, without saving or enabling it. The test bypasses the in-app proxy; a system VPN still applies."},
-    {"name":"dns_test_success","value":"x.com resolved successfully"},
-    {"name":"dns_test_failed","value":"Resolution failed. Check the URL, network or DNS service."},
-    {"name":"dns_failure_note","value":"After saving, DoH failures stop affected requests instead of falling back to system DNS. Turn DoH off and save to restore system DNS. Changes apply after saving."},
-    {"name":"help_support_afdian","value":"Afdian"},
-    {"name":"help_support_qr_summary","value":"Imbas untuk menyokong pembangunan"},
-    {"name":"help_support_afdian_summary","value":"Tanpa cadangan selamanya · ¥16.6"},
-    {"name":"help_support_afdian_desc","value":"Beli kod kekal tanpa cadangan di Afdian, kemudian kembali ke aplikasi untuk menebusnya."},
-    {"name":"help_support_afdian_buy","value":"Beli di Afdian"},
-    {"name":"help_support_expand","value":"Ketik untuk kembangkan"},
-    {"name":"help_support_collapse","value":"Ketik untuk runtuhkan"},
-    {"name":"help_support_scan_code","value":"Imbas kod ini dengan aplikasi pembayaran yang berkenaan."},
-    {"name":"help_support_recommended","value":"Disyorkan"}
+    {
+      "name": "post_link_copy",
+      "value": "Copy link"
+    },
+    {
+      "name": "post_link_open",
+      "value": "Open link"
+    },
+    {
+      "name": "settings_video_download_button",
+      "value": "Video download button"
+    },
+    {
+      "name": "settings_video_download_button_desc",
+      "value": "Show the download button in the top-right corner of videos"
+    },
+    {
+      "name": "video_source_from",
+      "value": "From"
+    },
+    {
+      "name": "video_source_original",
+      "value": "Original video"
+    },
+    {
+      "name": "video_source_open_failed",
+      "value": "Unable to open the original video. Try again."
+    },
+    {
+      "name": "dns_title",
+      "value": "DNS over HTTPS (DoH)"
+    },
+    {
+      "name": "dns_enable",
+      "value": "Use DNS over HTTPS"
+    },
+    {
+      "name": "dns_enable_desc",
+      "value": "Encrypt DNS queries with a chosen HTTPS resolver"
+    },
+    {
+      "name": "dns_scope",
+      "value": "Applies to app API requests, downloaded images, video segments and built-in web pages. System players and external apps may use their own DNS. When a proxy resolves the destination, its DNS takes precedence. DoH does not replace a proxy or VPN."
+    },
+    {
+      "name": "dns_provider",
+      "value": "DNS provider"
+    },
+    {
+      "name": "dns_provider_ali",
+      "value": "AliDNS"
+    },
+    {
+      "name": "dns_provider_cloudflare",
+      "value": "Cloudflare"
+    },
+    {
+      "name": "dns_provider_google",
+      "value": "Google Public DNS"
+    },
+    {
+      "name": "dns_provider_custom",
+      "value": "Custom"
+    },
+    {
+      "name": "dns_endpoint",
+      "value": "DoH server URL"
+    },
+    {
+      "name": "dns_endpoint_hint",
+      "value": "https://example.com/dns-query"
+    },
+    {
+      "name": "dns_endpoint_desc",
+      "value": "Enter a complete RFC 8484 HTTPS endpoint, without credentials, fragments or URI templates such as {?dns}."
+    },
+    {
+      "name": "dns_invalid",
+      "value": "Enter a valid HTTPS DoH server URL"
+    },
+    {
+      "name": "dns_saved",
+      "value": "Saved. New requests use this setting; reload open web pages."
+    },
+    {
+      "name": "dns_test",
+      "value": "Test DNS resolution"
+    },
+    {
+      "name": "dns_test_desc",
+      "value": "Tests the current URL by resolving x.com directly, without saving or enabling it. The test bypasses the in-app proxy; a system VPN still applies."
+    },
+    {
+      "name": "dns_test_success",
+      "value": "x.com resolved successfully"
+    },
+    {
+      "name": "dns_test_failed",
+      "value": "Resolution failed. Check the URL, network or DNS service."
+    },
+    {
+      "name": "dns_failure_note",
+      "value": "After saving, DoH failures stop affected requests instead of falling back to system DNS. Turn DoH off and save to restore system DNS. Changes apply after saving."
+    },
+    {
+      "name": "help_support_afdian",
+      "value": "Afdian"
+    },
+    {
+      "name": "help_support_qr_summary",
+      "value": "Imbas untuk menyokong pembangunan"
+    },
+    {
+      "name": "help_support_afdian_summary",
+      "value": "Tanpa cadangan selamanya · ¥16.6"
+    },
+    {
+      "name": "help_support_afdian_desc",
+      "value": "Beli kod kekal tanpa cadangan di Afdian, kemudian kembali ke aplikasi untuk menebusnya."
+    },
+    {
+      "name": "help_support_afdian_buy",
+      "value": "Beli di Afdian"
+    },
+    {
+      "name": "help_support_expand",
+      "value": "Ketik untuk kembangkan"
+    },
+    {
+      "name": "help_support_collapse",
+      "value": "Ketik untuk runtuhkan"
+    },
+    {
+      "name": "help_support_scan_code",
+      "value": "Imbas kod ini dengan aplikasi pembayaran yang berkenaan."
+    },
+    {
+      "name": "help_support_recommended",
+      "value": "Disyorkan"
+    },
+    {
+      "name": "dns_x_test",
+      "value": "Test native X connection"
+    },
+    {
+      "name": "dns_x_test_desc",
+      "value": "Uses this DoH URL to request the public x.com/robots.txt through native HTTP, without account information or the in-app proxy. Does not save settings. A system VPN still applies. Success checks this connection only, not every API or media host."
+    },
+    {
+      "name": "dns_x_test_success",
+      "value": "Native X connection succeeded"
+    },
+    {
+      "name": "dns_x_test_failed",
+      "value": "Native X connection failed. Check the network, proxy or ECH support."
+    },
+    {
+      "name": "settings_inline_video_hold",
+      "value": "Tekan lama video sebaris"
+    },
+    {
+      "name": "settings_inline_video_hold_desc",
+      "value": "Pilih menu atau main balik. Main balik mengikut tetapan kelajuan tekan lama."
+    },
+    {
+      "name": "settings_inline_video_hold_menu",
+      "value": "Menu"
+    },
+    {
+      "name": "settings_inline_video_hold_play",
+      "value": "Tahan untuk main"
+    },
+    {
+      "name": "settings_sidebar_items",
+      "value": "Ciri bar sisi"
+    },
+    {
+      "name": "settings_sidebar_items_desc",
+      "value": "Tunjukkan atau sembunyikan ciri dan susun dengan anak panah. Tetapan sentiasa tersedia."
+    },
+    {
+      "name": "settings_bottom_bar_visible",
+      "value": "Tunjukkan bar bawah"
+    },
+    {
+      "name": "settings_bottom_bar_visible_desc",
+      "value": "Apabila disembunyikan, gunakan bar sisi untuk navigasi dan carian."
+    },
+    {
+      "name": "settings_post_count_format",
+      "value": "Format kiraan siaran"
+    },
+    {
+      "name": "settings_post_count_compact",
+      "value": "K/M (ribu/juta)"
+    },
+    {
+      "name": "settings_post_count_chinese",
+      "value": "万/亿 (10 ribu/100 juta)"
+    },
+    {
+      "name": "settings_post_count_full",
+      "value": "Nombor penuh"
+    },
+    {
+      "name": "settings_sidebar_search_capsule",
+      "value": "Kapsul carian bar sisi"
+    },
+    {
+      "name": "settings_sidebar_search_capsule_desc",
+      "value": "Tunjukkan kapsul carian ringkas di bahagian atas bar sisi. Dimatikan secara lalai."
+    },
+    {
+      "name": "settings_home_header_action",
+      "value": "Butang pengepala Laman Utama"
+    },
+    {
+      "name": "settings_home_header_action_desc",
+      "value": "Pilih Cari atau Tambah orang. Ketik untuk terus membuka halaman yang dipilih."
+    },
+    {
+      "name": "settings_home_follow_suggestions",
+      "value": "Cadangan untuk diikuti"
+    },
+    {
+      "name": "settings_home_follow_suggestions_desc",
+      "value": "Tunjukkan akaun yang dicadangkan dalam garis masa Laman Utama."
+    },
+    {
+      "name": "page_background_preset_colors",
+      "value": "Kekalkan kecerunan asal"
+    },
+    {
+      "name": "page_background_preset_colors_desc",
+      "value": "Gunakan kecerunan sepadan bagi setiap corak penuh. Matikan untuk memilih warna atau foto tersuai."
+    },
+    {
+      "name": "settings_inline_video_overlay_controls",
+      "value": "Kawalan pada video siaran"
+    },
+    {
+      "name": "settings_inline_video_overlay_controls_desc",
+      "value": "Alihkan kawalan ke dalam video. Ketik untuk tunjuk atau sembunyi; kawalan tersembunyi semasa dimainkan."
+    },
+    {
+      "name": "settings_pause_inline_video_on_return",
+      "value": "Jeda video siaran apabila kembali"
+    },
+    {
+      "name": "settings_pause_inline_video_on_return_desc",
+      "value": "Video siaran kekal dijeda selepas penonton ditutup. Ketik Main untuk meneruskan."
+    },
+    {
+      "name": "settings_timeline_columns_four",
+      "value": "Empat lajur"
+    },
+    {
+      "name": "settings_timeline_columns_five",
+      "value": "Lima lajur"
+    },
+    {
+      "name": "crash_recovery_title",
+      "value": "Aplikasi ditutup secara tidak dijangka"
+    },
+    {
+      "name": "crash_recovery_message",
+      "value": "Log diagnostik ranap terakhir telah disimpan. Eksport log dan hubungi pembangun dengan langkah sebelum masalah berlaku."
+    },
+    {
+      "name": "crash_later",
+      "value": "Kemudian"
+    },
+    {
+      "name": "crash_export",
+      "value": "Eksport log"
+    },
+    {
+      "name": "crash_contact",
+      "value": "Hubungi pembangun"
+    },
+    {
+      "name": "crash_export_success",
+      "value": "Log dieksport. Lampirkan fail semasa menghubungi pembangun."
+    },
+    {
+      "name": "crash_export_failed",
+      "value": "Gagal mengeksport log. Cuba lagi atau pilih lokasi lain."
+    },
+    {
+      "name": "crash_contact_failed",
+      "value": "Halaman maklum balas tidak dapat dibuka. Hubungi pembangun melalui Perihal."
+    },
+    {
+      "name": "crash_logs_title",
+      "value": "Diagnostik aplikasi"
+    },
+    {
+      "name": "crash_logs_description",
+      "value": "Log ranap disimpan pada peranti. Lima laporan terkini dikekalkan. Lampirkan fail yang dieksport pada maklum balas anda."
+    },
+    {
+      "name": "crash_logs_empty",
+      "value": "Tiada laporan ranap. Anda boleh mengeksport log sesi semasa."
+    },
+    {
+      "name": "app_exit_desktop",
+      "value": "Kembali ke skrin utama"
+    },
+    {
+      "name": "app_exit_desktop_hint",
+      "value": "Tekan Kembali sekali lagi untuk ke skrin utama"
+    },
+    {
+      "name": "media_save_method",
+      "value": "Kaedah menyimpan media"
+    },
+    {
+      "name": "media_save_gallery_dialog",
+      "value": "Galeri · pengesahan sistem"
+    },
+    {
+      "name": "media_save_secure_button",
+      "value": "Galeri · butang simpan selamat"
+    },
+    {
+      "name": "media_save_directory",
+      "value": "Folder muat turun · simpan terus selepas kebenaran"
+    },
+    {
+      "name": "media_save_file_picker",
+      "value": "Fail · pilih lokasi setiap kali"
+    },
+    {
+      "name": "media_save_secure_title",
+      "value": "Simpan ke Galeri"
+    },
+    {
+      "name": "media_save_secure_note",
+      "value": "Gunakan butang simpan sistem untuk menyimpan terus ke Galeri. Beri kebenaran pada penggunaan pertama; ketik sekali bagi setiap fail dalam kumpulan."
+    },
+    {
+      "name": "account_groups_title",
+      "value": "Kumpulan setempat"
+    },
+    {
+      "name": "account_groups_hint",
+      "value": "Kumpulan disimpan pada peranti ini. Pilih akaun diikuti dan pin kumpulan ke Laman Utama."
+    },
+    {
+      "name": "account_groups_empty",
+      "value": "Belum ada kumpulan. Cipta kumpulan untuk bermula."
+    },
+    {
+      "name": "account_groups_manage",
+      "value": "Urus kumpulan setempat"
+    },
+    {
+      "name": "account_group_create",
+      "value": "Kumpulan baharu"
+    },
+    {
+      "name": "account_group_delete",
+      "value": "Padam kumpulan"
+    },
+    {
+      "name": "account_group_member_count",
+      "value": "%d akaun"
+    },
+    {
+      "name": "account_group_edit_title",
+      "value": "Edit kumpulan"
+    },
+    {
+      "name": "account_group_name",
+      "value": "Nama kumpulan"
+    },
+    {
+      "name": "account_group_icon",
+      "value": "Ikon (emoji atau simbol)"
+    },
+    {
+      "name": "account_group_selected",
+      "value": "%d akaun dipilih"
+    },
+    {
+      "name": "account_group_search",
+      "value": "Cari akaun diikuti yang dimuatkan"
+    },
+    {
+      "name": "account_group_cancel",
+      "value": "Batal"
+    },
+    {
+      "name": "account_group_save",
+      "value": "Simpan"
+    },
+    {
+      "name": "grok_chat_hint",
+      "value": "Tanya Grok soalan untuk memulakan perbualan."
+    }
   ]
 }

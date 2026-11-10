@@ -412,7 +412,8 @@ export class XChatService {
     const proxy: ProxyEntry | null = !vpn && settings.enabled ? settings.activeProxy() : null;
     const credentials: string = proxy !== null && proxy.username.length > 0 ?
       encodeURIComponent(proxy.username) + ':' + encodeURIComponent(proxy.password) + '@' : '';
-    const url: string = proxy === null ? '' : (proxy.isSocks5() ? 'socks5h://' : 'http://') + credentials + proxy.host + ':' + proxy.port;
+    const url: string = proxy === null ? '' : (proxy.isSocks5() ? 'socks5h://' : 'http://') +
+      credentials + proxy.host + ':' + proxy.port;
     if (generation !== this.generation || this.ownRecord?.token_map === undefined) { throw new Error('account_changed'); }
     const configured: XChatNativeResult = await this.callNative('recoveryConfig', JSON.stringify({ config: this.ownRecord.token_map, proxy: url }));
     if (generation !== this.generation || !configured.ok) { throw new Error('recovery_config_failed'); }

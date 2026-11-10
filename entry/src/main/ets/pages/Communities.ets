@@ -31,6 +31,12 @@ import { communityFavoritesStore } from '../services/CommunityFavoritesStore';
 import { communityRoute } from '../utils/CommunityNavigation';
 import { pageSurfaceColor } from '../utils/ThemeColors';
 import { ResponsiveLayout } from '../utils/ResponsiveLayout';
+import { DesktopLayout } from '../utils/DesktopLayout';
+import {
+  STORAGE_KEY_TIMELINE_COLUMNS,
+  TIMELINE_COLUMNS_AUTO_TWO,
+  TIMELINE_COLUMNS_TWO
+} from '../services/TimelineSettingsStore';
 import { sheetMaterialOptions } from '../utils/SheetMaterial';
 import { DEFAULT_SHEET_MATERIAL_ENABLED, DEFAULT_SHEET_MATERIAL_LEVEL, STORAGE_KEY_SHEET_MATERIAL_ENABLED,
   STORAGE_KEY_SHEET_MATERIAL_LEVEL } from '../services/SheetMaterialSettingsStore';
@@ -80,6 +86,8 @@ export struct Communities {
   @StorageProp('harmonyx.compact_window') private sheetCompactWindow: boolean = false;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @StorageProp('harmonyx.breakpoint') private sheetWindowBreakpoint: string = 'sm';
+  @StorageProp('harmonyx.desktop_layout') private desktopLayoutEnabled: boolean = false;
+  @StorageProp(STORAGE_KEY_TIMELINE_COLUMNS) private timelineColumnsMode: number = 0;
   @Consume('pageStack') pageStack: NavPathStack;
   @StorageProp('harmonyx.status_bar_height') statusBarHeight: number = 0;
   @StorageProp('harmonyx.navigation_indicator_height') navigationIndicatorHeight: number = 0;
@@ -311,6 +319,9 @@ export struct Communities {
   }
   @Builder
   private FeedHeader(index: number): void {
+    if (this.useListFeed()) {
+      Column().width('100%').height(this.statusBarHeight + 108)
+    }
     if (index === 0) {
           this.JoinedCommunities()
           this.JoinedStrip(this.favorites, $r('app.string.communities_favorites'))
@@ -362,13 +373,37 @@ export struct Communities {
 
         if (index === 0) { this.Recommendations() }
   }
+
+  private isDesktopLayout(): boolean {
+    return DesktopLayout.active(this.desktopLayoutEnabled, this.sheetWindowBreakpoint);
+  }
+
+  private useTimelineWaterFlow(): boolean {
+    return this.isDesktopLayout() || ResponsiveLayout.isLarge(this.sheetWindowBreakpoint) ||
+      this.timelineColumnsMode === TIMELINE_COLUMNS_TWO ||
+      this.timelineColumnsMode === TIMELINE_COLUMNS_AUTO_TWO;
+  }
+
+  private useListFeed(): boolean {
+    return !this.useTimelineWaterFlow();
+  }
+
+  private feedStartOffset(): number {
+    if (this.useListFeed() || this.isDesktopLayout()) {
+      return 0;
+    }
+    return this.statusBarHeight + 108;
+  }
+
   @Builder
   private FeedPage(index: number): void {
     Refresh({ refreshing: this.feed(index).refreshing }) {
       AdaptivePostFeed({ scroller: index === 0 ? this.homeScroller : this.exploreScroller,
         itemKeys: this.orderedPosts(index).map((post: Tweet): string => post.id),
-        feedId: 'communities-post-feed-' + index.toString(), startOffset: this.statusBarHeight + 108,
+        useList: this.useListFeed(), lazyItems: true,
+        feedId: 'communities-post-feed-' + index.toString(), startOffset: this.feedStartOffset(),
         endOffset: this.navigationIndicatorHeight + 80,
+        clipContent: !this.isDesktopLayout(),
         header: (): void => this.FeedHeader(index),
         item: (item: number): void => this.CommunityPost(this.orderedPosts(index)[item]),
         footer: (): void => this.FeedFooter(index), onLoadMore: (): void => { void this.loadFeed(index, false); } })

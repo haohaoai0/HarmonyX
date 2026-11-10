@@ -29,12 +29,19 @@ export class CloudSettingField {
 export const CLOUD_SETTING_FIELDS: CloudSettingField[] = [
   new CloudSettingField('harmonyx_timeline', 'cover_single_column', 'harmonyx.cover_single_column', 1, true),
   new CloudSettingField('harmonyx_interaction', 'home_single_tap_top', 'harmonyx.home_single_tap_top', 1, true),
+  new CloudSettingField('harmonyx_interaction', 'home_header_action', 'harmonyx.home_header_action', 1, 'search'),
+  new CloudSettingField('harmonyx_interaction', 'home_follow_suggestions', 'harmonyx.home_follow_suggestions', 1, true),
   new CloudSettingField('harmonyx_startup', 'mode', 'harmonyx.startup_mode', 1, 'video'),
   new CloudSettingField('harmonyx_startup', 'speed', 'harmonyx.startup_speed', 1, 1, 0.5, 2),
   new CloudSettingField('harmonyx_tab_order', 'bottom', 'harmonyx.bottom_tab_order', 1, ''),
   new CloudSettingField('harmonyx_tab_order', 'home', 'harmonyx.home_tab_order', 1, ''),
   new CloudSettingField('harmonyx_post_display', 'actions_mask', 'harmonyx.post_actions_mask', 1, 127, 0, 127),
   new CloudSettingField('harmonyx_post_display', 'counts', 'harmonyx.post_action_counts', 1, true),
+  new CloudSettingField('harmonyx_post_display', 'count_format', 'harmonyx.post_count_format', 1, 0, 0, 2),
+  new CloudSettingField('harmonyx_sidebar', 'order', 'harmonyx.sidebar_order', 1, ''),
+  new CloudSettingField('harmonyx_sidebar', 'hidden', 'harmonyx.sidebar_hidden', 1, 'home,explore,messages'),
+  new CloudSettingField('harmonyx_sidebar', 'search_capsule', 'harmonyx.sidebar_search_capsule', 1, false),
+  new CloudSettingField('harmonyx_bottom_bar', 'visible', 'harmonyx.bottom_bar_visible', 1, true),
   new CloudSettingField('harmonyx_motion', 'reduce_motion', 'reduceMotionEnabled', 1, false),
   new CloudSettingField('harmonyx_motion', 'duration', 'harmonyx.motion_duration', 1, 300, 100, 700),
   new CloudSettingField('harmonyx_motion', 'amplitude', 'harmonyx.motion_amplitude', 1, 1, 0, 1.5),
@@ -68,6 +75,9 @@ export const CLOUD_SETTING_FIELDS: CloudSettingField[] = [
   new CloudSettingField('harmonyx_media', 'video_quality', 'harmonyx.video_quality', 2, 0, 0, 3),
   new CloudSettingField('harmonyx_media', 'compact_video_layout', 'harmonyx.compact_video_layout', 2, 0, 0, 1),
   new CloudSettingField('harmonyx_media', 'video_feed_tap_pause', 'harmonyx.video_feed_tap_pause', 2, true),
+  new CloudSettingField('harmonyx_media', 'inline_video_hold_play', 'harmonyx.inline_video_hold_play', 2, false),
+  new CloudSettingField('harmonyx_media', 'inline_video_overlay_controls', 'harmonyx.inline_video_overlay_controls', 2, false),
+  new CloudSettingField('harmonyx_media', 'pause_inline_video_on_return', 'harmonyx.pause_inline_video_on_return', 2, false),
   new CloudSettingField('harmonyx_media', 'video_double_tap_seek', 'harmonyx.video_double_tap_seek', 2, true),
   new CloudSettingField('harmonyx_media', 'video_double_tap_seek_seconds', 'harmonyx.video_double_tap_seek_seconds', 2, 10, 1, 60),
   new CloudSettingField('harmonyx_media', 'media_viewer_black_background', 'harmonyx.media_viewer_black_background', 2, false),
@@ -118,6 +128,7 @@ export function validCloudValue(field: CloudSettingField, encoded: string): bool
           (field.key === 'amplitude' || field.key === 'damping')) || Number.isInteger(value));
     }
     if (typeof value === 'string') {
+      if (field.key === 'home_header_action') { return value === 'search' || value === 'follow'; }
       if (field.store === 'harmonyx_startup' && field.key === 'mode') {
         return ['none', 'icon', 'ios', 'video'].indexOf(value) >= 0;
       }

@@ -77,7 +77,7 @@ Harmony X is more than a reskin. It is an API 26-oriented HarmonyOS adaptation o
 
 | Setting | Current value |
 |:--|:--|
-| Application | `Harmony X` · `com.haohaoai0.harmonx` · version `3.5.0` (`versionCode` 28) |
+| Application | `Harmony X` · `com.haohaoai0.harmonx` · version `3.9.0` (`versionCode` 36) |
 | Module | `entry` · Stage model · `modelVersion` 5.0.0 |
 | SDK profile | No explicit compile SDK (uses the installed DevEco SDK) · compatible SDK `6.0.2 (API 22)` · target SDK `26.0.0` |
 | Devices | `phone`, `tablet`, `2in1` · fullscreen `EntryAbility` |

@@ -155,7 +155,7 @@ test('removing a dismissed post reindexes surviving items and releases its dupli
 
 const Player = methods('entry/src/main/ets/components/PostMedia.ets', 'SurfaceVideoPlayer',
   ['aboutToDisappear', 'destroyPlayer', 'closeCacheLease', 'closeDataSourceLease', 'canControlPlayer'], {
-    videoPipGate: { isHeld: () => false }, videoPipPlaybackKeeper: { unregister() {} },
+    videoPipGate: { isHeld: () => false, unregisterOwner() {} }, videoPipPlaybackKeeper: { unregister() {} },
     videoPlaybackCoordinator: { release() {} }, videoPlayerPreparation: { cancel() {} },
     videoMediaSession: { release() {} }, videoPlayerHandoff: { isRequested: () => false, unregister() {}, unregisterReturnTarget() {} },
     hilog: { warn() {} }, DOMAIN: 0, TAG: ''

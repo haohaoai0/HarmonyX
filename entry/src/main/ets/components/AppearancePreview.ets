@@ -4,7 +4,7 @@ import { deviceInfo } from '@kit.BasicServicesKit';
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
 import { DEFAULT_BOTTOM_BAR_PAGES_MASK, STORAGE_KEY_BOTTOM_BAR_PAGES } from '../services/BottomBarSettingsStore';
 import { pageBackgroundFromValue, PageBackgroundState } from '../services/PageBackgroundStore';
-import { PageBackgroundLayer } from './PageBackgroundLayer';
+import { appPageBackground } from './PageBackgroundLayer';
 import { SideBarMaterialLayer } from './SideBarMaterialLayer';
 import { RootBottomTabItem } from './RootBottomTabItem';
 import { HdsButton } from './HdsButton';
@@ -24,10 +24,12 @@ import { motionDuration, motionDistance, motionScale, motionCurve, symbolMotionE
 import { hapticConfirm } from '../utils/Haptics';
 import { STORAGE_KEY_REDUCE_MOTION, STORAGE_KEY_MOTION_AMPLITUDE, STORAGE_KEY_SYMBOL_EFFECTS } from '../services/MotionSettingsStore';
 import { materialModifier } from '../utils/SystemMaterial';
+import { MaterialCompat } from '../utils/MaterialCompat';
 import { DEFAULT_REPLY_CAPSULE_MATERIAL_LEVEL, STORAGE_KEY_REPLY_CAPSULE_MATERIAL_LEVEL,
   DEFAULT_REPLY_CAPSULE_BUTTON_MATERIAL_ENABLED, STORAGE_KEY_REPLY_CAPSULE_BUTTON_MATERIAL_ENABLED,
   STORAGE_KEY_REPLY_CAPSULE_SPLIT_ENABLED, DEFAULT_REPLY_CAPSULE_SPLIT_ENABLED,
-  STORAGE_KEY_TITLE_BAR_LOGO, STORAGE_KEY_COMPACT_SWITCH_STYLE, COMPACT_SWITCH_BUTTONS } from '../services/AppearanceStore';
+  STORAGE_KEY_TITLE_BAR_LOGO, STORAGE_KEY_COMPACT_SWITCH_STYLE, COMPACT_SWITCH_BUTTONS,
+  COMPACT_SWITCH_SEGMENTED } from '../services/AppearanceStore';
 
 // One compact illustration shows the app's social controls. Scale its whole
 // canvas so native materials, tab labels and their edge clearance stay together.
@@ -170,7 +172,9 @@ export struct AppearancePreview {
   @Builder
   private Backdrop(): void {
     if (this.wallpaper().enabled) {
-      PageBackgroundLayer({ wallpaper: this.wallpaper() })
+      // Reuse the composed texture across settings pages. Only the specimen's
+      // material controls need to stay live; its background is static.
+      appPageBackground(true)
       Column().width('100%').height('100%').backgroundColor($r('app.color.appearance_preview_canvas')).opacity(0.45)
     } else {
       Column().width('100%').height('100%').backgroundColor($r('app.color.appearance_preview_canvas'))
@@ -282,7 +286,8 @@ export struct AppearancePreview {
       { key: 'for-you', label: $r('app.string.home_for_you') } as IconTabItem,
       { key: 'following', label: $r('app.string.home_following') } as IconTabItem
     ], selected: 0, barHeight: compact ? 36 : 54, equalWidth: true,
-      buttonStyle: compact && this.compactSwitchStyle === COMPACT_SWITCH_BUTTONS })
+      buttonStyle: compact && this.compactSwitchStyle === COMPACT_SWITCH_BUTTONS,
+      segmentedStyle: compact && this.compactSwitchStyle === COMPACT_SWITCH_SEGMENTED })
       .width('100%').id('appearance-preview-title-tabs')
   }
 
@@ -421,8 +426,11 @@ export struct AppearancePreview {
   private FloatingTabsSample(): void {
       HdsTabs({ index: 0 }) { this.TabContents() }
         .width('100%').height('100%').barPosition(BarPosition.End).barHeight($r('app.float.root_tab_bar_height'))
-        .barOverlap(true).barBackgroundColor(Color.Transparent).scrollable(false)
+        .barOverlap(true).barBackgroundColor(Color.Transparent).clip(false)
+        .barBackgroundStyle({ maskColor: Color.Transparent, maskHeight: 1 })
+        .barBackgroundBlurStyle(MaterialCompat.NO_PLATE_BLUR)
         .barFloatingStyle({ barBottomMargin: 24, barSideMargin: 20, lightColor: this.accent,
+          gradientMask: { maskColor: Color.Transparent, maskHeight: 1 },
           systemMaterialEffect: { materialType: hdsMaterial.MaterialType.IMMERSIVE, materialLevel: this.tabLevel } })
         .id('appearance-preview-native-tabs')
   }
@@ -431,7 +439,7 @@ export struct AppearancePreview {
   private ReplyTool(symbol: Resource): void {
     Button({ type: ButtonType.Circle, stateEffect: false }) {
       SymbolGlyph(symbol).fontSize(23).fontColor([$r('sys.color.icon_primary')])
-    }.width(42).height(42).padding(0).backgroundColor(Color.Transparent).borderRadius(21).clip(true)
+    }.width(42).height(42).padding(0).backgroundColor(Color.Transparent).borderRadius(21).clip(!this.replyButtonMaterial)
       .attributeModifier(materialModifier(replyCapsuleControlMaterial(this.replyButtonMaterial, this.accent))).focusable(false)
   }
 
@@ -440,10 +448,10 @@ export struct AppearancePreview {
     Row({ space: 6 }) {
       Button({ type: ButtonType.Circle, stateEffect: false }) {
         SymbolGlyph($r('sys.symbol.person_crop_circle_fill')).fontSize(36).fontColor([this.role('profile')])
-      }.width(42).height(42).padding(1).backgroundColor(Color.Transparent).borderRadius(21).clip(true)
+      }.width(42).height(42).padding(1).backgroundColor(Color.Transparent).borderRadius(21).clip(!this.replyButtonMaterial)
         .attributeModifier(materialModifier(replyCapsuleControlMaterial(this.replyButtonMaterial, this.accent))).focusable(false)
       TextArea({ placeholder: $r('app.string.post_detail_reply_placeholder'), text: '' }).fontFamily(this.appFontFamily)
-        .layoutWeight(1).height(48).backgroundColor(Color.Transparent).borderRadius(24).clip(true)
+        .layoutWeight(1).height(48).backgroundColor(Color.Transparent).borderRadius(24).clip(!this.replyButtonMaterial)
         .fontSize($r('sys.float.Body_M')).fontColor($r('sys.color.font_primary'))
         .placeholderColor($r('sys.color.font_secondary')).focusable(false)
         .attributeModifier(materialModifier(replyCapsuleControlMaterial(this.replyButtonMaterial, this.accent, this.titleLevel)))

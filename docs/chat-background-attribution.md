@@ -37,6 +37,11 @@ when the selector scrolls.
 Original sources, dimensions, light-mode palettes and SHA-256 hashes are
 recorded in [chat-background-assets.json](chat-background-assets.json).
 
+Full-pattern page backgrounds also retain each preset's gradient colors and
+angle by default. This follows Petrelgram's `WallpaperPreview.ets`, which draws
+`wallpaper.colors` at `wallpaper.angle` below the pattern. The separate
+**Keep original gradient** setting allows users to restore a custom page base.
+
 Pattern artwork is supplied by Telegram's wallpaper service, separately from
 Petrelgram's Apache-2.0 application code; this file does not relicense it.
 See [Telegram's wallpaper specification](https://core.telegram.org/api/wallpapers).

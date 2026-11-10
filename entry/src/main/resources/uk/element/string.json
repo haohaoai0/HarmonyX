@@ -198,11 +198,11 @@
     },
     {
       "name": "settings_confirm_app_exit",
-      "value": "Підтверджувати вихід"
+      "value": "Підказка повернення на головний екран"
     },
     {
       "name": "settings_confirm_app_exit_desc",
-      "value": "Запитувати при поверненні з головної сторінки. Якщо вимкнено, виходити одразу."
+      "value": "На кореневій сторінці спершу показати підказку; повторне натискання «Назад» протягом 2,2 секунди відкриває головний екран"
     },
     {
       "name": "app_exit_title",
@@ -622,7 +622,7 @@
     },
     {
       "name": "settings_compact_switch_style_desc",
-      "value": "Коли логотип X приховано. Тло кнопок заповнюється під час гортання між сторінками."
+      "value": "Коли логотип X приховано, виберіть текстові вкладки, кнопки-капсули або сегментований перемикач."
     },
     {
       "name": "settings_compact_switch_tabs",
@@ -631,6 +631,10 @@
     {
       "name": "settings_compact_switch_buttons",
       "value": "Кнопки"
+    },
+    {
+      "name": "settings_compact_switch_segmented",
+      "value": "Сегментований перемикач"
     },
     {
       "name": "settings_avatar_tint",
@@ -1342,7 +1346,7 @@
     },
     {
       "name": "profile_version",
-      "value": "Harmony X 3.5.0 · HarmonyOS 6.0.2 (API 22-26) · модель Stage"
+      "value": "Harmony X 3.9.0 · HarmonyOS 6.0.2 (API 22-26) · модель Stage"
     },
     {
       "name": "profile_following",
@@ -3514,7 +3518,7 @@
     },
     {
       "name": "diagnostics_desc",
-      "value": "Нещодавні запити й перевірка внутрішнього API."
+      "value": "Експорт журналів збоїв, перегляд останніх запитів і результатів перевірки."
     },
     {
       "name": "diagnostics_probe",
@@ -12729,6 +12733,10 @@
       "value": "Показати всі популярні дописи"
     },
     {
+      "name": "global_trends_cover_url",
+      "value": "https://pbs.twimg.com/topics/topic/globe_center_compressed.png"
+    },
+    {
       "name": "post_video_publish",
       "value": "Опублікувати відео"
     },
@@ -12860,40 +12868,405 @@
       "name": "post_translation_languages_description",
       "value": "Виберіть мови дописів для автоперекладу. Інші можна перекладати вручну."
     },
-    {"name": "post_link_copy", "value": "Copy link"},
-    {"name": "post_link_open", "value": "Open link"},
-    {"name": "settings_video_download_button", "value": "Video download button"},
-    {"name": "settings_video_download_button_desc", "value": "Show the download button in the top-right corner of videos"},
-    {"name": "video_source_from", "value": "From"},
-    {"name": "video_source_original", "value": "Original video"},
-    {"name": "video_source_open_failed", "value": "Unable to open the original video. Try again."},
-    {"name":"dns_title","value":"DNS over HTTPS (DoH)"},
-    {"name":"dns_enable","value":"Use DNS over HTTPS"},
-    {"name":"dns_enable_desc","value":"Encrypt DNS queries with a chosen HTTPS resolver"},
-    {"name":"dns_scope","value":"Applies to app API requests, downloaded images, video segments and built-in web pages. System players and external apps may use their own DNS. When a proxy resolves the destination, its DNS takes precedence. DoH does not replace a proxy or VPN."},
-    {"name":"dns_provider","value":"DNS provider"},
-    {"name":"dns_provider_ali","value":"AliDNS"},
-    {"name":"dns_provider_cloudflare","value":"Cloudflare"},
-    {"name":"dns_provider_google","value":"Google Public DNS"},
-    {"name":"dns_provider_custom","value":"Custom"},
-    {"name":"dns_endpoint","value":"DoH server URL"},
-    {"name":"dns_endpoint_hint","value":"https://example.com/dns-query"},
-    {"name":"dns_endpoint_desc","value":"Enter a complete RFC 8484 HTTPS endpoint, without credentials, fragments or URI templates such as {?dns}."},
-    {"name":"dns_invalid","value":"Enter a valid HTTPS DoH server URL"},
-    {"name":"dns_saved","value":"Saved. New requests use this setting; reload open web pages."},
-    {"name":"dns_test","value":"Test DNS resolution"},
-    {"name":"dns_test_desc","value":"Tests the current URL by resolving x.com directly, without saving or enabling it. The test bypasses the in-app proxy; a system VPN still applies."},
-    {"name":"dns_test_success","value":"x.com resolved successfully"},
-    {"name":"dns_test_failed","value":"Resolution failed. Check the URL, network or DNS service."},
-    {"name":"dns_failure_note","value":"After saving, DoH failures stop affected requests instead of falling back to system DNS. Turn DoH off and save to restore system DNS. Changes apply after saving."},
-    {"name":"help_support_afdian","value":"Afdian"},
-    {"name":"help_support_qr_summary","value":"Скануйте, щоб підтримати розробку"},
-    {"name":"help_support_afdian_summary","value":"Назавжди без рекомендацій · ¥16.6"},
-    {"name":"help_support_afdian_desc","value":"Придбайте постійний код вимкнення рекомендацій на Afdian і поверніться до застосунку, щоб активувати його."},
-    {"name":"help_support_afdian_buy","value":"Придбати на Afdian"},
-    {"name":"help_support_expand","value":"Торкніться, щоб розгорнути"},
-    {"name":"help_support_collapse","value":"Торкніться, щоб згорнути"},
-    {"name":"help_support_scan_code","value":"Скануйте цей код відповідним платіжним застосунком."},
-    {"name":"help_support_recommended","value":"Рекомендуємо"}
+    {
+      "name": "post_link_copy",
+      "value": "Copy link"
+    },
+    {
+      "name": "post_link_open",
+      "value": "Open link"
+    },
+    {
+      "name": "settings_video_download_button",
+      "value": "Video download button"
+    },
+    {
+      "name": "settings_video_download_button_desc",
+      "value": "Show the download button in the top-right corner of videos"
+    },
+    {
+      "name": "video_source_from",
+      "value": "From"
+    },
+    {
+      "name": "video_source_original",
+      "value": "Original video"
+    },
+    {
+      "name": "video_source_open_failed",
+      "value": "Unable to open the original video. Try again."
+    },
+    {
+      "name": "dns_title",
+      "value": "DNS over HTTPS (DoH)"
+    },
+    {
+      "name": "dns_enable",
+      "value": "Use DNS over HTTPS"
+    },
+    {
+      "name": "dns_enable_desc",
+      "value": "Encrypt DNS queries with a chosen HTTPS resolver"
+    },
+    {
+      "name": "dns_scope",
+      "value": "Applies to app API requests, downloaded images, video segments and built-in web pages. System players and external apps may use their own DNS. When a proxy resolves the destination, its DNS takes precedence. DoH does not replace a proxy or VPN."
+    },
+    {
+      "name": "dns_provider",
+      "value": "DNS provider"
+    },
+    {
+      "name": "dns_provider_ali",
+      "value": "AliDNS"
+    },
+    {
+      "name": "dns_provider_cloudflare",
+      "value": "Cloudflare"
+    },
+    {
+      "name": "dns_provider_google",
+      "value": "Google Public DNS"
+    },
+    {
+      "name": "dns_provider_custom",
+      "value": "Custom"
+    },
+    {
+      "name": "dns_endpoint",
+      "value": "DoH server URL"
+    },
+    {
+      "name": "dns_endpoint_hint",
+      "value": "https://example.com/dns-query"
+    },
+    {
+      "name": "dns_endpoint_desc",
+      "value": "Enter a complete RFC 8484 HTTPS endpoint, without credentials, fragments or URI templates such as {?dns}."
+    },
+    {
+      "name": "dns_invalid",
+      "value": "Enter a valid HTTPS DoH server URL"
+    },
+    {
+      "name": "dns_saved",
+      "value": "Saved. New requests use this setting; reload open web pages."
+    },
+    {
+      "name": "dns_test",
+      "value": "Test DNS resolution"
+    },
+    {
+      "name": "dns_test_desc",
+      "value": "Tests the current URL by resolving x.com directly, without saving or enabling it. The test bypasses the in-app proxy; a system VPN still applies."
+    },
+    {
+      "name": "dns_test_success",
+      "value": "x.com resolved successfully"
+    },
+    {
+      "name": "dns_test_failed",
+      "value": "Resolution failed. Check the URL, network or DNS service."
+    },
+    {
+      "name": "dns_failure_note",
+      "value": "After saving, DoH failures stop affected requests instead of falling back to system DNS. Turn DoH off and save to restore system DNS. Changes apply after saving."
+    },
+    {
+      "name": "help_support_afdian",
+      "value": "Afdian"
+    },
+    {
+      "name": "help_support_qr_summary",
+      "value": "Скануйте, щоб підтримати розробку"
+    },
+    {
+      "name": "help_support_afdian_summary",
+      "value": "Назавжди без рекомендацій · ¥16.6"
+    },
+    {
+      "name": "help_support_afdian_desc",
+      "value": "Придбайте постійний код вимкнення рекомендацій на Afdian і поверніться до застосунку, щоб активувати його."
+    },
+    {
+      "name": "help_support_afdian_buy",
+      "value": "Придбати на Afdian"
+    },
+    {
+      "name": "help_support_expand",
+      "value": "Торкніться, щоб розгорнути"
+    },
+    {
+      "name": "help_support_collapse",
+      "value": "Торкніться, щоб згорнути"
+    },
+    {
+      "name": "help_support_scan_code",
+      "value": "Скануйте цей код відповідним платіжним застосунком."
+    },
+    {
+      "name": "help_support_recommended",
+      "value": "Рекомендуємо"
+    },
+    {
+      "name": "dns_x_test",
+      "value": "Test native X connection"
+    },
+    {
+      "name": "dns_x_test_desc",
+      "value": "Uses this DoH URL to request the public x.com/robots.txt through native HTTP, without account information or the in-app proxy. Does not save settings. A system VPN still applies. Success checks this connection only, not every API or media host."
+    },
+    {
+      "name": "dns_x_test_success",
+      "value": "Native X connection succeeded"
+    },
+    {
+      "name": "dns_x_test_failed",
+      "value": "Native X connection failed. Check the network, proxy or ECH support."
+    },
+    {
+      "name": "settings_inline_video_hold",
+      "value": "Утримання вбудованого відео"
+    },
+    {
+      "name": "settings_inline_video_hold_desc",
+      "value": "Виберіть меню або відтворення. Відтворення враховує налаштування швидкості утримання."
+    },
+    {
+      "name": "settings_inline_video_hold_menu",
+      "value": "Меню"
+    },
+    {
+      "name": "settings_inline_video_hold_play",
+      "value": "Утримувати для відтворення"
+    },
+    {
+      "name": "settings_sidebar_items",
+      "value": "Функції бічної панелі"
+    },
+    {
+      "name": "settings_sidebar_items_desc",
+      "value": "Показуйте або приховуйте функції та змінюйте порядок стрілками. Налаштування завжди доступні."
+    },
+    {
+      "name": "settings_bottom_bar_visible",
+      "value": "Показувати нижню панель"
+    },
+    {
+      "name": "settings_bottom_bar_visible_desc",
+      "value": "Якщо її приховано, користуйтеся бічною панеллю для навігації та пошуку."
+    },
+    {
+      "name": "settings_post_count_format",
+      "value": "Формат лічильників дописів"
+    },
+    {
+      "name": "settings_post_count_compact",
+      "value": "K/M (тисячі/мільйони)"
+    },
+    {
+      "name": "settings_post_count_chinese",
+      "value": "万/亿 (10 тис./100 млн)"
+    },
+    {
+      "name": "settings_post_count_full",
+      "value": "Повні числа"
+    },
+    {
+      "name": "settings_sidebar_search_capsule",
+      "value": "Пошукова капсула бічної панелі"
+    },
+    {
+      "name": "settings_sidebar_search_capsule_desc",
+      "value": "Показувати компактну пошукову капсулу вгорі бічної панелі. Типово вимкнено."
+    },
+    {
+      "name": "settings_home_header_action",
+      "value": "Кнопка в заголовку головної"
+    },
+    {
+      "name": "settings_home_header_action_desc",
+      "value": "Виберіть пошук або додавання людей. Натискання відразу відкриє вибрану сторінку."
+    },
+    {
+      "name": "settings_home_follow_suggestions",
+      "value": "Кого читати"
+    },
+    {
+      "name": "settings_home_follow_suggestions_desc",
+      "value": "Показувати рекомендовані облікові записи в головній стрічці."
+    },
+    {
+      "name": "page_background_preset_colors",
+      "value": "Зберегти початковий градієнт"
+    },
+    {
+      "name": "page_background_preset_colors_desc",
+      "value": "Використовувати градієнт кожного повного візерунка. Вимкніть, щоб вибрати власний колір або фото."
+    },
+    {
+      "name": "settings_inline_video_overlay_controls",
+      "value": "Керування поверх відео в дописі"
+    },
+    {
+      "name": "settings_inline_video_overlay_controls_desc",
+      "value": "Перенести кнопки в область відео. Торкніться, щоб показати або сховати; під час відтворення вони ховаються автоматично."
+    },
+    {
+      "name": "settings_pause_inline_video_on_return",
+      "value": "Призупиняти відео після повернення"
+    },
+    {
+      "name": "settings_pause_inline_video_on_return_desc",
+      "value": "Після закриття програвача відео в дописі залишається на паузі. Натисніть «Відтворити», щоб продовжити."
+    },
+    {
+      "name": "settings_timeline_columns_four",
+      "value": "Чотири стовпці"
+    },
+    {
+      "name": "settings_timeline_columns_five",
+      "value": "П’ять стовпців"
+    },
+    {
+      "name": "crash_recovery_title",
+      "value": "Застосунок несподівано закрився"
+    },
+    {
+      "name": "crash_recovery_message",
+      "value": "Збережено журнал останнього збою. Експортуйте його та повідомте розробнику, що ви робили перед виникненням проблеми."
+    },
+    {
+      "name": "crash_later",
+      "value": "Пізніше"
+    },
+    {
+      "name": "crash_export",
+      "value": "Експортувати журнали"
+    },
+    {
+      "name": "crash_contact",
+      "value": "Зв’язатися з розробником"
+    },
+    {
+      "name": "crash_export_success",
+      "value": "Журнали експортовано. Додайте файл до звернення розробнику."
+    },
+    {
+      "name": "crash_export_failed",
+      "value": "Не вдалося експортувати журнали. Спробуйте ще раз або виберіть інше місце."
+    },
+    {
+      "name": "crash_contact_failed",
+      "value": "Не вдалося відкрити сторінку відгуків. Зверніться до розробника в розділі «Про застосунок»."
+    },
+    {
+      "name": "crash_logs_title",
+      "value": "Діагностика застосунку"
+    },
+    {
+      "name": "crash_logs_description",
+      "value": "Журнали збоїв зберігаються на пристрої. Залишаються останні 5 звітів. Додайте експортований файл до відгуку."
+    },
+    {
+      "name": "crash_logs_empty",
+      "value": "Звітів про збої немає. Можна експортувати журнал поточного сеансу."
+    },
+    {
+      "name": "app_exit_desktop",
+      "value": "На головний екран"
+    },
+    {
+      "name": "app_exit_desktop_hint",
+      "value": "Натисніть «Назад» ще раз, щоб перейти на головний екран"
+    },
+    {
+      "name": "media_save_method",
+      "value": "Спосіб збереження медіа"
+    },
+    {
+      "name": "media_save_gallery_dialog",
+      "value": "Галерея · системне підтвердження"
+    },
+    {
+      "name": "media_save_secure_button",
+      "value": "Галерея · безпечна кнопка збереження"
+    },
+    {
+      "name": "media_save_directory",
+      "value": "Завантаження · пряме збереження після дозволу"
+    },
+    {
+      "name": "media_save_file_picker",
+      "value": "Файл · щоразу вибирати місце"
+    },
+    {
+      "name": "media_save_secure_title",
+      "value": "Зберегти в галерею"
+    },
+    {
+      "name": "media_save_secure_note",
+      "value": "Системна кнопка зберігає безпосередньо в галерею. Надайте дозвіл під час першого використання; для групи натискайте окремо для кожного файлу."
+    },
+    {
+      "name": "account_groups_title",
+      "value": "Локальні групи"
+    },
+    {
+      "name": "account_groups_hint",
+      "value": "Групи зберігаються на цьому пристрої. Виберіть облікові записи й закріпіть групу на головній."
+    },
+    {
+      "name": "account_groups_empty",
+      "value": "Груп поки немає. Створіть першу."
+    },
+    {
+      "name": "account_groups_manage",
+      "value": "Керування локальними групами"
+    },
+    {
+      "name": "account_group_create",
+      "value": "Нова група"
+    },
+    {
+      "name": "account_group_delete",
+      "value": "Видалити групу"
+    },
+    {
+      "name": "account_group_member_count",
+      "value": "Облікових записів: %d"
+    },
+    {
+      "name": "account_group_edit_title",
+      "value": "Редагувати групу"
+    },
+    {
+      "name": "account_group_name",
+      "value": "Назва групи"
+    },
+    {
+      "name": "account_group_icon",
+      "value": "Значок (емодзі або символ)"
+    },
+    {
+      "name": "account_group_selected",
+      "value": "Вибрано облікових записів: %d"
+    },
+    {
+      "name": "account_group_search",
+      "value": "Пошук у завантажених підписках"
+    },
+    {
+      "name": "account_group_cancel",
+      "value": "Скасувати"
+    },
+    {
+      "name": "account_group_save",
+      "value": "Зберегти"
+    },
+    {
+      "name": "grok_chat_hint",
+      "value": "Поставте Grok запитання, щоб почати розмову."
+    }
   ]
 }

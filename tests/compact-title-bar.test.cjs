@@ -228,6 +228,26 @@ test('invalid compact styles migrate to tabs without discarding the hidden logo 
   }
 });
 
+test('native segmented tabs survive restart, logo toggles and unrelated appearance saves', () => {
+  const f = appearanceFixture({ compact_switch_style: 'segmented', title_bar_logo: false });
+  const settings = f.store.load({});
+  assert.equal(settings.compactSwitchStyle, f.COMPACT_SWITCH_SEGMENTED);
+  settings.titleBarLogoEnabled = true;
+  settings.fontScale = 1.25;
+  f.store.save({}, settings);
+  const restarted = f.store.load({});
+  assert.equal(restarted.compactSwitchStyle, f.COMPACT_SWITCH_SEGMENTED);
+  assert.equal(restarted.titleBarLogoEnabled, true);
+  restarted.titleBarLogoEnabled = false;
+  f.store.save({}, restarted);
+  assert.equal(f.values.get('compact_switch_style'), 'segmented');
+  for (const style of [f.COMPACT_SWITCH_TABS, f.COMPACT_SWITCH_BUTTONS, f.COMPACT_SWITCH_SEGMENTED]) {
+    restarted.compactSwitchStyle = style;
+    f.store.save({}, restarted);
+    assert.equal(f.store.load({}).compactSwitchStyle, style);
+  }
+});
+
 const { XNotificationParser: parser } = load('entry/src/main/ets/services/XNotificationParser.ets', {
   './XTimelineParser': require('./post-card-fixture.cjs').load('services/XTimelineParser'),
   '../utils/UserIdentity': load('entry/src/main/ets/utils/UserIdentity.ets'),

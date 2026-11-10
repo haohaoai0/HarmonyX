@@ -316,6 +316,7 @@ export const SETTINGS_CATEGORIES: SettingsCategory[] = [
       $r('app.string.settings_compact_switch_style_desc'),
       $r('app.string.settings_compact_switch_tabs'),
       $r('app.string.settings_compact_switch_buttons'),
+      $r('app.string.settings_compact_switch_segmented'),
       $r('app.string.settings_immersive_title_bar_blur'),
       $r('app.string.settings_immersive_title_bar_blur_note'),
       $r('app.string.settings_immersive_title_bar_blur_switch'),
@@ -394,8 +395,15 @@ export const SETTINGS_CATEGORIES: SettingsCategory[] = [
       $r('app.string.home_following'),
       $r('app.string.settings_default_feed_following_desc')
     ]),
+  new SettingsCategory('sidebar', 'experience', 'home', $r('app.string.settings_sidebar_items'),
+    $r('app.string.settings_sidebar_items_desc'), $r('sys.symbol.list_bullet'), '', [
+      $r('app.string.settings_sidebar_search_capsule'), $r('app.string.settings_sidebar_search_capsule_desc'),
+      $r('app.string.search_title'), $r('app.string.settings_tab_move_up'), $r('app.string.settings_tab_move_down')
+    ]),
   new SettingsCategory('navigation', 'experience', 'home', $r('app.string.settings_category_navigation'),
     $r('app.string.settings_category_navigation_desc'), $r('sys.symbol.rectangle'), '', [
+      $r('app.string.settings_bottom_bar_visible'),
+      $r('app.string.settings_bottom_bar_visible_desc'),
       $r('app.string.settings_navigation_style'),
       $r('app.string.settings_hds_bottom_bar'),
       $r('app.string.settings_split_bottom_bar'),
@@ -445,6 +453,10 @@ export const SETTINGS_CATEGORIES: SettingsCategory[] = [
     ]),
   new SettingsCategory('home_interaction', 'experience', 'home', $r('app.string.settings_home_interaction'),
     $r('app.string.settings_category_home_interaction_desc'), $r('sys.symbol.arrow_clockwise'), '', [
+      $r('app.string.settings_home_header_action'),
+      $r('app.string.settings_home_header_action_desc'),
+      $r('app.string.settings_home_follow_suggestions'),
+      $r('app.string.settings_home_follow_suggestions_desc'),
       $r('app.string.settings_home_tab_order'),
       $r('app.string.settings_tab_order_desc'),
       $r('app.string.settings_home_interaction'),
@@ -478,6 +490,10 @@ export const SETTINGS_CATEGORIES: SettingsCategory[] = [
       $r('app.string.settings_post_actions'),
       $r('app.string.settings_post_actions_desc'),
       $r('app.string.settings_post_action_counts'),
+      $r('app.string.settings_post_count_format'),
+      $r('app.string.settings_post_count_compact'),
+      $r('app.string.settings_post_count_chinese'),
+      $r('app.string.settings_post_count_full'),
       $r('app.string.action_reply'), $r('app.string.action_repost'), $r('app.string.action_like'),
       $r('app.string.post_detail_views'), $r('app.string.action_bookmark'), $r('app.string.action_share'), $r('app.string.post_translate'),
       $r('app.string.settings_desktop_layout'),
@@ -504,7 +520,9 @@ export const SETTINGS_CATEGORIES: SettingsCategory[] = [
       $r('app.string.settings_timeline_columns_auto_two'),
       $r('app.string.settings_timeline_columns_one'),
       $r('app.string.settings_timeline_columns_two'),
-      $r('app.string.settings_timeline_columns_three')
+      $r('app.string.settings_timeline_columns_three'),
+      $r('app.string.settings_timeline_columns_four'),
+      $r('app.string.settings_timeline_columns_five')
     ]),
   new SettingsCategory('cards', 'experience', 'home', $r('app.string.card_settings_title'),
     $r('app.string.card_settings_intro'), $r('sys.symbol.square_grid_2x2'), 'CardSettings', [
@@ -556,6 +574,14 @@ export const SETTINGS_CATEGORIES: SettingsCategory[] = [
       $r('app.string.settings_video_immersive_fill'),
       $r('app.string.settings_video_immersive_fill_desc'),
       $r('app.string.settings_video_hold_speed'),
+      $r('app.string.settings_inline_video_hold'),
+      $r('app.string.settings_inline_video_overlay_controls'),
+      $r('app.string.settings_inline_video_overlay_controls_desc'),
+      $r('app.string.settings_pause_inline_video_on_return'),
+      $r('app.string.settings_pause_inline_video_on_return_desc'),
+      $r('app.string.settings_inline_video_hold_desc'),
+      $r('app.string.settings_inline_video_hold_menu'),
+      $r('app.string.settings_inline_video_hold_play'),
       $r('app.string.settings_video_hold_speed_desc'),
       $r('app.string.settings_video_double_tap_seek'),
       $r('app.string.settings_video_double_tap_seek_desc'),

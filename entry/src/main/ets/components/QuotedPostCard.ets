@@ -1,4 +1,5 @@
 import { PostMedia } from './PostMedia';
+import { PhotoRequest } from '../utils/PhotoViewerRequest';
 import { pageTextColor } from '../utils/ThemeColors';
 import { postCardSurfaceColor } from '../utils/ThemeColors';
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
@@ -22,6 +23,7 @@ import {
 
 @Component
 export struct QuotedPostCard {
+  onPhotoOpen: (request: PhotoRequest) => boolean = (): boolean => false;
   @StorageProp('harmonyx.page_background') private pageBackgroundValue: string = '';
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @StorageProp(STORAGE_KEY_SYSTEM_EMOJI_ENABLED) private systemEmojiEnabled: boolean = false;
@@ -162,6 +164,7 @@ export struct QuotedPostCard {
       }
       if (this.firstMedia() !== null && this.quoted.presentation?.visibility?.hidden !== true) {
         PostMedia({ sourceTweet: this.asTweet(), attachments: this.quoted.attachments ?? [],
+          onPhotoOpen: this.onPhotoOpen,
           playbackEnabled: false, showDownloadButton: false, hideInlineControls: true,
           naturalVideoSize: true,
           onVideoOpen: (): void => this.onOpen(this.asTweet()) }).width('100%')

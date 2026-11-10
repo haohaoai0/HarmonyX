@@ -82,7 +82,8 @@ test('lazy feed updates preserve header/footer identity and avoid reloads for an
     () => ({ XXAuthPromotionInjector: { slots: () => [] }, XXAuthPromotionSlot: class { } }));
   const source = new exports.TimelinePageDataSource();
   const events = [];
-  const listener = { onDataReloaded: () => events.push('reload'), onDataChanged: index => events.push(index) };
+  const listener = { onDataReloaded: () => events.push('reload'), onDataChanged: index => events.push(index),
+    onDataAdded: index => events.push(['add', index]), onDataDeleted: index => events.push(['delete', index]) };
   source.registerDataChangeListener(listener); source.registerDataChangeListener(listener);
   const posts = [post('a'), post('b')]; source.replace(posts);
   assert.deepEqual(events, ['reload']);
@@ -95,6 +96,46 @@ test('lazy feed updates preserve header/footer identity and avoid reloads for an
   assert.deepEqual([source.getData(1).tweet.id, source.getData(2).tweet.id], ['new', 'a']);
   assert.equal(source.getData(2).postIndex, 1);
   source.unregisterDataChangeListener(listener); events.length = 0; source.replace([]); assert.deepEqual(events, []);
+});
+
+test('topic filtering sends local deletions and additions while retaining surviving card rows', () => {
+  const api = {};
+  new Function('exports', 'require', compile(fs.readFileSync('entry/src/main/ets/utils/TimelinePageDataSource.ets', 'utf8')))(api,
+    () => ({ XXAuthPromotionInjector: { slots: () => [] } }));
+  const source = new api.TimelinePageDataSource(), events = [];
+  const posts = [post('a'), post('b'), post('c'), post('d')];
+  source.replace(posts);
+  const retained = source.getData(3), header = source.getData(0), footer = source.getData(5);
+  source.registerDataChangeListener({onDataReloaded: () => events.push(['reload']),
+    onDataAdded: i => events.push(['add', i]), onDataDeleted: i => events.push(['delete', i]),
+    onDataChanged: i => events.push(['change', i])});
+  source.replace([posts[0], posts[2], posts[3]]);
+  assert.equal(source.getData(2), retained);
+  assert.ok(events.some(event => event[0] === 'delete' && event[1] === 2));
+  assert.equal(events.some(event => event[0] === 'reload'), false);
+  assert.equal(source.getData(2).postIndex, 1);
+  events.length = 0; source.replace(posts);
+  assert.equal(source.getData(3), retained);
+  assert.ok(events.some(event => event[0] === 'add' && event[1] === 2));
+  assert.equal(events.some(event => event[0] === 'reload'), false);
+  assert.equal(source.getData(0), header); assert.equal(source.getData(5), footer);
+});
+
+test('several topic switches commit once after sheet dismissal without replacing raw pagination posts', () => {
+  const names = ['onHomeTimelinePreferencesChanged', 'refreshHomeTopicPresentation', 'onPauseTopicsDismissed'];
+  const body = names.map(name => component.members.find(node => ts.isMethodDeclaration(node) &&
+    node.name.getText(tree) === name).getText(tree)).join('\n');
+  const Home = new Function('homeTimelineStore', 'localAccountGroupStore', `${compile(`class Home { ${body} }`)}; return Home;`)(
+    {pinnedTopics: () => [], nextPauseExpiry: () => 0}, { sources: () => [] });
+  const updates = [], posts = [post('a'), post('b')];
+  const home = Object.assign(new Home(), {timeline: posts, activeHomeTopicId: '', showPauseTopics: true,
+    topicPauseTimer: -1, communityHomeRankings: new Map(), localGroupHomeVersions: new Map(), previewHomeTopic: null, homeTabItems: () => [{}, {}],
+    replaceHomePageData: index => updates.push(index), syncHomeWaterFlowSections() {}});
+  for (let i = 0; i < 5; i++) home.onHomeTimelinePreferencesChanged();
+  assert.deepEqual(updates, []); assert.equal(home.timeline, posts);
+  home.onPauseTopicsDismissed();
+  assert.deepEqual(updates, [0, 1]); assert.equal(home.timeline, posts);
+  home.onPauseTopicsDismissed(); assert.deepEqual(updates, [0, 1]);
 });
 
 test('tapping the capsule merges once and scrolls its own page after the new layout', () => {

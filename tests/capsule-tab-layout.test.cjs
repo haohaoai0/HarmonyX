@@ -13,7 +13,7 @@ const methods = ['measureButton', 'revealSelected'].map(name =>
 const output = ts.transpileModule(`class Tabs { ${methods.join('\n')} }`, {
   compilerOptions: { target: ts.ScriptTarget.ES2020 }
 }).outputText;
-const Tabs = new Function(`${output}; return Tabs;`)();
+const Tabs = new Function('motionDuration', `${output}; return Tabs;`)(duration => duration);
 
 function fixture() {
   const calls = [];

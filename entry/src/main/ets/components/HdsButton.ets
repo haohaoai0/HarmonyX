@@ -13,6 +13,7 @@ import { HdsTabs, HdsTabsController, hdsEffect, hdsMaterial } from '@kit.UIDesig
 import { HdsMaterialUtil } from '../utils/HdsMaterialUtil';
 import { SystemMaterialUtil } from '../utils/SystemMaterial';
 import { materialModifier } from '../utils/SystemMaterial';
+import { MaterialCompat } from '../utils/MaterialCompat';
 
 /**
  * HDS floating material button adapted from F:\\Mark-dev.  The foreground
@@ -142,6 +143,9 @@ export struct HdsButton {
             .barOverlap(this.barOverlap)
             .barPosition(this.barPosition)
             .backgroundColor(Color.Transparent)
+            .barBackgroundColor(Color.Transparent)
+            .barBackgroundStyle({ maskColor: Color.Transparent, maskHeight: 1 })
+            .barBackgroundBlurStyle(MaterialCompat.NO_PLATE_BLUR)
             .shadow(undefined)
             .vertical(false)
             .monopolizeEvents(false)
@@ -152,7 +156,7 @@ export struct HdsButton {
                 largeWidth: this.barWidth
               },
               lightColor: this.lightColor,
-              gradientMask: { maskColor: Color.Transparent },
+              gradientMask: { maskColor: Color.Transparent, maskHeight: 1 },
               barBottomMargin: 0,
               barSideMargin: 0,
               systemMaterialEffect: {
@@ -176,7 +180,7 @@ export struct HdsButton {
         color: this.currentColorMode === ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT ?
           'rgba(255,255,255,0.72)' : 'rgba(255,255,255,0.14)'
       })
-      .clip(true)
+      .clip(!this.shouldUseHdsMaterial() && !this.shouldUseImmersiveMaterial())
       .hitTestBehavior(HitTestMode.None);
 
       Stack({ alignContent: Alignment.Center }) {
@@ -191,7 +195,7 @@ export struct HdsButton {
       .height(this.barHeight - 12)
       .backgroundColor(Color.Transparent)
       .borderRadius(this.getCornerRadius())
-      .clip(true)
+      .clip(!this.shouldUseImmersiveMaterial())
       .hitTestBehavior(HitTestMode.Default)
       .attributeModifier(materialModifier(this.shouldUseImmersiveMaterial() ? this.immersiveMaterial() : undefined));
 

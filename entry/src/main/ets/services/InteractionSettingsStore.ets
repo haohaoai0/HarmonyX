@@ -3,6 +3,10 @@ import { preferences } from '@kit.ArkData';
 
 export const STORAGE_KEY_PHOTO_FULLSCREEN: string = 'harmonyx.photo_fullscreen';
 export const STORAGE_KEY_HOME_FLOATING_ACTION: string = 'harmonyx.home_floating_action';
+export const STORAGE_KEY_HOME_HEADER_ACTION: string = 'harmonyx.home_header_action';
+export const STORAGE_KEY_HOME_FOLLOW_SUGGESTIONS: string = 'harmonyx.home_follow_suggestions';
+export const HOME_HEADER_SEARCH: string = 'search';
+export const HOME_HEADER_FOLLOW: string = 'follow';
 export const STORAGE_KEY_ME_FLOATING_ACTION: string = 'harmonyx.me_floating_action';
 export const STORAGE_KEY_FLOATING_COMPOSE_MATERIAL_TINT: string = 'harmonyx.floating_compose_material_tint';
 export const STORAGE_KEY_REFRESH_ON_FOREGROUND: string = 'harmonyx.refresh_on_foreground';
@@ -24,6 +28,8 @@ export const ME_FLOATING_HIDDEN: string = 'hidden';
 export class InteractionSettings {
   photoFullscreen: boolean = true;
   homeFloatingAction: string = HOME_FLOATING_COMPOSE;
+  homeHeaderAction: string = HOME_HEADER_SEARCH;
+  homeFollowSuggestions: boolean = true;
   meFloatingAction: string = ME_FLOATING_PROFILE;
   floatingComposeMaterialTint: boolean = true;
   refreshOnForeground: boolean = false;
@@ -60,6 +66,9 @@ export class InteractionSettingsStore {
       const store: preferences.Preferences = this.store(context);
       settings.photoFullscreen = store.getSync('photo_fullscreen', true) as boolean;
       settings.homeFloatingAction = this.normaliseAction(store.getSync('home_floating_action', HOME_FLOATING_COMPOSE) as string);
+      settings.homeHeaderAction = store.getSync('home_header_action', HOME_HEADER_SEARCH) === HOME_HEADER_FOLLOW ?
+        HOME_HEADER_FOLLOW : HOME_HEADER_SEARCH;
+      settings.homeFollowSuggestions = store.getSync('home_follow_suggestions', true) as boolean;
       settings.meFloatingAction = this.normaliseMeAction(
         store.getSync('me_floating_action', ME_FLOATING_PROFILE) as string);
       settings.floatingComposeMaterialTint = store.getSync('floating_compose_material_tint', true) as boolean;
@@ -76,6 +85,9 @@ export class InteractionSettingsStore {
   publish(settings: InteractionSettings): void {
     AppStorage.setOrCreate<boolean>(STORAGE_KEY_PHOTO_FULLSCREEN, settings.photoFullscreen);
     AppStorage.setOrCreate<string>(STORAGE_KEY_HOME_FLOATING_ACTION, this.normaliseAction(settings.homeFloatingAction));
+    AppStorage.setOrCreate<string>(STORAGE_KEY_HOME_HEADER_ACTION,
+      settings.homeHeaderAction === HOME_HEADER_FOLLOW ? HOME_HEADER_FOLLOW : HOME_HEADER_SEARCH);
+    AppStorage.setOrCreate<boolean>(STORAGE_KEY_HOME_FOLLOW_SUGGESTIONS, settings.homeFollowSuggestions);
     AppStorage.setOrCreate<string>(STORAGE_KEY_ME_FLOATING_ACTION, this.normaliseMeAction(settings.meFloatingAction));
     AppStorage.setOrCreate<boolean>(STORAGE_KEY_FLOATING_COMPOSE_MATERIAL_TINT, settings.floatingComposeMaterialTint);
     AppStorage.setOrCreate<boolean>(STORAGE_KEY_REFRESH_ON_FOREGROUND, settings.refreshOnForeground);
@@ -98,6 +110,21 @@ export class InteractionSettingsStore {
 
   savePhotoFullscreen(context: common.Context, value: boolean): boolean {
     return this.saveBoolean(context, 'photo_fullscreen', STORAGE_KEY_PHOTO_FULLSCREEN, value);
+  }
+
+  saveHomeFollowSuggestions(context: common.Context, value: boolean): boolean {
+    return this.saveBoolean(context, 'home_follow_suggestions', STORAGE_KEY_HOME_FOLLOW_SUGGESTIONS, value);
+  }
+
+  saveHomeHeaderAction(context: common.Context, action: string): boolean {
+    if (action !== HOME_HEADER_SEARCH && action !== HOME_HEADER_FOLLOW) { return false; }
+    try {
+      const store: preferences.Preferences = this.store(context);
+      store.putSync('home_header_action', action);
+      store.flushSync();
+      AppStorage.setOrCreate<string>(STORAGE_KEY_HOME_HEADER_ACTION, action);
+      return true;
+    } catch (error) { return false; }
   }
 
   saveFloatingComposeMaterialTint(context: common.Context, value: boolean): boolean {

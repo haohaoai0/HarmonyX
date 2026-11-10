@@ -6,6 +6,7 @@ import { RootLiquidTabMotion } from '../utils/RootLiquidTabMotion';
 import { LiquidTabTarget, RootLiquidTabGeometry } from '../utils/RootLiquidTabGeometry';
 import { curves, uiMaterial } from '@kit.ArkUI';
 import { ReplyCapsuleSurface } from './ReplyCapsuleSurface';
+import { MaterialCompat } from '../utils/MaterialCompat';
 import { SystemMaterialUtil } from '../utils/SystemMaterial';
 import { DEFAULT_NATIVE_TAB_MATERIAL_LEVEL, STORAGE_KEY_NATIVE_TAB_MATERIAL_LEVEL } from '../services/HdsTabsSettingsStore';
 import { motionCurve, motionDuration } from '../utils/AppMotion';
@@ -353,7 +354,7 @@ export struct RootSplitNavigation {
       return {
         barWidth: { smallWidth: Math.max(1, width), mediumWidth: Math.max(1, width), largeWidth: Math.max(1, width) },
         lightColor: this.accentColor,
-        gradientMask: { maskColor: Color.Transparent },
+        gradientMask: { maskColor: Color.Transparent, maskHeight: 1 },
         barBottomMargin: 0,
         barSideMargin: 0,
         systemMaterialEffect: {
@@ -461,12 +462,14 @@ export struct RootSplitNavigation {
         ReplyCapsuleSurface({ capsuleHeight: 56, cornerRadius: 28, materialEnabled: true,
           materialLevel: this.nativeMaterialLevel, capsuleContent: (): void => { this.NativeNavigationItems(); } })
           .width('100%').height('100%')
+          .clip(false)
           .id('split-root-native-material')
       } else if (deviceInfo.apiAvailable('6.1.0(23)')) {
         HdsTabs({ index: this.selectedIndex() }) {
           ForEach(this.pages, (page: number): void => {
             TabContent() {}
               .tabBar(this.NavigationTab(page))
+              .clip(false)
           }, (page: number): string => page.toString())
         }
         .width('100%').height($r('app.float.root_tab_bar_height'))
@@ -475,10 +478,13 @@ export struct RootSplitNavigation {
         .barMode(BarMode.Fixed)
         .barOverlap(true)
         .vertical(false)
-        .scrollable(false)
         .animationDuration(0)
         .backgroundColor(Color.Transparent)
+        .barBackgroundColor(Color.Transparent)
+        .barBackgroundStyle({ maskColor: Color.Transparent, maskHeight: 1 })
+        .barBackgroundBlurStyle(MaterialCompat.NO_PLATE_BLUR)
         .barFloatingStyle(this.floatingStyle(this.navigationWidth))
+        .clip(false)
         .direction(isAppRtl(this.appLocale) ? Direction.Rtl : Direction.Ltr)
         .onSelected((index: number): void => this.onNativeSelected(index))
         .onTabBarClick((index: number): void => this.onNativeTabClick(index))
@@ -494,7 +500,7 @@ export struct RootSplitNavigation {
     .height($r('app.float.root_tab_bar_height'))
     .layoutWeight(1)
     .borderRadius($r('app.float.split_navigation_corner_radius'))
-    .clip(true)
+    .clip(false)
     .id('split-root-capsule')
     .translate({ x: this.navigationTranslation() })
     .animation({ duration: motionDuration(300), curve: motionCurve() })
@@ -512,7 +518,7 @@ export struct RootSplitNavigation {
           materialLevel: this.nativeMaterialLevel, capsuleContent: (): void => { this.NativeActionTab(); } })
           .width($r('app.float.root_tab_bar_height')).height($r('app.float.root_tab_bar_height'))
           .borderRadius($r('app.float.split_navigation_corner_radius'))
-          .clip(true)
+          .clip(false)
           .id('split-root-native-action')
           .opacity(this.actionHidden ? 0 : 1)
           .translate({ x: this.actionTranslation(), y: this.actionHidden ? 16 : 0 })
@@ -522,6 +528,7 @@ export struct RootSplitNavigation {
         HdsTabs({ index: 0 }) {
           TabContent() {}
             .tabBar(this.ActionTab())
+            .clip(false)
         }
         .width($r('app.float.root_tab_bar_height')).height($r('app.float.root_tab_bar_height'))
         .barHeight($r('app.float.root_tab_bar_height'))
@@ -529,14 +536,16 @@ export struct RootSplitNavigation {
         .barMode(BarMode.Fixed)
         .barOverlap(true)
         .vertical(false)
-        .scrollable(false)
         .animationDuration(0)
         .backgroundColor(Color.Transparent)
+        .barBackgroundColor(Color.Transparent)
+        .barBackgroundStyle({ maskColor: Color.Transparent, maskHeight: 1 })
+        .barBackgroundBlurStyle(MaterialCompat.NO_PLATE_BLUR)
         .barFloatingStyle(this.floatingStyle(56))
         .onTabBarClick((): void => this.onNativeAction())
         .accessibilityText(this.actionLabel)
         .borderRadius($r('app.float.split_navigation_corner_radius'))
-        .clip(true)
+        .clip(false)
         .id('split-root-action')
         .opacity(this.actionHidden ? 0 : 1)
         .translate({ x: this.actionTranslation(), y: this.actionHidden ? 16 : 0 })
@@ -546,6 +555,7 @@ export struct RootSplitNavigation {
     }
     .height($r('app.float.root_tab_bar_height'))
     .width('100%')
+    .clip(false)
     .direction(Direction.Ltr)
     .constraintSize({ maxWidth: $r('app.float.split_navigation_max_width') })
     .padding({ left: $r('app.float.split_navigation_side_margin'), right: $r('app.float.split_navigation_side_margin') })

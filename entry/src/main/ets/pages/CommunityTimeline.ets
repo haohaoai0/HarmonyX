@@ -42,6 +42,12 @@ import { XCommunityParser } from '../services/XCommunityParser';
 import { XUserParser } from '../services/XUserParser';
 import { destinationTitleBarStyle } from '../utils/DestinationTitleBar';
 import { ResponsiveLayout } from '../utils/ResponsiveLayout';
+import { DesktopLayout } from '../utils/DesktopLayout';
+import {
+  STORAGE_KEY_TIMELINE_COLUMNS,
+  TIMELINE_COLUMNS_AUTO_TWO,
+  TIMELINE_COLUMNS_TWO
+} from '../services/TimelineSettingsStore';
 import { fieldSurfaceColor, pageSurfaceColor } from '../utils/ThemeColors';
 import type { CommunityRulesRouteParam, CommunityTimelineRouteParam } from './Communities';
 import type { PostDetailRouteParam } from './PostDetail';
@@ -61,6 +67,8 @@ export struct CommunityTimeline {
   @StorageProp('harmonyx.compact_window') private sheetCompactWindow: boolean = false;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @StorageProp('harmonyx.breakpoint') private sheetWindowBreakpoint: string = 'sm';
+  @StorageProp('harmonyx.desktop_layout') private desktopLayoutEnabled: boolean = false;
+  @StorageProp(STORAGE_KEY_TIMELINE_COLUMNS) private timelineColumnsMode: number = 0;
   @Consume('pageStack') pageStack: NavPathStack;
   @StorageProp('harmonyx.status_bar_height') statusBarHeight: number =
     AppStorage.get<number>('harmonyx.status_bar_height') ?? 0;
@@ -832,10 +840,26 @@ export struct CommunityTimeline {
 
     }
   }
+
+  private isDesktopLayout(): boolean {
+    return DesktopLayout.active(this.desktopLayoutEnabled, this.sheetWindowBreakpoint);
+  }
+
+  private useTimelineWaterFlow(): boolean {
+    return this.isDesktopLayout() || ResponsiveLayout.isLarge(this.sheetWindowBreakpoint) ||
+      this.timelineColumnsMode === TIMELINE_COLUMNS_TWO ||
+      this.timelineColumnsMode === TIMELINE_COLUMNS_AUTO_TWO;
+  }
+
+  private useListFeed(): boolean {
+    return !this.useTimelineWaterFlow();
+  }
+
   @Builder
   private ActivityList(tab: number): void {
     AdaptivePostFeed({ scroller: this.activityScrollers[tab],
       itemKeys: tab === 2 ? [] : this.visiblePosts(tab).map((post: Tweet): string => post.id),
+      useList: this.useListFeed(), lazyItems: true,
       feedId: 'community-timeline-post-feed-' + tab.toString(), endOffset: this.navigationIndicatorHeight,
       forwardMode: NestedScrollMode.PARENT_FIRST, backwardMode: NestedScrollMode.SELF_FIRST,
       header: (): void => this.TimelineHeader(tab),

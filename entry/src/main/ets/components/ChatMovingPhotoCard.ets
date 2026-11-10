@@ -12,6 +12,7 @@ import { chatControlMaterial, chatInputMaterial } from '../utils/ChatMaterial';
 import { SystemMaterialUtil } from '../utils/SystemMaterial';
 import { ChatAlbumGeometry, chatAlbumLayout } from '../utils/ChatAlbumLayout';
 import { materialModifier } from '../utils/SystemMaterial';
+import { MaterialCompat } from '../utils/MaterialCompat';
 
 interface MovingPhotoPopupState { isVisible: boolean; }
 
@@ -271,7 +272,7 @@ export struct ChatMovingPhotoCard {
         SymbolGlyph($r('sys.symbol.chevron_down')).fontSize($r('app.float.chat_moving_photo_chevron_size'))
           .fontColor([$r('app.color.text_primary')])
       }
-    }.width('100%').height('100%').padding(0).borderRadius(this.controlSize()).clip(true)
+    }.width('100%').height('100%').padding(0).borderRadius(this.controlSize()).clip(!SystemMaterialUtil.isApi26OrAbove())
       .backgroundColor(SystemMaterialUtil.isApi26OrAbove() ? Color.Transparent : $r('app.color.bg_secondary_btn'))
       .attributeModifier(materialModifier(chatControlMaterial(this.accentColor)))
       .accessibilityText($r('app.string.chat_moving_photo_options'))
@@ -286,10 +287,12 @@ export struct ChatMovingPhotoCard {
     Navigation() { Column().height(0).hitTestBehavior(HitTestMode.None) }
       .title({ builder: (): void => { this.LiveBadgeButton(); }, height: this.controlSize() },
         { barStyle: BarStyle.STACK, backgroundColor: Color.Transparent,
+          backgroundBlurStyle: MaterialCompat.NO_PLATE_BLUR,
           paddingStart: LengthMetrics.vp(0), paddingEnd: LengthMetrics.vp(0) })
       .titleMode(NavigationTitleMode.Full).mode(NavigationMode.Stack).hideBackButton(true).hideToolBar(true)
       .width(this.compact ? $r('app.float.chat_moving_photo_compact_badge_width') : $r('app.float.chat_moving_photo_badge_width'))
       .height(this.controlSize()).backgroundColor(Color.Transparent)
+      .clip(false)
       .id('chat-moving-photo-live-badge')
       .alignRules({ left: { anchor: '__container__', align: HorizontalAlign.Start },
         top: { anchor: '__container__', align: VerticalAlign.Top } })
@@ -303,6 +306,7 @@ export struct ChatMovingPhotoCard {
       SymbolGlyph(this.muted ? $r('sys.symbol.speaker_slash_fill') : $r('sys.symbol.speaker_wave_2_fill'))
         .fontSize($r('sys.float.Body_L')).fontColor([$r('app.color.text_primary')])
     }.width('100%').height('100%').padding(0)
+      .clip(false)
       .backgroundColor(SystemMaterialUtil.isApi26OrAbove() ? Color.Transparent : $r('app.color.bg_secondary_btn'))
       .attributeModifier(materialModifier(chatControlMaterial(this.accentColor))).enabled(this.liveEnabled)
       .accessibilityText(this.muted ? $r('app.string.chat_moving_photo_unmute') : $r('app.string.chat_moving_photo_mute'))
@@ -314,9 +318,11 @@ export struct ChatMovingPhotoCard {
     Navigation() { Column().height(0).hitTestBehavior(HitTestMode.None) }
       .title({ builder: (): void => { this.SoundButton(); }, height: this.controlSize() },
         { barStyle: BarStyle.STACK, backgroundColor: Color.Transparent,
+          backgroundBlurStyle: MaterialCompat.NO_PLATE_BLUR,
           paddingStart: LengthMetrics.vp(0), paddingEnd: LengthMetrics.vp(0) })
       .titleMode(NavigationTitleMode.Full).mode(NavigationMode.Stack).hideBackButton(true).hideToolBar(true)
       .width(this.controlSize()).height(this.controlSize()).backgroundColor(Color.Transparent)
+      .clip(false)
       .id('chat-moving-photo-sound')
       .alignRules({ right: { anchor: '__container__', align: HorizontalAlign.End },
         bottom: { anchor: '__container__', align: VerticalAlign.Bottom } })

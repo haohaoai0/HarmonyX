@@ -198,11 +198,11 @@
     },
     {
       "name": "settings_confirm_app_exit",
-      "value": "Çıkmadan önce onayla"
+      "value": "Ana ekrana dönüş ipucu"
     },
     {
       "name": "settings_confirm_app_exit_desc",
-      "value": "Ana sayfada geri gidildiğinde onay iste. Kapalıysa doğrudan çık."
+      "value": "Ana sayfada önce ipucu göster; ana ekrana dönmek için 2,2 saniye içinde tekrar Geri tuşuna basın"
     },
     {
       "name": "app_exit_title",
@@ -622,7 +622,7 @@
     },
     {
       "name": "settings_compact_switch_style_desc",
-      "value": "X logosu gizliyken kullanılır. Sayfalar arasında kaydırdıkça düğme arka planları dolar."
+      "value": "X logosu gizliyken metin sekmeleri, kapsül düğmeler veya bölümlü denetim seçin."
     },
     {
       "name": "settings_compact_switch_tabs",
@@ -631,6 +631,10 @@
     {
       "name": "settings_compact_switch_buttons",
       "value": "Düğmeler"
+    },
+    {
+      "name": "settings_compact_switch_segmented",
+      "value": "Bölümlü denetim"
     },
     {
       "name": "settings_avatar_tint",
@@ -1342,7 +1346,7 @@
     },
     {
       "name": "profile_version",
-      "value": "Harmony X 3.5.0 · HarmonyOS 6.0.2 (API 22-26) · Stage modeli"
+      "value": "Harmony X 3.9.0 · HarmonyOS 6.0.2 (API 22-26) · Stage modeli"
     },
     {
       "name": "profile_following",
@@ -3514,7 +3518,7 @@
     },
     {
       "name": "diagnostics_desc",
-      "value": "Son arayüz çağrıları ve özel API kontrolü."
+      "value": "Çökme günlüklerini dışa aktarın, son istekleri ve test sonuçlarını inceleyin."
     },
     {
       "name": "diagnostics_probe",
@@ -12729,6 +12733,10 @@
       "value": "Tüm popüler gönderileri göster"
     },
     {
+      "name": "global_trends_cover_url",
+      "value": "https://pbs.twimg.com/topics/topic/globe_center_compressed.png"
+    },
+    {
       "name": "post_video_publish",
       "value": "Videoyu paylaş"
     },
@@ -12860,40 +12868,405 @@
       "name": "post_translation_languages_description",
       "value": "Otomatik çevrilecek gönderi dillerini seçin. Diğer diller elle çevrilebilir."
     },
-    {"name": "post_link_copy", "value": "Copy link"},
-    {"name": "post_link_open", "value": "Open link"},
-    {"name": "settings_video_download_button", "value": "Video download button"},
-    {"name": "settings_video_download_button_desc", "value": "Show the download button in the top-right corner of videos"},
-    {"name": "video_source_from", "value": "From"},
-    {"name": "video_source_original", "value": "Original video"},
-    {"name": "video_source_open_failed", "value": "Unable to open the original video. Try again."},
-    {"name":"dns_title","value":"DNS over HTTPS (DoH)"},
-    {"name":"dns_enable","value":"Use DNS over HTTPS"},
-    {"name":"dns_enable_desc","value":"Encrypt DNS queries with a chosen HTTPS resolver"},
-    {"name":"dns_scope","value":"Applies to app API requests, downloaded images, video segments and built-in web pages. System players and external apps may use their own DNS. When a proxy resolves the destination, its DNS takes precedence. DoH does not replace a proxy or VPN."},
-    {"name":"dns_provider","value":"DNS provider"},
-    {"name":"dns_provider_ali","value":"AliDNS"},
-    {"name":"dns_provider_cloudflare","value":"Cloudflare"},
-    {"name":"dns_provider_google","value":"Google Public DNS"},
-    {"name":"dns_provider_custom","value":"Custom"},
-    {"name":"dns_endpoint","value":"DoH server URL"},
-    {"name":"dns_endpoint_hint","value":"https://example.com/dns-query"},
-    {"name":"dns_endpoint_desc","value":"Enter a complete RFC 8484 HTTPS endpoint, without credentials, fragments or URI templates such as {?dns}."},
-    {"name":"dns_invalid","value":"Enter a valid HTTPS DoH server URL"},
-    {"name":"dns_saved","value":"Saved. New requests use this setting; reload open web pages."},
-    {"name":"dns_test","value":"Test DNS resolution"},
-    {"name":"dns_test_desc","value":"Tests the current URL by resolving x.com directly, without saving or enabling it. The test bypasses the in-app proxy; a system VPN still applies."},
-    {"name":"dns_test_success","value":"x.com resolved successfully"},
-    {"name":"dns_test_failed","value":"Resolution failed. Check the URL, network or DNS service."},
-    {"name":"dns_failure_note","value":"After saving, DoH failures stop affected requests instead of falling back to system DNS. Turn DoH off and save to restore system DNS. Changes apply after saving."},
-    {"name":"help_support_afdian","value":"Afdian"},
-    {"name":"help_support_qr_summary","value":"Geliştirmeyi desteklemek için tarayın"},
-    {"name":"help_support_afdian_summary","value":"Kalıcı olarak önerisiz · ¥16.6"},
-    {"name":"help_support_afdian_desc","value":"Afdian’dan kalıcı önerisiz kullanım kodu satın alın, ardından etkinleştirmek için uygulamaya dönün."},
-    {"name":"help_support_afdian_buy","value":"Afdian’da satın al"},
-    {"name":"help_support_expand","value":"Genişletmek için dokunun"},
-    {"name":"help_support_collapse","value":"Daraltmak için dokunun"},
-    {"name":"help_support_scan_code","value":"Bu kodu ilgili ödeme uygulamasıyla tarayın."},
-    {"name":"help_support_recommended","value":"Önerilen"}
+    {
+      "name": "post_link_copy",
+      "value": "Copy link"
+    },
+    {
+      "name": "post_link_open",
+      "value": "Open link"
+    },
+    {
+      "name": "settings_video_download_button",
+      "value": "Video download button"
+    },
+    {
+      "name": "settings_video_download_button_desc",
+      "value": "Show the download button in the top-right corner of videos"
+    },
+    {
+      "name": "video_source_from",
+      "value": "From"
+    },
+    {
+      "name": "video_source_original",
+      "value": "Original video"
+    },
+    {
+      "name": "video_source_open_failed",
+      "value": "Unable to open the original video. Try again."
+    },
+    {
+      "name": "dns_title",
+      "value": "DNS over HTTPS (DoH)"
+    },
+    {
+      "name": "dns_enable",
+      "value": "Use DNS over HTTPS"
+    },
+    {
+      "name": "dns_enable_desc",
+      "value": "Encrypt DNS queries with a chosen HTTPS resolver"
+    },
+    {
+      "name": "dns_scope",
+      "value": "Applies to app API requests, downloaded images, video segments and built-in web pages. System players and external apps may use their own DNS. When a proxy resolves the destination, its DNS takes precedence. DoH does not replace a proxy or VPN."
+    },
+    {
+      "name": "dns_provider",
+      "value": "DNS provider"
+    },
+    {
+      "name": "dns_provider_ali",
+      "value": "AliDNS"
+    },
+    {
+      "name": "dns_provider_cloudflare",
+      "value": "Cloudflare"
+    },
+    {
+      "name": "dns_provider_google",
+      "value": "Google Public DNS"
+    },
+    {
+      "name": "dns_provider_custom",
+      "value": "Custom"
+    },
+    {
+      "name": "dns_endpoint",
+      "value": "DoH server URL"
+    },
+    {
+      "name": "dns_endpoint_hint",
+      "value": "https://example.com/dns-query"
+    },
+    {
+      "name": "dns_endpoint_desc",
+      "value": "Enter a complete RFC 8484 HTTPS endpoint, without credentials, fragments or URI templates such as {?dns}."
+    },
+    {
+      "name": "dns_invalid",
+      "value": "Enter a valid HTTPS DoH server URL"
+    },
+    {
+      "name": "dns_saved",
+      "value": "Saved. New requests use this setting; reload open web pages."
+    },
+    {
+      "name": "dns_test",
+      "value": "Test DNS resolution"
+    },
+    {
+      "name": "dns_test_desc",
+      "value": "Tests the current URL by resolving x.com directly, without saving or enabling it. The test bypasses the in-app proxy; a system VPN still applies."
+    },
+    {
+      "name": "dns_test_success",
+      "value": "x.com resolved successfully"
+    },
+    {
+      "name": "dns_test_failed",
+      "value": "Resolution failed. Check the URL, network or DNS service."
+    },
+    {
+      "name": "dns_failure_note",
+      "value": "After saving, DoH failures stop affected requests instead of falling back to system DNS. Turn DoH off and save to restore system DNS. Changes apply after saving."
+    },
+    {
+      "name": "help_support_afdian",
+      "value": "Afdian"
+    },
+    {
+      "name": "help_support_qr_summary",
+      "value": "Geliştirmeyi desteklemek için tarayın"
+    },
+    {
+      "name": "help_support_afdian_summary",
+      "value": "Kalıcı olarak önerisiz · ¥16.6"
+    },
+    {
+      "name": "help_support_afdian_desc",
+      "value": "Afdian’dan kalıcı önerisiz kullanım kodu satın alın, ardından etkinleştirmek için uygulamaya dönün."
+    },
+    {
+      "name": "help_support_afdian_buy",
+      "value": "Afdian’da satın al"
+    },
+    {
+      "name": "help_support_expand",
+      "value": "Genişletmek için dokunun"
+    },
+    {
+      "name": "help_support_collapse",
+      "value": "Daraltmak için dokunun"
+    },
+    {
+      "name": "help_support_scan_code",
+      "value": "Bu kodu ilgili ödeme uygulamasıyla tarayın."
+    },
+    {
+      "name": "help_support_recommended",
+      "value": "Önerilen"
+    },
+    {
+      "name": "dns_x_test",
+      "value": "Test native X connection"
+    },
+    {
+      "name": "dns_x_test_desc",
+      "value": "Uses this DoH URL to request the public x.com/robots.txt through native HTTP, without account information or the in-app proxy. Does not save settings. A system VPN still applies. Success checks this connection only, not every API or media host."
+    },
+    {
+      "name": "dns_x_test_success",
+      "value": "Native X connection succeeded"
+    },
+    {
+      "name": "dns_x_test_failed",
+      "value": "Native X connection failed. Check the network, proxy or ECH support."
+    },
+    {
+      "name": "settings_inline_video_hold",
+      "value": "Satır içi videoya uzun basma"
+    },
+    {
+      "name": "settings_inline_video_hold_desc",
+      "value": "Menü veya oynatmayı seçin. Oynatma, basılı tutma hızı ayarını izler."
+    },
+    {
+      "name": "settings_inline_video_hold_menu",
+      "value": "Menü"
+    },
+    {
+      "name": "settings_inline_video_hold_play",
+      "value": "Oynatmak için basılı tut"
+    },
+    {
+      "name": "settings_sidebar_items",
+      "value": "Kenar çubuğu özellikleri"
+    },
+    {
+      "name": "settings_sidebar_items_desc",
+      "value": "Özellikleri gösterin veya gizleyin ve oklarla sıralayın. Ayarlar her zaman kullanılabilir."
+    },
+    {
+      "name": "settings_bottom_bar_visible",
+      "value": "Alt çubuğu göster"
+    },
+    {
+      "name": "settings_bottom_bar_visible_desc",
+      "value": "Gizlendiğinde gezinmek ve aramak için kenar çubuğunu kullanın."
+    },
+    {
+      "name": "settings_post_count_format",
+      "value": "Gönderi sayacı biçimi"
+    },
+    {
+      "name": "settings_post_count_compact",
+      "value": "K/M (bin/milyon)"
+    },
+    {
+      "name": "settings_post_count_chinese",
+      "value": "万/亿 (10 bin/100 milyon)"
+    },
+    {
+      "name": "settings_post_count_full",
+      "value": "Tam sayılar"
+    },
+    {
+      "name": "settings_sidebar_search_capsule",
+      "value": "Kenar çubuğu arama kapsülü"
+    },
+    {
+      "name": "settings_sidebar_search_capsule_desc",
+      "value": "Kenar çubuğunun üstünde kısa bir arama kapsülü gösterin. Varsayılan olarak kapalıdır."
+    },
+    {
+      "name": "settings_home_header_action",
+      "value": "Ana sayfa başlık düğmesi"
+    },
+    {
+      "name": "settings_home_header_action_desc",
+      "value": "Ara veya Kişi ekle seçin. Dokunduğunuzda seçilen sayfa doğrudan açılır."
+    },
+    {
+      "name": "settings_home_follow_suggestions",
+      "value": "Kimi takip etmeli"
+    },
+    {
+      "name": "settings_home_follow_suggestions_desc",
+      "value": "Ana sayfa akışında önerilen hesapları göster."
+    },
+    {
+      "name": "page_background_preset_colors",
+      "value": "Özgün gradyanı koru"
+    },
+    {
+      "name": "page_background_preset_colors_desc",
+      "value": "Her tam desenin kendi gradyanını kullan. Özel renk veya fotoğraf seçmek için kapat."
+    },
+    {
+      "name": "settings_inline_video_overlay_controls",
+      "value": "Gönderi videosunda kontroller"
+    },
+    {
+      "name": "settings_inline_video_overlay_controls_desc",
+      "value": "Kontrolleri videonun içine taşıyın. Göstermek veya gizlemek için dokunun; oynatılırken otomatik gizlenir."
+    },
+    {
+      "name": "settings_pause_inline_video_on_return",
+      "value": "Dönüşte gönderi videosunu duraklat"
+    },
+    {
+      "name": "settings_pause_inline_video_on_return_desc",
+      "value": "Oynatıcı kapatılınca gönderi videosu duraklatılmış kalır. Devam etmek için Oynat düğmesine dokunun."
+    },
+    {
+      "name": "settings_timeline_columns_four",
+      "value": "Dört sütun"
+    },
+    {
+      "name": "settings_timeline_columns_five",
+      "value": "Beş sütun"
+    },
+    {
+      "name": "crash_recovery_title",
+      "value": "Uygulama beklenmedik şekilde kapandı"
+    },
+    {
+      "name": "crash_recovery_message",
+      "value": "Son çökmeye ait tanılama günlüğü kaydedildi. Günlüğü dışa aktarın ve sorundan önceki adımlarla birlikte geliştiriciyle iletişime geçin."
+    },
+    {
+      "name": "crash_later",
+      "value": "Daha sonra"
+    },
+    {
+      "name": "crash_export",
+      "value": "Günlükleri dışa aktar"
+    },
+    {
+      "name": "crash_contact",
+      "value": "Geliştiriciye ulaş"
+    },
+    {
+      "name": "crash_export_success",
+      "value": "Günlükler dışa aktarıldı. Geliştiriciye yazarken dosyayı ekleyin."
+    },
+    {
+      "name": "crash_export_failed",
+      "value": "Günlükler dışa aktarılamadı. Tekrar deneyin veya başka bir konum seçin."
+    },
+    {
+      "name": "crash_contact_failed",
+      "value": "Geri bildirim sayfası açılamadı. Hakkında bölümünden geliştiriciye ulaşın."
+    },
+    {
+      "name": "crash_logs_title",
+      "value": "Uygulama tanılama"
+    },
+    {
+      "name": "crash_logs_description",
+      "value": "Çökme günlükleri cihazda saklanır. Son 5 rapor tutulur. Dışa aktarılan dosyayı geri bildiriminize ekleyin."
+    },
+    {
+      "name": "crash_logs_empty",
+      "value": "Çökme raporu yok. Geçerli oturum günlüğünü dışa aktarabilirsiniz."
+    },
+    {
+      "name": "app_exit_desktop",
+      "value": "Ana ekrana dön"
+    },
+    {
+      "name": "app_exit_desktop_hint",
+      "value": "Ana ekrana dönmek için tekrar Geri tuşuna basın"
+    },
+    {
+      "name": "media_save_method",
+      "value": "Medya kaydetme yöntemi"
+    },
+    {
+      "name": "media_save_gallery_dialog",
+      "value": "Galeri · sistem onayı"
+    },
+    {
+      "name": "media_save_secure_button",
+      "value": "Galeri · güvenli kaydet düğmesi"
+    },
+    {
+      "name": "media_save_directory",
+      "value": "İndirilenler · izin sonrası doğrudan kaydet"
+    },
+    {
+      "name": "media_save_file_picker",
+      "value": "Dosya · her seferinde konum seç"
+    },
+    {
+      "name": "media_save_secure_title",
+      "value": "Galeriye kaydet"
+    },
+    {
+      "name": "media_save_secure_note",
+      "value": "Sistem kaydet düğmesiyle doğrudan Galeriye kaydedin. İlk kullanımda izin verin; toplu kayıtta her dosya için bir kez dokunun."
+    },
+    {
+      "name": "account_groups_title",
+      "value": "Yerel gruplar"
+    },
+    {
+      "name": "account_groups_hint",
+      "value": "Gruplar bu cihazda saklanır. Takip ettiğiniz hesapları seçip grubu ana sayfaya sabitleyin."
+    },
+    {
+      "name": "account_groups_empty",
+      "value": "Henüz grup yok. Başlamak için bir grup oluşturun."
+    },
+    {
+      "name": "account_groups_manage",
+      "value": "Yerel grupları yönet"
+    },
+    {
+      "name": "account_group_create",
+      "value": "Yeni grup"
+    },
+    {
+      "name": "account_group_delete",
+      "value": "Grubu sil"
+    },
+    {
+      "name": "account_group_member_count",
+      "value": "%d hesap"
+    },
+    {
+      "name": "account_group_edit_title",
+      "value": "Grubu düzenle"
+    },
+    {
+      "name": "account_group_name",
+      "value": "Grup adı"
+    },
+    {
+      "name": "account_group_icon",
+      "value": "Simge (emoji veya sembol)"
+    },
+    {
+      "name": "account_group_selected",
+      "value": "%d hesap seçildi"
+    },
+    {
+      "name": "account_group_search",
+      "value": "Yüklenen takip hesaplarında ara"
+    },
+    {
+      "name": "account_group_cancel",
+      "value": "İptal"
+    },
+    {
+      "name": "account_group_save",
+      "value": "Kaydet"
+    },
+    {
+      "name": "grok_chat_hint",
+      "value": "Sohbete başlamak için Grok’a bir soru sorun."
+    }
   ]
 }

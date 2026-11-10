@@ -21,6 +21,11 @@ import { ContentFilterSettings, contentFilterStore, STORAGE_KEY_FILTER_REVISION 
 import { DEFAULT_PAGE_TRANSITION_MODE, STORAGE_KEY_PAGE_TRANSITION_MODE } from '../services/PageTransitionSettingsStore';
 import { DEFAULT_SHEET_MATERIAL_ENABLED, DEFAULT_SHEET_MATERIAL_LEVEL,
   STORAGE_KEY_SHEET_MATERIAL_ENABLED, STORAGE_KEY_SHEET_MATERIAL_LEVEL } from '../services/SheetMaterialSettingsStore';
+import {
+  STORAGE_KEY_TIMELINE_COLUMNS,
+  TIMELINE_COLUMNS_AUTO_TWO,
+  TIMELINE_COLUMNS_TWO
+} from '../services/TimelineSettingsStore';
 import { destinationTitleBarStyle } from '../utils/DestinationTitleBar';
 import { DesktopLayout } from '../utils/DesktopLayout';
 import { PageTransitionMotion, pageSystemTransition } from '../utils/PageTransition';
@@ -41,6 +46,7 @@ export struct GlobalTrendsPageView {
   @StorageProp('harmonyx.navigation_indicator_height') private bottomInset: number = 0;
   @StorageProp('harmonyx.desktop_layout') private desktopLayout: boolean = false;
   @StorageProp('harmonyx.breakpoint') private breakpoint: string = 'sm';
+  @StorageProp(STORAGE_KEY_TIMELINE_COLUMNS) private timelineColumnsMode: number = 0;
   @StorageProp(STORAGE_KEY_PAGE_TRANSITION_MODE) private pageTransitionMode: string = DEFAULT_PAGE_TRANSITION_MODE;
   @StorageProp(STORAGE_KEY_SHEET_MATERIAL_ENABLED) private sheetMaterialEnabled: boolean = DEFAULT_SHEET_MATERIAL_ENABLED;
   @StorageProp(STORAGE_KEY_SHEET_MATERIAL_LEVEL) private sheetMaterialLevel: number = DEFAULT_SHEET_MATERIAL_LEVEL;
@@ -350,6 +356,9 @@ export struct GlobalTrendsPageView {
   @Builder
   private FeedHeader(): void {
     Column({ space: 0 }) {
+      if (this.useListFeed()) {
+        Column().width('100%').height(this.statusBarHeight + 60)
+      }
       if (this.categories.length > 0) { this.CategoryStrip() }
       if (this.topics.length > 0) { this.TopicStrip() }
       Row() {
@@ -367,6 +376,27 @@ export struct GlobalTrendsPageView {
         LoadingProgress().width(28).height(28).color(this.accentColor).margin(24)
       }
     }.width('100%')
+  }
+
+  private isDesktopLayout(): boolean {
+    return DesktopLayout.active(this.desktopLayout, this.breakpoint);
+  }
+
+  private useTimelineWaterFlow(): boolean {
+    return this.isDesktopLayout() || ResponsiveLayout.isLarge(this.breakpoint) ||
+      this.timelineColumnsMode === TIMELINE_COLUMNS_TWO ||
+      this.timelineColumnsMode === TIMELINE_COLUMNS_AUTO_TWO;
+  }
+
+  private useListFeed(): boolean {
+    return !this.useTimelineWaterFlow();
+  }
+
+  private feedStartOffset(): number {
+    if (this.useListFeed() || this.isDesktopLayout()) {
+      return 0;
+    }
+    return this.statusBarHeight + 60;
   }
 
   @Builder
@@ -429,8 +459,12 @@ export struct GlobalTrendsPageView {
         Refresh({ refreshing: $$this.refreshing }) {
           AdaptivePostFeed({ scroller: this.scroller, feedId: 'global-trends-feed',
             itemKeys: this.visiblePosts.map((tweet: Tweet): string => tweet.id),
-            startOffset: DesktopLayout.active(this.desktopLayout, this.breakpoint) ? 0 : this.statusBarHeight + 60,
+            useList: this.useListFeed(), lazyItems: true,
+            startOffset: this.feedStartOffset(),
             endOffset: this.bottomInset + 16,
+            forwardMode: NestedScrollMode.SELF_FIRST,
+            backwardMode: NestedScrollMode.SELF_FIRST,
+            clipContent: !this.isDesktopLayout(),
             header: (): void => this.FeedHeader(),
             item: (index: number): void => this.postBuilder(this.visiblePosts[index]),
             footer: (): void => this.FeedFooter(),

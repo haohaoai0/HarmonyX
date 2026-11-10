@@ -30,7 +30,7 @@ import { ResponsiveLayout } from '../utils/ResponsiveLayout';
 import { cardSurfaceColor, fieldSurfaceColor, pageSurfaceColor } from '../utils/ThemeColors';
 
 export interface GrokRouteParam {
-  tweet: Tweet;
+  tweet?: Tweet;
   mode?: string;
 }
 
@@ -69,17 +69,18 @@ export struct GrokPage {
   private webController: webview.WebviewController = new webview.WebviewController();
   private webSessionTimer: number = -1;
   private webSessionSaving: boolean = false;
+  private alive: boolean = true;
 
   private text(resource: Resource): string {
     const context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
     return context.resourceManager.getStringSync(resource);
   }
 
-  private async applyRouteParam(param: GrokRouteParam): Promise<void> {
-    this.tweet = param.tweet;
-    this.mode = param.mode === GROK_MODE_API ? GROK_MODE_API : GROK_MODE_WEB;
+  private async applyRouteParam(param?: GrokRouteParam): Promise<void> {
+    this.tweet = param?.tweet ?? null;
     const context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
     const settings: GrokSettings = grokSettingsStore.load(context);
+    this.mode = (param?.mode ?? settings.mode) === GROK_MODE_API ? GROK_MODE_API : GROK_MODE_WEB;
     if (this.mode === GROK_MODE_WEB && settings.useXWebSession) {
       // Writes only into the x.com ArkWeb cookie jar. Grok receives no raw
       // X credential and still owns its normal OAuth/SSO authorization step.
@@ -88,9 +89,15 @@ export struct GrokPage {
     if (this.mode === GROK_MODE_WEB) {
       // The stored Grok session has to be back in the jar before the first
       // navigation, so the Web component is created afterwards.
-      await webSessionStore.restore(context, GROK_WEB_SESSION_ORIGINS);
-      this.webReady = true;
-      this.startWebSessionCheckpoint();
+      try {
+        await webSessionStore.restore(context, GROK_WEB_SESSION_ORIGINS);
+      } catch (error) {
+        // A failed cookie restore must not prevent the page from opening.
+      }
+      if (this.alive) {
+        this.webReady = true;
+        this.startWebSessionCheckpoint();
+      }
     }
     this.messages = [];
     this.prompt = '';
@@ -111,6 +118,7 @@ export struct GrokPage {
   }
 
   aboutToDisappear(): void {
+    this.alive = false;
     this.stopWebSessionCheckpoint();
     this.persistWebSession();
   }
@@ -195,7 +203,7 @@ export struct GrokPage {
   private async submitPrompt(): Promise<void> {
     const current: Tweet | null = this.tweet;
     const question: string = this.prompt.trim();
-    if (this.submitting || current === null) {
+    if (this.submitting) {
       return;
     }
     if (question.length === 0) {
@@ -213,7 +221,7 @@ export struct GrokPage {
     this.submitting = true;
     const result: GrokResult = await grokService.reply(current, question, history, settings);
     this.submitting = false;
-    if (this.tweet === null || this.tweet.id !== current.id) {
+    if (!this.alive || this.tweet?.id !== current?.id) {
       return;
     }
     if (result.ok) {
@@ -287,23 +295,25 @@ export struct GrokPage {
             SymbolGlyph($r('sys.symbol.wand_and_stars'))
               .fontSize(22)
               .fontColor([this.accentColor])
-            Text($r('app.string.grok_context_title')).fontFamily(this.appFontFamily)
+            Text(this.tweet === null ? $r('app.string.grok_title') : $r('app.string.grok_context_title')).fontFamily(this.appFontFamily)
               .fontSize($r('sys.float.Subtitle_L'))
               .fontWeight(FontWeight.Bold)
               .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, pageReadingSurfaceColor(cardSurfaceColor(this.themeDisplayMode, this.themeDarkSurface), this.pageBackgroundValue)))
           }
           .width('100%')
-          Text($r('app.string.grok_context_hint')).fontFamily(this.appFontFamily)
+          Text(this.tweet === null ? $r('app.string.grok_chat_hint') : $r('app.string.grok_context_hint')).fontFamily(this.appFontFamily)
             .width('100%')
             .fontSize($r('sys.float.Body_L'))
             .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, pageReadingSurfaceColor(cardSurfaceColor(this.themeDisplayMode, this.themeDarkSurface), this.pageBackgroundValue)))
             .lineHeight(22)
-          Flex({ wrap: FlexWrap.Wrap, space: { main: LengthMetrics.vp(8), cross: LengthMetrics.vp(8) } }) {
-            this.Suggestion($r('app.string.grok_suggestion_summary'))
-            this.Suggestion($r('app.string.grok_suggestion_context'))
-            this.Suggestion($r('app.string.grok_suggestion_questions'))
+          if (this.tweet !== null) {
+            Flex({ wrap: FlexWrap.Wrap, space: { main: LengthMetrics.vp(8), cross: LengthMetrics.vp(8) } }) {
+              this.Suggestion($r('app.string.grok_suggestion_summary'))
+              this.Suggestion($r('app.string.grok_suggestion_context'))
+              this.Suggestion($r('app.string.grok_suggestion_questions'))
+            }
+            .width('100%')
           }
-          .width('100%')
         }
         .width('100%')
         .padding(16)
@@ -482,9 +492,7 @@ export struct GrokPage {
     .onReady((context: NavDestinationContext): void => {
       this.pageMotion.attach(context);
       const param: GrokRouteParam = context.pathInfo?.param as GrokRouteParam;
-      if (param !== undefined && param !== null) {
-        this.applyRouteParam(param);
-      }
+      this.applyRouteParam(param);
     })
     .titleMode(HdsNavDestinationTitleMode.MINI)
     .hideBackButton(false)

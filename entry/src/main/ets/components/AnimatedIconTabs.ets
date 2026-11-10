@@ -4,17 +4,20 @@ import { hapticTick } from '../utils/Haptics';
 import { DEFAULT_COMPONENT_HDR_ENABLED, DEFAULT_COMPONENT_HDR_RATIO, STORAGE_KEY_COMPONENT_HDR_ENABLED,
   STORAGE_KEY_COMPONENT_HDR_RATIO } from '../services/ComponentHdrSettingsStore';
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
-import { LengthMetrics, UIContext } from '@kit.ArkUI';
+import { LengthMetrics, UIContext, TabSegmentButtonV2, SegmentButtonV2Items,
+  SegmentButtonV2ItemOptions, TextModifier, uiMaterial } from '@kit.ArkUI';
 import { resourceManager } from '@kit.LocalizationKit';
 import { ProfileTabMotion } from '../utils/ProfileTabMotion';
 import { SystemMaterialUtil } from '../utils/SystemMaterial';
 import { ComponentHdrHighlight } from '../utils/ComponentHdrHighlight';
 import { materialModifier } from '../utils/SystemMaterial';
+import { STORAGE_KEY_APP_LOCALE, effectiveAppLocale, isAppRtl } from '../utils/AppLocale';
 
 export interface IconTabItem {
   key: string;
   label: ResourceStr;
   icon?: Resource;
+  iconText?: string;
   imageUrl?: string;
   chevron?: boolean;
 }
@@ -37,6 +40,7 @@ export struct AnimatedIconTabs {
   @StorageProp(STORAGE_KEY_COMPONENT_HDR_ENABLED) private componentHdrEnabled: boolean = DEFAULT_COMPONENT_HDR_ENABLED;
   @StorageProp(STORAGE_KEY_COMPONENT_HDR_RATIO) private componentHdrRatio: number = DEFAULT_COMPONENT_HDR_RATIO;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
+  @StorageProp(STORAGE_KEY_APP_LOCALE) private appLocale: string = effectiveAppLocale();
   @Prop items: IconTabItem[] = [];
   @Prop @Watch('selectionChanged') selected: number = 0;
   @Prop tabPosition: number = -1;
@@ -44,6 +48,7 @@ export struct AnimatedIconTabs {
   @Prop showDivider: boolean = false;
   @Prop equalWidth: boolean = false;
   @Prop @Watch('selectionChanged') buttonStyle: boolean = false;
+  @Prop @Watch('selectionChanged') segmentedStyle: boolean = false;
   // Explore's category row sizes every slot from its own label. The active
   // icon unfolds inside that slot instead of taking width away from the text.
   @Prop contentSized: boolean = false;
@@ -53,10 +58,19 @@ export struct AnimatedIconTabs {
   @State private textWidths: number[] = [];
   @State private intrinsicWidths: number[] = [];
   @State private buttonAreas: ButtonTabArea[] = [];
+  @State private segmentAreas: ButtonTabArea[] = [];
   private scroller: Scroller = new Scroller();
   private buttonGap: number = 0;
   private buttonMaxHeight: number = 0;
   private buttonFillOpacity: number = 0;
+  private segmentMinSlot: number = 0;
+  private segmentMaxSlot: number = 0;
+  private segmentPadding: number = 0;
+  private segmentLabelPadding: number = 0;
+  private segmentItems: SegmentButtonV2Items = new SegmentButtonV2Items([]);
+  private segmentItemsSignature: string = '';
+  private segmentMaterial: uiMaterial.Material | undefined = undefined;
+  private segmentScrollStart: number = 0;
   onSelect: (index: number) => void = (): void => {};
   onOptions: (index: number) => void = (index: number): void => this.onSelect(index);
 
@@ -68,6 +82,10 @@ export struct AnimatedIconTabs {
     this.buttonGap = context.px2vp(resources.getNumber($r('app.float.icon_buttons_gap').id));
     this.buttonMaxHeight = context.px2vp(resources.getNumber($r('app.float.icon_buttons_height').id));
     this.buttonFillOpacity = resources.getNumber($r('app.float.icon_buttons_fill_opacity').id);
+    this.segmentMinSlot = context.px2vp(resources.getNumber($r('app.float.icon_segments_min_slot').id));
+    this.segmentMaxSlot = context.px2vp(resources.getNumber($r('app.float.icon_segments_max_slot').id));
+    this.segmentPadding = context.px2vp(resources.getNumber($r('app.float.icon_segments_padding').id));
+    this.segmentLabelPadding = context.px2vp(resources.getNumber($r('app.float.icon_segments_label_padding').id));
   }
 
   private selectionChanged(): void {
@@ -83,7 +101,103 @@ export struct AnimatedIconTabs {
     return ProfileTabMotion.clamp(this.tabPosition >= 0 ? this.tabPosition : this.animatedPosition, this.items.length);
   }
   private contentSizedActive(): boolean {
-    return this.contentSized && !this.buttonStyle && !this.equalWidth;
+    return this.contentSized && !this.buttonStyle && !this.segmentedStyle && !this.equalWidth;
+  }
+
+  private segmentOptions(): SegmentButtonV2Items {
+    const labels: string[] = this.items.map((_item: IconTabItem, index: number): string => this.label(index));
+    const keys: string[] = this.items.map((item: IconTabItem): string => item.key);
+    const signature: string = JSON.stringify(keys) + '|' + JSON.stringify(labels) + '|' + this.appFontFamily;
+    if (signature !== this.segmentItemsSignature) {
+      const options: SegmentButtonV2ItemOptions[] = this.items.map((item: IconTabItem): SegmentButtonV2ItemOptions => {
+        return { text: item.label, accessibilityText: item.label,
+          textModifier: new TextModifier().fontFamily(this.appFontFamily) };
+      });
+      this.segmentItems = new SegmentButtonV2Items(options);
+      this.segmentItemsSignature = signature;
+    }
+    return this.segmentItems;
+  }
+
+  private segmentContentWidth(): number {
+    let slot: number = this.segmentMinSlot;
+    for (let index: number = 0; index < this.items.length; index++) {
+      const area: ButtonTabArea | undefined = this.segmentAreas.find((value: ButtonTabArea): boolean =>
+        value.key === this.items[index].key);
+      slot = Math.max(slot, (area?.width ?? 0) + this.segmentLabelPadding * 2);
+    }
+    // Native segments share a width: a long list title must not stretch every
+    // source. The control ellipsizes that title and keeps its accessible label.
+    slot = Math.min(slot, this.segmentMaxSlot);
+    return slot * this.items.length + this.segmentPadding * 2;
+  }
+
+  private segmentViewportWidth(): number {
+    const content: number = this.segmentContentWidth();
+    return this.viewportWidth > 0 ? Math.min(content, this.viewportWidth) : content;
+  }
+
+  private measureSegment(index: number, area: Area): void {
+    const item: IconTabItem | undefined = this.items[index];
+    const width: number = Number(area.width);
+    if (item === undefined || width <= 0) { return; }
+    const previous: ButtonTabArea | undefined = this.segmentAreas.find((value: ButtonTabArea): boolean => value.key === item.key);
+    if (previous !== undefined && Math.abs(previous.width - width) <= 0.5) { return; }
+    const areas: ButtonTabArea[] = this.segmentAreas.filter((value: ButtonTabArea): boolean =>
+      value.key !== item.key && this.items.some((tab: IconTabItem): boolean => tab.key === value.key));
+    areas.push({ key: item.key, start: 0, width: width });
+    this.segmentAreas = areas;
+    this.revealSelected();
+  }
+
+  private segmentBackgroundMaterial(): uiMaterial.Material | undefined {
+    if (this.segmentMaterial === undefined) {
+      this.segmentMaterial = SystemMaterialUtil.immersiveMaterial(1, true, false, false, undefined);
+    }
+    return this.segmentMaterial;
+  }
+
+  private beginSegmentScroll(): void {
+    this.segmentScrollStart = this.scroller.currentOffset().xOffset;
+    this.scroller.scrollTo({ xOffset: this.segmentScrollStart, yOffset: 0 });
+  }
+
+  private scrollSegments(event: GestureEvent): void {
+    const maximum: number = Math.max(0, this.segmentContentWidth() - this.segmentViewportWidth());
+    const offset: number = Math.max(0, Math.min(maximum, this.segmentScrollStart - event.offsetX));
+    this.scroller.scrollTo({ xOffset: offset, yOffset: 0 });
+  }
+
+  private endSegmentScroll(event: GestureEvent): void {
+    if (this.segmentContentWidth() <= this.segmentViewportWidth() || !Number.isFinite(event.velocityX) ||
+      event.velocityX === 0) { return; }
+    try { this.scroller.fling(event.velocityX); } catch (_error) { }
+  }
+
+  private tapSegment(event: GestureEvent): void {
+    const finger: FingerInfo | undefined = event.fingerList[0];
+    const width: number = this.segmentViewportWidth();
+    if (finger === undefined || this.items.length === 0 || finger.localX < 0 || finger.localX > width) { return; }
+    const local: number = isAppRtl(this.appLocale) ? width - finger.localX : finger.localX;
+    const slot: number = (this.segmentContentWidth() - this.segmentPadding * 2) / this.items.length;
+    const index: number = Math.max(0, Math.min(this.items.length - 1,
+      Math.floor((this.scroller.currentOffset().xOffset + local - this.segmentPadding) / slot)));
+    if (index === this.selected) { this.clickSegment(index); }
+    else { this.selectSegment(index); }
+  }
+
+  private selectSegment(index: number): void {
+    if (index < 0 || index >= this.items.length || index === this.selected) { return; }
+    hapticTick();
+    this.onSelect(index);
+  }
+
+  private clickSegment(index: number): void {
+    // Native item clicks arrive before selection changes. Re-tapping the
+    // active Home source keeps its options; changed taps use $selectedIndex.
+    if (index < 0 || index >= this.items.length || index !== this.selected) { return; }
+    hapticTick();
+    this.onOptions(index);
   }
   private slotExpansion(): number {
     return this.equalWidth || this.buttonStyle || this.contentSized ? 0 : 0.5;
@@ -178,7 +292,7 @@ export struct AnimatedIconTabs {
     }
     return center - this.indicatorWidthAt(position) / 2;
   }
-  private iconPrefix(index: number): number { return this.items[index].icon || (this.items[index].imageUrl ?? '').length > 0 ? 27 : 0; }
+  private iconPrefix(index: number): number { return this.items[index].icon || (this.items[index].imageUrl ?? '').length > 0 || (this.items[index].iconText ?? '').length > 0 ? 27 : 0; }
   private optionsOffset(index: number): number {
     return this.motionCenter(index) + (this.iconPrefix(index) + this.labelWidth(index) - 17) / 2;
   }
@@ -206,6 +320,19 @@ export struct AnimatedIconTabs {
     catch (_error) { return ''; }
   }
   private revealSelected(): void {
+    if (this.segmentedStyle) {
+      if (this.items.length === 0 || this.viewportWidth <= 0) { return; }
+      const slot: number = (this.segmentContentWidth() - this.segmentPadding * 2) / this.items.length;
+      const left: number = this.segmentPadding + slot * this.selected;
+      const right: number = left + slot;
+      const current: number = this.scroller.currentOffset().xOffset;
+      const target: number = slot >= this.viewportWidth || left < current ? left :
+        right > current + this.viewportWidth ? right - this.viewportWidth : current;
+      if (Math.abs(target - current) > 0.5) {
+        this.scroller.scrollTo({ xOffset: Math.max(0, target), yOffset: 0, animation: { duration: motionDuration(280) } });
+      }
+      return;
+    }
     if (this.buttonStyle) {
       const item: IconTabItem | undefined = this.items[this.selected];
       if (item === undefined || this.viewportWidth <= 0) { return; }
@@ -245,7 +372,9 @@ export struct AnimatedIconTabs {
 
   @Builder
   private TabIcon(index: number): void {
-    if ((this.items[index].imageUrl ?? '').length > 0) {
+    if ((this.items[index].iconText ?? '').length > 0) {
+      Text(this.items[index].iconText ?? '').fontSize($r('app.float.icon_tabs_icon_size')).width(22).maxLines(1)
+    } else if ((this.items[index].imageUrl ?? '').length > 0) {
       Stack() {
         if (this.items[index].icon) {
           SymbolGlyph(this.items[index].icon as Resource).fontSize($r('app.float.icon_tabs_icon_size'))
@@ -402,42 +531,100 @@ export struct AnimatedIconTabs {
     }.opacity(0).hitTestBehavior(HitTestMode.None).accessibilityLevel('no')
   }
 
+  @Builder
+  private SegmentedTabs(): void {
+    Stack({ alignContent: Alignment.Center }) {
+      // A Column constrains the native control's cross-axis width. A Row in
+      // the horizontal Scroll gives it an unbounded main axis and oversized
+      // equal-weight segments. Keep the whole control sized to its labels.
+      Column() {
+        TabSegmentButtonV2({
+          items: this.segmentOptions(), selectedIndex: this.selected,
+          $selectedIndex: (index: number): void => this.selectSegment(index),
+          onItemClicked: (index: number): void => this.clickSegment(index),
+          itemFontSize: LengthMetrics.resource($r('app.float.icon_buttons_label_size')),
+          itemSelectedFontSize: LengthMetrics.resource($r('app.float.icon_buttons_label_size')),
+          itemMinHeight: LengthMetrics.vp(this.buttonHeight() - this.segmentPadding * 2),
+          itemPadding: { top: LengthMetrics.vp(0), bottom: LengthMetrics.vp(0),
+            start: LengthMetrics.vp(this.segmentLabelPadding), end: LengthMetrics.vp(this.segmentLabelPadding) },
+          buttonMinHeight: LengthMetrics.vp(this.buttonHeight()),
+          buttonPadding: LengthMetrics.vp(this.segmentPadding),
+          languageDirection: isAppRtl(this.appLocale) ? Direction.Rtl : Direction.Ltr,
+          enableStateAnimation: SystemMaterialUtil.isApi26OrAbove(),
+          backgroundSystemMaterial: this.segmentBackgroundMaterial()
+        })
+      }.width(this.segmentContentWidth()).height(this.buttonHeight())
+      ForEach(this.items, (item: IconTabItem, index: number) => {
+        Row() {
+          Text(item.label).fontFamily(this.appFontFamily)
+            .fontSize($r('app.float.icon_buttons_label_size')).fontWeight(FontWeight.Medium)
+            .maxLines(1).width(LayoutPolicy.fixAtIdealSize)
+            .onAreaChange((_old: Area, area: Area): void => this.measureSegment(index, area))
+        }.opacity(0).hitTestBehavior(HitTestMode.None).accessibilityLevel('no')
+      }, (item: IconTabItem): string => 'segment-probe-' + item.key)
+    }.width(this.segmentContentWidth()).height(this.buttonHeight())
+      .id('harmonyx-segmented-tabs')
+  }
+
   build(): void {
-    Scroll(this.scroller) {
-      if (this.buttonStyle) {
-        // Each capsule keeps its complete bold label, optional icons and padding.
-        // The two label states share an intrinsic size; only the fill/opacity animate.
-        Row({ space: this.buttonGap }) {
-          ForEach(this.items, (item: IconTabItem, index: number) => { this.FilledButton(index) },
-            (item: IconTabItem): string => item.key)
-        }.width(LayoutPolicy.fixAtIdealSize).height(this.barHeight)
-          .padding({ left: this.buttonGap / 2, right: this.buttonGap / 2 })
+    Column() {
+      if (this.segmentedStyle) {
+        // The visible rounded control stays fixed. Only its native segment
+        // contents scroll; the material can never extend beyond that frame.
+        Scroll(this.scroller) {
+          this.SegmentedTabs()
+        }.width(this.segmentViewportWidth()).height(this.buttonHeight())
+          .borderRadius(this.buttonHeight() / 2).clip(true)
+          .scrollable(ScrollDirection.Horizontal).scrollBar(BarState.Off)
+          .fadingEdge(false)
+          .id('harmonyx-segmented-control')
+          .priorityGesture(
+            GestureGroup(GestureMode.Exclusive,
+              PanGesture({ direction: PanDirection.Horizontal })
+                .onActionStart((): void => this.beginSegmentScroll())
+                .onActionUpdate((event: GestureEvent): void => this.scrollSegments(event))
+                .onActionEnd((event: GestureEvent): void => this.endSegmentScroll(event)),
+              TapGesture().onAction((event: GestureEvent): void => this.tapSegment(event))
+            )
+          )
       } else {
-        Stack({ alignContent: Alignment.TopStart }) {
-          ForEach(this.items, (item: IconTabItem, index: number) => { this.Tab(index) },
-            (item: IconTabItem): string => item.key)
-          Row().width(this.indicatorWidthAt(this.motionPosition()))
-            .height($r('app.float.icon_tabs_indicator_height')).borderRadius($r('app.float.icon_tabs_indicator_radius'))
-            .backgroundColor($r('app.color.text_primary'))
-            .translate({ x: this.indicatorLeftAt(this.motionPosition()), y: this.barHeight - 3 })
-            .hitTestBehavior(HitTestMode.None)
-          ForEach(this.items, (item: IconTabItem, index: number) => { this.HitArea(index) }, (item: IconTabItem): string => item.key)
-          if (this.contentSizedActive()) {
-            ForEach(this.items, (item: IconTabItem, index: number) => { this.IntrinsicLabelProbe(index) },
-              (item: IconTabItem): string => 'probe-' + item.key)
+        Scroll(this.scroller) {
+          if (this.buttonStyle) {
+            // Each capsule keeps its complete bold label, optional icons and padding.
+            // The two label states share an intrinsic size; only the fill/opacity animate.
+            Row({ space: this.buttonGap }) {
+              ForEach(this.items, (item: IconTabItem, index: number) => { this.FilledButton(index) },
+                (item: IconTabItem): string => item.key)
+            }.width(LayoutPolicy.fixAtIdealSize).height(this.barHeight)
+              .padding({ left: this.buttonGap / 2, right: this.buttonGap / 2 })
+          } else {
+            Stack({ alignContent: Alignment.TopStart }) {
+              ForEach(this.items, (item: IconTabItem, index: number) => { this.Tab(index) },
+                (item: IconTabItem): string => item.key)
+              Row().width(this.indicatorWidthAt(this.motionPosition()))
+                .height($r('app.float.icon_tabs_indicator_height')).borderRadius($r('app.float.icon_tabs_indicator_radius'))
+                .backgroundColor($r('app.color.text_primary'))
+                .translate({ x: this.indicatorLeftAt(this.motionPosition()), y: this.barHeight - 3 })
+                .hitTestBehavior(HitTestMode.None)
+              ForEach(this.items, (item: IconTabItem, index: number) => { this.HitArea(index) }, (item: IconTabItem): string => item.key)
+              if (this.contentSizedActive()) {
+                ForEach(this.items, (item: IconTabItem, index: number) => { this.IntrinsicLabelProbe(index) },
+                  (item: IconTabItem): string => 'probe-' + item.key)
+              }
+              if (this.items[this.selected]?.chevron && Math.abs(this.motionPosition() - this.selected) < 0.01) {
+                Button({ type: ButtonType.Normal, stateEffect: false }) { Row() }.width(22).height(this.barHeight - 8)
+                  .backgroundColor(Color.Transparent)
+                  .translate({ x: this.optionsOffset(this.selected), y: 3 })
+                  .accessibilityText(this.label(this.selected)).onClick((): void => this.onOptions(this.selected))
+              }
+            }.width(this.contentWidth()).height(this.barHeight).clip(true)
           }
-          if (this.items[this.selected]?.chevron && Math.abs(this.motionPosition() - this.selected) < 0.01) {
-            Button({ type: ButtonType.Normal, stateEffect: false }) { Row() }.width(22).height(this.barHeight - 8)
-              .backgroundColor(Color.Transparent)
-              .translate({ x: this.optionsOffset(this.selected), y: 3 })
-              .accessibilityText(this.label(this.selected)).onClick((): void => this.onOptions(this.selected))
-          }
-        }.width(this.contentWidth()).height(this.barHeight).clip(true)
+        }.width('100%').height(this.barHeight).scrollable(ScrollDirection.Horizontal).scrollBar(BarState.Off)
+          .fadingEdge(this.buttonStyle, {
+            fadingEdgeLength: LengthMetrics.resource($r('app.float.title_bar_pill_edge_fade_length'))
+          })
       }
-    }.width('100%').height(this.barHeight).scrollable(ScrollDirection.Horizontal).scrollBar(BarState.Off)
-      .fadingEdge(this.buttonStyle, {
-        fadingEdgeLength: LengthMetrics.resource($r('app.float.title_bar_pill_edge_fade_length'))
-      })
+    }.width('100%').height(this.barHeight).justifyContent(FlexAlign.Center)
       .border({ width: { bottom: this.showDivider ? 0.5 : 0 }, color: $r('app.color.divider') })
       .onAreaChange((_old: Area, area: Area): void => {
         const width: number = Number(area.width);

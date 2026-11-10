@@ -3,11 +3,13 @@ import { preferences } from '@kit.ArkData';
 import type { CommunityRow, CommunityPage } from '../models/Community';
 import type { ListRow, ListPage } from '../models/Tweet';
 import { homeTimelineStore, TimelineTopic } from './HomeTimelineStore';
+import { homeTopicStore } from './HomeTopicStore';
 import { pinnedHomeListStore } from './PinnedHomeListStore';
 import { copyList, listStateStore } from './ListStateStore';
 import { XCommunityParser } from './XCommunityParser';
 import { XListParser } from './XListParser';
 import { XPrivateResult, xPrivateClient } from './XPrivateClient';
+import { localAccountGroupStore } from './LocalAccountGroupStore';
 
 export class HomeCommunityOrder {
   id: string = '';
@@ -33,6 +35,8 @@ export class HomeTimelineSourceStore {
     this.lists = pinnedHomeListStore.current(viewer);
     this.communities = [];
     this.pendingLoad = null;
+    localAccountGroupStore.load(context, viewer);
+    homeTopicStore.load(context, viewer);
     if (viewer.length > 0) {
       try {
         const store = preferences.getPreferencesSync(context, { name: 'harmonyx_home_sources' });
@@ -120,12 +124,15 @@ export class HomeTimelineSourceStore {
   }
 
   async setPinned(context: common.Context, source: TimelineTopic, pinned: boolean): Promise<boolean> {
+    if (source.localGroupId.length > 0) {
+      return localAccountGroupStore.setPinned(context, source.localGroupId, pinned);
+    }
     if (source.communityId.length > 0) {
       const row: CommunityRow | undefined = [...this.communities, ...this.state.communities]
         .find((value: CommunityRow): boolean => value.id === source.communityId);
       return row !== undefined && this.setCommunityPinned(context, row, pinned);
     }
-    if (source.listId.length === 0) { return homeTimelineStore.setPinned(context, source.id, pinned); }
+    if (source.listId.length === 0) { return homeTopicStore.setPinned(context, source, pinned); }
     const viewer: string = this.viewer;
     const generation: number = xPrivateClient.sessionGeneration();
     const row: ListRow | undefined = [...this.lists, ...pinnedHomeListStore.current(viewer)]
@@ -153,7 +160,7 @@ export class HomeTimelineSourceStore {
     const generation: number = xPrivateClient.sessionGeneration();
     if (viewer.length === 0 || viewer !== xPrivateClient.viewerId()) { return false; }
     const results: boolean[] = await Promise.all([
-      this.loadLists(context, viewer, generation), this.loadCommunities(viewer, generation)
+      this.loadLists(context, viewer, generation), this.loadCommunities(viewer, generation), homeTopicStore.refresh(context)
     ]);
     return results.every((ok: boolean): boolean => ok);
   }

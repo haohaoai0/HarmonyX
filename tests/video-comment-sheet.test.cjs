@@ -110,6 +110,24 @@ test('comment expansion cannot trigger viewport pause, while leaving the feed st
   assert.deepEqual(component.calls, ['pause']);
 });
 
+const commentPreviewVisibilityBody = realMethods('entry/src/main/ets/components/PostMedia.ets', 'SurfaceVideoPlayer',
+  ['showsCommentPreviewControls']);
+const CommentPreviewVisibility = new Function(`${commentPreviewVisibilityBody}; return Harness;`)();
+
+test('comment side controls exist only while a comment preview has usable geometry', () => {
+  const component = new CommentPreviewVisibility();
+  component.viewerCommentProgress = 0;
+  component.viewerCommentHeight = 120;
+  assert.equal(component.showsCommentPreviewControls(), false);
+  component.viewerCommentProgress = 0.5;
+  component.viewerCommentHeight = 0;
+  assert.equal(component.showsCommentPreviewControls(), false);
+  component.viewerCommentHeight = 120;
+  assert.equal(component.showsCommentPreviewControls(), true);
+  assert.match(fs.readFileSync('entry/src/main/ets/components/PostMedia.ets', 'utf8'),
+    /if\s*\(\s*this\.mediaViewerLayout\s*&&\s*this\.showsCommentPreviewControls\(\)\s*\)\s*\{\s*this\.CommentPreviewControls\(\)/s);
+});
+
 test('compact controls toggle the current AVPlayer and retain mute state across closing', () => {
   const component = player();
   component.togglePlay();

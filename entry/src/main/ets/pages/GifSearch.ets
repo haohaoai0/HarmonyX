@@ -314,7 +314,7 @@ export struct GifSearchPage {
       .width('100%')
       .height(height)
       .borderRadius(height / 2)
-      .clip(true)
+      .clip(false)
       .attributeModifier(materialModifier(new uiMaterial.ImmersiveMaterial({
         style: uiMaterial.ImmersiveStyle.THIN,
         interactive: true,

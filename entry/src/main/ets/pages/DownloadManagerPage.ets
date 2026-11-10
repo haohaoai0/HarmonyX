@@ -23,7 +23,7 @@ import {
   mediaDownloadService
 } from '../services/MediaDownloadService';
 import { videoPlaybackCache } from '../services/VideoPlaybackCache';
-import { downloadLocationStore } from '../services/DownloadLocationStore';
+import { downloadLocationStore, MediaSaveMethod } from '../services/DownloadLocationStore';
 import { StorageCacheKind, StorageClearResult, clearAppCache, storageBytes } from '../services/DataStorageService';
 import { destinationTitleBarStyle } from '../utils/DestinationTitleBar';
 import { ResponsiveLayout } from '../utils/ResponsiveLayout';
@@ -179,6 +179,9 @@ export struct DownloadManagerPage {
     }
     if (task.status === DownloadTaskStatus.PAUSED || task.status === DownloadTaskStatus.FAILED) {
       return $r('app.string.download_resume');
+    }
+    if (downloadLocationStore.method(this.context()) === MediaSaveMethod.FILE_PICKER) {
+      return $r('app.string.media_save_file_picker');
     }
     return this.saveToFolder ? (downloadLocationStore.supportsDirectory() ?
       $r('app.string.storage_save_to_remembered') : $r('app.string.storage_save_to_downloads')) :

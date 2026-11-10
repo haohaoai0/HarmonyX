@@ -372,7 +372,7 @@ export struct ReplyComposerCapsule {
     .padding(1)
     .backgroundColor(Color.Transparent)
     .borderRadius(userAvatarRadius(42, 21, this.resolvedVerifiedType, this.resolvedAvatarShape))
-    .clip(true)
+    .clip(!this.innerMaterialEnabled())
     .attributeModifier(materialModifier(this.controlMaterial()))
   }
 
@@ -387,7 +387,7 @@ export struct ReplyComposerCapsule {
     .height(42)
     .backgroundColor(Color.Transparent)
     .borderRadius(21)
-    .clip(true)
+    .clip(!this.innerMaterialEnabled())
     .onClick(onClick)
     .attributeModifier(materialModifier(this.controlMaterial()))
   }
@@ -592,7 +592,7 @@ export struct ReplyComposerCapsule {
           .height(this.capsuleTextAreaHeight())
           .backgroundColor(Color.Transparent)
           .borderRadius(this.expanded && this.imageUri.length > 0 ? 28 : 24)
-          .clip(true)
+          .clip(!this.innerMaterialEnabled())
           .fontSize(17)
           .fontColor($r('sys.color.font_primary'))
           .placeholderColor($r('sys.color.font_secondary'))
@@ -672,6 +672,7 @@ export struct ReplyComposerCapsule {
     }
     .width('100%')
     .height(this.capsuleHeight())
+    .clip(false)
     .transition(TransitionEffect.OPACITY.combine(TransitionEffect.translate({ y: 8 }))
       .animation({ duration: 220, curve: Curve.EaseOut, delay: 70 }))
   }

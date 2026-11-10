@@ -2,7 +2,7 @@ import { common } from '@kit.AbilityKit';
 import { HdsNavDestination, HdsNavDestinationTitleMode, ScrollEffectType } from '@kit.UIDesignKit';
 import promptAction from '@ohos.promptAction';
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
-import { DnsSettings, dnsSettingsStore } from '../services/DnsSettingsStore';
+import { DnsSettings, DnsConnectionTestResult, dnsSettingsStore } from '../services/DnsSettingsStore';
 import { DOH_ALIDNS, DOH_CLOUDFLARE, DOH_GOOGLE, normalizeDohEndpoint } from '../services/DnsOverHttps';
 import { STORAGE_KEY_PAGE_TRANSITION_MODE, DEFAULT_PAGE_TRANSITION_MODE } from '../services/PageTransitionSettingsStore';
 import { appPageBackground } from '../components/PageBackgroundLayer';
@@ -34,7 +34,9 @@ export struct DnsSettingsPage {
   @State private endpoint: string = DOH_ALIDNS;
   @State private provider: number = 0;
   @State private testing: boolean = false;
+  @State private testingX: boolean = false;
   @State private testResult: string = '';
+  @State private xTestResult: string = '';
   private scroller: Scroller = new Scroller();
   private testRevision: number = 0;
 
@@ -63,7 +65,9 @@ export struct DnsSettingsPage {
   private invalidateTest(): void {
     this.testRevision++;
     this.testing = false;
+    this.testingX = false;
     this.testResult = '';
+    this.xTestResult = '';
   }
 
   private selectProvider(index: number): void {
@@ -100,6 +104,30 @@ export struct DnsSettingsPage {
     this.testing = false;
     this.testResult = latency >= 0 ? this.text($r('app.string.dns_test_success')) + ' · ' +
       latency.toString() + ' ms' : this.text($r('app.string.dns_test_failed'));
+  }
+
+  private async testX(): Promise<void> {
+    if (normalizeDohEndpoint(this.endpoint).length === 0) {
+      promptAction.showToast({ message: $r('app.string.dns_invalid'), duration: 2200 });
+      return;
+    }
+    const revision: number = ++this.testRevision;
+    this.testingX = true;
+    this.xTestResult = '';
+    const result: DnsConnectionTestResult = await dnsSettingsStore.testXConnection(this.endpoint);
+    if (revision !== this.testRevision) { return; }
+    this.testingX = false;
+    if (result.success) {
+      this.xTestResult = this.text($r('app.string.dns_x_test_success')) + ' · ' +
+        result.latencyMs.toString() + ' ms';
+    } else {
+      this.xTestResult = this.text($r('app.string.dns_x_test_failed'));
+      if (result.responseCode > 0) {
+        this.xTestResult += ' · HTTP ' + result.responseCode.toString();
+      } else if (result.errorCode !== 0) {
+        this.xTestResult += ' · ' + result.errorCode.toString();
+      }
+    }
   }
 
   @Builder
@@ -156,12 +184,19 @@ export struct DnsSettingsPage {
                 .onChange((value: string): void => { this.endpoint = value; this.invalidateTest(); })
               this.Note($r('app.string.dns_endpoint_desc'))
               Button(this.testing ? $r('app.string.proxy_testing') : $r('app.string.dns_test'))
-                .width('100%').enabled(!this.testing)
+                .width('100%').enabled(!this.testing && !this.testingX)
                 .backgroundColor(secondaryButtonSurfaceColor(this.displayMode, this.darkSurface))
                 .fontColor($r('app.color.text_primary'))
                 .onClick((): void => { this.test(); })
               if (this.testResult.length > 0) { this.Note(this.testResult) }
               this.Note($r('app.string.dns_test_desc'))
+              Button(this.testingX ? $r('app.string.proxy_testing') : $r('app.string.dns_x_test'))
+                .width('100%').enabled(!this.testing && !this.testingX)
+                .backgroundColor(secondaryButtonSurfaceColor(this.displayMode, this.darkSurface))
+                .fontColor($r('app.color.text_primary'))
+                .onClick((): void => { this.testX(); })
+              if (this.xTestResult.length > 0) { this.Note(this.xTestResult) }
+              this.Note($r('app.string.dns_x_test_desc'))
             }.width('100%').alignItems(HorizontalAlign.Start).padding(16).borderRadius(16)
               .backgroundColor(pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue))
 

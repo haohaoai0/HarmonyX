@@ -39,6 +39,11 @@ export const STORAGE_KEY_TITLE_BAR_LOGO_AUTO_CONTRAST: string = 'harmonyx.title_
 export const STORAGE_KEY_COMPACT_SWITCH_STYLE: string = 'harmonyx.compact_switch_style';
 export const COMPACT_SWITCH_TABS: string = 'tabs';
 export const COMPACT_SWITCH_BUTTONS: string = 'buttons';
+export const COMPACT_SWITCH_SEGMENTED: string = 'segmented';
+
+export function normalizeCompactSwitchStyle(style: string): string {
+  return style === COMPACT_SWITCH_BUTTONS || style === COMPACT_SWITCH_SEGMENTED ? style : COMPACT_SWITCH_TABS;
+}
 export const STORAGE_KEY_IMMERSIVE_TITLE_BAR_BLUR: string = 'harmonyx.immersive_title_bar_blur';
 // 标题栏样式，显示设置里以三选一呈现，玻璃材质还有个子开关：
 //   0 沉浸渐变模糊——标题栏样式全给 HDS；
@@ -133,7 +138,7 @@ export class AppearanceSettings {
     this.titleBarLogoEnabled = titleBarLogoEnabled;
     this.titleBarLogoAutoContrast = titleBarLogoAutoContrast;
     this.systemEmojiEnabled = systemEmojiEnabled;
-    this.compactSwitchStyle = compactSwitchStyle === COMPACT_SWITCH_BUTTONS ? COMPACT_SWITCH_BUTTONS : COMPACT_SWITCH_TABS;
+    this.compactSwitchStyle = normalizeCompactSwitchStyle(compactSwitchStyle);
   }
 }
 
@@ -271,7 +276,7 @@ export class AppearanceStore {
       store.putSync(AppearanceStore.TITLE_BAR_LOGO_KEY, settings.titleBarLogoEnabled);
       store.putSync(AppearanceStore.TITLE_BAR_LOGO_AUTO_CONTRAST_KEY, settings.titleBarLogoAutoContrast);
       store.putSync(AppearanceStore.COMPACT_SWITCH_STYLE_KEY,
-        settings.compactSwitchStyle === COMPACT_SWITCH_BUTTONS ? COMPACT_SWITCH_BUTTONS : COMPACT_SWITCH_TABS);
+        normalizeCompactSwitchStyle(settings.compactSwitchStyle));
       store.putSync(AppearanceStore.DARK_SURFACE_KEY,
         this.isValidDarkSurface(settings.darkSurface) ? settings.darkSurface : DARK_SURFACE_BLACK);
       store.flushSync();

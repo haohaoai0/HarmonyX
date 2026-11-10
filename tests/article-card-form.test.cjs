@@ -1,3 +1,4 @@
+const { withDohHttpMock } = require('./doh-http-fixture.cjs');
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
@@ -11,7 +12,7 @@ function evaluate(source, dependencies = {}, globals = {}) {
   }).outputText;
   const module = { exports: {} };
   const names = Object.keys(globals);
-  new Function('require', 'module', 'exports', ...names, output)(name => {
+  new Function('require', 'module', 'exports', ...names, output)(name => { withDohHttpMock(dependencies);
     assert.ok(Object.hasOwn(dependencies, name), 'Unexpected dependency: ' + name);
     return dependencies[name];
   }, module, module.exports, ...names.map(name => globals[name]));

@@ -49,6 +49,7 @@ export struct TitleBarPill {
     .padding({ left: $r('app.float.title_bar_pill_padding'), right: $r('app.float.title_bar_pill_padding') })
     .backgroundColor(SystemMaterialUtil.isApi26OrAbove() ? Color.Transparent :
       (this.selected ? this.accentColor : $r('app.color.bg_field')))
+    .clip(false)
     .attributeModifier(materialModifier(this.material()))
     .accessibilityGroup(true).accessibilityText(this.accessibilityLabel())
     .onClick((): void => this.onSelect())

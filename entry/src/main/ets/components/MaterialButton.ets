@@ -6,6 +6,7 @@ import { motionDuration, motionScale, motionCurve } from '../utils/AppMotion';
 import { hapticTick } from '../utils/Haptics';
 import { SystemMaterialUtil } from '../utils/SystemMaterial';
 import { materialModifier } from '../utils/SystemMaterial';
+import { MaterialSurfaceHost } from './MaterialSurfaceHost';
 
 @Component
 export struct MaterialButton {
@@ -16,6 +17,7 @@ export struct MaterialButton {
   @Prop buttonRadius: Length = 21;
   @Prop surfaceColor: ResourceColor = Color.Transparent;
   @Prop materialEnabled: boolean = true;
+  @Prop nativeMaterialHost: boolean = false;
   @Prop materialLevel: number = 1;
   @Prop applyShadow: boolean = false;
   @Prop enableFallbackBlur: boolean = false;
@@ -32,6 +34,7 @@ export struct MaterialButton {
   @Prop buttonPressFeedback: boolean = true;
   @StorageProp('reduceMotionEnabled') private reduceMotion: boolean = false;
   @State private pressed: boolean = false;
+  @State private measuredButtonHeight: number = 0;
 
   public onButtonClick: () => void = (): void => {
   };
@@ -46,12 +49,23 @@ export struct MaterialButton {
     if (!this.materialEnabled) {
       return undefined;
     }
-    return SystemMaterialUtil.immersiveMaterial(this.materialLevel, false, this.applyShadow,
-      this.materialTint === undefined, this.lightColor, this.materialTint);
+    return SystemMaterialUtil.immersiveMaterial(this.materialLevel, this.usesNativeMaterialHost(), this.applyShadow,
+      this.materialTint === undefined && (!this.nativeMaterialHost || this.adaptiveForeground),
+      this.usesNativeMaterialHost() ? (this.lightColor ?? Color.White) : this.lightColor, this.materialTint);
+  }
+
+  private usesNativeMaterialHost(): boolean {
+    return this.nativeMaterialHost && this.materialEnabled && SystemMaterialUtil.isApi26OrAbove();
+  }
+
+  private nativeHeight(): number {
+    if (typeof this.buttonHeight === 'number') { return this.buttonHeight; }
+    if (typeof this.buttonHeight === 'string') { return this.measuredButtonHeight; }
+    return this.getUIContext().px2vp(getContext(this).resourceManager.getNumber(this.buttonHeight.id));
   }
 
   private onButtonTouch(event: TouchEvent): void {
-    if (!this.buttonPressFeedback || !this.buttonEnabled) { return; }
+    if (!this.buttonPressFeedback || !this.buttonEnabled || this.usesNativeMaterialHost()) { return; }
     const pressed: boolean = event.type === TouchType.Down ? true :
       (event.type === TouchType.Up || event.type === TouchType.Cancel ? false : this.pressed);
     if (pressed === this.pressed) { return; }
@@ -67,6 +81,7 @@ export struct MaterialButton {
         .width(LayoutPolicy.matchParent)
         .height(LayoutPolicy.matchParent)
         .borderRadius(this.buttonRadius)
+        .clip(false)
         .backgroundColor(Color.Transparent)
         .focusable(false)
         .accessibilityLevel('no')
@@ -89,13 +104,27 @@ export struct MaterialButton {
     }
     .width(this.buttonWidth === undefined ? undefined : '100%')
     .height('100%')
+    .clip(false)
     .compositingFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.componentHdrEnabled && this.enableHdrHighlight && this.buttonEnabled, this.componentHdrRatio))
     .hitTestBehavior(HitTestMode.None)
   }
 
+  @Builder
+  private NativeMaterialContent(): void {
+    Stack({ alignContent: Alignment.Center }) { this.ForegroundContent(); }
+      .width('100%').height('100%')
+      .borderRadius(this.buttonRadius).clip(false)
+      .backgroundColor(Color.Transparent)
+      .attributeModifier(materialModifier(this.material()))
+  }
+
   build(): void {
     Stack({ alignContent: Alignment.Center }) {
-      if (this.adaptiveForeground && this.materialEnabled && SystemMaterialUtil.isApi26OrAbove()) {
+      if (this.usesNativeMaterialHost()) {
+        MaterialSurfaceHost({ surfaceHeight: this.nativeHeight(),
+          surfaceContent: (): void => { this.NativeMaterialContent(); } })
+          .width('100%').height('100%').clip(false)
+      } else if (this.adaptiveForeground && this.materialEnabled && SystemMaterialUtil.isApi26OrAbove()) {
         // Automatic foreground inversion only reaches descendants of the material node.
         Toggle({ type: ToggleType.Button, isOn: false }) {
           this.ForegroundContent();
@@ -104,6 +133,7 @@ export struct MaterialButton {
         .height('100%')
         .padding(0)
         .borderRadius(this.buttonRadius)
+        .clip(false)
         .backgroundColor(Color.Transparent)
         .focusable(false)
         .accessibilityLevel('no')
@@ -116,9 +146,14 @@ export struct MaterialButton {
     }
     .width(this.buttonWidth)
     .height(this.buttonHeight)
+    .onAreaChange((_old: Area, area: Area): void => {
+      if (!this.nativeMaterialHost || typeof this.buttonHeight !== 'string') { return; }
+      const height: number = Number(area.height);
+      if (height > 0 && height !== this.measuredButtonHeight) { this.measuredButtonHeight = height; }
+    })
     .borderRadius(this.buttonRadius)
     .border({ width: this.buttonBorderWidth, color: this.buttonBorderColor })
-    .clip(true)
+    .clip(!(this.materialEnabled && SystemMaterialUtil.isApi26OrAbove()))
     .onClick((): void => {
       hapticTick();
       this.onButtonClick();

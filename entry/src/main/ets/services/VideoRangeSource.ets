@@ -1,3 +1,4 @@
+import { DohHttpRequest, createDohHttpRequest } from './DohHttpRequest';
 // Native AVPlayer consumes this loopback HTTP source. Remote Range requests
 // use the app's actual proxy; validated chunks persist across player releases.
 // No decoder is replaced and no second full-file download runs during playback.
@@ -176,7 +177,7 @@ class VideoRangeSession {
   private pending: Map<number, Promise<boolean>> = new Map<number, Promise<boolean>>();
   private transfers: Map<number, RangeStreamBuffer> = new Map<number, RangeStreamBuffer>();
   private demands: Map<number, boolean> = new Map<number, boolean>();
-  private requests: http.HttpRequest[] = [];
+  private requests: DohHttpRequest[] = [];
   private closed: boolean = false;
   private onClosed: () => void;
   private onChunk: () => void;
@@ -389,7 +390,7 @@ class VideoRangeSession {
     return !this.metadata.validator.startsWith('"') || validator.length === 0 || validator === this.metadata.validator;
   }
 
-  private async receiveStream(request: http.HttpRequest, options: http.HttpRequestOptions,
+  private async receiveStream(request: DohHttpRequest, options: http.HttpRequestOptions,
     start: number, length: number, transfer: RangeStreamBuffer): Promise<RangeStreamResponse> {
     const response: RangeStreamResponse = new RangeStreamResponse();
     const started: number = Date.now();
@@ -429,7 +430,7 @@ class VideoRangeSession {
   private async fetchChunk(index: number, bootstrap: boolean = false,
     transfer: RangeStreamBuffer | null = null): Promise<boolean> {
     for (let attempt: number = 0; attempt < 2 && !this.closed; attempt++) {
-      let request: http.HttpRequest | null = null;
+      let request: DohHttpRequest | null = null;
       try {
         const start: number = index * VIDEO_RANGE_CHUNK_BYTES;
         const length: number = bootstrap ? VIDEO_RANGE_START_BYTES : this.chunkLength(index);
@@ -443,7 +444,7 @@ class VideoRangeSession {
           connectTimeout: 5000, readTimeout: 8000 };
         await proxyStore.applyForMediaRequest(options, this.remoteUrl);
         if (this.closed) { return false; }
-        request = http.createHttp(); this.requests.push(request);
+        request = createDohHttpRequest(); this.requests.push(request);
         const started: number = Date.now();
         let code: number = 0;
         let headerText: string = '{}';

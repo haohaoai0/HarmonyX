@@ -1,3 +1,4 @@
+const { withDohHttpMock } = require('./doh-http-fixture.cjs');
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
@@ -29,7 +30,8 @@ const dependencies = {
   'libharmonyx_chat.so': { async invoke(method, input) { nativeCalls.push({method,input:JSON.parse(input)}); return JSON.stringify(nativeByMethod[method] || nativeResult); } },
   './XPrivateClient': { xPrivateClient: client },
   './XPrivateStore': { xPrivateStore: {load() { return {cacheIdentity:()=>active}; }} },
-  './ProxyStore': { proxyStore: {snapshot:()=>proxySettings,refreshSystemVpnState:async()=>systemVpnActive} },
+  './ProxyStore': { proxyStore: {snapshot:()=>proxySettings,refreshSystemVpnState:async()=>systemVpnActive,
+    resolveProxyHost: async host => host.includes(':') ? '[' + host.replace(/^\[|\]$/g, '') + ']' : host} },
   './XNotificationParser': {XNotificationParser:{relativeTime:()=> 'now'}}
   , './XDmParser': {XDmParser:{parseConversation:()=>legacyMessages === undefined ? null : {messages:legacyMessages}}}
   , './XChatActions': { xChatActions: {localString:()=>'',localBoolean:()=>false,
@@ -43,9 +45,9 @@ const actionModule={exports:{}};
 const actionCode=ts.transpileModule(fs.readFileSync('entry/src/main/ets/services/XChatActions.ets','utf8'), {
   compilerOptions:{target:ts.ScriptTarget.ES2020,module:ts.ModuleKind.CommonJS}
 }).outputText;
-new Function('require','module','exports',actionCode)(id=>dependencies[id]||{},actionModule,actionModule.exports);
+new Function('require','module','exports',actionCode)(id=>(() => { withDohHttpMock(dependencies); return dependencies[id]||{}; })(),actionModule,actionModule.exports);
 dependencies['./XChatActions'].xChatActions.action=(...args)=>actionModule.exports.xChatActions.action(...args);
-new Function('require','module','exports',code)(id=>{if(id==='../utils/UserIdentity')return require('./post-card-fixture.cjs').load('utils/UserIdentity');if(!dependencies[id])throw new Error(id);return dependencies[id];},moduleObject,moduleObject.exports);
+new Function('require','module','exports',code)(id=>{ withDohHttpMock(dependencies);if(id==='../utils/UserIdentity')return require('./post-card-fixture.cjs').load('utils/UserIdentity');if(!dependencies[id])throw new Error(id);return dependencies[id];},moduleObject,moduleObject.exports);
 const {XChatService,XChatPage}=moduleObject.exports;
 function user(id, version='1') { return {rest_id:id,result:{core:{name:'User '+id,screen_name:'user'+id},get_public_keys:{public_keys_with_token_map:[{
   public_key_with_metadata:{version,public_key:{public_key:'identity-'+id,signing_public_key:'signing-'+id,identity_public_key_signature:'binding-'+id}},

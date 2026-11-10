@@ -1,4 +1,5 @@
 import { MediaDownloadButton } from './MediaDownloadButton';
+import type { PostCardReadingState } from '../services/PostCardReadingState';
 import { STORAGE_KEY_VIDEO_DOWNLOAD_BUTTON } from '../services/MediaSettingsStore';
 import { postUsesHorizontalMediaStrip } from '../utils/PostMediaStrip';
 import { mediaAvatarPanProgress } from '../utils/PostMediaAvatarMotion';
@@ -79,6 +80,7 @@ import {
 } from '../services/MediaDownloadService';
 import { proxyDownloadService } from '../services/ProxyDownloadService';
 import {
+  PhotoRequest,
   PhotoViewerPhoto,
   requestPhotoViewer
 } from '../utils/PhotoViewerRequest';
@@ -102,6 +104,8 @@ import {
   STORAGE_KEY_VIDEO_FEED_TAP_PAUSE,
   STORAGE_KEY_VIDEO_AUTO_BITRATE_CAP,
   STORAGE_KEY_VIDEO_HOLD_SPEED,
+  STORAGE_KEY_INLINE_VIDEO_HOLD_PLAY,
+  STORAGE_KEY_INLINE_VIDEO_OVERLAY_CONTROLS,
   STORAGE_KEY_VIDEO_DOUBLE_TAP_SEEK,
   STORAGE_KEY_VIDEO_DOUBLE_TAP_SEEK_SECONDS,
   DEFAULT_VIDEO_DOUBLE_TAP_SEEK_ENABLED,
@@ -436,6 +440,8 @@ struct MediaCover {
     }
     .width('100%')
     .height(this.mediaHeight)
+    .borderRadius(this.cornerRadius)
+    .clip(true)
     // Media sits inside a card that also opens the post. Without event
     // monopoly one tap can push both PhotoViewer and PostDetail, leaving two
     // shared-element transitions fighting over the return path.
@@ -518,8 +524,8 @@ class SurfacePipPlaybackHandle implements VideoPipPlaybackHandle {
 
 const PLAYER_BAR_HEIGHT: number = 56;
 const INLINE_VIDEO_CONTROLS_HEIGHT: number = 56;
-// 44vp seek target + 12vp separation + 48vp buttons + 8vp bottom padding.
-export const VIDEO_FEED_CONTROLS_HEIGHT: number = 112;
+// 28vp seek target + 44vp buttons + 8vp bottom padding; safe area is separate.
+export const VIDEO_FEED_CONTROLS_HEIGHT: number = 80;
 const INLINE_PROGRESS_LINE_HEIGHT: number = 28;
 const INLINE_CONTROL_PANEL_HEIGHT: number = PLAYER_BAR_HEIGHT + 22 + 4;
 const FULLSCREEN_CONTROL_PANEL_HEIGHT: number = 94;
@@ -645,7 +651,7 @@ export struct SurfaceVideoPlayer {
   onFullscreenFeedSwipe: () => void = (): void => {};
   onViewerControlsChanged: (visible: boolean) => void = (visible: boolean): void => {};
   onViewerVideoTap: () => void = (): void => {};
-  // Inline posts use the media menu; the viewer keeps its playback hold gesture.
+  // Inline posts can choose the media menu or the playback hold gesture.
   onMenuRequest: () => void = (): void => {};
   @StorageProp(STORAGE_KEY_VIDEO_FEED_TAP_PAUSE) private videoFeedTapPause: boolean = false;
   @Prop adaptiveShortVideo: boolean = false;
@@ -696,6 +702,8 @@ export struct SurfaceVideoPlayer {
   // Holding a playing video raises its rate instead of seeking. The reader
   // chooses between the two gestures in Media settings.
   @StorageLink(STORAGE_KEY_VIDEO_HOLD_SPEED) holdSpeedEnabled: boolean = true;
+  @StorageProp(STORAGE_KEY_INLINE_VIDEO_HOLD_PLAY) inlineVideoHoldPlay: boolean = false;
+  @StorageProp(STORAGE_KEY_INLINE_VIDEO_OVERLAY_CONTROLS) inlineVideoOverlayControls: boolean = false;
   @StorageProp(STORAGE_KEY_VIDEO_DOUBLE_TAP_SEEK) doubleTapSeekEnabled: boolean = DEFAULT_VIDEO_DOUBLE_TAP_SEEK_ENABLED;
   @StorageProp(STORAGE_KEY_VIDEO_DOUBLE_TAP_SEEK_SECONDS) doubleTapSeekSeconds: number = DEFAULT_VIDEO_DOUBLE_TAP_SEEK_SECONDS;
   // What this video does when the reader leaves the app while it is playing
@@ -853,6 +861,7 @@ export struct SurfaceVideoPlayer {
   private playbackVolume: number = 1;
   private alive: boolean = true;
   private retainedForPip: boolean = false;
+  private postPipClosed: boolean = false;
   private fullscreenOrientationRequest: number = 0;
 
   aboutToAppear(): void {
@@ -863,6 +872,11 @@ export struct SurfaceVideoPlayer {
     if (this.fullscreenInstanceKey.length === 0) {
       this.fullscreenInstanceKey = this.media.id + '-' + Date.now().toString() + '-' +
         Math.floor(Math.random() * 1000000).toString();
+    }
+    this.postPipClosed = false;
+    if (this.allowPip) {
+      videoPipGate.registerOwner(this.media.id, this.fullscreenInstanceKey,
+        (): void => this.closePostPip());
     }
     // Returning needs a surface owner even if autoplay was off and this
     // component never created a native player underneath the viewer.
@@ -875,7 +889,7 @@ export struct SurfaceVideoPlayer {
     this.aiCaptionShown = this.captionRequested;
     this.aiCaptionOptions.initialOpacity = this.captionOpacity;
     this.playbackHandle.onStart = (): void => {
-      this.play();
+      this.play(true);
     };
     this.playbackHandle.onPause = (): void => {
       this.pause();
@@ -892,7 +906,8 @@ export struct SurfaceVideoPlayer {
     this.wantsPlay = this.playbackEnabled ?
       (this.exploreHeroVideo || this.videoAutoplay || this.manualStart) :
       this.preloadEnabled;
-    if (this.isCoveredByVideoFeed()) { this.wantsPlay = false; }
+    if (this.isCoveredByVideoFeed() || !this.mediaViewerLayout &&
+      videoPlayerHandoff.isInlinePaused(this.media.id)) { this.wantsPlay = false; }
     this.preloading = !this.playbackEnabled && this.wantsPlay;
     this.currentSource = streamSource(this.media, this.videoQuality, this.autoBitrateCap);
     if (this.playbackEnabled && !this.isAnimatedGif()) {
@@ -969,6 +984,12 @@ export struct SurfaceVideoPlayer {
     return this.hideInlineControls && !this.fullscreen && !this.mediaViewerLayout;
   }
 
+  private usesInlineOverlayControls(): boolean {
+    return this.inlineVideoOverlayControls && !this.mediaViewerLayout && !this.fullscreen &&
+      !this.adaptiveShortVideo && !this.controlsAtScreenBottom &&
+      !this.hideVideoChrome() && !this.hideInlineVideoControls();
+  }
+
   private hideVideoChrome(): boolean {
     return this.exploreHeroVideo || this.isAnimatedGif() || this.linkCardVideo && !this.fullscreen;
   }
@@ -1042,6 +1063,7 @@ export struct SurfaceVideoPlayer {
       return;
     }
     this.alive = false;
+    videoPipGate.unregisterOwner(this.fullscreenInstanceKey);
     this.clearHideTimer();
     this.clearLoadTimeout();
     this.clearSourceRetryTimer();
@@ -1620,7 +1642,7 @@ export struct SurfaceVideoPlayer {
   }
 
   private showsProgressBelowVideo(): boolean {
-    return !this.controlsAtScreenBottom && !this.adaptiveShortVideo && !this.hideVideoChrome() && !this.hideInlineVideoControls() &&
+    return !this.usesInlineOverlayControls() && !this.controlsAtScreenBottom && !this.adaptiveShortVideo && !this.hideVideoChrome() && !this.hideInlineVideoControls() &&
       (this.mediaViewerLayout || this.fullscreen || this.videoAutoplay || this.manualStart || this.playing);
   }
 
@@ -1914,12 +1936,17 @@ export struct SurfaceVideoPlayer {
     this.muted = this.usesFeedMutePreference() ? this.startMuted() : handoff.muted;
     this.playbackVolume = this.usesFeedMutePreference() ?
       (this.muted ? 0 : (handoff.volume > 0 ? handoff.volume : 1)) : handoff.volume;
-    this.wantsPlay = true;
+    this.wantsPlay = this.mediaViewerLayout || !videoPlayerHandoff.isInlinePaused(this.media.id);
     this.initialPositionApplied = true;
     this.buffering = false;
     this.failed = false;
     this.preparing = false;
     this.bindPlayerEvents(handoff.player);
+    if (!this.wantsPlay) {
+      this.resumeAfterVideoFeed = false;
+      this.pause();
+      this.playing = false;
+    }
     if (this.playing && this.playbackEnabled) {
       this.claimExclusivePlayback();
       this.lastProgressAt = Date.now();
@@ -1945,7 +1972,7 @@ export struct SurfaceVideoPlayer {
     this.attachSurfaceAndPrepare();
     hilog.info(DOMAIN, TAG, 'video handoff adopted id=%{public}s viewer=%{public}d state=%{public}s surface=%{public}s',
       this.media.id, this.mediaViewerLayout ? 1 : 0, handoff.player.state, this.inlineSurfaceId);
-    if (!this.playing && this.playbackEnabled) {
+    if (!this.playing && this.playbackEnabled && this.wantsPlay) {
       this.play();
     }
   }
@@ -2527,7 +2554,11 @@ export struct SurfaceVideoPlayer {
 
   // ---- Playback ------------------------------------------------------------
 
-  private play(): void {
+  private play(explicit: boolean = false): void {
+    if (!this.mediaViewerLayout && !this.fullscreen && !this.isAnimatedGif()) {
+      if (explicit) { videoPlayerHandoff.setInlinePaused(this.media.id, false); }
+      else if (videoPlayerHandoff.isInlinePaused(this.media.id)) { this.pause(); return; }
+    }
     if (this.casting) {
       videoMediaSession.sendCastCommand(this.media.id, { command: 'play' });
       this.holdControls();
@@ -2653,6 +2684,7 @@ export struct SurfaceVideoPlayer {
   }
 
   private togglePlay(): void {
+    if (!this.mediaViewerLayout && !this.fullscreen) { videoPlayerHandoff.setInlinePaused(this.media.id, false); }
     if (this.failed) {
       this.retry();
       return;
@@ -2707,6 +2739,7 @@ export struct SurfaceVideoPlayer {
   }
 
   private onInlineAudioTap(): void {
+    videoPlayerHandoff.setInlinePaused(this.media.id, false);
     if (!this.playing) {
       this.setMuted(false, true, true);
       this.saveFeedMuteChoice();
@@ -2912,7 +2945,7 @@ export struct SurfaceVideoPlayer {
   // gesture: a recognised long press is dropped as soon as the reader slides
   // their finger, and sliding is exactly how the temporary rate is chosen.
   private onHoldSpeedTouch(event: TouchEvent): void {
-    if ((!this.mediaViewerLayout && !this.fullscreen) || !this.holdSpeedEnabled) {
+    if ((!this.mediaViewerLayout && !this.fullscreen && !this.inlineVideoHoldPlay) || !this.holdSpeedEnabled) {
       return;
     }
     if (event.type === TouchType.Down) {
@@ -3284,7 +3317,7 @@ export struct SurfaceVideoPlayer {
 
   private onManualStartChanged(): void {
     if (this.playbackEnabled && this.manualStart && !this.wantsPlay) {
-      this.play();
+      this.play(true);
     }
   }
 
@@ -3303,8 +3336,13 @@ export struct SurfaceVideoPlayer {
   private onVideoSurfaceTap(): void {
     if (this.holdSeekDirection !== 0 || Date.now() < this.suppressVideoTapUntil) { return; }
     if (this.linkCardVideo && !this.fullscreen) { this.onLinkCardOpen(); return; }
-    if (!this.mediaViewerLayout && !this.fullscreen && !this.isAnimatedGif() &&
-      this.onFullscreenIntent(this.positionSec)) { return; }
+    if (!this.mediaViewerLayout && !this.fullscreen) {
+      // An inline surface tap belongs to this player only. Opening the video
+      // feed viewer is reserved for the explicit fullscreen controls.
+      if (this.isAnimatedGif()) { this.togglePlay(); }
+      else if (!this.hideVideoChrome()) { this.toggleControls(); }
+      return;
+    }
     if (this.retainViewerPlayback) { this.onViewerCommentDismiss(); return; }
     if (this.mediaViewerLayout && !this.fullscreen) {
       this.onViewerVideoTap();
@@ -3315,7 +3353,13 @@ export struct SurfaceVideoPlayer {
   }
 
   private onVideoLongPress(event: GestureEvent): void {
-    if (this.mediaViewerLayout || this.fullscreen) {
+    if (!this.mediaViewerLayout && !this.fullscreen && this.inlineVideoHoldPlay &&
+      !this.isAnimatedGif() && !this.playing) {
+      this.suppressVideoTapUntil = Date.now() + 700;
+      this.play(true);
+      return;
+    }
+    if (this.mediaViewerLayout || this.fullscreen || (this.inlineVideoHoldPlay && !this.isAnimatedGif())) {
       // Touch owns temporary speed so sliding does not cancel the hold.
       if (!this.holdSpeedEnabled) { this.holdSeek(event); }
       return;
@@ -3557,11 +3601,11 @@ export struct SurfaceVideoPlayer {
   }
 
   private async startPip(): Promise<void> {
-    if (!this.alive || this.pipActive || this.fullscreen || !this.pipSupported()) {
+    if (this.postPipClosed || !this.alive || this.pipActive || this.fullscreen || !this.pipSupported()) {
       return;
     }
     const controller: PiPWindow.PiPController | null = await this.ensurePipController(false);
-    if (controller === null || !this.alive || this.pipActive) {
+    if (controller === null || this.postPipClosed || !this.alive || this.pipActive) {
       return;
     }
     videoPipGate.hold(this.media.id);
@@ -3573,6 +3617,10 @@ export struct SurfaceVideoPlayer {
       hilog.warn(DOMAIN, TAG, 'pip auto start enable skipped id=%{public}s', this.media.id);
     }
     activeController.startPiP().then((): void => {
+      if (this.postPipClosed || !this.alive) {
+        activeController.stopPiP().catch((): void => {});
+        return;
+      }
       hilog.info(DOMAIN, TAG, 'pip started id=%{public}s', this.media.id);
     }).catch((error: BusinessError): void => {
       videoPipGate.release(this.media.id);
@@ -3623,7 +3671,8 @@ export struct SurfaceVideoPlayer {
       hilog.error(DOMAIN, TAG, 'pip create failed id=%{public}s', this.media.id);
       return null;
     }
-    if (!this.alive) {
+    if (!this.alive || this.postPipClosed) {
+      controller.setAutoStartEnabled(false);
       return null;
     }
     this.pipController = controller;
@@ -3761,7 +3810,7 @@ export struct SurfaceVideoPlayer {
   }
 
   private requestPip(): void {
-    if (!this.alive || !this.playbackEnabled || this.fullscreen || this.pipActive || !this.pipSupported()) {
+    if (this.postPipClosed || !this.alive || !this.playbackEnabled || this.fullscreen || this.pipActive || !this.pipSupported()) {
       return;
     }
     this.onPipIntent();
@@ -3882,6 +3931,13 @@ export struct SurfaceVideoPlayer {
       return;
     }
     this.stopRequested = true;
+    try { controller.setAutoStartEnabled(false); } catch (error) {
+      hilog.warn(DOMAIN, TAG, 'pip auto start disable failed id=%{public}s', this.media.id);
+    }
+    // Detach before stop: a late STARTED/restore event must not revive a page
+    // whose navigation handle has just been removed.
+    controller.off('stateChange');
+    controller.off('controlEvent');
     controller.stopPiP().then((): void => {
       controller.off('stateChange');
       controller.off('controlEvent');
@@ -3892,6 +3948,7 @@ export struct SurfaceVideoPlayer {
   }
 
   private onPipState(state: PiPWindow.PiPState, reason: string): void {
+    if (this.postPipClosed) { return; }
     hilog.info(DOMAIN, TAG, 'pip state id=%{public}s state=%{public}d reason=%{public}s',
       this.media.id, state, reason);
     if (state === PiPWindow.PiPState.STARTED) {
@@ -3930,6 +3987,7 @@ export struct SurfaceVideoPlayer {
       this.syncBackgroundPlayback();
       if (retained && !restored) {
         this.alive = false;
+        videoPipGate.unregisterOwner(this.fullscreenInstanceKey);
         this.releasePipCallbacks();
         this.destroyPlayer();
         return;
@@ -3962,6 +4020,7 @@ export struct SurfaceVideoPlayer {
   }
 
   private onPipControl(control: PiPWindow.ControlEventParam): void {
+    if (this.postPipClosed) { return; }
     if (control.controlType === PiPWindow.PiPControlType.FAST_FORWARD) {
       this.seekBy(PIP_SEEK_STEP_SECONDS);
       return;
@@ -3992,6 +4051,20 @@ export struct SurfaceVideoPlayer {
         this.playing ? PiPWindow.PiPControlStatus.PLAY : PiPWindow.PiPControlStatus.PAUSE);
     } catch (error) {
       hilog.warn(DOMAIN, TAG, 'pip control status skipped id=%{public}s', this.media.id);
+    }
+  }
+
+  private closePostPip(): void {
+    this.postPipClosed = true;
+    this.pendingPip = false;
+    this.pause();
+    this.releasePip();
+    this.syncBackgroundPlayback();
+    if (this.retainedForPip) {
+      this.retainedForPip = false;
+      this.alive = false;
+      videoPipGate.unregisterOwner(this.fullscreenInstanceKey);
+      this.destroyPlayer();
     }
   }
 
@@ -4716,6 +4789,86 @@ export struct SurfaceVideoPlayer {
       pageTextColor(original, this.pageBackgroundValue, this.controlSurface, minimum) : original;
   }
 
+  private inlineOverlayIcon(action: number): Resource {
+    if (action === 0) { return this.playing ? $r('sys.symbol.pause_fill') : $r('sys.symbol.play_fill'); }
+    if (action === 1) { return this.muted ? $r('sys.symbol.speaker_slash_fill') : $r('sys.symbol.speaker_wave_2_fill'); }
+    return $r('sys.symbol.arrow_up_left_and_arrow_down_right');
+  }
+
+  private inlineOverlayLabel(action: number): Resource {
+    if (action === 0) { return this.playing ? $r('app.string.video_pause') : $r('app.string.video_play'); }
+    if (action === 1) { return this.muted ? $r('app.string.video_unmute') : $r('app.string.video_mute'); }
+    return $r('app.string.video_fullscreen');
+  }
+
+  private activateInlineOverlayAction(action: number): void {
+    hapticTick();
+    if (action === 0) { this.togglePlay(); }
+    else if (action === 1) { this.toggleMutedFromUser(); }
+    else if (!this.onFullscreenIntent(this.positionSec)) { this.enterFullscreen(); }
+    if (this.playing) { this.scheduleHide(); }
+  }
+
+  @Builder
+  private InlineOverlayAction(action: number): void {
+    Button({ type: ButtonType.Circle, stateEffect: true }) {
+      // Resolve state inside the native update callback. Passing a computed
+      // Resource to an @Builder captures the original play/mute icon.
+      SymbolGlyph(this.inlineOverlayIcon(action)).fontSize($r('app.float.inline_video_overlay_icon'))
+        .fontColor([$r('app.color.text_on_brand')]).accessibilityLevel('no')
+    }.width($r('app.float.inline_video_overlay_button_width')).height($r('app.float.inline_video_overlay_button_height'))
+      .padding(0).backgroundColor(Color.Transparent).accessibilityText(this.inlineOverlayLabel(action)).monopolizeEvents(true)
+      .id('inline-video-control-' + action.toString() + '-' + this.media.id)
+      .onClick((): void => this.activateInlineOverlayAction(action))
+  }
+
+  @Builder
+  private InlineOverlayMenu(): void {
+    Menu() {
+      MenuItem({ content: $r('app.string.video_playback_speed'), labelInfo: this.playbackRateLabel() })
+        .onClick((): void => this.cyclePlaybackRate())
+      MenuItem({ content: $r('app.string.video_feed_subtitles') })
+        .onClick((): void => this.toggleAiCaption())
+      if (this.allowPip && this.pipSupported() && !this.pipActive) {
+        MenuItem({ content: $r('app.string.video_pip') }).onClick((): void => this.requestPip())
+      }
+      MenuItem({ content: $r('app.string.settings_inline_video_hold_menu') })
+        .onClick((): void => this.requestMediaMenu())
+    }.onAppear((): void => this.clearHideTimer())
+      .onDisAppear((): void => { if (this.playing) { this.scheduleHide(); } })
+  }
+
+  @Builder
+  private InlineOverlayPlayerBar(): void {
+    Column() {
+      Row() {
+        this.InlineOverlayAction(0)
+        Text(clockLabel(this.displaySeconds()) + ' / ' + clockLabel(this.durationSec)).fontFamily(this.appFontFamily)
+          .fontSize($r('app.float.inline_video_overlay_time')).fontColor($r('app.color.text_on_brand'))
+          .layoutWeight(1).maxLines(1).textOverflow({ overflow: TextOverflow.Ellipsis })
+        this.InlineOverlayAction(1)
+        this.InlineOverlayAction(2)
+        Button({ type: ButtonType.Circle, stateEffect: true }) {
+          SymbolGlyph($r('sys.symbol.more')).fontSize($r('app.float.inline_video_overlay_icon'))
+            .fontColor([$r('app.color.text_on_brand')]).accessibilityLevel('no')
+        }.width($r('app.float.inline_video_overlay_button_width')).height($r('app.float.inline_video_overlay_button_height'))
+          .padding(0).backgroundColor(Color.Transparent).monopolizeEvents(true)
+          .accessibilityText($r('app.string.settings_category_video_controls')).bindMenu(this.InlineOverlayMenu)
+      }.width('100%').alignItems(VerticalAlign.Center)
+      Slider({ value: this.displaySeconds(), min: 0, max: this.durationSec > 0 ? this.durationSec : 1,
+        step: 1, style: SliderStyle.OutSet })
+        .width('100%').height($r('app.float.inline_video_overlay_seek_height'))
+        .trackThickness($r('app.float.inline_video_overlay_track'))
+        .blockSize({ width: $r('app.float.inline_video_overlay_thumb'), height: $r('app.float.inline_video_overlay_thumb') })
+        .selectedColor($r('app.color.text_on_brand')).blockColor($r('app.color.text_on_brand'))
+        .trackColor($r('app.color.video_control_progress_track')).accessibilityText($r('app.string.video_progress'))
+        .monopolizeEvents(true).onChange((value: number, mode: SliderChangeMode): void => this.onSliderChange(value, mode))
+    }.width('100%').height($r('app.float.inline_video_overlay_height')).justifyContent(FlexAlign.End)
+      .padding({ left: $r('app.float.inline_video_overlay_inset'), right: $r('app.float.inline_video_overlay_inset'), bottom: 4 })
+      .linearGradient({ angle: 180, colors: [[Color.Transparent, 0], [$r('app.color.inline_video_overlay_scrim'), 1]] })
+      .id('inline-video-overlay-controls').onClick((): void => {})
+  }
+
   @Builder
   private InlinePlayerBar(): void {
     Column() {
@@ -4878,21 +5031,21 @@ export struct SurfaceVideoPlayer {
             .fontColor([$r('app.color.text_on_brand')])
             .accessibilityText(this.playing ? $r('app.string.video_pause') : $r('app.string.video_play'))
             .width(32)
-            .height(this.compactFeedLayout ? $r('app.float.compact_video_controls_row_height') : 48)
+            .height(this.compactFeedLayout ? $r('app.float.compact_video_controls_row_height') : 44)
             .onClick((): void => { hapticTick(); this.togglePlay(); })
           Text(this.feedTimeLabel()).fontFamily(this.appFontFamily)
             .fontSize(14)
             .fontColor($r('app.color.video_feed_secondary_text'))
             .layoutWeight(1)
             .maxLines(1)
-            .height(this.compactFeedLayout ? $r('app.float.compact_video_controls_row_height') : 48)
+            .height(this.compactFeedLayout ? $r('app.float.compact_video_controls_row_height') : 44)
             .onClick((): void => { hapticTick(); this.feedElapsedTime = !this.feedElapsedTime; this.holdControls(); })
           Text(this.playbackRateLabel()).fontFamily(this.appFontFamily)
             .fontSize(18)
             .fontWeight(FontWeight.Bold)
             .fontColor($r('app.color.text_on_brand'))
             .width(40)
-            .height(this.compactFeedLayout ? $r('app.float.compact_video_controls_row_height') : 48)
+            .height(this.compactFeedLayout ? $r('app.float.compact_video_controls_row_height') : 44)
             .textAlign(TextAlign.Center)
             .onClick((): void => { hapticTick(); this.cyclePlaybackRate(); })
           SymbolGlyph(this.muted ? $r('sys.symbol.speaker_slash_fill') : $r('sys.symbol.speaker_wave_2_fill'))
@@ -4900,14 +5053,14 @@ export struct SurfaceVideoPlayer {
             .fontColor([$r('app.color.text_on_brand')])
             .accessibilityText(this.muted ? $r('app.string.video_unmute') : $r('app.string.video_mute'))
             .width(32)
-            .height(this.compactFeedLayout ? $r('app.float.compact_video_controls_row_height') : 48)
+            .height(this.compactFeedLayout ? $r('app.float.compact_video_controls_row_height') : 44)
             .onClick((): void => { hapticTick(); this.toggleMutedFromUser(); })
           SymbolGlyph($r('sys.symbol.arrow_up_left_and_arrow_down_right'))
             .fontSize(22)
             .fontColor([$r('app.color.text_on_brand')])
             .accessibilityText($r('app.string.video_fullscreen'))
             .width(32)
-            .height(this.compactFeedLayout ? $r('app.float.compact_video_controls_row_height') : 48)
+            .height(this.compactFeedLayout ? $r('app.float.compact_video_controls_row_height') : 44)
             .onClick((): void => { hapticTick(); this.enterFullscreen(); })
           if (this.allowPip && this.pipSupported() && !this.pipActive) {
             SymbolGlyph($r('sys.symbol.rectangle_on_rectangle'))
@@ -4915,12 +5068,12 @@ export struct SurfaceVideoPlayer {
               .fontColor([$r('app.color.text_on_brand')])
               .accessibilityText($r('app.string.video_pip'))
               .width(32)
-              .height(this.compactFeedLayout ? $r('app.float.compact_video_controls_row_height') : 48)
+              .height(this.compactFeedLayout ? $r('app.float.compact_video_controls_row_height') : 44)
               .onClick((): void => { hapticTick(); this.requestPip(); })
           }
         }
         .width('100%')
-        .height(this.compactFeedLayout ? $r('app.float.compact_video_controls_row_height') : 48)
+        .height(this.compactFeedLayout ? $r('app.float.compact_video_controls_row_height') : 44)
         .padding({ left: 16, right: 16 })
         .alignItems(VerticalAlign.Center)
         .monopolizeEvents(true)
@@ -4937,6 +5090,10 @@ export struct SurfaceVideoPlayer {
   private feedTimeLabel(): string {
     return this.feedElapsedTime ? clockLabel(this.displaySeconds()) + ' / ' + clockLabel(this.durationSec) :
       '-' + clockLabel(this.remainingSeconds());
+  }
+
+  private showsCommentPreviewControls(): boolean {
+    return this.viewerCommentProgress > 0 && this.viewerCommentHeight > 0;
   }
 
   @Builder
@@ -4987,7 +5144,7 @@ export struct SurfaceVideoPlayer {
     .position({ top: 0, right: $r('app.float.media_viewer_comment_control_inset') })
     .translate({ y: this.commentVideoLayout().controlsY })
     .opacity(this.commentVideoLayout().controlsOpacity)
-    .hitTestBehavior(this.viewerCommentProgress > 0 && this.viewerCommentHeight > 0 ?
+    .hitTestBehavior(this.showsCommentPreviewControls() ?
       HitTestMode.Default : HitTestMode.None)
     .monopolizeEvents(true)
   }
@@ -5151,7 +5308,7 @@ export struct SurfaceVideoPlayer {
           .onActionCancel((): void => {
             this.finishFullscreenPan(false);
           }),
-            LongPressGesture({ fingers: 1, repeat: this.mediaViewerLayout || this.fullscreen, duration: HOLD_SEEK_DURATION_MS })
+            LongPressGesture({ fingers: 1, repeat: this.mediaViewerLayout || this.fullscreen || this.inlineVideoHoldPlay, duration: HOLD_SEEK_DURATION_MS })
               .onAction((event: GestureEvent): void => this.onVideoLongPress(event))
               .onActionEnd((): void => this.finishHoldGesture())
               .onActionCancel((): void => this.finishHoldGesture()),
@@ -5363,7 +5520,9 @@ export struct SurfaceVideoPlayer {
         if (this.controlsVisible && !this.hideVideoChrome() && !this.hideInlineVideoControls() && !this.controlsAtScreenBottom &&
           !this.hasFeedControlStrip()) {
           Stack({ alignContent: Alignment.Bottom }) {
-            if (this.videoControlStyle === VIDEO_CONTROL_STYLE_ORIGINAL) {
+            if (this.usesInlineOverlayControls()) {
+              this.InlineOverlayPlayerBar()
+            } else if (this.videoControlStyle === VIDEO_CONTROL_STYLE_ORIGINAL) {
               if (this.adaptiveShortVideo) {
                 this.LegacyShortVideoControlPanel()
               } else {
@@ -5380,9 +5539,13 @@ export struct SurfaceVideoPlayer {
       }
       .width('100%')
       .height(this.videoLayerHeight())
+      // The frame, loading cover and inline chrome share the same rounded
+      // viewport. Clipping only XComponent leaves the gradient's corners square.
+      .borderRadius(this.videoRadius())
+      .clip(!this.mediaViewerLayout && !this.fullscreen)
       .id(this.mediaViewerLayout ? 'video-viewer-layer' : '')
       .gesture(GestureGroup(GestureMode.Exclusive,
-        LongPressGesture({ fingers: 1, repeat: this.mediaViewerLayout || this.fullscreen, duration: HOLD_SEEK_DURATION_MS })
+        LongPressGesture({ fingers: 1, repeat: this.mediaViewerLayout || this.fullscreen || this.inlineVideoHoldPlay, duration: HOLD_SEEK_DURATION_MS })
           .onAction((event: GestureEvent): void => this.onVideoLongPress(event))
           .onActionEnd((): void => this.finishHoldGesture())
           .onActionCancel((): void => this.finishHoldGesture()),
@@ -5407,11 +5570,8 @@ export struct SurfaceVideoPlayer {
         .width('100%')
         .height(this.videoFrameControlsInset())
         .backgroundColor(this.mediaViewerLayout ? Color.Transparent : $r('app.color.video_feed_player_surface'))
-        .onClick((): void => {
-          if (!this.controlsVisible) {
-            this.holdControls();
-          }
-        })
+        // The footer only preserves the video viewport. It is not a second
+        // control surface; taps on the video use the shared surface gesture.
       } else if (this.showsProgressBelowVideo()) {
         if (this.videoControlStyle === VIDEO_CONTROL_STYLE_ORIGINAL) {
           this.LegacyProgressLine()
@@ -5458,7 +5618,7 @@ export struct SurfaceVideoPlayer {
         .opacity(1 - this.viewerCommentProgress)
         .hitTestBehavior(this.retainViewerPlayback ? HitTestMode.None : HitTestMode.Transparent)
       }
-      if (this.mediaViewerLayout) {
+      if (this.mediaViewerLayout && this.showsCommentPreviewControls()) {
         this.CommentPreviewControls()
       }
     }
@@ -5495,6 +5655,9 @@ export struct SurfaceVideoPlayer {
 
 @Component
 export struct PostMedia {
+  @StorageProp(STORAGE_KEY_INLINE_VIDEO_HOLD_PLAY) inlineVideoHoldPlay: boolean = false;
+  readingState: PostCardReadingState | null = null;
+  private restoredMediaOffsets: Set<number> = new Set();
   @StorageProp(STORAGE_KEY_VIDEO_DOWNLOAD_BUTTON) private videoDownloadButton: boolean = true;
   private inputModalScope: InputModalScope = new InputModalScope();
   @Prop controlsUsePageBackground: boolean = true;
@@ -5525,6 +5688,7 @@ export struct PostMedia {
   @Prop photoViewportHeight: number = 0;
   @Prop photoViewerAttachments: MediaAttachment[] = [];
   onPhotoViewerReturn: (sourceIndex: number) => void = (sourceIndex: number): void => {};
+  onPhotoOpen: (request: PhotoRequest) => boolean = (): boolean => false;
   onPhotoPageChanged: (index: number) => void = (): void => {};
   onMediaPanProgress: (progress: number) => void = (): void => {};
   private mediaStripScroller: ListScroller = new ListScroller();
@@ -5612,6 +5776,7 @@ export struct PostMedia {
   @StorageLink('harmonyx.image_quality') imageQuality: number = IMAGE_QUALITY_ORIGINAL;
   @StorageLink('harmonyx.video_quality') videoQuality: number = VIDEO_QUALITY_DATA_SAVER;
   @StorageLink(STORAGE_KEY_VIDEO_CONTROL_STYLE) private videoControlStyle: number = VIDEO_CONTROL_STYLE_SPACED;
+  @StorageProp(STORAGE_KEY_INLINE_VIDEO_OVERLAY_CONTROLS) private inlineVideoOverlayControls: boolean = false;
   @StorageLink(STORAGE_KEY_VIDEO_AUTO_BITRATE_CAP) autoBitrateCap: number = DEFAULT_VIDEO_AUTO_BITRATE_CAP;
   @StorageProp(STORAGE_KEY_VIDEO_FEED_ACTIVE) videoFeedActive: boolean = false;
   @StorageProp('harmonyx.display_mode') private themeDisplayMode: string = '';
@@ -6021,7 +6186,7 @@ export struct PostMedia {
   }
 
   private inlineControlsHeight(media: MediaAttachment): number {
-    if (!this.usesStableInlineLayout() || this.hideInlineControls ||
+    if (!this.usesStableInlineLayout() || this.hideInlineControls || this.inlineVideoOverlayControls ||
       (!this.videoAutoplay && !this.isManualStart(media.id))) { return 0; }
     return this.videoControlStyle === VIDEO_CONTROL_STYLE_ORIGINAL ?
       INLINE_PROGRESS_LINE_HEIGHT : INLINE_VIDEO_CONTROLS_HEIGHT;
@@ -6120,9 +6285,19 @@ export struct PostMedia {
     return photoStripLayout(this.attachments, Math.max(1, width - this.photoStartOffset - this.photoEndOffset), this.windowHeight, true);
   }
 
-  private updateMediaPan(scroller: Scroller): void {
+  private updateMediaPan(scroller: Scroller, cacheKey: number = -1): void {
     const offset: number = scroller.currentOffset().xOffset;
+    if (this.readingState !== null && this.restoredMediaOffsets.has(cacheKey)) {
+      this.readingState.mediaOffsets.set(cacheKey, offset);
+    }
     this.onMediaPanProgress(mediaAvatarPanProgress(offset, this.photoStartOffset));
+  }
+
+  private restoreMediaPan(scroller: Scroller, cacheKey: number): void {
+    if (this.readingState === null || this.restoredMediaOffsets.has(cacheKey)) { return; }
+    this.restoredMediaOffsets.add(cacheKey);
+    const offset: number = this.readingState.mediaOffsets.get(cacheKey) ?? 0;
+    if (offset > 0) { scroller.scrollTo({ xOffset: offset, yOffset: 0, animation: false }); }
   }
 
   private isUsablePhoto(media: MediaAttachment): boolean {
@@ -6282,6 +6457,7 @@ export struct PostMedia {
     if (index < 0) {
       return;
     }
+    if (this.onPhotoOpen(new PhotoRequest(items, index, media.altText, '', this.sourceTweet))) { return; }
     this.photoTransitionPrefix = 'photo-viewer-' + Date.now().toString() + '-' + media.id;
     const source: MediaViewerSource | undefined = captureMediaViewerSource(this.getUIContext(),
       this.mediaSourceId(media), media.id, items[index].width, items[index].height, this.photoViewportHeight > 0);
@@ -6491,13 +6667,13 @@ export struct PostMedia {
       minimalVideoControls: this.exploreHeroVideo || this.hideInlineControls, wants: this.wantsCover(media),
       spinner: this.usesStableInlineLayout() && (this.videoAutoplay || this.isManualStart(media.id)) &&
         this.showsPlayer(media) && !this.inlinePreviewHidden(media.id),
-      onLongPress: onLongPress,
+      onLongPress: (): void => {
+        if (this.inlineVideoHoldPlay && !isAnimatedGif(media)) { this.activate(media, true); }
+        else { onLongPress(); }
+      },
       onTap: (): void => {
         if (this.linkCardVideo) { this.onVideoOpen(media); return; }
-        if (this.canStream(media)) {
-          if (this.openVideo(media)) { return; }
-          this.activate(media, true);
-        }
+        if (this.canStream(media)) { this.activate(media, true); }
       }
     }).id(this.mediaSourceId(media))
   }
@@ -6522,8 +6698,8 @@ export struct PostMedia {
       }, (media: MediaAttachment) => media.id)
     }
     .listDirection(Axis.Horizontal)
-    .onDidScroll((): void => this.updateMediaPan(this.photoScrollerFor(startIndex)))
-    .onScrollStop((): void => this.updateMediaPan(this.photoScrollerFor(startIndex)))
+    .onDidScroll((): void => this.updateMediaPan(this.photoScrollerFor(startIndex), startIndex))
+    .onScrollStop((): void => this.updateMediaPan(this.photoScrollerFor(startIndex), startIndex))
     .id(this.photoListId(startIndex))
     .scrollBar(BarState.Off)
     .contentEndOffset(this.photoEndOffset)
@@ -6538,6 +6714,7 @@ export struct PostMedia {
       if (width > 0 && Math.abs(width - this.photoContainerWidth) > 1) {
         this.photoContainerWidth = width;
       }
+      if (width > 0) { this.restoreMediaPan(this.photoScrollerFor(startIndex), startIndex); }
     })
     .onVisibleAreaApproximateChange({ ratios: [0, 0.05], expectedUpdateInterval: 100 },
       (isExpanding: boolean, currentRatio: number): void => {
@@ -6832,6 +7009,7 @@ export struct PostMedia {
       .onAreaChange((_old: Area, area: Area): void => {
         const width: number = Number(area.width);
         if (width > 0 && Math.abs(width - this.photoContainerWidth) > 1) { this.photoContainerWidth = width; }
+        if (width > 0) { this.restoreMediaPan(this.mediaStripScroller, -1); }
       })
   }
 

@@ -1,3 +1,4 @@
+const { withDohHttpMock } = require('./doh-http-fixture.cjs');
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
@@ -53,10 +54,10 @@ function fixture() {
   const librarySource = ts.transpileModule(fs.readFileSync('entry/src/main/ets/services/BackgroundImageStore.ets', 'utf8'), {
     compilerOptions: { target: ts.ScriptTarget.ES2020, module: ts.ModuleKind.CommonJS }
   }).outputText;
-  new Function('require', 'module', 'exports', librarySource)(id => dependencies[id], library, library.exports);
+  new Function('require', 'module', 'exports', librarySource)(id => (() => { withDohHttpMock(dependencies); return dependencies[id]; })(), library, library.exports);
   dependencies['./BackgroundImageStore'] = library.exports;
   const mod = { exports: {} };
-  new Function('require', 'module', 'exports', '$r', source)(id => dependencies[id], mod, mod.exports, name => name);
+  new Function('require', 'module', 'exports', '$r', source)(id => (() => { withDohHttpMock(dependencies); return dependencies[id]; })(), mod, mod.exports, name => name);
   dependencies['./ChatBackgroundStore'] = mod.exports;
   dependencies['../models/PageBackgroundMotifs'] = { validPageMotif: () => false };
   const pageValues = new Map();
@@ -68,7 +69,7 @@ function fixture() {
   const pageSource = ts.transpileModule(fs.readFileSync('entry/src/main/ets/services/PageBackgroundStore.ets', 'utf8'), {
     compilerOptions: { target: ts.ScriptTarget.ES2020, module: ts.ModuleKind.CommonJS }
   }).outputText;
-  new Function('require', 'module', 'exports', 'AppStorage', pageSource)(id => dependencies[id], page, page.exports,
+  new Function('require', 'module', 'exports', 'AppStorage', pageSource)(id => (() => { withDohHttpMock(dependencies); return dependencies[id]; })(), page, page.exports,
     { setOrCreate: () => {} });
   return { ...mod.exports, ...library.exports, ...page.exports, context, files, saved, removed, closed, control };
 }

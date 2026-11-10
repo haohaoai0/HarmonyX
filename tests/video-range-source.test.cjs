@@ -1,3 +1,4 @@
+const { withDohHttpMock } = require('./doh-http-fixture.cjs');
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
@@ -11,7 +12,7 @@ const load = (name, dependencies, extra = '') => {
   const output = {};
   new Function('require', 'exports', ts.transpileModule(fs.readFileSync(`entry/src/main/ets/services/${name}.ets`, 'utf8'),
     { compilerOptions: { target: ts.ScriptTarget.ES2020, module: ts.ModuleKind.CommonJS } }).outputText + extra)
-    (key => { if (!dependencies[key]) throw Error(`Unmocked dependency ${key}`); return dependencies[key]; }, output);
+    (key => { withDohHttpMock(dependencies); if (!dependencies[key]) throw Error(`Unmocked dependency ${key}`); return dependencies[key]; }, output);
   return output;
 };
 const protocol = load('VideoRangeProtocol', {});

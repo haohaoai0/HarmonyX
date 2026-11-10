@@ -1,3 +1,4 @@
+const { withDohHttpMock } = require('./doh-http-fixture.cjs');
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
@@ -8,7 +9,7 @@ function load(file, deps, globals) {
   const code = ts.transpileModule(fs.readFileSync(file, 'utf8'), {
     compilerOptions: { target: ts.ScriptTarget.ES2020, module: ts.ModuleKind.CommonJS }
   }).outputText;
-  new Function('require', 'exports', ...Object.keys(globals), code)(id => {
+  new Function('require', 'exports', ...Object.keys(globals), code)(id => { withDohHttpMock(deps);
     if (!deps[id]) throw Error('Missing dependency ' + id);
     return deps[id];
   }, exports, ...Object.values(globals));

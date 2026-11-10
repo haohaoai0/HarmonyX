@@ -198,11 +198,11 @@
     },
     {
       "name": "settings_confirm_app_exit",
-      "value": "बाहर निकलने से पहले पुष्टि"
+      "value": "होम स्क्रीन पर लौटने का संकेत"
     },
     {
       "name": "settings_confirm_app_exit_desc",
-      "value": "मुख्य पृष्ठ से वापस जाने पर पुष्टि माँगें। बंद होने पर सीधे बाहर निकलें।"
+      "value": "मुख्य पृष्ठ पर पहले संकेत दिखाएँ; होम स्क्रीन पर जाने के लिए 2.2 सेकंड में वापस फिर दबाएँ"
     },
     {
       "name": "app_exit_title",
@@ -622,7 +622,7 @@
     },
     {
       "name": "settings_compact_switch_style_desc",
-      "value": "X लोगो छिपा होने पर। पन्नों के बीच स्वाइप करते समय बटन की पृष्ठभूमि भरती है।"
+      "value": "X लोगो छिपा होने पर टेक्स्ट टैब, कैप्सूल बटन या खंडित नियंत्रण चुनें।"
     },
     {
       "name": "settings_compact_switch_tabs",
@@ -631,6 +631,10 @@
     {
       "name": "settings_compact_switch_buttons",
       "value": "बटन"
+    },
+    {
+      "name": "settings_compact_switch_segmented",
+      "value": "खंडित नियंत्रण"
     },
     {
       "name": "settings_avatar_tint",
@@ -1342,7 +1346,7 @@
     },
     {
       "name": "profile_version",
-      "value": "Harmony X 3.5.0 · HarmonyOS 6.0.2 (API 22-26) · Stage मॉडल"
+      "value": "Harmony X 3.9.0 · HarmonyOS 6.0.2 (API 22-26) · Stage मॉडल"
     },
     {
       "name": "profile_following",
@@ -3514,7 +3518,7 @@
     },
     {
       "name": "diagnostics_desc",
-      "value": "हाल के अनुरोध और निजी API की जाँच।"
+      "value": "क्रैश लॉग निर्यात करें और हाल के अनुरोधों तथा जाँच परिणामों की समीक्षा करें।"
     },
     {
       "name": "diagnostics_probe",
@@ -12729,6 +12733,10 @@
       "value": "सभी लोकप्रिय पोस्ट दिखाएँ"
     },
     {
+      "name": "global_trends_cover_url",
+      "value": "https://pbs.twimg.com/topics/topic/globe_center_compressed.png"
+    },
+    {
       "name": "post_video_publish",
       "value": "वीडियो पोस्ट करें"
     },
@@ -12860,40 +12868,405 @@
       "name": "post_translation_languages_description",
       "value": "पोस्ट के स्वतः अनुवाद की भाषाएँ चुनें। अन्य भाषाओं का अनुवाद मैन्युअल रूप से किया जा सकता है।"
     },
-    {"name": "post_link_copy", "value": "Copy link"},
-    {"name": "post_link_open", "value": "Open link"},
-    {"name": "settings_video_download_button", "value": "Video download button"},
-    {"name": "settings_video_download_button_desc", "value": "Show the download button in the top-right corner of videos"},
-    {"name": "video_source_from", "value": "From"},
-    {"name": "video_source_original", "value": "Original video"},
-    {"name": "video_source_open_failed", "value": "Unable to open the original video. Try again."},
-    {"name":"dns_title","value":"DNS over HTTPS (DoH)"},
-    {"name":"dns_enable","value":"Use DNS over HTTPS"},
-    {"name":"dns_enable_desc","value":"Encrypt DNS queries with a chosen HTTPS resolver"},
-    {"name":"dns_scope","value":"Applies to app API requests, downloaded images, video segments and built-in web pages. System players and external apps may use their own DNS. When a proxy resolves the destination, its DNS takes precedence. DoH does not replace a proxy or VPN."},
-    {"name":"dns_provider","value":"DNS provider"},
-    {"name":"dns_provider_ali","value":"AliDNS"},
-    {"name":"dns_provider_cloudflare","value":"Cloudflare"},
-    {"name":"dns_provider_google","value":"Google Public DNS"},
-    {"name":"dns_provider_custom","value":"Custom"},
-    {"name":"dns_endpoint","value":"DoH server URL"},
-    {"name":"dns_endpoint_hint","value":"https://example.com/dns-query"},
-    {"name":"dns_endpoint_desc","value":"Enter a complete RFC 8484 HTTPS endpoint, without credentials, fragments or URI templates such as {?dns}."},
-    {"name":"dns_invalid","value":"Enter a valid HTTPS DoH server URL"},
-    {"name":"dns_saved","value":"Saved. New requests use this setting; reload open web pages."},
-    {"name":"dns_test","value":"Test DNS resolution"},
-    {"name":"dns_test_desc","value":"Tests the current URL by resolving x.com directly, without saving or enabling it. The test bypasses the in-app proxy; a system VPN still applies."},
-    {"name":"dns_test_success","value":"x.com resolved successfully"},
-    {"name":"dns_test_failed","value":"Resolution failed. Check the URL, network or DNS service."},
-    {"name":"dns_failure_note","value":"After saving, DoH failures stop affected requests instead of falling back to system DNS. Turn DoH off and save to restore system DNS. Changes apply after saving."},
-    {"name":"help_support_afdian","value":"Afdian"},
-    {"name":"help_support_qr_summary","value":"विकास में सहयोग के लिए स्कैन करें"},
-    {"name":"help_support_afdian_summary","value":"हमेशा के लिए सुझाव बंद · ¥16.6"},
-    {"name":"help_support_afdian_desc","value":"Afdian पर सुझाव हटाने का स्थायी कोड खरीदें, फिर उसे सक्रिय करने के लिए ऐप में लौटें।"},
-    {"name":"help_support_afdian_buy","value":"Afdian पर खरीदें"},
-    {"name":"help_support_expand","value":"खोलने के लिए टैप करें"},
-    {"name":"help_support_collapse","value":"समेटने के लिए टैप करें"},
-    {"name":"help_support_scan_code","value":"इस भुगतान कोड को संबंधित भुगतान ऐप से स्कैन करें।"},
-    {"name":"help_support_recommended","value":"अनुशंसित"}
+    {
+      "name": "post_link_copy",
+      "value": "Copy link"
+    },
+    {
+      "name": "post_link_open",
+      "value": "Open link"
+    },
+    {
+      "name": "settings_video_download_button",
+      "value": "Video download button"
+    },
+    {
+      "name": "settings_video_download_button_desc",
+      "value": "Show the download button in the top-right corner of videos"
+    },
+    {
+      "name": "video_source_from",
+      "value": "From"
+    },
+    {
+      "name": "video_source_original",
+      "value": "Original video"
+    },
+    {
+      "name": "video_source_open_failed",
+      "value": "Unable to open the original video. Try again."
+    },
+    {
+      "name": "dns_title",
+      "value": "DNS over HTTPS (DoH)"
+    },
+    {
+      "name": "dns_enable",
+      "value": "Use DNS over HTTPS"
+    },
+    {
+      "name": "dns_enable_desc",
+      "value": "Encrypt DNS queries with a chosen HTTPS resolver"
+    },
+    {
+      "name": "dns_scope",
+      "value": "Applies to app API requests, downloaded images, video segments and built-in web pages. System players and external apps may use their own DNS. When a proxy resolves the destination, its DNS takes precedence. DoH does not replace a proxy or VPN."
+    },
+    {
+      "name": "dns_provider",
+      "value": "DNS provider"
+    },
+    {
+      "name": "dns_provider_ali",
+      "value": "AliDNS"
+    },
+    {
+      "name": "dns_provider_cloudflare",
+      "value": "Cloudflare"
+    },
+    {
+      "name": "dns_provider_google",
+      "value": "Google Public DNS"
+    },
+    {
+      "name": "dns_provider_custom",
+      "value": "Custom"
+    },
+    {
+      "name": "dns_endpoint",
+      "value": "DoH server URL"
+    },
+    {
+      "name": "dns_endpoint_hint",
+      "value": "https://example.com/dns-query"
+    },
+    {
+      "name": "dns_endpoint_desc",
+      "value": "Enter a complete RFC 8484 HTTPS endpoint, without credentials, fragments or URI templates such as {?dns}."
+    },
+    {
+      "name": "dns_invalid",
+      "value": "Enter a valid HTTPS DoH server URL"
+    },
+    {
+      "name": "dns_saved",
+      "value": "Saved. New requests use this setting; reload open web pages."
+    },
+    {
+      "name": "dns_test",
+      "value": "Test DNS resolution"
+    },
+    {
+      "name": "dns_test_desc",
+      "value": "Tests the current URL by resolving x.com directly, without saving or enabling it. The test bypasses the in-app proxy; a system VPN still applies."
+    },
+    {
+      "name": "dns_test_success",
+      "value": "x.com resolved successfully"
+    },
+    {
+      "name": "dns_test_failed",
+      "value": "Resolution failed. Check the URL, network or DNS service."
+    },
+    {
+      "name": "dns_failure_note",
+      "value": "After saving, DoH failures stop affected requests instead of falling back to system DNS. Turn DoH off and save to restore system DNS. Changes apply after saving."
+    },
+    {
+      "name": "help_support_afdian",
+      "value": "Afdian"
+    },
+    {
+      "name": "help_support_qr_summary",
+      "value": "विकास में सहयोग के लिए स्कैन करें"
+    },
+    {
+      "name": "help_support_afdian_summary",
+      "value": "हमेशा के लिए सुझाव बंद · ¥16.6"
+    },
+    {
+      "name": "help_support_afdian_desc",
+      "value": "Afdian पर सुझाव हटाने का स्थायी कोड खरीदें, फिर उसे सक्रिय करने के लिए ऐप में लौटें।"
+    },
+    {
+      "name": "help_support_afdian_buy",
+      "value": "Afdian पर खरीदें"
+    },
+    {
+      "name": "help_support_expand",
+      "value": "खोलने के लिए टैप करें"
+    },
+    {
+      "name": "help_support_collapse",
+      "value": "समेटने के लिए टैप करें"
+    },
+    {
+      "name": "help_support_scan_code",
+      "value": "इस भुगतान कोड को संबंधित भुगतान ऐप से स्कैन करें।"
+    },
+    {
+      "name": "help_support_recommended",
+      "value": "अनुशंसित"
+    },
+    {
+      "name": "dns_x_test",
+      "value": "Test native X connection"
+    },
+    {
+      "name": "dns_x_test_desc",
+      "value": "Uses this DoH URL to request the public x.com/robots.txt through native HTTP, without account information or the in-app proxy. Does not save settings. A system VPN still applies. Success checks this connection only, not every API or media host."
+    },
+    {
+      "name": "dns_x_test_success",
+      "value": "Native X connection succeeded"
+    },
+    {
+      "name": "dns_x_test_failed",
+      "value": "Native X connection failed. Check the network, proxy or ECH support."
+    },
+    {
+      "name": "settings_inline_video_hold",
+      "value": "इनलाइन वीडियो पर लंबा दबाना"
+    },
+    {
+      "name": "settings_inline_video_hold_desc",
+      "value": "मेन्यू या प्लेबैक चुनें। प्लेबैक लंबा दबाने की गति सेटिंग का पालन करता है।"
+    },
+    {
+      "name": "settings_inline_video_hold_menu",
+      "value": "मेन्यू"
+    },
+    {
+      "name": "settings_inline_video_hold_play",
+      "value": "चलाने के लिए दबाए रखें"
+    },
+    {
+      "name": "settings_sidebar_items",
+      "value": "साइडबार सुविधाएँ"
+    },
+    {
+      "name": "settings_sidebar_items_desc",
+      "value": "सुविधाएँ दिखाएँ या छिपाएँ और तीरों से क्रम बदलें। सेटिंग्स हमेशा उपलब्ध रहती हैं।"
+    },
+    {
+      "name": "settings_bottom_bar_visible",
+      "value": "निचला बार दिखाएँ"
+    },
+    {
+      "name": "settings_bottom_bar_visible_desc",
+      "value": "छिपाने पर नेविगेशन और खोज के लिए साइडबार उपयोग करें।"
+    },
+    {
+      "name": "settings_post_count_format",
+      "value": "पोस्ट गिनती का प्रारूप"
+    },
+    {
+      "name": "settings_post_count_compact",
+      "value": "K/M (हज़ार/मिलियन)"
+    },
+    {
+      "name": "settings_post_count_chinese",
+      "value": "万/亿 (10 हज़ार/100 मिलियन)"
+    },
+    {
+      "name": "settings_post_count_full",
+      "value": "पूरी संख्याएँ"
+    },
+    {
+      "name": "settings_sidebar_search_capsule",
+      "value": "साइडबार खोज कैप्सूल"
+    },
+    {
+      "name": "settings_sidebar_search_capsule_desc",
+      "value": "साइडबार के ऊपर छोटा खोज कैप्सूल दिखाएँ। डिफ़ॉल्ट रूप से बंद।"
+    },
+    {
+      "name": "settings_home_header_action",
+      "value": "होम शीर्षक का बटन"
+    },
+    {
+      "name": "settings_home_header_action_desc",
+      "value": "खोजें या लोग जोड़ें चुनें। टैप करने पर चुना पेज सीधे खुलेगा।"
+    },
+    {
+      "name": "settings_home_follow_suggestions",
+      "value": "किसे फ़ॉलो करें"
+    },
+    {
+      "name": "settings_home_follow_suggestions_desc",
+      "value": "होम टाइमलाइन में सुझाए गए खाते दिखाएँ।"
+    },
+    {
+      "name": "page_background_preset_colors",
+      "value": "मूल ग्रेडिएंट रखें"
+    },
+    {
+      "name": "page_background_preset_colors_desc",
+      "value": "हर पूरे पैटर्न का अपना ग्रेडिएंट इस्तेमाल करें। अपना रंग या फ़ोटो चुनने के लिए इसे बंद करें।"
+    },
+    {
+      "name": "settings_inline_video_overlay_controls",
+      "value": "पोस्ट वीडियो पर नियंत्रण"
+    },
+    {
+      "name": "settings_inline_video_overlay_controls_desc",
+      "value": "नियंत्रण वीडियो के अंदर दिखाएँ। दिखाने या छिपाने के लिए टैप करें; चलने पर अपने आप छिप जाते हैं।"
+    },
+    {
+      "name": "settings_pause_inline_video_on_return",
+      "value": "वापस आने पर पोस्ट वीडियो रोकें"
+    },
+    {
+      "name": "settings_pause_inline_video_on_return_desc",
+      "value": "व्यूअर बंद करने पर पोस्ट का वीडियो रुका रहता है। जारी रखने के लिए चलाएँ पर टैप करें।"
+    },
+    {
+      "name": "settings_timeline_columns_four",
+      "value": "चार कॉलम"
+    },
+    {
+      "name": "settings_timeline_columns_five",
+      "value": "पाँच कॉलम"
+    },
+    {
+      "name": "crash_recovery_title",
+      "value": "ऐप अप्रत्याशित रूप से बंद हो गया"
+    },
+    {
+      "name": "crash_recovery_message",
+      "value": "पिछले क्रैश का निदान लॉग सहेज लिया गया है। लॉग निर्यात करें और समस्या से पहले किए गए चरणों के साथ डेवलपर से संपर्क करें।"
+    },
+    {
+      "name": "crash_later",
+      "value": "बाद में"
+    },
+    {
+      "name": "crash_export",
+      "value": "लॉग निर्यात करें"
+    },
+    {
+      "name": "crash_contact",
+      "value": "डेवलपर से संपर्क करें"
+    },
+    {
+      "name": "crash_export_success",
+      "value": "लॉग निर्यात हो गए। डेवलपर से संपर्क करते समय फ़ाइल संलग्न करें।"
+    },
+    {
+      "name": "crash_export_failed",
+      "value": "लॉग निर्यात नहीं हो सके। फिर कोशिश करें या दूसरा स्थान चुनें।"
+    },
+    {
+      "name": "crash_contact_failed",
+      "value": "फ़ीडबैक पृष्ठ नहीं खुल सका। परिचय से डेवलपर से संपर्क करें।"
+    },
+    {
+      "name": "crash_logs_title",
+      "value": "ऐप निदान"
+    },
+    {
+      "name": "crash_logs_description",
+      "value": "क्रैश लॉग डिवाइस पर सहेजे जाते हैं। नवीनतम 5 रिपोर्ट रखी जाती हैं। निर्यात की गई फ़ाइल फ़ीडबैक में संलग्न करें।"
+    },
+    {
+      "name": "crash_logs_empty",
+      "value": "कोई क्रैश रिपोर्ट नहीं है। आप वर्तमान सत्र का लॉग निर्यात कर सकते हैं।"
+    },
+    {
+      "name": "app_exit_desktop",
+      "value": "होम स्क्रीन पर लौटें"
+    },
+    {
+      "name": "app_exit_desktop_hint",
+      "value": "होम स्क्रीन पर जाने के लिए वापस फिर दबाएँ"
+    },
+    {
+      "name": "media_save_method",
+      "value": "मीडिया सहेजने का तरीका"
+    },
+    {
+      "name": "media_save_gallery_dialog",
+      "value": "गैलरी · सिस्टम पुष्टि"
+    },
+    {
+      "name": "media_save_secure_button",
+      "value": "गैलरी · सुरक्षित सेव बटन"
+    },
+    {
+      "name": "media_save_directory",
+      "value": "डाउनलोड फ़ोल्डर · अनुमति के बाद सीधे सहेजें"
+    },
+    {
+      "name": "media_save_file_picker",
+      "value": "फ़ाइल · हर बार स्थान चुनें"
+    },
+    {
+      "name": "media_save_secure_title",
+      "value": "गैलरी में सहेजें"
+    },
+    {
+      "name": "media_save_secure_note",
+      "value": "सिस्टम सेव बटन से सीधे गैलरी में सहेजें। पहली बार अनुमति दें; कई फ़ाइलें सहेजते समय हर फ़ाइल के लिए एक बार टैप करें।"
+    },
+    {
+      "name": "account_groups_title",
+      "value": "स्थानीय समूह"
+    },
+    {
+      "name": "account_groups_hint",
+      "value": "समूह इस डिवाइस पर रहते हैं। फ़ॉलो किए गए खाते चुनें और समूह को होम पर पिन करें।"
+    },
+    {
+      "name": "account_groups_empty",
+      "value": "अभी कोई समूह नहीं है। नया समूह बनाएँ।"
+    },
+    {
+      "name": "account_groups_manage",
+      "value": "स्थानीय समूह प्रबंधित करें"
+    },
+    {
+      "name": "account_group_create",
+      "value": "नया समूह"
+    },
+    {
+      "name": "account_group_delete",
+      "value": "समूह हटाएँ"
+    },
+    {
+      "name": "account_group_member_count",
+      "value": "%d खाते"
+    },
+    {
+      "name": "account_group_edit_title",
+      "value": "समूह संपादित करें"
+    },
+    {
+      "name": "account_group_name",
+      "value": "समूह का नाम"
+    },
+    {
+      "name": "account_group_icon",
+      "value": "आइकन (इमोजी या प्रतीक)"
+    },
+    {
+      "name": "account_group_selected",
+      "value": "%d खाते चुने गए"
+    },
+    {
+      "name": "account_group_search",
+      "value": "लोड किए गए फ़ॉलो खातों में खोजें"
+    },
+    {
+      "name": "account_group_cancel",
+      "value": "रद्द करें"
+    },
+    {
+      "name": "account_group_save",
+      "value": "सहेजें"
+    },
+    {
+      "name": "grok_chat_hint",
+      "value": "बातचीत शुरू करने के लिए Grok से सवाल पूछें।"
+    }
   ]
 }

@@ -77,6 +77,7 @@ import { effectiveAppLocale, STORAGE_KEY_APP_LOCALE } from '../utils/AppLocale';
 import { chatInputMaterial, chatPageMaterial, chatTintedControlMaterial } from '../utils/ChatMaterial';
 import { SystemMaterialUtil } from '../utils/SystemMaterial';
 import { materialModifier } from '../utils/SystemMaterial';
+import { MaterialSurfaceHost } from '../components/MaterialSurfaceHost';
 import { STORAGE_KEY_REPLY_CAPSULE_MATERIAL_LEVEL, DEFAULT_REPLY_CAPSULE_MATERIAL_LEVEL,
   STORAGE_KEY_TITLE_BAR_GLASS_MATERIAL_LEVEL, DEFAULT_TITLE_BAR_GLASS_MATERIAL_LEVEL } from '../services/AppearanceStore';
 
@@ -1561,7 +1562,7 @@ export struct DmConversationPage {
     Search({ value: this.searchQuery, placeholder: $r('app.string.chat_search') })
       .keyboardAppearance(KeyboardAppearance.IMMERSIVE)
       .height(44).margin({ left: 16, right: 16, top: 4 }).backgroundColor(Color.Transparent)
-      .fontColor($r('app.color.text_primary')).borderRadius(24).clip(true)
+      .fontColor($r('app.color.text_primary')).borderRadius(24).clip(!SystemMaterialUtil.isApi26OrAbove())
       .attributeModifier(materialModifier(chatInputMaterial(this.capsuleMaterialLevel)))
       .onChange((value: string): void => { this.searchQuery = value; })
   }
@@ -1618,7 +1619,8 @@ export struct DmConversationPage {
           .accessibilityText(this.draft.trim().length > 0 || this.attachments.length > 0 ? $r('app.string.dm_send') : $r('app.string.chat_voice_messages'))
           .onClick((): void => { if (this.draft.trim().length > 0 || this.attachments.length > 0) { this.send(); } else { this.record(); } })
         }.width('100%').height(44)
-      }.layoutWeight(1).height(this.composerSurfaceHeight()).borderRadius(this.replyTarget === null ? 24 : 32).clip(true)
+      }.layoutWeight(1).height(this.composerSurfaceHeight()).borderRadius(this.replyTarget === null ? 24 : 32)
+        .clip(!SystemMaterialUtil.isApi26OrAbove())
         .backgroundColor(SystemMaterialUtil.isApi26OrAbove() ? Color.Transparent :
           secondaryButtonSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
         .border({ width: SystemMaterialUtil.isApi26OrAbove() ? 0 : 1, color: $r('app.color.divider') })
@@ -1749,7 +1751,7 @@ export struct DmConversationPage {
           .enableKeyboardOnFocus(true).onFocus((): void => { this.showReplyKeyboard(); })
           .fontSize($r('sys.float.Body_L')).fontColor($r('app.color.text_primary')).maxLength(10000)
           .backgroundColor(SystemMaterialUtil.isApi26OrAbove() ? Color.Transparent : $r('app.color.bg_field'))
-          .borderRadius(24).clip(true).padding({ start: LengthMetrics.vp(14), end: LengthMetrics.vp(12),
+          .borderRadius(24).clip(!SystemMaterialUtil.isApi26OrAbove()).padding({ start: LengthMetrics.vp(14), end: LengthMetrics.vp(12),
             top: LengthMetrics.vp(14), bottom: LengthMetrics.vp(10) })
           .attributeModifier(materialModifier(chatInputMaterial(this.inputMaterialLevel)))
           .enabled(!this.sending).onChange((value: string): void => { this.draft = value; })
@@ -1765,7 +1767,7 @@ export struct DmConversationPage {
     }.width('100%').height(this.composerSurfaceHeight()).padding({ left: 12, right: 12, top: 10, bottom: 10 })
       .backgroundColor(SystemMaterialUtil.isApi26OrAbove() ? Color.Transparent : $r('app.color.bg_field'))
       .border({ width: SystemMaterialUtil.isApi26OrAbove() ? 0 : 1, color: $r('app.color.divider') })
-      .borderRadius(32).clip(true).attributeModifier(materialModifier(chatInputMaterial(this.capsuleMaterialLevel)))
+      .borderRadius(32).clip(!SystemMaterialUtil.isApi26OrAbove()).attributeModifier(materialModifier(chatInputMaterial(this.capsuleMaterialLevel)))
   }
 
   @Builder
@@ -1785,7 +1787,7 @@ export struct DmConversationPage {
         }.width(36).height(36).backgroundColor(Color.Transparent).enabled(!this.recordingPending)
           .accessibilityText($r('app.string.chat_voice_finish')).onClick((): void => { this.record(); })
       }.width('100%').height(40)
-    }.width('100%').height(this.composerSurfaceHeight()).padding(16).borderRadius(32).clip(true)
+    }.width('100%').height(this.composerSurfaceHeight()).padding(16).borderRadius(32).clip(!SystemMaterialUtil.isApi26OrAbove())
       .backgroundColor(SystemMaterialUtil.isApi26OrAbove() ? Color.Transparent : $r('app.color.bg_field'))
       .attributeModifier(materialModifier(chatInputMaterial(this.capsuleMaterialLevel)))
   }
@@ -1801,21 +1803,12 @@ export struct DmConversationPage {
 
   @Builder
   private ComposerTitleBar(): void {
-    // Like ReplyComposerCapsule, host the material surfaces in a native stacked
-    // TitleBar. A material on an ordinary Row does not provide the same host.
-    Navigation() {
-      Column().width('100%').height('100%').hitTestBehavior(HitTestMode.None)
-    }
-    .title({
-      builder: (): void => { this.ComposerTitleBarContent(); },
-      height: this.composerSurfaceHeight()
-    }, { barStyle: BarStyle.STACK })
-    .titleMode(NavigationTitleMode.Full)
-    .mode(NavigationMode.Stack)
-    .hideToolBar(true)
+    MaterialSurfaceHost({ surfaceHeight: this.composerSurfaceHeight(),
+      surfaceContent: (): void => { this.ComposerTitleBarContent(); } })
     .backgroundColor(Color.Transparent)
     .width('100%')
     .height(this.composerSurfaceHeight())
+    .clip(false)
   }
 
   @Builder
@@ -1939,7 +1932,7 @@ export struct DmConversationPage {
   @Builder
   private AttachmentPanelSurface(): void {
     Column().width('100%').height($r('app.float.chat_attachment_panel_surface_height'))
-      .borderRadius(24).clip(true)
+      .borderRadius(24).clip(!SystemMaterialUtil.isApi26OrAbove())
       .backgroundColor(SystemMaterialUtil.isApi26OrAbove() ? Color.Transparent :
         secondaryButtonSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
       .border({ width: SystemMaterialUtil.isApi26OrAbove() ? 0 : 1, color: $r('app.color.divider') })
@@ -1951,16 +1944,12 @@ export struct DmConversationPage {
     Stack() {
       // Retain the native material host as a passive background. The four
       // buttons are siblings above it, outside Navigation/TitleBar gestures.
-      Navigation() {
-        Column().width('100%').height('100%')
-      }
-      .title({ builder: (): void => { this.AttachmentPanelSurface(); },
-        height: $r('app.float.chat_attachment_panel_surface_height') }, { barStyle: BarStyle.STACK })
-      .titleMode(NavigationTitleMode.Full)
-      .mode(NavigationMode.Stack)
-      .hideToolBar(true)
+      MaterialSurfaceHost({ surfaceHeight: this.getUIContext().px2vp(
+        getContext(this).resourceManager.getNumber($r('app.float.chat_attachment_panel_surface_height').id)),
+        surfaceContent: (): void => { this.AttachmentPanelSurface(); } })
       .backgroundColor(Color.Transparent)
       .width('100%').height($r('app.float.chat_attachment_panel_surface_height'))
+      .clip(false)
       .hitTestBehavior(HitTestMode.BLOCK_DESCENDANTS)
       .accessibilityLevel('no-hide-descendants')
       Row({ space: 4 }) {

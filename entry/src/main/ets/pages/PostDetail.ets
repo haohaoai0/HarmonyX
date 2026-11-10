@@ -1,3 +1,5 @@
+import { formatPostCount } from '../utils/PostCountFormat';
+import { STORAGE_KEY_POST_COUNT_FORMAT } from '../services/PostDisplaySettingsStore';
 import { PostLinkMenu } from '../components/PostLinkMenu';
 import { PostTranslationInfo } from '../components/PostTranslationInfo';
 import { PostActionBar } from '../components/PostActionBar';
@@ -50,6 +52,8 @@ import { AvatarTintPalette, avatarTintIsDark, avatarTintSurface } from '../utils
 import { SpaceAwareAvatar } from '../components/SpaceAwareAvatar';
 import { CommunitySource } from '../components/CommunitySource';
 import { PostMedia } from '../components/PostMedia';
+import { CommentPhotoViewer } from '../components/CommentPhotoViewer';
+import { PhotoRequest } from '../utils/PhotoViewerRequest';
 import { browsingHistoryStore } from '../services/BrowsingHistoryStore';
 import { QuotedPostCard } from '../components/QuotedPostCard';
 import { PostInteractiveContent } from '../components/PostInteractiveContent';
@@ -65,6 +69,8 @@ import { XUserParser } from '../services/XUserParser';
 import { XTimelineParser } from '../services/XTimelineParser';
 import type { TweetDetailPage } from '../services/XTimelineParser';
 import { ThreadReplyOrder } from '../services/ThreadReplyOrder';
+import { CommentTimelineDataSource, CommentTimelineRow } from '../services/CommentTimelineDataSource';
+import type { PostCardReadingState } from '../services/PostCardReadingState';
 import { ReplyQuality, ReplyQualityAssessment } from '../utils/ReplyQuality';
 import { replyQualityStore, ReplyQualitySettings, ReplyQualityAllowedAuthor,
   STORAGE_KEY_REPLY_QUALITY_ENABLED, STORAGE_KEY_REPLY_QUALITY_REVISION } from '../services/ReplyQualityStore';
@@ -72,7 +78,6 @@ import { STORAGE_KEY_ACCOUNTS_CHANGED, accountStore } from '../services/AccountS
 import { ReplyQualityNotice } from '../components/ReplyQualityNotice';
 import { postIsEdited, refreshedPostMetrics, bookmarkCountAfter } from '../utils/PostMetadata';
 import type { ThreadReplyRow } from '../services/ThreadReplyOrder';
-import { formatCount } from '../models/Tweet';
 import type { MediaAttachment, Tweet, TweetAuthor, UserProfile } from '../models/Tweet';
 import type { UserDetailRouteParam } from './UserDetail';
 import type { ReadAloudRouteParam } from './ReadAloud';
@@ -123,15 +128,6 @@ import {
 } from '../services/AppearanceStore';
 
 const REPLY_CAPSULE_GRIP_KEY: string = 'post-detail-reply-capsule';
-
-// A comment-section row is either a real reply or an injected recommendation;
-// one list keeps the thread order and the promotion position in the same pass.
-class CommentTimelineRow {
-  key: string = '';
-  reply: ThreadReplyRow | null = null;
-  promotion: XXAuthPromotionPost | null = null;
-  quality: ReplyQualityAssessment | null = null;
-}
 
 const REPLY_SORT_RECENT: string = 'recent';
 const REPLY_SORT_RELEVANCE: string = 'relevance';
@@ -193,26 +189,49 @@ export struct PostDetail {
   @StorageProp(STORAGE_KEY_PAGE_TRANSITION_MODE) private pageTransitionMode: string = DEFAULT_PAGE_TRANSITION_MODE;
   @StorageProp('harmonyx.compact_window') private sheetCompactWindow: boolean = false;
   @StorageProp(STORAGE_KEY_POST_ACTIONS_MASK) private actionsMask: number = DEFAULT_POST_ACTIONS_MASK;
+  @StorageProp(STORAGE_KEY_POST_COUNT_FORMAT) private postCountFormat: number = 0;
   @StorageProp(STORAGE_KEY_POST_ACTION_COUNTS) private actionCountsVisible: boolean = true;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @StorageProp(STORAGE_KEY_SYSTEM_EMOJI_ENABLED) private systemEmojiEnabled: boolean = false;
-  @StorageLink(STORAGE_KEY_FILTER_HIDE_ADS) private filterHideAds: boolean = true;
-  @StorageProp(STORAGE_KEY_REPLY_QUALITY_ENABLED) private replyQualityEnabled: boolean = false;
+  @StorageLink(STORAGE_KEY_FILTER_HIDE_ADS) @Watch('rebuildCommentRows') private filterHideAds: boolean = true;
+  @StorageProp(STORAGE_KEY_REPLY_QUALITY_ENABLED) @Watch('rebuildCommentRows') private replyQualityEnabled: boolean = false;
   @StorageProp(STORAGE_KEY_REPLY_QUALITY_REVISION) @Watch('loadReplyQuality') private replyQualityRevision: number = 0;
   @StorageProp(STORAGE_KEY_ACCOUNTS_CHANGED) @Watch('loadReplyQuality') private qualityAccountRevision: number = 0;
-  @State private qualityAllowedIds: string[] = [];
-  @State private qualityViewerId: string = '';
+  @State @Watch('rebuildCommentRows') private qualityAllowedIds: string[] = [];
+  @State @Watch('rebuildCommentRows') private qualityViewerId: string = '';
   @State private bookmarkCount: number = -1;
   @StorageProp('harmonyx.breakpoint') private sheetWindowBreakpoint: string = 'sm';
   @StorageProp(STORAGE_KEY_DESKTOP_LAYOUT) desktopLayoutEnabled: boolean = false;
   @StorageProp(STORAGE_KEY_SHEET_MATERIAL_ENABLED) private sheetMaterialEnabled: boolean = DEFAULT_SHEET_MATERIAL_ENABLED;
   @StorageProp(STORAGE_KEY_SHEET_MATERIAL_LEVEL) private sheetMaterialLevel: number = DEFAULT_SHEET_MATERIAL_LEVEL;
   @Prop embedded: boolean = false;
+  @Prop embeddedViewportHeight: number = 0;
   @StorageProp(STORAGE_KEY_MEDIA_COMMENT_BACKGROUND) private mediaCommentBackground: boolean = true;
   @Prop initialTweet: Tweet | null = null;
   @Prop initialRoute: PostDetailRouteParam | null = null;
   onEmbeddedPostChanged: (post: Tweet) => void = (): void => {};
   onEmbeddedNavigate: () => void = (): void => {};
+  onEmbeddedImageViewerChanged: (close: (() => boolean) | null) => void = (): void => {};
+  @State private commentPhotoRequest: PhotoRequest | null = null;
+
+  private openCommentPhoto(request: PhotoRequest): boolean {
+    if (!this.embedded || request.items.length === 0) { return false; }
+    this.dismissExpandedReply();
+    this.commentPhotoRequest = request;
+    this.onEmbeddedImageViewerChanged((): boolean => this.closeCommentPhoto());
+    return true;
+  }
+
+  private closeCommentPhoto(): boolean {
+    if (this.commentPhotoRequest === null) { return false; }
+    this.commentPhotoRequest = null;
+    this.onEmbeddedImageViewerChanged(null);
+    return true;
+  }
+
+  private embeddedPhotoHeight(): number | string {
+    return this.commentPhotoRequest !== null && this.embeddedViewportHeight > 0 ? this.embeddedViewportHeight : '100%';
+  }
   @StorageProp(STORAGE_KEY_POST_TIME_NOW) private postTimeNow: number = Date.now();
   @StorageProp(STORAGE_KEY_POST_VIEWS_REVISION) private viewCountRevision: number = 0;
   @Consume('pageStack') pageStack: NavPathStack;
@@ -251,7 +270,12 @@ export struct PostDetail {
   private commentPromotions: XXAuthCommentPromotionSession = new XXAuthCommentPromotionSession();
   @State sharedElementId: string = '';
   @State private returnToMain: boolean = false;
-  @State replies: Tweet[] = [];
+  @State @Watch('onRepliesChanged') replies: Tweet[] = [];
+  private commentDataSource: CommentTimelineDataSource = new CommentTimelineDataSource();
+  private orderedReplyCache: ThreadReplyRow[] | null = null;
+  private orderedReplySource: Tweet[] | null = null;
+  private orderedReplyRootId: string = '';
+  private orderedReplySortMode: string = '';
   @State private discoverMore: Tweet[] = [];
   @State private threadNextToken: string = '';
   @State private threadLoadingMore: boolean = false;
@@ -289,7 +313,7 @@ export struct PostDetail {
   @State private replyBarWidth: number = 0;
   @State private replyCapsuleExpanded: boolean = false;
   @State private replyComposerDismissRequest: number = 0;
-  @State private replySortMode: string = REPLY_SORT_RELEVANCE;
+  @State @Watch('onRepliesChanged') private replySortMode: string = REPLY_SORT_RELEVANCE;
   @State private replyCapsuleHand: string = 'right';
   @State private viewportShortSide: number = 360;
   @State private actionBarWidth: number = 0;
@@ -399,6 +423,7 @@ export struct PostDetail {
     // Bind the shared element before the destination's first layout. onReady
     // is too late: inserting it with an empty id loses the in/out pairing.
     this.initializeRoute();
+    this.rebuildCommentRows();
     this.getUIContext().setKeyboardAvoidMode(KeyboardAvoidMode.RESIZE);
     this.observeKeyboardState();
     this.readViewportShortSide();
@@ -427,6 +452,8 @@ export struct PostDetail {
   }
 
   aboutToDisappear(): void {
+    this.closeCommentPhoto();
+    this.closePostPip();
     if (this.embedded && this.tweet !== null) {
       this.onEmbeddedPostChanged(this.tweet);
     }
@@ -456,6 +483,14 @@ export struct PostDetail {
       } else {
         videoPipGate.disarmAuto(media.id);
       }
+    }
+  }
+
+  private closePostPip(): void {
+    this.setAutoPipArmed(false);
+    const attachments: MediaAttachment[] = this.tweet?.attachments ?? [];
+    for (let i: number = 0; i < attachments.length; i++) {
+      if (attachments[i].type === 'video') { videoPipGate.close(attachments[i].id); }
     }
   }
 
@@ -632,6 +667,7 @@ export struct PostDetail {
   }
 
   private applyRouteParam(param: PostDetailRouteParam): void {
+    if (this.tweet !== null && this.tweet.id !== param.tweet.id) { this.closePostPip(); }
     this.routeNeedsContent = param.refreshContent === true;
     const firstRoute: boolean = this.tweet === null;
     const previousId: string = this.tweet === null ? '' : this.tweet.id;
@@ -1132,11 +1168,30 @@ export struct PostDetail {
 
   private orderedReplies(): ThreadReplyRow[] {
     const current: Tweet | null = this.tweet;
-    return ThreadReplyOrder.order(current === null ? '' : current.id, this.sortedReplies());
+    const rootId: string = current === null ? '' : current.id;
+    if (this.orderedReplyCache !== null && this.orderedReplyCache !== undefined &&
+      this.orderedReplySource === this.replies && this.orderedReplyRootId === rootId &&
+      this.orderedReplySortMode === this.replySortMode) {
+      return this.orderedReplyCache;
+    }
+    this.orderedReplySource = this.replies;
+    this.orderedReplyRootId = rootId;
+    this.orderedReplySortMode = this.replySortMode;
+    this.orderedReplyCache = ThreadReplyOrder.order(rootId, this.sortedReplies());
+    return this.orderedReplyCache;
+  }
+
+  private onRepliesChanged(): void {
+    this.orderedReplyCache = null;
+    this.rebuildCommentRows();
+  }
+
+  private rebuildCommentRows(): void {
+    this.commentDataSource.replace(this.commentRows());
   }
 
   private onPromotionChanged(): void {
-    // Rebuilt in place by the comment list; nothing to prefetch.
+    this.rebuildCommentRows();
   }
 
   private promotionPlan(): XXAuthPromotionPlan {
@@ -1232,17 +1287,18 @@ export struct PostDetail {
         ReplyQualityNotice({ tweetId: row.reply.tweet.id,
           authorName: row.reply.tweet.author.name + ' @' + row.reply.tweet.author.username,
           reasons: row.quality.reasons, pageBackground: this.embedded ? '' : this.pageBackgroundValue,
+          readingState: row.readingState,
           onAllow: (): void => { this.allowQualityAuthor((row.reply as ThreadReplyRow).tweet.author); } }) {
-          this.CommentReplyRow(row.reply as ThreadReplyRow)
+          this.CommentReplyRow(row.reply as ThreadReplyRow, row.readingState)
         }
       } else {
-        this.CommentReplyRow(row.reply as ThreadReplyRow)
+        this.CommentReplyRow(row.reply as ThreadReplyRow, row.readingState)
       }
     }
   }
 
   @Builder
-  private CommentReplyRow(row: ThreadReplyRow): void {
+  private CommentReplyRow(row: ThreadReplyRow, readingState: PostCardReadingState): void {
     Column({ space: 0 }) {
       if (row.isNestedReply && !row.connectAbove) {
         Text(row.replyingToUsername.length > 0 ?
@@ -1255,17 +1311,23 @@ export struct PostDetail {
       }
       TweetCard({
         tweet: row.tweet,
+        onPhotoOpen: (request: PhotoRequest): boolean => this.openCommentPhoto(request),
+        readingState: readingState,
+        roundedCard: !this.embedded && postCardUsesCustomSurface(this.pageBackgroundValue),
         transparentBackground: this.transparentEmbeddedBackground(),
         sharedElementId: this.tweet === null ? '' : 'post-reply-' + this.tweet.id + '-' + row.tweet.id,
         showActions: true,
         connectAbove: row.connectAbove,
         connectBelow: row.connectBelow,
+        onLikeChanged: (reply: Tweet, liked: boolean): Promise<boolean> => this.writeLike(reply, liked),
         onOpen: (selected: Tweet, sourceId: string): void => this.openPost(selected, sourceId),
         onAuthorTapped: (reply: Tweet): void => this.openUser(reply.author),
         onMentionTapped: (handle: string): void => this.openMention(handle)
       })
     }
     .width('100%')
+    .padding({ bottom: !this.embedded && !row.connectBelow && postCardUsesCustomSurface(this.pageBackgroundValue) ?
+      $r('app.float.post_comment_card_gap') : 0 })
   }
 
   // The private detail query asks X for either relevance or recency before the
@@ -1286,18 +1348,29 @@ export struct PostDetail {
     if (this.replySortMode !== REPLY_SORT_LIKES) {
       return ordered;
     }
-    // Use an explicit insertion pass rather than mutating the API result: the
-    // same reply list is used by refresh, read-aloud and the quote entry.
-    for (let index: number = 1; index < ordered.length; index++) {
-      const candidate: Tweet = ordered[index];
-      let previous: number = index - 1;
-      while (previous >= 0 && ordered[previous].metrics.likeCount < candidate.metrics.likeCount) {
-        ordered[previous + 1] = ordered[previous];
-        previous--;
+    // Merge without mutating the API result. Equal counters keep their source
+    // order, and large paginated threads avoid a quadratic insertion pass.
+    let source: Tweet[] = ordered;
+    for (let width: number = 1; width < source.length; width *= 2) {
+      const merged: Tweet[] = [];
+      for (let start: number = 0; start < source.length; start += width * 2) {
+        const middle: number = Math.min(start + width, source.length);
+        const end: number = Math.min(start + width * 2, source.length);
+        let left: number = start;
+        let right: number = middle;
+        while (left < middle && right < end) {
+          if (source[left].metrics.likeCount >= source[right].metrics.likeCount) {
+            merged.push(source[left++]);
+          } else {
+            merged.push(source[right++]);
+          }
+        }
+        while (left < middle) { merged.push(source[left++]); }
+        while (right < end) { merged.push(source[right++]); }
       }
-      ordered[previous + 1] = candidate;
+      source = merged;
     }
-    return ordered;
+    return source;
   }
 
   private replySortLabel(): Resource {
@@ -1379,6 +1452,7 @@ export struct PostDetail {
   // request/result state explicitly. This keeps the visible result in ArkUI
   // while replies use the shared TweetCard path below.
   private onHeroTweetChanged(): void {
+    this.rebuildCommentRows();
     const current: Tweet | null = this.tweet;
     if (current === null) { this.resetHeroTranslation(); return; }
     if (this.heroTranslationPostId !== current.id && (this.heroTranslating || this.heroTranslatedText.length > 0)) {
@@ -1710,6 +1784,10 @@ export struct PostDetail {
   private async writeLike(post: Tweet, nextLiked: boolean): Promise<boolean> {
     if (!this.isXPostId(post.id)) {
       return true;
+    }
+    if (!this.syncActionAvailable()) {
+      this.showSignInRequired($r('app.string.action_like_posts'));
+      return false;
     }
     if (xPrivateClient.isSignedIn()) {
       const result: XPrivateResult = await xPrivateClient.like(post.id, nextLiked);
@@ -2108,10 +2186,12 @@ export struct PostDetail {
     this.pageStack.pushPath({ name: 'ReadAloud', param: param });
   }
 
+  private formatMetricCount(value: number): string { return formatPostCount(value, this.postCountFormat); }
+
   @Builder
   private Metric(value: number, label: Resource): void {
     Column({ space: 2 }) {
-      Text(formatCount(value)).fontFamily(this.appFontFamily)
+      Text(this.formatMetricCount(value)).fontFamily(this.appFontFamily)
         .fontSize($r('sys.float.Subtitle_L'))
         .fontWeight(FontWeight.Bold)
         .fontColor(pageTextColor($r('app.color.text_primary'), this.embedded ? '' : this.pageBackgroundValue, postCardSurfaceColor($r('app.color.bg_card'), this.pageBackgroundValue)))
@@ -2193,7 +2273,7 @@ export struct PostDetail {
             .fontWeight(capsule ? FontWeight.Medium : FontWeight.Normal)
             .fontColor([capsule ? $r('sys.color.font_secondary') : this.postActionColor($r('app.color.text_secondary'))])
           if (this.actionCountsVisible) {
-          Text(formatCount(this.tweet.metrics.replyCount)).fontFamily(this.appFontFamily)
+          Text(this.formatMetricCount(this.tweet.metrics.replyCount)).fontFamily(this.appFontFamily)
             .fontSize(capsule ? $r('app.float.reply_capsule_split_caption_size') : $r('app.float.post_detail_action_text'))
             .margin({ left: capsule ? 0 : 5, top: capsule ? 2 : 0 })
             .maxLines(1).textOverflow({ overflow: TextOverflow.Ellipsis })
@@ -2228,7 +2308,7 @@ export struct PostDetail {
             .scale({ x: this.reposted ? 1.08 : 1, y: this.reposted ? 1.08 : 1 })
             .animation({ duration: 150, curve: Curve.EaseOut })
           if (this.actionCountsVisible) {
-          Text(formatCount(this.tweet.metrics.repostCount)).fontFamily(this.appFontFamily)
+          Text(this.formatMetricCount(this.tweet.metrics.repostCount)).fontFamily(this.appFontFamily)
             .fontSize(capsule ? $r('app.float.reply_capsule_split_caption_size') : $r('app.float.post_detail_action_text'))
             .margin({ left: capsule ? 0 : 5, top: capsule ? 2 : 0 })
             .maxLines(1).textOverflow({ overflow: TextOverflow.Ellipsis })
@@ -2264,7 +2344,7 @@ export struct PostDetail {
             .scale({ x: this.liked ? 1.08 : 1, y: this.liked ? 1.08 : 1 })
             .animation({ duration: 150, curve: Curve.EaseOut })
           if (this.actionCountsVisible) {
-          Text(formatCount(this.likeCount)).fontFamily(this.appFontFamily)
+          Text(this.formatMetricCount(this.likeCount)).fontFamily(this.appFontFamily)
             .fontSize(capsule ? $r('app.float.reply_capsule_split_caption_size') : $r('app.float.post_detail_action_text'))
             .margin({ left: capsule ? 0 : 5, top: capsule ? 2 : 0 })
             .maxLines(1).textOverflow({ overflow: TextOverflow.Ellipsis })
@@ -2300,7 +2380,7 @@ export struct PostDetail {
             .scale({ x: this.bookmarked ? 1.08 : 1, y: this.bookmarked ? 1.08 : 1 })
             .animation({ duration: 150, curve: Curve.EaseOut })
           if (capsule && this.actionCountsVisible) {
-            Text(this.bookmarkCount >= 0 ? formatCount(this.bookmarkCount) : '')
+            Text(this.bookmarkCount >= 0 ? this.formatMetricCount(this.bookmarkCount) : '')
               .fontFamily(this.appFontFamily).fontSize($r('app.float.reply_capsule_split_caption_size')).height(12).margin({ top: 2 }).maxLines(1)
               .textOverflow({ overflow: TextOverflow.Ellipsis })
               .fontColor(this.bookmarked ? this.accentColor : $r('sys.color.font_secondary'))
@@ -2730,6 +2810,7 @@ export struct PostDetail {
         }
         if (this.tweet.quotedTweet !== undefined && this.tweet.presentation?.visibility?.hidden !== true) {
           QuotedPostCard({
+            onPhotoOpen: (request: PhotoRequest): boolean => this.openCommentPhoto(request),
             quoted: this.tweet.quotedTweet,
             accentColor: this.accentColor,
             sharedElementId: this.heroQuotedElementId(),
@@ -2741,7 +2822,7 @@ export struct PostDetail {
         Text() {
           Span(this.postTimePrefix())
           if (this.actionCountsVisible && (this.actionsMask & 8) !== 0) {
-          Span(formatCount(postViewCounts.countFor(this.tweet.id, this.tweet.metrics.viewCount, this.viewCountRevision)))
+          Span(this.formatMetricCount(postViewCounts.countFor(this.tweet.id, this.tweet.metrics.viewCount, this.viewCountRevision)))
             .fontWeight(FontWeight.Bold)
             .fontColor(pageTextColor($r('app.color.text_primary'), this.embedded ? '' : this.pageBackgroundValue, postCardSurfaceColor(this.transparentEmbeddedBackground() ? Color.Transparent :
         avatarTintSurface(this.avatarPalette, this.tweet.author.avatarUrl ?? '',
@@ -2749,10 +2830,10 @@ export struct PostDetail {
           Span(' ' + this.text($r('app.string.post_detail_views')))
           }
           if (this.actionCountsVisible && (this.actionsMask & 16) !== 0 && this.bookmarkCount >= 0) {
-            Span(' · ' + formatCount(this.bookmarkCount) + ' ' + this.text($r('app.string.post_metric_bookmarks')))
+            Span(' · ' + this.formatMetricCount(this.bookmarkCount) + ' ' + this.text($r('app.string.post_metric_bookmarks')))
           }
           if (this.actionCountsVisible && (this.actionsMask & 2) !== 0 && this.tweet.metrics.quoteCount !== undefined) {
-            Span(' · ' + formatCount(this.tweet.metrics.quoteCount ?? 0) + ' ' + this.text($r('app.string.post_metric_quotes')))
+            Span(' · ' + this.formatMetricCount(this.tweet.metrics.quoteCount ?? 0) + ' ' + this.text($r('app.string.post_metric_quotes')))
           }
           if (postIsEdited(this.tweet.editHistoryIds)) {
             Span(' · ' + this.text($r('app.string.post_edited'))).onClick((): void => this.openEditHistory())
@@ -2794,7 +2875,7 @@ export struct PostDetail {
   }
 
   @Builder
-  private RepliesListPane(): void {
+  private RepliesHeader(): void {
     Column({ space: 4 }) {
       if (this.threadLoading || !this.transitionSettled) {
         this.ThreadPlaceholder()
@@ -2815,33 +2896,44 @@ export struct PostDetail {
             .fontColor(pageTextColor($r('app.color.text_primary'), this.embedded ? '' : this.pageBackgroundValue, this.embeddedSectionBackground()))
             .padding({ left: 4, right: 4, top: 8 })
         }
-        Column({ space: 0 }) {
-        ForEach(this.commentRows(), (row: CommentTimelineRow) => {
-          if (row.promotion !== null) {
-            this.PromotionRow(row.promotion as XXAuthPromotionPost)
-          } else {
-            this.QualityReplyRow(row)
-          }
-        }, (row: CommentTimelineRow) => row.key)
-        }.width('100%')
+      }
+    }
+    .width('100%')
+    .padding({ bottom: this.threadLoading || !this.transitionSettled ? 0 : 4 })
+  }
+
+  @Builder
+  private CommentListItems(): void {
+    ListItemGroup({ header: (): void => { this.RepliesHeader(); } }) {
+      if (!this.threadLoading && this.transitionSettled) {
+        LazyForEach(this.commentDataSource, (row: CommentTimelineRow | undefined) => {
+          ListItem() {
+            if (row !== undefined) {
+              if (row.promotion !== null) {
+                this.PromotionRow(row.promotion as XXAuthPromotionPost)
+              } else {
+                this.QualityReplyRow(row)
+              }
+            }
+          }.width('100%')
+        }, (row: CommentTimelineRow | undefined, index: number): string =>
+          row === undefined ? 'missing-comment:' + index.toString() : row.key + ':' + row.revision.toString())
       }
     }
     .width('100%')
     .backgroundColor(this.embeddedSectionBackground())
     .borderRadius(this.embeddedSectionRadius())
     .clip(this.embedded)
-  }
-
-  @Builder
-  private RepliesPane(): void {
-    Column({ space: 16 }) {
-      this.RepliesListPane()
-      if (!this.threadLoading && this.transitionSettled) {
-        this.DiscoverMorePane()
-        this.ThreadPagination()
-      }
+    if (!this.threadLoading && this.transitionSettled &&
+      (this.threadLoadingMore || this.threadNextToken.length > 0 ||
+      this.discoverMore.some((post: Tweet): boolean => !this.filterHideAds || !isAdPost(post.presentation)))) {
+      ListItem() {
+        Column({ space: 16 }) {
+          this.DiscoverMorePane()
+          this.ThreadPagination()
+        }.width('100%').padding({ top: 16 })
+      }.width('100%')
     }
-    .width('100%')
   }
 
   @Builder
@@ -2875,9 +2967,11 @@ export struct PostDetail {
   private DiscoverMorePost(post: Tweet): void {
     TweetCard({
       tweet: post,
+      onPhotoOpen: (request: PhotoRequest): boolean => this.openCommentPhoto(request),
       transparentBackground: this.transparentEmbeddedBackground(),
       sharedElementId: this.tweet === null ? '' : 'post-discover-' + this.tweet.id + '-' + post.id,
       showActions: true,
+      onLikeChanged: (selected: Tweet, liked: boolean): Promise<boolean> => this.writeLike(selected, liked),
       onOpen: (selected: Tweet, sourceId: string): void => this.openPost(selected, sourceId),
       onAuthorTapped: (selected: Tweet): void => this.openUser(selected.author),
       onMentionTapped: (handle: string): void => this.openMention(handle)
@@ -2908,19 +3002,15 @@ export struct PostDetail {
 
   @Builder
   private SingleThreadLayout(): void {
-    Scroll(this.scroller) {
-      Column({ space: 8 }) {
-        this.PrimaryPane()
-        this.RepliesPane()
-      }
-      .width('100%')
-      .padding({
-        left: 12,
-        right: 12,
-        top: this.embedded ? 16 : this.statusBarHeight + 64,
-        bottom: this.navigationIndicatorHeight + (this.useSplitReplyCapsule() ? 68 : 92)
-      })
+    List({ scroller: this.scroller }) {
+      ListItem() { this.PrimaryPane() }.width('100%').margin({ bottom: 8 })
+      this.CommentListItems()
     }
+    .cachedCount(2)
+    .maintainVisibleContentPosition(true)
+    .padding({ left: 12, right: 12 })
+    .contentStartOffset(this.embedded ? 16 : this.statusBarHeight + 64)
+    .contentEndOffset(this.navigationIndicatorHeight + (this.useSplitReplyCapsule() ? 68 : 92))
     .onScrollStop((): void => scrollStopped(this.scroller))
     .onScrollStart((): void => scrollStarted(this.scroller))
     .onScrollFrameBegin((offset: number, state: ScrollState): OnScrollFrameBeginHandlerResult =>
@@ -2933,8 +3023,8 @@ export struct PostDetail {
     .onWillScroll((scrollOffset: number): void => {
       this.onPrimaryDetailScroll(scrollOffset);
     })
-    .onScrollEdge((edge: Edge): void => {
-      if (edge === Edge.Bottom && !this.threadLoadMoreFailed) {
+    .onReachEnd((): void => {
+      if (!this.threadLoadMoreFailed) {
         this.loadMoreThread();
       }
     })
@@ -2966,13 +3056,12 @@ export struct PostDetail {
         this.onPrimaryDetailScroll(scrollOffset);
       })
 
-      Scroll(this.repliesScroller) {
-        Column() {
-          this.RepliesPane()
-        }
-        .width('100%')
-        .padding({ bottom: this.navigationIndicatorHeight + (this.useSplitReplyCapsule() ? 68 : 92) })
+      List({ scroller: this.repliesScroller }) {
+        this.CommentListItems()
       }
+      .cachedCount(2)
+      .maintainVisibleContentPosition(true)
+      .contentEndOffset(this.navigationIndicatorHeight + (this.useSplitReplyCapsule() ? 68 : 92))
       .onScrollStop((): void => scrollStopped(this.repliesScroller))
       .onScrollStart((): void => scrollStarted(this.repliesScroller))
       .onScrollFrameBegin((offset: number, state: ScrollState): OnScrollFrameBeginHandlerResult =>
@@ -2984,8 +3073,8 @@ export struct PostDetail {
       .onWillScroll((scrollOffset: number): void => {
         this.onRepliesDetailScroll(scrollOffset);
       })
-      .onScrollEdge((edge: Edge): void => {
-        if (edge === Edge.Bottom && !this.threadLoadMoreFailed) {
+      .onReachEnd((): void => {
+        if (!this.threadLoadMoreFailed) {
           this.loadMoreThread();
         }
       })
@@ -3025,13 +3114,15 @@ export struct PostDetail {
         }
       }.width('56%').height('100%')
         .backgroundColor($r('app.color.bg_field'))
-      Scroll(this.repliesScroller) {
-        Column({ space: 16 }) {
-          this.PrimaryPane()
-          this.RepliesPane()
-        }.width('100%').padding({ left: 16, right: 16, top: 16,
-          bottom: this.navigationIndicatorHeight + (this.useSplitReplyCapsule() ? 68 : 92) })
+      List({ scroller: this.repliesScroller }) {
+        ListItem() { this.PrimaryPane() }.width('100%').margin({ bottom: 16 })
+        this.CommentListItems()
       }
+      .cachedCount(2)
+      .maintainVisibleContentPosition(true)
+      .padding({ left: 16, right: 16 })
+      .contentStartOffset(16)
+      .contentEndOffset(this.navigationIndicatorHeight + (this.useSplitReplyCapsule() ? 68 : 92))
       .onScrollStop((): void => scrollStopped(this.repliesScroller))
       .onScrollStart((): void => scrollStarted(this.repliesScroller))
       .onScrollFrameBegin((offset: number, state: ScrollState): OnScrollFrameBeginHandlerResult =>
@@ -3039,7 +3130,7 @@ export struct PostDetail {
       .onTouchIntercept((event: TouchEvent): HitTestMode => stopScrollOnTouch(event, this.repliesScroller)).layoutWeight(1).height('100%').scrollBar(BarState.Off)
         .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: true })
         .onWillScroll((scrollOffset: number): void => this.onRepliesDetailScroll(scrollOffset))
-        .onScrollEdge((edge: Edge): void => { if (edge === Edge.Bottom && !this.threadLoadMoreFailed) { this.loadMoreThread(); } })
+        .onReachEnd((): void => { if (!this.threadLoadMoreFailed) { this.loadMoreThread(); } })
     }.width('100%').height('100%').padding({ top: this.statusBarHeight + 64 })
   }
 
@@ -3107,11 +3198,18 @@ export struct PostDetail {
 
   build(): void {
     if (this.embedded) {
-      Column() {
-        this.ContentBuilder()
+      Stack() {
+        Column() { this.ContentBuilder() }
+          .width('100%').height('100%')
+          .visibility(this.commentPhotoRequest !== null ? Visibility.Hidden : Visibility.Visible)
+        if (this.commentPhotoRequest !== null) {
+          CommentPhotoViewer({ request: this.commentPhotoRequest, viewportHeight: this.embeddedViewportHeight,
+            onBack: (): void => { this.closeCommentPhoto(); } })
+        }
       }
       .width('100%')
-      .height('100%')
+      .height(this.embeddedPhotoHeight())
+      .constraintSize({ minHeight: this.embeddedPhotoHeight(), maxHeight: this.embeddedPhotoHeight() })
       .backgroundColor(sheetContentBackground(pageSurfaceColor(this.themeDisplayMode, this.themeDarkSurface),
         this.sheetMaterialEnabled))
       .bindSheet($$this.replySortSheetVisible, this.ReplySortSheet(), sheetMaterialOptions({
@@ -3179,7 +3277,7 @@ export struct PostDetail {
     .titleMode(HdsNavDestinationTitleMode.MINI)
     .hideBackButton(false)
     .onBackPressed((): boolean => {
-      this.setAutoPipArmed(false);
+      this.closePostPip();
       continuationStore.publishHome();
       if (this.returnToMain) {
         ResponsiveLayout.closeToMain(this.pageStack);

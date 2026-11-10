@@ -1,10 +1,12 @@
 import { common } from '@kit.AbilityKit';
 import { photoAccessHelper } from '@kit.MediaLibraryKit';
 import { HdsNavDestination, HdsNavDestinationTitleMode, ScrollEffectType, TextStyleMode } from '@kit.UIDesignKit';
-import { PageBackgroundLayer } from '../components/PageBackgroundLayer';
+import { PageBackgroundLayer, appPageBackground } from '../components/PageBackgroundLayer';
 import { BackgroundPhotoTile, BackgroundSelectionMark } from '../components/BackgroundPhotoTile';
 import { ChatBackgroundPreset, chatBackgroundPresets } from '../services/ChatBackgroundStore';
-import { PageBackgroundState, normalizePageBackground, pageBackgroundStore } from '../services/PageBackgroundStore';
+import { PageBackgroundState, normalizePageBackground, pageBackgroundStore,
+  pageBackgroundPresetColors, pageBackgroundFromValue, STORAGE_KEY_PAGE_BACKGROUND } from '../services/PageBackgroundStore';
+import { pageBackgroundTextureStyle } from '../services/PageBackgroundTextureCache';
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
 import { STORAGE_KEY_PAGE_TRANSITION_MODE, DEFAULT_PAGE_TRANSITION_MODE } from '../services/PageTransitionSettingsStore';
 import { PageTransitionMotion, pageSystemTransition } from '../utils/PageTransition';
@@ -19,6 +21,14 @@ import { importPageBackgroundScheme, sharePageBackgroundScheme } from '../servic
 @Builder
 export function PageBackgroundBuilder(): void { PageBackgroundPage(); }
 
+class PageBackgroundSections implements IDataSource {
+  private sections: string[] = ['preview', 'base', 'paper', 'patterns', 'adjustments', 'reset'];
+  totalCount(): number { return this.sections.length; }
+  getData(index: number): string { return this.sections[index]; }
+  registerDataChangeListener(_listener: DataChangeListener): void {}
+  unregisterDataChangeListener(_listener: DataChangeListener): void {}
+}
+
 @Component
 struct PageBackgroundPage {
   @Consume('pageStack') private pageStack: NavPathStack;
@@ -27,6 +37,7 @@ struct PageBackgroundPage {
   @StorageProp('harmonyx.dark_surface') private darkSurface: string = '';
   @StorageProp('harmonyx.accent_color') private accentColor: string = '';
   @StorageProp('harmonyx.title_bar_style_mode') private titleBarStyleMode: number = 0;
+  @StorageProp(STORAGE_KEY_PAGE_BACKGROUND) private appliedBackgroundValue: string = '';
   @StorageProp('harmonyx.status_bar_height') private statusBarHeight: number = 0;
   @StorageProp('harmonyx.navigation_indicator_height') private bottomInset: number = 0;
   @StorageProp(STORAGE_KEY_PAGE_TRANSITION_MODE) private pageTransitionMode: string = DEFAULT_PAGE_TRANSITION_MODE;
@@ -42,6 +53,7 @@ struct PageBackgroundPage {
   private stagedPath: string = '';
   private disposed: boolean = false;
   private scroller: Scroller = new Scroller();
+  private sections: PageBackgroundSections = new PageBackgroundSections();
 
   private context(): common.UIAbilityContext { return getContext(this) as common.UIAbilityContext; }
   aboutToAppear(): void {
@@ -61,6 +73,7 @@ struct PageBackgroundPage {
   }
   private setMode(mode: string): void {
     const next: PageBackgroundState = normalizePageBackground(this.selected);
+    next.presetColors = false;
     next.mode = mode;
     if (mode === 'theme') {
       next.color = '';
@@ -73,7 +86,7 @@ struct PageBackgroundPage {
     const candidate: string = value.startsWith('#') ? value : '#' + value;
     if (!/^#[0-9a-fA-F]{6}$/.test(candidate)) { return; }
     const next: PageBackgroundState = normalizePageBackground(this.selected);
-    next.color = candidate.toUpperCase(); next.mode = 'color';
+    next.color = candidate.toUpperCase(); next.mode = 'color'; next.presetColors = false;
     this.selected = next;
   }
   private selectSwatch(index: number): void {
@@ -94,8 +107,13 @@ struct PageBackgroundPage {
     const next: PageBackgroundState = normalizePageBackground(this.selected);
     next.patternIds = id === 'none' ? [] : [id];
     next.patternId = next.patternIds.length > 0 ? next.patternIds[0] : 'none';
-    next.patternLayout = 'preset'; this.selected = next;
+    next.patternLayout = 'preset'; next.presetColors = id !== 'none'; this.selected = next;
   }
+  private setPresetColors(enabled: boolean): void {
+    const next: PageBackgroundState = normalizePageBackground(this.selected);
+    next.presetColors = enabled; this.selected = next;
+  }
+  private usesPresetColors(): boolean { return pageBackgroundPresetColors(this.selected).length > 0; }
   private setLayout(layout: string): void {
     const next: PageBackgroundState = normalizePageBackground(this.selected);
     next.patternLayout = layout; this.selected = next;
@@ -182,7 +200,7 @@ struct PageBackgroundPage {
       pageBackgroundStore.removePhoto(context, this.stagedPath);
       this.stagedPath = path;
       const next: PageBackgroundState = normalizePageBackground(this.selected);
-      next.mode = 'photo'; next.path = path; this.selected = next;
+      next.mode = 'photo'; next.path = path; next.presetColors = false; this.selected = next;
       await this.refreshSelectedTone();
     } catch (error) { if (!this.disposed) { this.toast($r('app.string.chat_background_photo_failed')); } }
     finally { if (!this.disposed) { this.picking = false; } }
@@ -190,7 +208,7 @@ struct PageBackgroundPage {
 
   private selectSavedPhoto(path: string): void {
     const next: PageBackgroundState = normalizePageBackground(this.selected);
-    next.mode = 'photo'; next.path = path;
+    next.mode = 'photo'; next.path = path; next.presetColors = false;
     this.selected = next;
     this.refreshSelectedTone();
   }
@@ -294,6 +312,11 @@ struct PageBackgroundPage {
     return pageTextColor(color, value, surface);
   }
 
+  private previewMatchesApplied(): boolean {
+    const applied: PageBackgroundState = pageBackgroundFromValue(this.appliedBackgroundValue);
+    return applied.enabled && pageBackgroundTextureStyle(this.selected, '') === pageBackgroundTextureStyle(applied, '');
+  }
+
   @Builder
   private Heading(title: Resource): void {
     Text(title).fontFamily(this.appFontFamily).fontSize($r('sys.float.Title_S')).fontWeight(FontWeight.Medium)
@@ -307,7 +330,11 @@ struct PageBackgroundPage {
   private Preview(): void {
     Stack({ alignContent: Alignment.Center }) {
       if (this.selected.enabled) {
-        PageBackgroundLayer({ wallpaper: this.selected })
+        if (this.previewMatchesApplied()) {
+          appPageBackground(true)
+        } else {
+          PageBackgroundLayer({ wallpaper: this.selected })
+        }
       } else {
         Column().width('100%').height('100%').backgroundColor(pageSurfaceColor(this.displayMode, this.darkSurface))
       }
@@ -332,9 +359,9 @@ struct PageBackgroundPage {
   private BackgroundControls(): void {
     Column({ space: 12 }) {
       Button($r('app.string.settings_theme_system')).width('100%')
-        .fontColor(this.selected.mode === 'theme' ? this.accentColor : $r('app.color.text_primary'))
+        .fontColor(!this.usesPresetColors() && this.selected.mode === 'theme' ? this.accentColor : $r('app.color.text_primary'))
         .backgroundColor(cardSurfaceColor(this.displayMode, this.darkSurface))
-        .border({ width: 1, color: this.selected.mode === 'theme' ? this.accentColor : $r('app.color.divider') })
+        .border({ width: 1, color: !this.usesPresetColors() && this.selected.mode === 'theme' ? this.accentColor : $r('app.color.divider') })
         .id('page-background-theme').onClick((): void => { this.setMode('theme'); })
       GridRow({ columns: 6, gutter: 8 }) {
         ForEach(this.swatches(), (color: Resource, index: number) => {
@@ -342,13 +369,13 @@ struct PageBackgroundPage {
             Button() {
               Stack({ alignContent: Alignment.Center }) {
                 Column().width('100%').height(40).backgroundColor(color)
-                if (this.selected.mode === 'color' && this.selected.color === this.swatchHex(index)) { this.Mark() }
+                if (!this.usesPresetColors() && this.selected.mode === 'color' && this.selected.color === this.swatchHex(index)) { this.Mark() }
               }
             }
               .width('100%').height(44).padding(2).borderRadius(12).clip(true)
               .backgroundColor(cardSurfaceColor(this.displayMode, this.darkSurface))
-              .border({ width: this.selected.mode === 'color' && this.selected.color === this.swatchHex(index) ? 2 : 1,
-                color: this.selected.mode === 'color' && this.selected.color === this.swatchHex(index) ? this.accentColor : $r('app.color.divider') })
+              .border({ width: !this.usesPresetColors() && this.selected.mode === 'color' && this.selected.color === this.swatchHex(index) ? 2 : 1,
+                color: !this.usesPresetColors() && this.selected.mode === 'color' && this.selected.color === this.swatchHex(index) ? this.accentColor : $r('app.color.divider') })
               .accessibilityText(this.swatchNames()[index]).id('page-background-color-' + index.toString())
               .onClick((): void => { this.selectSwatch(index); })
           }
@@ -363,7 +390,7 @@ struct PageBackgroundPage {
           Text($r('app.string.chat_background_pick_photo')).fontFamily(this.appFontFamily)
             .fontColor($r('app.color.text_primary')).layoutWeight(1).textAlign(TextAlign.Start)
           if (this.picking) { LoadingProgress().width(24).height(24).color(this.accentColor) }
-          else if (this.selected.mode === 'photo') { this.Mark() }
+          else if (!this.usesPresetColors() && this.selected.mode === 'photo') { this.Mark() }
           else { SymbolGlyph($r('sys.symbol.chevron_right')).fontSize(16).fontColor([$r('app.color.text_secondary')]) }
         }.width('100%').padding(16)
       }.width('100%').borderRadius(16).backgroundColor(cardSurfaceColor(this.displayMode, this.darkSurface))
@@ -404,7 +431,7 @@ struct PageBackgroundPage {
 
   @Builder
   private SavedPhotoTile(photo: BackgroundImage): void {
-    BackgroundPhotoTile({ path: photo.path, selected: this.selected.path === photo.path,
+    BackgroundPhotoTile({ path: photo.path, selected: !this.usesPresetColors() && this.selected.mode === 'photo' && this.selected.path === photo.path,
       accentColor: this.accentColor, interactive: !this.picking && !this.saving && !this.enabledSaving,
       onSelect: (path: string): void => { this.selectSavedPhoto(path); },
       onDeleted: (path: string): void => { this.photoDeleted(path); } })
@@ -514,14 +541,15 @@ struct PageBackgroundPage {
         .fontColor($r('app.color.text_secondary')).maxLines(2).textOverflow({ overflow: TextOverflow.Ellipsis })
     }.width('100%')
   }
-  build(): void {
-    HdsNavDestination() {
-      Scroll(this.scroller) {
-        Column({ space: 18 }) {
+  @Builder
+  private EditorSection(section: string): void {
+    Column({ space: 18 }) {
+      if (section === 'preview') {
           this.EnabledSwitch()
           this.Preview()
           Text($r('app.string.page_background_note')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_S'))
             .fontColor($r('app.color.text_secondary')).width('100%')
+      } else if (section === 'base') {
           this.Heading($r('app.string.page_background_base'))
           this.BackgroundControls()
           if (this.savedPhotos.length > 0) {
@@ -532,6 +560,7 @@ struct PageBackgroundPage {
               }, (photo: BackgroundImage): string => photo.path)
             }.id('page-background-saved-photos')
           }
+      } else if (section === 'paper') {
           this.Heading($r('app.string.page_background_paper'))
           Row({ space: 10 }) {
             this.PaperTile('none', $r('app.string.page_background_paper_none'))
@@ -541,6 +570,7 @@ struct PageBackgroundPage {
           if (this.selected.texture !== 'none') {
             this.Adjustment($r('app.string.page_background_texture_strength'), 100, 'texture')
           }
+      } else if (section === 'patterns') {
           this.Heading($r('app.string.page_background_pattern'))
           Row({ space: 8 }) {
             this.LayoutChoice('icons', $r('app.string.page_background_layout_icons'))
@@ -548,6 +578,19 @@ struct PageBackgroundPage {
           }.width('100%')
           if (this.selected.patternLayout === 'icons') { this.IconControls() }
           else {
+            if (this.selected.patternIds.length > 0) {
+              Row({ space: 12 }) {
+                Column({ space: 4 }) {
+                  Text($r('app.string.page_background_preset_colors')).fontFamily(this.appFontFamily)
+                    .fontSize($r('sys.float.Body_L')).fontColor($r('app.color.text_primary')).width('100%')
+                  Text($r('app.string.page_background_preset_colors_desc')).fontFamily(this.appFontFamily)
+                    .fontSize($r('sys.float.Body_S')).fontColor($r('app.color.text_secondary')).width('100%')
+                }.layoutWeight(1)
+                Toggle({ type: ToggleType.Switch, isOn: this.selected.presetColors }).selectedColor(this.accentColor)
+                  .accessibilityText($r('app.string.page_background_preset_colors'))
+                  .id('page-background-preset-colors').onChange((enabled: boolean): void => { this.setPresetColors(enabled); })
+              }.width('100%').padding(16).borderRadius(20).backgroundColor(cardSurfaceColor(this.displayMode, this.darkSurface))
+            }
             Text($r('app.string.page_background_presets_mix')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_S'))
               .fontColor($r('app.color.text_secondary')).width('100%')
             GridRow({ columns: { sm: 3, md: 4, lg: 5, xl: 5 }, gutter: { x: 12, y: 16 } }) {
@@ -557,6 +600,7 @@ struct PageBackgroundPage {
               }, (preset: ChatBackgroundPreset): string => preset.id)
             }.id('page-background-patterns')
           }
+      } else if (section === 'adjustments') {
           Column({ space: 12 }) {
             this.TransparencySwitch($r('app.string.page_background_transparent_posts'),
               $r('app.string.page_background_transparent_posts_desc'), 'posts')
@@ -575,17 +619,31 @@ struct PageBackgroundPage {
               (this.selected.patternLayout === 'icons' && this.selected.motifIds.length > 0)) {
               this.Adjustment($r('app.string.chat_background_pattern_strength'), 100, 'pattern')
             }
-            if (this.selected.mode === 'photo') {
+            if (!this.usesPresetColors() && this.selected.mode === 'photo') {
               this.Adjustment($r('app.string.chat_background_blur'), 30, 'blur')
             }
             this.Adjustment($r('app.string.chat_background_dim'), 60, 'dim')
             this.Adjustment($r('app.string.page_background_content_opacity'), 100, 'content')
           }.width('100%').padding(16).borderRadius(20).backgroundColor(cardSurfaceColor(this.displayMode, this.darkSurface))
+      } else if (section === 'reset') {
           Button($r('app.string.page_background_reset')).width('100%').fontColor(this.accentColor)
             .backgroundColor(cardSurfaceColor(this.displayMode, this.darkSurface)).id('page-background-reset')
             .enabled(!this.picking && !this.saving).onClick((): void => { this.reset(); })
-        }.width('100%').padding({ left: 16, right: 16, top: this.statusBarHeight + 80, bottom: this.bottomInset + 28 })
-      }.width('100%').height('100%').scrollBar(BarState.Off).align(Alignment.TopStart)
+      }
+    }.width('100%')
+  }
+
+  build(): void {
+    HdsNavDestination() {
+      // Mount only the visible sections; offscreen galleries and sliders must
+      // not compete with the destination's entrance animation.
+      List({ scroller: this.scroller, space: 18 }) {
+        LazyForEach(this.sections, (section: string): void => {
+          ListItem() { this.EditorSection(section) }.id('page-background-section-' + section)
+        }, (section: string): string => section)
+      }.width('100%').height('100%').padding({ left: 16, right: 16 }).cachedCount(0)
+        .contentStartOffset(this.statusBarHeight + 80).contentEndOffset(this.bottomInset + 28)
+        .scrollBar(BarState.Off).align(Alignment.TopStart)
         .edgeEffect(EdgeEffect.Spring, { alwaysEnabled: true })
     }.scale({ x: this.pageMotion.scale, y: this.pageMotion.scale }).opacity(this.pageMotion.opacity)
       .onReady((context: NavDestinationContext): void => { this.pageMotion.attach(context); })

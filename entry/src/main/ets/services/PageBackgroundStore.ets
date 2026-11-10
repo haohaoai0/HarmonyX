@@ -3,7 +3,7 @@ import { preferences } from '@kit.ArkData';
 import { fileIo } from '@kit.CoreFileKit';
 import { image } from '@kit.ImageKit';
 import util from '@ohos.util';
-import { chatBackgroundPreset } from './ChatBackgroundStore';
+import { ChatBackgroundPreset, chatBackgroundPreset } from './ChatBackgroundStore';
 import { validPageMotif } from '../models/PageBackgroundMotifs';
 import { backgroundImageStore } from './BackgroundImageStore';
 import { PagePhotoTone, samplePagePhoto } from '../utils/PageBackgroundContrast';
@@ -19,6 +19,7 @@ export class PageBackgroundState {
   patternId: string = 'none';
   patternIds: string[] = [];
   patternLayout: string = 'icons';
+  presetColors: boolean = false;
   motifIds: string[] = [];
   density: number = 50;
   texture: string = 'none';
@@ -64,6 +65,7 @@ export function normalizePageBackground(value: PageBackgroundState): PageBackgro
   } else if (state.patternId !== 'none') { state.patternIds = [state.patternId]; }
   state.patternId = state.patternIds.length > 0 ? state.patternIds[0] : 'none';
   state.patternLayout = value.patternLayout === 'preset' ? 'preset' : 'icons';
+  state.presetColors = value.presetColors === true;
   if (Array.isArray(value.motifIds)) {
     for (let i: number = 0; i < Math.min(256, value.motifIds.length); i++) {
       const id: string = value.motifIds[i];
@@ -90,6 +92,22 @@ export function normalizePageBackground(value: PageBackgroundState): PageBackgro
     state.photoAlpha = bounded(value.photoAlpha, 1, 1);
   }
   return state;
+}
+
+// Full wallpaper presets own their gradient. Keep the user's theme, solid
+// color and photo settings so turning this off restores their custom base.
+const presetColorCache: Map<string, ResourceColor[]> = new Map<string, ResourceColor[]>();
+export function pageBackgroundPresetColors(state: PageBackgroundState): ResourceColor[] {
+  if (!state.presetColors || state.patternLayout !== 'preset' || state.patternIds.length === 0) { return []; }
+  const id: string = state.patternIds[0];
+  const cached: ResourceColor[] | undefined = presetColorCache.get(id);
+  if (cached !== undefined) { return cached; }
+  const preset: ChatBackgroundPreset = chatBackgroundPreset(id);
+  if (preset.pattern === undefined) { return []; }
+  // Retain resource references, so resolving them still follows light/dark.
+  // Foreground contrast requests must not rebuild the 17-item catalog.
+  presetColorCache.set(id, preset.colors);
+  return preset.colors;
 }
 
 let cachedValue: string = '';

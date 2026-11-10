@@ -32,6 +32,9 @@ export const STORAGE_KEY_VIDEO_FEED_TAP_PAUSE: string = 'harmonyx.video_feed_tap
 // keeps the original hold-to-seek gesture (left half rewinds, right half
 // forwards).
 export const STORAGE_KEY_VIDEO_HOLD_SPEED: string = 'harmonyx.video_hold_speed';
+export const STORAGE_KEY_INLINE_VIDEO_HOLD_PLAY: string = 'harmonyx.inline_video_hold_play';
+export const STORAGE_KEY_INLINE_VIDEO_OVERLAY_CONTROLS: string = 'harmonyx.inline_video_overlay_controls';
+export const STORAGE_KEY_PAUSE_INLINE_VIDEO_ON_RETURN: string = 'harmonyx.pause_inline_video_on_return';
 export const STORAGE_KEY_VIDEO_HDR_ENHANCEMENT: string = 'harmonyx.video_hdr_enhancement';
 export const DEFAULT_VIDEO_HDR_ENHANCEMENT: boolean = true;
 export const STORAGE_KEY_VIDEO_DOUBLE_TAP_SEEK: string = 'harmonyx.video_double_tap_seek';
@@ -144,6 +147,7 @@ export class MediaSettingsStore {
   private static readonly VIDEO_FEED_CONTROLS_ALWAYS_VISIBLE_KEY: string = 'video_feed_controls_always_visible';
   private static readonly VIDEO_FEED_TAP_PAUSE_KEY: string = 'video_feed_tap_pause';
   private static readonly VIDEO_HOLD_SPEED_KEY: string = 'video_hold_speed';
+  private static readonly INLINE_VIDEO_HOLD_PLAY_KEY: string = 'inline_video_hold_play';
   private static readonly VIDEO_DOUBLE_TAP_SEEK_KEY: string = 'video_double_tap_seek';
   private static readonly VIDEO_DOUBLE_TAP_SEEK_SECONDS_KEY: string = 'video_double_tap_seek_seconds';
   private static readonly VIDEO_FEED_LAYOUT_KEY: string = 'video_feed_layout';
@@ -545,6 +549,60 @@ export class MediaSettingsStore {
     } catch (error) {
       return DEFAULT_VIDEO_HOLD_SPEED_ENABLED;
     }
+  }
+
+  loadInlineVideoHoldPlay(context: common.Context): boolean {
+    try {
+      const store: preferences.Preferences = preferences.getPreferencesSync(context,
+        { name: MediaSettingsStore.STORE_NAME });
+      return store.getSync(MediaSettingsStore.INLINE_VIDEO_HOLD_PLAY_KEY, false) as boolean;
+    } catch (error) { return false; }
+  }
+
+  loadInlineVideoOverlayControls(context: common.Context): boolean {
+    return this.loadInlineOption(context, 'inline_video_overlay_controls');
+  }
+
+  saveInlineVideoOverlayControls(context: common.Context, enabled: boolean): boolean {
+    return this.saveInlineOption(context, 'inline_video_overlay_controls', STORAGE_KEY_INLINE_VIDEO_OVERLAY_CONTROLS, enabled);
+  }
+
+  loadPauseInlineVideoOnReturn(context: common.Context): boolean {
+    return this.loadInlineOption(context, 'pause_inline_video_on_return');
+  }
+
+  savePauseInlineVideoOnReturn(context: common.Context, enabled: boolean): boolean {
+    return this.saveInlineOption(context, 'pause_inline_video_on_return', STORAGE_KEY_PAUSE_INLINE_VIDEO_ON_RETURN, enabled);
+  }
+
+  private loadInlineOption(context: common.Context, key: string): boolean {
+    try {
+      const store: preferences.Preferences = preferences.getPreferencesSync(context,
+        { name: MediaSettingsStore.STORE_NAME });
+      return store.getSync(key, false) === true;
+    } catch (error) { return false; }
+  }
+
+  private saveInlineOption(context: common.Context, key: string, storageKey: string, enabled: boolean): boolean {
+    try {
+      const store: preferences.Preferences = preferences.getPreferencesSync(context,
+        { name: MediaSettingsStore.STORE_NAME });
+      store.putSync(key, enabled);
+      store.flushSync();
+      AppStorage.setOrCreate<boolean>(storageKey, enabled);
+      return true;
+    } catch (error) { return false; }
+  }
+
+  saveInlineVideoHoldPlay(context: common.Context, enabled: boolean): boolean {
+    try {
+      const store: preferences.Preferences = preferences.getPreferencesSync(context,
+        { name: MediaSettingsStore.STORE_NAME });
+      store.putSync(MediaSettingsStore.INLINE_VIDEO_HOLD_PLAY_KEY, enabled);
+      store.flushSync();
+      AppStorage.setOrCreate<boolean>(STORAGE_KEY_INLINE_VIDEO_HOLD_PLAY, enabled);
+      return true;
+    } catch (error) { return false; }
   }
 
   saveVideoHoldSpeed(context: common.Context, enabled: boolean): boolean {

@@ -296,5 +296,5 @@ test('disabling the floating-tab gradient uses a transparent HDS mask while the 
   });
   assert.equal(Object.hasOwn(instance.rootTabFloatingStyle(), 'gradientMask'), false);
   instance.rootTabGradientMaskEnabled = false;
-  assert.deepEqual(instance.rootTabFloatingStyle().gradientMask, { maskColor: 'transparent' });
+  assert.deepEqual(instance.rootTabFloatingStyle().gradientMask, { maskColor: 'transparent', maskHeight: 1 });
 });

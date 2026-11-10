@@ -1,3 +1,4 @@
+const { withDohHttpMock } = require('./doh-http-fixture.cjs');
 const assert = require('node:assert/strict');
 const test = require('node:test');
 const fs = require('node:fs');
@@ -10,7 +11,7 @@ function load(name, dependencies = {}) {
     target: ts.ScriptTarget.ES2020, module: ts.ModuleKind.CommonJS, esModuleInterop: true
   } }).outputText;
   const module = { exports: {} };
-  new Function('require', 'module', 'exports', output)(id => {
+  new Function('require', 'module', 'exports', output)(id => { withDohHttpMock(dependencies);
     if (Object.hasOwn(dependencies, id)) return dependencies[id];
     if (id === './XPostResponse') return load('XPostResponse');
     if (id === './XConnectFeatures') return load('XConnectFeatures');
@@ -69,6 +70,47 @@ function fixture(status = 200, body = {}, timeout = false, extraDependencies = {
   }, featuresFor: () => ({}) };
   return { client, calls, releases: () => releases };
 }
+
+test('Home category requests forward the server tag, cursor and seen ids while Following keeps its own source', async () => {
+  const { client, calls } = fixture();
+  await client.homeTimeline(true, 'category-bottom', 40, ['123'], true, 'pull', 'g:opaque');
+  await client.homeTimeline(false, 'following-bottom', 20, ['123']);
+  const first = JSON.parse(new URL(calls[0].url).searchParams.get('variables'));
+  const second = JSON.parse(new URL(calls[1].url).searchParams.get('variables'));
+  assert.match(calls[0].url, /\/L6SRp4VXI9qrmQgX0-OTYA\/HomeTimelineQuery\?/);
+  assert.equal(first.tag, 'g:opaque'); assert.equal(first.cursor, 'category-bottom');
+  assert.deepEqual(first.seenTweetIds, ['123']); assert.equal(first.requestContext, 'pull');
+  assert.equal(first.__relay_internal__pv__xclientsfeaturesappviewerisloggedinrelayprovider, true);
+  assert.equal(Object.keys(first).filter(name => name.startsWith('__relay_internal__pv__')).length, 6);
+  assert.match(calls[1].url, /\/HomeTimelineLatest\?/);
+  assert.equal(second.tag, undefined); assert.equal(second.seen_tweet_ids, undefined);
+  assert.equal((await client.homeTimeline(false, '', 20, [], false, '', 'gaming')).ok, false);
+  assert.equal(calls.length, 2);
+});
+
+test('Home topic discovery and pin writes use the account directory and current web Tag input', async () => {
+  const { client, calls } = fixture(200, url => ({ status: 200, body: { data: url.includes('/unpinButtonMutation') ?
+    { unpin_timeline: { __typename: 'UnpinTimelineSuccessResult' } } : { pin_timeline: { __typename: 'PinTimelineSuccessResult' } } } }));
+  await client.pinnableTimelines(); await client.pinnedTimelines();
+  assert.equal((await client.pinHomeTopic('g:opaque', true)).ok, true);
+  assert.equal((await client.pinHomeTopic('g:opaque', false)).ok, true);
+  assert.match(calls[0].url, /\/PinnableTimelinesQuery\?/); assert.match(calls[1].url, /\/PinnedTimelinesQuery\?/);
+  assert.equal(calls[2].url, 'https://api.x.com/graphql/rQXvN9KZOR3qgEFyTVUsag/pinButtonMutation');
+  assert.equal(calls[3].url, 'https://api.x.com/graphql/mSMbCZkeQFKmq7cdPAzFFg/unpinButtonMutation');
+  assert.deepEqual(JSON.parse(calls[2].options.extraData),
+    { queryId: 'rQXvN9KZOR3qgEFyTVUsag', variables: { id: '0', strId: 'g:opaque', type: 'Tag' } });
+  assert.equal((await client.pinHomeTopic(' \n', true)).ok, false); assert.equal(calls.length, 4);
+});
+
+test('HTTP 200 with a rejected or missing topic mutation result cannot report a saved category', async () => {
+  for (const body of [{ data: { pin_timeline: { __typename: 'PinTimelineErrorResult', message: 'rejected' } } },
+    { data: {} }, { data: { pin_timeline: { __typename: 'UnpinTimelineSuccessResult' } } }]) {
+    const { client } = fixture(200, body);
+    const result = await client.pinHomeTopic('gaming', true);
+    assert.equal(result.ok, false); assert.equal(result.status, 200);
+    assert.equal(result.errorText, body.data.pin_timeline?.message ?? 'home_pin_unconfirmed');
+  }
+});
 
 test('profile post timelines supply the card platform required to return polls and link cards', async () => {
   const { client, calls } = fixture();

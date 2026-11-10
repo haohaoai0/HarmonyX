@@ -107,11 +107,11 @@ test('another OAuth request cannot overwrite the notification error, and a new m
   const http = { RequestMethod: { GET: 'GET' }, createHttp: () => ({
     request: async () => responses.shift(), destroy() {}
   }) };
-  const Client = new Function('http', 'proxyStore', 'hilog', 'DOMAIN', 'TAG', 'BASE_URL',
+  const Client = new Function('createDohHttpRequest', 'http', 'proxyStore', 'hilog', 'DOMAIN', 'TAG', 'BASE_URL',
     'NotificationRateLimit', 'XApiClient',
     `${compile('class Client { ' + methods('entry/src/main/ets/services/XApiClient.ets', 'XApiClient',
       ['hasToken', 'get', 'mentions', 'mentionsRateLimitReason']) + ' }')}; return Client;`)(
-    http, { apply: async () => {} }, { error() {} }, 0, '', 'https://example.test',
+    () => http.createHttp(), http, { apply: async () => {} }, { error() {} }, 0, '', 'https://example.test',
     NotificationRateLimit, { parseMentions: () => [] });
   const client = Object.assign(new Client(), { token: 'fixture', mentionsLimitReason: '' });
   assert.equal(await client.mentions('viewer'), null);

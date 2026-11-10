@@ -1,6 +1,10 @@
+import { STORAGE_KEY_SIDEBAR_SEARCH_CAPSULE } from '../services/SidebarSettingsStore';
+import { CrashRecoveryNotice } from '../components/CrashRecoveryNotice';
+import { crashDiagnostics } from '../services/CrashDiagnostics';
 import { SupportBuilder, SupporterAccessBuilder } from './Support';
 import { mediaViewerNavigationTransition } from '../utils/MediaViewerNavigation';
 import { PostTranslationOptionsHost } from '../components/PostTranslationOptionsHost';
+import { SecureMediaSaveHost } from '../components/SecureMediaSaveHost';
 import { AboutAccountBuilder } from './AboutAccount';
 import { StartupLaunchCover } from '../components/StartupLaunchCover';
 import { SPLASH_OPEN_REQUEST } from '../services/XXAuthSplashStore';
@@ -9,6 +13,9 @@ import { orderedTabIds } from '../utils/TabOrder';
 import { STORAGE_KEY_BOTTOM_TAB_ORDER, STORAGE_KEY_HOME_TAB_ORDER } from '../services/TabOrderSettingsStore';
 import { scrollFrame, scrollStarted, scrollStopped, stopScrollOnTouch } from '../utils/ScrollInteraction';
 import { homeTimelineSourceStore } from '../services/HomeTimelineSourceStore';
+import { localAccountGroupStore } from '../services/LocalAccountGroupStore';
+import { localGroupTimelineService } from '../services/LocalGroupTimelineService';
+import { AccountGroupsBuilder, AccountGroupEditorBuilder } from './AccountGroups';
 import { HomeSourceOptionsSheet } from '../components/HomeTimelineSheets';
 import { pinnedHomeListStore } from '../services/PinnedHomeListStore';
 import { STORAGE_KEY_VIDEO_FULLSCREEN_OWNER } from '../utils/AppWindowOrientation';
@@ -35,12 +42,13 @@ import { appPageBackground } from '../components/PageBackgroundLayer';
 import { pageCanvasColor, pageReadingSurfaceColor } from '../utils/ThemeColors';
 import { STORAGE_KEY_PAGE_TRANSITION_MODE, DEFAULT_PAGE_TRANSITION_MODE } from '../services/PageTransitionSettingsStore';
 import { pageSystemTransition, PageTransitionMotion, officialPageTransition } from '../utils/PageTransition';
-import { STORAGE_KEY_SYSTEM_EMOJI_ENABLED } from '../services/AppearanceStore';
+import { STORAGE_KEY_SYSTEM_EMOJI_ENABLED, STORAGE_KEY_SYSTEM_DARK } from '../services/AppearanceStore';
 import { XXAuthPopupHost } from '../components/XXAuthPopupHost';
 import { userAvatarRadius, userVerifiedType, userAvatarShape, verificationBadgeColor } from '../utils/UserIdentity';
 import { DEFAULT_SHEET_MATERIAL_ENABLED, DEFAULT_SHEET_MATERIAL_LEVEL, STORAGE_KEY_SHEET_MATERIAL_ENABLED, STORAGE_KEY_SHEET_MATERIAL_LEVEL } from '../services/SheetMaterialSettingsStore';
 import { sheetContentBackground, sheetMaterialOptions } from '../utils/SheetMaterial';
 import { HOME_FLOATING_COMPOSE, HOME_FLOATING_HIDDEN, STORAGE_KEY_HOME_FLOATING_ACTION,
+  HOME_HEADER_SEARCH, HOME_HEADER_FOLLOW, STORAGE_KEY_HOME_HEADER_ACTION, STORAGE_KEY_HOME_FOLLOW_SUGGESTIONS,
   STORAGE_KEY_ME_FLOATING_ACTION, ME_FLOATING_PROFILE, ME_FLOATING_ACCOUNTS, ME_FLOATING_SETTINGS,
   ME_FLOATING_HELP, ME_FLOATING_HIDDEN, STORAGE_KEY_PHOTO_FULLSCREEN,
   STORAGE_KEY_REFRESH_ON_FOREGROUND, STORAGE_KEY_REFRESH_ON_HOME_TAB, STORAGE_KEY_HOME_SINGLE_TAP_TOP,
@@ -55,7 +63,7 @@ import common from '@ohos.app.ability.common';
 import webview from '@ohos.web.webview';
 import { deviceInfo } from '@kit.BasicServicesKit';
 import { preferences } from '@kit.ArkData';
-import { curves, FrameCallback, LengthMetrics, SymbolGlyphModifier, uiMaterial } from '@kit.ArkUI';
+import { ColorMetrics, curves, FrameCallback, LengthMetrics, SymbolGlyphModifier, uiMaterial } from '@kit.ArkUI';
 import {
   BottomBuilderShowType,
   DividerShowType,
@@ -90,6 +98,7 @@ import { RootBottomTabItem } from '../components/RootBottomTabItem';
 import { RootSplitNavigation } from '../components/RootSplitNavigation';
 import { RootLiquidTabIndicator } from '../components/RootLiquidTabIndicator';
 import { RootLiquidTabSurface } from '../components/RootLiquidTabSurface';
+import { MaterialCompat } from '../utils/MaterialCompat';
 import { RootLiquidTabMotion } from '../utils/RootLiquidTabMotion';
 import { SpacePreviewSheet } from '../components/SpacePreviewSheet';
 import { SPACE_SURFACE_REVISION, SPACE_PREVIEW_REQUEST, spaceSurfaceStore } from '../services/SpaceSurfaceStore';
@@ -284,6 +293,7 @@ import {
   STORAGE_KEY_COMPACT_SWITCH_STYLE,
   COMPACT_SWITCH_TABS,
   COMPACT_SWITCH_BUTTONS,
+  COMPACT_SWITCH_SEGMENTED,
   STORAGE_KEY_COMPOSE_BUTTON_ENABLED,
   STORAGE_KEY_DARK_SURFACE,
   STORAGE_KEY_TITLE_BAR_GLASS_MATERIAL_LEVEL,
@@ -297,7 +307,7 @@ import {
   BOTTOM_BAR_NOTIFICATIONS_PAGE,
   BOTTOM_BAR_PAGE_COUNT,
   DEFAULT_BOTTOM_BAR_PAGES_MASK,
-  STORAGE_KEY_BOTTOM_BAR_PAGES
+  STORAGE_KEY_BOTTOM_BAR_VISIBLE, STORAGE_KEY_BOTTOM_BAR_PAGES
 } from '../services/BottomBarSettingsStore';
 import type { UserDetailRouteParam } from './UserDetail';
 import { DesktopNavRail } from '../components/DesktopNavRail';
@@ -350,6 +360,8 @@ import {
   STORAGE_KEY_COVER_SCREEN_ACTIVE,
   TIMELINE_COLUMNS_ONE,
   TIMELINE_COLUMNS_THREE,
+  TIMELINE_COLUMNS_FOUR,
+  TIMELINE_COLUMNS_FIVE,
   TIMELINE_COLUMNS_AUTO_TWO,
   TIMELINE_COLUMNS_TWO,
   timelineSettingsStore
@@ -623,6 +635,11 @@ struct Index {
   private exploreSearchMaterialCache: TitleBarControlMaterialCache = new TitleBarControlMaterialCache();
   private rootTitleBarBuilder: CustomBuilder = (): void => { this.RootTitleBarContent(); };
   private rootTitleBarBottomBuilder: CustomBuilder = (): void => { this.RootTitleBarBottomContent(); };
+  private sidebarNavPathStack: NavPathStack = new NavPathStack();
+  private sidebarScroller: Scroller = new Scroller();
+  @StorageProp(STORAGE_KEY_SIDEBAR_SEARCH_CAPSULE) private sidebarSearchCapsuleEnabled: boolean = false;
+  private sidebarSearchCapsuleBuilder: CustomBuilder = (): void => { this.SidebarSearchCapsule(); };
+  private sidebarSearchMaterialCache: TitleBarControlMaterialCache = new TitleBarControlMaterialCache();
   private sideBarPanelBuilder: CustomBuilder = (): void => { this.SideBarPanelBuilder(SIDEBAR_MATERIAL_SYSTEM); };
   private contentPanelBuilder: CustomBuilder = (): void => { this.ContentPanelBuilder(); };
   // While reading down the Home feed, the feed switch moves beside the avatar
@@ -638,6 +655,7 @@ struct Index {
   @State private exploreCategoryPages: ExploreCategoryPage[] = [new ExploreCategoryPage(), new ExploreCategoryPage(),
     new ExploreCategoryPage(), new ExploreCategoryPage(), new ExploreCategoryPage()];
   @State private activeHomeTopicId: string = '';
+  @State private previewHomeTopic: TimelineTopic | null = null;
   @StorageProp(STORAGE_KEY_LIST_REVISION) @Watch('onHomeListsChanged') private homeListRevision: number = 0;
   @State private pinnedHomeTopics: TimelineTopic[] = [];
   @State private showPauseTopics: boolean = false;
@@ -645,11 +663,13 @@ struct Index {
   @State private showHomeSourceOptions: boolean = false;
   @State private selectedHomeSource: TimelineTopic | null = null;
   private communityHomeRankings: Map<string, string> = new Map<string, string>();
+  private localGroupHomeVersions: Map<string, number> = new Map<string, number>();
   @StorageProp('harmonyx.home_source_request') @Watch('onHomeSourceRequested') private homeSourceRequest: string = '';
   @StorageLink(STORAGE_KEY_HOME_TIMELINE_REVISION) @Watch('onHomeTimelinePreferencesChanged')
   private homeTimelineRevision: number = 0;
   private manageTimelinesAfterDismiss: boolean = false;
   private topicPauseTimer: number = -1;
+  private topicPresentationPending: boolean = false;
   @StorageLink('harmonyx.default_home_feed') @Watch('onDefaultHomeFeedChanged')
   defaultHomeFeedMode: number = 0;
   @State @Watch('onTimelineChanged') timeline: Tweet[] = [];
@@ -707,6 +727,7 @@ struct Index {
   @StorageLink(STORAGE_KEY_VIDEO_REQUEST) @Watch('onVideoRequested') videoRequest: string = '';
   // The in-app web sheet follows the app's own light/dark setting.
   @StorageLink('harmonyx.display_mode') displayMode: string = DISPLAY_MODE_SYSTEM;
+  @StorageProp(STORAGE_KEY_SYSTEM_DARK) private appDark: boolean = false;
   @StorageLink(STORAGE_KEY_DARK_SURFACE) darkSurface: string = DARK_SURFACE_BLACK;
   @StorageLink('harmonyx.notification_alerts') @Watch('onNotificationAlertsChanged')
   notificationAlertsEnabled: boolean = true;
@@ -732,6 +753,8 @@ struct Index {
   // away from the newest post, and morphs back on any downward scroll.
   @State private fabMode: string = 'compose';
   @StorageProp(STORAGE_KEY_HOME_FLOATING_ACTION) homeFloatingAction: string = HOME_FLOATING_COMPOSE;
+  @StorageProp(STORAGE_KEY_HOME_HEADER_ACTION) homeHeaderAction: string = HOME_HEADER_SEARCH;
+  @StorageProp(STORAGE_KEY_HOME_FOLLOW_SUGGESTIONS) homeFollowSuggestions: boolean = true;
   @StorageProp(STORAGE_KEY_ME_FLOATING_ACTION) meFloatingAction: string = ME_FLOATING_PROFILE;
   @StorageProp(STORAGE_KEY_REFRESH_ON_FOREGROUND) refreshOnForeground: boolean = false;
   @StorageProp(STORAGE_KEY_REFRESH_ON_HOME_TAB) refreshOnHomeTab: boolean = false;
@@ -880,6 +903,7 @@ struct Index {
   titleBarGlassMaterialLevel: number = DEFAULT_TITLE_BAR_GLASS_MATERIAL_LEVEL;
   @StorageLink(STORAGE_KEY_AUTO_HIDE_TAB_BAR) @Watch('onAutoHideTabBarChanged')
   autoHideTabBar: boolean = false;
+  @StorageProp(STORAGE_KEY_BOTTOM_BAR_VISIBLE) @Watch('onBottomBarVisibilityChanged') private bottomBarVisible: boolean = true;
   @StorageLink(STORAGE_KEY_BOTTOM_BAR_PAGES) @Watch('onBottomBarPagesChanged')
   bottomBarPagesMask: number = DEFAULT_BOTTOM_BAR_PAGES_MASK;
   @StorageProp(STORAGE_KEY_BOTTOM_TAB_ORDER) @Watch('onBottomBarPagesChanged') private bottomTabOrder: string = '';
@@ -936,7 +960,6 @@ struct Index {
     new ChatUnlockRequest((action: () => void): void => { this.requestChatUnlock(action); });
   private photoOverlayStack: NavPathStack = new NavPathStack();
   @State private photoOverlayOpen: boolean = false;
-  private exitConfirmationPending: boolean = false;
   @StorageProp(STORAGE_KEY_CONFIRM_APP_EXIT) private confirmExitEnabled: boolean = true;
   private handledContinuationRestoreRequest: number = 0;
   private homePager: SwiperController = new SwiperController();
@@ -1196,7 +1219,7 @@ struct Index {
   }
 
   private usesFloatingTabBar(): boolean {
-    return this.supportsHdsFloatingMaterial() && !this.classicBottomBar && !this.splitBottomBar;
+    return this.bottomBarVisible !== false && this.supportsHdsFloatingMaterial() && !this.classicBottomBar && !this.splitBottomBar;
   }
 
   private usesSplitTabBar(): boolean {
@@ -1320,7 +1343,7 @@ struct Index {
     return !this.inputModalBlocked && this.navPathStack.size() === 0 && !this.photoOverlayOpen && this.photoOverlayStack.size() === 0 &&
       !this.showOnboardingGuide && !this.showLoginSheet && !this.showMidAutumnGreeting && !this.showChatUnlock &&
       !this.showLinkPreview && !this.showSpacePreview && !this.showPauseTopics && !this.showFollowingOrder && !this.showHomeSourceOptions &&
-      !(this.showSideDrawer && !this.isLargeScreen()) && !this.desktopAdvancedSearchOpen && !this.exitConfirmationPending;
+      !(this.showSideDrawer && !this.isLargeScreen()) && !this.desktopAdvancedSearchOpen && !this.returningToDesktop;
   }
 
   private runRootInput(id: string): void {
@@ -1492,6 +1515,7 @@ struct Index {
   }
 
   private startupAdAllowed(): boolean {
+    if (crashDiagnostics.pendingReport()) { return false; }
     return !this.showOnboardingGuide && !this.showLoginSheet && !this.showChatUnlock &&
       !this.showMidAutumnGreeting && !this.photoOverlayOpen && !this.showLinkPreview &&
       !this.showSpacePreview && !this.showPauseTopics && !this.showFollowingOrder && !this.showHomeSourceOptions &&
@@ -1508,6 +1532,7 @@ struct Index {
   }
 
   private popupHostBlocked(): boolean {
+    if (crashDiagnostics.pendingReport()) { return true; }
     // A large-screen rail is persistent navigation, not a modal surface. It
     // must not suppress the recommendation sheet while the narrow overlay
     // drawer still needs to keep the sheet behind it.
@@ -1527,47 +1552,53 @@ struct Index {
 
   onBackPress(): boolean {
     if (this.showStartupCover) {
+      this.exitBackRequestedAt = 0;
       this.showStartupCover = false;
       this.startupFromForeground = false;
       return true;
     }
     if (!this.isLargeScreen() && this.showSideDrawer) {
+      this.exitBackRequestedAt = 0;
       this.showSideDrawer = false;
       return true;
     }
     if (this.navPathStack.size() > 0 || this.photoOverlayOpen || this.photoOverlayStack.size() > 0) {
+      this.exitBackRequestedAt = 0;
       return false;
     }
-    if (!this.confirmExitEnabled) { return false; }
-    this.confirmAppExit();
+    if (!this.confirmExitEnabled) { this.exitBackRequestedAt = 0; return false; }
+    this.handleRootBack();
     return true;
   }
 
-  private async confirmAppExit(): Promise<void> {
-    if (this.exitConfirmationPending) { return; }
-    this.exitConfirmationPending = true;
-    try {
-      const result: promptAction.ShowDialogSuccessResponse = await this.getUIContext().getPromptAction().showDialog({
-        title: this.text($r('app.string.app_exit_title')),
-        message: this.text($r('app.string.app_exit_message')),
-        buttons: [
-          { text: this.text($r('app.string.compose_cancel')), color: $r('app.color.text_secondary'), primary: true },
-          { text: this.text($r('app.string.app_exit_action')), color: $r('app.color.text_accent') }
-        ]
-      });
-      if (result.index !== 1) { return; }
-      const context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
-      try {
-        await context.terminateSelf();
-      } catch (error) {
-        hilog.error(0xFF00, 'HarmonyX-Exit', 'Failed to close ability: %{public}s', (error as Error).message);
-      }
-    } catch (error) {
-      // Back, Escape, and outside-tap dismissal keep the current page open.
-      hilog.info(0xFF00, 'HarmonyX-Exit', 'Exit dialog ended without selection: %{public}s', JSON.stringify(error));
-    } finally {
-      this.exitConfirmationPending = false;
+  private exitBackRequestedAt: number = 0;
+
+  private handleRootBack(): void {
+    if (this.returningToDesktop) { return; }
+    const now: number = Date.now();
+    const elapsed: number = now - this.exitBackRequestedAt;
+    if (this.exitBackRequestedAt > 0 && elapsed >= 0 && elapsed <= 2200) {
+      this.exitBackRequestedAt = 0;
+      void this.returnAppToDesktop();
+      return;
     }
+    this.exitBackRequestedAt = now;
+    this.getUIContext().getPromptAction().showToast({
+      message: this.text($r('app.string.app_exit_desktop_hint')), duration: 2200
+    });
+  }
+
+  private returningToDesktop: boolean = false;
+
+  private async returnAppToDesktop(): Promise<void> {
+    if (this.returningToDesktop) { return; }
+    this.returningToDesktop = true;
+    try {
+      const context: common.UIAbilityContext = this.getUIContext().getHostContext() as common.UIAbilityContext;
+      await context.moveAbilityToBackground();
+    } catch (error) {
+      hilog.error(0xFF00, 'HarmonyX-Exit', 'Failed to return to desktop: %{public}s', (error as Error).message);
+    } finally { this.returningToDesktop = false; }
   }
 
   private isWideScreen(): boolean {
@@ -1596,6 +1627,8 @@ struct Index {
     if (this.timelineColumnsMode === TIMELINE_COLUMNS_THREE) {
       return 3;
     }
+    if (this.timelineColumnsMode === TIMELINE_COLUMNS_FOUR) { return 4; }
+    if (this.timelineColumnsMode === TIMELINE_COLUMNS_FIVE) { return 5; }
     if (this.isWideScreen() && this.contentDestinationOpen) {
       return 1;
     }
@@ -1611,6 +1644,8 @@ struct Index {
 
   private timelineColumnsTemplate(): string {
     const columns: number = this.effectiveTimelineColumns();
+    if (columns === 5) { return '1fr 1fr 1fr 1fr 1fr'; }
+    if (columns === 4) { return '1fr 1fr 1fr 1fr'; }
     if (columns >= 3) {
       return '1fr 1fr 1fr';
     }
@@ -1994,6 +2029,17 @@ struct Index {
   private onHomeTimelinePreferencesChanged(): void {
     this.pinnedHomeTopics = homeTimelineStore.pinnedTopics();
     let reloadCommunity: boolean = false;
+    for (const source of localAccountGroupStore.sources()) {
+      const previous: number | undefined = this.localGroupHomeVersions.get(source.id);
+      if (previous !== undefined && previous !== source.localGroupVersion) {
+        this.topicSnapshots.delete(source.id);
+        if (this.activeHomeTopicId === source.id) { reloadCommunity = true; }
+      }
+      this.localGroupHomeVersions.set(source.id, source.localGroupVersion);
+    }
+    if (this.previewHomeTopic !== null && this.previewHomeTopic.localGroupId.length > 0) {
+      this.previewHomeTopic = homeTimelineStore.topicById(this.previewHomeTopic.id);
+    }
     for (const source of this.pinnedHomeTopics) {
       if (source.communityId.length === 0) { continue; }
       const previous: string | undefined = this.communityHomeRankings.get(source.id);
@@ -2004,12 +2050,16 @@ struct Index {
       this.communityHomeRankings.set(source.id, source.rankingMode);
     }
     if (reloadCommunity) { this.timeline = []; this.timelineNextToken = ''; this.loadTimeline(); }
-    if (this.activeHomeTopicId.length > 0 && !homeTimelineStore.isPinned(this.activeHomeTopicId)) {
+    const previewId: string = this.previewHomeTopic?.id ?? '';
+    if (previewId.length > 0 && homeTimelineStore.isPinned(previewId)) { this.previewHomeTopic = null; }
+    if (this.activeHomeTopicId.length > 0 && !homeTimelineStore.isPinned(this.activeHomeTopicId) &&
+      this.previewHomeTopic?.id !== this.activeHomeTopicId) {
       this.applyHomeFeedMode(this.defaultHomeFeedMode);
     }
-    // Refresh both List and WaterFlow when the store changes without touching
-    // the original pagination order or fetching a new page.
-    this.timeline = this.copyTweets(this.timeline);
+    // A switch may be toggled several times while the sheet is open. Commit
+    // one presentation update after it closes, without replacing raw posts.
+    if (this.showPauseTopics) { this.topicPresentationPending = true; }
+    else { this.refreshHomeTopicPresentation(); }
     if (this.topicPauseTimer >= 0) {
       clearTimeout(this.topicPauseTimer);
       this.topicPauseTimer = -1;
@@ -2023,6 +2073,19 @@ struct Index {
     }
   }
 
+  private refreshHomeTopicPresentation(): void {
+    this.topicPresentationPending = false;
+    for (let index: number = 0; index < this.homeTabItems().length; index++) {
+      this.replaceHomePageData(index);
+    }
+    this.syncHomeWaterFlowSections();
+  }
+
+  private onPauseTopicsDismissed(): void {
+    this.showPauseTopics = false;
+    if (this.topicPresentationPending) { this.refreshHomeTopicPresentation(); }
+  }
+
   private onPostModerationChanged(): void {
     for (let index: number = 0; index < this.homeTabItems().length; index++) {
       this.replaceHomePageData(index);
@@ -2032,7 +2095,7 @@ struct Index {
 
   private onHomeSourceRequested(): void {
     const topic: TimelineTopic | null = homeTimelineStore.topicById(this.homeSourceRequest.split('|')[0]);
-    if (topic === null || !homeTimelineStore.isPinned(topic.id)) { return; }
+    if (topic === null || (!homeTimelineStore.isPinned(topic.id) && topic.tag.length === 0 && topic.localGroupId.length === 0)) { return; }
     this.selectHomeTopic(topic);
     this.selectRootTabPage(HOME_TAB_INDEX);
     this.homePager.changeIndex(this.homeTabIndex(), false);
@@ -2041,6 +2104,7 @@ struct Index {
   private openHomeTimelineOptions(index: number): void {
     const mode: number = this.homeModeAt(index);
     if (mode >= 2) {
+      if (!homeTimelineStore.isPinned(this.tabKey(index))) { this.openTimelineManager(); return; }
       this.selectedHomeSource = homeTimelineStore.topicById(this.tabKey(index));
       this.showHomeSourceOptions = this.selectedHomeSource !== null;
       return;
@@ -2321,6 +2385,7 @@ struct Index {
   // which reads as "the last post will not scroll up".
   private contentBottomInset(): number {
     if (this.isDesktopLayout()) { return this.navigationIndicatorHeight + 20; }
+    if (!this.bottomBarVisible) { return this.navigationIndicatorHeight + 20 + (this.hasActiveSpace() ? 72 : 0); }
     if (!this.usesFloatingTabBar() && !this.usesSplitTabBar()) {
       if (this.supportsHdsNavigation()) {
         return this.classicTabBarHeight() + (this.hasActiveSpace() ? 72 : 0);
@@ -2411,7 +2476,7 @@ struct Index {
       }
     };
     if (!this.rootTabGradientMaskEnabled) {
-      style.gradientMask = { maskColor: Color.Transparent };
+      style.gradientMask = { maskColor: Color.Transparent, maskHeight: 1 };
     }
     return style;
   }
@@ -2430,6 +2495,7 @@ struct Index {
   }
 
   private bindHdsTabScrollers(): void {
+    if (!this.bottomBarVisible) { return; }
     if (!this.usesFloatingTabBar()) {
       return;
     }
@@ -2475,18 +2541,30 @@ struct Index {
   }
 
   private bottomBarPageIndex(pageIndex: number): number {
+    if (!this.bottomBarVisible) { return pageIndex; }
     return Math.max(0, this.classicBottomBarPages().indexOf(pageIndex));
   }
 
   private countBottomBarPages(): number { return this.classicBottomBarPages().length; }
 
   private bottomBarPageAt(visibleIndex: number): number {
+    if (!this.bottomBarVisible) { return visibleIndex; }
     return this.classicBottomBarPages()[visibleIndex] ?? this.firstBottomBarPage();
   }
 
   private firstBottomBarPage(): number { return this.classicBottomBarPages()[0] ?? HOME_TAB_INDEX; }
 
+  private onBottomBarVisibilityChanged(): void {
+    this.tabBarHidden = false;
+    this.onBottomBarPagesChanged();
+  }
+
   private selectRootTabPage(pageIndex: number): void {
+    if (!this.bottomBarVisible && !this.isDesktopLayout()) {
+      this.onTabChange(pageIndex);
+      this.tabsController.changeIndex(pageIndex);
+      return;
+    }
     const targetPage: number = this.isDesktopLayout() || this.isBottomBarPageEnabled(pageIndex) ? pageIndex : this.firstBottomBarPage();
     this.onTabChange(targetPage);
     if (!this.usesFloatingTabBar()) {
@@ -2495,6 +2573,7 @@ struct Index {
   }
 
   private onBottomBarPagesChanged(): void {
+    if (!this.bottomBarVisible && !this.isDesktopLayout()) { return; }
     this.bindHdsTabScrollers();
     if (!this.isBottomBarPageEnabled(this.currentTab)) {
       this.selectRootTabPage(this.firstBottomBarPage());
@@ -2853,7 +2932,10 @@ struct Index {
     const context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
     const activeId: string = accountStore.activeId(context);
     const source: TimelineTopic | null = homeTimelineStore.topicById(this.activeHomeTopicId);
-    const feed: string = this.activeHomeTopicId.length > 0 ? 'topic:' + this.activeHomeTopicId +
+    const category: boolean = source !== null && source.listId.length === 0 && source.communityId.length === 0 && source.localGroupId.length === 0;
+    const feed: string = (source?.localGroupId.length ?? 0) > 0 ? 'local-group:' + source?.localGroupId + ':' + source?.localGroupVersion :
+      category ? 'topic-home-v2:' + (source?.tag || 'unresolved:' + this.activeHomeTopicId) :
+      this.activeHomeTopicId.length > 0 ? 'topic:' + this.activeHomeTopicId +
       ((source?.communityId.length ?? 0) > 0 ? ':' + source?.rankingMode : '') :
       (this.homeFeedMode === 0 && this.onlySensitiveForYou ? 'sensitive' : this.homeFeedMode.toString());
     if (activeId.length > 0) {
@@ -3034,7 +3116,8 @@ struct Index {
 
     const topic: TimelineTopic | null = homeTimelineStore.topicById(this.activeHomeTopicId);
     if (topic !== null) {
-      await this.fetchHomeTopicPosts(topic, requestId);
+      await this.fetchHomeTopicPosts(topic, requestId, refreshing, requestContext,
+        refreshCursor, previousNextToken, previousCursorHistory);
       return;
     }
 
@@ -3181,49 +3264,64 @@ struct Index {
     this.statusLine = this.text($r('app.string.status_sample_sign_in'));
   }
 
-  private async homeTopicPage(topic: TimelineTopic, cursor: string, privateSession: boolean): Promise<TweetPage | null> {
+  private async homeTopicPage(topic: TimelineTopic, cursor: string, privateSession: boolean,
+    refreshing: boolean = false, requestContext: string = ''): Promise<TweetPage | null> {
+    if (!privateSession) { return null; }
+    if (topic.localGroupId.length > 0) {
+      return localGroupTimelineService.page(topic.localGroupId, cursor, 20);
+    }
     if (topic.communityId.length > 0) {
-      if (!privateSession) { return null; }
       const result: XPrivateResult = await this.xPrivate.communityTimeline(topic.communityId, cursor, 20, topic.rankingMode);
       return result.ok ? XTimelineParser.parse(result.body) : null;
     }
     if (topic.listId.length > 0) {
-      if (!privateSession) { return null; }
       const result: XPrivateResult = await this.xPrivate.listTimeline(topic.listId, cursor, 20);
       return result.ok ? XTimelineParser.parse(result.body) : null;
     }
-    if (privateSession) {
-      const result: XPrivateResult = await this.xPrivate.searchTimeline(topic.query, cursor, 20, 'Latest');
-      return result.ok ? XTimelineParser.parse(result.body) : null;
-    }
-    return this.api.searchRecentPage(topic.query, cursor);
+    if (topic.tag.length === 0) { return null; }
+    const result: XPrivateResult = await this.xPrivate.homeTimeline(true, cursor,
+      !refreshing && cursor.length > 0 ? 40 : 20, this.seenTweetIdsForTimeline(), refreshing, requestContext, topic.tag);
+    return result.ok ? XTimelineParser.parse(result.body) : null;
   }
 
-  private async fetchHomeTopicPosts(topic: TimelineTopic, requestId: number): Promise<void> {
+  private async fetchHomeTopicPosts(topic: TimelineTopic, requestId: number, refreshing: boolean = false,
+    requestContext: string = 'launch', refreshCursor: string = '', previousNextToken: string = '',
+    previousCursorHistory: string[] = []): Promise<void> {
     let page: TweetPage | null = null;
-    let source: string = '';
-    if (this.xPrivate.isSignedIn()) {
-      page = await this.homeTopicPage(topic, '', true);
-      source = 'topic-private';
-    }
-    if (requestId !== this.homeTimelineRequestId) {
-      return;
-    }
-    if (page === null && authStore.isSignedIn()) {
-      page = await this.homeTopicPage(topic, '', false);
-      source = 'topic-search';
-    }
+    const source: string = topic.tag.length > 0 ? 'topic-home' : 'topic-private';
+    try {
+      if (this.xPrivate.isSignedIn()) {
+        page = await this.homeTopicPage(topic, topic.tag.length > 0 && refreshing ? refreshCursor : '', true, refreshing, requestContext);
+      }
+    } catch (error) { page = null; }
     if (requestId !== this.homeTimelineRequestId) {
       return;
     }
     if (page !== null) {
+      if (refreshing) {
+        if (topic.tag.length > 0) {
+          const seen: Set<string> = new Set<string>(this.seenTweetIdsForTimeline(true));
+          page.tweets = page.tweets.filter((tweet: Tweet): boolean => !seen.has(tweet.id));
+        }
+        page.tweets = this.mergeFreshPosts(page.tweets, this.timeline);
+      }
       this.timeline = page.tweets;
       this.timelineSource = source;
-      this.timelineNextToken = page.nextToken;
-      this.hasMoreTimeline = page.nextToken.length > 0;
+      if ((page.topToken ?? '').length > 0) { this.timelineTopToken = page.topToken ?? ''; }
+      this.timelineNextToken = refreshing && previousNextToken.length > 0 ? previousNextToken : page.nextToken;
+      if (this.timelineNextToken === previousNextToken) { this.timelineCursorHistory = previousCursorHistory; }
+      this.hasMoreTimeline = this.timelineNextToken.length > 0;
       this.liveBadge = this.text($r('app.string.status_live_badge'));
       this.statusLine = page.tweets.length > 0 ? topic.displayTitle || this.text(topic.title) : this.text($r('app.string.status_home_empty'));
       this.persistFeed();
+    } else if (refreshing) {
+      this.homeRefreshFailed = true;
+      this.timelineSource = source;
+      this.timelineNextToken = previousNextToken;
+      this.timelineCursorHistory = previousCursorHistory;
+      this.hasMoreTimeline = previousNextToken.length > 0;
+      this.liveBadge = '';
+      this.statusLine = this.text($r('app.string.status_home_unavailable'));
     } else if (!this.restoreCachedFeed()) {
       this.timeline = [];
       this.liveBadge = '';
@@ -4184,6 +4282,7 @@ struct Index {
   }
 
   private onForegroundTick(): void {
+    this.exitBackRequestedAt = 0;
     if (this.foregroundTick <= 0) {
       return;
     }
@@ -4654,7 +4753,7 @@ struct Index {
   // APK rpb/opb/vg4 sends a persistent observation snapshot for For You.
   // Loading a page alone does not make its unviewed tail an impression.
   private seenTweetIdsForTimeline(includeHistory: boolean = false): string[] {
-    if (this.homeFeedMode !== 0) { return []; }
+    if (this.homeFeedMode !== 0 && (homeTimelineStore.topicById(this.activeHomeTopicId)?.tag.length ?? 0) === 0) { return []; }
     const context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
     return includeHistory ? homeSeenTweetStore.observedIds(context) : homeSeenTweetStore.requestIds(context);
   }
@@ -5248,10 +5347,10 @@ struct Index {
         page = await this.api.homeTimelinePage(authStore.getUserId(), requestedCursor);
       } else if (this.timelineSource === 'recommend') {
         page = await this.api.searchRecentPage(this.activeRecommendationQuery, requestedCursor);
-      } else if (this.timelineSource === 'topic-private' || this.timelineSource === 'topic-search') {
+      } else if (this.timelineSource === 'topic-private' || this.timelineSource === 'topic-home') {
         const topic: TimelineTopic | null = homeTimelineStore.topicById(this.activeHomeTopicId);
         if (topic !== null) {
-          page = await this.homeTopicPage(topic, requestedCursor, this.timelineSource === 'topic-private');
+          page = await this.homeTopicPage(topic, requestedCursor, true);
         }
       }
       if (requestId !== this.homeTimelineRequestId) {
@@ -5309,6 +5408,7 @@ struct Index {
     }
     this.saveCurrentFeedSnapshot();
     this.activeHomeTopicId = '';
+    this.previewHomeTopic = null;
     this.homeFeedMode = mode;
     this.showSelectedHomeFeed();
   }
@@ -5318,6 +5418,7 @@ struct Index {
       return;
     }
     this.saveCurrentFeedSnapshot();
+    this.previewHomeTopic = homeTimelineStore.isPinned(topic.id) ? null : topic;
     this.activeHomeTopicId = topic.id;
     this.showSelectedHomeFeed();
   }
@@ -6132,6 +6233,16 @@ struct Index {
     return pageSurfaceColor(this.displayMode, this.darkSurface);
   }
 
+  private rootSystemBarStyle(): SystemBarStyle {
+    // HDS otherwise derives the status-bar ink from its title content. Custom
+    // logo/title colors are independent of the canvas, including in portrait.
+    const dark: boolean = this.displayMode === DISPLAY_MODE_DARK ||
+      (this.displayMode === DISPLAY_MODE_SYSTEM && this.appDark);
+    const ink: ColorMetrics = ColorMetrics.resourceColor(
+      pageTextColor(dark ? '#FFFFFF' : '#000000', this.pageBackgroundValue, Color.Transparent));
+    return { statusBarContentColor: ink.red + ink.green + ink.blue > 382 ? '#FFFFFF' : '#000000' };
+  }
+
   private themedCardSurface(): ResourceColor {
     return pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue);
   }
@@ -6172,6 +6283,26 @@ struct Index {
     if (!this.isLargeScreen()) {
       this.showSideDrawer = false;
     }
+    if (feature === 'search') { this.showSearchPage(); return; }
+    if (feature === 'sidebar') {
+      const param: SettingsRouteParam = { section: 'sidebar' };
+      this.openRootContent({ name: 'SettingsSection', param: param }); return;
+    }
+    if (feature === 'follow') {
+      this.openContentDestination();
+      const param: FollowDiscoveryRouteParam = { tab: 0, contextualUserId: '' };
+      this.navPathStack.pushPath({ name: 'FollowDiscovery', param: param }); return;
+    }
+    if (feature === 'home') { this.selectRootTabPage(HOME_TAB_INDEX); return; }
+    if (feature === 'explore') {
+      if (this.bottomBarVisible && !this.isBottomBarPageEnabled(EXPLORE_TAB_INDEX) && !this.isDesktopLayout()) {
+        this.showSearchPage();
+      } else { this.selectRootTabPage(EXPLORE_TAB_INDEX); }
+      return;
+    }
+    if (feature === 'messages') { this.goMessages(); return; }
+    if (feature === 'grok') { this.openRootContent({ name: 'Grok' }); return; }
+    if (feature === 'groups') { this.openRootContent({ name: 'AccountGroups' }); return; }
     if (feature === 'history') {
       this.openRootContent({ name: 'BrowsingHistory' });
       return;
@@ -6223,7 +6354,7 @@ struct Index {
     }
     ResponsiveLayout.closeToMain(this.navPathStack);
     this.updateNavigationMode();
-    if (!this.isDesktopLayout() && !this.isBottomBarPageEnabled(NOTIFICATIONS_TAB_INDEX)) {
+    if (this.bottomBarVisible && !this.isDesktopLayout() && !this.isBottomBarPageEnabled(NOTIFICATIONS_TAB_INDEX)) {
       this.onNotificationsOpened();
       this.refreshNotificationsIfStale();
       this.openContentDestination();
@@ -6765,6 +6896,8 @@ struct Index {
     this.forYouSnapshot = new HomeFeedSnapshot();
     this.followingSnapshot = new HomeFeedSnapshot();
     this.topicSnapshots.clear();
+    this.localGroupHomeVersions.clear();
+    this.previewHomeTopic = null;
     this.homePageSources.forEach((source: TimelinePageDataSource, key: string): void => {
       source.replace([], [], key, 0, (count: number): void => { this.pageSections('home', key, count); });
     });
@@ -6917,6 +7050,7 @@ struct Index {
   }
 
   private desktopSelected(): string {
+    if (this.desktopRoute === 'AccountGroups' || this.desktopRoute === 'AccountGroupEditor') { return 'groups'; }
     if (this.desktopRoute === 'Grok') { return 'grok'; }
     if (this.desktopRoute === 'CreatorStudio') { return 'studio'; }
     if (this.desktopRoute === 'Bookmarks') { return 'bookmarks'; }
@@ -7371,7 +7505,7 @@ struct Index {
             this.NewPostsCapsule()
           }
 
-          if (this.composeButtonEnabled && !this.isDesktopLayout() && !this.usesSplitTabBar() && this.currentTab !== ME_TAB_INDEX &&
+          if (this.composeButtonEnabled && !this.isDesktopLayout() && (!this.bottomBarVisible || !this.usesSplitTabBar()) && this.currentTab !== ME_TAB_INDEX &&
             (this.currentTab !== HOME_TAB_INDEX || this.homeFloatingAction !== HOME_FLOATING_HIDDEN)) {
             FloatingComposeButton({
               bottomInset: this.floatingTabBottomMargin(),
@@ -7412,6 +7546,7 @@ struct Index {
           officialPageTransition(this.getUIContext(), this.rootPageMotion, this.pageTransitionMode, from, to, operation)))
       .direction(isAppRtl(this.appLocale) ? Direction.Rtl : Direction.Ltr)
       .titleBar(this.rootTitleBarOptions())
+      .systemBarStyle(this.rootSystemBarStyle(), this.rootSystemBarStyle())
       .titleMode(HdsNavigationTitleMode.MINI)
       .hideTitleBar(this.currentTab === ME_TAB_INDEX)
       .mode(this.mainNavigationMode)
@@ -7472,6 +7607,7 @@ struct Index {
       .height('100%')
       .backgroundColor(pageCanvasColor(this.displayMode, this.darkSurface, this.pageBackgroundValue))
       .title(this.RootNavigationTitle())
+      .systemBarStyle(this.rootSystemBarStyle())
       .titleMode(NavigationTitleMode.Mini)
       .hideTitleBar(this.titleBarShouldHide())
       .mode(NavigationMode.Stack)
@@ -7573,6 +7709,7 @@ struct Index {
       // 同一节点上排在后面的 bindSheet(isShow = false) 会把前面刚拉起来的弹窗直接关掉，
       // 所以登录、引导与中秋弹窗各挂一个零尺寸宿主节点，根节点只保留链接预览。
       PostTranslationOptionsHost()
+      SecureMediaSaveHost()
       XXAuthPopupHost({ blocked: this.popupHostBlocked() })
       Column().width(0).height(0)
         .bindSheet($$this.showSpacePreview, this.SpacePreviewContent(), sheetMaterialOptions({
@@ -7634,7 +7771,7 @@ struct Index {
           dragBar: true,
           showClose: false,
           backgroundColor: this.themedPageSurface(),
-          onDisappear: (): void => { this.showPauseTopics = false; }
+          onDisappear: (): void => { this.onPauseTopicsDismissed(); }
         }, this.sheetMaterialEnabled, this.sheetMaterialLevel, this.sheetWindowBreakpoint, this.compactWindow))
       Column().width(0).height(0)
         .bindSheet($$this.showFollowingOrder, this.FollowingOrderSheetContent(), sheetMaterialOptions({
@@ -7675,6 +7812,9 @@ struct Index {
       .position({ x: 0, y: this.videoDownloadNoticeTopInset() })
       .hitTestBehavior(HitTestMode.Transparent).zIndex(60)
 
+      CrashRecoveryNotice({ blocked: this.showStartupCover,
+        onOpenDiagnostics: (): void => { this.openRootContent({ name: 'Diagnostics' }); } })
+
       if (this.showStartupCover) {
       ForEach([this.splashOpenRequest], (_opening: number): void => {
         StartupLaunchCover({ allowAd: this.startupAdAllowed(), coldStart: !this.startupFromForeground,
@@ -7703,36 +7843,87 @@ struct Index {
   }
 
   @Builder
+  private SidebarSearchCapsule(): void {
+    if (this.sidebarSearchCapsuleEnabled) {
+      Stack({ alignContent: Alignment.BottomEnd }) {
+        Button({ type: ButtonType.Capsule, stateEffect: true }) {
+          Row({ space: 6 }) {
+            SymbolGlyph($r('sys.symbol.magnifyingglass')).fontSize($r('app.float.sidebar_search_capsule_icon'))
+              .fontColor([$r('app.color.text_secondary')])
+            Text($r('app.string.search_title')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M'))
+              .fontColor($r('app.color.text_secondary')).maxLines(1).textOverflow({ overflow: TextOverflow.Ellipsis })
+          }.justifyContent(FlexAlign.Center)
+        }.width($r('app.float.sidebar_search_capsule_width')).height($r('app.float.sidebar_search_capsule_height'))
+          .padding({ left: 12, right: 12 }).backgroundColor(SystemMaterialUtil.isApi26OrAbove() ? Color.Transparent : $r('app.color.bg_field'))
+          .attributeModifier(materialModifier(this.sidebarSearchMaterialCache.material(this.accentColor)))
+          .accessibilityText($r('app.string.search_title')).id('sidebar-search-capsule')
+          .onClick((): void => { this.showSideDrawer = false; this.showSearchPage(); })
+      }.width('100%').height($r('app.float.sidebar_navigation_title_height')).padding({ right: 16, bottom: 10 }).hitTestBehavior(HitTestMode.Transparent)
+    }
+  }
+
+  private sidebarTitleBarStyle(): TitleBarStyleOptions {
+    const options: TitleBarStyleOptions = {
+      scrollEffectOpts: { enableScrollEffect: true, scrollEffectType: ScrollEffectType.GRADIENT_BLUR },
+      originalStyle: { contentStyle: {
+        subIconStyle: { iconColor: $r('app.color.text_primary') },
+        menuStyle: { iconColor: $r('app.color.text_primary') }
+      } },
+      scrollEffectStyle: { contentStyle: {
+        subIconStyle: { iconColor: $r('app.color.text_primary') },
+        menuStyle: { iconColor: $r('app.color.text_primary') }
+      } }
+    };
+    if (deviceInfo.apiAvailable('6.1.0(23)')) {
+      options.scrollEffectOpts = { enableScrollEffect: true,
+        scrollEffectType: ScrollEffectType.IMMERSIVE_GRADIENT_BLUR };
+      options.systemMaterialEffect = { materialType: hdsMaterial.MaterialType.IMMERSIVE,
+        materialLevel: hdsMaterial.MaterialLevel.ADAPTIVE };
+    }
+    return options;
+  }
+
+  @Builder
   private SideBarPanelBuilder(materialType: number): void {
-    XSideDrawer({
-      sidebarMaterialType: materialType,
-      profile: this.profile,
-      fallbackName: this.handleText.length > 1 ? this.handleText.substring(1) : 'Harmony X',
-      fallbackHandle: this.handleText.length > 0 ? this.handleText : '@harmonyx',
-      onClose: (): void => { this.showSideDrawer = false; },
-      onProfile: (): void => {
-        this.openOwnProfile();
-      },
-      onFollowing: (): void => {
-        this.showSideDrawer = false;
-        this.openOwnUserList(USER_LIST_FOLLOWING);
-      },
-      onFollowers: (): void => {
-        this.showSideDrawer = false;
-        this.openOwnUserList(USER_LIST_FOLLOWERS);
-      },
-      onSettings: (): void => this.openSettings(),
-      onAccounts: (): void => this.openAccounts(),
-      onMenu: (feature: string): void => {
-        if (feature === 'help') { this.openHelpCenter(); return; }
-        if (feature === 'support') {
+    HdsNavigation(this.sidebarNavPathStack) {
+      XSideDrawer({
+        scroller: this.sidebarScroller,
+        sidebarMaterialType: materialType,
+        profile: this.profile,
+        fallbackName: this.handleText.length > 1 ? this.handleText.substring(1) : 'Harmony X',
+        fallbackHandle: this.handleText.length > 0 ? this.handleText : '@harmonyx',
+        onClose: (): void => { this.showSideDrawer = false; },
+        onProfile: (): void => {
+          this.openOwnProfile();
+        },
+        onFollowing: (): void => {
           this.showSideDrawer = false;
-          this.openRootContent({ name: 'Support' });
-          return;
+          this.openOwnUserList(USER_LIST_FOLLOWING);
+        },
+        onFollowers: (): void => {
+          this.showSideDrawer = false;
+          this.openOwnUserList(USER_LIST_FOLLOWERS);
+        },
+        onSettings: (): void => this.openSettings(),
+        onAccounts: (): void => this.openAccounts(),
+        onMenu: (feature: string): void => {
+          if (feature === 'help') { this.openHelpCenter(); return; }
+          if (feature === 'support') {
+            this.showSideDrawer = false;
+            this.openRootContent({ name: 'Support' });
+            return;
+          }
+          this.showDrawerFeature(feature);
         }
-        this.showDrawerFeature(feature);
-      }
-    })
+      })
+    }.width('100%').height('100%').mode(NavigationMode.Stack)
+      .titleMode(HdsNavigationTitleMode.MINI).hideBackButton(true).hideToolBar(true)
+      .bindToScrollable([this.sidebarScroller])
+      .titleBar({ avoidLayoutSafeArea: true, style: this.sidebarTitleBarStyle(), content: {
+        subIcon: { content: { icon: $r('sys.symbol.close_sidebar'),
+          action: (): void => { this.showSideDrawer = false; } } },
+        stackBuilder: this.sidebarSearchCapsuleBuilder
+      } }).backgroundColor(Color.Transparent).id('account-sidebar-navigation')
   }
 
   @Builder
@@ -7740,6 +7931,13 @@ struct Index {
     Stack({ alignContent: Alignment.BottomEnd }) {
       if (this.isDesktopLayout()) {
         this.DesktopRootPage()
+      } else if (!this.bottomBarVisible) {
+        Tabs({ barPosition: BarPosition.End, index: this.currentTab, controller: this.tabsController }) {
+          ForEach([0, 1, 2, 3, 4], (page: number) => {
+            TabContent() { this.RootPageContent(page) }
+          }, (page: number): string => page.toString())
+        }.width('100%').height('100%').barHeight(0).scrollable(false)
+          .onChange((page: number): void => this.onTabChange(page))
       } else if (this.supportsHdsNavigation()) {
         this.RootHdsTabs()
         if (this.usesSplitTabBar()) {
@@ -7790,7 +7988,7 @@ struct Index {
             this.openSpacePreview(room);
           } })
         }.width('100%').padding({ left: 12, right: 12 })
-          .margin({ bottom: this.floatingTabBottomMargin() + (this.tabBarHidden ? 12 : 72) })
+          .margin({ bottom: this.floatingTabBottomMargin() + (!this.bottomBarVisible || this.tabBarHidden ? 12 : 72) })
       }
     }
     .width('100%')
@@ -7822,6 +8020,10 @@ struct Index {
         .vertical(false)
         .barHeight(this.usesFloatingTabBar() ? $r('app.float.root_tab_bar_height') : this.classicTabBarHeight())
         .barBackgroundColor(this.usesFloatingTabBar() ? Color.Transparent : this.themedPageSurface())
+        .barBackgroundBlurStyle(MaterialCompat.NO_PLATE_BLUR)
+        .barBackgroundStyle(this.rootTabGradientMaskEnabled ? undefined :
+          { maskColor: Color.Transparent, maskHeight: 1 })
+        .clip(false)
         // Bind the native style at creation and on safe-area changes. Mutating
         // a modifier before HdsTabs mounts can leave its first layout at 0vp.
         .barFloatingStyle(this.rootTabFloatingStyle())
@@ -7870,6 +8072,10 @@ struct Index {
       PostArticleBuilder();
     } else if (name === 'Grok') {
       GrokBuilder();
+    } else if (name === 'AccountGroups') {
+      AccountGroupsBuilder();
+    } else if (name === 'AccountGroupEditor') {
+      AccountGroupEditorBuilder();
     } else if (name === 'PostInteractions') {
       PostInteractionsBuilder();
     } else if (name === 'EditHistory') {
@@ -8038,6 +8244,7 @@ struct Index {
     ForEach(this.classicBottomBarPages(), (page: number) => {
       TabContent() { this.RootPageContent(page) }
         .tabBar(this.HdsTabBar(page, this.rootPageIcon(page), this.rootPageLabel(page)))
+        .clip(false)
     }, (page: number): string => page.toString())
   }
   @Builder
@@ -8433,7 +8640,11 @@ struct Index {
     ];
     for (let i: number = 0; i < this.pinnedHomeTopics.length; i++) {
       const topic: TimelineTopic = this.pinnedHomeTopics[i];
-      items.push({ key: topic.id, label: topic.displayTitle || topic.title, icon: topic.icon, imageUrl: topic.bannerUrl, chevron: true });
+      items.push({ key: topic.id, label: topic.displayTitle || topic.title, icon: topic.icon, iconText: topic.iconText, imageUrl: topic.bannerUrl, chevron: true });
+    }
+    if (this.previewHomeTopic !== null && !items.some((item: IconTabItem): boolean => item.key === this.previewHomeTopic?.id)) {
+      const preview: TimelineTopic = this.previewHomeTopic;
+      items.push({ key: preview.id, label: preview.displayTitle || preview.title, icon: preview.icon, iconText: preview.iconText, imageUrl: preview.bannerUrl });
     }
     const order: string[] = orderedTabIds(this.homeTabOrder, items.map((item: IconTabItem): string => item.key));
     return order.map((id: string): IconTabItem => items.find((item: IconTabItem): boolean => item.key === id) as IconTabItem);
@@ -8473,6 +8684,7 @@ struct Index {
       AnimatedIconTabs({ items: this.homeTabItems(), selected: this.homeTabIndex(), tabPosition: this.homeTabPosition,
         barHeight: height, contentSized: true,
         buttonStyle: !this.useTitleBarLogo() && this.compactSwitchStyle === COMPACT_SWITCH_BUTTONS,
+        segmentedStyle: !this.useTitleBarLogo() && this.compactSwitchStyle === COMPACT_SWITCH_SEGMENTED,
         onSelect: (index: number): void => this.selectHomeIconTab(index),
         onOptions: (index: number): void => this.openHomeTimelineOptions(index) }).layoutWeight(1)
       Button({ type: ButtonType.Circle }) {
@@ -8507,6 +8719,7 @@ struct Index {
       { key: 'verified', label: $r('app.string.notifications_verified'), icon: $r('sys.symbol.checkmark_circle_fill') }
     ], selected: this.notificationFilter, tabPosition: this.notificationTabPosition, barHeight: compact ? 36 : 52,
       buttonStyle: compact && this.compactSwitchStyle === COMPACT_SWITCH_BUTTONS,
+      segmentedStyle: compact && this.compactSwitchStyle === COMPACT_SWITCH_SEGMENTED,
       onSelect: (index: number): void => { this.notificationPager.changeIndex(index, true); } })
   }
 
@@ -8573,6 +8786,7 @@ struct Index {
   private TitleIdentityAction(): void {
         if (this.chromeTab === MESSAGES_TAB_INDEX) { this.ChatFilterButton() }
         else if (this.chromeTab === NOTIFICATIONS_TAB_INDEX) { this.NotificationSettingsButton() }
+        else if (this.chromeTab === HOME_TAB_INDEX) { this.HomeSearchButton() }
         else { this.AddFollowButton() }
   }
 
@@ -8612,6 +8826,21 @@ struct Index {
       return this.handleText.substring(1, 2).toUpperCase();
     }
     return 'O';
+  }
+
+  @Builder
+  private HomeSearchButton(): void {
+    if (this.homeHeaderAction === HOME_HEADER_FOLLOW) {
+      this.AddFollowButton()
+    } else {
+    Button({ type: ButtonType.Circle, stateEffect: true }) {
+      SymbolGlyph($r('sys.symbol.magnifyingglass')).fontSize($r('app.float.follow_header_symbol_size'))
+        .fontColor([$r('app.color.text_primary')])
+        .foregroundFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.componentHdrEnabled, this.componentHdrRatio))
+    }.width(36).height(36).padding(4).backgroundColor(Color.Transparent)
+      .accessibilityText($r('app.string.search_title')).id('home-search-button')
+      .onClick((): void => { this.showSideDrawer = false; this.showSearchPage(); })
+    }
   }
 
   @Builder
@@ -8754,7 +8983,7 @@ struct Index {
   @Builder
   private HomePost(tweet: Tweet, index: number, postIndex: number, postCount: number): void {
     Column() {
-    if (postIndex === 0) {
+    if (this.homeFollowSuggestions && postIndex === 0) {
       ForEach((index === this.homeTabIndex() ? this.homeSuggestionGroups : this.homeSnapshotAt(index).suggestions).filter((group: FollowSuggestionGroup): boolean => group.afterTweetId.length === 0),
         (group: FollowSuggestionGroup) => { FollowSuggestions({ group: group }) },
         (group: FollowSuggestionGroup): string => group.id)
@@ -8764,7 +8993,7 @@ struct Index {
       narrowColumn: this.useNarrowTimelineCards(),
       videoFeedEnabled: true,
       homeTimelineVideo: true,
-      recordRecommendationSeen: this.homeModeAt(index) === 0,
+      recordRecommendationSeen: this.homeModeAt(index) === 0 || (homeTimelineStore.topicById(this.tabKey(index))?.tag.length ?? 0) > 0,
       naturalVideoSize: true,
       onLikeChanged: (tt: Tweet, liked: boolean) => this.onLike(tt, liked),
       onRepostChanged: (tt: Tweet, reposted: boolean) => this.onRepost(tt, reposted),
@@ -8774,12 +9003,14 @@ struct Index {
       onAuthorTapped: (tt: Tweet) => this.openUser(tt),
       onMentionTapped: (handle: string) => this.openMention(handle)
     })
+    if (this.homeFollowSuggestions) {
     ForEach((index === this.homeTabIndex() ? this.homeSuggestionGroups : this.homeSnapshotAt(index).suggestions).filter((group: FollowSuggestionGroup): boolean => group.afterTweetId === tweet.id),
       (group: FollowSuggestionGroup) => { FollowSuggestions({ group: group }) },
       (group: FollowSuggestionGroup): string => group.id)
     if (this.homeModeAt(index) === 1 && this.hasCookieSession && (index === this.homeTabIndex() ? this.homeSuggestionGroups : this.homeSnapshotAt(index).suggestions).length === 0 &&
       postIndex === Math.min(2, postCount - 1)) {
       FollowSuggestions({ autoLoad: true })
+    }
     }
     }.width('100%')
   }
@@ -8807,7 +9038,9 @@ struct Index {
           .margin({ top: 14, bottom: 14 })
       } else if (this.filteredTimeline(index).length > 0 ||
         !(index === this.homeTabIndex() ? this.loading : !this.homeSnapshotAt(index).loaded)) {
-        Text((index === this.homeTabIndex() ? this.hasMoreTimeline : this.homeSnapshotAt(index).hasMore) ? $r('app.string.timeline_load_more') : $r('app.string.timeline_no_more')).fontFamily(this.appFontFamily)
+        Text(this.filteredTimeline(index).length === 0 ?
+          ((index === this.homeTabIndex() ? this.statusLine : this.homeSnapshotAt(index).statusLine) || this.text($r('app.string.status_home_empty'))) :
+          ((index === this.homeTabIndex() ? this.hasMoreTimeline : this.homeSnapshotAt(index).hasMore) ? $r('app.string.timeline_load_more') : $r('app.string.timeline_no_more'))).fontFamily(this.appFontFamily)
           .fontSize($r('sys.float.Body_S'))
           .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
           .margin({ top: 16, bottom: 16 })
@@ -8815,7 +9048,11 @@ struct Index {
     }
     .width('100%')
     .justifyContent(FlexAlign.Center)
-    .onClick((): void => { if (index === this.homeTabIndex() && this.hasMoreTimeline) { this.requestMoreTimeline(); } })
+    .onClick((): void => {
+      if (index !== this.homeTabIndex()) { return; }
+      if (this.hasMoreTimeline) { this.requestMoreTimeline(); }
+      else if (this.timeline.length === 0 && !this.loading) { this.onRefresh(); }
+    })
   }
 
   @Builder
@@ -8846,6 +9083,7 @@ struct Index {
         ListItem() { this.HomePageItem(item, index) }.width('100%')
       }, (item: TimelinePageItem): string => item.key)
     }
+    .maintainVisibleContentPosition(true)
     .onScrollStart((): void => scrollStarted(this.contentPageScroller('home', this.homeTabItems()[index].key)))
     .onScrollFrameBegin((offset: number, state: ScrollState): OnScrollFrameBeginHandlerResult =>
       scrollFrame(this.contentPageScroller('home', this.homeTabItems()[index].key), offset, state))
@@ -9342,6 +9580,7 @@ struct Index {
       ], selected: this.exploreCategoryIndex(), tabPosition: this.exploreTabPosition,
         barHeight: this.exploreCategoriesHeight(),
         buttonStyle: !this.useTitleBarLogo() && this.compactSwitchStyle === COMPACT_SWITCH_BUTTONS,
+        segmentedStyle: !this.useTitleBarLogo() && this.compactSwitchStyle === COMPACT_SWITCH_SEGMENTED,
         contentSized: true,
         onSelect: (index: number): void => {
           if (index === this.exploreCategoryIndex()) { this.selectExploreHomeCategory(EXPLORE_CATEGORY_IDS[index]); }
@@ -9846,7 +10085,7 @@ struct Index {
         .layoutWeight(1)
         .height(40)
         .borderRadius(20)
-        .clip(true)
+        .clip(false)
         .attributeModifier(materialModifier(new uiMaterial.ImmersiveMaterial({
           style: uiMaterial.ImmersiveStyle.THIN,
           interactive: true,
@@ -10150,6 +10389,10 @@ struct Index {
 
   @Builder
   private SearchResultsHeader(index: number): void {
+    Column() {
+    if (!this.isDesktopLayout()) {
+      Column().width('100%').height(this.statusBarHeight + 104)
+    }
     if (this.searchPageLoading(index) && this.searchResultKeys(index).length === 0) {
       ForEach(this.frameIndexes(4), (skeleton: number) => { this.SearchResultSkeletonRow(skeleton) },
         (skeleton: number): string => 'search-skeleton-' + skeleton.toString())
@@ -10158,6 +10401,7 @@ struct Index {
         .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
         .width('92%').padding({ top: 6, bottom: 8 })
     }
+    }.width('100%')
   }
 
   @Builder
@@ -10176,10 +10420,11 @@ struct Index {
   @Builder
   private SearchResultsContent(index: number): void {
     AdaptivePostFeed({ scroller: this.contentPageScroller('search', SEARCH_PRODUCT_IDS[index]),
+      useList: !this.useTimelineWaterFlow(),
       itemKeys: this.searchResultKeys(index), allowColumns: this.searchPagePosts(index).length > 0,
       lazyItems: true,
       feedId: 'search-post-feed-' + SEARCH_PRODUCT_IDS[index],
-      startOffset: this.isDesktopLayout() ? 0 : this.statusBarHeight + 104,
+      forwardMode: NestedScrollMode.SELF_FIRST, backwardMode: NestedScrollMode.SELF_FIRST,
       clipContent: !this.isDesktopLayout(),
       header: (): void => this.SearchResultsHeader(index),
       item: (item: number): void => this.SearchResultItem(index, item),
@@ -10476,6 +10721,7 @@ struct Index {
       { key: 'Lists', label: $r('app.string.search_filter_lists'), icon: $r('sys.symbol.list_bullet') }
     ], selected: this.searchProductIndex(), tabPosition: this.searchTabPosition, barHeight: 48,
       buttonStyle: !this.useTitleBarLogo() && this.compactSwitchStyle === COMPACT_SWITCH_BUTTONS,
+      segmentedStyle: !this.useTitleBarLogo() && this.compactSwitchStyle === COMPACT_SWITCH_SEGMENTED,
       onSelect: (index: number): void => this.searchPager.changeIndex(index, true) })
   }
 
@@ -10487,7 +10733,7 @@ struct Index {
       .constraintSize({ maxWidth: 720 }).height($r('app.float.title_bar_search_height'))
       .backgroundColor(this.supportsImmersiveMaterial() ? Color.Transparent : this.themedFieldSurface())
       .fontColor($r('app.color.text_primary')).placeholderColor($r('app.color.text_secondary'))
-      .borderRadius($r('app.float.title_bar_search_radius')).clip(true).defaultFocus(false)
+      .borderRadius($r('app.float.title_bar_search_radius')).clip(!this.supportsImmersiveMaterial()).defaultFocus(false)
       .attributeModifier(materialModifier(this.chatSearchMaterialCache.material(this.accentColor)))
       .onChange((value: string): void => { this.chatSearch = value; })
   }
@@ -10519,7 +10765,7 @@ struct Index {
       .constraintSize({ maxWidth: 720 })
       .height(this.exploreSearchHeight())
       .borderRadius(this.exploreSearchRadius())
-      .clip(true)
+      .clip(false)
       .attributeModifier(materialModifier(this.exploreSearchMaterialCache.material(this.accentColor, true)))
       .onAreaChange((_oldValue: Area, newValue: Area): void => {
         if (this.useTitleBarLogo() && this.activeExploreQuery.length > 0) { this.captureExploreTitleContent(newValue); }

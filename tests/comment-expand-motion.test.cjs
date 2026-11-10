@@ -15,13 +15,14 @@ function fixture(options = {}) {
     compilerOptions: { target: ts.ScriptTarget.ES2020 }
   }).outputText;
   const pending = [];
-  const Harness = new Function('setTimeout', 'KeyboardAvoidMode', js + '; return Harness;')(
-    callback => pending.push(callback), { RESIZE: 1 });
+  const Harness = new Function('setTimeout', 'KeyboardAvoidMode', 'XXAuthCommentPromotionSession',
+    js + '; return Harness;')(callback => pending.push(callback), { RESIZE: 1 }, class {});
   const events = [];
   const page = Object.assign(new Harness(), {
     embedded: false, initialTweet: null, initialRoute: null,
     getUIContext: () => ({ setKeyboardAvoidMode() {} }),
     observeKeyboardState() {}, readViewportShortSide() {}, initializeReplyGripHand() {}, loadReplyQuality() {},
+    rebuildCommentRows() {},
     applyRouteParam(route) { events.push(['route', route]); this.sharedElementId = route.sharedElementId ?? ''; },
     loadRouteParam() { events.push(['fallback']); },
     startInitialLoad() { events.push(['load']); }, registerGesturesShare() {}, ...options

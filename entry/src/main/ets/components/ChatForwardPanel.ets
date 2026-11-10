@@ -4,7 +4,8 @@ import { ChatPerson, xChatActions } from '../services/XChatActions';
 import { ProxyAvatar } from './ProxyAvatar';
 import { chatInputMaterial } from '../utils/ChatMaterial';
 import { DEFAULT_REPLY_CAPSULE_MATERIAL_LEVEL, STORAGE_KEY_REPLY_CAPSULE_MATERIAL_LEVEL } from '../services/AppearanceStore';
-import { materialModifier } from '../utils/SystemMaterial';
+import { materialModifier, SystemMaterialUtil } from '../utils/SystemMaterial';
+import { MaterialSurfaceHost } from './MaterialSurfaceHost';
 
 @Component
 export struct ChatForwardPanel {
@@ -38,7 +39,8 @@ export struct ChatForwardPanel {
   private SearchBar(): void {
     Search({ value: this.query, placeholder: $r('app.string.chat_search') })
       .keyboardAppearance(KeyboardAppearance.IMMERSIVE).height(44).margin({ left: 16, right: 16 })
-      .backgroundColor(Color.Transparent).borderRadius(24).clip(true).attributeModifier(materialModifier(chatInputMaterial(this.materialLevel)))
+      .backgroundColor(Color.Transparent).borderRadius(24).clip(!SystemMaterialUtil.isApi26OrAbove())
+      .attributeModifier(materialModifier(chatInputMaterial(this.materialLevel)))
       .onChange((query: string): void => {
         this.query = query; this.generation++;
         if (this.timer >= 0) { clearTimeout(this.timer); }
@@ -47,10 +49,9 @@ export struct ChatForwardPanel {
   }
   build(): void {
     Column({ space: 8 }) {
-      Navigation() { Column().height(0) }
-        .title({ builder: (): void => { this.SearchBar(); }, height: 52 }, { barStyle: BarStyle.STACK })
-        .titleMode(NavigationTitleMode.Full).mode(NavigationMode.Stack).hideToolBar(true)
+      MaterialSurfaceHost({ surfaceHeight: 52, surfaceContent: (): void => { this.SearchBar(); } })
         .height(52).width('100%').backgroundColor(Color.Transparent)
+        .clip(false)
       if (this.loading) { LoadingProgress().height(24).width(24).color(this.accent) }
       if (this.failed) {
         Button($r('app.string.common_retry')).backgroundColor(Color.Transparent).fontColor(this.accent).onClick((): void => { this.search(); })

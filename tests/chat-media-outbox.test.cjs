@@ -1,3 +1,4 @@
+const { withDohHttpMock } = require('./doh-http-fixture.cjs');
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
@@ -27,7 +28,7 @@ function harness() {
     './XChatService':{xChatService:{cachedMessages:id=>cache.get(id)||[]}}
   };
   const mod={exports:{}};
-  new Function('require','module','exports','setTimeout',source)(id=>dependencies[id],mod,mod.exports,cb=>timers.push(cb));
+  new Function('require','module','exports','setTimeout',source)(id=>(() => { withDohHttpMock(dependencies); return dependencies[id]; })(),mod,mod.exports,cb=>timers.push(cb));
   const service=new mod.exports.ChatMediaOutbox();
   const file={uri:context.cacheDir+'/picked.jpg',filename:'picked.jpg',type:1};
   fs.writeFileSync(file.uri,'original photo');

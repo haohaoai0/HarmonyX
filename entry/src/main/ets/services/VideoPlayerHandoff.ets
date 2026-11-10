@@ -73,6 +73,20 @@ export class VideoPlayerHandoffStore {
   private returnTargets: Map<string, VideoPlayerReturnTarget> = new Map<string, VideoPlayerReturnTarget>();
   private returningMediaId: string = '';
   private returningOwner: string = '';
+  // A deliberate return pause survives card recycling and visibility callbacks.
+  // Explicit playback clears it; it is session state, not a saved preference.
+  private inlinePausedIds: string[] = [];
+
+  setInlinePaused(mediaId: string, paused: boolean): void {
+    if (mediaId.length === 0) { return; }
+    this.inlinePausedIds = this.inlinePausedIds.filter((id: string): boolean => id !== mediaId);
+    if (paused) { this.inlinePausedIds.push(mediaId); }
+    if (this.inlinePausedIds.length > 64) { this.inlinePausedIds.shift(); }
+  }
+
+  isInlinePaused(mediaId: string): boolean {
+    return this.inlinePausedIds.indexOf(mediaId) >= 0;
+  }
 
   register(mediaId: string, player: mediaKit.AVPlayer, take: VideoPlayerTakeCallback,
     expire: VideoPlayerExpireCallback, returnTarget: VideoPlayerReturnTarget | null = null): void {

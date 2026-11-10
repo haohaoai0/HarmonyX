@@ -1,3 +1,4 @@
+import { DohHttpRequest, createDohHttpRequest } from './DohHttpRequest';
 // Fetches images through the configured proxy and decodes them in memory.
 // PixelMaps are shared by URL while callers hold leases, then kept in a small
 // LRU cache so opening an already visible image does not decode it again.
@@ -351,9 +352,9 @@ class ProxyImageResolver {
   }
 
   private async fetchBytes(url: string): Promise<ArrayBuffer | null> {
-    let request: http.HttpRequest | undefined = undefined;
+    let request: DohHttpRequest | undefined = undefined;
     try {
-      request = http.createHttp();
+      request = createDohHttpRequest();
       const options: http.HttpRequestOptions = {
         method: http.RequestMethod.GET,
         header: { 'User-Agent': 'HarmonyX image' },

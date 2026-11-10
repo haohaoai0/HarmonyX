@@ -1,3 +1,4 @@
+const { withDohHttpMock } = require('./doh-http-fixture.cjs');
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
@@ -23,7 +24,7 @@ function harness() {
     } }
   };
   const exports = {};
-  new Function('require', 'exports', 'AppStorage', output)(id => dependencies[id], exports,
+  new Function('require', 'exports', 'AppStorage', output)(id => (() => { withDohHttpMock(dependencies); return dependencies[id]; })(), exports,
     { get: key => storage.get(key), setOrCreate: (key, value) => storage.set(key, value) });
   return { store: exports.postLikeStore, storage,
     switchAccount(next = 'account-b') { generation++; user = next; privateUser = next; listeners.forEach(listener => listener()); },
@@ -144,4 +145,95 @@ test('returning to the original account rejects its old in-flight response', asy
   old.resolve(false); assert.equal(await oldCompletion, false);
   assert.equal(h.store.isPending('123'), true);
   current.resolve(true); assert.equal(await newCompletion, true);
+});
+
+// Execute the actual detail-page card bindings as well as the store. A card
+// with no onLikeChanged callback animates first, then silently rolls back.
+function component(file, name) {
+  const source = fs.readFileSync('entry/src/main/ets/' + file + '.ets', 'utf8').replace('struct ' + name, 'class ' + name);
+  const tree = ts.createSourceFile('fixture.ts', source, ts.ScriptTarget.Latest, true);
+  const node = tree.statements.find(n => ts.isClassDeclaration(n) && n.name.text === name);
+  return { tree, method: name => node.members.find(n => ts.isMethodDeclaration(n) && n.name.getText(tree) === name) };
+}
+function fixtureClass(body, globals) {
+  const code = ts.transpileModule('class Fixture {' + body + '}', {
+    compilerOptions: { target: ts.ScriptTarget.ES2020 }
+  }).outputText;
+  return new Function(...Object.keys(globals), code + ';return Fixture;')(...Object.values(globals));
+}
+function detailLikeCard(store, kind, options = {}) {
+  const calls = [], messages = [];
+  const detail = component('pages/PostDetail', 'PostDetail');
+  const binding = detail.method(kind);
+  let argument;
+  const visit = node => {
+    if (ts.isCallExpression(node) && node.expression.getText(detail.tree) === 'TweetCard') {
+      argument = node.arguments[0].getText(detail.tree);
+    }
+    ts.forEachChild(node, visit);
+  };
+  visit(binding);
+  assert.ok(argument, 'the page must create a comment/discovery card');
+  const client = {
+    isSignedIn: () => options.privateSession !== false,
+    like: async (id, liked) => {
+      calls.push(['private', id, liked]);
+      const ok = options.write ? await options.write() : true;
+      return { ok, status: ok ? 200 : 500 };
+    }
+  };
+  const Page = fixtureClass(detail.method('writeLike').getText(detail.tree) +
+    '\nbind(row, readingState, post) {return ' + argument + ';}', {
+    xPrivateClient: client, promptAction: { showToast: value => messages.push(value.message) }, $r: id => id,
+    postCardUsesCustomSurface: () => false
+  });
+  const root = post(false, 50, '111');
+  const page = Object.assign(new Page(), { tweet: root,
+    syncActionAvailable: () => options.available !== false,
+    isXPostId: id => /^\d+$/.test(id), transparentEmbeddedBackground: () => false,
+    showSignInRequired: value => messages.push(value), privateActionError: () => 'failed', text: value => value,
+    api: { setLike: async (id, liked) => { calls.push(['oauth', id, liked]); return true; } }
+  });
+  const reply = post(false, 7, '222');
+  const props = page.bind({ tweet: reply }, {}, reply);
+  assert.equal(typeof props.onLikeChanged, 'function', kind + ' must wire the write callback');
+  const card = component('components/TweetCard', 'TweetCard');
+  const Card = fixtureClass(['toggleLike', 'syncLikeState'].map(name => card.method(name).getText(card.tree)).join('\n'), {
+    postLikeStore: store, canPostAction: () => true, hapticTick() {}
+  });
+  const instance = Object.assign(new Card(), props, { likePending: false, playLikeMotion() {} });
+  instance.syncLikeState();
+  return { card: instance, calls, messages, root };
+}
+
+test('detail replies and discovery posts keep their like icon/count after completion and unlike', async () => {
+  for (const kind of ['CommentReplyRow', 'DiscoverMorePost']) {
+    const h = harness(), request = deferred();
+    const { card, calls, root } = detailLikeCard(h.store, kind, { write: () => request.promise });
+    const completion = card.toggleLike();
+    assert.equal(card.liked, true); assert.equal(card.likeCount, 8);
+    assert.deepEqual(calls, [['private', '222', true]]);
+    assert.equal(root.liked, false); assert.equal(root.metrics.likeCount, 50);
+    await card.toggleLike(); assert.equal(calls.length, 1, 'pending taps must not duplicate writes');
+    request.resolve(true); await completion;
+    assert.equal(card.liked, true); assert.equal(card.likeCount, 8);
+    await card.toggleLike();
+    assert.equal(card.liked, false); assert.equal(card.likeCount, 7);
+    assert.deepEqual(calls[1], ['private', '222', false]);
+  }
+});
+
+test('comment likes roll back on failure and preserve the normal sign-in and OAuth paths', async () => {
+  const failed = detailLikeCard(harness().store, 'CommentReplyRow', { write: async () => false });
+  await failed.card.toggleLike();
+  assert.equal(failed.card.liked, false); assert.equal(failed.card.likeCount, 7);
+  assert.deepEqual(failed.messages, ['failed']);
+  const signedOut = detailLikeCard(harness().store, 'CommentReplyRow', { available: false });
+  await signedOut.card.toggleLike();
+  assert.equal(signedOut.card.liked, false); assert.deepEqual(signedOut.calls, []);
+  assert.deepEqual(signedOut.messages, ['app.string.action_like_posts']);
+  const oauth = detailLikeCard(harness().store, 'CommentReplyRow', { privateSession: false });
+  await oauth.card.toggleLike();
+  assert.equal(oauth.card.liked, true); assert.equal(oauth.card.likeCount, 8);
+  assert.deepEqual(oauth.calls, [['oauth', '222', true]]);
 });

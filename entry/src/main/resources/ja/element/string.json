@@ -198,11 +198,11 @@
     },
     {
       "name": "settings_confirm_app_exit",
-      "value": "終了前に確認"
+      "value": "ホームに戻るヒント"
     },
     {
       "name": "settings_confirm_app_exit_desc",
-      "value": "メイン画面で戻る操作をしたときに確認します。オフにすると直接終了します。"
+      "value": "ルート画面で戻るとヒントを表示し、2.2秒以内にもう一度戻るとホームに戻ります"
     },
     {
       "name": "app_exit_title",
@@ -622,7 +622,7 @@
     },
     {
       "name": "settings_compact_switch_style_desc",
-      "value": "X ロゴを非表示にした場合に使用します。ページをスワイプするとボタンの背景が塗りつぶされます。"
+      "value": "Xロゴを非表示にすると、テキストタブ、カプセルボタン、セグメント切り替えを選べます。"
     },
     {
       "name": "settings_compact_switch_tabs",
@@ -631,6 +631,10 @@
     {
       "name": "settings_compact_switch_buttons",
       "value": "ボタン"
+    },
+    {
+      "name": "settings_compact_switch_segmented",
+      "value": "セグメント切り替え"
     },
     {
       "name": "settings_avatar_tint",
@@ -1342,7 +1346,7 @@
     },
     {
       "name": "profile_version",
-      "value": "Harmony X 3.5.0 · HarmonyOS 6.0.2（API 22-26）· Stageモデル"
+      "value": "Harmony X 3.9.0 · HarmonyOS 6.0.2（API 22-26）· Stageモデル"
     },
     {
       "name": "profile_following",
@@ -3514,7 +3518,7 @@
     },
     {
       "name": "diagnostics_desc",
-      "value": "最近のAPI呼び出しと非公開APIの自己診断です。"
+      "value": "クラッシュログの書き出しと、最近のリクエストや自己診断結果の確認。"
     },
     {
       "name": "diagnostics_probe",
@@ -12729,6 +12733,10 @@
       "value": "人気のポストをすべて表示"
     },
     {
+      "name": "global_trends_cover_url",
+      "value": "https://pbs.twimg.com/topics/topic/globe_center_compressed.png"
+    },
+    {
       "name": "post_video_publish",
       "value": "動画をポスト"
     },
@@ -12860,40 +12868,405 @@
       "name": "post_translation_languages_description",
       "value": "投稿を自動翻訳する言語を選択します。未選択の言語も手動で翻訳できます。"
     },
-    {"name": "post_link_copy", "value": "Copy link"},
-    {"name": "post_link_open", "value": "Open link"},
-    {"name": "settings_video_download_button", "value": "Video download button"},
-    {"name": "settings_video_download_button_desc", "value": "Show the download button in the top-right corner of videos"},
-    {"name": "video_source_from", "value": "From"},
-    {"name": "video_source_original", "value": "Original video"},
-    {"name": "video_source_open_failed", "value": "Unable to open the original video. Try again."},
-    {"name":"dns_title","value":"DNS over HTTPS (DoH)"},
-    {"name":"dns_enable","value":"Use DNS over HTTPS"},
-    {"name":"dns_enable_desc","value":"Encrypt DNS queries with a chosen HTTPS resolver"},
-    {"name":"dns_scope","value":"Applies to app API requests, downloaded images, video segments and built-in web pages. System players and external apps may use their own DNS. When a proxy resolves the destination, its DNS takes precedence. DoH does not replace a proxy or VPN."},
-    {"name":"dns_provider","value":"DNS provider"},
-    {"name":"dns_provider_ali","value":"AliDNS"},
-    {"name":"dns_provider_cloudflare","value":"Cloudflare"},
-    {"name":"dns_provider_google","value":"Google Public DNS"},
-    {"name":"dns_provider_custom","value":"Custom"},
-    {"name":"dns_endpoint","value":"DoH server URL"},
-    {"name":"dns_endpoint_hint","value":"https://example.com/dns-query"},
-    {"name":"dns_endpoint_desc","value":"Enter a complete RFC 8484 HTTPS endpoint, without credentials, fragments or URI templates such as {?dns}."},
-    {"name":"dns_invalid","value":"Enter a valid HTTPS DoH server URL"},
-    {"name":"dns_saved","value":"Saved. New requests use this setting; reload open web pages."},
-    {"name":"dns_test","value":"Test DNS resolution"},
-    {"name":"dns_test_desc","value":"Tests the current URL by resolving x.com directly, without saving or enabling it. The test bypasses the in-app proxy; a system VPN still applies."},
-    {"name":"dns_test_success","value":"x.com resolved successfully"},
-    {"name":"dns_test_failed","value":"Resolution failed. Check the URL, network or DNS service."},
-    {"name":"dns_failure_note","value":"After saving, DoH failures stop affected requests instead of falling back to system DNS. Turn DoH off and save to restore system DNS. Changes apply after saving."},
-    {"name":"help_support_afdian","value":"Afdian"},
-    {"name":"help_support_qr_summary","value":"コードを読み取って開発を支援"},
-    {"name":"help_support_afdian_summary","value":"おすすめを永久に非表示 · ¥16.6"},
-    {"name":"help_support_afdian_desc","value":"Afdianでおすすめを永久に非表示にするコードを購入し、アプリに戻って有効化してください。"},
-    {"name":"help_support_afdian_buy","value":"Afdianで購入"},
-    {"name":"help_support_expand","value":"タップして展開"},
-    {"name":"help_support_collapse","value":"タップして折りたたむ"},
-    {"name":"help_support_scan_code","value":"対応する決済アプリでこのコードを読み取ってください。"},
-    {"name":"help_support_recommended","value":"おすすめ"}
+    {
+      "name": "post_link_copy",
+      "value": "Copy link"
+    },
+    {
+      "name": "post_link_open",
+      "value": "Open link"
+    },
+    {
+      "name": "settings_video_download_button",
+      "value": "Video download button"
+    },
+    {
+      "name": "settings_video_download_button_desc",
+      "value": "Show the download button in the top-right corner of videos"
+    },
+    {
+      "name": "video_source_from",
+      "value": "From"
+    },
+    {
+      "name": "video_source_original",
+      "value": "Original video"
+    },
+    {
+      "name": "video_source_open_failed",
+      "value": "Unable to open the original video. Try again."
+    },
+    {
+      "name": "dns_title",
+      "value": "DNS over HTTPS (DoH)"
+    },
+    {
+      "name": "dns_enable",
+      "value": "Use DNS over HTTPS"
+    },
+    {
+      "name": "dns_enable_desc",
+      "value": "Encrypt DNS queries with a chosen HTTPS resolver"
+    },
+    {
+      "name": "dns_scope",
+      "value": "Applies to app API requests, downloaded images, video segments and built-in web pages. System players and external apps may use their own DNS. When a proxy resolves the destination, its DNS takes precedence. DoH does not replace a proxy or VPN."
+    },
+    {
+      "name": "dns_provider",
+      "value": "DNS provider"
+    },
+    {
+      "name": "dns_provider_ali",
+      "value": "AliDNS"
+    },
+    {
+      "name": "dns_provider_cloudflare",
+      "value": "Cloudflare"
+    },
+    {
+      "name": "dns_provider_google",
+      "value": "Google Public DNS"
+    },
+    {
+      "name": "dns_provider_custom",
+      "value": "Custom"
+    },
+    {
+      "name": "dns_endpoint",
+      "value": "DoH server URL"
+    },
+    {
+      "name": "dns_endpoint_hint",
+      "value": "https://example.com/dns-query"
+    },
+    {
+      "name": "dns_endpoint_desc",
+      "value": "Enter a complete RFC 8484 HTTPS endpoint, without credentials, fragments or URI templates such as {?dns}."
+    },
+    {
+      "name": "dns_invalid",
+      "value": "Enter a valid HTTPS DoH server URL"
+    },
+    {
+      "name": "dns_saved",
+      "value": "Saved. New requests use this setting; reload open web pages."
+    },
+    {
+      "name": "dns_test",
+      "value": "Test DNS resolution"
+    },
+    {
+      "name": "dns_test_desc",
+      "value": "Tests the current URL by resolving x.com directly, without saving or enabling it. The test bypasses the in-app proxy; a system VPN still applies."
+    },
+    {
+      "name": "dns_test_success",
+      "value": "x.com resolved successfully"
+    },
+    {
+      "name": "dns_test_failed",
+      "value": "Resolution failed. Check the URL, network or DNS service."
+    },
+    {
+      "name": "dns_failure_note",
+      "value": "After saving, DoH failures stop affected requests instead of falling back to system DNS. Turn DoH off and save to restore system DNS. Changes apply after saving."
+    },
+    {
+      "name": "help_support_afdian",
+      "value": "Afdian"
+    },
+    {
+      "name": "help_support_qr_summary",
+      "value": "コードを読み取って開発を支援"
+    },
+    {
+      "name": "help_support_afdian_summary",
+      "value": "おすすめを永久に非表示 · ¥16.6"
+    },
+    {
+      "name": "help_support_afdian_desc",
+      "value": "Afdianでおすすめを永久に非表示にするコードを購入し、アプリに戻って有効化してください。"
+    },
+    {
+      "name": "help_support_afdian_buy",
+      "value": "Afdianで購入"
+    },
+    {
+      "name": "help_support_expand",
+      "value": "タップして展開"
+    },
+    {
+      "name": "help_support_collapse",
+      "value": "タップして折りたたむ"
+    },
+    {
+      "name": "help_support_scan_code",
+      "value": "対応する決済アプリでこのコードを読み取ってください。"
+    },
+    {
+      "name": "help_support_recommended",
+      "value": "おすすめ"
+    },
+    {
+      "name": "dns_x_test",
+      "value": "Test native X connection"
+    },
+    {
+      "name": "dns_x_test_desc",
+      "value": "Uses this DoH URL to request the public x.com/robots.txt through native HTTP, without account information or the in-app proxy. Does not save settings. A system VPN still applies. Success checks this connection only, not every API or media host."
+    },
+    {
+      "name": "dns_x_test_success",
+      "value": "Native X connection succeeded"
+    },
+    {
+      "name": "dns_x_test_failed",
+      "value": "Native X connection failed. Check the network, proxy or ECH support."
+    },
+    {
+      "name": "settings_inline_video_hold",
+      "value": "インライン動画の長押し操作"
+    },
+    {
+      "name": "settings_inline_video_hold_desc",
+      "value": "メニューか再生を選びます。再生時は長押し速度の設定を使用します。"
+    },
+    {
+      "name": "settings_inline_video_hold_menu",
+      "value": "メニュー"
+    },
+    {
+      "name": "settings_inline_video_hold_play",
+      "value": "長押しで再生"
+    },
+    {
+      "name": "settings_sidebar_items",
+      "value": "サイドバーの機能"
+    },
+    {
+      "name": "settings_sidebar_items_desc",
+      "value": "機能の表示・非表示を選び、矢印で並べ替えます。設定は常に表示されます。"
+    },
+    {
+      "name": "settings_bottom_bar_visible",
+      "value": "下部バーを表示"
+    },
+    {
+      "name": "settings_bottom_bar_visible_desc",
+      "value": "非表示時はサイドバーから画面切り替えや検索ができます。"
+    },
+    {
+      "name": "settings_post_count_format",
+      "value": "投稿の件数表示"
+    },
+    {
+      "name": "settings_post_count_compact",
+      "value": "K/M（千／百万）"
+    },
+    {
+      "name": "settings_post_count_chinese",
+      "value": "万／億"
+    },
+    {
+      "name": "settings_post_count_full",
+      "value": "省略しない"
+    },
+    {
+      "name": "settings_sidebar_search_capsule",
+      "value": "サイドバーの検索カプセル"
+    },
+    {
+      "name": "settings_sidebar_search_capsule_desc",
+      "value": "サイドバー上部に短い検索カプセルを表示します。初期設定ではオフです。"
+    },
+    {
+      "name": "settings_home_header_action",
+      "value": "ホームのタイトルバーボタン"
+    },
+    {
+      "name": "settings_home_header_action_desc",
+      "value": "検索またはフォローする人を追加を選択します。タップすると選択したページを直接開きます。"
+    },
+    {
+      "name": "settings_home_follow_suggestions",
+      "value": "おすすめユーザー"
+    },
+    {
+      "name": "settings_home_follow_suggestions_desc",
+      "value": "ホームのタイムラインにおすすめユーザーを表示します。"
+    },
+    {
+      "name": "page_background_preset_colors",
+      "value": "元のグラデーションを保持"
+    },
+    {
+      "name": "page_background_preset_colors_desc",
+      "value": "各フルパターンに対応するグラデーションを使います。オフにすると背景色や写真をカスタマイズできます。"
+    },
+    {
+      "name": "settings_inline_video_overlay_controls",
+      "value": "投稿動画内に操作ボタンを表示"
+    },
+    {
+      "name": "settings_inline_video_overlay_controls_desc",
+      "value": "操作ボタンを動画内に移動します。タップで表示・非表示を切り替え、再生中は自動で隠れます。"
+    },
+    {
+      "name": "settings_pause_inline_video_on_return",
+      "value": "戻ったときに投稿動画を一時停止"
+    },
+    {
+      "name": "settings_pause_inline_video_on_return_desc",
+      "value": "ビューアを閉じた後、投稿の動画を一時停止します。再生ボタンで続きから再生できます。"
+    },
+    {
+      "name": "settings_timeline_columns_four",
+      "value": "4列"
+    },
+    {
+      "name": "settings_timeline_columns_five",
+      "value": "5列"
+    },
+    {
+      "name": "crash_recovery_title",
+      "value": "アプリが予期せず終了しました"
+    },
+    {
+      "name": "crash_recovery_message",
+      "value": "前回のクラッシュの診断ログを保存しました。ログをエクスポートし、発生前の操作とともに開発者にご連絡ください。"
+    },
+    {
+      "name": "crash_later",
+      "value": "後で"
+    },
+    {
+      "name": "crash_export",
+      "value": "ログを書き出す"
+    },
+    {
+      "name": "crash_contact",
+      "value": "開発者に連絡"
+    },
+    {
+      "name": "crash_export_success",
+      "value": "ログを書き出しました。開発者への連絡時にファイルを添付してください。"
+    },
+    {
+      "name": "crash_export_failed",
+      "value": "ログを書き出せませんでした。再試行するか、別の保存先を選択してください。"
+    },
+    {
+      "name": "crash_contact_failed",
+      "value": "報告ページを開けません。「このアプリについて」から開発者にご連絡ください。"
+    },
+    {
+      "name": "crash_logs_title",
+      "value": "アプリの診断"
+    },
+    {
+      "name": "crash_logs_description",
+      "value": "クラッシュログは端末に保存され、最新の5件が保持されます。書き出したファイルを報告に添付できます。"
+    },
+    {
+      "name": "crash_logs_empty",
+      "value": "クラッシュの記録はありません。現在の実行ログを書き出せます。"
+    },
+    {
+      "name": "app_exit_desktop",
+      "value": "ホームに戻る"
+    },
+    {
+      "name": "app_exit_desktop_hint",
+      "value": "もう一度戻るとホームに戻ります"
+    },
+    {
+      "name": "media_save_method",
+      "value": "メディアの保存方法"
+    },
+    {
+      "name": "media_save_gallery_dialog",
+      "value": "ギャラリー · システムで確認"
+    },
+    {
+      "name": "media_save_secure_button",
+      "value": "ギャラリー · 安全な保存ボタン"
+    },
+    {
+      "name": "media_save_directory",
+      "value": "ダウンロード先 · 許可後に直接保存"
+    },
+    {
+      "name": "media_save_file_picker",
+      "value": "ファイル · 毎回保存先を選択"
+    },
+    {
+      "name": "media_save_secure_title",
+      "value": "ギャラリーに保存"
+    },
+    {
+      "name": "media_save_secure_note",
+      "value": "システムの保存ボタンでギャラリーに直接保存します。初回は許可が必要です。一括保存ではファイルごとにタップしてください。"
+    },
+    {
+      "name": "account_groups_title",
+      "value": "ローカルグループ"
+    },
+    {
+      "name": "account_groups_hint",
+      "value": "グループはこの端末に保存されます。フォロー中のアカウントを選び、ホームに固定できます。"
+    },
+    {
+      "name": "account_groups_empty",
+      "value": "グループがありません。新しく作成してください。"
+    },
+    {
+      "name": "account_groups_manage",
+      "value": "ローカルグループを管理"
+    },
+    {
+      "name": "account_group_create",
+      "value": "グループを作成"
+    },
+    {
+      "name": "account_group_delete",
+      "value": "グループを削除"
+    },
+    {
+      "name": "account_group_member_count",
+      "value": "%d 件のアカウント"
+    },
+    {
+      "name": "account_group_edit_title",
+      "value": "グループを編集"
+    },
+    {
+      "name": "account_group_name",
+      "value": "グループ名"
+    },
+    {
+      "name": "account_group_icon",
+      "value": "アイコン（絵文字や記号）"
+    },
+    {
+      "name": "account_group_selected",
+      "value": "%d 件選択済み"
+    },
+    {
+      "name": "account_group_search",
+      "value": "読み込み済みのフォロー中アカウントを検索"
+    },
+    {
+      "name": "account_group_cancel",
+      "value": "キャンセル"
+    },
+    {
+      "name": "account_group_save",
+      "value": "保存"
+    },
+    {
+      "name": "grok_chat_hint",
+      "value": "Grok に質問して会話を始めましょう。"
+    }
   ]
 }

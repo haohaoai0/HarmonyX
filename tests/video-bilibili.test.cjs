@@ -183,7 +183,7 @@ test('video feed tap preference chooses playback or controls and preserves comme
     ['onVideoSurfaceTap'], {});
   const calls = [];
   const player = Object.assign(new Player(), {holdSeekDirection:0,suppressVideoTapUntil:0,
-    linkCardVideo:false,mediaViewerLayout:true,fullscreen:false,retainViewerPlayback:false,
+    linkCardVideo:false,mediaViewerLayout:true,fullscreen:false,retainViewerPlayback:false,usesInlineOverlayControls:()=>false,
     videoFeedTapPause:false,onViewerVideoTap:() => calls.push('capsule'),
     onViewerCommentDismiss:() => calls.push('dismiss'),isAnimatedGif:() => false,
     hideVideoChrome:() => false,togglePlay:() => calls.push('play'),toggleControls:() => calls.push('controls')});

@@ -1,3 +1,4 @@
+const { withDohHttpMock } = require('./doh-http-fixture.cjs');
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
@@ -10,7 +11,7 @@ function moduleFrom(name, dependencies) {
     compilerOptions: { target: ts.ScriptTarget.ES2020, module: ts.ModuleKind.CommonJS }
   }).outputText;
   const result = {};
-  new Function('exports', 'require', 'AppStorage', output)(result, id => {
+  new Function('exports', 'require', 'AppStorage', output)(result, id => { withDohHttpMock(dependencies);
     assert.ok(Object.hasOwn(dependencies, id), 'unexpected dependency ' + id);
     return dependencies[id];
   }, { get: () => undefined, setOrCreate() {} });
@@ -18,6 +19,39 @@ function moduleFrom(name, dependencies) {
 }
 
 const dns = moduleFrom('DnsOverHttps', { '@ohos.url': { default: { URL } } });
+const customEndpoint = 'https://resolver.example/dns-query';
+
+test('saved non-preset resolvers open as editable custom settings and provider changes preserve custom input', () => {
+  const f = fixture();
+  assert.equal(f.store.save(true, customEndpoint), true);
+  const source = fs.readFileSync('entry/src/main/ets/pages/DnsSettings.ets', 'utf8')
+    .replace('struct DnsSettingsPage', 'class DnsSettingsPage');
+  const tree = ts.createSourceFile('settings.ts', source, ts.ScriptTarget.Latest, true);
+  const component = tree.statements.find(node => ts.isClassDeclaration(node));
+  const names = ['aboutToAppear', 'selectProvider', 'invalidateTest', 'providerTitle'];
+  const methods = component.members.filter(node => node.name && names.includes(node.name.getText(tree)))
+    .map(node => node.getText(tree)).join('\n');
+  const js = ts.transpileModule('class Page {' + methods + '}', {
+    compilerOptions: { target: ts.ScriptTarget.ES2020 }
+  }).outputText;
+  const Page = new Function('dnsSettingsStore', 'DOH_ALIDNS', 'DOH_CLOUDFLARE', 'DOH_GOOGLE', '$r',
+    js + ';return Page;')(f.store, dns.DOH_ALIDNS, dns.DOH_CLOUDFLARE, dns.DOH_GOOGLE, name => name);
+  const page = Object.assign(new Page(), { testRevision: 0 });
+  page.aboutToAppear();
+  assert.equal(page.dohEnabled, true);
+  assert.equal(page.provider, 3);
+  assert.equal(page.endpoint, customEndpoint);
+  assert.equal(page.providerTitle(), 'app.string.dns_provider_custom');
+  page.selectProvider(3);
+  assert.equal(page.endpoint, customEndpoint);
+  for (const [index, endpoint] of [dns.DOH_ALIDNS, dns.DOH_CLOUDFLARE, dns.DOH_GOOGLE].entries()) {
+    page.selectProvider(index);
+    assert.equal(page.endpoint, endpoint);
+    page.aboutToAppear();
+    assert.equal(page.provider, 3);
+    assert.equal(page.endpoint, customEndpoint, 'the existing saved resolver is never silently replaced');
+  }
+});
 
 function answer(flags = 0x8180) {
   const bytes = [...dns.dohProbeQuery()];
@@ -34,7 +68,7 @@ function fixture(saved = new Map()) {
     flushSync() {}
   };
   const platform = {
-    RequestMethod: { POST: 'POST' }, HttpDataType: { ARRAY_BUFFER: 2 },
+    RequestMethod: { POST: 'POST', GET: 'GET' }, HttpDataType: { ARRAY_BUFFER: 2, STRING: 0 },
     createHttp: () => ({
       async request(url, options) { requests.push({ url, options }); return response; },
       destroy() { destroyed++; }
@@ -133,6 +167,63 @@ test('resolver test sends a direct wire query and rejects HTTP 200 with failed D
   assert.equal(f.saved.size, 0);
   f.platform.createHttp = () => { throw Error('request service unavailable'); };
   assert.equal(await f.store.testEndpoint(dns.DOH_ALIDNS), -1);
+});
+
+test('custom endpoint persists and reaches native and Web request configuration', () => {
+  const f = fixture();
+  assert.equal(f.store.save(true, '  ' + customEndpoint + '  '), true);
+  const restored = fixture(f.saved);
+  const options = {};
+  restored.store.apply(options);
+  assert.equal(options.dnsOverHttps, customEndpoint);
+  assert.deepEqual(restored.webCalls.at(-1), [2, customEndpoint]);
+});
+
+test('native X test uses the selected DoH without accounts, proxy, cache or saved-setting changes', async () => {
+  const f = fixture();
+  f.respond({ responseCode: 200, result: 'User-agent: *\nDisallow: /' });
+  const result = await f.store.testXConnection(customEndpoint);
+  assert.equal(result.success, true);
+  assert.ok(result.latencyMs >= 0);
+  const { url, options } = f.requests[0];
+  assert.equal(url, 'https://x.com/robots.txt');
+  assert.equal(options.method, 'GET');
+  assert.equal(options.dnsOverHttps, customEndpoint);
+  assert.equal(options.usingProxy, false);
+  assert.equal(options.usingCache, false);
+  assert.equal(options.header, undefined);
+  assert.equal(options.extraData, undefined);
+  assert.equal(f.store.snapshot().enabled, false);
+  assert.equal(f.saved.size, 0);
+  assert.equal(f.destroyed(), 1);
+});
+
+test('native X test rejects blocked, captive, empty and TLS-failed connections and releases requests', async () => {
+  const f = fixture();
+  for (const response of [
+    { responseCode: 403, result: 'User-agent: *' },
+    { responseCode: 200, result: '<html>network login</html>' },
+    { responseCode: 200, result: '' },
+    { responseCode: 200, result: new ArrayBuffer(0) }
+  ]) {
+    f.respond(response);
+    const result = await f.store.testXConnection(customEndpoint);
+    assert.equal(result.success, false);
+    assert.equal(result.responseCode, response.responseCode);
+    assert.equal(result.latencyMs, -1);
+  }
+  assert.equal(f.destroyed(), 4);
+  let destroyed = false;
+  f.platform.createHttp = () => ({
+    async request() { throw { code: 2300035 }; },
+    destroy() { destroyed = true; }
+  });
+  const result = await f.store.testXConnection(customEndpoint);
+  assert.equal(result.success, false);
+  assert.equal(result.errorCode, 2300035);
+  assert.equal(destroyed, true);
+  f.platform.createHttp = () => { throw Error('must not create a request for invalid input'); };
+  assert.equal((await f.store.testXConnection('http://invalid.test')).success, false);
 });
 
 test('shared request integration applies DoH through VPN bypass, proxy and forced video-CDN routes', async () => {

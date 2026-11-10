@@ -1,3 +1,4 @@
+const { withDohHttpMock } = require('./doh-http-fixture.cjs');
 const assert = require('node:assert/strict');
 const test = require('node:test');
 const fs = require('node:fs');
@@ -10,7 +11,7 @@ function load(file, dependencies = {}) {
     target: ts.ScriptTarget.ES2020, module: ts.ModuleKind.CommonJS, esModuleInterop: true
   } }).outputText;
   const module = { exports: {} };
-  new Function('require', 'module', 'exports', '$r', 'AppStorage', output)(id => {
+  new Function('require', 'module', 'exports', '$r', 'AppStorage', output)(id => { withDohHttpMock(dependencies);
     if (Object.hasOwn(dependencies, id)) return dependencies[id];
     throw new Error('Unexpected import ' + id);
   }, module, module.exports, name => name, { setOrCreate() {}, get() {} });
@@ -52,7 +53,8 @@ function fixture() {
     '@ohos.net.http': { RequestMethod: { GET: 'GET', POST: 'POST' }, createHttp: () => ({
       request: async (url, options) => {
         httpCalls.push({ url, options });
-        if (httpResponse !== undefined) return { responseCode: 200, result: httpResponse };
+        if (httpResponse !== undefined) return { responseCode: 200,
+          result: typeof httpResponse === 'function' ? await httpResponse() : httpResponse };
         return { responseCode: 200, result: options.method === 'GET' ?
           JSON.stringify([[['Google result']]]) : JSON.stringify({ choices: [{ message: { content: 'API result' } }] }) };
       }, destroy() {}
@@ -132,6 +134,35 @@ test('queued X translations from the previous account never dispatch', async () 
   assert.equal((await queued).errorText, 'session_changed');
   assert.equal(f.calls.length, 1);
 });
+
+test('failed X transports return a result, release the pending request and permit retry', async () => {
+  const f = fixture(), config = settings();
+  f.setResponse(() => { throw Error('connection closed'); });
+  assert.equal((await f.service.translate('123', 'Hello', config)).errorText, 'request_failed');
+  f.setResponse({ok: true, status: 200, body: JSON.stringify({id_str: '123', translation: '你好'})});
+  assert.equal((await f.service.translate('123', 'Hello', config)).text, '你好');
+  assert.equal(f.calls.length, 2);
+});
+
+for (const mode of [model.TRANSLATION_MODE_WEB, model.TRANSLATION_MODE_API]) {
+  test(mode + ': duplicate visible cards share one request and an account change rejects its result', async () => {
+    const f = fixture(), config = settings(mode);
+    let resolve;
+    f.setHttpResponse(() => new Promise(done => { resolve = done; }));
+    const first = f.service.translate('same', 'Hello', config, 'en');
+    const duplicate = f.service.translate('same', 'Hello', config, 'en');
+    await new Promise(done => setImmediate(done));
+    assert.equal(f.httpCalls.length, 1);
+    f.switchAccount();
+    resolve(mode === model.TRANSLATION_MODE_WEB ? JSON.stringify([[['旧结果']]]) :
+      JSON.stringify({choices: [{message: {content: '旧结果'}}]}));
+    assert.equal((await first).errorText, 'session_changed');
+    assert.equal((await duplicate).errorText, 'session_changed');
+    f.setHttpResponse(mode === model.TRANSLATION_MODE_WEB ? JSON.stringify([[['新结果']]]) :
+      JSON.stringify({choices: [{message: {content: '新结果'}}]}));
+    assert.equal((await f.service.translate('same', 'Hello', config, 'en')).text, '新结果');
+  });
+}
 
 test('invalid, missing, wrong-post and non-text X responses do not become cached translations', async () => {
   for (const body of ['null', 'broken', '{}', '{"id_str":"999","translation":"wrong post"}',
@@ -356,7 +387,7 @@ test('whitespace-only input and provider output never become successful translat
 
 function translationUi(kind) {
   const card = kind === 'card';
-  const names = card ? ['runTranslation', 'tryAutomaticTranslation', 'resetTranslation',
+  const names = card ? ['runTranslation', 'tryAutomaticTranslation', 'resetTranslation', 'saveReadingState',
     'onTranslationSettingsRevisionChanged', 'onTranslationAppLocaleChanged', 'onTweetChanged'] :
     ['runHeroTranslation', 'tryAutoHeroTranslation', 'resetHeroTranslation',
       'onTranslationSettingsRevisionChanged', 'onTranslationAppLocaleChanged', 'onHeroTweetChanged'];
@@ -371,10 +402,10 @@ function translationUi(kind) {
     compilerOptions: { target: ts.ScriptTarget.ES2020, module: ts.ModuleKind.CommonJS }
   }).outputText;
   const config = settings(model.TRANSLATION_MODE_API), requests = [];
-  const Subject = new Function('translationStore', 'translationService', 'getContext', 'TARGET_LANGUAGE_APP', code + '\nreturn Subject;')(
+  const Subject = new Function('translationStore', 'translationService', 'getContext', 'TARGET_LANGUAGE_APP', 'postViewCounts', code + '\nreturn Subject;')(
     { load: () => config }, { translate: (id, text, configuration, language) => new Promise(resolve => {
       requests.push({ id, text, language, target: configuration.effectiveTargetLanguage(), resolve });
-    }) }, () => ({}), model.TARGET_LANGUAGE_APP);
+    }) }, () => ({}), model.TARGET_LANGUAGE_APP, {requestMissing() {}});
   const subject = Object.assign(new Subject(), {
     tweet: { id: '123', text: 'Hello', language: 'en' },
     translationAutoEnabled: true, translationSettingsRevision: 0,
@@ -382,7 +413,7 @@ function translationUi(kind) {
     translationRequestGeneration: 0, translationPostId: '', translationWasAutomatic: false,
     heroTranslationRequestGeneration: 0, heroTranslationPostId: '', heroTranslationWasAutomatic: false,
     translatedText: '', translating: false, heroTranslatedText: '', heroTranslating: false,
-    loadModeration() {}, syncLikeState() {}, visibleForViews: false
+    loadModeration() {}, syncLikeState() {}, releaseCardPress() {}, visibleForViews: true, readingState: null, rebuildCommentRows() {}
   });
   return { config, subject, requests,
     run: automatic => subject[card ? 'runTranslation' : 'runHeroTranslation'](automatic),
@@ -392,6 +423,17 @@ function translationUi(kind) {
     busy: () => subject[card ? 'translating' : 'heroTranslating']
   };
 }
+
+test('cached offscreen cards do not start automatic translation until they become visible', async () => {
+  const f = translationUi('card');
+  f.subject.visibleForViews = false;
+  f.tryAuto(); assert.equal(f.requests.length, 0);
+  f.subject.visibleForViews = true;
+  f.tryAuto(); f.tryAuto(); assert.equal(f.requests.length, 1);
+  f.requests[0].resolve({ok: true, text: 'visible result', errorText: ''});
+  await new Promise(done => setImmediate(done));
+  assert.equal(f.value(), 'visible result');
+});
 const settle = async () => { for (let i = 0; i < 6; i++) await Promise.resolve(); };
 const finish = (request, text) => request.resolve({ ok: true, text, errorText: '' });
 

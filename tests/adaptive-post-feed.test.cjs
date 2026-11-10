@@ -38,6 +38,19 @@ test('the existing column setting is honored without squeezing three cards into 
   assert.equal(layout.columns(1500, 99), 3);
 });
 
+test('manual four/five columns are independent of automatic two/three and the existing stored mode 4', () => {
+  for (const width of [600, 839, 840, 1500]) {
+    assert.equal(layout.columns(width, 5), 4);
+    assert.equal(layout.columns(width, 6), 5);
+    assert.equal(layout.columns(width, 4), 2);
+  }
+  for (const mode of [0, 4, 5, 6]) assert.equal(layout.columns(420, mode), 1);
+  assert.equal(layout.columns(700), 2);
+  assert.equal(layout.columns(1400), 3);
+  assert.equal(layout.template(4), '1fr 1fr 1fr 1fr');
+  assert.equal(layout.template(5), '1fr 1fr 1fr 1fr 1fr');
+});
+
 function feedHarness() {
   let source = fs.readFileSync('entry/src/main/ets/components/AdaptivePostFeed.ets', 'utf8');
   source = source.replace('export struct AdaptivePostFeed', 'export class AdaptivePostFeed');

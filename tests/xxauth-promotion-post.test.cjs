@@ -239,8 +239,8 @@ function homeRenderingFixture() {
   const compiled = ts.transpileModule('class Home {' + methods.join('\n') + '}', {
     compilerOptions: { target: ts.ScriptTarget.ES2020 }
   }).outputText;
-  const Home = new Function('HomeViewportFrameCallback', compiled + '; return Home;')(
-    class { constructor(action) { this.onIdle = action; } });
+  const Home = new Function('HomeViewportFrameCallback', 'crashDiagnostics', compiled + '; return Home;')(
+    class { constructor(action) { this.onIdle = action; } }, { pendingReport: () => null });
   const frames = [], sections = [0, 0], sources = [new TimelinePageDataSource(), new TimelinePageDataSource()];
   const plan = policy.plan([info(BODY)], {});
   let selected = 0;
@@ -263,7 +263,7 @@ function homeRenderingFixture() {
   sources.forEach((row, index) => {
     const check = () => assert.equal(sections[index] + 2, row.totalCount(),
       'WaterFlow section count must match every LazyForEach notification');
-    row.registerDataChangeListener({onDataReloaded: check, onDataChanged: check});
+    row.registerDataChangeListener({onDataReloaded: check, onDataChanged: check, onDataAdded: check, onDataDeleted: check});
   });
   return {home, sources, sections, frames, select: index => { selected = index; }};
 }

@@ -29,7 +29,7 @@ test('only rendered background changes invalidate the shared texture', () => {
   const original = style(state, 'light|1.5');
   Object.assign(state, { postOpacity: 0.1, inboxOpacity: 0.2, contentOpacity: 0.3, transparentPosts: true, appearanceRevision: 99 });
   assert.equal(style(state, 'light|1.5'), original);
-  for (const change of [{ density: 80 }, { motifIds: ['petrel_space_0'] }, { blur: 10 }, { dim: 0.2 }, { texture: 'kraft' }]) {
+  for (const change of [{ density: 80 }, { motifIds: ['petrel_space_0'] }, { blur: 10 }, { dim: 0.2 }, { texture: 'kraft' }, { presetColors: true }]) {
     assert.notEqual(style({ ...state, ...change }, 'light|1.5'), original);
   }
   assert.notEqual(style(state, 'dark|1.5'), original);
@@ -127,6 +127,40 @@ test('a destination leaving during composition cannot be updated by its late res
   assert.equal(f.instance.pixels, undefined); assert.equal(f.instance.displayed, undefined);
   assert.equal(pending.users, 0);
   cache.clear(); assert.equal(bitmap.released, 1);
+});
+
+test('settings previews reuse the current page texture across sizes without composing another background', async () => {
+  const cache = fixture(), bitmap = pixels();
+  const page = cache.acquire('light|300x900', 'light', async () => bitmap); await page.ready;
+  const f = view(cache);
+  Object.assign(f.instance, { reuseTexture: true, viewportWidth: 360, viewportHeight: 280 });
+  f.instance.getUIContext = () => { throw Error('a warm preview must not request a snapshot'); };
+  f.instance.aboutToAppear();
+  assert.equal(f.instance.displayed, page);
+  assert.equal(f.instance.pixels, bitmap);
+  for (const width of [280, 300, 360, 420]) {
+    f.instance.viewportWidth = width; f.instance.refresh();
+    assert.equal(f.instance.displayed, page);
+    assert.equal(f.instance.pending, undefined);
+  }
+  f.instance.aboutToDisappear();
+  assert.equal(page.users, 1); assert.equal(bitmap.released, 0);
+  cache.release(page); cache.clear(); assert.equal(bitmap.released, 1);
+});
+
+test('reusing a preview texture still invalidates it when the actual background changes', async () => {
+  const cache = fixture(), oldPixels = pixels(), nextPixels = pixels();
+  const page = cache.acquire('light|300x900', 'light', async () => oldPixels); await page.ready;
+  const f = view(cache); f.instance.reuseTexture = true; f.instance.aboutToAppear();
+  f.instance.currentAppearance = 'changed'; f.instance.refresh();
+  const pending = f.instance.pending;
+  assert.ok(pending); assert.equal(f.instance.pixels, undefined);
+  assert.equal(oldPixels.released, 0, 'the original page keeps its own texture lease');
+  f.render.resolve(nextPixels); await pending.ready; await Promise.resolve();
+  assert.equal(f.instance.pixels, nextPixels);
+  assert.equal(f.instance.displayed.appearance, 'changed');
+  f.instance.aboutToDisappear(); cache.release(page); cache.clear();
+  assert.equal(oldPixels.released, 1); assert.equal(nextPixels.released, 1);
 });
 
 test('applied pages draw one cached image while the editor retains live pattern previews', () => {

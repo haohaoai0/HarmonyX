@@ -3,8 +3,10 @@
 // considered only when the app is explicitly set to Dark.
 import { DARK_SURFACE_GENTLE, DISPLAY_MODE_DARK } from '../services/AppearanceStore';
 import { ColorMetrics } from '@kit.ArkUI';
-import { pageBackgroundActive, pageBackgroundFromValue, DEFAULT_PAGE_SURFACE_OPACITY, PageBackgroundState } from '../services/PageBackgroundStore';
-import { PageRgb, rgbFromHex, mixPageRgb, pageLightInk, pageContrastRatio, photoReadingVeil, pagePatternOpacity, pageRgbAtLightness } from './PageBackgroundContrast';
+import { pageBackgroundActive, pageBackgroundFromValue, DEFAULT_PAGE_SURFACE_OPACITY, PageBackgroundState,
+  pageBackgroundPresetColors } from '../services/PageBackgroundStore';
+import { PageRgb, rgbFromHex, mixPageRgb, pageLightInk, pageContrastRatio, photoReadingVeil, pagePatternOpacity,
+  pageRgbAtLightness, pageLuminance } from './PageBackgroundContrast';
 
 export class PageBackdropTone {
   average: PageRgb = rgbFromHex('#808080');
@@ -35,6 +37,8 @@ function cachedBackdropTone(backgroundValue: string): PageBackdropTone {
 }
 
 export function pageBackgroundBaseColor(state: PageBackgroundState, displayMode: string, darkSurface: string): ResourceColor {
+  const colors: ResourceColor[] = pageBackgroundPresetColors(state);
+  if (colors.length > 0) { return colors[0]; }
   if (state.mode === 'color') { return state.color; }
   if (state.mode === 'theme' && state.texture === 'kraft') { return $r('app.color.page_background_kraft'); }
   if (state.mode === 'theme' && state.texture === 'parchment') { return $r('app.color.page_background_parchment'); }
@@ -44,6 +48,27 @@ export function pageBackgroundBaseColor(state: PageBackgroundState, displayMode:
 function resourceRgb(value: ResourceColor): PageRgb {
   const color: ColorMetrics = ColorMetrics.resourceColor(value);
   return { red: color.red, green: color.green, blue: color.blue };
+}
+
+function presetGradientTone(colors: ResourceColor[]): PageBackdropTone {
+  const tone: PageBackdropTone = new PageBackdropTone();
+  const stops: PageRgb[] = colors.map((color: ResourceColor): PageRgb => resourceRgb(color));
+  let red: number = 0; let green: number = 0; let blue: number = 0;
+  let low: number = 2; let high: number = -1;
+  // Include intermediate colors: an RGB gradient can be darker between stops
+  // than either endpoint. Foregrounds must work along the entire wallpaper.
+  const samples: number = 32;
+  for (let index: number = 0; index <= samples; index++) {
+    const position: number = index / samples * (stops.length - 1);
+    const first: number = Math.floor(position);
+    const color: PageRgb = mixPageRgb(stops[first], stops[Math.min(first + 1, stops.length - 1)], position - first);
+    const luminance: number = pageLuminance(color);
+    red += color.red; green += color.green; blue += color.blue;
+    if (luminance < low) { low = luminance; tone.darkest = color; }
+    if (luminance > high) { high = luminance; tone.lightest = color; }
+  }
+  tone.average = { red: red / (samples + 1), green: green / (samples + 1), blue: blue / (samples + 1) };
+  return tone;
 }
 
 function inkContrast(low: PageRgb, high: PageRgb): number {
@@ -75,11 +100,14 @@ function readableSurfaceRgb(color: PageRgb, alpha: number, tone: PageBackdropTon
 // The same compositing model drives both the rendered veil and foregrounds.
 // Dim and balance the canvas first. Motifs keep their own opacity above it.
 export function pageBackdropTone(state: PageBackgroundState, displayMode: string, darkSurface: string): PageBackdropTone {
-  const tone: PageBackdropTone = new PageBackdropTone();
+  const colors: ResourceColor[] = pageBackgroundPresetColors(state);
+  const tone: PageBackdropTone = colors.length > 0 ? presetGradientTone(colors) : new PageBackdropTone();
   const base: PageRgb = resourceRgb(pageBackgroundBaseColor(state, displayMode, darkSurface));
-  tone.average = state.mode === 'photo' ? mixPageRgb(base, rgbFromHex(state.photoAverage), state.photoAlpha) : base;
-  tone.darkest = state.mode === 'photo' ? mixPageRgb(base, rgbFromHex(state.photoDarkest), state.photoAlpha) : base;
-  tone.lightest = state.mode === 'photo' ? mixPageRgb(base, rgbFromHex(state.photoLightest), state.photoAlpha) : base;
+  if (colors.length === 0) {
+    tone.average = state.mode === 'photo' ? mixPageRgb(base, rgbFromHex(state.photoAverage), state.photoAlpha) : base;
+    tone.darkest = state.mode === 'photo' ? mixPageRgb(base, rgbFromHex(state.photoDarkest), state.photoAlpha) : base;
+    tone.lightest = state.mode === 'photo' ? mixPageRgb(base, rgbFromHex(state.photoLightest), state.photoAlpha) : base;
+  }
   const black: PageRgb = rgbFromHex('#000000'); const white: PageRgb = rgbFromHex('#FFFFFF');
   if (state.texture !== 'none') {
     tone.darkest = mixPageRgb(tone.darkest, black, state.textureStrength * 0.4);

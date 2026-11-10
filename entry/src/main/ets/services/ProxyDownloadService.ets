@@ -1,3 +1,4 @@
+import { DohHttpRequest, createDohHttpRequest } from './DohHttpRequest';
 // Streaming file downloader used for media and playback cache. Unlike the
 // system request.downloadFile API, this path accepts the same proxy options as
 // the rest of the app's HTTP stack.
@@ -19,12 +20,12 @@ export const PROXY_DOWNLOAD_FAILED: number = 2;
 
 export class ProxyDownloadOperation {
   promise: Promise<number> = Promise.resolve(PROXY_DOWNLOAD_FAILED);
-  private request: http.HttpRequest | null = null;
+  private request: DohHttpRequest | null = null;
   private stopped: boolean = false;
 
   cancel(): void {
     this.stopped = true;
-    const request: http.HttpRequest | null = this.request;
+    const request: DohHttpRequest | null = this.request;
     if (request !== null) {
       try {
         request.destroy();
@@ -38,7 +39,7 @@ export class ProxyDownloadOperation {
     return this.stopped;
   }
 
-  setRequest(request: http.HttpRequest | null): void {
+  setRequest(request: DohHttpRequest | null): void {
     this.request = request;
   }
 }
@@ -56,7 +57,7 @@ export class ProxyDownloadService {
     if (url.length === 0 || filePath.length === 0) {
       return false;
     }
-    let request: http.HttpRequest | undefined = undefined;
+    let request: DohHttpRequest | undefined = undefined;
     let file: fileIo.File | undefined = undefined;
     let writeFailed: boolean = false;
     let expectedBytes: number = 0;
@@ -65,7 +66,7 @@ export class ProxyDownloadService {
     try {
       file = fileIo.openSync(filePath,
         fileIo.OpenMode.WRITE_ONLY | fileIo.OpenMode.CREATE | fileIo.OpenMode.TRUNC);
-      request = http.createHttp();
+      request = createDohHttpRequest();
       request.on('dataReceive', (data: ArrayBuffer): void => {
         if (writeFailed || file === undefined) {
           return;
@@ -189,14 +190,14 @@ export class ProxyDownloadService {
 
   private async downloadAttempt(operation: ProxyDownloadOperation, url: string, filePath: string,
     offset: number, onProgress: ProxyDownloadProgress): Promise<number> {
-    let request: http.HttpRequest | undefined = undefined;
+    let request: DohHttpRequest | undefined = undefined;
     let file: fileIo.File | undefined = undefined;
     let writeFailed: boolean = false;
     try {
       const openMode: number = fileIo.OpenMode.WRITE_ONLY | fileIo.OpenMode.CREATE |
         (offset > 0 ? fileIo.OpenMode.APPEND : fileIo.OpenMode.TRUNC);
       file = fileIo.openSync(filePath, openMode);
-      request = http.createHttp();
+      request = createDohHttpRequest();
       operation.setRequest(request);
       request.on('dataReceive', (data: ArrayBuffer): void => {
         if (operation.isStopped() || writeFailed || file === undefined) {

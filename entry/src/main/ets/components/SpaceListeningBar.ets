@@ -11,6 +11,7 @@ import {
 import { cardSurfaceColor } from '../utils/ThemeColors';
 import { SystemMaterialUtil } from '../utils/SystemMaterial';
 import { materialModifier } from '../utils/SystemMaterial';
+import { MaterialSurfaceHost } from './MaterialSurfaceHost';
 
 @Component
 export struct SpaceListeningBar {
@@ -74,26 +75,18 @@ export struct SpaceListeningBar {
         cardSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
       .border({ width: SystemMaterialUtil.isApi26OrAbove() ? 0 : 1, color: $r('app.color.divider') })
       .borderRadius(32)
-      .clip(true)
+      .clip(!SystemMaterialUtil.isApi26OrAbove())
       .attributeModifier(materialModifier(this.capsuleMaterial()))
   }
 
   build(): void {
     if (this.room() !== null) {
-      // Use the same native title-builder host as ReplyComposerCapsule.
-      Navigation() {
-        Column().width('100%').height('100%').hitTestBehavior(HitTestMode.None)
-      }
-      .title({
-        builder: (): void => { this.CapsuleSurfaceContent(); },
-        height: 64
-      }, { barStyle: BarStyle.STACK })
-      .titleMode(NavigationTitleMode.Full)
-      .mode(NavigationMode.Stack)
-      .hideToolBar(true)
+      MaterialSurfaceHost({ surfaceHeight: 64,
+        surfaceContent: (): void => { this.CapsuleSurfaceContent(); } })
       .backgroundColor(Color.Transparent)
       .width('100%')
       .height(64)
+      .clip(false)
     }
   }
 }

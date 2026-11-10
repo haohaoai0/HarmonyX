@@ -1,3 +1,4 @@
+const { withDohHttpMock } = require('./doh-http-fixture.cjs');
 const assert = require('node:assert/strict');
 const test = require('node:test');
 const fs = require('node:fs');
@@ -16,7 +17,7 @@ function load(relative, dependencies = {}) {
     compilerOptions: { target: ts.ScriptTarget.ES2020, module: ts.ModuleKind.CommonJS, esModuleInterop: true }
   }).outputText;
   const module = { exports: {} };
-  new Function('require', 'module', 'exports', output)(id => {
+  new Function('require', 'module', 'exports', output)(id => { withDohHttpMock(dependencies);
     if (Object.hasOwn(dependencies, id)) return dependencies[id];
     if (id === '@ohos.util') return util;
     if (id === '@kit.AbilityKit') return {};
@@ -73,7 +74,7 @@ function clientFixture() {
     './ProxyStore': { proxyStore: { apply: () => proxyHook() } }
   };
   new Function('require', 'module', 'exports', 'AppStorage', output)(
-    id => imports[id] || {}, module, module.exports, { get: () => 'dark' });
+    id => withDohHttpMock(imports)[id] || {}, module, module.exports, { get: () => 'dark' });
   const client = new module.exports.XPrivateClient();
   client.session = { isUsable: () => usable };
   client.context = {};

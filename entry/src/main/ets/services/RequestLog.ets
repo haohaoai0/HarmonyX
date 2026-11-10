@@ -1,6 +1,6 @@
 // In-memory ring buffer of the private-interface calls the app made, newest
-// first. Nothing is persisted: this exists so a user can see which request
-// failed and with what status, instead of only getting a toast.
+// first. Full notes stay in memory. The optional diagnostic bridge persists
+// only operation/status metadata, so a crash report can retain recent activity.
 export class RequestLogEntry {
   time: number = 0;
   operation: string = '';
@@ -20,8 +20,14 @@ export class RequestLogEntry {
 class RequestLog {
   private static readonly MAX_ENTRIES: number = 60;
   private entries: RequestLogEntry[] = [];
+  private diagnosticRecorder: ((operation: string, status: number, ok: boolean) => void) | undefined = undefined;
+
+  setDiagnosticRecorder(recorder: (operation: string, status: number, ok: boolean) => void): void {
+    this.diagnosticRecorder = recorder;
+  }
 
   record(operation: string, status: number, ok: boolean, note: string): void {
+    if (this.diagnosticRecorder) { this.diagnosticRecorder(operation, status, ok); }
     this.entries.unshift(new RequestLogEntry(Date.now(), operation, status, ok, note));
     while (this.entries.length > RequestLog.MAX_ENTRIES) {
       this.entries.pop();

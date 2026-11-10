@@ -14,6 +14,9 @@ export const TIMELINE_COLUMNS_ONE: number = 1;
 export const TIMELINE_COLUMNS_TWO: number = 2;
 export const TIMELINE_COLUMNS_THREE: number = 3;
 export const TIMELINE_COLUMNS_AUTO_TWO: number = 4;
+// Keep the stored value 4 for the existing adaptive two-column mode.
+export const TIMELINE_COLUMNS_FOUR: number = 5;
+export const TIMELINE_COLUMNS_FIVE: number = 6;
 
 export class TimelineSettingsStore {
   private static readonly STORE_NAME: string = 'harmonyx_timeline';
@@ -26,7 +29,8 @@ export class TimelineSettingsStore {
 
   private normaliseColumns(value: number): number {
     if (value === TIMELINE_COLUMNS_ONE || value === TIMELINE_COLUMNS_TWO ||
-      value === TIMELINE_COLUMNS_THREE || value === TIMELINE_COLUMNS_AUTO_TWO) {
+      value === TIMELINE_COLUMNS_THREE || value === TIMELINE_COLUMNS_AUTO_TWO ||
+      value === TIMELINE_COLUMNS_FOUR || value === TIMELINE_COLUMNS_FIVE) {
       return value;
     }
     return TIMELINE_COLUMNS_AUTO;

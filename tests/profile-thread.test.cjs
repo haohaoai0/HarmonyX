@@ -1,3 +1,4 @@
+const { withDohHttpMock } = require('./doh-http-fixture.cjs');
 const assert = require('node:assert/strict');
 const test = require('node:test');
 const fs = require('node:fs');
@@ -12,7 +13,7 @@ function loadService(name, dependencies = {}) {
     compilerOptions: { target: ts.ScriptTarget.ES2020, module: ts.ModuleKind.CommonJS, esModuleInterop: true }
   }).outputText;
   const module = { exports: {} };
-  new Function('require', 'module', 'exports', output)((id) => {
+  new Function('require', 'module', 'exports', output)((id) => { withDohHttpMock(dependencies);
     if (Object.hasOwn(dependencies, id)) return dependencies[id];
     if (id === './ReplyConversation') return require('./reply-conversation-fixture.cjs');
     if (id === '../utils/PostGif') return require('./post-gif-fixture.cjs');
@@ -28,7 +29,7 @@ function loadService(name, dependencies = {}) {
     });
     if (id === './XStarterPackParser') return loadService('XStarterPackParser');
     if (id === './XPostCardParser' || id === './XPollRequest') return require('./post-card-fixture.cjs');
-    if (id.startsWith('./X')) return require('./post-card-fixture.cjs').load('services/' + id.slice(2));
+    if (id.startsWith('./X')) return require('./post-card-fixture.cjs').load('services/' + id.slice(2), dependencies);
     throw new Error('Unexpected dependency: ' + id);
   }, module, module.exports);
   return module.exports;

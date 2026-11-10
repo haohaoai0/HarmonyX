@@ -65,6 +65,7 @@ test('sensitive-only selection affects For You while Following and pinned timeli
   });
   Object.assign(h, { onlySensitiveForYou: true, timeline: [{ id: 'normal' }, { id: 'sensitive', sensitive: true }],
     contentFilterSettings: () => ({}), homeTabIndex: () => 0 });
+  h.homeModeAt = index => index === 0 ? 0 : 1;
   h.homeSnapshotAt = () => ({ timeline: h.timeline });
   assert.deepEqual(h.filteredTimeline(0).map(row => row.id), ['sensitive']);
   assert.equal(h.filteredTimeline(1).length, 2); assert.equal(h.filteredTimeline(2).length, 2);

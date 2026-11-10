@@ -1,3 +1,4 @@
+import { DohHttpRequest, createDohHttpRequest } from './DohHttpRequest';
 import { userIsVerified, userVerifiedType, userAvatarShape, normalizedVerifiedType } from '../utils/UserIdentity';
 // Read-only public-web adapter for X content. It intentionally maps only
 // public posts and profiles into the app's existing models; writes and private
@@ -135,9 +136,9 @@ export class XWebClient {
   }
 
   private async requestText(url: string): Promise<string | null> {
-    let request: http.HttpRequest | undefined = undefined;
+    let request: DohHttpRequest | undefined = undefined;
     try {
-      request = http.createHttp();
+      request = createDohHttpRequest();
       const options: http.HttpRequestOptions = {
         method: http.RequestMethod.GET,
         header: { 'User-Agent': 'HarmonyX public web adapter' },

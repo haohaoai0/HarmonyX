@@ -1,4 +1,5 @@
-import { PageBackgroundState, STORAGE_KEY_PAGE_BACKGROUND, pageBackgroundFromValue, pageBackgroundActive } from '../services/PageBackgroundStore';
+import { PageBackgroundState, STORAGE_KEY_PAGE_BACKGROUND, pageBackgroundFromValue, pageBackgroundActive,
+  pageBackgroundPresetColors } from '../services/PageBackgroundStore';
 import { chatBackgroundPreset } from '../services/ChatBackgroundStore';
 import { pageBackgroundBaseColor, pageBackdropTone } from '../utils/ThemeColors';
 import { ChatBackgroundPattern } from './ChatBackgroundPattern';
@@ -25,11 +26,22 @@ export struct PageBackgroundLayer {
   private ink(): number {
     return pageLightInk(pageBackdropTone(this.wallpaper, this.displayMode, this.darkSurface).average) ? 1 : 0;
   }
+  private gradientStops(): Array<[ResourceColor, number]> {
+    const colors: ResourceColor[] = pageBackgroundPresetColors(this.wallpaper);
+    const stops: Array<[ResourceColor, number]> = [];
+    for (let index: number = 0; index < colors.length; index++) {
+      stops.push([colors[index], colors.length > 1 ? index / (colors.length - 1) : 0]);
+    }
+    return stops;
+  }
 
   build(): void {
     Stack() {
       Column().width('100%').height('100%').backgroundColor(this.baseColor())
-      if (this.wallpaper.mode === 'color') {
+      if (pageBackgroundPresetColors(this.wallpaper).length > 0) {
+        Column().width('100%').height('100%').linearGradient({
+          angle: chatBackgroundPreset(this.wallpaper.patternIds[0]).angle, colors: this.gradientStops() })
+      } else if (this.wallpaper.mode === 'color') {
         Column().width('100%').height('100%').backgroundColor(this.wallpaper.color)
       } else if (this.wallpaper.mode === 'photo' && this.wallpaper.path.length > 0) {
         Image('file://' + this.wallpaper.path).width('100%').height('100%')
@@ -66,6 +78,7 @@ export struct PageBackgroundLayer {
 
 @Component
 struct AppPageBackgroundLayer {
+  @Prop reuseTexture: boolean = false;
   @StorageProp(STORAGE_KEY_PAGE_BACKGROUND) @Watch('backgroundChanged') private backgroundValue: string = '';
   @StorageProp('harmonyx.display_mode') @Watch('backgroundChanged') private displayMode: string = '';
   @StorageProp('harmonyx.dark_surface') @Watch('backgroundChanged') private darkSurface: string = '';
@@ -140,6 +153,9 @@ struct AppPageBackgroundLayer {
       pageBackgroundTextureCache.release(this.displayed);
       this.displayed = undefined;
     }
+    // Small settings previews can crop the existing page texture. Do not build
+    // another complete pattern just to match their frame's dimensions.
+    if (this.reuseTexture && this.displayed !== undefined) { return; }
     if (this.viewportWidth <= 0 || this.viewportHeight <= 0) { return; }
     const width: number = this.viewportWidth;
     const height: number = this.viewportHeight;
@@ -198,4 +214,4 @@ struct AppPageBackgroundLayer {
 // Each destination paints a complete surface, including during native page
 // transitions. Transparent content can never reveal the previous destination.
 @Builder
-export function appPageBackground(): void { AppPageBackgroundLayer(); }
+export function appPageBackground(reuseTexture: boolean = false): void { AppPageBackgroundLayer({ reuseTexture: reuseTexture }); }

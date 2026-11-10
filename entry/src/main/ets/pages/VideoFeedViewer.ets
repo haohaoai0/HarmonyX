@@ -61,6 +61,7 @@ import {
   COMPACT_VIDEO_LAYOUT_BOTTOM,
   videoHoldSpeedLabel,
   STORAGE_KEY_VIDEO_IMMERSIVE_FILL,
+  STORAGE_KEY_PAUSE_INLINE_VIDEO_ON_RETURN,
   STORAGE_KEY_VIDEO_QUALITY,
   STORAGE_KEY_VIDEO_AUTO_BITRATE_CAP,
   VIDEO_QUALITY_DATA_SAVER,
@@ -197,6 +198,7 @@ export struct VideoFeedViewer {
   @StorageProp(STORAGE_KEY_MEDIA_VIEWER_BLACK_BACKGROUND) mediaViewerBlackBackground: boolean = false;
   @StorageLink(STORAGE_KEY_VIDEO_FEED_CONTROLS_ALWAYS_VISIBLE)
   videoFeedControlsAlwaysVisible: boolean = false;
+  @StorageProp(STORAGE_KEY_PAUSE_INLINE_VIDEO_ON_RETURN) private pauseInlineVideoOnReturn: boolean = false;
   @StorageProp(STORAGE_KEY_HIDDEN_MENU_ACTIONS) private hiddenMenuActions: string = '';
   @StorageLink(STORAGE_KEY_VIDEO_FEED_LAYOUT) videoFeedLayout: number = VIDEO_FEED_LAYOUT_CLASSIC;
   @StorageLink(STORAGE_KEY_COMPACT_VIDEO_LAYOUT) private compactVideoLayout: number = COMPACT_VIDEO_LAYOUT_RAIL;
@@ -232,6 +234,8 @@ export struct VideoFeedViewer {
   private initialIndex: number = -1;
   @State private showMoreSheet: boolean = false;
   @State private showPostSheet: boolean = false;
+  @State private commentPhotoVisible: boolean = false;
+  private closeCommentPhoto: (() => boolean) | null = null;
   @State private postSheetActive: boolean = false;
   @State private postSheetTweet: Tweet | null = null;
   @State private postSheetHeight: number = 0;
@@ -257,6 +261,7 @@ export struct VideoFeedViewer {
   private pager: SwiperController = new SwiperController();
 
   private inputBack(): void {
+    if (this.closeCommentPhoto?.() === true) { return; }
     if (this.showDanmakuSheet) { this.showDanmakuSheet = false; return; }
     if (this.showPostSheet) { this.closePostSheet(); return; }
     if (this.showMoreSheet) { this.showMoreSheet = false; return; }
@@ -525,6 +530,9 @@ export struct VideoFeedViewer {
       return;
     }
     const finish: () => void = (): void => {
+      if (media !== null) { videoPlayerHandoff.setInlinePaused(media.id, this.pauseInlineVideoOnReturn); }
+      const originId: string = this.motion.source?.mediaId ?? '';
+      videoPlayerHandoff.setInlinePaused(originId, this.pauseInlineVideoOnReturn);
       const sourceId: string = media !== null && this.motion.source?.mediaId === media.id ? this.motion.source.id : '';
       const ui = this.getUIContext();
       let returned: boolean = false;
@@ -643,6 +651,9 @@ export struct VideoFeedViewer {
   }
 
   private closePostSheet(): void {
+    this.closeCommentPhoto?.();
+    this.closeCommentPhoto = null;
+    this.commentPhotoVisible = false;
     if (!this.showPostSheet) { return; }
     this.postSheetOpening = false;
     this.showPostSheet = false;
@@ -667,9 +678,14 @@ export struct VideoFeedViewer {
     if (this.postSheetTweet !== null) {
       PostDetail({
         embedded: true,
+        embeddedViewportHeight: sheetUsesCenteredPresentation(this.sheetWindowBreakpoint) ? 0 :
+          (this.postSheetHeight > 0 ? this.postSheetHeight : this.initialPostSheetHeight()),
         initialTweet: this.postSheetTweet,
         onEmbeddedPostChanged: (post: Tweet): void => this.applyPostSheetChange(post),
-        onEmbeddedNavigate: (): void => this.closePostSheet()
+        onEmbeddedNavigate: (): void => this.closePostSheet(),
+        onEmbeddedImageViewerChanged: (close: (() => boolean) | null): void => {
+          this.closeCommentPhoto = close; this.commentPhotoVisible = close !== null;
+        }
       })
     }
   }
@@ -1513,7 +1529,7 @@ export struct VideoFeedViewer {
       .onClick((): void => this.openAuthorProfile(tweet))
 
       if (!this.isOwnPost(tweet)) {
-        MaterialButton({
+        MaterialButton({ nativeMaterialHost: true,
           buttonWidth: this.authorFollowing ? 90 : 72,
           buttonHeight: 38,
           buttonRadius: 19,
@@ -1547,7 +1563,7 @@ export struct VideoFeedViewer {
   @Builder
   private PostActions(tweet: Tweet): void {
     Row() {
-      MaterialButton({
+      MaterialButton({ nativeMaterialHost: true,
         buttonWidth: 64,
         buttonHeight: 42,
         buttonRadius: 21,
@@ -1569,7 +1585,7 @@ export struct VideoFeedViewer {
             .maxFontScale(1)
         }
       }
-      MaterialButton({
+      MaterialButton({ nativeMaterialHost: true,
         buttonWidth: 68,
         buttonHeight: 42,
         buttonRadius: 21,
@@ -1595,7 +1611,7 @@ export struct VideoFeedViewer {
             .maxFontScale(1)
         }
       }
-      MaterialButton({
+      MaterialButton({ nativeMaterialHost: true,
         buttonWidth: 68,
         buttonHeight: 42,
         buttonRadius: 21,
@@ -1621,7 +1637,7 @@ export struct VideoFeedViewer {
             .maxFontScale(1)
         }
       }
-      MaterialButton({
+      MaterialButton({ nativeMaterialHost: true,
         buttonWidth: 42,
         buttonHeight: 42,
         buttonRadius: 21,
@@ -1641,7 +1657,7 @@ export struct VideoFeedViewer {
           .fontSize(20)
           .fontColor([this.bookmarked ? this.accentColor : $r('app.color.text_on_brand')])
       }
-      MaterialButton({
+      MaterialButton({ nativeMaterialHost: true,
         buttonWidth: 42,
         buttonHeight: 42,
         buttonRadius: 21,
@@ -2323,7 +2339,7 @@ export struct VideoFeedViewer {
           .onClick((): void => this.openAuthorProfile(tweet))
         PostAdLabel({ presentation: tweet.presentation })
         if (!this.isOwnPost(tweet)) {
-          MaterialButton({ buttonWidth: $r('app.float.compact_video_bottom_follow_width'),
+          MaterialButton({ nativeMaterialHost: true, buttonWidth: $r('app.float.compact_video_bottom_follow_width'),
             buttonHeight: $r('app.float.compact_video_bottom_action_height'),
             buttonRadius: $r('app.float.compact_video_bottom_radius'), materialLevel: 1,
             surfaceColor: $r('app.color.video_episode_surface'), lightColor: this.accentColor,
@@ -2385,7 +2401,7 @@ export struct VideoFeedViewer {
     Column({ space: 2 }) {
       // Same surface treatment as the reply capsule in the classic overlay, so
       // both layouts read as one family.
-      MaterialButton({
+      MaterialButton({ nativeMaterialHost: true,
         buttonWidth: this.shortVideoRailButtonSize(),
         buttonHeight: this.shortVideoRailButtonSize(),
         buttonRadius: this.shortVideoRailButtonSize() / 2,
@@ -2419,7 +2435,7 @@ export struct VideoFeedViewer {
   @Builder
   private ShortVideoRailReply(tweet: Tweet): void {
     Column({ space: 2 }) {
-      MaterialButton({
+      MaterialButton({ nativeMaterialHost: true,
         buttonWidth: this.shortVideoRailButtonSize(),
         buttonHeight: this.shortVideoRailButtonSize(),
         buttonRadius: this.shortVideoRailButtonSize() / 2,
@@ -2451,7 +2467,7 @@ export struct VideoFeedViewer {
   @Builder
   private ShortVideoRailRepost(tweet: Tweet): void {
     Column({ space: 2 }) {
-      MaterialButton({
+      MaterialButton({ nativeMaterialHost: true,
         buttonWidth: this.shortVideoRailButtonSize(),
         buttonHeight: this.shortVideoRailButtonSize(),
         buttonRadius: this.shortVideoRailButtonSize() / 2,
@@ -2485,7 +2501,7 @@ export struct VideoFeedViewer {
   @Builder
   private ShortVideoRailBookmark(tweet: Tweet): void {
     Column() {
-      MaterialButton({
+      MaterialButton({ nativeMaterialHost: true,
         buttonWidth: this.shortVideoRailButtonSize(),
         buttonHeight: this.shortVideoRailButtonSize(),
         buttonRadius: this.shortVideoRailButtonSize() / 2,
@@ -2515,7 +2531,7 @@ export struct VideoFeedViewer {
   @Builder
   private ShortVideoRailShare(tweet: Tweet): void {
     Column() {
-      MaterialButton({
+      MaterialButton({ nativeMaterialHost: true,
         buttonWidth: this.shortVideoRailButtonSize(),
         buttonHeight: this.shortVideoRailButtonSize(),
         buttonRadius: this.shortVideoRailButtonSize() / 2,
@@ -2779,7 +2795,7 @@ export struct VideoFeedViewer {
         .onChange((value: string): void => { this.danmakuDraft = value; })
         .onSubmit((): void => { void this.sendDanmaku(); })
         .enabled(!this.danmakuSending)
-      MaterialButton({ buttonWidth: '100%', buttonHeight: 48, buttonRadius: 24,
+      MaterialButton({ nativeMaterialHost: true, buttonWidth: '100%', buttonHeight: 48, buttonRadius: 24,
         buttonPressFeedback: true,
         materialLevel: 2, applyShadow: true, surfaceColor: this.accentColor,
         buttonEnabled: this.danmakuDraft.trim().length > 0 && !this.danmakuSending,
@@ -2865,7 +2881,7 @@ export struct VideoFeedViewer {
         .onClick((): void => this.openPostSheet(tweet))
       this.BiliEpisodes(tweet)
       Row({ space: 4 }) {
-        MaterialButton({ buttonWidth: 40, buttonHeight: 44, buttonRadius: 22, materialLevel: 2,
+        MaterialButton({ nativeMaterialHost: true, buttonWidth: 40, buttonHeight: 44, buttonRadius: 22, materialLevel: 2,
           buttonPressFeedback: true,
           applyShadow: true, surfaceColor: $r('app.color.video_episode_surface'),
           accessibilityLabel: this.text($r('app.string.video_danmaku_toggle')),
@@ -2874,7 +2890,7 @@ export struct VideoFeedViewer {
             .fontColor([this.danmakuEnabled ? this.accentColor : $r('app.color.text_on_brand')])
         }
         Row() {
-        MaterialButton({ buttonWidth: '100%', buttonHeight: 44, buttonRadius: 22, materialLevel: 2,
+        MaterialButton({ nativeMaterialHost: true, buttonWidth: '100%', buttonHeight: 44, buttonRadius: 22, materialLevel: 2,
           buttonPressFeedback: true,
           applyShadow: true, surfaceColor: $r('app.color.video_episode_surface'),
           accessibilityLabel: this.text($r('app.string.video_danmaku_send')),
@@ -3051,7 +3067,7 @@ export struct VideoFeedViewer {
             preferType: SheetType.BOTTOM,
             keyboardAvoidMode: SheetKeyboardAvoidMode.RESIZE_ONLY,
             showClose: false,
-            dragBar: true,
+            dragBar: !this.commentPhotoVisible,
             maskColor: Color.Transparent,
             enableOutsideInteractive: true,
             radius: { topLeft: $r('app.float.media_viewer_post_sheet_radius'),
@@ -3064,6 +3080,7 @@ export struct VideoFeedViewer {
             },
             onAppear: (): void => { this.postSheetOpening = false; },
             onWillDismiss: (action: DismissSheetAction): void => {
+              if (this.closeCommentPhoto?.() === true) { return; }
               this.closePostSheet();
               action.dismiss();
             },
@@ -3092,6 +3109,9 @@ export struct VideoFeedViewer {
         Column() {
           ForEach(this.commentsTweets(), (post: Tweet) => {
             PostDetail({ embedded: true, initialTweet: post,
+              onEmbeddedImageViewerChanged: (close: (() => boolean) | null): void => {
+                this.closeCommentPhoto = close; this.commentPhotoVisible = close !== null;
+              },
               onEmbeddedPostChanged: (changed: Tweet): void => this.applyPostSheetChange(changed) })
           }, (post: Tweet): string => post.id)
         }.layoutWeight(44).height('100%')

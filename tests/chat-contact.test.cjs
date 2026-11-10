@@ -1,3 +1,4 @@
+const { withDohHttpMock } = require('./doh-http-fixture.cjs');
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
@@ -18,7 +19,7 @@ const mod = {exports: {}};
 const code = ts.transpileModule(fs.readFileSync('entry/src/main/ets/services/ChatContactService.ets', 'utf8'), {
   compilerOptions: {target: ts.ScriptTarget.ES2020, module: ts.ModuleKind.CommonJS}
 }).outputText;
-new Function('require', 'module', 'exports', code)(id => id === '../utils/UserIdentity' ? require('./post-card-fixture.cjs').load('utils/UserIdentity') : mocks[id] || {}, mod, mod.exports);
+new Function('require', 'module', 'exports', code)(id => (() => { withDohHttpMock(mocks); return id === '../utils/UserIdentity' ? require('./post-card-fixture.cjs').load('utils/UserIdentity') : mocks[id] || {}; })(), mod, mod.exports);
 const {ChatContactService, ChatContact} = mod.exports;
 const ok = body => ({ok: true, status: 200, body: JSON.stringify(body)});
 const numberOk = () => ok({data: {xchat_verify_x_number: {enabled: true}}});

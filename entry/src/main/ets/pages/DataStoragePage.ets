@@ -13,7 +13,7 @@ import {
 } from '../services/DataStorageService';
 import { xChatActions } from '../services/XChatActions';
 import { xChatMedia } from '../services/XChatMedia';
-import { downloadLocationStore } from '../services/DownloadLocationStore';
+import { downloadLocationStore, MediaSaveMethod } from '../services/DownloadLocationStore';
 import { destinationTitleBarStyle } from '../utils/DestinationTitleBar';
 import { ResponsiveLayout } from '../utils/ResponsiveLayout';
 import { cardSurfaceColor, pageSurfaceColor, secondaryButtonSurfaceColor } from '../utils/ThemeColors';
@@ -42,6 +42,7 @@ export struct DataStoragePage {
   @State private networkAvailable: boolean = false;
   @State private busy: boolean = false;
   @State private useFolder: boolean = false;
+  @State private saveMethod: MediaSaveMethod = MediaSaveMethod.GALLERY;
   @State private directorySupported: boolean = false;
   @State private directoryPath: string = '';
   @State private directoryAuthorized: boolean = false;
@@ -62,6 +63,8 @@ export struct DataStoragePage {
   private refreshLocation(): void {
     this.useFolder = downloadLocationStore.useDownloads(this.context());
     this.directorySupported = downloadLocationStore.supportsDirectory();
+    const method: MediaSaveMethod = downloadLocationStore.method(this.context());
+    this.saveMethod = method === MediaSaveMethod.DIRECTORY && !this.directorySupported ? MediaSaveMethod.FILE_PICKER : method;
     this.directoryPath = downloadLocationStore.path(this.context());
     this.directoryAuthorized = downloadLocationStore.hasDirectory(this.context());
     this.chatRetention = xChatActions.localString(this.context(), 'retention_days', '30');
@@ -104,6 +107,31 @@ export struct DataStoragePage {
       }
     }).catch((): void => { promptAction.showToast({ message: $r('app.string.storage_directory_failed') }); })
       .finally((): void => { this.busy = false; });
+  }
+
+  private changeSaveMethod(method: MediaSaveMethod): void {
+    if (this.busy || method === this.saveMethod) { return; }
+    this.busy = true;
+    const prepared: Promise<boolean> = method === MediaSaveMethod.DIRECTORY ?
+      downloadLocationStore.prepare(this.context(), true) : Promise.resolve(true);
+    prepared.then((ready: boolean): Promise<void> => ready ?
+      downloadLocationStore.setMethod(this.context(), method) : Promise.resolve())
+      .catch((): void => { promptAction.showToast({ message: $r('app.string.storage_directory_failed') }); })
+      .finally((): void => { this.refreshLocation(); this.busy = false; });
+  }
+
+  @Builder
+  private SaveMethodOption(method: MediaSaveMethod, label: Resource): void {
+    Row({ space: 12 }) {
+      Text(label).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L'))
+        .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue,
+          pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue)))
+        .layoutWeight(1)
+      Radio({ value: method.toString(), group: 'media-save-method' }).checked(this.saveMethod === method)
+        .enabled(!this.busy).accessibilityText(label)
+        .onChange((selected: boolean): void => { if (selected) { this.changeSaveMethod(method); } })
+    }.width('100%').constraintSize({ minHeight: 48 })
+      .enabled(!this.busy).onClick((): void => this.changeSaveMethod(method))
   }
 
   private confirmClear(kind: StorageCacheKind): void {
@@ -168,20 +196,17 @@ export struct DataStoragePage {
   @Builder
   private DownloadsCard(): void {
     Column({ space: 12 }) {
-      Text($r('app.string.storage_download_path')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Subtitle_L')).fontWeight(FontWeight.Medium)
+      Text($r('app.string.media_save_method')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Subtitle_L')).fontWeight(FontWeight.Medium)
         .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue))).width('100%')
-      Text(this.directorySupported ? this.directoryPath : $r('app.string.storage_system_save')).fontFamily(this.appFontFamily)
-        .fontSize($r('sys.float.Body_M')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue))).width('100%')
-      Row({ space: 12 }) {
-        Column({ space: 5 }) {
-          Text($r('app.string.storage_save_to_folder')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L')).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue)))
-          Text(this.directorySupported ? $r('app.string.storage_save_remembered_note') :
-            $r('app.string.storage_save_target_note')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Caption_M')).fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, pageReadingSurfaceColor(cardSurfaceColor(this.displayMode, this.darkSurface), this.pageBackgroundValue)))
-        }.layoutWeight(1).alignItems(HorizontalAlign.Start)
-        Toggle({ type: ToggleType.Switch, isOn: this.useFolder }).enabled(!this.busy)
-          .onChange((enabled: boolean): void => this.changeSaveTarget(enabled))
-      }.width('100%')
+      this.SaveMethodOption(MediaSaveMethod.GALLERY, $r('app.string.media_save_gallery_dialog'))
+      this.SaveMethodOption(MediaSaveMethod.SECURE_BUTTON, $r('app.string.media_save_secure_button'))
       if (this.directorySupported) {
+        this.SaveMethodOption(MediaSaveMethod.DIRECTORY, $r('app.string.media_save_directory'))
+      }
+      this.SaveMethodOption(MediaSaveMethod.FILE_PICKER, $r('app.string.media_save_file_picker'))
+      if (this.saveMethod === MediaSaveMethod.DIRECTORY && this.directorySupported) {
+        Text(this.directoryPath).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M'))
+          .fontColor($r('app.color.text_secondary')).width('100%')
         Text(this.directoryAuthorized ? $r('app.string.storage_path_note') : $r('app.string.storage_path_authorize'))
           .fontFamily(this.appFontFamily).fontSize($r('sys.float.Caption_M')).fontColor($r('app.color.text_secondary')).width('100%')
         Button($r('app.string.storage_change_path')).width('100%').enabled(!this.busy)

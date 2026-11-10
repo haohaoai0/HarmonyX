@@ -1,3 +1,4 @@
+const { withDohHttpMock } = require('./doh-http-fixture.cjs');
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
@@ -9,7 +10,7 @@ function evaluate(source, dependencies, globals = {}) {
   const code = ts.transpileModule(source, {
     compilerOptions: { target: ts.ScriptTarget.ES2020, module: ts.ModuleKind.CommonJS }
   }).outputText;
-  new Function('exports', 'require', ...Object.keys(globals), code)(exports, name => {
+  new Function('exports', 'require', ...Object.keys(globals), code)(exports, name => { withDohHttpMock(dependencies);
     assert.ok(dependencies[name], name); return dependencies[name];
   }, ...Object.values(globals));
   return exports;

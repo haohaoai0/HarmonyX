@@ -7,6 +7,7 @@
   "license": "Apache-2.0",
   "modelVersion": "5.0.0",
   "dependencies": {
-    "libharmonyx_chat.so": "file:./src/main/cpp/types/libharmonyx_chat"
+    "libharmonyx_chat.so": "file:./src/main/cpp/types/libharmonyx_chat",
+    "libharmonyx_doh.so": "file:./src/main/cpp/types/libharmonyx_doh"
   }
 }

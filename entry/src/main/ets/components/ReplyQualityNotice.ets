@@ -1,4 +1,5 @@
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
+import type { PostCardReadingState } from '../services/PostCardReadingState';
 import { fieldSurfaceColor, pageTextColor } from '../utils/ThemeColors';
 
 @Component
@@ -14,6 +15,19 @@ export struct ReplyQualityNotice {
   @BuilderParam replyBuilder: () => void = this.EmptyReply;
   @State private expanded: boolean = false;
   @State private showingReasons: boolean = false;
+  readingState: PostCardReadingState | null = null;
+
+  aboutToAppear(): void {
+    if (this.readingState === null) { return; }
+    this.expanded = this.readingState.qualityExpanded;
+    this.showingReasons = this.readingState.qualityShowingReasons;
+  }
+
+  aboutToDisappear(): void {
+    if (this.readingState === null) { return; }
+    this.readingState.qualityExpanded = this.expanded;
+    this.readingState.qualityShowingReasons = this.showingReasons;
+  }
 
   @Builder private EmptyReply(): void { Column() }
 

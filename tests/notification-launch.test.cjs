@@ -76,7 +76,8 @@ function fixture({ wide = false, large = false } = {}) {
     isWideScreen: () => wide, isLargeScreen: () => large, isDesktopLayout: () => false, isBottomBarPageEnabled: () => true,
     firstBottomBarPage: () => 0, supportsHdsNavigation: () => false, usesFloatingTabBar: () => false,
     bottomBarPageIndex: value => value, tabsController: { changeIndex: value => { root.visibleTab = value; } },
-    onTabChange: value => { root.currentTab = value; }, text: value => value, getUIContext: () => ({})
+    onTabChange: value => { root.currentTab = value; }, text: value => value, getUIContext: () => ({}),
+    bottomBarVisible: true
   });
   for (const name of ['loadOnboardingState', 'syncAllWaterFlowSections', 'onBreakpointChange', 'configureImmersiveTabs',
     'bindHdsTabScrollers', 'watchConnectivity', 'loadSearchHistory', 'loadTimeline', 'startNotificationPolling',

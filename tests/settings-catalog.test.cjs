@@ -38,8 +38,8 @@ test('all settings can be reached from one home group with no missing parents or
 
 test('search opens the page containing a relocated control and explains its location', () => {
   for (const [query, expected] of [
-    ['首页空间胶囊', 'home_interaction'], ['退出前确认', 'home_interaction'],
-    ['主页面返回', 'home_interaction'], ['自动播放', 'playback'], ['长按', 'video_controls'],
+    ['首页空间胶囊', 'home_interaction'], ['返回桌面提示', 'home_interaction'],
+    ['再次返回', 'home_interaction'], ['自动播放', 'playback'], ['长按', 'video_controls'],
     ['玻璃', 'titlebar'], ['自定义字体', 'fonts'], ['头像', 'theme'],
     ['广告', 'content'], ['侧栏', 'layout'], ['下载', 'storage'], ['SOCKS5', 'proxy'],
     ['经典底部', 'navigation'], ['Tab 文字', 'navigation'], ['渐变遮罩', 'tabmaterial']

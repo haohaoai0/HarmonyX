@@ -1,3 +1,4 @@
+import { DohHttpRequest, createDohHttpRequest } from './DohHttpRequest';
 // Translation client. API mode speaks OpenAI-compatible and Anthropic APIs;
 // web mode calls the public translation-web endpoint without an API key.
 // Both paths share one result contract, so the post card only updates its
@@ -49,6 +50,7 @@ export class TranslationService {
   // Keyed by mode + configuration + language + post id, so switching any of
   // them re-runs the request while repeated taps on one post stay free.
   private cache: Map<string, string> = new Map();
+  private pendingTranslations: Map<string, Promise<TranslationResult>> = new Map();
   private pendingXTranslations: Map<string, Promise<TranslationResult>> = new Map();
   private xTranslationQueue: Promise<void> = Promise.resolve();
 
@@ -58,6 +60,7 @@ export class TranslationService {
 
   clearCache(): void {
     this.cache.clear();
+    this.pendingTranslations.clear();
     this.pendingXTranslations.clear();
     this.xTranslationQueue = Promise.resolve();
   }
@@ -74,6 +77,23 @@ export class TranslationService {
 
   async translate(postId: string, text: string, settings: TranslationSettings,
     postLanguage: string = ''): Promise<TranslationResult> {
+    const key: string = xPrivateClient.sessionGeneration().toString() + '|' + settings.mode + '|' +
+      settings.providerId + '|' + settings.effectiveBaseUrl() + '|' + settings.effectiveModel() + '|' +
+      settings.apiKey + '|' + settings.sourceLanguage + '|' + settings.effectiveTargetLanguage() + '|' +
+      postLanguage + '|' + postId + '|' + text;
+    const existing: Promise<TranslationResult> | undefined = this.pendingTranslations.get(key);
+    if (existing !== undefined) { return existing; }
+    const pending: Promise<TranslationResult> = this.translateRequest(postId, text, settings, postLanguage)
+      .catch((): TranslationResult => new TranslationResult(false, '', 'request_failed'));
+    this.pendingTranslations.set(key, pending);
+    try { return await pending; }
+    finally {
+      if (this.pendingTranslations.get(key) === pending) { this.pendingTranslations.delete(key); }
+    }
+  }
+
+  private async translateRequest(postId: string, text: string, settings: TranslationSettings,
+    postLanguage: string): Promise<TranslationResult> {
     // Whitespace can be part of a poem's layout. Trim only for validation.
     const body: string = text;
     if (body.trim().length === 0) {
@@ -101,7 +121,8 @@ export class TranslationService {
     if (baseUrl.length === 0 || model.length === 0) {
       return new TranslationResult(false, '', 'not_configured');
     }
-    const cacheKey: string = settings.mode + '|' + settings.providerId + '|' + model + '|' +
+    const generation: number = xPrivateClient.sessionGeneration();
+    const cacheKey: string = generation.toString() + '|' + settings.mode + '|' + settings.providerId + '|' + model + '|' +
       baseUrl + '|' + sourceLanguage + '|' + targetLanguage + '|' + postId + '|' + body;
     const cached: string | undefined = this.cache.get(cacheKey);
     if (cached !== undefined) {
@@ -149,6 +170,7 @@ export class TranslationService {
     }
 
     const response: string | null = await this.send(url, headers, payload);
+    if (generation !== xPrivateClient.sessionGeneration()) { return new TranslationResult(false, '', 'session_changed'); }
     if (response === null) {
       return new TranslationResult(false, '', 'http_' + this.lastStatusCode.toString());
     }
@@ -227,7 +249,8 @@ export class TranslationService {
     targetLanguage: string): Promise<TranslationResult> {
     const links: TranslationLinks = new TranslationLinks(body);
     if (links.onlyLinks()) { return new TranslationResult(true, body, ''); }
-    const cacheKey: string = TRANSLATION_MODE_WEB + '|' + sourceLanguage + '|' + targetLanguage + '|' + postId + '|' + body;
+    const generation: number = xPrivateClient.sessionGeneration();
+    const cacheKey: string = generation.toString() + '|' + TRANSLATION_MODE_WEB + '|' + sourceLanguage + '|' + targetLanguage + '|' + postId + '|' + body;
     const cached: string | undefined = this.cache.get(cacheKey);
     if (cached !== undefined) {
       return new TranslationResult(true, cached, '');
@@ -235,6 +258,7 @@ export class TranslationService {
     const url: string = WEB_TRANSLATION_ENDPOINT + '?client=gtx&sl=' + encodeURIComponent(sourceLanguage) + '&tl=' +
       encodeURIComponent(targetLanguage) + '&dt=t&q=' + encodeURIComponent(links.protectedText);
     const response: string | null = await this.sendGet(url);
+    if (generation !== xPrivateClient.sessionGeneration()) { return new TranslationResult(false, '', 'session_changed'); }
     if (response === null) {
       return new TranslationResult(false, '', 'http_' + this.lastStatusCode.toString());
     }
@@ -257,9 +281,9 @@ export class TranslationService {
 
   private async send(url: string, headers: Record<string, string>,
     payload: Record<string, Object>): Promise<string | null> {
-    let httpRequest: http.HttpRequest | undefined = undefined;
+    let httpRequest: DohHttpRequest | undefined = undefined;
     try {
-      httpRequest = http.createHttp();
+      httpRequest = createDohHttpRequest();
       const options: http.HttpRequestOptions = {
         method: http.RequestMethod.POST,
         header: headers,
@@ -288,9 +312,9 @@ export class TranslationService {
   }
 
   private async sendGet(url: string): Promise<string | null> {
-    let httpRequest: http.HttpRequest | undefined = undefined;
+    let httpRequest: DohHttpRequest | undefined = undefined;
     try {
-      httpRequest = http.createHttp();
+      httpRequest = createDohHttpRequest();
       const options: http.HttpRequestOptions = {
         method: http.RequestMethod.GET,
         connectTimeout: CONNECT_TIMEOUT_MS,

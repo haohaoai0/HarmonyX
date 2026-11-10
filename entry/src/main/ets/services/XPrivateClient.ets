@@ -1,3 +1,4 @@
+import { DohHttpRequest, createDohHttpRequest } from './DohHttpRequest';
 // On-device client for X's private surface, following the reference Android
 // client's implementation:
 //   * https://api.x.com/graphql/{queryId}/{OperationName}   (GET or POST)
@@ -92,6 +93,10 @@ export class XPrivateResult {
 }
 
 export const SENSITIVE_TIMELINE_QUERY: string = 'filter:sensitive';
+
+interface HomeTopicPinResult { __typename?: string; message?: string; }
+interface HomeTopicPinData { pin_timeline?: HomeTopicPinResult; unpin_timeline?: HomeTopicPinResult; }
+interface HomeTopicPinResponse { data?: HomeTopicPinData; }
 
 export class XPrivateClient {
   private session: XSession = new XSession('', '', '', '', '', '');
@@ -991,7 +996,7 @@ export class XPrivateClient {
     accept: string, label: string, contentType: string = '',
     retryOnProxyFailure: boolean = true, requestLanguage: string = '', requestGeneration: number = -1,
     minimalHeaders: boolean = false): Promise<XPrivateResult> {
-    let httpRequest: http.HttpRequest | undefined = undefined;
+    let httpRequest: DohHttpRequest | undefined = undefined;
     const generation: number = this.sessionGeneration();
     try {
       if (requestGeneration >= 0 && requestGeneration !== this.sessionGeneration()) {
@@ -1023,7 +1028,7 @@ export class XPrivateClient {
       if (transactionId.length > 0) {
         headers['X-Client-Transaction-Id'] = transactionId;
       }
-      httpRequest = http.createHttp();
+      httpRequest = createDohHttpRequest();
       const options: http.HttpRequestOptions = {
         method: method === 'POST' ? http.RequestMethod.POST : method === 'DELETE' ? http.RequestMethod.DELETE :
           method === 'PUT' ? http.RequestMethod.PUT : http.RequestMethod.GET,
@@ -1165,7 +1170,11 @@ export class XPrivateClient {
   }
 
   homeTimeline(forEachYou: boolean, cursor: string, count: number,
-    seenTweetIds: string[] = [], fresh: boolean = false, requestContext: string = 'launch'): Promise<XPrivateResult> {
+    seenTweetIds: string[] = [], fresh: boolean = false, requestContext: string = 'launch', tag: string = ''): Promise<XPrivateResult> {
+    if (tag.length > 0 && (!forEachYou || tag.trim().length === 0 || tag.length > 512 || /[\u0000-\u001f\u007f]/.test(tag))) {
+      return Promise.resolve(new XPrivateResult(false, 0, '', 'invalid_home_tag', 'HomeTimeline'));
+    }
+    if (tag.length > 0) { return this.taggedHomeTimeline(tag, cursor, count, seenTweetIds, requestContext); }
     const variables: Record<string, Object> = {
       'count': count,
       'include_profile_info': false,
@@ -1178,6 +1187,66 @@ export class XPrivateClient {
       variables['cursor'] = cursor;
     }
     return this.graphql(forEachYou ? 'home_timeline' : 'home_timeline_latest', variables, '', fresh);
+  }
+
+  private async taggedHomeTimeline(tag: string, cursor: string, count: number,
+    seenTweetIds: string[], requestContext: string): Promise<XPrivateResult> {
+    const operation: string = 'HomeTimelineQuery';
+    if (!this.isSignedIn()) { return new XPrivateResult(false, 0, '', 'no_session', operation); }
+    // Current x-web for-you-preload-DR2QesMG.js declares camelCase Relay
+    // variables. The old Android registry HomeTimeline can ignore its tag.
+    const variables: Record<string, Object | null> = { 'count': count, 'cursor': cursor || null,
+      'requestContext': requestContext || null, 'seenTweetIds': seenTweetIds, 'tag': tag, 'topicIds': null,
+      '__relay_internal__pv__xclientsfeaturesappviewerisloggedinrelayprovider': true,
+      '__relay_internal__pv__xclientsfeaturestranslationgroktranslatedpostenabledrelayprovider': false,
+      '__relay_internal__pv__xclientsfeaturestweetcomponentsgrokanalyzepostrelayprovider': false,
+      '__relay_internal__pv__xclientsfeaturestranslationnoteautotranslationenabledrelayprovider': false,
+      '__relay_internal__pv__liveeventpostcontextenabledrelayprovider': false,
+      '__relay_internal__pv__sportspostcontextenabledrelayprovider': false };
+    const result: XPrivateResult = await this.send('GET', GRAPHQL_BASE + '/L6SRp4VXI9qrmQgX0-OTYA/' + operation +
+      '?variables=' + encodeURIComponent(JSON.stringify(variables)), '', GRAPHQL_ACCEPT, operation,
+      '', true, '', this.sessionGeneration());
+    requestLog.record(operation, result.status, result.ok, result.errorText);
+    hilog.info(DOMAIN, TAG, 'topic tag=%{public}s operation=%{public}s status=%{public}d paging=%{public}s count=%{public}d',
+      tag, operation, result.status, String(cursor.length > 0), count);
+    return result;
+  }
+
+  pinnableTimelines(): Promise<XPrivateResult> {
+    return this.graphql('pinnable_timelines_query', { 'include_list_details': false, 'isMemberTargetUserId': '0' });
+  }
+
+  pinnedTimelines(): Promise<XPrivateResult> {
+    return this.graphql('pinned_timelines_query', { 'include_list_details': false, 'isMemberTargetUserId': '0' });
+  }
+
+  async pinHomeTopic(tag: string, pinned: boolean): Promise<XPrivateResult> {
+    const operation: string = pinned ? 'pinButtonMutation' : 'unpinButtonMutation';
+    if (tag.trim().length === 0 || tag.length > 512 || /[\u0000-\u001f\u007f]/.test(tag)) {
+      return new XPrivateResult(false, 0, '', 'invalid_home_tag', operation);
+    }
+    if (!this.isSignedIn()) { return new XPrivateResult(false, 0, '', 'no_session', operation); }
+    // Current x-web's management modal uses a zero numeric id for Tag; the
+    // opaque category identifier belongs only in strId. Relay embeds the input
+    // object and safety_level in these persisted mutations.
+    const queryId: string = pinned ? 'rQXvN9KZOR3qgEFyTVUsag' : 'mSMbCZkeQFKmq7cdPAzFFg';
+    const variables: Record<string, Object> = { 'id': '0', 'strId': tag, 'type': 'Tag' };
+    const payload: Record<string, Object> = { 'queryId': queryId, 'variables': variables };
+    let result: XPrivateResult = await this.send('POST', GRAPHQL_BASE + '/' + queryId + '/' + operation,
+      JSON.stringify(payload), GRAPHQL_ACCEPT, operation, 'application/json', true, '', this.sessionGeneration());
+    if (result.ok) {
+      try {
+        const response: HomeTopicPinResponse = JSON.parse(result.body) as HomeTopicPinResponse;
+        const value: HomeTopicPinResult | undefined = pinned ? response.data?.pin_timeline : response.data?.unpin_timeline;
+        if (value?.__typename !== (pinned ? 'PinTimelineSuccessResult' : 'UnpinTimelineSuccessResult')) {
+          result = new XPrivateResult(false, result.status, result.body, value?.message || 'home_pin_unconfirmed', operation);
+        }
+      } catch (error) { result = new XPrivateResult(false, result.status, result.body, 'home_pin_unconfirmed', operation); }
+    }
+    requestLog.record(operation, result.status, result.ok, result.errorText);
+    hilog.info(DOMAIN, TAG, 'topic pin tag=%{public}s pinned=%{public}s status=%{public}d ok=%{public}s',
+      tag, String(pinned), result.status, String(result.ok));
+    return result;
   }
 
   async immersiveMedia(seedTweetId: string, pageName: string = ''): Promise<XPrivateResult> {
@@ -1406,7 +1475,7 @@ export class XPrivateClient {
     }
     const label: string = method === 'POST' ? 'FollowStarterPack' : 'StarterPacks';
     const url: string = 'https://x.com/i/jfapi/' + path;
-    const request: http.HttpRequest = http.createHttp();
+    const request: DohHttpRequest = createDohHttpRequest();
     try {
       const headers: Record<string, string> = this.headers(method === 'POST' ? 'application/x-www-form-urlencoded' : '',
         'application/octet-stream');
@@ -1453,7 +1522,7 @@ export class XPrivateClient {
     const generation: number = this.sessionGeneration();
     const context: common.Context = this.context;
     const url: string = 'https://x.com/i/jfapi/' + requestPath;
-    const request: http.HttpRequest = http.createHttp();
+    const request: DohHttpRequest = createDohHttpRequest();
     try {
       const headers: Record<string, string> = this.headers('', 'application/octet-stream');
       headers['x-jf-v'] = 'JP-5';
@@ -3120,7 +3189,7 @@ export class XPrivateClient {
   private async postBinary(url: string, body: ArrayBuffer, contentType: string,
     label: string, retryOnProxyFailure: boolean = true, cookieOnly: boolean = false,
     onProgress?: (sentBytes: number, totalBytes: number) => void): Promise<XPrivateResult> {
-    let httpRequest: http.HttpRequest | undefined = undefined;
+    let httpRequest: DohHttpRequest | undefined = undefined;
     let reporting: boolean = true;
     try {
       const headers: Record<string, string> = cookieOnly ? this.chatMediaCookieHeaders(contentType) :
@@ -3129,7 +3198,7 @@ export class XPrivateClient {
       if (transactionId.length > 0) {
         headers['X-Client-Transaction-Id'] = transactionId;
       }
-      httpRequest = http.createHttp();
+      httpRequest = createDohHttpRequest();
       if (onProgress !== undefined) {
         httpRequest.on('dataSendProgress', (progress: http.DataSendProgressInfo): void => {
           if (reporting && progress !== undefined && Number.isFinite(progress.sendSize) &&
@@ -3218,7 +3287,7 @@ export class XPrivateClient {
     if (!this.session.isUsable()) { throw new Error('no_session'); }
     const url: string = XPrivateClient.chatMediaUrl(conversationId, mediaHash);
     if (url.length === 0) { throw new Error('invalid_media_path'); }
-    const request: http.HttpRequest = http.createHttp();
+    const request: DohHttpRequest = createDohHttpRequest();
     try {
       const options: http.HttpRequestOptions = { method: http.RequestMethod.GET,
         header: cookieOnly ? this.chatMediaCookieHeaders('') : this.headers('', 'application/octet-stream'),

@@ -56,6 +56,8 @@ import {
 } from '../utils/PhotoViewerRequest';
 
 export interface PhotoViewerRouteParam {
+  commentPreview?: boolean;
+  onCommentPreviewBack?: () => void;
   source?: MediaViewerSource;
   urls: string[];
   items?: PhotoViewerPhoto[];
@@ -708,6 +710,8 @@ export struct PhotoViewer {
   private viewerAlive: boolean = true;
   private returnNavigation: MediaViewerNavigationReturn = new MediaViewerNavigationReturn();
   private windowOverlay: boolean = false;
+  private commentPreview: boolean = false;
+  private commentPreviewBack: () => void = (): void => {};
   @StorageProp('reduceMotionEnabled') private reduceMotion: boolean = false;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @StorageProp('harmonyx.breakpoint') @Watch('onPhotoViewportChanged') private sheetWindowBreakpoint: string = 'sm';
@@ -731,6 +735,8 @@ export struct PhotoViewer {
   @StorageProp('harmonyx.dark_surface') themeDarkSurface: string = '';
   @State private tweet: Tweet | null = null;
   @State private showPostSheet: boolean = false;
+  @State private commentPhotoVisible: boolean = false;
+  private closeCommentPhoto: (() => boolean) | null = null;
   @State private showMoreSheet: boolean = false;
   @State private postSheetHeight: number = 0;
   @State private photoViewportWidth: number = 0;
@@ -776,12 +782,14 @@ export struct PhotoViewer {
   aboutToDisappear(): void {
     this.returnNavigation.detach();
     this.viewerAlive = false;
+    if (this.commentPreview) { this.photoSession.restore(this.getUIContext()); }
     this.ocrRequestId += 1;
     this.subjectRequestId += 1;
     this.releaseSubjectPixelMap();
   }
 
   private inputBack(): boolean {
+      if (this.closeCommentPhoto?.() === true) { return true; }
       if (this.subjectVisible) {
         this.closeSubjectPanel();
         return true;
@@ -840,6 +848,8 @@ export struct PhotoViewer {
 
   private readRoute(param: PhotoViewerRouteParam): void {
     this.viewerAlive = true;
+    this.commentPreview = param.commentPreview === true;
+    this.commentPreviewBack = param.onCommentPreviewBack ?? ((): void => {});
     this.windowOverlay = param.windowOverlay === true;
     this.motion.prepare(param.source);
     this.photoTransformScale = 1;
@@ -852,7 +862,7 @@ export struct PhotoViewer {
     this.originalShown = false;
     this.gifSelectAction = param.onGifSelect ?? null;
     this.selectingGif = false;
-    this.controlsVisible = this.gifSelectAction !== null || !this.photoFullscreen;
+    this.controlsVisible = this.commentPreview || this.gifSelectAction !== null || !this.photoFullscreen;
     this.backdropOpacity = 1;
     this.showPostSheet = false;
     this.showMoreSheet = false;
@@ -1383,6 +1393,12 @@ export struct PhotoViewer {
     if (this.closing) {
       return;
     }
+    if (this.commentPreview) {
+      this.closing = true;
+      this.photoSession.restore(this.getUIContext());
+      this.commentPreviewBack();
+      return;
+    }
     if (this.returnNavigation.request((): void => this.close(), (): void => this.popViewer(true))) { return; }
     this.closing = true;
     // First align the source strip with the currently viewed photo. Measure
@@ -1540,6 +1556,9 @@ export struct PhotoViewer {
   }
 
   private closePostSheet(): void {
+    this.closeCommentPhoto?.();
+    this.closeCommentPhoto = null;
+    this.commentPhotoVisible = false;
     if (!this.showPostSheet) { return; }
     this.postSheetOpening = false;
     this.showPostSheet = false;
@@ -1699,7 +1718,7 @@ export struct PhotoViewer {
             onPostChanged: (changed: Tweet): void => { this.tweet = changed; }
           })
         }, (post: Tweet): string => post.id + '-' + this.postRevision)
-        MaterialButton({ buttonWidth: '100%', buttonHeight: 50, buttonRadius: 25,
+        MaterialButton({ nativeMaterialHost: true, buttonWidth: '100%', buttonHeight: 50, buttonRadius: 25,
           surfaceColor: $r('app.color.media_viewer_control'), materialLevel: 1, applyShadow: true,
           adaptiveForeground: true,
           lightColor: this.accentColor, accessibilityLabel: this.text($r('app.string.action_reply')),
@@ -1721,9 +1740,14 @@ export struct PhotoViewer {
     if (this.tweet !== null) {
       PostDetail({
         embedded: true,
+        embeddedViewportHeight: sheetUsesCenteredPresentation(this.sheetWindowBreakpoint) || this.desktop() ? 0 :
+          (this.postSheetHeight > 0 ? this.postSheetHeight : this.initialPostSheetHeight()),
         initialTweet: this.tweet,
         onEmbeddedPostChanged: (post: Tweet): void => { this.tweet = post; this.postRevision += 1; },
-        onEmbeddedNavigate: (): void => this.closePostSheet()
+        onEmbeddedNavigate: (): void => this.closePostSheet(),
+        onEmbeddedImageViewerChanged: (close: (() => boolean) | null): void => {
+          this.closeCommentPhoto = close; this.commentPhotoVisible = close !== null;
+        }
       })
     }
   }
@@ -1925,7 +1949,7 @@ export struct PhotoViewer {
             preferType: SheetType.BOTTOM,
             keyboardAvoidMode: SheetKeyboardAvoidMode.RESIZE_ONLY,
             showClose: false,
-            dragBar: true,
+            dragBar: !this.commentPhotoVisible,
             maskColor: Color.Transparent,
             radius: { topLeft: 28, topRight: 28 },
             backgroundColor: pageSurfaceColor(this.themeDisplayMode, this.themeDarkSurface),
@@ -1937,6 +1961,7 @@ export struct PhotoViewer {
             },
             onAppear: (): void => { this.postSheetOpening = false; },
             onWillDismiss: (action: DismissSheetAction): void => {
+              if (this.closeCommentPhoto?.() === true) { return; }
               this.closePostSheet();
               action.dismiss();
             },

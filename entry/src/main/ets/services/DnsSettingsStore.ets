@@ -1,5 +1,7 @@
+import { DohHttpRequest, createDohHttpRequest } from './DohHttpRequest';
 import { common } from '@kit.AbilityKit';
 import { preferences } from '@kit.ArkData';
+import { BusinessError } from '@kit.BasicServicesKit';
 import http from '@ohos.net.http';
 import webview from '@ohos.web.webview';
 import hilog from '@ohos.hilog';
@@ -10,6 +12,13 @@ export const STORAGE_KEY_DNS_REVISION: string = 'harmonyx.dns_revision';
 export class DnsSettings {
   enabled: boolean = false;
   endpoint: string = DOH_ALIDNS;
+}
+
+export class DnsConnectionTestResult {
+  success: boolean = false;
+  latencyMs: number = -1;
+  responseCode: number = 0;
+  errorCode: number = 0;
 }
 
 export class DnsSettingsStore {
@@ -81,9 +90,9 @@ export class DnsSettingsStore {
   async testEndpoint(input: string): Promise<number> {
     const endpoint: string = normalizeDohEndpoint(input);
     if (endpoint.length === 0) { return -1; }
-    let request: http.HttpRequest | undefined = undefined;
+    let request: DohHttpRequest | undefined = undefined;
     try {
-      request = http.createHttp();
+      request = createDohHttpRequest();
       const options: http.HttpRequestOptions = {
         method: http.RequestMethod.POST,
         header: { 'Content-Type': 'application/dns-message', 'Accept': 'application/dns-message' },
@@ -106,6 +115,38 @@ export class DnsSettingsStore {
     } finally {
       if (request !== undefined) { request.destroy(); }
     }
+  }
+
+  async testXConnection(input: string): Promise<DnsConnectionTestResult> {
+    const result: DnsConnectionTestResult = new DnsConnectionTestResult();
+    const endpoint: string = normalizeDohEndpoint(input);
+    if (endpoint.length === 0) { return result; }
+    let request: DohHttpRequest | undefined = undefined;
+    try {
+      request = createDohHttpRequest();
+      // Exercise the same native HTTP/TLS stack as the API, without account
+      // headers, app proxies, cached responses or changing the saved setting.
+      const options: http.HttpRequestOptions = {
+        method: http.RequestMethod.GET,
+        expectDataType: http.HttpDataType.STRING,
+        dnsOverHttps: endpoint,
+        usingProxy: false,
+        usingCache: false,
+        connectTimeout: 8000,
+        readTimeout: 8000
+      };
+      const startedAt: number = Date.now();
+      const response: http.HttpResponse = await request.request('https://x.com/robots.txt', options);
+      result.responseCode = response.responseCode;
+      result.success = response.responseCode === 200 && typeof response.result === 'string' &&
+        /(^|\n)\s*user-agent\s*:/i.test(response.result as string);
+      if (result.success) { result.latencyMs = Date.now() - startedAt; }
+    } catch (error) {
+      result.errorCode = (error as BusinessError).code ?? 0;
+    } finally {
+      if (request !== undefined) { request.destroy(); }
+    }
+    return result;
   }
 }
 

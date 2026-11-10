@@ -35,8 +35,8 @@ test('API v2 retains bookmark counts, quote counts and edit history',()=>{
  const cls=tree.statements.find(n=>ts.isClassDeclaration(n)&&n.name?.text==='XApiClient');
  const method=cls.members.find(n=>n.name?.getText(tree)==='parseTweets').getText(tree);
  const code=ts.transpileModule('class XApiClient {'+method+'}',{compilerOptions:{target:ts.ScriptTarget.ES2020}}).outputText;
- const Subject=new Function('postEditHistoryIds','optionalPostCount','userIsVerified','userVerifiedType','userAvatarShape','XPostCardParser','XPostPresentationParser','ReplyConversation','hilog','DOMAIN','TAG',code+';return XApiClient;')(
-  metadata.postEditHistoryIds,metadata.optionalPostCount,()=>false,()=>'',()=>'',{v2Poll:()=>undefined,link:()=>undefined},{parse:()=>undefined},ReplyConversation,{error(){}},0,'test');
+  const Subject=new Function('postEditHistoryIds','optionalPostCount','userIsVerified','userVerifiedType','userAvatarShape','XTimelineParser','XPostCardParser','XPostPresentationParser','ReplyConversation','hilog','DOMAIN','TAG',code+';return XApiClient;')(
+  metadata.postEditHistoryIds,metadata.optionalPostCount,()=>false,()=>'',()=>'',XTimelineParser,{v2Poll:()=>undefined,link:()=>undefined},{parse:()=>undefined},ReplyConversation,{error(){}},0,'test');
  Subject.parseAttachments=()=>[];Subject.highResAvatarUrl=url=>url;
  const [tweet]=Subject.parseTweets(JSON.stringify({data:[{id:'100',text:'text',edit_history_tweet_ids:['99','100'],public_metrics:{bookmark_count:9,quote_count:0}}]}));
  assert.equal(tweet.metrics.bookmarkCount,9);assert.equal(tweet.metrics.quoteCount,0);assert.deepEqual(tweet.editHistoryIds,['99','100']);

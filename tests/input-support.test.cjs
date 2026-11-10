@@ -93,7 +93,7 @@ function rootFixture(){
 }
 test('main shortcuts cannot navigate or submit behind destinations, drawers and dialogs',()=>{
   for(const flag of ['inputModalBlocked','photoOverlayOpen','showOnboardingGuide','showLoginSheet','showMidAutumnGreeting','showChatUnlock',
-    'showLinkPreview','showSpacePreview','showPauseTopics','showFollowingOrder','showSideDrawer','desktopAdvancedSearchOpen','exitConfirmationPending']){
+    'showLinkPreview','showSpacePreview','showPauseTopics','showFollowingOrder','showSideDrawer','desktopAdvancedSearchOpen','returningToDesktop']){
     const f=rootFixture();f[flag]=true;f.selectRootTabPage=()=>assert.fail(flag+' allowed navigation');
     assert.equal(f.rootInputAvailable(),false,flag);f.runRootInput('home');
   }

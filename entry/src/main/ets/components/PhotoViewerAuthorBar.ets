@@ -121,7 +121,7 @@ export struct PhotoViewerAuthorBar {
 
   @Builder
   private FollowButton(): void {
-    MaterialButton({ buttonWidth: $r('app.float.photo_viewer_follow_width'),
+    MaterialButton({ nativeMaterialHost: true, buttonWidth: $r('app.float.photo_viewer_follow_width'),
       buttonHeight: $r('app.float.photo_viewer_follow_height'),
       buttonRadius: $r('app.float.photo_viewer_follow_radius'),
       surfaceColor: $r('app.color.media_viewer_control'), materialLevel: 1, applyShadow: true,

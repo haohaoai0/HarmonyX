@@ -9,7 +9,7 @@ import { pageSystemTransition, PageTransitionMotion } from '../utils/PageTransit
 import { APP_FONT_FAMILY_KEY, DEFAULT_APP_FONT_FAMILY } from '../services/AppFontStore';
 import common from '@ohos.app.ability.common';
 import { deviceInfo } from '@kit.BasicServicesKit';
-import { uiMaterial } from '@kit.ArkUI';
+import { LengthMetrics, uiMaterial } from '@kit.ArkUI';
 import { HdsNavDestination, HdsNavDestinationTitleMode, ScrollEffectType } from '@kit.UIDesignKit';
 import promptAction from '@ohos.promptAction';
 import { RequestLogEntry, requestLog } from '../services/RequestLog';
@@ -18,6 +18,7 @@ import { destinationTitleBarStyle } from '../utils/DestinationTitleBar';
 import { ResponsiveLayout } from '../utils/ResponsiveLayout';
 import { fieldSurfaceColor, pageSurfaceColor } from '../utils/ThemeColors';
 import { materialModifier } from '../utils/SystemMaterial';
+import { CrashReport, crashDiagnostics, STORAGE_KEY_CRASH_DIAGNOSTICS } from '../services/CrashDiagnostics';
 
 @Builder
 export function DiagnosticsBuilder(): void {
@@ -42,6 +43,9 @@ export struct Diagnostics {
   @State private entries: RequestLogEntry[] = [];
   @State private probing: boolean = false;
   @State private probeResult: string = '';
+  @StorageProp(STORAGE_KEY_CRASH_DIAGNOSTICS) @Watch('refreshCrashes') private crashRevision: number = 0;
+  @State private crashes: CrashReport[] = [];
+  @State private exporting: boolean = false;
 
   aboutToAppear(): void {
     this.refresh();
@@ -54,6 +58,58 @@ export struct Diagnostics {
 
   private refresh(): void {
     this.entries = requestLog.snapshot();
+    this.refreshCrashes();
+  }
+
+  private refreshCrashes(): void { this.crashes = crashDiagnostics.snapshot(); }
+
+  private async exportLogs(): Promise<void> {
+    if (this.exporting) { return; }
+    this.exporting = true;
+    try {
+      if (await crashDiagnostics.exportLogs(getContext(this) as common.UIAbilityContext)) {
+        this.getUIContext().getPromptAction().showToast({ message: this.text($r('app.string.crash_export_success')) });
+      }
+    } catch (error) {
+      this.getUIContext().getPromptAction().showToast({ message: this.text($r('app.string.crash_export_failed')) });
+    } finally { this.exporting = false; }
+  }
+
+  private async contactDeveloper(): Promise<void> {
+    try { await crashDiagnostics.contactDeveloper(getContext(this) as common.UIAbilityContext); }
+    catch (error) {
+      this.getUIContext().getPromptAction().showToast({ message: this.text($r('app.string.crash_contact_failed')) });
+    }
+  }
+
+  @Builder
+  private CrashSection(): void {
+    Column({ space: 12 }) {
+      Text($r('app.string.crash_logs_title')).fontFamily(this.appFontFamily)
+        .fontSize($r('sys.float.Title_S'))
+        .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
+      Text($r('app.string.crash_logs_description')).fontFamily(this.appFontFamily)
+        .fontSize($r('sys.float.Body_M'))
+        .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
+      Flex({ wrap: FlexWrap.Wrap, space: { main: LengthMetrics.vp(12), cross: LengthMetrics.vp(8) } }) {
+        Button(this.exporting ? $r('app.string.status_loading') : $r('app.string.crash_export'))
+          .fontSize($r('sys.float.Body_M')).fontColor($r('app.color.text_on_accent'))
+          .backgroundColor(this.accentColor).enabled(!this.exporting)
+          .id('diagnostics-export-logs')
+          .onClick((): void => { this.exportLogs(); })
+        Button($r('app.string.crash_contact'))
+          .fontSize($r('sys.float.Body_M'))
+          .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, fieldSurfaceColor(this.themeDisplayMode, this.themeDarkSurface)))
+          .backgroundColor(fieldSurfaceColor(this.themeDisplayMode, this.themeDarkSurface))
+          .id('diagnostics-contact-developer')
+          .onClick((): void => { this.contactDeveloper(); })
+      }
+      if (this.crashes.length === 0) {
+        Text($r('app.string.crash_logs_empty')).fontFamily(this.appFontFamily)
+          .fontSize($r('sys.float.Body_M'))
+          .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
+      }
+    }.width('100%').alignItems(HorizontalAlign.Start).padding(16)
   }
 
   private pageMaterial(): uiMaterial.Material | undefined {
@@ -126,6 +182,20 @@ export struct Diagnostics {
       Stack({ alignContent: Alignment.TopStart }) {
         appPageBackground()
       List() {
+        ListItem() { this.CrashSection() }
+        ForEach(this.crashes, (crash: CrashReport): void => {
+          ListItem() {
+            Column({ space: 6 }) {
+              Text(new Date(crash.time).toLocaleString() + ' · ' + crash.type).fontFamily(this.appFontFamily)
+                .fontSize($r('sys.float.Body_M')).fontWeight(FontWeight.Medium)
+                .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
+              Text(crash.text.substring(0, 6000)).fontFamily(this.appFontFamily)
+                .fontSize($r('sys.float.Body_S'))
+                .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
+                .copyOption(CopyOptions.LocalDevice)
+            }.width('100%').alignItems(HorizontalAlign.Start).padding(16)
+          }
+        }, (crash: CrashReport): string => crash.id)
         ListItem() {
           Row({ space: 12 }) {
             Button(this.probing ? $r('app.string.status_loading') :

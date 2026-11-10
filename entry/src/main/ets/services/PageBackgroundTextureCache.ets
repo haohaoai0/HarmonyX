@@ -8,7 +8,8 @@ export const PAGE_BACKGROUND_TEXTURE_PIXELS: number = 2000000;
 // Card opacity and other foreground preferences do not change the background.
 export function pageBackgroundTextureStyle(state: PageBackgroundState, appearance: string): string {
   return [state.mode, state.color, state.path, state.texture, state.textureStrength.toString(),
-    state.patternLayout, state.patternLayout === 'preset' ? state.patternIds.join(',') : state.motifIds.join(','),
+    state.patternLayout, state.presetColors === true ? 'preset-colors' : 'custom-colors',
+    state.patternLayout === 'preset' ? state.patternIds.join(',') : state.motifIds.join(','),
     state.density.toString(), state.patternStrength.toString(), state.blur.toString(), state.dim.toString(),
     state.photoAverage, state.photoDarkest, state.photoLightest, state.photoAlpha.toString(), appearance].join('|');
 }

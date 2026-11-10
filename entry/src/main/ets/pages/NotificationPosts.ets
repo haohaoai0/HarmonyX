@@ -16,6 +16,12 @@ import hilog from '@ohos.hilog';
 import { destinationTitleBarStyle } from '../utils/DestinationTitleBar';
 import { pageSurfaceColor } from '../utils/ThemeColors';
 import { ResponsiveLayout } from '../utils/ResponsiveLayout';
+import { DesktopLayout } from '../utils/DesktopLayout';
+import {
+  STORAGE_KEY_TIMELINE_COLUMNS,
+  TIMELINE_COLUMNS_AUTO_TWO,
+  TIMELINE_COLUMNS_TWO
+} from '../services/TimelineSettingsStore';
 import type { PostDetailRouteParam } from './PostDetail';
 import type { UserDetailRouteParam } from './UserDetail';
 import type { VideoFeedRouteParam } from './VideoFeedViewer';
@@ -42,6 +48,9 @@ struct NotificationPosts {
   @StorageProp('harmonyx.display_mode') private themeDisplayMode: string = '';
   @StorageProp('harmonyx.dark_surface') private themeDarkSurface: string = '';
   @StorageProp('harmonyx.title_bar_style_mode') private titleBarStyleMode: number = 0;
+  @StorageProp('harmonyx.desktop_layout') private desktopLayoutEnabled: boolean = false;
+  @StorageProp('harmonyx.breakpoint') private windowBreakpoint: string = 'sm';
+  @StorageProp(STORAGE_KEY_TIMELINE_COLUMNS) private timelineColumnsMode: number = 0;
   @State private posts: Tweet[] = [];
   @State private refreshing: boolean = false;
   @State private status: string = '';
@@ -151,6 +160,9 @@ struct NotificationPosts {
 
   @Builder
   private FeedHeader(): void {
+    if (this.useListFeed()) {
+      Column().width('100%').height(this.statusBarHeight + 56)
+    }
     if (this.status.length > 0 || this.posts.length === 0) {
       Column() {
         Text(this.status.length > 0 ? this.status : $r('app.string.notification_posts_empty'))
@@ -158,6 +170,27 @@ struct NotificationPosts {
           .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent)).width('100%').padding(20)
       }
     }
+  }
+
+  private isDesktopLayout(): boolean {
+    return DesktopLayout.active(this.desktopLayoutEnabled, this.windowBreakpoint);
+  }
+
+  private useTimelineWaterFlow(): boolean {
+    return this.isDesktopLayout() || ResponsiveLayout.isLarge(this.windowBreakpoint) ||
+      this.timelineColumnsMode === TIMELINE_COLUMNS_TWO ||
+      this.timelineColumnsMode === TIMELINE_COLUMNS_AUTO_TWO;
+  }
+
+  private useListFeed(): boolean {
+    return !this.useTimelineWaterFlow();
+  }
+
+  private feedStartOffset(): number {
+    if (this.useListFeed() || this.isDesktopLayout()) {
+      return 0;
+    }
+    return this.statusBarHeight + 56;
   }
 
   @Builder
@@ -190,7 +223,11 @@ struct NotificationPosts {
         appPageBackground()
       Refresh({ refreshing: $$this.refreshing }) {
         AdaptivePostFeed({ scroller: this.scroller, itemKeys: this.posts.map((post: Tweet): string => post.id),
-          feedId: 'notification-post-feed', startOffset: this.statusBarHeight + 56, endOffset: this.bottomInset + 12,
+          useList: this.useListFeed(), lazyItems: true,
+          feedId: 'notification-post-feed', startOffset: this.feedStartOffset(), endOffset: this.bottomInset + 12,
+          forwardMode: NestedScrollMode.SELF_FIRST,
+          backwardMode: NestedScrollMode.SELF_FIRST,
+          clipContent: !this.isDesktopLayout(),
           header: (): void => this.FeedHeader(), item: (index: number): void => this.FeedPost(this.posts[index]),
           footer: (): void => this.FeedFooter() })
       }.width('100%').height('100%').onRefreshing((): void => {

@@ -90,7 +90,7 @@ test('hidden card controls keep Home audio preferences and do not hide opened-pl
   const source = fs.readFileSync(filename, 'utf8').replace('struct SurfaceVideoPlayer', 'class SurfaceVideoPlayer');
   const parsed = ts.createSourceFile(filename + '.ts', source, ts.ScriptTarget.Latest, true);
   const declaration = parsed.statements.find(node => ts.isClassDeclaration(node) && node.name.text === 'SurfaceVideoPlayer');
-  const names = ['hideInlineVideoControls', 'showsProgressBelowVideo', 'hideVideoChrome',
+  const names = ['hideInlineVideoControls', 'usesInlineOverlayControls', 'showsProgressBelowVideo', 'hideVideoChrome',
     'usesHomeMutePreference', 'usesViewerMutePreference', 'inlineAudioMuted'];
   const methods = names.map(name => declaration.members.find(node => node.name?.getText(parsed) === name).getText(parsed));
   const output = ts.transpileModule('export class Player {\n' + methods.join('\n') + '\n}', {

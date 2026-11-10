@@ -198,11 +198,11 @@
     },
     {
       "name": "settings_confirm_app_exit",
-      "value": "Confirmar antes de salir"
+      "value": "Aviso para volver al inicio"
     },
     {
       "name": "settings_confirm_app_exit_desc",
-      "value": "Pedir confirmación al volver desde la página principal. Si se desactiva, se sale directamente."
+      "value": "En la pantalla principal, muestra un aviso; pulsa Atrás otra vez antes de 2,2 segundos para volver al inicio"
     },
     {
       "name": "app_exit_title",
@@ -622,7 +622,7 @@
     },
     {
       "name": "settings_compact_switch_style_desc",
-      "value": "Con el logo de X oculto. El fondo de los botones se rellena al deslizar entre páginas."
+      "value": "Con el logotipo de X oculto, elige pestañas de texto, botones de cápsula o un control segmentado."
     },
     {
       "name": "settings_compact_switch_tabs",
@@ -631,6 +631,10 @@
     {
       "name": "settings_compact_switch_buttons",
       "value": "Botones"
+    },
+    {
+      "name": "settings_compact_switch_segmented",
+      "value": "Control segmentado"
     },
     {
       "name": "settings_avatar_tint",
@@ -1342,7 +1346,7 @@
     },
     {
       "name": "profile_version",
-      "value": "Harmony X 3.5.0 · HarmonyOS 6.0.2 (API 22-26) · modelo Stage"
+      "value": "Harmony X 3.9.0 · HarmonyOS 6.0.2 (API 22-26) · modelo Stage"
     },
     {
       "name": "profile_following",
@@ -3514,7 +3518,7 @@
     },
     {
       "name": "diagnostics_desc",
-      "value": "Llamadas recientes y comprobación de la API privada."
+      "value": "Exporta registros de fallos y consulta las solicitudes recientes y las pruebas."
     },
     {
       "name": "diagnostics_probe",
@@ -12729,6 +12733,10 @@
       "value": "Mostrar todas las publicaciones populares"
     },
     {
+      "name": "global_trends_cover_url",
+      "value": "https://pbs.twimg.com/topics/topic/globe_center_compressed.png"
+    },
+    {
       "name": "post_video_publish",
       "value": "Publicar video"
     },
@@ -12860,40 +12868,405 @@
       "name": "post_translation_languages_description",
       "value": "Elige los idiomas de publicaciones para traducir automáticamente. Los demás se pueden traducir manualmente."
     },
-    {"name": "post_link_copy", "value": "Copy link"},
-    {"name": "post_link_open", "value": "Open link"},
-    {"name": "settings_video_download_button", "value": "Video download button"},
-    {"name": "settings_video_download_button_desc", "value": "Show the download button in the top-right corner of videos"},
-    {"name": "video_source_from", "value": "From"},
-    {"name": "video_source_original", "value": "Original video"},
-    {"name": "video_source_open_failed", "value": "Unable to open the original video. Try again."},
-    {"name":"dns_title","value":"DNS over HTTPS (DoH)"},
-    {"name":"dns_enable","value":"Use DNS over HTTPS"},
-    {"name":"dns_enable_desc","value":"Encrypt DNS queries with a chosen HTTPS resolver"},
-    {"name":"dns_scope","value":"Applies to app API requests, downloaded images, video segments and built-in web pages. System players and external apps may use their own DNS. When a proxy resolves the destination, its DNS takes precedence. DoH does not replace a proxy or VPN."},
-    {"name":"dns_provider","value":"DNS provider"},
-    {"name":"dns_provider_ali","value":"AliDNS"},
-    {"name":"dns_provider_cloudflare","value":"Cloudflare"},
-    {"name":"dns_provider_google","value":"Google Public DNS"},
-    {"name":"dns_provider_custom","value":"Custom"},
-    {"name":"dns_endpoint","value":"DoH server URL"},
-    {"name":"dns_endpoint_hint","value":"https://example.com/dns-query"},
-    {"name":"dns_endpoint_desc","value":"Enter a complete RFC 8484 HTTPS endpoint, without credentials, fragments or URI templates such as {?dns}."},
-    {"name":"dns_invalid","value":"Enter a valid HTTPS DoH server URL"},
-    {"name":"dns_saved","value":"Saved. New requests use this setting; reload open web pages."},
-    {"name":"dns_test","value":"Test DNS resolution"},
-    {"name":"dns_test_desc","value":"Tests the current URL by resolving x.com directly, without saving or enabling it. The test bypasses the in-app proxy; a system VPN still applies."},
-    {"name":"dns_test_success","value":"x.com resolved successfully"},
-    {"name":"dns_test_failed","value":"Resolution failed. Check the URL, network or DNS service."},
-    {"name":"dns_failure_note","value":"After saving, DoH failures stop affected requests instead of falling back to system DNS. Turn DoH off and save to restore system DNS. Changes apply after saving."},
-    {"name":"help_support_afdian","value":"Afdian"},
-    {"name":"help_support_qr_summary","value":"Escanea para apoyar el desarrollo"},
-    {"name":"help_support_afdian_summary","value":"Sin recomendaciones para siempre · ¥16.6"},
-    {"name":"help_support_afdian_desc","value":"Compra un código permanente sin recomendaciones en Afdian y vuelve a la app para canjearlo."},
-    {"name":"help_support_afdian_buy","value":"Comprar en Afdian"},
-    {"name":"help_support_expand","value":"Toca para desplegar"},
-    {"name":"help_support_collapse","value":"Toca para contraer"},
-    {"name":"help_support_scan_code","value":"Escanea este código con la aplicación de pago correspondiente."},
-    {"name":"help_support_recommended","value":"Recomendado"}
+    {
+      "name": "post_link_copy",
+      "value": "Copy link"
+    },
+    {
+      "name": "post_link_open",
+      "value": "Open link"
+    },
+    {
+      "name": "settings_video_download_button",
+      "value": "Video download button"
+    },
+    {
+      "name": "settings_video_download_button_desc",
+      "value": "Show the download button in the top-right corner of videos"
+    },
+    {
+      "name": "video_source_from",
+      "value": "From"
+    },
+    {
+      "name": "video_source_original",
+      "value": "Original video"
+    },
+    {
+      "name": "video_source_open_failed",
+      "value": "Unable to open the original video. Try again."
+    },
+    {
+      "name": "dns_title",
+      "value": "DNS over HTTPS (DoH)"
+    },
+    {
+      "name": "dns_enable",
+      "value": "Use DNS over HTTPS"
+    },
+    {
+      "name": "dns_enable_desc",
+      "value": "Encrypt DNS queries with a chosen HTTPS resolver"
+    },
+    {
+      "name": "dns_scope",
+      "value": "Applies to app API requests, downloaded images, video segments and built-in web pages. System players and external apps may use their own DNS. When a proxy resolves the destination, its DNS takes precedence. DoH does not replace a proxy or VPN."
+    },
+    {
+      "name": "dns_provider",
+      "value": "DNS provider"
+    },
+    {
+      "name": "dns_provider_ali",
+      "value": "AliDNS"
+    },
+    {
+      "name": "dns_provider_cloudflare",
+      "value": "Cloudflare"
+    },
+    {
+      "name": "dns_provider_google",
+      "value": "Google Public DNS"
+    },
+    {
+      "name": "dns_provider_custom",
+      "value": "Custom"
+    },
+    {
+      "name": "dns_endpoint",
+      "value": "DoH server URL"
+    },
+    {
+      "name": "dns_endpoint_hint",
+      "value": "https://example.com/dns-query"
+    },
+    {
+      "name": "dns_endpoint_desc",
+      "value": "Enter a complete RFC 8484 HTTPS endpoint, without credentials, fragments or URI templates such as {?dns}."
+    },
+    {
+      "name": "dns_invalid",
+      "value": "Enter a valid HTTPS DoH server URL"
+    },
+    {
+      "name": "dns_saved",
+      "value": "Saved. New requests use this setting; reload open web pages."
+    },
+    {
+      "name": "dns_test",
+      "value": "Test DNS resolution"
+    },
+    {
+      "name": "dns_test_desc",
+      "value": "Tests the current URL by resolving x.com directly, without saving or enabling it. The test bypasses the in-app proxy; a system VPN still applies."
+    },
+    {
+      "name": "dns_test_success",
+      "value": "x.com resolved successfully"
+    },
+    {
+      "name": "dns_test_failed",
+      "value": "Resolution failed. Check the URL, network or DNS service."
+    },
+    {
+      "name": "dns_failure_note",
+      "value": "After saving, DoH failures stop affected requests instead of falling back to system DNS. Turn DoH off and save to restore system DNS. Changes apply after saving."
+    },
+    {
+      "name": "help_support_afdian",
+      "value": "Afdian"
+    },
+    {
+      "name": "help_support_qr_summary",
+      "value": "Escanea para apoyar el desarrollo"
+    },
+    {
+      "name": "help_support_afdian_summary",
+      "value": "Sin recomendaciones para siempre · ¥16.6"
+    },
+    {
+      "name": "help_support_afdian_desc",
+      "value": "Compra un código permanente sin recomendaciones en Afdian y vuelve a la app para canjearlo."
+    },
+    {
+      "name": "help_support_afdian_buy",
+      "value": "Comprar en Afdian"
+    },
+    {
+      "name": "help_support_expand",
+      "value": "Toca para desplegar"
+    },
+    {
+      "name": "help_support_collapse",
+      "value": "Toca para contraer"
+    },
+    {
+      "name": "help_support_scan_code",
+      "value": "Escanea este código con la aplicación de pago correspondiente."
+    },
+    {
+      "name": "help_support_recommended",
+      "value": "Recomendado"
+    },
+    {
+      "name": "dns_x_test",
+      "value": "Test native X connection"
+    },
+    {
+      "name": "dns_x_test_desc",
+      "value": "Uses this DoH URL to request the public x.com/robots.txt through native HTTP, without account information or the in-app proxy. Does not save settings. A system VPN still applies. Success checks this connection only, not every API or media host."
+    },
+    {
+      "name": "dns_x_test_success",
+      "value": "Native X connection succeeded"
+    },
+    {
+      "name": "dns_x_test_failed",
+      "value": "Native X connection failed. Check the network, proxy or ECH support."
+    },
+    {
+      "name": "settings_inline_video_hold",
+      "value": "Pulsación larga en vídeos integrados"
+    },
+    {
+      "name": "settings_inline_video_hold_desc",
+      "value": "Elige menú o reproducción. Se usa el ajuste de velocidad al mantener pulsado."
+    },
+    {
+      "name": "settings_inline_video_hold_menu",
+      "value": "Menú"
+    },
+    {
+      "name": "settings_inline_video_hold_play",
+      "value": "Mantener para reproducir"
+    },
+    {
+      "name": "settings_sidebar_items",
+      "value": "Funciones de la barra lateral"
+    },
+    {
+      "name": "settings_sidebar_items_desc",
+      "value": "Muestra u oculta funciones y ordénalas con las flechas. Ajustes siempre está disponible."
+    },
+    {
+      "name": "settings_bottom_bar_visible",
+      "value": "Mostrar barra inferior"
+    },
+    {
+      "name": "settings_bottom_bar_visible_desc",
+      "value": "Si se oculta, usa la barra lateral para navegar y buscar."
+    },
+    {
+      "name": "settings_post_count_format",
+      "value": "Formato de cifras de publicaciones"
+    },
+    {
+      "name": "settings_post_count_compact",
+      "value": "K/M (miles/millones)"
+    },
+    {
+      "name": "settings_post_count_chinese",
+      "value": "万/亿 (10 mil/100 millones)"
+    },
+    {
+      "name": "settings_post_count_full",
+      "value": "Cifras completas"
+    },
+    {
+      "name": "settings_sidebar_search_capsule",
+      "value": "Cápsula de búsqueda lateral"
+    },
+    {
+      "name": "settings_sidebar_search_capsule_desc",
+      "value": "Muestra una cápsula de búsqueda compacta arriba de la barra lateral. Desactivada de forma predeterminada."
+    },
+    {
+      "name": "settings_home_header_action",
+      "value": "Botón de la cabecera de Inicio"
+    },
+    {
+      "name": "settings_home_header_action_desc",
+      "value": "Elige Buscar o Añadir personas. Toca para abrir directamente la página seleccionada."
+    },
+    {
+      "name": "settings_home_follow_suggestions",
+      "value": "A quién seguir"
+    },
+    {
+      "name": "settings_home_follow_suggestions_desc",
+      "value": "Mostrar cuentas sugeridas en la cronología de Inicio."
+    },
+    {
+      "name": "page_background_preset_colors",
+      "value": "Conservar degradado original"
+    },
+    {
+      "name": "page_background_preset_colors_desc",
+      "value": "Usa el degradado de cada patrón completo. Desactívalo para elegir un color o una foto personalizados."
+    },
+    {
+      "name": "settings_inline_video_overlay_controls",
+      "value": "Controles sobre el vídeo"
+    },
+    {
+      "name": "settings_inline_video_overlay_controls_desc",
+      "value": "Muestra los controles dentro del vídeo. Toca para mostrarlos u ocultarlos; se ocultan al reproducir."
+    },
+    {
+      "name": "settings_pause_inline_video_on_return",
+      "value": "Pausar el vídeo al volver"
+    },
+    {
+      "name": "settings_pause_inline_video_on_return_desc",
+      "value": "El vídeo de la publicación queda en pausa al cerrar el visor. Pulsa Reproducir para continuar."
+    },
+    {
+      "name": "settings_timeline_columns_four",
+      "value": "Cuatro columnas"
+    },
+    {
+      "name": "settings_timeline_columns_five",
+      "value": "Cinco columnas"
+    },
+    {
+      "name": "crash_recovery_title",
+      "value": "La aplicación se cerró inesperadamente"
+    },
+    {
+      "name": "crash_recovery_message",
+      "value": "Se guardó un registro del último fallo. Expórtalo y contacta con el desarrollador indicando los pasos anteriores al problema."
+    },
+    {
+      "name": "crash_later",
+      "value": "Más tarde"
+    },
+    {
+      "name": "crash_export",
+      "value": "Exportar registros"
+    },
+    {
+      "name": "crash_contact",
+      "value": "Contactar al desarrollador"
+    },
+    {
+      "name": "crash_export_success",
+      "value": "Registros exportados. Adjunta el archivo al contactar con el desarrollador."
+    },
+    {
+      "name": "crash_export_failed",
+      "value": "No se pudieron exportar los registros. Reintenta o elige otra ubicación."
+    },
+    {
+      "name": "crash_contact_failed",
+      "value": "No se pudo abrir la página de comentarios. Contacta desde Acerca de."
+    },
+    {
+      "name": "crash_logs_title",
+      "value": "Diagnóstico de la aplicación"
+    },
+    {
+      "name": "crash_logs_description",
+      "value": "Los registros de fallos se guardan localmente. Se conservan los 5 últimos informes. Adjunta el archivo exportado a tus comentarios."
+    },
+    {
+      "name": "crash_logs_empty",
+      "value": "No hay informes de fallos. Puedes exportar el registro de la sesión actual."
+    },
+    {
+      "name": "app_exit_desktop",
+      "value": "Volver al inicio"
+    },
+    {
+      "name": "app_exit_desktop_hint",
+      "value": "Pulsa Atrás de nuevo para volver al inicio"
+    },
+    {
+      "name": "media_save_method",
+      "value": "Método para guardar medios"
+    },
+    {
+      "name": "media_save_gallery_dialog",
+      "value": "Galería · confirmación del sistema"
+    },
+    {
+      "name": "media_save_secure_button",
+      "value": "Galería · botón de guardado seguro"
+    },
+    {
+      "name": "media_save_directory",
+      "value": "Descargas · guardar directamente tras autorizar"
+    },
+    {
+      "name": "media_save_file_picker",
+      "value": "Archivo · elegir ubicación cada vez"
+    },
+    {
+      "name": "media_save_secure_title",
+      "value": "Guardar en la galería"
+    },
+    {
+      "name": "media_save_secure_note",
+      "value": "El botón del sistema guarda directamente en la galería. Autoriza el primer uso y pulsa una vez por cada archivo de un lote."
+    },
+    {
+      "name": "account_groups_title",
+      "value": "Grupos locales"
+    },
+    {
+      "name": "account_groups_hint",
+      "value": "Los grupos se guardan en este dispositivo. Elige cuentas seguidas y fija un grupo en Inicio."
+    },
+    {
+      "name": "account_groups_empty",
+      "value": "Aún no hay grupos. Crea uno para empezar."
+    },
+    {
+      "name": "account_groups_manage",
+      "value": "Gestionar grupos locales"
+    },
+    {
+      "name": "account_group_create",
+      "value": "Nuevo grupo"
+    },
+    {
+      "name": "account_group_delete",
+      "value": "Eliminar grupo"
+    },
+    {
+      "name": "account_group_member_count",
+      "value": "%d cuentas"
+    },
+    {
+      "name": "account_group_edit_title",
+      "value": "Editar grupo"
+    },
+    {
+      "name": "account_group_name",
+      "value": "Nombre del grupo"
+    },
+    {
+      "name": "account_group_icon",
+      "value": "Icono (emoji o símbolo)"
+    },
+    {
+      "name": "account_group_selected",
+      "value": "%d cuentas seleccionadas"
+    },
+    {
+      "name": "account_group_search",
+      "value": "Buscar cuentas seguidas cargadas"
+    },
+    {
+      "name": "account_group_cancel",
+      "value": "Cancelar"
+    },
+    {
+      "name": "account_group_save",
+      "value": "Guardar"
+    },
+    {
+      "name": "grok_chat_hint",
+      "value": "Hazle una pregunta a Grok para iniciar una conversación."
+    }
   ]
 }

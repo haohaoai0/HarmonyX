@@ -206,7 +206,7 @@ export struct CommunitySearch {
               if (value.trim().length === 0 && this.query.length > 0) { this.submit(''); }
             }).onSubmit((value: string): void => { this.submit(value); })
         }
-        .layoutWeight(1).height(40).borderRadius(20).clip(true)
+        .layoutWeight(1).height(40).borderRadius(20).clip(false)
         .attributeModifier(materialModifier(new uiMaterial.ImmersiveMaterial({
           style: uiMaterial.ImmersiveStyle.THIN,
           interactive: true,
@@ -244,7 +244,7 @@ export struct CommunitySearch {
                   .fontColor(this.topicId === topic.id ? $r('app.color.text_on_accent') : $r('app.color.text_primary'))
                   .padding({ left: 18, right: 18, top: 9, bottom: 9 })
               }
-              .borderRadius(22).clip(true)
+              .borderRadius(22).clip(false)
               .backgroundColor(Color.Transparent)
               .border({ width: 1, color: this.topicId === topic.id ? this.accentColor : $r('app.color.divider') })
               .attributeModifier(materialModifier(this.topicMaterial(this.topicId === topic.id)))

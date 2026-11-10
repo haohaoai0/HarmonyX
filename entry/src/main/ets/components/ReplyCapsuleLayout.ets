@@ -25,8 +25,10 @@ export struct ReplyCapsuleLayout {
             materialLevel: this.materialLevel, transitionId: this.transitionId, transitionFollow: true,
             capsuleContent: (): void => { this.capsuleContent(); } })
             .width('100%').height('100%')
+            .clip(false)
         }
         .width('100%').height('100%')
+        .clip(false)
         .id(this.transitionId + '-expanded')
       } else if (this.split) {
         Row({ space: 8 }) {
@@ -35,24 +37,29 @@ export struct ReplyCapsuleLayout {
               materialLevel: this.materialLevel, transitionId: this.transitionId,
               capsuleContent: (): void => { this.capsuleContent(); } })
               .width('100%').height('100%')
+              .clip(false)
           }
           .layoutWeight(1).height('100%')
+          .clip(false)
           .id(this.transitionId + '-collapsed')
           ReplyCapsuleSurface({ capsuleHeight: this.capsuleHeight, materialEnabled: this.materialEnabled,
             materialLevel: this.materialLevel, capsuleContent: (): void => { this.postActions(); } })
             .width(this.actionWidth)
+            .clip(false)
             .id('reply-capsule-post-actions')
             .transition(TransitionEffect.OPACITY.combine(TransitionEffect.translate({ x: 12 }))
               .animation({ duration: 180, curve: Curve.EaseOut }))
-        }.width('100%').height('100%')
+        }.width('100%').height('100%').clip(false)
       } else {
         ReplyCapsuleSurface({ capsuleHeight: this.capsuleHeight, materialEnabled: this.materialEnabled,
           materialLevel: this.materialLevel, capsuleContent: (): void => { this.capsuleContent(); } })
           .width('100%').height('100%')
+          .clip(false)
       }
     }
     .width('100%').height(this.capsuleHeight)
     .justifyContent(FlexAlign.End)
     .alignItems(HorizontalAlign.Start)
+    .clip(false)
   }
 }

@@ -111,6 +111,7 @@ test('cover pull stretches below the anchored top without changing layout height
 test('Me title disables blur and material in every saved appearance mode without changing other tabs', () => {
   const Root = loadMethod('pages/Index', 'Index', 'titleBarStyle', {
     ME_TAB_INDEX: 4, Color: { Transparent: 'transparent' },
+    deviceInfo: { apiAvailable: () => true },
     hdsMaterial: { MaterialType: { NONE: 0 } },
     rootTitleBarStyle: () => ({ scrollEffectOpts: { enableScrollEffect: true },
       originalStyle: { contentStyle: { test: 'colors' } }, systemMaterialEffect: { materialType: 101 } })

@@ -1,3 +1,4 @@
+const { withDohHttpMock } = require('./doh-http-fixture.cjs');
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
@@ -10,7 +11,7 @@ function evaluate(source, dependencies, globals = {}) {
   }).outputText;
   const module = { exports: {} };
   new Function('require', 'exports', '$r', 'setTimeout', 'clearTimeout', 'Date', output)(
-    name => dependencies[name] || {}, module.exports, value => value,
+    name => (() => { withDohHttpMock(dependencies); return dependencies[name] || {}; })(), module.exports, value => value,
     globals.setTimeout || setTimeout, globals.clearTimeout || clearTimeout, globals.Date || Date);
   return module.exports;
 }

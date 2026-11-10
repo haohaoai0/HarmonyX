@@ -1,3 +1,4 @@
+import { DohHttpRequest, createDohHttpRequest } from './DohHttpRequest';
 import { userIsVerified, userVerifiedType, userAvatarShape, normalizedVerifiedType } from '../utils/UserIdentity';
 // X API v2 client for HarmonyOS (OAuth 2.0 user context + app-only Bearer).
 // Uses @ohos.net.http (stable from API 6 through API 24/26).
@@ -112,9 +113,9 @@ export class XApiClient {
   async exchangeCode(clientId: string, clientSecret: string, code: string,
     verifier: string): Promise<TokenResult> {
     const fail: TokenResult = { ok: false, accessToken: '', errorText: 'Token exchange failed' };
-    let httpRequest: http.HttpRequest | undefined = undefined;
+    let httpRequest: DohHttpRequest | undefined = undefined;
     try {
-      httpRequest = http.createHttp();
+      httpRequest = createDohHttpRequest();
       const body: string = 'grant_type=authorization_code' +
         '&code=' + encodeURIComponent(code) +
         '&redirect_uri=' + encodeURIComponent(REDIRECT_URI) +
@@ -461,9 +462,9 @@ export class XApiClient {
   // ---- HTTP primitives --------------------------------------------------
 
   private async get(url: string, onResponse?: (status: number, body: string) => void): Promise<string | null> {
-    let httpRequest: http.HttpRequest | undefined = undefined;
+    let httpRequest: DohHttpRequest | undefined = undefined;
     try {
-      httpRequest = http.createHttp();
+      httpRequest = createDohHttpRequest();
       const options: http.HttpRequestOptions = {
         method: http.RequestMethod.GET,
         header: { 'Authorization': 'Bearer ' + this.token },
@@ -493,9 +494,9 @@ export class XApiClient {
 
   private async post(url: string, payload: Record<string, Object>, okCodes: number[],
     requirePostReceipt: boolean = false): Promise<boolean> {
-    let httpRequest: http.HttpRequest | undefined = undefined;
+    let httpRequest: DohHttpRequest | undefined = undefined;
     try {
-      httpRequest = http.createHttp();
+      httpRequest = createDohHttpRequest();
       const options: http.HttpRequestOptions = {
         method: http.RequestMethod.POST,
         header: {
@@ -535,9 +536,9 @@ export class XApiClient {
   }
 
   private async del(url: string): Promise<boolean> {
-    let httpRequest: http.HttpRequest | undefined = undefined;
+    let httpRequest: DohHttpRequest | undefined = undefined;
     try {
-      httpRequest = http.createHttp();
+      httpRequest = createDohHttpRequest();
       const options: http.HttpRequestOptions = {
         method: http.RequestMethod.DELETE,
         header: { 'Authorization': 'Bearer ' + this.token },

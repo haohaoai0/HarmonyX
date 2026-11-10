@@ -1,3 +1,4 @@
+const { withDohHttpMock } = require('./doh-http-fixture.cjs');
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
@@ -5,7 +6,7 @@ const ts = require(process.env.HARMONYX_TYPESCRIPT || 'D:/DevEco Studio/tools/oh
 function compile(source) { return ts.transpileModule(source,{compilerOptions:{target:ts.ScriptTarget.ES2020,module:ts.ModuleKind.CommonJS}}).outputText; }
 function load(file,deps={}) {
   const exports={};
-  new Function('exports','require',compile(fs.readFileSync(file,'utf8')))(exports,id=>{
+  new Function('exports','require',compile(fs.readFileSync(file,'utf8')))(exports,id=>{ withDohHttpMock(deps);
     if (Object.hasOwn(deps,id)) return deps[id]; throw Error('Unexpected import '+id);
   });return exports;
 }

@@ -160,13 +160,13 @@ test('embedded photo and video comment panes render actual replies without injec
   const Detail = harness('PostDetail', ['commentRows', 'orderedReplies', 'sortedReplies'], {
     ThreadReplyOrder, CommentTimelineRow, isAdPost: value => value?.isAd === true,
     REPLY_SORT_RECENT: 'recent', REPLY_SORT_LIKES: 'likes',
-    XXAuthPromotionInjector: { slots: (_length, posts) => [{ index: 1, post: posts[0] }] }
   });
   const posts = XTimelineParser.parseTweetDetail(response([entry(post('root')),
     moduleEntry('conversationthread-1', [post('direct', 'root'), post('nested', 'direct'), post('second', 'root')])]).body,
     'root').replies;
   const detail = Object.assign(new Detail(), { tweet: focal(), replies: posts, embedded: true,
     replySortMode: 'relevance', filterHideAds: true,
+    commentPromotions: { placements: (_thread, anchors, plan) => new Map([[anchors[0], plan.posts[0]]]) },
     promotionPlan() { throw new Error('embedded comments must not load promotions'); }
   });
   const embeddedRows = detail.commentRows();
@@ -179,5 +179,5 @@ test('embedded photo and video comment panes render actual replies without injec
   assert.equal(detail.commentRows().length, 3);
   detail.embedded = false;
   detail.promotionPlan = () => ({ posts: [{ fingerprint: 'example' }], commentCount: 1 });
-  assert.deepEqual(detail.commentRows().map(row => row.key), ['direct', 'nested', 'promo:example:2', 'second']);
+  assert.deepEqual(detail.commentRows().map(row => row.key), ['direct', 'nested', 'promo:example:second', 'second']);
 });

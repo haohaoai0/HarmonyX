@@ -29,6 +29,12 @@ import { XPrivateClient, XPrivateResult, xPrivateClient } from '../services/XPri
 import { XTimelineParser } from '../services/XTimelineParser';
 import { destinationTitleBarStyle } from '../utils/DestinationTitleBar';
 import { ResponsiveLayout } from '../utils/ResponsiveLayout';
+import { DesktopLayout } from '../utils/DesktopLayout';
+import {
+  STORAGE_KEY_TIMELINE_COLUMNS,
+  TIMELINE_COLUMNS_AUTO_TWO,
+  TIMELINE_COLUMNS_TWO
+} from '../services/TimelineSettingsStore';
 import { pageSurfaceColor } from '../utils/ThemeColors';
 import type { PostDetailRouteParam } from './PostDetail';
 import type { UserDetailRouteParam } from './UserDetail';
@@ -62,6 +68,9 @@ export struct ListTimeline {
   @State private pageMotion: PageTransitionMotion = new PageTransitionMotion();
   @StorageProp(STORAGE_KEY_PAGE_TRANSITION_MODE) private pageTransitionMode: string = DEFAULT_PAGE_TRANSITION_MODE;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
+  @StorageProp('harmonyx.desktop_layout') private desktopLayoutEnabled: boolean = false;
+  @StorageProp('harmonyx.breakpoint') private windowBreakpoint: string = 'sm';
+  @StorageProp(STORAGE_KEY_TIMELINE_COLUMNS) private timelineColumnsMode: number = 0;
   @Consume('pageStack') pageStack: NavPathStack;
   @StorageProp('harmonyx.status_bar_height') statusBarHeight: number =
     AppStorage.get<number>('harmonyx.status_bar_height') ?? 0;
@@ -545,6 +554,20 @@ export struct ListTimeline {
     return this.statusBarHeight + 60 + this.getUIContext().px2vp(heightPx);
   }
 
+  private isDesktopLayout(): boolean {
+    return DesktopLayout.active(this.desktopLayoutEnabled, this.windowBreakpoint);
+  }
+
+  private useTimelineWaterFlow(): boolean {
+    return this.isDesktopLayout() || ResponsiveLayout.isLarge(this.windowBreakpoint) ||
+      this.timelineColumnsMode === TIMELINE_COLUMNS_TWO ||
+      this.timelineColumnsMode === TIMELINE_COLUMNS_AUTO_TWO;
+  }
+
+  private useListFeed(): boolean {
+    return !this.useTimelineWaterFlow();
+  }
+
   build(): void {
     HdsNavDestination() {
       Stack({ alignContent: Alignment.TopStart }) {
@@ -560,6 +583,7 @@ export struct ListTimeline {
         Refresh({ refreshing: $$this.refreshing }) {
           AdaptivePostFeed({ scroller: this.scroller,
             itemKeys: this.loading ? [] : this.visiblePosts().map((post: Tweet): string => post.id),
+            useList: this.useListFeed(), lazyItems: true,
             feedId: 'list-timeline-post-feed', endOffset: this.navigationIndicatorHeight + 24,
             header: (): void => this.Content(),
             item: (index: number): void => this.TimelinePost(this.visiblePosts()[index]),

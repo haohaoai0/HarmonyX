@@ -1,4 +1,6 @@
 import { InputModalScope } from '../utils/InputModalScope';
+import { AppLocalizedResources } from '../utils/AppLocalizedResources';
+import { STORAGE_KEY_APP_LOCALE, effectiveAppLocale } from '../utils/AppLocale';
 import { menuActionVisible, menuActionsForGroup, MenuActionOption } from '../models/MenuActionCatalog';
 import { STORAGE_KEY_HIDDEN_MENU_ACTIONS } from '../services/MenuSettingsStore';
 import { common } from '@kit.AbilityKit';
@@ -21,6 +23,8 @@ import type { ProfileWebRouteParam } from '../pages/ProfileWeb';
 @Component
 export struct PostOverflowButton {
   private inputModalScope: InputModalScope = new InputModalScope();
+  private localizedResources: AppLocalizedResources = new AppLocalizedResources();
+  @StorageProp(STORAGE_KEY_APP_LOCALE) private appLocale: string = effectiveAppLocale();
 
   aboutToDisappear(): void { this.inputModalScope.setActive(false); }
   @StorageProp(STORAGE_KEY_HIDDEN_MENU_ACTIONS) private hiddenMenuActions: string = '';
@@ -54,7 +58,9 @@ export struct PostOverflowButton {
   @State private following: boolean = false;
 
   private context(): common.UIAbilityContext { return getContext(this) as common.UIAbilityContext; }
-  private text(resource: Resource): string { return this.context().resourceManager.getStringSync(resource); }
+  private text(resource: Resource): string {
+    return this.localizedResources.text(this.context(), resource, this.appLocale);
+  }
   private dimension(resource: Resource): number {
     return this.getUIContext().px2vp(this.context().resourceManager.getNumber(resource.id));
   }
@@ -191,7 +197,10 @@ export struct PostOverflowButton {
       Row({ space: this.dimension($r('app.float.post_menu_row_gap')) }) {
         SymbolGlyph(symbol).fontSize($r('app.float.post_menu_icon_size')).fontColor([$r('app.color.text_secondary')])
           .width($r('app.float.post_menu_icon_width'))
-        Text(this.text(title) + (handle ? ' @' + this.tweet.author.username : ''))
+        Text() {
+          Span(title)
+          if (handle) { Span(' @' + this.tweet.author.username) }
+        }
           .fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L'))
           .fontColor($r('app.color.text_primary')).layoutWeight(1).textAlign(TextAlign.Start).maxLines(2)
       }.width('100%')

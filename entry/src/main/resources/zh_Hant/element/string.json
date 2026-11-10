@@ -198,11 +198,11 @@
     },
     {
       "name": "settings_confirm_app_exit",
-      "value": "結束前確認"
+      "value": "返回桌面提示"
     },
     {
       "name": "settings_confirm_app_exit_desc",
-      "value": "在主頁返回時先詢問是否結束，關閉後直接結束應用程式。"
+      "value": "首頁第一次返回僅顯示提示，2.2秒內再次返回到桌面"
     },
     {
       "name": "app_exit_title",
@@ -622,7 +622,7 @@
     },
     {
       "name": "settings_compact_switch_style_desc",
-      "value": "關閉 X Logo 時使用。按鈕背景隨橫向滑動進度填滿。"
+      "value": "關閉 X Logo 時使用，可選擇文字頁籤、膠囊按鈕或分段切換。"
     },
     {
       "name": "settings_compact_switch_tabs",
@@ -631,6 +631,10 @@
     {
       "name": "settings_compact_switch_buttons",
       "value": "按鈕"
+    },
+    {
+      "name": "settings_compact_switch_segmented",
+      "value": "分段切換"
     },
     {
       "name": "settings_avatar_tint",
@@ -1342,7 +1346,7 @@
     },
     {
       "name": "profile_version",
-      "value": "Harmony X 3.5.0 · HarmonyOS 6.0.2（API 22-26）· Stage 模型"
+      "value": "Harmony X 3.9.0 · HarmonyOS 6.0.2（API 22-26）· Stage 模型"
     },
     {
       "name": "profile_following",
@@ -3514,7 +3518,7 @@
     },
     {
       "name": "diagnostics_desc",
-      "value": "檢視最近的介面呼叫與私有介面自檢結果。"
+      "value": "匯出當機記錄，檢視最近的介面呼叫與自我檢查結果。"
     },
     {
       "name": "diagnostics_probe",
@@ -10158,7 +10162,7 @@
     },
     {
       "name": "chat_group_invite_hint",
-      "value": "Create a link to join this chat. When disabled, people cannot join using the link."
+      "value": "建立加入此聊天的連結。停用後，即使持有連結也無法加入。"
     },
     {
       "name": "chat_group_invite_privacy",
@@ -10274,7 +10278,7 @@
     },
     {
       "name": "chat_group_capture_hint",
-      "value": "Prevent screen captures and recordings of this conversation. This setting is shared with group members."
+      "value": "防止此聊天內容被截圖或錄影。此設定會與群組成員共用。"
     },
     {
       "name": "chat_group_ttl_hint",
@@ -12729,6 +12733,10 @@
       "value": "顯示全部熱門貼文"
     },
     {
+      "name": "global_trends_cover_url",
+      "value": "https://pbs.twimg.com/topics/topic/globe_center_compressed.png"
+    },
+    {
       "name": "post_video_publish",
       "value": "發佈影片"
     },
@@ -12860,40 +12868,405 @@
       "name": "post_translation_languages_description",
       "value": "勾選需要自動翻譯的貼文語言，未勾選的語言仍可手動翻譯。"
     },
-    {"name": "post_link_copy", "value": "複製連結"},
-    {"name": "post_link_open", "value": "開啟連結"},
-    {"name": "settings_video_download_button", "value": "影片下載按鈕"},
-    {"name": "settings_video_download_button_desc", "value": "顯示影片右上角的下載按鈕"},
-    {"name": "video_source_from", "value": "來自"},
-    {"name": "video_source_original", "value": "原始影片"},
-    {"name": "video_source_open_failed", "value": "暫時無法開啟原始影片，請重試"},
-    {"name":"dns_title","value":"DNS over HTTPS（DoH）"},
-    {"name":"dns_enable","value":"啟用 DoH 加密解析"},
-    {"name":"dns_enable_desc","value":"透過指定的 HTTPS 服務加密查詢網域"},
-    {"name":"dns_scope","value":"用於應用程式介面、圖片下載、影片分段請求和內建網頁。系統播放器和外部應用程式可能使用各自的 DNS。代理伺服器代解析目標網域時，以代理的 DNS 為準。DoH 無法取代代理或 VPN。"},
-    {"name":"dns_provider","value":"DNS 服務商"},
-    {"name":"dns_provider_ali","value":"阿里雲公共 DNS"},
-    {"name":"dns_provider_cloudflare","value":"Cloudflare"},
-    {"name":"dns_provider_google","value":"Google Public DNS"},
-    {"name":"dns_provider_custom","value":"自訂"},
-    {"name":"dns_endpoint","value":"DoH 服務網址"},
-    {"name":"dns_endpoint_hint","value":"https://example.com/dns-query"},
-    {"name":"dns_endpoint_desc","value":"填寫完整的 RFC 8484 HTTPS 網址，不支援使用者名稱密碼、片段或 {?dns} 等網址範本。"},
-    {"name":"dns_invalid","value":"請輸入有效的 HTTPS DoH 服務網址"},
-    {"name":"dns_saved","value":"已儲存，新請求生效；已開啟的網頁請重新載入"},
-    {"name":"dns_test","value":"測試 DNS 解析"},
-    {"name":"dns_test_desc","value":"使用目前網址直接解析 x.com，不會儲存或啟用設定。測試略過應用程式內代理，仍受系統 VPN 影響。"},
-    {"name":"dns_test_success","value":"x.com 解析成功"},
-    {"name":"dns_test_failed","value":"解析失敗，請檢查服務網址、網路或 DNS 服務"},
-    {"name":"dns_failure_note","value":"儲存後，DoH 解析失敗會停止相應請求，不會自動退回系統 DNS。關閉 DoH 並儲存可恢復系統解析。所有變更均在儲存後生效。"},
-    {"name":"help_support_afdian","value":"愛發電"},
-    {"name":"help_support_qr_summary","value":"掃碼支持開發"},
-    {"name":"help_support_afdian_summary","value":"永久免推薦 · ¥16.6"},
-    {"name":"help_support_afdian_desc","value":"在愛發電購買永久免推薦卡密，購買後返回應用兌換即可。"},
-    {"name":"help_support_afdian_buy","value":"前往愛發電購買"},
-    {"name":"help_support_expand","value":"點擊展開"},
-    {"name":"help_support_collapse","value":"點擊收起"},
-    {"name":"help_support_scan_code","value":"使用對應的支付應用掃描收款碼。"},
-    {"name":"help_support_recommended","value":"推薦"}
+    {
+      "name": "post_link_copy",
+      "value": "複製連結"
+    },
+    {
+      "name": "post_link_open",
+      "value": "開啟連結"
+    },
+    {
+      "name": "settings_video_download_button",
+      "value": "影片下載按鈕"
+    },
+    {
+      "name": "settings_video_download_button_desc",
+      "value": "顯示影片右上角的下載按鈕"
+    },
+    {
+      "name": "video_source_from",
+      "value": "來自"
+    },
+    {
+      "name": "video_source_original",
+      "value": "原始影片"
+    },
+    {
+      "name": "video_source_open_failed",
+      "value": "暫時無法開啟原始影片，請重試"
+    },
+    {
+      "name": "dns_title",
+      "value": "DNS over HTTPS（DoH）"
+    },
+    {
+      "name": "dns_enable",
+      "value": "啟用 DoH 加密解析"
+    },
+    {
+      "name": "dns_enable_desc",
+      "value": "透過指定的 HTTPS 服務加密查詢網域"
+    },
+    {
+      "name": "dns_scope",
+      "value": "用於應用程式介面、圖片下載、影片分段請求和內建網頁。系統播放器和外部應用程式可能使用各自的 DNS。代理伺服器代解析目標網域時，以代理的 DNS 為準。DoH 無法取代代理或 VPN。"
+    },
+    {
+      "name": "dns_provider",
+      "value": "DNS 服務商"
+    },
+    {
+      "name": "dns_provider_ali",
+      "value": "阿里雲公共 DNS"
+    },
+    {
+      "name": "dns_provider_cloudflare",
+      "value": "Cloudflare"
+    },
+    {
+      "name": "dns_provider_google",
+      "value": "Google Public DNS"
+    },
+    {
+      "name": "dns_provider_custom",
+      "value": "自訂"
+    },
+    {
+      "name": "dns_endpoint",
+      "value": "DoH 服務網址"
+    },
+    {
+      "name": "dns_endpoint_hint",
+      "value": "https://example.com/dns-query"
+    },
+    {
+      "name": "dns_endpoint_desc",
+      "value": "填寫完整的 RFC 8484 HTTPS 網址，不支援使用者名稱密碼、片段或 {?dns} 等網址範本。"
+    },
+    {
+      "name": "dns_invalid",
+      "value": "請輸入有效的 HTTPS DoH 服務網址"
+    },
+    {
+      "name": "dns_saved",
+      "value": "已儲存，新請求生效；已開啟的網頁請重新載入"
+    },
+    {
+      "name": "dns_test",
+      "value": "測試 DNS 解析"
+    },
+    {
+      "name": "dns_test_desc",
+      "value": "使用目前網址直接解析 x.com，不會儲存或啟用設定。測試略過應用程式內代理，仍受系統 VPN 影響。"
+    },
+    {
+      "name": "dns_test_success",
+      "value": "x.com 解析成功"
+    },
+    {
+      "name": "dns_test_failed",
+      "value": "解析失敗，請檢查服務網址、網路或 DNS 服務"
+    },
+    {
+      "name": "dns_failure_note",
+      "value": "儲存後，DoH 解析失敗會停止相應請求，不會自動退回系統 DNS。關閉 DoH 並儲存可恢復系統解析。所有變更均在儲存後生效。"
+    },
+    {
+      "name": "help_support_afdian",
+      "value": "愛發電"
+    },
+    {
+      "name": "help_support_qr_summary",
+      "value": "掃碼支持開發"
+    },
+    {
+      "name": "help_support_afdian_summary",
+      "value": "永久免推薦 · ¥16.6"
+    },
+    {
+      "name": "help_support_afdian_desc",
+      "value": "在愛發電購買永久免推薦卡密，購買後返回應用兌換即可。"
+    },
+    {
+      "name": "help_support_afdian_buy",
+      "value": "前往愛發電購買"
+    },
+    {
+      "name": "help_support_expand",
+      "value": "點擊展開"
+    },
+    {
+      "name": "help_support_collapse",
+      "value": "點擊收起"
+    },
+    {
+      "name": "help_support_scan_code",
+      "value": "使用對應的支付應用掃描收款碼。"
+    },
+    {
+      "name": "help_support_recommended",
+      "value": "推薦"
+    },
+    {
+      "name": "dns_x_test",
+      "value": "測試 X 原生連線"
+    },
+    {
+      "name": "dns_x_test_desc",
+      "value": "使用目前 DoH 網址，透過原生 HTTP 請求公開的 x.com/robots.txt，不攜帶帳號資訊，不使用應用程式內代理，也不儲存設定；仍受系統 VPN 影響。成功僅代表此連線可用，不代表所有介面和媒體網域均可用。"
+    },
+    {
+      "name": "dns_x_test_success",
+      "value": "X 原生連線成功"
+    },
+    {
+      "name": "dns_x_test_failed",
+      "value": "X 原生連線失敗，請檢查網路、代理或 ECH 支援情況"
+    },
+    {
+      "name": "settings_inline_video_hold",
+      "value": "外層影片長按操作"
+    },
+    {
+      "name": "settings_inline_video_hold_desc",
+      "value": "選擇操作選單或長按快進。快進使用長按倍速設定；關閉倍速後，長按左右兩側快退或快進。"
+    },
+    {
+      "name": "settings_inline_video_hold_menu",
+      "value": "選單"
+    },
+    {
+      "name": "settings_inline_video_hold_play",
+      "value": "長按快進"
+    },
+    {
+      "name": "settings_sidebar_items",
+      "value": "側邊欄功能"
+    },
+    {
+      "name": "settings_sidebar_items_desc",
+      "value": "選擇顯示的功能並用箭頭調整順序；設定入口始終保留。"
+    },
+    {
+      "name": "settings_bottom_bar_visible",
+      "value": "顯示底欄"
+    },
+    {
+      "name": "settings_bottom_bar_visible_desc",
+      "value": "關閉後可透過側邊欄切換首頁、探索、通知、私訊及搜尋。"
+    },
+    {
+      "name": "settings_post_count_format",
+      "value": "貼文計數格式"
+    },
+    {
+      "name": "settings_post_count_compact",
+      "value": "K/M（千／百萬）"
+    },
+    {
+      "name": "settings_post_count_chinese",
+      "value": "萬／億"
+    },
+    {
+      "name": "settings_post_count_full",
+      "value": "完整數字"
+    },
+    {
+      "name": "settings_sidebar_search_capsule",
+      "value": "側邊欄搜尋膠囊"
+    },
+    {
+      "name": "settings_sidebar_search_capsule_desc",
+      "value": "在側邊欄頂部顯示短搜尋膠囊，預設關閉。"
+    },
+    {
+      "name": "settings_home_header_action",
+      "value": "首頁標題列按鈕"
+    },
+    {
+      "name": "settings_home_header_action_desc",
+      "value": "選擇搜尋或新增關注，點擊後直接開啟對應頁面。"
+    },
+    {
+      "name": "settings_home_follow_suggestions",
+      "value": "推薦關注"
+    },
+    {
+      "name": "settings_home_follow_suggestions_desc",
+      "value": "在首頁時間軸中顯示推薦關注卡片。"
+    },
+    {
+      "name": "page_background_preset_colors",
+      "value": "保留原始漸層"
+    },
+    {
+      "name": "page_background_preset_colors_desc",
+      "value": "選擇完整圖案時使用其配套漸層；關閉後可自訂底色或照片。"
+    },
+    {
+      "name": "settings_inline_video_overlay_controls",
+      "value": "貼文影片畫面內播控"
+    },
+    {
+      "name": "settings_inline_video_overlay_controls_desc",
+      "value": "將卡片下方的播控移入影片畫面。輕點顯示或隱藏，播放時自動收起。"
+    },
+    {
+      "name": "settings_pause_inline_video_on_return",
+      "value": "退出影片後暫停貼文預覽"
+    },
+    {
+      "name": "settings_pause_inline_video_on_return_desc",
+      "value": "關閉影片檢視器後，貼文內的影片保持暫停；點擊播放後繼續。"
+    },
+    {
+      "name": "settings_timeline_columns_four",
+      "value": "四欄"
+    },
+    {
+      "name": "settings_timeline_columns_five",
+      "value": "五欄"
+    },
+    {
+      "name": "crash_recovery_title",
+      "value": "偵測到應用程式異常結束"
+    },
+    {
+      "name": "crash_recovery_message",
+      "value": "已儲存上次異常結束的診斷記錄。請匯出記錄並聯絡開發者，附上問題發生前的操作，以協助排查。"
+    },
+    {
+      "name": "crash_later",
+      "value": "稍後"
+    },
+    {
+      "name": "crash_export",
+      "value": "匯出記錄"
+    },
+    {
+      "name": "crash_contact",
+      "value": "聯絡開發者"
+    },
+    {
+      "name": "crash_export_success",
+      "value": "記錄已匯出，請聯絡開發者並附上記錄檔。"
+    },
+    {
+      "name": "crash_export_failed",
+      "value": "記錄匯出失敗，請重試或選擇其他儲存位置。"
+    },
+    {
+      "name": "crash_contact_failed",
+      "value": "無法開啟回報頁面，請在「關於」中聯絡開發者。"
+    },
+    {
+      "name": "crash_logs_title",
+      "value": "全域記錄診斷"
+    },
+    {
+      "name": "crash_logs_description",
+      "value": "當機記錄會自動儲存在本機，最多保留最近 5 份。匯出後可將記錄檔附在回報中。"
+    },
+    {
+      "name": "crash_logs_empty",
+      "value": "尚無當機記錄，可匯出目前的執行記錄。"
+    },
+    {
+      "name": "app_exit_desktop",
+      "value": "返回桌面"
+    },
+    {
+      "name": "app_exit_desktop_hint",
+      "value": "再按一次返回桌面"
+    },
+    {
+      "name": "media_save_method",
+      "value": "媒體儲存方式"
+    },
+    {
+      "name": "media_save_gallery_dialog",
+      "value": "圖庫 · 系統確認"
+    },
+    {
+      "name": "media_save_secure_button",
+      "value": "圖庫 · 安全控制項直接儲存"
+    },
+    {
+      "name": "media_save_directory",
+      "value": "下載目錄 · 授權後直接儲存"
+    },
+    {
+      "name": "media_save_file_picker",
+      "value": "檔案 · 每次選擇位置"
+    },
+    {
+      "name": "media_save_secure_title",
+      "value": "儲存到圖庫"
+    },
+    {
+      "name": "media_save_secure_note",
+      "value": "點擊系統儲存控制項直接寫入圖庫。首次使用依系統提示授權，批次儲存時逐張點擊。"
+    },
+    {
+      "name": "account_groups_title",
+      "value": "本機分組"
+    },
+    {
+      "name": "account_groups_hint",
+      "value": "分組僅儲存在目前裝置。選擇已關注帳戶，可將分組固定至首頁時間軸。"
+    },
+    {
+      "name": "account_groups_empty",
+      "value": "尚無分組，建立一個吧"
+    },
+    {
+      "name": "account_groups_manage",
+      "value": "管理本機分組"
+    },
+    {
+      "name": "account_group_create",
+      "value": "新增分組"
+    },
+    {
+      "name": "account_group_delete",
+      "value": "刪除分組"
+    },
+    {
+      "name": "account_group_member_count",
+      "value": "%d 個帳戶"
+    },
+    {
+      "name": "account_group_edit_title",
+      "value": "編輯分組"
+    },
+    {
+      "name": "account_group_name",
+      "value": "分組名稱"
+    },
+    {
+      "name": "account_group_icon",
+      "value": "圖示（輸入 Emoji 或符號）"
+    },
+    {
+      "name": "account_group_selected",
+      "value": "已選 %d 個帳戶"
+    },
+    {
+      "name": "account_group_search",
+      "value": "搜尋已載入的關注帳戶"
+    },
+    {
+      "name": "account_group_cancel",
+      "value": "取消"
+    },
+    {
+      "name": "account_group_save",
+      "value": "儲存"
+    },
+    {
+      "name": "grok_chat_hint",
+      "value": "直接向 Grok 提問，開始新的對話。"
+    }
   ]
 }

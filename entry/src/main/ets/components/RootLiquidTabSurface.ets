@@ -8,6 +8,7 @@ import { DEFAULT_COMPONENT_HDR_ENABLED, DEFAULT_COMPONENT_HDR_RATIO, STORAGE_KEY
   STORAGE_KEY_COMPONENT_HDR_RATIO } from '../services/ComponentHdrSettingsStore';
 import { ComponentHdrHighlight } from '../utils/ComponentHdrHighlight';
 import { ReplyCapsuleSurface } from './ReplyCapsuleSurface';
+import { MaterialCompat } from '../utils/MaterialCompat';
 
 // Decorative only: the native tab-bar ancestor supplies its hide/show transform,
 // opacity and clipping, including interrupted and reversed animations.
@@ -61,6 +62,7 @@ export struct RootLiquidTabSurface {
           materialEnabled: true, materialLevel: this.nativeMaterialLevel,
           capsuleContent: (): void => { this.SelectedContent(); } })
           .width(this.motion.restWidth).height(this.motion.restHeight)
+          .clip(false)
           .scale({ x: this.motion.scaleX, y: this.motion.scaleY })
           .compositingFilter(ComponentHdrHighlight.filter(this.getUIContext(), this.componentHdrEnabled, this.componentHdrRatio))
           .hitTestBehavior(HitTestMode.None)
@@ -70,10 +72,14 @@ export struct RootLiquidTabSurface {
             .width(this.motion.restWidth).height(this.motion.restHeight)
             .barWidth(this.motion.restWidth).barHeight(this.motion.restHeight)
             .barPosition(BarPosition.End).barOverlap(true).vertical(false)
+            .backgroundColor(Color.Transparent)
+            .barBackgroundColor(Color.Transparent)
+            .barBackgroundStyle({ maskColor: Color.Transparent, maskHeight: 1 })
+            .barBackgroundBlurStyle(MaterialCompat.NO_PLATE_BLUR)
             .barFloatingStyle({
               barWidth: { smallWidth: this.motion.restWidth, mediumWidth: this.motion.restWidth, largeWidth: this.motion.restWidth },
               barBottomMargin: 0, barSideMargin: 0,
-              gradientMask: { maskColor: Color.Transparent },
+              gradientMask: { maskColor: Color.Transparent, maskHeight: 1 },
               lightColor: mixedAccentRoleColor(this.accentTheme, accentPageRole(this.motion.displayPage), this.accentColor),
               systemMaterialEffect: { materialType: hdsMaterial.MaterialType.IMMERSIVE,
                 materialLevel: this.materialLevel },

@@ -71,6 +71,11 @@ export class TimelinePageDataSource implements IDataSource {
     this.posts = posts.length;
 
     const previous: TimelinePageItem[] = this.rows;
+    const oldIndices: Map<string, number> = new Map();
+    const desiredKeys: Set<string> = new Set();
+    for (let i: number = 1; i < previous.length - 1; i++) { oldIndices.set(previous[i].key, i); }
+    let lastOldIndex: number = 0;
+    let reordered: boolean = false;
     let structureChanged: boolean = previous.length - 2 !== desired.length;
     if (!structureChanged) {
       for (let i: number = 0; i < desired.length; i++) {
@@ -78,18 +83,32 @@ export class TimelinePageDataSource implements IDataSource {
       }
     }
     const changed: number[] = [];
+    const added: number[] = [];
+    const deleted: number[] = [];
     const rows: TimelinePageItem[] = [previous[0]];
     for (let i: number = 0; i < desired.length; i++) {
       const item: TimelinePageItem = desired[i];
-      const old: TimelinePageItem | undefined = previous[i + 1];
+      desiredKeys.add(item.key);
+      const oldIndex: number | undefined = oldIndices.get(item.key);
+      const old: TimelinePageItem | undefined = oldIndex === undefined ? undefined : previous[oldIndex];
+      if (oldIndex !== undefined) {
+        if (oldIndex < lastOldIndex) { reordered = true; }
+        lastOldIndex = oldIndex;
+      }
       // Identical key and content means the same card; reuse it so LazyForEach
       // neither rebuilds the post nor re-runs its media setup.
-      if (!structureChanged && old !== undefined && old.key === item.key && old.tweet === item.tweet) {
+      if (old !== undefined && old.tweet === item.tweet) {
+        if (old.postIndex !== item.postIndex) { changed.push(i + 1); }
+        old.postIndex = item.postIndex;
         rows.push(old);
       } else {
         rows.push(item);
-        changed.push(i + 1);
+        if (old === undefined) { added.push(i + 1); }
+        else { changed.push(i + 1); }
       }
+    }
+    for (let i: number = previous.length - 2; i > 0; i--) {
+      if (!desiredKeys.has(previous[i].key)) { deleted.push(i); }
     }
     rows.push(previous[previous.length - 1]);
     this.rows = rows;
@@ -99,8 +118,10 @@ export class TimelinePageDataSource implements IDataSource {
     if (onRowsReady !== null) { onRowsReady(this.contentCount()); }
     for (let i: number = 0; i < this.listeners.length; i++) {
       const listener: DataChangeListener = this.listeners[i];
-      if (structureChanged) { listener.onDataReloaded(); }
+      if (structureChanged && (previous.length === 2 || reordered)) { listener.onDataReloaded(); }
       else {
+        for (const index of deleted) { listener.onDataDeleted(index); }
+        for (const index of added) { listener.onDataAdded(index); }
         for (let j: number = 0; j < changed.length; j++) { listener.onDataChanged(changed[j]); }
       }
     }

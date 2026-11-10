@@ -1,3 +1,4 @@
+import { SidebarSettings } from '../components/SidebarSettings';
 import { STORAGE_KEY_VIDEO_DOWNLOAD_BUTTON } from '../services/MediaSettingsStore';
 import { TabOrderSettings } from '../components/TabOrderSettings';
 import { PostDisplaySettings } from '../components/PostDisplaySettings';
@@ -44,6 +45,7 @@ import { STORAGE_KEY_SIDEBAR_MATERIAL_TYPE, SIDEBAR_MATERIAL_GLASS, SIDEBAR_MATE
 import { STORAGE_KEY_HOME_SPACE_CAPSULE_ENABLED, STORAGE_KEY_HOME_SPACE_CAPSULE_HIDDEN_FOR_SESSION,
   spacePreferencesStore } from '../services/SpacePreferencesStore';
 import { HOME_FLOATING_COMPOSE, HOME_FLOATING_REFRESH, HOME_FLOATING_TOP, HOME_FLOATING_HIDDEN,
+  HOME_HEADER_SEARCH, HOME_HEADER_FOLLOW, STORAGE_KEY_HOME_HEADER_ACTION, STORAGE_KEY_HOME_FOLLOW_SUGGESTIONS,
   ME_FLOATING_PROFILE, ME_FLOATING_ACCOUNTS, ME_FLOATING_SETTINGS, ME_FLOATING_HELP, ME_FLOATING_HIDDEN,
   STORAGE_KEY_HOME_FLOATING_ACTION, STORAGE_KEY_ME_FLOATING_ACTION,
   STORAGE_KEY_PHOTO_FULLSCREEN, STORAGE_KEY_REFRESH_ON_FOREGROUND,
@@ -94,6 +96,7 @@ import {
   STORAGE_KEY_COMPACT_SWITCH_STYLE,
   COMPACT_SWITCH_TABS,
   COMPACT_SWITCH_BUTTONS,
+  COMPACT_SWITCH_SEGMENTED,
   STORAGE_KEY_AUTO_HIDE_TAB_BAR,
   STORAGE_KEY_AUTO_HIDE_TITLE_BAR,
   STORAGE_KEY_COMPOSE_BUTTON_ENABLED,
@@ -137,7 +140,7 @@ import {
   BOTTOM_BAR_NOTIFICATIONS_PAGE,
   bottomBarSettingsStore,
   DEFAULT_BOTTOM_BAR_PAGES_MASK,
-  STORAGE_KEY_BOTTOM_BAR_PAGES
+  STORAGE_KEY_BOTTOM_BAR_VISIBLE, STORAGE_KEY_BOTTOM_BAR_PAGES
 } from '../services/BottomBarSettingsStore';
 import {
   cardSurfaceColor,
@@ -208,6 +211,9 @@ import {
   STORAGE_KEY_VIDEO_AUTO_PIP,
   STORAGE_KEY_VIDEO_BACKGROUND_MODE,
   STORAGE_KEY_VIDEO_HOLD_SPEED,
+  STORAGE_KEY_INLINE_VIDEO_HOLD_PLAY,
+  STORAGE_KEY_INLINE_VIDEO_OVERLAY_CONTROLS,
+  STORAGE_KEY_PAUSE_INLINE_VIDEO_ON_RETURN,
   STORAGE_KEY_VIDEO_DOUBLE_TAP_SEEK,
   STORAGE_KEY_VIDEO_DOUBLE_TAP_SEEK_SECONDS,
   DEFAULT_VIDEO_DOUBLE_TAP_SEEK_ENABLED,
@@ -239,6 +245,8 @@ import {
   TIMELINE_COLUMNS_AUTO,
   TIMELINE_COLUMNS_ONE,
   TIMELINE_COLUMNS_THREE,
+  TIMELINE_COLUMNS_FOUR,
+  TIMELINE_COLUMNS_FIVE,
   TIMELINE_COLUMNS_AUTO_TWO,
   TIMELINE_COLUMNS_TWO,
   timelineSettingsStore
@@ -606,6 +614,7 @@ export struct SettingsSection {
   @StorageLink(STORAGE_KEY_SYSTEM_EMOJI_ENABLED) systemEmojiEnabled: boolean = false;
   @StorageLink(STORAGE_KEY_AUTO_HIDE_TITLE_BAR) autoHideTitleBar: boolean = false;
   @StorageLink(STORAGE_KEY_AUTO_HIDE_TAB_BAR) autoHideTabBar: boolean = false;
+  @StorageProp(STORAGE_KEY_BOTTOM_BAR_VISIBLE) private bottomBarVisible: boolean = true;
   @StorageLink(STORAGE_KEY_BOTTOM_BAR_PAGES) bottomBarPagesMask: number = DEFAULT_BOTTOM_BAR_PAGES_MASK;
   @StorageLink(STORAGE_KEY_CLASSIC_BOTTOM_BAR) classicBottomBar: boolean = false;
   @StorageLink(STORAGE_KEY_SPLIT_BOTTOM_BAR) splitBottomBar: boolean = false;
@@ -630,6 +639,8 @@ export struct SettingsSection {
   replyCapsuleSplitEnabled: boolean = DEFAULT_REPLY_CAPSULE_SPLIT_ENABLED;
   @StorageLink(STORAGE_KEY_COMPOSE_BUTTON_ENABLED) composeButtonEnabled: boolean = true;
   @StorageProp(STORAGE_KEY_HOME_FLOATING_ACTION) homeFloatingAction: string = HOME_FLOATING_COMPOSE;
+  @StorageProp(STORAGE_KEY_HOME_HEADER_ACTION) homeHeaderAction: string = HOME_HEADER_SEARCH;
+  @StorageProp(STORAGE_KEY_HOME_FOLLOW_SUGGESTIONS) homeFollowSuggestions: boolean = true;
   @StorageProp(STORAGE_KEY_ME_FLOATING_ACTION) meFloatingAction: string = ME_FLOATING_PROFILE;
   @StorageProp(STORAGE_KEY_FLOATING_COMPOSE_MATERIAL_TINT) floatingComposeMaterialTint: boolean = true;
   @StorageProp(STORAGE_KEY_PHOTO_FULLSCREEN) photoFullscreen: boolean = true;
@@ -669,6 +680,9 @@ export struct SettingsSection {
   @StorageLink(STORAGE_KEY_VIDEO_AUTO_PIP) videoAutoPip: boolean = true;
   @StorageLink(STORAGE_KEY_VIDEO_IMMERSIVE_FILL) videoImmersiveFill: boolean = false;
   @StorageLink(STORAGE_KEY_VIDEO_HOLD_SPEED) videoHoldSpeed: boolean = true;
+  @StorageLink(STORAGE_KEY_INLINE_VIDEO_HOLD_PLAY) inlineVideoHoldPlay: boolean = false;
+  @StorageLink(STORAGE_KEY_INLINE_VIDEO_OVERLAY_CONTROLS) inlineVideoOverlayControls: boolean = false;
+  @StorageLink(STORAGE_KEY_PAUSE_INLINE_VIDEO_ON_RETURN) pauseInlineVideoOnReturn: boolean = false;
   @StorageLink(STORAGE_KEY_VIDEO_HDR_ENHANCEMENT) private videoHdrEnhancement: boolean = DEFAULT_VIDEO_HDR_ENHANCEMENT;
   @StorageLink(STORAGE_KEY_VIDEO_DOUBLE_TAP_SEEK) private videoDoubleTapSeek: boolean = DEFAULT_VIDEO_DOUBLE_TAP_SEEK_ENABLED;
   @StorageLink(STORAGE_KEY_VIDEO_DOUBLE_TAP_SEEK_SECONDS) private videoDoubleTapSeekSeconds: number = DEFAULT_VIDEO_DOUBLE_TAP_SEEK_SECONDS;
@@ -1061,6 +1075,11 @@ export struct SettingsSection {
     }
   }
 
+  private setInlineVideoHoldPlay(index: number): void {
+    this.interactionSaved(mediaSettingsStore.saveInlineVideoHoldPlay(
+      getContext(this) as common.UIAbilityContext, index === 1));
+  }
+
   private setVideoFeedTapPause(value: boolean): void {
     const previous: boolean = this.videoFeedTapPause;
     this.videoFeedTapPause = value;
@@ -1368,6 +1387,8 @@ export struct SettingsSection {
   }
 
   private timelineColumnsIndex(): number {
+    if (this.timelineColumnsMode === TIMELINE_COLUMNS_FOUR) { return 5; }
+    if (this.timelineColumnsMode === TIMELINE_COLUMNS_FIVE) { return 6; }
     if (this.timelineColumnsMode === TIMELINE_COLUMNS_AUTO_TWO) { return 4; }
     if (this.timelineColumnsMode === TIMELINE_COLUMNS_ONE) {
       return 1;
@@ -1382,6 +1403,8 @@ export struct SettingsSection {
   }
 
   private timelineColumnsLabel(): Resource {
+    if (this.timelineColumnsMode === TIMELINE_COLUMNS_FOUR) { return $r('app.string.settings_timeline_columns_four'); }
+    if (this.timelineColumnsMode === TIMELINE_COLUMNS_FIVE) { return $r('app.string.settings_timeline_columns_five'); }
     if (this.timelineColumnsMode === TIMELINE_COLUMNS_AUTO_TWO) { return $r('app.string.settings_timeline_columns_auto_two'); }
     if (this.timelineColumnsMode === TIMELINE_COLUMNS_ONE) {
       return $r('app.string.settings_timeline_columns_one');
@@ -1405,6 +1428,10 @@ export struct SettingsSection {
       mode = TIMELINE_COLUMNS_THREE;
     } else if (index === 4) {
       mode = TIMELINE_COLUMNS_AUTO_TWO;
+    } else if (index === 5) {
+      mode = TIMELINE_COLUMNS_FOUR;
+    } else if (index === 6) {
+      mode = TIMELINE_COLUMNS_FIVE;
     }
     this.setTimelineColumns(mode);
   }
@@ -2617,7 +2644,9 @@ export struct SettingsSection {
           { value: $r('app.string.settings_timeline_columns_one') },
           { value: $r('app.string.settings_timeline_columns_two') },
           { value: $r('app.string.settings_timeline_columns_three') },
-          { value: $r('app.string.settings_timeline_columns_auto_two') }
+          { value: $r('app.string.settings_timeline_columns_auto_two') },
+          { value: $r('app.string.settings_timeline_columns_four') },
+          { value: $r('app.string.settings_timeline_columns_five') }
         ])
           .selected(this.timelineColumnsIndex())
           .value(this.timelineColumnsLabel())
@@ -2836,6 +2865,25 @@ export struct SettingsSection {
     Column({ space: 16 }) {
       Text($r('app.string.settings_home_interaction')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Title_S'))
         .fontWeight(FontWeight.Bold).fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
+      Row({ space: 12 }) {
+        Column({ space: 4 }) {
+          Text($r('app.string.settings_home_header_action')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_L'))
+            .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
+          Text($r('app.string.settings_home_header_action_desc')).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M'))
+            .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
+        }.layoutWeight(1).alignItems(HorizontalAlign.Start)
+        Select([{ value: $r('app.string.search_title') }, { value: $r('app.string.follow_add_button') }])
+          .selected(this.homeHeaderAction === HOME_HEADER_FOLLOW ? 1 : 0)
+          .value(this.homeHeaderAction === HOME_HEADER_FOLLOW ? $r('app.string.follow_add_button') : $r('app.string.search_title'))
+          .onSelect((index: number): void => {
+            this.interactionSaved(interactionSettingsStore.saveHomeHeaderAction(getContext(this) as common.UIAbilityContext,
+              index === 1 ? HOME_HEADER_FOLLOW : HOME_HEADER_SEARCH));
+          }).id('settings-home-header-action')
+      }.width('100%')
+      this.AutoHideSwitchRow($r('app.string.settings_home_follow_suggestions'),
+        $r('app.string.settings_home_follow_suggestions_desc'), this.homeFollowSuggestions,
+        (value: boolean): void => { this.interactionSaved(interactionSettingsStore.saveHomeFollowSuggestions(
+          getContext(this) as common.UIAbilityContext, value)); })
       this.AutoHideSwitchRow($r('app.string.settings_confirm_app_exit'),
         $r('app.string.settings_confirm_app_exit_desc'), this.confirmAppExit,
         (value: boolean): void => { this.interactionSaved(interactionSettingsStore.saveConfirmAppExit(
@@ -2919,15 +2967,19 @@ export struct SettingsSection {
           }.layoutWeight(1).alignItems(HorizontalAlign.Start)
           Select([
             { value: $r('app.string.settings_compact_switch_tabs') },
-            { value: $r('app.string.settings_compact_switch_buttons') }
-          ]).selected(this.compactSwitchStyle === COMPACT_SWITCH_BUTTONS ? 1 : 0)
-            .value(this.compactSwitchStyle === COMPACT_SWITCH_BUTTONS ?
-              $r('app.string.settings_compact_switch_buttons') : $r('app.string.settings_compact_switch_tabs'))
+            { value: $r('app.string.settings_compact_switch_buttons') },
+            { value: $r('app.string.settings_compact_switch_segmented') }
+          ]).selected(this.compactSwitchStyle === COMPACT_SWITCH_SEGMENTED ? 2 :
+            this.compactSwitchStyle === COMPACT_SWITCH_BUTTONS ? 1 : 0)
+            .value(this.compactSwitchStyle === COMPACT_SWITCH_SEGMENTED ? $r('app.string.settings_compact_switch_segmented') :
+              this.compactSwitchStyle === COMPACT_SWITCH_BUTTONS ?
+                $r('app.string.settings_compact_switch_buttons') : $r('app.string.settings_compact_switch_tabs'))
             .selectedOptionFontColor(this.accentColor)
             .selectedOptionBgColor(fieldSurfaceColor(this.displayMode, this.darkSurface))
             .id('settings-compact-switch-style')
             .onSelect((index: number): void => {
-              this.compactSwitchStyle = index === 1 ? COMPACT_SWITCH_BUTTONS : COMPACT_SWITCH_TABS;
+              this.compactSwitchStyle = index === 2 ? COMPACT_SWITCH_SEGMENTED :
+                index === 1 ? COMPACT_SWITCH_BUTTONS : COMPACT_SWITCH_TABS;
               this.saveAppearance();
             })
         }.width('100%').alignItems(VerticalAlign.Center)
@@ -3775,6 +3827,13 @@ export struct SettingsSection {
         $r('app.string.settings_root_liquid_tab_indicator_desc'), this.rootLiquidTabIndicatorEnabled,
         (value: boolean): void => this.setRootLiquidTabIndicatorEnabled(value), !this.classicBottomBar)
       Divider().color($r('app.color.divider'))
+      this.AutoHideSwitchRow($r('app.string.settings_bottom_bar_visible'),
+        $r('app.string.settings_bottom_bar_visible_desc'), this.bottomBarVisible,
+        (value: boolean): void => {
+          if (!bottomBarSettingsStore.saveVisible(getContext(this) as common.UIAbilityContext, value)) {
+            promptAction.showToast({ message: $r('app.string.settings_interaction_save_failed') });
+          }
+        })
       this.CustomBottomBarSection()
       TabOrderSettings({ home: false })
       Divider().color($r('app.color.divider'))
@@ -3890,6 +3949,22 @@ export struct SettingsSection {
   @Builder
   private PlaybackContent(): void {
     Column() {
+      Row({ space: 14 }) {
+        Column({ space: 4 }) {
+          Text($r('app.string.settings_inline_video_hold')).fontFamily(this.appFontFamily)
+            .fontSize($r('sys.float.Subtitle_L'))
+            .fontColor(pageTextColor($r('app.color.text_primary'), this.pageBackgroundValue, Color.Transparent))
+          Text($r('app.string.settings_inline_video_hold_desc')).fontFamily(this.appFontFamily)
+            .fontSize($r('sys.float.Body_M'))
+            .fontColor(pageTextColor($r('app.color.text_secondary'), this.pageBackgroundValue, Color.Transparent))
+        }.layoutWeight(1).alignItems(HorizontalAlign.Start)
+        Select([{ value: $r('app.string.settings_inline_video_hold_menu') },
+          { value: $r('app.string.settings_inline_video_hold_play') }])
+          .selected(this.inlineVideoHoldPlay ? 1 : 0)
+          .value(this.inlineVideoHoldPlay ? $r('app.string.settings_inline_video_hold_play') :
+            $r('app.string.settings_inline_video_hold_menu'))
+          .onSelect((index: number): void => this.setInlineVideoHoldPlay(index))
+      }.width('100%').padding({ left: 20, right: 20, top: 16, bottom: 16 })
       Column() {
       this.AutoHideSwitchRow($r('app.string.settings_video_download_button'),
         $r('app.string.settings_video_download_button_desc'), this.videoDownloadButton,
@@ -3945,6 +4020,14 @@ export struct SettingsSection {
       Column() {
         this.VideoFeedLayoutContent()
         this.CompactVideoLayoutContent()
+        this.AutoHideSwitchRow($r('app.string.settings_inline_video_overlay_controls'),
+          $r('app.string.settings_inline_video_overlay_controls_desc'), this.inlineVideoOverlayControls,
+          (value: boolean): void => { this.interactionSaved(mediaSettingsStore.saveInlineVideoOverlayControls(
+            getContext(this) as common.UIAbilityContext, value)); })
+        this.AutoHideSwitchRow($r('app.string.settings_pause_inline_video_on_return'),
+          $r('app.string.settings_pause_inline_video_on_return_desc'), this.pauseInlineVideoOnReturn,
+          (value: boolean): void => { this.interactionSaved(mediaSettingsStore.savePauseInlineVideoOnReturn(
+            getContext(this) as common.UIAbilityContext, value)); })
         this.AutoHideSwitchRow($r('app.string.video_feed_controls_always_visible'),
           $r('app.string.video_feed_controls_always_visible_desc'), this.videoFeedControlsAlwaysVisible,
           (value: boolean): void => { this.interactionSaved(mediaSettingsStore.saveVideoFeedControlsAlwaysVisible(
@@ -4989,6 +5072,8 @@ export struct SettingsSection {
             Blank()
           } else if (this.children().length > 0) {
             this.CategoryContent()
+          } else if (this.section === 'sidebar') {
+            Column() { SidebarSettings() }.width('100%').padding({ left: 20, right: 20, top: 16, bottom: 28 })
           } else if (this.section === 'anti_peep') {
             this.AntiPeepContent()
           } else if (this.section === 'theme') {

@@ -1,3 +1,4 @@
+const { withDohHttpMock } = require('./doh-http-fixture.cjs');
 const fs = require('node:fs');
 const test = require('node:test');
 const assert = require('node:assert/strict');
@@ -10,7 +11,7 @@ function evaluate(file, dependencies, globals = {}) {
   } }).outputText;
   const exports = {};
   new Function('exports', 'require', '$r', ...Object.keys(globals), code)(exports,
-    id => { if (id in dependencies) return dependencies[id]; throw Error('Unexpected dependency ' + id); },
+    id => { withDohHttpMock(dependencies); if (id in dependencies) return dependencies[id]; throw Error('Unexpected dependency ' + id); },
     value => value, ...Object.values(globals));
   return exports;
 }
@@ -29,7 +30,8 @@ function fixture() {
       putSync: (key, value) => { if (failWrites) throw Error('disk full'); values.set(key, value); }, flushSync() {} };
   } };
   const AppStorage = { get: key => storage.get(key), setOrCreate: (key, value) => storage.set(key, value) };
-  const home = evaluate('services/HomeTimelineStore', { '@kit.ArkData': { preferences } }, { AppStorage }).homeTimelineStore;
+  const homeModule = evaluate('services/HomeTimelineStore', { '@kit.ArkData': { preferences } }, { AppStorage });
+  const home = homeModule.homeTimelineStore;
   const lists = evaluate('services/PinnedHomeListStore', {
     '@kit.ArkData': { preferences }, './HomeTimelineStore': { homeTimelineStore: home }
   }).pinnedHomeListStore;
@@ -50,8 +52,15 @@ function fixture() {
       return typeof value === 'function' ? value() : { ok: true, body: JSON.stringify(value) };
     }
   };
+  const groups = evaluate('services/LocalAccountGroupStore', {
+    '@kit.ArkData': { preferences },
+    './HomeTimelineStore': { homeTimelineStore: home, TimelineTopic: homeModule.TimelineTopic },
+    './XPrivateClient': { xPrivateClient: client }
+  }).localAccountGroupStore;
   const { HomeTimelineSourceStore } = evaluate('services/HomeTimelineSourceStore', {
     '@kit.ArkData': { preferences }, './HomeTimelineStore': { homeTimelineStore: home },
+    './HomeTopicStore': { homeTopicStore: { load() {}, refresh: async () => true,
+      setPinned: async (context, source, pinned) => home.setPinned(context, source.id, pinned) } },
     './PinnedHomeListStore': { pinnedHomeListStore: lists },
     './ListStateStore': { copyList: row => ({ ...row }), listStateStore: {
       update: (user, row) => states.set(user + ':' + row.id, row),
@@ -59,10 +68,11 @@ function fixture() {
     } },
     './XCommunityParser': { XCommunityParser: { parse: body => JSON.parse(body) } },
     './XListParser': { XListParser: { directory: body => JSON.parse(body) } },
-    './XPrivateClient': { xPrivateClient: client }
+    './XPrivateClient': { xPrivateClient: client },
+    './LocalAccountGroupStore': { localAccountGroupStore: groups }
   });
   const store = new HomeTimelineSourceStore(); lists.load({}, viewer); store.load({}, viewer);
-  return { home, lists, store, calls, client,
+  return { home, lists, store, calls, client, groups,
     restart() { const next = new HomeTimelineSourceStore(); next.load({}, viewer); return next; },
     switchAccount(value) { viewer = value; generation++; lists.load({}, viewer); store.load({}, viewer); },
     setPages(a, b) { listPages = a; communityPages = b; },
@@ -88,6 +98,20 @@ test('communities appear beside lists and topics; each community keeps its own r
   assert.equal(f.home.topicById('community:a').rankingMode, 'Likes');
   assert.equal(restarted.setRanking({}, 'a', 'made-up-ranking'), false);
   assert.equal(restarted.setRanking({}, 'unavailable', 'Likes'), false);
+});
+
+test('local groups pin and reorder beside remote sources without network writes and survive restart', async () => {
+  const f = fixture();
+  const id = f.groups.upsert({}, { id: '', name: 'Games', icon: '🎮', members: [], pinned: false, version: 0 }, 'alice');
+  assert.ok(id);
+  const source = f.home.topicById('local-group:' + id);
+  f.store.setCommunityPinned({}, community('a'), true);
+  assert.equal(await f.store.setPinned({}, source, true), true);
+  assert.equal(f.store.setOrder({}, [source.id, 'community:a']), true);
+  f.restart(); assert.deepEqual(f.home.pinnedTopics().map(row => row.id), [source.id, 'community:a']);
+  assert.equal(await f.store.setPinned({}, source, false), true);
+  assert.equal(f.home.isPinned(source.id), false); assert.deepEqual(f.calls, []);
+  f.restart(); assert.equal(f.home.isPinned(source.id), false); assert.equal(f.groups.get(id).name, 'Games');
 });
 
 test('mixed source ordering persists, validates all ids and cannot leak into another account', () => {

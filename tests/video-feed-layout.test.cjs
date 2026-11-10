@@ -20,7 +20,7 @@ const playerMethods = methodsFrom('entry/src/main/ets/components/PostMedia.ets',
   'videoSourceWidth', 'videoSourceHeight', 'videoFrameControlsInset', 'videoFrameHeight',
   'videoFrameWidth', 'hasFeedControlStrip', 'videoLayerHeight', 'playerContainerHeight',
   'videoFrameAlignment', 'fillsSmallFeedGap', 'feedPlayerBarHeight',
-  'hideInlineVideoControls', 'showsProgressBelowVideo', 'applyVideoScaleType', 'canControlPlayer', 'controlsShouldStayVisible',
+  'hideInlineVideoControls', 'usesInlineOverlayControls', 'showsProgressBelowVideo', 'applyVideoScaleType', 'canControlPlayer', 'controlsShouldStayVisible',
   'onControlsVisibilityChanged', 'toggleControls', 'scheduleHide', 'holdControls'
 ]);
 const playerCode = ts.transpileModule(`class Harness { ${playerMethods} }`, {
@@ -181,6 +181,18 @@ test('single taps hide and restore feed chrome without resizing or resuming a pa
       assert.deepEqual(observed, [false, true]);
     }
   }
+});
+
+test('portrait control footer is inert so only the video surface restores controls', () => {
+  const source = fs.readFileSync('entry/src/main/ets/components/PostMedia.ets', 'utf8');
+  const start = source.indexOf('if (this.hasFeedControlStrip() && !this.compactFeedLayout) {');
+  const end = source.indexOf('} else if (this.showsProgressBelowVideo()) {', start);
+  assert.ok(start >= 0 && end > start, 'portrait control footer exists');
+  const footer = source.slice(start, end);
+  assert.doesNotMatch(footer, /\.onClick\s*\(/,
+    'the hidden footer must not be a second controls entry point');
+  assert.match(footer, /HitTestMode\.None/,
+    'hidden controls stay outside the hit-test tree');
 });
 
 test('native decoded dimensions replace stale attachment dimensions, and unknown sizes remain bounded', () => {

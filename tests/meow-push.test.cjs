@@ -1,3 +1,4 @@
+const { withDohHttpMock } = require('./doh-http-fixture.cjs');
 const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
@@ -26,7 +27,7 @@ function setup() {
   };
   const code=ts.transpileModule(fs.readFileSync('entry/src/main/ets/services/MeowPushService.ets','utf8'),{
     compilerOptions:{target:ts.ScriptTarget.ES2020,module:ts.ModuleKind.CommonJS}}).outputText;
-  const loaded={exports:{}};new Function('require','module','exports',code)(id=>deps[id]||{},loaded,loaded.exports);
+  const loaded={exports:{}};new Function('require','module','exports',code)(id=>(() => { withDohHttpMock(deps); return deps[id]||{}; })(),loaded,loaded.exports);
   const service=new loaded.exports.MeowPushService();
   const draft=()=>Object.assign(new loaded.exports.MeowPushConfig(),{relayBase:'https://push.example.org/',relayToken:'token'.repeat(8),nickname:' User ',previews:false});
   return {service,draft,disk,requests,xRequests,hooks,exports:loaded.exports};

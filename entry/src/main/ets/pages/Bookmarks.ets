@@ -2,6 +2,11 @@ import { OfflineReadingLibrary } from '../components/OfflineReadingLibrary';
 import { offlineReadingStore, OfflineSaveResult } from '../services/OfflineReadingStore';
 import { DesktopLayout } from '../utils/DesktopLayout';
 import { AdaptivePostFeed } from '../components/AdaptivePostFeed';
+import {
+  STORAGE_KEY_TIMELINE_COLUMNS,
+  TIMELINE_COLUMNS_AUTO_TWO,
+  TIMELINE_COLUMNS_TWO
+} from '../services/TimelineSettingsStore';
 import { pageTextColor } from '../utils/ThemeColors';
 import { pageBackgroundActive } from '../services/PageBackgroundStore';
 import { appPageBackground } from '../components/PageBackgroundLayer';
@@ -70,6 +75,7 @@ export struct BookmarksPage {
   @StorageLink('harmonyx.title_bar_style_mode') titleBarStyleMode: number = 0;
   @StorageProp('harmonyx.desktop_layout') desktopLayoutEnabled: boolean = false;
   @StorageProp('harmonyx.breakpoint') windowBreakpoint: string = 'sm';
+  @StorageProp(STORAGE_KEY_TIMELINE_COLUMNS) private timelineColumnsMode: number = 0;
   @StorageLink(STORAGE_KEY_READ_ALOUD_ENTRY_ENABLED) readAloudEntryEnabled: boolean = false;
   @StorageLink(STORAGE_KEY_FILTER_ONLY_MEDIA) filterOnlyMedia: boolean = false;
   @StorageLink(STORAGE_KEY_FILTER_HIDE_REPOSTS) filterHideReposts: boolean = false;
@@ -121,6 +127,29 @@ export struct BookmarksPage {
   private text(resource: Resource): string {
     const context: common.UIAbilityContext = getContext(this) as common.UIAbilityContext;
     return context.resourceManager.getStringSync(resource);
+  }
+
+  private desktopLayout(): boolean {
+    return DesktopLayout.active(this.desktopLayoutEnabled, this.windowBreakpoint);
+  }
+
+  // A single-column phone feed needs the same native press/drag routing as Home.
+  // Explicit two-column choices and large/desktop layouts stay on WaterFlow.
+  private useTimelineWaterFlow(): boolean {
+    return this.desktopLayout() || ResponsiveLayout.isLarge(this.windowBreakpoint) ||
+      this.timelineColumnsMode === TIMELINE_COLUMNS_TWO ||
+      this.timelineColumnsMode === TIMELINE_COLUMNS_AUTO_TWO;
+  }
+
+  private useListFeed(): boolean {
+    return !this.useTimelineWaterFlow();
+  }
+
+  private feedStartOffset(): number {
+    if (this.useListFeed() || this.desktopLayout()) {
+      return 0;
+    }
+    return this.statusBarHeight + 60;
   }
 
   // The API's own message, so "HTTP 400" says which field X rejected.
@@ -378,6 +407,17 @@ export struct BookmarksPage {
   }
 
   @Builder
+  private BookmarkFeedHeader(): void {
+    if (this.useListFeed() && !this.desktopLayout()) {
+      Column()
+        .width('100%')
+        .height(this.statusBarHeight + 60)
+    }
+    this.BookmarkControls();
+    this.Content();
+  }
+
+  @Builder
   private BookmarkControls(): void {
     Column() {
       this.LibraryTabs()
@@ -619,11 +659,16 @@ export struct BookmarksPage {
         } else {
         Refresh({ refreshing: $$this.refreshing }) {
           AdaptivePostFeed({ scroller: this.scroller,
+            useList: this.useListFeed(),
             itemKeys: this.showCollections || this.loading ? [] : this.visiblePosts().map((post: Tweet): string => post.id),
+            lazyItems: true,
             feedId: 'bookmarks-post-feed',
-            startOffset: DesktopLayout.active(this.desktopLayoutEnabled, this.windowBreakpoint) ? 0 : this.statusBarHeight + 60,
+            startOffset: this.feedStartOffset(),
             endOffset: this.navigationIndicatorHeight + 24,
-            header: (): void => { this.BookmarkControls(); this.Content(); },
+            forwardMode: NestedScrollMode.SELF_FIRST,
+            backwardMode: NestedScrollMode.SELF_FIRST,
+            clipContent: !this.desktopLayout(),
+            header: (): void => this.BookmarkFeedHeader(),
             item: (index: number): void => this.BookmarkPost(this.visiblePosts()[index]),
             footer: (): void => this.BookmarkFooter(),
             onLoadMore: (): void => { if (!this.showCollections) { this.load(false); } },

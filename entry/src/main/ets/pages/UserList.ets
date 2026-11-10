@@ -359,6 +359,12 @@ export struct UserList {
         appPageBackground()
       Refresh({ refreshing: $$this.refreshing }) {
         List({ scroller: this.scroller }) {
+          if (this.mode === USER_LIST_FOLLOWING && this.userId === xPrivateClient.viewerId()) {
+            ListItem() {
+              Button($r('app.string.account_groups_manage')).width('100%').backgroundColor(Color.Transparent)
+                .onClick((): void => { this.pageStack.pushPath({ name: 'AccountGroups' }); })
+            }
+          }
           this.Content()
         }
         .width('100%')

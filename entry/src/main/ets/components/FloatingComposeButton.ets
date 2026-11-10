@@ -7,6 +7,7 @@ import { ColorMetrics, curves, display } from '@kit.ArkUI';
 import { HdsButton } from './HdsButton';
 import { GripHandManager } from '../utils/GripHandManager';
 import { SystemMaterialUtil } from '../utils/SystemMaterial';
+import { MaterialSurfaceHost } from './MaterialSurfaceHost';
 import { ComponentHdrHighlight } from '../utils/ComponentHdrHighlight';
 import { STORAGE_KEY_FLOATING_COMPOSE_MATERIAL_TINT } from '../services/InteractionSettingsStore';
 
@@ -398,24 +399,14 @@ export struct FloatingComposeButton {
     Stack({ alignContent: Alignment.TopStart }) {
     if (!this.hidden) {
     if (SystemMaterialUtil.isApi26OrAbove()) {
-      Navigation() {
-        Column()
-          .width('100%')
-          .height('100%')
-          .hitTestBehavior(HitTestMode.None)
-      }
-      .title({
-        builder: (): void => {
+      MaterialSurfaceHost({ surfaceHeight: FAB_SIZE,
+        surfaceContent: (): void => {
           this.FloatingActionButton();
-        },
-        height: FAB_SIZE
-      }, { barStyle: BarStyle.STACK })
-      .titleMode(NavigationTitleMode.Full)
-      .mode(NavigationMode.Stack)
-      .hideToolBar(true)
+        }
+      })
       .backgroundColor(Color.Transparent)
       .borderRadius(FAB_SIZE / 2)
-      .clip(true)
+      .clip(false)
       .width(FAB_SIZE)
       .height(FAB_SIZE)
       .position({ x: this.buttonX, y: this.buttonY })
@@ -443,6 +434,7 @@ export struct FloatingComposeButton {
     }
     .width('100%')
     .height('100%')
+    .clip(false)
     .hitTestBehavior(HitTestMode.Transparent)
     .onAreaChange((_old: Area, area: Area): void => this.updateViewport(area))
   }

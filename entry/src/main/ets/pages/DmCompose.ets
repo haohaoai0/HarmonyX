@@ -122,7 +122,7 @@ struct DmComposePage {
   private SearchField(): void {
     Search({ value: this.query, placeholder: $r('app.string.chat_search') })
       .keyboardAppearance(KeyboardAppearance.IMMERSIVE)
-      .height($r('app.float.chat_search_height')).borderRadius(24).clip(true)
+      .height($r('app.float.chat_search_height')).borderRadius(24).clip(!SystemMaterialUtil.isApi26OrAbove())
       .backgroundColor(SystemMaterialUtil.isApi26OrAbove() ? Color.Transparent : fieldSurfaceColor(this.displayMode, this.darkSurface))
       .fontColor($r('app.color.text_primary')).margin({ left: 16, right: 16, top: 4 })
       .attributeModifier(materialModifier(chatControlMaterial(this.accentColor)))

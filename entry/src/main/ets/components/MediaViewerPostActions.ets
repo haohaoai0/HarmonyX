@@ -4,7 +4,8 @@ import { common } from '@kit.AbilityKit';
 import { MaterialButton } from './MaterialButton';
 import { SystemMaterialUtil } from '../utils/SystemMaterial';
 import promptAction from '@ohos.promptAction';
-import { formatCount } from '../models/Tweet';
+import { formatPostCount } from '../utils/PostCountFormat';
+import { STORAGE_KEY_POST_COUNT_FORMAT } from '../services/PostDisplaySettingsStore';
 import { bookmarkCountAfter } from '../utils/PostMetadata';
 import type { Tweet } from '../models/Tweet';
 import { xPrivateClient, XPrivateResult } from '../services/XPrivateClient';
@@ -17,6 +18,7 @@ import { postLikeStore, STORAGE_KEY_POST_LIKES_REVISION } from '../services/Post
 // both optimistic updates and rollback redraw the material button content.
 @Component
 struct MediaViewerCountPill {
+  @StorageProp(STORAGE_KEY_POST_COUNT_FORMAT) private countFormatValue: number = 0;
   @StorageProp(APP_FONT_FAMILY_KEY) private appFontFamily: string = DEFAULT_APP_FONT_FAMILY;
   @Prop symbol: Resource = $r('sys.symbol.heart');
   @Prop count: number = 0;
@@ -27,14 +29,14 @@ struct MediaViewerCountPill {
   onAction: () => void = (): void => {};
 
   build(): void {
-    MaterialButton({ buttonWidth: '100%', buttonHeight: $r('app.float.media_viewer_action_height'), buttonRadius: 24,
+    MaterialButton({ nativeMaterialHost: true, buttonWidth: '100%', buttonHeight: $r('app.float.media_viewer_action_height'), buttonRadius: 24,
       surfaceColor: $r('app.color.media_viewer_control'), materialLevel: 1, applyShadow: true,
       adaptiveForeground: this.adaptiveForeground, lightColor: this.foreground, buttonEnabled: this.actionEnabled,
       accessibilityLabel: getContext(this).resourceManager.getStringSync(this.label),
       buttonMonopolizeEvents: true, onButtonClick: this.onAction }) {
       Row({ space: 7 }) {
         SymbolGlyph(this.symbol).fontSize(23).fontColor([this.foreground])
-        Text(formatCount(this.count)).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M'))
+        Text(formatPostCount(this.count, this.countFormatValue)).fontFamily(this.appFontFamily).fontSize($r('sys.float.Body_M'))
           .fontWeight(FontWeight.Bold).fontColor(this.foreground).maxLines(1).maxFontScale(1.2)
       }.justifyContent(FlexAlign.Center)
     }
@@ -156,7 +158,7 @@ export struct MediaViewerPostActions {
   @Builder
   private IconPill(symbol: Resource, color: ResourceColor, label: Resource,
     enabled: boolean, action: () => void): void {
-    MaterialButton({ buttonWidth: $r('app.float.media_viewer_action_height'),
+    MaterialButton({ nativeMaterialHost: true, buttonWidth: $r('app.float.media_viewer_action_height'),
       buttonHeight: $r('app.float.media_viewer_action_height'), buttonRadius: 24,
       surfaceColor: $r('app.color.media_viewer_control'), materialLevel: 1, applyShadow: true,
       adaptiveForeground: this.adaptiveForeground,

@@ -44,7 +44,7 @@ test('saved tab order ignores missing and duplicate IDs, and appends new tabs wi
 test('reordered and hidden bottom tabs retain logical page mapping for clicks, swipes and restoration', () => {
   const Root = methods('pages/Index', 'Index', ['classicBottomBarPages', 'isBottomBarPageEnabled', 'bottomBarPageIndex',
     'bottomBarPageAt', 'firstBottomBarPage'], { orderedTabIds: order.orderedTabIds, HOME_TAB_INDEX: 0 });
-  const root = Object.assign(new Root(), { bottomTabOrder: '4,0,3,2,1', bottomBarPagesMask: 25 });
+  const root = Object.assign(new Root(), { bottomTabOrder: '4,0,3,2,1', bottomBarPagesMask: 25, bottomBarVisible: true });
   assert.deepEqual(root.classicBottomBarPages(), [4, 0, 3]);
   assert.equal(root.bottomBarPageAt(0), 4);
   assert.equal(root.bottomBarPageIndex(0), 1);
@@ -62,7 +62,8 @@ test('home tab ordering keeps each timeline snapshot and selection attached to i
   const following = { timeline: ['following'], offset: 200 };
   const topic = { timeline: ['list'], offset: 300 };
   const home = Object.assign(new Home(), { homeTabOrder: 'following,list:1,for-you',
-    pinnedHomeTopics: [{ id: 'list:1', title: 'List', displayTitle: '' }], activeHomeTopicId: '', homeFeedMode: 0,
+    pinnedHomeTopics: [{ id: 'list:1', title: 'List', displayTitle: '' }], previewHomeTopic: null,
+    activeHomeTopicId: '', homeFeedMode: 0,
     forYouSnapshot: recommended, followingSnapshot: following, topicSnapshots: new Map([['list:1', topic]]) });
   assert.equal(home.homeTabIndex(), 2);
   assert.equal(home.homeSnapshotAt(0), following);
@@ -92,8 +93,8 @@ test('profile touches inside the post feed reach its own native drag recognizer,
 });
 
 test('action visibility, analytics and counts apply consistently without inventing absent bookmark counts', () => {
-  const Bar = methods('components/PostActionBar', 'PostActionBar', ['ids', 'count', 'showsCount', 'minimumWidth', 'contentWidth']);
-  const bar = Object.assign(new Bar(), { actionsMask: 127, countsVisible: true, readOnly: false, detail: false,
+  const { createActionBar } = require('./post-action-layout-fixture.cjs');
+  const bar = createActionBar({ actionsMask: 127, countsVisible: true, readOnly: false, detail: false,
     translationEnabled: false, replyCount: 100, repostCount: 0, likeCount: 12000, viewCount: 0, bookmarkCount: -1, availableWidth: 300 });
   assert.deepEqual(bar.ids(), [1, 2, 4, 8, 16, 32]);
   assert.equal(bar.showsCount(2), false);
@@ -105,7 +106,9 @@ test('action visibility, analytics and counts apply consistently without inventi
   assert.deepEqual(bar.ids(), [4, 32]);
   assert.equal(bar.contentWidth(), 1200, 'remaining actions still span the row');
   bar.availableWidth = 70;
-  assert.equal(bar.contentWidth(), 90, 'narrow panes scroll rather than overlap counts');
+  assert.equal(bar.contentWidth(), 70, 'packed actions remain within the card');
+  assert.equal(bar.packedActions(), true);
+  assert.deepEqual(bar.visibleIds(), [4]);
   bar.countsVisible = false;
   assert.equal(bar.showsCount(4), false);
   bar.detail = true;
