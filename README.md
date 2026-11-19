@@ -25,10 +25,10 @@
 
 请通过 [Issues](https://github.com/haohaoai0/HarmonyX/issues) 反馈问题，并注明应用版本、设备型号、系统版本和复现步骤。请勿公开账号凭据或私人信息。
 
-## 致谢与许可证
+## 发行说明与第三方许可
 
-Harmony X 基于 [Abhi-Flex1/OpenTwit](https://github.com/Abhi-Flex1/OpenTwit) 二次开发。保留上游 Apache-2.0 许可证及适用的第三方许可和署名。
+Harmony X 当前采用闭源方式发行，本仓库不公开应用源码。
 
-原有开源版本的许可文本见 [LICENSE](LICENSE)，第三方署名及许可文本见 [licenses](licenses/README.md)。
+Harmony X 基于 [Abhi-Flex1/OpenTwit](https://github.com/Abhi-Flex1/OpenTwit) 二次开发。所使用的上游及第三方组件仍遵循各自许可证，许可文本与署名见 [第三方许可](licenses/README.md)。这些说明适用于相应组件，不表示 Harmony X 应用源码在本仓库开源。
 
 历史更新说明见 [更新记录](CHANGELOG.md)。

@@ -25,10 +25,10 @@ Choose a `.hap` or `.app.zip` installation package under the release's **Assets*
 
 Report problems through [Issues](https://github.com/haohaoai0/HarmonyX/issues), including the app version, device model, system version, and reproduction steps. Do not share account credentials or private information.
 
-## Credits and licenses
+## Distribution and third-party licenses
 
-Harmony X is based on [Abhi-Flex1/OpenTwit](https://github.com/Abhi-Flex1/OpenTwit). The upstream Apache-2.0 license and applicable third-party licenses and notices are retained.
+Harmony X is currently distributed as a closed-source application. This repository does not publish application source code.
 
-See [LICENSE](LICENSE) for the license text of previously released open source versions, and [licenses](licenses/README.md) for third-party notices and license texts.
+Harmony X is based on [Abhi-Flex1/OpenTwit](https://github.com/Abhi-Flex1/OpenTwit). Upstream and third-party components remain subject to their respective licenses; see [third-party notices and licenses](licenses/README.md). These notices apply to the corresponding components and do not indicate that Harmony X application source code is published in this repository.
 
 See the [release history](CHANGELOG.md) for previous release notes.
