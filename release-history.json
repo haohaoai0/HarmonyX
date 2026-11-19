@@ -1,0 +1,453 @@
+[
+  {
+    "tag_name": "v4.2.5",
+    "name": "Harmony X 4.2.5",
+    "original_created_at": "2026-10-15T11:18:13Z",
+    "original_published_at": "2026-11-18T15:33:41Z",
+    "prerelease": false,
+    "assets": [
+      {
+        "name": "HarmonyX-v4.2.5-unsigned.app.zip",
+        "size": 88817485,
+        "digest": "sha256:2753ca387e7bb4927bf5284170d0596ad81ab30abcf1581e0dbf458d431035fb"
+      },
+      {
+        "name": "HarmonyX-v4.2.5-unsigned.hap",
+        "size": 133128455,
+        "digest": "sha256:71a39f0cbf2fac7750f57ac0a7d4609f16fa843366a17b146fec234e45b93bda"
+      }
+    ]
+  },
+  {
+    "tag_name": "v4.2.1",
+    "name": "Harmony X 4.2.1",
+    "original_created_at": "2026-10-15T11:18:13Z",
+    "original_published_at": "2026-11-16T16:30:15Z",
+    "prerelease": false,
+    "assets": [
+      {
+        "name": "HarmonyX-v4.2.1-unsigned.app.zip",
+        "size": 87475600,
+        "digest": "sha256:43e2bd34424653f4997ccdd8dda9f9cee95083928d5c23301f1d18356fabe48e"
+      },
+      {
+        "name": "HarmonyX-v4.2.1-unsigned.hap",
+        "size": 131721915,
+        "digest": "sha256:9eded934b1d2de61e9660f825346e145e091e462dea617083ed5f7bece76012a"
+      }
+    ]
+  },
+  {
+    "tag_name": "v4.2.0",
+    "name": "Harmony X 4.2.0",
+    "original_created_at": "2026-10-15T11:18:13Z",
+    "original_published_at": "2026-11-15T15:20:52Z",
+    "prerelease": false,
+    "assets": [
+      {
+        "name": "HarmonyX-v4.2.0-unsigned.app.zip",
+        "size": 87478220,
+        "digest": "sha256:77803ff65fa624249fb05f0ee684032b68339433d44731a5f91bfb9b83299604"
+      },
+      {
+        "name": "HarmonyX-v4.2.0-unsigned.hap",
+        "size": 131715833,
+        "digest": "sha256:556aa63da284080704e806bffb99ab44a513fdd1d7d2999e21eaa42228d87c69"
+      }
+    ]
+  },
+  {
+    "tag_name": "v4.0.0",
+    "name": "Harmony X 4.0.0",
+    "original_created_at": "2026-10-15T11:18:13Z",
+    "original_published_at": "2026-11-12T17:27:33Z",
+    "prerelease": false,
+    "assets": [
+      {
+        "name": "HarmonyX-v4.0.0-unsigned.app.zip",
+        "size": 72048814,
+        "digest": "sha256:41faeea35acc1957b4c88a513695193ce559cdd96b9c29454c7407a99195f01d"
+      },
+      {
+        "name": "HarmonyX-v4.0.0-unsigned.hap",
+        "size": 109164445,
+        "digest": "sha256:392870bca4cee5a7b81fb54bc55bfbd7143acedcaf2d400968ee66124caf8282"
+      }
+    ]
+  },
+  {
+    "tag_name": "v3.9.0",
+    "name": "Harmony X 3.9.0",
+    "original_created_at": "2026-11-10T13:49:21Z",
+    "original_published_at": "2026-11-10T13:51:53Z",
+    "prerelease": false,
+    "assets": [
+      {
+        "name": "entry-default-signed.hap",
+        "size": 108408803,
+        "digest": "sha256:3f68442328d73aca29888df457dd6f4c88d77390c1d5278dffbb81920b944438"
+      },
+      {
+        "name": "HarmonyX-v3.9.0-unsigned.app.zip",
+        "size": 71444555,
+        "digest": "sha256:dca63571df8adab73fe8f85ed384ec6a2ecfb30e07e26ac5585be9f2b000653b"
+      }
+    ]
+  },
+  {
+    "tag_name": "v3.8.0",
+    "name": "Harmony X 3.8.0",
+    "original_created_at": "2026-10-15T11:18:13Z",
+    "original_published_at": "2026-10-31T15:09:06Z",
+    "prerelease": false,
+    "assets": [
+      {
+        "name": "HarmonyX-v3.8.0-unsigned.app.zip",
+        "size": 71514451,
+        "digest": "sha256:0f56fbab45de5f8e1e215ddd8f7ad0e5e99d0ec69d2581b0fff3f55748721a0f"
+      },
+      {
+        "name": "HarmonyX-v3.8.0-unsigned.hap",
+        "size": 108058055,
+        "digest": "sha256:56e03f90caa7e72ea8527e6109f08a56d2d729021b57776836397c8a358bf913"
+      }
+    ]
+  },
+  {
+    "tag_name": "v3.7.0",
+    "name": "Harmony X 3.7.0",
+    "original_created_at": "2026-10-15T11:18:13Z",
+    "original_published_at": "2026-10-28T16:20:42Z",
+    "prerelease": false,
+    "assets": [
+      {
+        "name": "HarmonyX-v3.7.0-unsigned.app.zip",
+        "size": 71413064,
+        "digest": "sha256:309c45f39d1d3ce67fad9a24adb7b95a0866aa877859d08834a0abc9ba796ca0"
+      },
+      {
+        "name": "HarmonyX-v3.7.0-unsigned.hap",
+        "size": 107840824,
+        "digest": "sha256:1b59672b54af11a89843a1d11f8c2891b7782ad5dece91a9f2c0e6196b6ae530"
+      }
+    ]
+  },
+  {
+    "tag_name": "v3.6.0",
+    "name": "Harmony X 3.6.0",
+    "original_created_at": "2026-10-15T11:18:13Z",
+    "original_published_at": "2026-10-26T23:09:54Z",
+    "prerelease": false,
+    "assets": [
+      {
+        "name": "HarmonyX-v3.6.0-unsigned.app.zip",
+        "size": 71365189,
+        "digest": "sha256:e4774c9dfe31b22684d081ed5b157fce0f9f08d565164b61ef098715f10a728c"
+      },
+      {
+        "name": "HarmonyX-v3.6.0-unsigned.hap",
+        "size": 107722124,
+        "digest": "sha256:f16e2fa6b90e65dd1dd4de6eb0039952bc943bc0560658cab41a22bd805eec11"
+      }
+    ]
+  },
+  {
+    "tag_name": "v3.5.0",
+    "name": "Harmony X 3.5.0",
+    "original_created_at": "2026-10-15T11:18:13Z",
+    "original_published_at": "2026-10-24T16:59:18Z",
+    "prerelease": false,
+    "assets": [
+      {
+        "name": "HarmonyX-v3.5.0-unsigned.app.zip",
+        "size": 66736216,
+        "digest": "sha256:bfa7bcdf3d770f52297b31def03e71f9636460dc92d13a2f8fd44eadd8b270a0"
+      },
+      {
+        "name": "HarmonyX-v3.5.0-unsigned.hap",
+        "size": 97513170,
+        "digest": "sha256:8e671ddbf7ee64f23b7e8697310c0afa08f3a0e64db8bf03462c44042a404cf9"
+      }
+    ]
+  },
+  {
+    "tag_name": "v3.4.0",
+    "name": "Harmony X 3.4.0",
+    "original_created_at": "2026-10-15T11:18:13Z",
+    "original_published_at": "2026-10-21T18:14:17Z",
+    "prerelease": false,
+    "assets": [
+      {
+        "name": "HarmonyX-v3.4.0-unsigned.app.zip",
+        "size": 66588046,
+        "digest": "sha256:0784bcb559ec54de3ab1e0fee11854e0d6a1fd51cf8b43c1b0abb18f25b49d8d"
+      },
+      {
+        "name": "HarmonyX-v3.4.0-unsigned.hap",
+        "size": 97159889,
+        "digest": "sha256:ea595e932d217ac6159c4f65bc1a0deab8919a65570f82dc853e4dde158b7a4a"
+      }
+    ]
+  },
+  {
+    "tag_name": "v3.3.0",
+    "name": "Harmony X 3.3.0",
+    "original_created_at": "2026-10-15T11:18:13Z",
+    "original_published_at": "2026-10-20T18:01:42Z",
+    "prerelease": false,
+    "assets": [
+      {
+        "name": "HarmonyX-v3.3.0-unsigned.app.zip",
+        "size": 40728819,
+        "digest": "sha256:8460835c8b381d4470fe9fe059b0c25f381abddbe015258274008a3563fcc5e2"
+      },
+      {
+        "name": "HarmonyX-v3.3.0-unsigned.hap",
+        "size": 70961057,
+        "digest": "sha256:25393a35712d6e5d9471bc3ee952a666179854c99efedc4317f53707fa107d54"
+      }
+    ]
+  },
+  {
+    "tag_name": "v3.2.0",
+    "name": "Harmony X 3.2.0",
+    "original_created_at": "2026-10-15T11:18:13Z",
+    "original_published_at": "2026-10-19T23:26:05Z",
+    "prerelease": false,
+    "assets": [
+      {
+        "name": "HarmonyX-v3.2.0-unsigned.app.zip",
+        "size": 40594511,
+        "digest": "sha256:e0766cfb5fdaff33663e14bece45954636502a6a441cd50062dc2ad9a41bd959"
+      },
+      {
+        "name": "HarmonyX-v3.2.0-unsigned.hap",
+        "size": 70589904,
+        "digest": "sha256:4e65e3af3374738c707b80a0cbec682548e4a4459af2e85eef7b8d67cbc2ca45"
+      }
+    ]
+  },
+  {
+    "tag_name": "v3.1.0",
+    "name": "Harmony X 3.1.0",
+    "original_created_at": "2026-10-15T11:18:13Z",
+    "original_published_at": "2026-10-18T13:23:45Z",
+    "prerelease": false,
+    "assets": [
+      {
+        "name": "HarmonyX-v3.1.0-unsigned.app.zip",
+        "size": 35072631,
+        "digest": "sha256:297765f4e968db87a82e8fb0c95e4fe43a8bb8ce49f727648af73a7c0854d94d"
+      },
+      {
+        "name": "HarmonyX-v3.1.0-unsigned.hap",
+        "size": 64615865,
+        "digest": "sha256:83ef6bbfdc3d7132afd5ec9e2c8ba9df73ea75dfba58284ccb9ce399a443b652"
+      }
+    ]
+  },
+  {
+    "tag_name": "v3.0.0",
+    "name": "Harmony X 3.0.0",
+    "original_created_at": "2026-10-15T11:18:13Z",
+    "original_published_at": "2026-10-15T16:51:27Z",
+    "prerelease": false,
+    "assets": [
+      {
+        "name": "HarmonyX-v3.0.0-unsigned.app.zip",
+        "size": 24561202,
+        "digest": "sha256:01d63906c5a3d11bb02317ae51c3815dc20f72ba5c6e3ffbde8fa23f9981db40"
+      },
+      {
+        "name": "HarmonyX-v3.0.0-unsigned.hap",
+        "size": 49877465,
+        "digest": "sha256:2d56932c53345eb21cfe7bbdf69a8d23cecbfb7ba91aa582578bd537179f5c34"
+      }
+    ]
+  },
+  {
+    "tag_name": "v2.9.0",
+    "name": "Harmony X 2.9.0",
+    "original_created_at": "2026-09-13T08:17:33Z",
+    "original_published_at": "2026-10-14T19:11:29Z",
+    "prerelease": false,
+    "assets": [
+      {
+        "name": "HarmonyX-v2.9.0-unsigned.app.zip",
+        "size": 22428921,
+        "digest": "sha256:2bb55819a6de8079a70c7ccd5e2857fb3fe119bc7ee34dc699c3ac59d414c3fb"
+      },
+      {
+        "name": "HarmonyX-v2.9.0-unsigned.hap",
+        "size": 47513085,
+        "digest": "sha256:1736f781a5fdab57e58eeb1c4874d2b142026d7f45f14bf0addb85886627535c"
+      }
+    ]
+  },
+  {
+    "tag_name": "v2.8.0",
+    "name": "Harmony X 2.8.0",
+    "original_created_at": "2026-09-13T08:17:33Z",
+    "original_published_at": "2026-10-12T18:53:13Z",
+    "prerelease": false,
+    "assets": [
+      {
+        "name": "HarmonyX-v2.8.0-unsigned.app.zip",
+        "size": 22253504,
+        "digest": "sha256:8a3945036f0db6f6a80bdf85b26f71fd08a7e7a953f4a0d101bb57ca8cdc3fde"
+      },
+      {
+        "name": "HarmonyX-v2.8.0-unsigned.hap",
+        "size": 47136768,
+        "digest": "sha256:1cf43b14917934132e409b3fdcc07ecd8165de0526a2ac51489b44d6f5d619a5"
+      }
+    ]
+  },
+  {
+    "tag_name": "v2.7.0",
+    "name": "Harmony X 2.7.0",
+    "original_created_at": "2026-09-13T08:17:33Z",
+    "original_published_at": "2026-10-11T17:04:04Z",
+    "prerelease": false,
+    "assets": [
+      {
+        "name": "HarmonyX-v2.7.0-unsigned.app.zip",
+        "size": 20575366,
+        "digest": "sha256:037aa008af91e60d42ca35bc8a630558c45d9e8a4cc4ac7534e3e50b3b05195e"
+      },
+      {
+        "name": "HarmonyX-v2.7.0-unsigned.hap",
+        "size": 45176691,
+        "digest": "sha256:77368d346728f0d1710dcd66f29565b1847f095c04828fd3c916e000d8437160"
+      }
+    ]
+  },
+  {
+    "tag_name": "v2.6.0",
+    "name": "Harmony X v2.6.0",
+    "original_created_at": "2026-09-13T08:17:33Z",
+    "original_published_at": "2026-10-11T05:50:22Z",
+    "prerelease": false,
+    "assets": [
+      {
+        "name": "HarmonyX-v2.6.0-unsigned.app.zip",
+        "size": 20492205,
+        "digest": "sha256:76ed79bf6f84296a717a5a7a208a676d0d441ccc62d5071b2a32b8b13c8edefd"
+      },
+      {
+        "name": "HarmonyX-v2.6.0-unsigned.hap",
+        "size": 44943452,
+        "digest": "sha256:7b3df26f7cecc8345dc04af6a1ef05f6147dca43e059447abe8d200c5df35fc2"
+      }
+    ]
+  },
+  {
+    "tag_name": "v2.5.0",
+    "name": "Harmony X v2.5.0",
+    "original_created_at": "2026-09-13T08:17:33Z",
+    "original_published_at": "2026-10-09T18:53:07Z",
+    "prerelease": false,
+    "assets": [
+      {
+        "name": "HarmonyX-v2.5.0-unsigned.app.zip",
+        "size": 19671820,
+        "digest": "sha256:580ef7186aca741a189272ec11d80070d57c1c5cc07fce929d820c46fb97e904"
+      },
+      {
+        "name": "HarmonyX-v2.5.0-unsigned.hap",
+        "size": 42709575,
+        "digest": "sha256:3aa03bc94c055f433c84c0e82d27d9732e2a586893bb4dc1829bbb226e27552a"
+      }
+    ]
+  },
+  {
+    "tag_name": "v2.4.2",
+    "name": "Harmony X v2.4.2",
+    "original_created_at": "2026-09-13T08:17:33Z",
+    "original_published_at": "2026-10-07T10:13:51Z",
+    "prerelease": false,
+    "assets": [
+      {
+        "name": "HarmonyX-v2.4.2-unsigned.app.zip",
+        "size": 19482863,
+        "digest": "sha256:c41370b0dd2ab3bfbf975de49cc26994cbb89567c4c01b7b997009d3b16b0acc"
+      },
+      {
+        "name": "HarmonyX-v2.4.2-unsigned.hap",
+        "size": 42266840,
+        "digest": "sha256:b2250d3c7b21579898f1772b5bee73d350f9fd8b73ebcf78736b80d85134e533"
+      }
+    ]
+  },
+  {
+    "tag_name": "v2.4.0",
+    "name": "Harmony X v2.4.0",
+    "original_created_at": "2026-09-13T08:17:33Z",
+    "original_published_at": "2026-10-07T03:41:55Z",
+    "prerelease": false,
+    "assets": [
+      {
+        "name": "HarmonyX-v2.4.0-unsigned.app.zip",
+        "size": 19473407,
+        "digest": "sha256:80c7d515168f325c0fcfcdb97e15a0f1ee0fe6a6036d997da72a5205fef880c8"
+      },
+      {
+        "name": "HarmonyX-v2.4.0-unsigned.hap",
+        "size": 42247156,
+        "digest": "sha256:d309f9e3fdee96a2ddbe9ae66e0947d20315fb6c50c106e145aedf22394a67b5"
+      }
+    ]
+  },
+  {
+    "tag_name": "v2.3.0",
+    "name": "Harmony X v2.3.0",
+    "original_created_at": "2026-09-13T08:17:33Z",
+    "original_published_at": "2026-10-06T17:44:40Z",
+    "prerelease": false,
+    "assets": [
+      {
+        "name": "HarmonyX-v2.3.0-unsigned.app.zip",
+        "size": 16912010,
+        "digest": "sha256:9cdb46822b2786b4fd7de1152d2cce0e0fa4bf0d18ba3c61a1e7cd1d62160518"
+      },
+      {
+        "name": "HarmonyX-v2.3.0-unsigned.hap",
+        "size": 30924576,
+        "digest": "sha256:12a38d05b1a0487b04c373d4c862b9ea0eb8cb5694d0e53ec932f2bb127248bb"
+      }
+    ]
+  },
+  {
+    "tag_name": "v2.2.0",
+    "name": "Harmony X v2.2.0",
+    "original_created_at": "2026-09-13T08:17:33Z",
+    "original_published_at": "2026-10-04T14:28:19Z",
+    "prerelease": false,
+    "assets": [
+      {
+        "name": "HarmonyX-v2.2.0-unsigned.app.zip",
+        "size": 16691215,
+        "digest": "sha256:70d454ff62b5fc52cdb30a6367e1548eafaaecec89d6278920e14bff54565f49"
+      },
+      {
+        "name": "HarmonyX-v2.2.0-unsigned.hap",
+        "size": 30430270,
+        "digest": "sha256:5b12a7c9f141fa55385612b7f4fe3a14bb668a188841b9bda1ab7ddb57fde5f0"
+      }
+    ]
+  },
+  {
+    "tag_name": "v1.0.0",
+    "name": "Harmony X v1.0.0",
+    "original_created_at": "2026-09-13T08:17:33Z",
+    "original_published_at": "2026-09-13T08:17:57Z",
+    "prerelease": false,
+    "assets": [
+      {
+        "name": "HarmonyX-v1.0.0-unsigned.hap",
+        "size": 5277341,
+        "digest": "sha256:863269b39747411dd75b459916a5c3e862092caf246c78ac55277bc62dea796e"
+      }
+    ]
+  }
+]
